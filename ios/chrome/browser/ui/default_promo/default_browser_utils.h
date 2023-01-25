@@ -7,6 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
+
+namespace feature_engagement {
+class Tracker;
+}
+
 // Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.
 typedef NS_ENUM(NSUInteger, DefaultPromoType) {
@@ -49,6 +55,13 @@ void LogRemindMeLaterPromoActionInteraction();
 // delay time threshold has been met.
 bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
 
+// Returns true if the passed default browser badge `feature` should be shown.
+// Also makes the necessary calls to the FET for keeping track of usage, as well
+// as checking that the correct preconditions are met.
+bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+    const base::Feature& feature,
+    feature_engagement::Tracker* tracker);
+
 // Returns true if the user is in the group that will be shown the Remind Me
 // Later button in the fullscreen promo.
 bool IsInRemindMeLaterGroup();
@@ -56,6 +69,13 @@ bool IsInRemindMeLaterGroup();
 // Returns true if the user is in the group that will be shown a modified
 // description and "Learn More" text.
 bool IsInModifiedStringsGroup();
+
+// Returns true if the user is in the default browser blue dot experiment.
+bool IsInBlueDotExperiment();
+
+// Returns true if the user is in the default browser blue dot experiment and in
+// the blue dot active/enabled group.
+bool IsInBlueDotExperimentEnabledGroup();
 
 // Returns true if the user is in the CTA experiment in the open links group.
 bool IsInCTAOpenLinksGroup();
@@ -102,6 +122,10 @@ bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch();
 // Returns YES if the user has pasted a valid URL into the omnibox twice in
 // the last 7 days and records the current paste.
 bool HasRecentValidURLPastesAndRecordsCurrentPaste();
+
+// Returns YES if the last timestamp passed as `eventKey` is part of the current
+// user session (6 hours). If not, it records the timestamp.
+bool HasRecentTimestampForKey(NSString* eventKey);
 
 // Returns true if the last URL open is within the time threshold that would
 // indicate Chrome is likely still the default browser. Returns false otherwise.

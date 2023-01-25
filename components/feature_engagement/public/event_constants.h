@@ -141,9 +141,17 @@ extern const char kBlueDotPromoEligibilityMet[];
 // carousel.
 extern const char kBlueDotPromoOverflowMenuShown[];
 
+// The user has been shown the blue dot default browser promo on the overflow
+// carousel, for a new user session. (i.e. after 6 hours from last shown).
+extern const char kBlueDotPromoOverflowMenuShownNewSession[];
+
 // The user has been shown the blue dot default browser promo on the settings
 // row.
 extern const char kBlueDotPromoSettingsShown[];
+
+// The user has been shown the blue dot default browser promo on the settings
+// row, after a new user session (i.e. after 6 hours from last shown).
+extern const char kBlueDotPromoSettingsShownNewSession[];
 
 // The user has dismissed the blue dot default browser promo on the overflow
 // carousel.

@@ -13,6 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -32,6 +35,7 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/net/crurl.h"
@@ -63,6 +67,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/icons/buildflags.h"
 #import "ios/chrome/browser/ui/icons/symbols.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -149,6 +154,11 @@ NSString* const kDefaultBrowserWorldImageName = @"default_browser_world";
 
 // The size of trailing symbol icons for unsafe state.
 NSInteger kTrailingSymbolImagePointSize = 18;
+
+// Key used for storing NSUserDefault entry to keep track of the last timestamp
+// we've shown the default browser blue dot promo.
+NSString* const kMostRecentTimestampBlueDotPromoShownInSettingsMenu =
+    @"MostRecentTimestampBlueDotPromoShownInSettingsMenu";
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 NSString* kDevViewSourceKey = @"DevViewSource";
@@ -309,6 +319,10 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 @property(nonatomic, readonly, weak)
     id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
         dispatcher;
+
+// YES if the default browser settings row is currently showing the notification
+// dot.
+@property(nonatomic, assign) BOOL showingDefaultBrowserNotificationDot;
 
 // YES if the sign-in is in progress.
 @property(nonatomic, assign) BOOL isSigninInProgress;
@@ -805,6 +819,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     defaultBrowser.iconImage =
         [UIImage imageNamed:kDefaultBrowserWorldImageName];
   }
+
+  [self maybeActivateDefaultBrowserBlueDotPromo:defaultBrowser];
 
   return defaultBrowser;
 }
@@ -1539,11 +1555,24 @@ UIImage* GetBrandedGoogleServicesSymbol() {
       }
       break;
     }
-    case SettingsItemTypeDefaultBrowser:
+    case SettingsItemTypeDefaultBrowser: {
       base::RecordAction(
           base::UserMetricsAction("Settings.ShowDefaultBrowser"));
+
+      if (self.showingDefaultBrowserNotificationDot) {
+        feature_engagement::Tracker* tracker =
+            feature_engagement::TrackerFactory::GetForBrowserState(
+                _browserState);
+        if (tracker) {
+          tracker->NotifyEvent(
+              feature_engagement::events::kBlueDotPromoSettingsDismissed);
+        }
+        [self reloadData];
+      }
+
       controller = [[DefaultBrowserSettingsTableViewController alloc] init];
       break;
+    }
     case SettingsItemTypeSearchEngine:
       base::RecordAction(base::UserMetricsAction("EditSearchEngines"));
       controller = [[SearchEngineTableViewController alloc]
@@ -1999,6 +2028,42 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return (isSignedIn && IsWebChannelsEnabled())
              ? l10n_util::GetNSString(IDS_IOS_DISCOVER_AND_FOLLOWING_FEED_TITLE)
              : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE);
+}
+
+// Decides whether the default browser blue dot promo should be active, and adds
+// the blue dot badge to the right settings row if it is.
+- (void)maybeActivateDefaultBrowserBlueDotPromo:
+    (TableViewDetailIconItem*)defaultBrowserCellItem {
+  self.showingDefaultBrowserNotificationDot = NO;
+
+  if (!_browserState) {
+    return;
+  }
+
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  if (!tracker) {
+    return;
+  }
+
+  if (ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+          feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature,
+          tracker)) {
+    // Add the blue dot promo badge to the default browser row.
+    defaultBrowserCellItem.showNotificationDot = YES;
+    self.showingDefaultBrowserNotificationDot = YES;
+
+    // If we've only started showing the blue dot recently (<6 hours), don't
+    // notify the FET again that the promo is being shown, since we're not in a
+    // new user session. We record the badge being shown per user session,
+    // instead of per time it is shown since the badge needs to be shown accross
+    // 3 user sessions.
+    if (!HasRecentTimestampForKey(
+            kMostRecentTimestampBlueDotPromoShownInSettingsMenu)) {
+      tracker->NotifyEvent(
+          feature_engagement::events::kBlueDotPromoSettingsShownNewSession);
+    }
+  }
 }
 
 #pragma mark - SigninPresenter

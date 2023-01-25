@@ -9,9 +9,10 @@ source_set("utils") {
     "default_browser_utils.mm",
   ]
   deps = [
-    "//base",
+    "//components/feature_engagement/public",
     "//ios/chrome/browser/ui:feature_flags",
   ]
+  public_deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]
 }
 

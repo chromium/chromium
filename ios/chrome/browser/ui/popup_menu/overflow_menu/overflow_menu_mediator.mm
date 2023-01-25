@@ -95,6 +95,11 @@ using experimental_flags::IsSpotlightDebuggingEnabled;
 
 namespace {
 
+// Key used for storing NSUserDefault entry to keep track of the last timestamp
+// we've shown the default browser blue dot promo.
+NSString* const kMostRecentTimestampBlueDotPromoShownInOverflowMenu =
+    @"MostRecentTimestampBlueDotPromoShownInOverflowMenu";
+
 typedef void (^Handler)(void);
 
 OverflowMenuAction* CreateOverflowMenuActionWithString(
@@ -1057,6 +1062,49 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   return newDestinations;
 }
 
+// Decides whether the default browser blue dot promo should be active, and if
+// it is, move the settings destination to the front and add the blue dot badge.
+- (NSArray<OverflowMenuDestination*>*)maybeActivateDefaultBrowserBlueDotPromo:
+    (NSArray<OverflowMenuDestination*>*)destinations {
+  if (!self.engagementTracker) {
+    return destinations;
+  }
+
+  if (ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
+          feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature,
+          self.engagementTracker)) {
+    // Add the blue dot promo badge to the settings destination.
+    self.settingsDestination.badge = BadgeTypeBlueDot;
+
+    // Move the settings destination to the front of the destinations, otherwise
+    // respecting the original order.
+    NSMutableArray<OverflowMenuDestination*>* newDestinations =
+        [[NSMutableArray alloc] init];
+
+    [newDestinations addObject:self.settingsDestination];
+    for (OverflowMenuDestination* destination in destinations) {
+      if (destination != self.settingsDestination) {
+        [newDestinations addObject:destination];
+      }
+    }
+
+    // If we've only started showing the blue dot recently (<6 hours), don't
+    // notify the FET again that the promo is being shown, since we're not in a
+    // new user session. We record the badge being shown per user session,
+    // instead of per time it is shown since the badge needs to be shown accross
+    // 3 user sessions.
+    if (!HasRecentTimestampForKey(
+            kMostRecentTimestampBlueDotPromoShownInOverflowMenu)) {
+      self.engagementTracker->NotifyEvent(
+          feature_engagement::events::kBlueDotPromoOverflowMenuShownNewSession);
+    }
+
+    return newDestinations;
+  }
+
+  return destinations;
+}
+
 // Adds SpotlightDebugger to the OverflowMenuDestination to be displayed in the
 // destinations carousel.
 - (NSArray<OverflowMenuDestination*>*)insertSpotlightDebuggerToDestinations:
@@ -1096,7 +1144,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         generateDestinationsList:baseDestinations];
   }
 
-  // What's New defy the smart sorting rules of the overflow menu to appear
+  // What's New defies the smart sorting rules of the overflow menu to appear
   // either at the front of the carousel or the back. Thus, What's New is
   // inserted after smart sorting returns the sorted destinations.
   if (IsWhatsNewEnabled()) {
@@ -1107,6 +1155,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     baseDestinations =
         [self insertSpotlightDebuggerToDestinations:baseDestinations];
   }
+
+  baseDestinations =
+      [self maybeActivateDefaultBrowserBlueDotPromo:baseDestinations];
 
   self.overflowMenuModel.destinations = [baseDestinations
       filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(
@@ -1840,6 +1891,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 
 // Dismisses the menu and opens settings.
 - (void)openSettings {
+  if (self.settingsDestination.badge == BadgeTypeBlueDot &&
+      self.engagementTracker) {
+    self.engagementTracker->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
+  }
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito

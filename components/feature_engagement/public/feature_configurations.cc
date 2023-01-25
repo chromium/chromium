@@ -1104,7 +1104,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // (kIPHiOSDefaultBrowserOverflowMenuBadgeFeature and
     // kIPHiOSDefaultBrowserSettingsBadgeFeature) which will enable a blue
     // notification badge to be shown to users at two different locations to
-    // help bring their attention to the default browser settings page.
+    // help bring their attention to the default browser settings page. This FET
+    // feature is non-blocking because it is a passive promo that appears
+    // alongside the rest of the UI, and does not interrupt the user's flow.
 
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1116,6 +1118,8 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360);
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 30, 360));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
     return config;
   }
 
@@ -1123,7 +1127,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // A config to allow a user to be shown the blue dot promo on the carousel.
     // It depends on kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed
     // users eligible, and adds more constraints to decide when to stop showing
-    // the promo to the user.
+    // the promo to the user. This FET feature is non-blocking because it is a
+    // passive promo that appears alongside the rest of the UI, and does not
+    // interrupt the user's flow.
 
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1132,12 +1138,17 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->used = EventConfig("blue_dot_promo_overflow_menu_dismissed",
                                Comparator(EQUAL, 0), 30, 360);
     config->trigger = EventConfig("blue_dot_promo_overflow_menu_shown",
-                                  Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360);
+                                  Comparator(ANY, 0), 360, 360);
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_overflow_menu_shown_new_session",
+                    Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
     config->event_configs.insert(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 30, 360));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
     return config;
   }
 
@@ -1146,7 +1157,9 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // browser settings row item. It depends on
     // kIPHiOSDefaultBrowserBadgeEligibilityFeature to have deemed users
     // eligible, and adds more constraints to decide when to stop showing the
-    // promo.
+    // promo. This FET feature is non-blocking because it is a passive promo
+    // that appears alongside the rest of the UI, and does not interrupt the
+    // user's flow.
 
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -1155,12 +1168,17 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->used = EventConfig("blue_dot_promo_settings_dismissed",
                                Comparator(EQUAL, 0), 30, 360);
     config->trigger = EventConfig("blue_dot_promo_settings_shown",
-                                  Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360);
+                                  Comparator(ANY, 0), 360, 360);
+    config->event_configs.insert(
+        EventConfig("blue_dot_promo_settings_shown_new_session",
+                    Comparator(LESS_THAN_OR_EQUAL, 2), 360, 360));
     config->event_configs.insert(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 30, 360));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
     return config;
   }
 #endif  // BUILDFLAG(IS_IOS)
