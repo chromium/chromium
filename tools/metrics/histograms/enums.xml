@@ -58416,6 +58416,7 @@ from previous Chrome versions.
   <int value="-1575430234" label="DontPrefetchLibraries:disabled"/>
   <int value="-1575375861" label="enable-captive-portal-random-url"/>
   <int value="-1575131701" label="AppServiceAsh:disabled"/>
+  <int value="-1574799991" label="SkipServiceWorkerForInstallPromot:enabled"/>
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
   <int value="-1572010356" label="enable-privet-v3"/>
   <int value="-1571841513" label="enable-devtools-experiments"/>
@@ -60340,6 +60341,7 @@ from previous Chrome versions.
   <int value="-504485318"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:enabled"/>
   <int value="-503601144" label="UserDataSnapshot:disabled"/>
+  <int value="-503457958" label="SkipServiceWorkerCheckInstallOnly:enabled"/>
   <int value="-503430431" label="XRSandbox:enabled"/>
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
@@ -60548,6 +60550,7 @@ from previous Chrome versions.
   <int value="-371397346" label="ChromeOSSharingHub:enabled"/>
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
+  <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
   <int value="-367474066" label="DialogTouchBar:enabled"/>
   <int value="-366949535" label="KeyboardShortcutViewerApp:enabled"/>
@@ -61366,6 +61369,7 @@ from previous Chrome versions.
   <int value="94576028" label="LensEnableRegionSearchOnPdfViewer:disabled"/>
   <int value="96148142" label="SyncAndroidPromosWithAlternativeTitle:enabled"/>
   <int value="97091906" label="AutofillSaveCardShowNoThanks:enabled"/>
+  <int value="97691440" label="SkipServiceWorkerForInstallPromot:disabled"/>
   <int value="97764742" label="QuickAnswersForMoreLocales:disabled"/>
   <int value="97976428" label="CastUseBlocklistForRemotingQuery:enabled"/>
   <int value="98029688" label="MediaAppDisplayExif:disabled"/>

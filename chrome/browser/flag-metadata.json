@@ -3074,6 +3074,16 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-skip-service-worker-check-install-for-promotion",
+    "owners": [ "camdenking@google.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
+    "name": "enable-skip-service-worker-check-install-only",
+    "owners": [ "camdenking@google.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "enable-start-surface",
     "owners": [ "hanxi", "wychen" ],
     "expiry_milestone": 115
