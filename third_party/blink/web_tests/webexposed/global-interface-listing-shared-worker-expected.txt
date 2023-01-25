@@ -1047,15 +1047,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method quadraticCurveTo
 [Worker]     method rect
 [Worker]     method roundRect
-[Worker] interface PaymentInstruments
-[Worker]     attribute @@toStringTag
-[Worker]     method clear
-[Worker]     method constructor
-[Worker]     method delete
-[Worker]     method get
-[Worker]     method has
-[Worker]     method keys
-[Worker]     method set
 [Worker] interface Performance : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter onresourcetimingbufferfull

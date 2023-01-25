@@ -2084,7 +2084,6 @@
     {
       name: "PaymentInstruments",
       depends_on: ["PaymentApp"],
-      status: "stable",
     },
     {
       name: "PaymentMethodChangeEvent",

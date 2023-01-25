@@ -1038,15 +1038,6 @@ interface Path2D
     method quadraticCurveTo
     method rect
     method roundRect
-interface PaymentInstruments
-    attribute @@toStringTag
-    method clear
-    method constructor
-    method delete
-    method get
-    method has
-    method keys
-    method set
 interface PaymentRequestEvent : ExtendableEvent
     attribute @@toStringTag
     getter instrumentKey
