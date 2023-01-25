@@ -7,6 +7,9 @@ declare_args() {
   # WebKit for mac but incorrectly setting `target_os="ios"`.
   is_webkit_only_build = false
 
+  # Control whether iOS builds with PartitionAlloc.
+  ios_partition_alloc_enabled = false
+
   # Control whether //ios/chrome and //ios/web targets are build. This
   # is used by bots from projects based on top of Chromium that want to
   # only reuse shared code (//ios/net, //remoting/ios, ...).
