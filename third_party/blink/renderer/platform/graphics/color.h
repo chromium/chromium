@@ -111,6 +111,24 @@ class PLATFORM_EXPORT Color {
            color_space == ColorSpace::kXYZD65;
   }
 
+  static bool HasRGBOrXYZComponents(ColorSpace color_space) {
+    return color_space == ColorSpace::kSRGB ||
+           color_space == ColorSpace::kSRGBLinear ||
+           color_space == ColorSpace::kDisplayP3 ||
+           color_space == ColorSpace::kA98RGB ||
+           color_space == ColorSpace::kProPhotoRGB ||
+           color_space == ColorSpace::kRec2020 ||
+           color_space == ColorSpace::kXYZD50 ||
+           color_space == ColorSpace::kXYZD65 ||
+           color_space == ColorSpace::kRGBLegacy;
+  }
+
+  static bool IsLightnessFirstComponent(ColorSpace color_space) {
+    return color_space == ColorSpace::kLab ||
+           color_space == ColorSpace::kOklab ||
+           color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch;
+  }
+
   // The default constructor creates a transparent color.
   constexpr Color()
       : param0_is_none_(0),
@@ -377,6 +395,13 @@ class PLATFORM_EXPORT Color {
                                 float value2,
                                 float percentage,
                                 HueInterpolationMethod hue_method);
+
+  // According the Spec https://www.w3.org/TR/css-color-4/#interpolation-missing
+  // we have to do a special treatment of when to carry forward the 'noneness'
+  // of a component, given if it's an 'analog component'.
+  static void CarryForwardAnalogousMissingComponents(
+      Color color,
+      ColorSpace prev_color_space);
 
   ColorSpace color_space_ = ColorSpace::kRGBLegacy;
 

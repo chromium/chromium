@@ -143,7 +143,6 @@ constexpr int AlphaChannel(RGBA32 color) {
 float AngleToUnitCircleDegrees(float angle) {
   return fmod(fmod(angle, 360.f) + 360.f, 360.f);
 }
-
 }  // namespace
 
 // The color parameters will use 16 bytes (for 4 floats). Ensure that the
@@ -285,6 +284,62 @@ float Color::HueInterpolation(float value1,
   return AngleToUnitCircleDegrees(blink::Blend(value1, value2, percentage));
 }
 
+namespace {}  // namespace
+
+void Color::CarryForwardAnalogousMissingComponents(
+    Color color,
+    Color::ColorSpace prev_color_space) {
+  auto HasRGBOrXYZComponents = [](Color::ColorSpace color_space) {
+    return color_space == Color::ColorSpace::kSRGB ||
+           color_space == Color::ColorSpace::kSRGBLinear ||
+           color_space == Color::ColorSpace::kDisplayP3 ||
+           color_space == Color::ColorSpace::kA98RGB ||
+           color_space == Color::ColorSpace::kProPhotoRGB ||
+           color_space == Color::ColorSpace::kRec2020 ||
+           color_space == Color::ColorSpace::kXYZD50 ||
+           color_space == Color::ColorSpace::kXYZD65 ||
+           color_space == Color::ColorSpace::kRGBLegacy;
+  };
+
+  auto IsLightnessFirstComponent = [](Color::ColorSpace color_space) {
+    return color_space == Color::ColorSpace::kLab ||
+           color_space == Color::ColorSpace::kOklab ||
+           color_space == Color::ColorSpace::kLch ||
+           color_space == Color::ColorSpace::kOklch;
+  };
+
+  const auto cur_color_space = color.GetColorSpace();
+  if (cur_color_space == prev_color_space) {
+    return;
+  }
+  if (HasRGBOrXYZComponents(cur_color_space) &&
+      HasRGBOrXYZComponents(prev_color_space)) {
+    return;
+  }
+  if (IsLightnessFirstComponent(cur_color_space) &&
+      IsLightnessFirstComponent(prev_color_space)) {
+    color.param1_is_none_ = false;
+    color.param2_is_none_ = false;
+    return;
+  }
+  if (IsLightnessFirstComponent(prev_color_space) &&
+      cur_color_space == ColorSpace::kHSL) {
+    color.param2_is_none_ = color.param0_is_none_;
+    color.param0_is_none_ = false;
+    if (prev_color_space != ColorSpace::kLch &&
+        prev_color_space != ColorSpace::kOklch) {
+      DCHECK(prev_color_space == ColorSpace::kLab ||
+             prev_color_space == ColorSpace::kOklab);
+      color.param1_is_none_ = false;
+    }
+    return;
+  }
+  // There are no analogous missing components.
+  color.param0_is_none_ = false;
+  color.param1_is_none_ = false;
+  color.param2_is_none_ = false;
+}
+
 // static
 Color::ColorSpace Color::ColorInterpolationSpaceToColorSpace(
     Color::ColorInterpolationSpace color_interpolation_space) {
@@ -324,8 +379,19 @@ Color Color::InterpolateColors(
   // hwb colorspaces.
   DCHECK(percentage >= 0.0f && percentage <= 1.0f);
 
+  const auto color1_prev_color_space = color1.GetColorSpace();
   color1.ConvertToColorInterpolationSpace(interpolation_space);
+  const auto color2_prev_color_space = color2.GetColorSpace();
   color2.ConvertToColorInterpolationSpace(interpolation_space);
+
+  CarryForwardAnalogousMissingComponents(color1, color1_prev_color_space);
+  CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
+
+  if (color1.alpha_is_none_ && !color2.alpha_is_none_) {
+    color1.alpha_ = color2.alpha_;
+  } else if (color2.alpha_is_none_ && !color1.alpha_is_none_) {
+    color2.alpha_ = color1.alpha_;
+  }
 
   absl::optional<float> alpha1 = color1.PremultiplyColor();
   absl::optional<float> alpha2 = color2.PremultiplyColor();
@@ -379,7 +445,7 @@ Color Color::InterpolateColors(
           : blink::Blend(color1.param2_, color2.param2_, percentage);
 
   absl::optional<float> alpha =
-      (color1.alpha_is_none_ && color2.alpha_is_none_)
+      (color1.alpha_is_none_ || color2.alpha_is_none_)
           ? HandleNoneInterpolation(alpha1.value(), color1.alpha_is_none_,
                                     alpha2.value(), color2.alpha_is_none_)
           : blink::Blend(alpha1.value(), alpha2.value(), percentage);
