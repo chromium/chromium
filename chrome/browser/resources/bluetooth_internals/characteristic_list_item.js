@@ -10,7 +10,7 @@ import './value_control.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './characteristic_list_item.html.js';
-import {CharacteristicInfo, Property} from './device.mojom-webui.js';
+import {Property} from './device.mojom-webui.js';
 
 /** Property names for the CharacteristicInfo fieldset */
 const INFO_PROPERTY_NAMES = {

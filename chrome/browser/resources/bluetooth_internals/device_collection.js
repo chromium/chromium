@@ -9,8 +9,6 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {DeviceInfo} from './device.mojom-webui.js';
-
 /**
  * Enum of connection status for a device.
  * @enum {number}

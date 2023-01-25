@@ -15,13 +15,13 @@ import {AdapterBroker, AdapterProperty, getAdapterBroker} from './adapter_broker
 import {AdapterPage} from './adapter_page.js';
 import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
 import {DebugLogPage} from './debug_log_page.js';
-import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {DeviceDetailsPage} from './device_details_page.js';
 import {DevicesPage, ScanStatus} from './devices_page.js';
 import {PageManager, PageManagerObserver} from './page_manager.js';
 import {Sidebar} from './sidebar.js';
 import {showSnackbar, SnackbarType} from './snackbar.js';
+
 
 
 // Expose for testing.

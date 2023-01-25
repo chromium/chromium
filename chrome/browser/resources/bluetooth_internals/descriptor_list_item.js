@@ -9,7 +9,6 @@ import './value_control.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {getTemplate} from './descriptor_list_item.html.js';
-import {DescriptorInfo} from './device.mojom-webui.js';
 
 /** Property names for the DescriptorInfo fieldset */
 const INFO_PROPERTY_NAMES = {

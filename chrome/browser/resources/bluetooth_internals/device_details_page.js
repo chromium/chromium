@@ -13,7 +13,7 @@ import './object_fieldset.js';
 
 import {$} from 'chrome://resources/js/util_ts.js';
 
-import {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
+import {DeviceRemote} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';

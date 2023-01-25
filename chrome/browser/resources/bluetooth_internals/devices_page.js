@@ -8,7 +8,6 @@
  */
 import './device_table.js';
 
-import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {Page} from './page.js';
 

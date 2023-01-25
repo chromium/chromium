@@ -8,7 +8,6 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {getTemplate} from './device_table.html.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';

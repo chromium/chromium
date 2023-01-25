@@ -8,31 +8,7 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 bluetooth_grd_prefix = "bluetooth_internals"
-public_mojo_grdp_file = "$target_gen_dir/public_mojo_resources.grdp"
-internals_mojo_grdp_file = "$target_gen_dir/internals_mojo_resources.grdp"
 resources_grd_file = "$target_gen_dir/resources.grd"
-
-generate_grd("build_public_mojo_grdp") {
-  grd_prefix = bluetooth_grd_prefix
-  out_grd = public_mojo_grdp_file
-  input_files = [
-    "adapter.mojom-webui.js",
-    "uuid.mojom-webui.js",
-    "device.mojom-webui.js",
-  ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/mojom-webui/device/bluetooth/public/mojom/",
-                  root_build_dir)
-}
-
-generate_grd("build_internal_mojo_grdp") {
-  grd_prefix = bluetooth_grd_prefix
-  out_grd = internals_mojo_grdp_file
-  input_files = [ "bluetooth_internals.mojom-webui.js" ]
-  input_files_base_dir = rebase_path(
-          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/bluetooth_internals/",
-          root_build_dir)
-}
 
 html_files = [
   "characteristic_list_item.html",
@@ -85,6 +61,28 @@ js_files = [
   "value_control.js",
 ]
 
+mojom_files = [
+  "adapter.mojom-webui.ts",
+  "bluetooth_internals.mojom-webui.ts",
+  "device.mojom-webui.ts",
+  "uuid.mojom-webui.js",
+]
+
+copy("copy_mojom") {
+  deps = [
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_ts__generator",
+    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_ts__generator",
+    "//device/bluetooth/public/mojom:mojom_js__generator",
+  ]
+  sources = [
+    "$root_gen_dir/chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/adapter.mojom-webui.ts",
+    "$root_gen_dir/device/bluetooth/public/mojom/device.mojom-webui.ts",
+    "$root_gen_dir/mojom-webui/device/bluetooth/public/mojom/uuid.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
 copy("copy_files") {
   sources = js_files
   outputs = [ "${target_gen_dir}/{{source_file_part}}" ]
@@ -98,10 +96,11 @@ ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = js_files + html_wrapper_files
+  in_files = js_files + html_wrapper_files + mojom_files
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [
     ":copy_files",
+    ":copy_mojom",
     ":html_wrapper_files",
   ]
 }
@@ -110,12 +109,7 @@ grit("resources") {
   enable_input_discovery_for_gn_analyze = false
   source = resources_grd_file
 
-  deps = [
-    ":build_grd",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js",
-    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
-    "//device/bluetooth/public/mojom:mojom_js",
-  ]
+  deps = [ ":build_grd" ]
 
   outputs = [
     "grit/bluetooth_internals_resources.h",
@@ -129,22 +123,13 @@ grit("resources") {
 generate_grd("build_grd") {
   grd_prefix = bluetooth_grd_prefix
   out_grd = resources_grd_file
-  deps = [
-    ":build_internal_mojo_grdp",
-    ":build_public_mojo_grdp",
-    ":build_ts",
-  ]
+  deps = [ ":build_ts" ]
   input_files = [
     "bluetooth_internals.css",
     "bluetooth_internals.html",
     "menu.svg",
   ]
   input_files_base_dir = rebase_path(".", "//")
-
-  grdp_files = [
-    public_mojo_grdp_file,
-    internals_mojo_grdp_file,
-  ]
 
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])

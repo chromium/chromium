@@ -8,7 +8,6 @@ import './object_fieldset.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
-import {ServiceInfo} from './device.mojom-webui.js';
 import {getTemplate} from './service_list_item.html.js';
 
 /**

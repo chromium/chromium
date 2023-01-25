@@ -7694,8 +7694,6 @@ grit("resources") {
 
   deps = [
     ":chrome_internal_resources_gen",
-    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_js",
-    "//device/bluetooth/public/mojom:mojom_js",
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
@@ -7749,7 +7747,6 @@ grit("resources") {
       "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/parent_access:mojo_bindings_js",
       "//chrome/browser/ui/webui/ash/vm:mojo_bindings_js__generator",
-      "//chrome/browser/ui/webui/settings/ash:mojom_js",
     ]
   }
 

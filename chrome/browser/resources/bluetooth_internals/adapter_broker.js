@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AdapterInfo, AdapterObserverInterface, AdapterObserverReceiver, AdapterRemote, ConnectResult, DiscoverySessionRemote} from './adapter.mojom-webui.js';
+import {AdapterObserverReceiver, AdapterRemote, ConnectResult, DiscoverySessionRemote} from './adapter.mojom-webui.js';
 import {BluetoothInternalsHandler, BluetoothInternalsHandlerRemote} from './bluetooth_internals.mojom-webui.js';
-import {Device, DeviceInfo, DeviceRemote} from './device.mojom-webui.js';
+import {Device, DeviceRemote} from './device.mojom-webui.js';
 
 const SCAN_CLIENT_NAME = 'Bluetooth Internals Page';
 

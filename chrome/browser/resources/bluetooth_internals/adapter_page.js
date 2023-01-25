@@ -10,7 +10,6 @@ import './object_fieldset.js';
 
 import {$} from 'chrome://resources/js/util_ts.js';
 
-import {AdapterInfo} from './adapter.mojom-webui.js';
 import {Page} from './page.js';
 
 const PROPERTY_NAMES = {
