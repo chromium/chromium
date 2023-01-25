@@ -134,6 +134,17 @@
   E_CPONLY(kColorSysSurface4) \
   E_CPONLY(kColorSysSurface5) \
   E_CPONLY(kColorSysDisabledContainer) \
+  /* Chrome surfaces */ \
+  E_CPONLY(kColorSysHeader) \
+  E_CPONLY(kColorSysHeaderInactive) \
+  E_CPONLY(kColorSysOnHeaderDivider) \
+  E_CPONLY(kColorSysOnHeaderDividerInactive) \
+  E_CPONLY(kColorSysOnHeaderPrimary) \
+  E_CPONLY(kColorSysOnHeaderPrimaryInactive) \
+  E_CPONLY(kColorSysOnHeaderSecondary) \
+  E_CPONLY(kColorSysOnHeaderSecondaryInactive) \
+  E_CPONLY(kColorSysOnHeaderContainer) \
+  E_CPONLY(kColorSysOnHeaderContainerInactive) \
   /* On-color tokens for any bases */ \
   E_CPONLY(kColorSysOnSurface) \
   E_CPONLY(kColorSysOnSurfaceDisabled) \
@@ -145,6 +156,7 @@
   E_CPONLY(kColorSysStateFocus) \
   E_CPONLY(kColorSysStatePressed) \
   E_CPONLY(kColorSysStateDrag) \
+  E_CPONLY(kColorSysStateFocusRing) \
   /* Core color concepts */ \
   /* kColorAccent is used in color_provider_css_colors_test.ts. */ \
   /* If changing the variable name, the variable name in the test needs to */ \

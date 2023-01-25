@@ -37,6 +37,11 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonForegroundDisabled] = {kColorSysOnSurfaceDisabled};
   mixer[kColorButtonForegroundProminent] = {kColorSysOnPrimary};
   mixer[kColorButtonForegroundUnchecked] = {kColorSysOnSurfaceVariant};
+  mixer[kColorFocusableBorderFocused] = {kColorSysStateFocusRing};
+  mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
+  mixer[kColorFrameActive] = {kColorSysHeader};
+  mixer[kColorFrameActiveUnthemed] = {kColorSysHeader};
+  mixer[kColorFrameInactive] = {kColorSysHeaderInactive};
   mixer[kColorSliderThumb] = {kColorSysPrimary};
   mixer[kColorSliderThumbMinimal] = {kColorSysSecondary};
   mixer[kColorSliderTrack] = {kColorSysOnPrimary};
