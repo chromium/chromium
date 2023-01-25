@@ -14,8 +14,9 @@
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "content/public/browser/web_contents.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/multi_animation.h"
+#include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -24,11 +25,10 @@
 #endif
 
 namespace views {
-class AnimatingLayoutManager;
 class FlexLayoutView;
 class FrameBackground;
 class Label;
-}
+}  // namespace views
 
 namespace {
 class WindowEventObserver;
@@ -40,10 +40,8 @@ class PictureInPictureBrowserFrameView
       public LocationIconView::Delegate,
       public IconLabelBubbleView::Delegate,
       public ContentSettingImageView::Delegate,
-#if BUILDFLAG(IS_MAC)
-      public device::GeolocationManager::PermissionObserver,
-#endif
-      public views::WidgetObserver {
+      public views::WidgetObserver,
+      public gfx::AnimationDelegate {
  public:
   METADATA_HEADER(PictureInPictureBrowserFrameView);
 
@@ -108,15 +106,12 @@ class PictureInPictureBrowserFrameView
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
-#if BUILDFLAG(IS_MAC)
-  // GeolocationManager::PermissionObserver:
-  void OnSystemPermissionUpdated(
-      device::LocationSystemPermissionStatus new_status) override;
-#endif
-
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+
+  // gfx::AnimationDelegate:
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -173,8 +168,10 @@ class PictureInPictureBrowserFrameView
 #endif
 
   // Helper functions for testing.
-  views::AnimatingLayoutManager* GetAnimatingLayoutManagerForTesting();
+  std::vector<gfx::Animation*> GetRenderActiveAnimationsForTesting();
+  std::vector<gfx::Animation*> GetRenderInactiveAnimationsForTesting();
   views::View* GetBackToTabButtonForTesting();
+  views::View* GetCloseButtonForTesting();
 
  private:
   // A model required to use LocationIconView.
@@ -190,9 +187,7 @@ class PictureInPictureBrowserFrameView
   raw_ptr<views::Label> window_title_ = nullptr;
 
   // A container view for the top right buttons.
-  raw_ptr<views::View> button_container_view_ = nullptr;
-  raw_ptr<views::AnimatingLayoutManager> button_container_animating_layout_ =
-      nullptr;
+  raw_ptr<views::FlexLayoutView> button_container_view_ = nullptr;
 
   // The content setting views for icons and bubbles.
   std::vector<ContentSettingImageView*> content_setting_views_;
@@ -202,7 +197,26 @@ class PictureInPictureBrowserFrameView
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  // When the window is created and shown for the first time, we show the active
+  // window state even if the mouse is not inside it.
+  bool render_active_ = true;
+
   bool mouse_inside_window_ = false;
+
+  // Animations for the top bar title and buttons. When the mouse moves in or
+  // out of the window, the title color and camera icon color will highlight
+  // or dim, the back to tab button and close button will show or hide, and the
+  // camera icon will move left or right if present. We consider animation state
+  // 1.0 as the window active state (mouse in) and 0.0 as inactive state (mouse
+  // out).
+  gfx::SlideAnimation top_bar_color_animation_;
+  gfx::SlideAnimation move_camera_button_to_left_animation_;
+  gfx::MultiAnimation move_camera_button_to_right_animation_;
+  gfx::MultiAnimation show_back_to_tab_button_animation_;
+  gfx::MultiAnimation hide_back_to_tab_button_animation_;
+  gfx::MultiAnimation show_close_button_animation_;
+  gfx::MultiAnimation hide_close_button_animation_;
 
 #if BUILDFLAG(IS_LINUX)
   // Used to draw window frame borders and shadow on Linux when GTK theme is
@@ -214,7 +228,7 @@ class PictureInPictureBrowserFrameView
   std::unique_ptr<views::FrameBackground> frame_background_;
 #endif
 
-  // Userd to monitor key and mouse event from native window.
+  // Used to monitor key and mouse events from native window.
   std::unique_ptr<WindowEventObserver> window_event_observer_;
 };
 
