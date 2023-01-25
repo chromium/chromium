@@ -1,27 +1,25 @@
 Tests that tracking and untracking IndexedDB for storage key works
 
 Open database, object store and set value
-[
-    [0] : {
-        method : Storage.indexedDBListUpdated
-        params : {
-            origin : http://127.0.0.1:8000
-            storageKey : http://127.0.0.1:8000/
-        }
-        sessionId : <string>
+{
+    method : Storage.indexedDBListUpdated
+    params : {
+        origin : http://127.0.0.1:8000
+        storageKey : http://127.0.0.1:8000/
     }
-    [1] : {
-        method : Storage.indexedDBContentUpdated
-        params : {
-            databaseName : test-database
-            objectStoreName : test-store
-            origin : http://127.0.0.1:8000
-            storageKey : http://127.0.0.1:8000/
-        }
-        sessionId : <string>
+    sessionId : <string>
+}
+Title{
+    method : Storage.indexedDBContentUpdated
+    params : {
+        databaseName : <string>
+        objectStoreName : test-store
+        origin : http://127.0.0.1:8000
+        storageKey : http://127.0.0.1:8000/
     }
-    [2] : key-value pair added successfully
-]
+    sessionId : <string>
+}
+key-value pair added successfully
 
 Untrack IndexedDB for storage key
 
