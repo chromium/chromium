@@ -41,8 +41,9 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   // May already be bound if user refreshes page.
   theme_observer_remote_.reset();
   theme_observer_remote_.Bind(std::move(observer));
-  if (!color_mode_observer_.IsObserving())
+  if (!color_mode_observer_.IsObserving()) {
     color_mode_observer_.Observe(ash::DarkLightModeControllerImpl::Get());
+  }
   // Call it once to get the current color mode.
   OnColorModeChanged(
       ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
@@ -58,10 +59,24 @@ void PersonalizationAppThemeProviderImpl::SetThemeObserver(
   // Call once to get the initial status.
   NotifyColorModeAutoScheduleChanged();
   if (ash::features::IsJellyEnabled()) {
-    // TODO(b/261505637): Observe changes to the color prefs.
-    AccountId account_id = GetAccountId(profile_);
-    OnStaticColorChanged(color_palette_controller_->GetStaticColor(account_id));
-    OnColorSchemeChanged(color_palette_controller_->GetColorScheme(account_id));
+    OnStaticColorChanged();
+    OnColorSchemeChanged();
+    if (!pref_change_registrar_.IsObserved(
+            ash::prefs::kDynamicColorColorScheme)) {
+      pref_change_registrar_.Add(
+          ash::prefs::kDynamicColorColorScheme,
+          base::BindRepeating(
+              &PersonalizationAppThemeProviderImpl::OnColorSchemeChanged,
+              base::Unretained(this)));
+    }
+    if (!pref_change_registrar_.IsObserved(
+            ash::prefs::kDynamicColorSeedColor)) {
+      pref_change_registrar_.Add(
+          ash::prefs::kDynamicColorSeedColor,
+          base::BindRepeating(
+              &PersonalizationAppThemeProviderImpl::OnStaticColorChanged,
+              base::Unretained(this)));
+    }
   }
 }
 
@@ -79,8 +94,9 @@ void PersonalizationAppThemeProviderImpl::SetColorModeAutoScheduleEnabled(
     bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
-  if (enabled)
+  if (enabled) {
     LogPersonalizationTheme(ColorMode::kAuto);
+  }
   const ScheduleType schedule_type =
       enabled ? ScheduleType::kSunsetToSunrise : ScheduleType::kNone;
   pref_service->SetInteger(ash::prefs::kDarkModeScheduleType,
@@ -104,16 +120,16 @@ void PersonalizationAppThemeProviderImpl::OnColorModeChanged(
   theme_observer_remote_->OnColorModeChanged(dark_mode_enabled);
 }
 
-void PersonalizationAppThemeProviderImpl::OnColorSchemeChanged(
-    ColorScheme color_scheme) {
+void PersonalizationAppThemeProviderImpl::OnColorSchemeChanged() {
   DCHECK(theme_observer_remote_.is_bound());
-  theme_observer_remote_->OnColorSchemeChanged(color_scheme);
+  theme_observer_remote_->OnColorSchemeChanged(
+      color_palette_controller_->GetColorScheme(GetAccountId(profile_)));
 }
 
-void PersonalizationAppThemeProviderImpl::OnStaticColorChanged(
-    absl::optional<SkColor> color) {
+void PersonalizationAppThemeProviderImpl::OnStaticColorChanged() {
   DCHECK(theme_observer_remote_.is_bound());
-  theme_observer_remote_->OnStaticColorChanged(color);
+  theme_observer_remote_->OnStaticColorChanged(
+      color_palette_controller_->GetStaticColor(GetAccountId(profile_)));
 }
 
 bool PersonalizationAppThemeProviderImpl::IsColorModeAutoScheduleEnabled() {
@@ -150,7 +166,6 @@ void PersonalizationAppThemeProviderImpl::SetColorScheme(
   }
   color_palette_controller_->SetColorScheme(
       color_scheme, GetAccountId(profile_), base::DoNothing());
-  OnColorSchemeChanged(color_scheme);
 }
 
 void PersonalizationAppThemeProviderImpl::GetStaticColor(
@@ -173,10 +188,6 @@ void PersonalizationAppThemeProviderImpl::SetStaticColor(SkColor static_color) {
   AccountId account_id = GetAccountId(profile_);
   color_palette_controller_->SetStaticColor(static_color, account_id,
                                             base::DoNothing());
-  // TODO(b/261505637): Remove and use pref listeners once the prefs are
-  // available.
-  OnStaticColorChanged(static_color);
-  OnColorSchemeChanged(ColorScheme::kStatic);
 }
 
 void PersonalizationAppThemeProviderImpl::GenerateSampleColorSchemes(

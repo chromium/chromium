@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_palette_controller.h"
@@ -35,15 +36,17 @@ namespace {
 
 constexpr char kFakeTestEmail[] = "fakeemail@personalization";
 constexpr char kTestGaiaId[] = "1234567890";
+AccountId kAccountId =
+    AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
 
-void AddAndLoginUser(const AccountId& account_id) {
+void AddAndLoginUser() {
   ash::FakeChromeUserManager* user_manager =
       static_cast<ash::FakeChromeUserManager*>(
           user_manager::UserManager::Get());
 
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  user_manager->SwitchActiveUser(account_id);
+  user_manager->AddUser(kAccountId);
+  user_manager->LoginUser(kAccountId);
+  user_manager->SwitchActiveUser(kAccountId);
 }
 
 class TestThemeObserver
@@ -267,10 +270,14 @@ class PersonalizationAppThemeProviderImplJellyTest
 
   void SetUp() override {
     PersonalizationAppThemeProviderImplTest::SetUp();
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId);
-    AddAndLoginUser(account_id);
-    GetSessionControllerClient()->AddUserSession(account_id, kFakeTestEmail);
+    AddAndLoginUser();
+    GetSessionControllerClient()->AddUserSession(kAccountId, kFakeTestEmail);
+  }
+
+ protected:
+  PrefService* GetUserPrefService() {
+    return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+        kAccountId);
   }
 
  private:
@@ -281,22 +288,67 @@ TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetStaticColor) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
   SkColor color = SK_ColorMAGENTA;
-  EXPECT_NE(color, GetStaticColor());
-  EXPECT_NE(ash::ColorScheme::kStatic, GetColorScheme());
+  EXPECT_NE(color,
+            GetUserPrefService()->GetUint64(prefs::kDynamicColorSeedColor));
 
   theme_provider()->SetStaticColor(color);
 
+  EXPECT_EQ(color,
+            GetUserPrefService()->GetUint64(prefs::kDynamicColorSeedColor));
+}
+
+TEST_F(PersonalizationAppThemeProviderImplJellyTest,
+       ObserveStaticColorChanges) {
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  SkColor color = SK_ColorMAGENTA;
+  EXPECT_NE(color,
+            GetUserPrefService()->GetUint64(prefs::kDynamicColorSeedColor));
+
+  // The static color is set via the UserPrefService in
+  // ColorPaletteController, and the pref listener is set via the
+  // ProfilePrefService in the ThemeProvider. In real life, these point to the
+  // same object, but not in this test. We have to set the pref in both places
+  // for the pref listener to work. Only the profile prefs will trigger the
+  // listener, and only the UserPrefService holds the information about which
+  // pref was updated.
+  theme_provider()->SetStaticColor(color);
+  profile()->GetPrefs()->SetUint64(prefs::kDynamicColorSeedColor, color);
+
   EXPECT_EQ(color, GetStaticColor());
-  EXPECT_EQ(ash::ColorScheme::kStatic, GetColorScheme());
 }
 
 TEST_F(PersonalizationAppThemeProviderImplJellyTest, SetColorScheme) {
   SetThemeObserver();
   theme_provider_remote()->FlushForTesting();
   auto color_scheme = ash::ColorScheme::kExpressive;
-  EXPECT_NE(color_scheme, GetColorScheme());
+  EXPECT_NE((int)color_scheme,
+            GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
 
   theme_provider()->SetColorScheme(color_scheme);
+
+  EXPECT_EQ((int)color_scheme,
+            GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
+}
+
+TEST_F(PersonalizationAppThemeProviderImplJellyTest,
+       ObserveColorSchemeChanges) {
+  SetThemeObserver();
+  theme_provider_remote()->FlushForTesting();
+  auto color_scheme = ash::ColorScheme::kExpressive;
+  EXPECT_NE((int)color_scheme,
+            GetUserPrefService()->GetInteger(prefs::kDynamicColorColorScheme));
+
+  // The color scheme is set via the UserPrefService in
+  // ColorPaletteController, and the pref listener is set via the
+  // ProfilePrefService in the ThemeProvider. In real life, these point to the
+  // same object, but not in this test. We have to set the pref in both places
+  // for the pref listener to work. Only the profile prefs will trigger the
+  // listener, and only the UserPrefService holds the information about which
+  // pref was updated.
+  theme_provider()->SetColorScheme(color_scheme);
+  profile()->GetPrefs()->SetInteger(prefs::kDynamicColorColorScheme,
+                                    (int)color_scheme);
 
   EXPECT_EQ(color_scheme, GetColorScheme());
 }
