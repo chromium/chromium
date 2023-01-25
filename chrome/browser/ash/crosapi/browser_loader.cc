@@ -226,7 +226,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&CheckRegisteredMayBlock, component_manager_),
+      base::BindOnce(&IsInstalledMayBlock, GetLacrosComponentName()),
       base::BindOnce(&BrowserLoader::OnLoadSelection,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
