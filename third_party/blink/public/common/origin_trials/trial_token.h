@@ -88,7 +88,8 @@ class BLINK_COMMON_EXPORT TrialToken {
       const std::string& feature_name,
       base::Time expiry_time,
       bool is_third_party,
-      UsageRestriction usage_restriction);
+      UsageRestriction usage_restriction,
+      const std::string& signature);
 
  protected:
   // Tests can access the Parse method directly to validate it, and so are

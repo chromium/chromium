@@ -9,6 +9,7 @@
 #include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
@@ -19,8 +20,15 @@ class OriginTrialsControllerDelegate;
 class CONTENT_EXPORT CriticalOriginTrialsThrottle
     : public blink::URLLoaderThrottle {
  public:
-  explicit CriticalOriginTrialsThrottle(
-      OriginTrialsControllerDelegate& origin_trials_delegate);
+  // Create a throttle using the passed |origin_trials_delegate| for token
+  // validation and the |top_frame_origin| as the partition origin. An empty
+  // optional should be passed for |top_frame_origin| if the request is a main
+  // frame navigation request.
+  // TODO(https://crbug.com/1410180): Switch |top_frame_origin| to use Cookie
+  // partitioning.
+  CriticalOriginTrialsThrottle(
+      OriginTrialsControllerDelegate& origin_trials_delegate,
+      absl::optional<url::Origin> top_frame_origin);
 
   ~CriticalOriginTrialsThrottle() override;
 
@@ -39,11 +47,18 @@ class CONTENT_EXPORT CriticalOriginTrialsThrottle
       net::HttpRequestHeaders* modified_request_headers,
       net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
 
+  // This throttle only handles navigation requests. Use this method to
+  // determine if the throttle will handle the passed-in |request| before
+  // constructing a throttle.
+  static bool IsNavigationRequest(const network::ResourceRequest& request);
+
  private:
   // The delegate is owned by the BrowserContext, and is expected to outlive
   // this throttle.
   raw_ref<OriginTrialsControllerDelegate, DanglingUntriaged>
       origin_trials_delegate_;
+
+  absl::optional<url::Origin> top_frame_origin_;
 
   bool is_navigation_request_ = false;
 

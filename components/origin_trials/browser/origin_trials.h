@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/origin_trials/common/origin_trials_persistence_provider.h"
+#include "components/origin_trials/common/persisted_trial_token.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
@@ -48,17 +49,21 @@ class OriginTrials : public KeyedService,
   // content::OriginTrialsControllerDelegate
   void PersistTrialsFromTokens(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
       const base::Time current_time) override;
   bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                 const url::Origin& partition_origin,
                                  const base::StringPiece trial_name,
                                  const base::Time current_time) override;
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       base::Time current_time) override;
   void ClearPersistedTokens() override;
 
  private:
+  friend class OriginTrialsTest;
   std::unique_ptr<OriginTrialsPersistenceProvider> persistence_provider_;
   std::unique_ptr<blink::TrialTokenValidator> trial_token_validator_;
 
@@ -69,8 +74,22 @@ class OriginTrials : public KeyedService,
   // that are still valid.
   base::flat_set<std::string> GetPersistedTrialsForOriginWithMatch(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       const base::Time current_time,
       const absl::optional<const base::StringPiece> trial_name_match) const;
+
+  // Update the passed |token_set| with the new tokens, partitioned by
+  // |partition_site|. Performs the update directly on the passed |token_set|.
+  static void UpdatePersistedTokenSet(
+      base::flat_set<PersistedTrialToken>& token_set,
+      std::vector<blink::TrialToken> new_tokens,
+      std::string partition_site);
+
+  // Get the 'site' used as the partitioning key for trial tokens.
+  //
+  // The key is the eTLD+1 of the |origin|, taking private registries such as
+  // blogspot.com into account.
+  static std::string GetTokenPartitionSite(const url::Origin& origin);
 };
 
 }  // namespace origin_trials

@@ -969,12 +969,14 @@ class OriginTrialsControllerDelegateMock
 
   void PersistTrialsFromTokens(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
       const base::Time current_time) override {
     persisted_tokens_[origin] =
         std::vector<std::string>(header_tokens.begin(), header_tokens.end());
   }
   bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                 const url::Origin& partition_origin,
                                  const base::StringPiece trial_name,
                                  const base::Time current_time) override {
     DCHECK(false) << "Method not implemented for test.";
@@ -983,6 +985,7 @@ class OriginTrialsControllerDelegateMock
 
   base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       base::Time current_time) override {
     DCHECK(false) << "Method not implemented for test.";
     return base::flat_set<std::string>();

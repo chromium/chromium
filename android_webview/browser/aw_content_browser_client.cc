@@ -771,7 +771,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     new android_webview::AwProxyingURLLoaderFactory(
         frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
         true /* intercept_only */, absl::nullopt /* security_options */,
-        nullptr /* xrw_allowlist_matcher */);
+        nullptr /* xrw_allowlist_matcher */, url::Origin());
   } else {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
@@ -783,7 +783,7 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                   frame_tree_node_id, std::move(receiver), mojo::NullRemote(),
                   true /* intercept_only */,
                   absl::nullopt /* security_options */,
-                  nullptr /* xrw_allowlist_matcher */);
+                  nullptr /* xrw_allowlist_matcher */, url::Origin());
             },
             std::move(receiver), frame_tree_node_id));
   }
@@ -930,16 +930,21 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
     auto xrw_allowlist_matcher =
         AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();
 
+    url::Origin top_frame_origin =
+        frame->GetOutermostMainFrame()->GetLastCommittedOrigin();
+
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
                        frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
                        std::move(target_factory_remote), security_options,
-                       std::move(xrw_allowlist_matcher)));
+                       std::move(xrw_allowlist_matcher),
+                       std::move(top_frame_origin)));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
     // we don't pass a valid |security_options| here.
+    // At the same time, we also don't have a valid |top_frame_origin|.
     AwBrowserContext* aw_browser_context =
         static_cast<AwBrowserContext*>(browser_context);
     content::GetIOThreadTaskRunner({})->PostTask(
@@ -949,7 +954,8 @@ bool AwContentBrowserClient::WillCreateURLLoaderFactory(
             content::RenderFrameHost::kNoFrameTreeNodeId,
             std::move(proxied_receiver), std::move(target_factory_remote),
             absl::nullopt /* security_options */,
-            aw_browser_context->service_worker_xrw_allowlist_matcher()));
+            aw_browser_context->service_worker_xrw_allowlist_matcher(),
+            url::Origin() /* top_level_origin */));
   }
   return true;
 }

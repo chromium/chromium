@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -49,8 +50,15 @@ void WebTestOriginTrialThrottle::SetHeaderForRequest() {
 
   base::flat_set<std::string> trials;
   if (!origin.opaque()) {
+    url::Origin partition_origin = origin;
+    if (navigation_handle()->GetParentFrameOrOuterDocument()) {
+      partition_origin = navigation_handle()
+                             ->GetParentFrameOrOuterDocument()
+                             ->GetOutermostMainFrame()
+                             ->GetLastCommittedOrigin();
+    }
     trials = origin_trials_controller_delegate_->GetPersistedTrialsForOrigin(
-        origin, base::Time::Now());
+        origin, partition_origin, base::Time::Now());
   }
   std::string header_value = base::JoinString(
       base::span<std::string>(trials.begin(), trials.end()), ", ");

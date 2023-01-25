@@ -13,6 +13,8 @@ message TrialTokenDbEntry {
   optional uint64 token_expiry = 2;
   optional uint32 usage_restriction = 3;
   optional bytes token_signature = 4;
+
+  repeated string partition_sites = 5;
 }
 
 // Message to store an already-parsed origin to avoid re-parsing origins from

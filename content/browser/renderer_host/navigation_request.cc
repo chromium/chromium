@@ -1043,6 +1043,7 @@ void RemoveOriginTrialHintsFromAcceptCH(
 // that correspond to persistent origin trials, provided the tokens are valid.
 void PersistOriginTrialsFromHeaders(
     const url::Origin& origin,
+    const url::Origin& partition_origin,
     const network::mojom::URLResponseHead* response,
     BrowserContext* browser_context) {
   if (!base::FeatureList::IsEnabled(features::kPersistentOriginTrials))
@@ -1065,8 +1066,8 @@ void PersistOriginTrialsFromHeaders(
 
   std::vector<std::string> tokens =
       GetOriginTrialHeaderValues(response->headers.get());
-  origin_trials_delegate->PersistTrialsFromTokens(origin, tokens,
-                                                  base::Time::Now());
+  origin_trials_delegate->PersistTrialsFromTokens(origin, partition_origin,
+                                                  tokens, base::Time::Now());
 }
 
 }  // namespace
@@ -5302,8 +5303,19 @@ void NavigationRequest::CommitNavigation() {
         common_params_->url, client_hints_delegate, response(),
         commit_params_->enabled_client_hints, frame_tree_node_);
   }
+  // Navigation requests should use the new origin as the partition origin
+  // except if embedded in an outer frame.
+  url::Origin partition_origin = origin;
+  bool is_top_level = frame_tree_node()->GetParentOrOuterDocument() == nullptr;
+  if (!is_top_level) {
+    partition_origin = frame_tree_node()
+                           ->GetParentOrOuterDocument()
+                           ->GetOutermostMainFrame()
+                           ->GetLastCommittedOrigin();
+  }
 
-  PersistOriginTrialsFromHeaders(origin, response(), browser_context);
+  PersistOriginTrialsFromHeaders(origin, partition_origin, response(),
+                                 browser_context);
 
   // Update the reduced accept-language to commit if it's empty, and stop
   // persisting the accepted language if the final response do not have a valid

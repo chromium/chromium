@@ -9099,6 +9099,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OriginTrials.PersistentOriginTrial.PartitionSetSize"
+    units="sites" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Reports the number of partitions a persistent origin trial token has been
+    stored against. The purpose of the metric is to uncover memory footprint
+    issues from storing site partitions, and to help decide if an eviction
+    strategy needs to be put in place. This metric is recorded once for every
+    stored origin trial token on browser startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="OriginTrials.PersistentOriginTrial.TokenHasFirstPartyPartition"
+    enum="Boolean" expires_after="2023-10-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/components/origin_trials/OWNERS</owner>
+  <summary>
+    Records whether a stored partition token has its own origins eTLD+1 as one
+    of the partitions. This is being recorded to determine if space can be saved
+    by making the first-party partition a special case. This metric is recorded
+    on browser startup when the persisted tokens are loaded from the database.
+  </summary>
+</histogram>
+
 <histogram name="OriginTrials.ValidationResult" enum="OriginTrialTokenStatus"
     expires_after="2021-10-10">
   <owner>chasej@chromium.org</owner>

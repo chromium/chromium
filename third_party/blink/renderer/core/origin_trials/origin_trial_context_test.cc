@@ -103,7 +103,7 @@ class MockTokenValidator : public TrialTokenValidator {
           response_.status,
           TrialToken::CreateTrialTokenForTesting(
               origin.origin, false, response_.feature, response_.expiry, false,
-              TrialToken::UsageRestriction::kNone));
+              TrialToken::UsageRestriction::kNone, ""));
     }
   }
 

@@ -3806,7 +3806,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
   std::vector<std::string> tokens{kPersistentOriginTrialToken};
   content::OriginTrialsControllerDelegate* delegate =
       profile->GetOriginTrialsControllerDelegate();
-  delegate->PersistTrialsFromTokens(origin, tokens,
+  delegate->PersistTrialsFromTokens(origin, /*partition_origin=*/origin, tokens,
                                     kPersistentOriginTrialValidTime);
 
   // Delete all data types that trigger website setting deletions.
@@ -3816,12 +3816,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
 
   EXPECT_FALSE(
       delegate
-          ->GetPersistedTrialsForOrigin(origin, kPersistentOriginTrialValidTime)
+          ->GetPersistedTrialsForOrigin(origin, /*partition_origin=*/origin,
+                                        kPersistentOriginTrialValidTime)
           .empty());
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(), mask, false);
-  EXPECT_TRUE(
-      delegate
-          ->GetPersistedTrialsForOrigin(origin, kPersistentOriginTrialValidTime)
-          .empty());
+  EXPECT_TRUE(delegate
+                  ->GetPersistedTrialsForOrigin(origin,
+                                                /*partition_origin=*/origin,
+                                                kPersistentOriginTrialValidTime)
+                  .empty());
 }

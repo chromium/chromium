@@ -20,6 +20,7 @@ source_set("browser") {
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",
+    "//net",
     "//third_party/blink/public/common:headers",
     "//url:url",
   ]

@@ -33,6 +33,9 @@ origin_trials_pb::TrialTokenDbEntries ProtoFromTokens(
     proto->set_token_signature(token.token_signature);
     proto->set_usage_restriction(
         static_cast<uint32_t>(token.usage_restriction));
+    for (const auto& site : token.partition_sites) {
+      proto->add_partition_sites(site);
+    }
   }
   return entries;
 }

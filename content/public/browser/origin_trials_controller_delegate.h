@@ -22,29 +22,50 @@ namespace content {
 // for the current profile.
 //
 // See |components/origin_trials/README.md| for more information.
+// TODO(https://crbug.com/1410180): Switch |partition_origin| to use Cookie
+// partitioning. This interface uses the last committed origin from the
+// outermost frame or document as partitioning as an interim measure to get a
+// stable partitioning key until cookie partitioning is fully rolled out.
 class CONTENT_EXPORT OriginTrialsControllerDelegate {
  public:
   virtual ~OriginTrialsControllerDelegate() = default;
 
   // Persist all enabled and persistable tokens in the |header_tokens|.
-  // Subsequent calls to this method will overwrite the list of persisted trials
-  // for the |origin|.
+  //
+  // Token persistence is partitioned based on |partition_origin|, meaning that
+  // the storage keeps track of which |partition_origin|s have been seen when
+  // persisting tokens for a given trial and origin.
+  //
+  // Subsequent calls to this method will update the registration of a token
+  // for an origin. Passing an empty |header_tokens| will effectively clear the
+  // persistence of tokens for the |origin| and |partition_origin|.
+  // TODO(https://crbug.com/1410180): Switch |partition_origin| to use Cookie
+  // partitioning.
   virtual void PersistTrialsFromTokens(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       const base::span<const std::string> header_tokens,
       const base::Time current_time) = 0;
 
-  // Returns |true| if |trial_name| has been persisted for |origin| and is still
-  // valid. This method should be used by origin trial owners to check if the
-  // feature under trial should be enabled.
+  // Returns |true| if |trial_name| has been persisted for |origin|,
+  // partitioned by |partition_origin| and is still valid. This method should
+  // be used by origin trial owners to check if the feature under trial should
+  // be enabled.
+  // TODO(https://crbug.com/1410180): Switch |partition_origin| to use Cookie
+  // partitioning.
   virtual bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                         const url::Origin& partition_origin,
                                          const base::StringPiece trial_name,
                                          const base::Time current_time) = 0;
 
   // Return the list of persistent origin trials that have been saved for
-  // |origin| and haven't expired given the |current_time| parameter.
+  // |origin|, partitioned by |partition_origin|, and haven't expired given the
+  // |current_time| parameter.
+  // TODO(https://crbug.com/1410180): Switch |partition_origin| to use Cookie
+  // partitioning.
   virtual base::flat_set<std::string> GetPersistedTrialsForOrigin(
       const url::Origin& origin,
+      const url::Origin& partition_origin,
       base::Time current_time) = 0;
 
   // Remove all persisted tokens. Used to clear browsing data.

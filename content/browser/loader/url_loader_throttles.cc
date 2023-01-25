@@ -11,6 +11,7 @@
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
@@ -28,6 +29,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace content {
@@ -76,9 +78,12 @@ CreateContentBrowserURLLoaderThrottles(
     }
   }
 
+  // Handle Critical Origin Trial headers if the context supports it and this
+  // is a navigation request.
   OriginTrialsControllerDelegate* origin_trials_delegate =
       browser_context->GetOriginTrialsControllerDelegate();
-  if (origin_trials_delegate) {
+  if (origin_trials_delegate &&
+      CriticalOriginTrialsThrottle::IsNavigationRequest(request)) {
     // Critical Origin Trials may restart the network request, so only allow on
     // safe methods, since the origin trials in question may change request
     // headers or other aspects of the network request. We want to avoid servers
@@ -86,8 +91,22 @@ CreateContentBrowserURLLoaderThrottles(
     // headers are changed, any idempotent method is still allowed to make
     // further changes to server state.
     if (net::HttpUtil::IsMethodSafe(request.method) && origin_trials_delegate) {
+      absl::optional<url::Origin> top_origin = absl::nullopt;
+      // frame_tree_node_id may be invalid if we are loading the first frame
+      // of the tab.
+      if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+        FrameTreeNode* frame_tree_node =
+            FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+        // The throttle should only use a top-frame origin for partitioning if
+        // this is not the outermost frame.
+        if (frame_tree_node->GetParentOrOuterDocument()) {
+          top_origin = frame_tree_node->GetParentOrOuterDocument()
+                           ->GetOutermostMainFrame()
+                           ->GetLastCommittedOrigin();
+        }
+      }
       throttles.push_back(std::make_unique<CriticalOriginTrialsThrottle>(
-          *origin_trials_delegate));
+          *origin_trials_delegate, std::move(top_origin)));
     }
   }
 

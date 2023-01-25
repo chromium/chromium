@@ -20,9 +20,20 @@ namespace content {
 
 using blink::mojom::ResourceType;
 
+// static
+bool CriticalOriginTrialsThrottle::IsNavigationRequest(
+    const network::ResourceRequest& request) {
+  ResourceType request_resource_type =
+      static_cast<ResourceType>(request.resource_type);
+  return request_resource_type == ResourceType::kMainFrame ||
+         request_resource_type == ResourceType::kSubFrame;
+}
+
 CriticalOriginTrialsThrottle::CriticalOriginTrialsThrottle(
-    OriginTrialsControllerDelegate& origin_trials_delegate)
-    : origin_trials_delegate_(origin_trials_delegate) {}
+    OriginTrialsControllerDelegate& origin_trials_delegate,
+    absl::optional<url::Origin> top_frame_origin)
+    : origin_trials_delegate_(origin_trials_delegate),
+      top_frame_origin_(std::move(top_frame_origin)) {}
 
 CriticalOriginTrialsThrottle::~CriticalOriginTrialsThrottle() = default;
 
@@ -30,13 +41,9 @@ void CriticalOriginTrialsThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   // Right now, Persistent Origin Trials are only supported on navigation
-  // requests, but this throttle is called for all network loads. Until support
-  // is implemented for other request types, we need to only intercept
-  // navigation requests.
-  ResourceType request_resource_type =
-      static_cast<ResourceType>(request->resource_type);
-  is_navigation_request_ = request_resource_type == ResourceType::kMainFrame ||
-                           request_resource_type == ResourceType::kSubFrame;
+  // requests. Until support is implemented for other request types, we need to
+  // only intercept navigation requests.
+  is_navigation_request_ = IsNavigationRequest(*request);
 
   if (is_navigation_request_)
     SetPreRequestFields(request->url);
@@ -113,8 +120,10 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
 
   if (needs_restart) {
     // Persist the trials that were set, so we can try again.
+    url::Origin partition_origin = top_frame_origin_.value_or(request_origin);
     origin_trials_delegate_->PersistTrialsFromTokens(
-        request_origin, origin_trial_tokens, base::Time::Now());
+        request_origin, partition_origin, origin_trial_tokens,
+        base::Time::Now());
     restarted_origins_.insert(request_origin);
     delegate_->RestartWithURLResetAndFlags(0);
   }
@@ -123,9 +132,12 @@ void CriticalOriginTrialsThrottle::MaybeRestartWithTrials(
 void CriticalOriginTrialsThrottle::SetPreRequestFields(
     const GURL& request_url) {
   request_url_ = request_url;
+  url::Origin partition_origin =
+      top_frame_origin_.value_or(url::Origin::Create(request_url_));
   original_persisted_trials_ =
       origin_trials_delegate_->GetPersistedTrialsForOrigin(
-          url::Origin::Create(request_url_), base::Time::Now());
+          url::Origin::Create(request_url_), partition_origin,
+          base::Time::Now());
 }
 
 }  // namespace content
