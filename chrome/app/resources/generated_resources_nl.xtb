@@ -4933,7 +4933,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
     <ph name="BEGIN_PARAGRAPH2" />Ook als je deze functie uitzet, is het mogelijk dat er via dit apparaat informatie wordt verstuurd die nodig is voor essentiële services (zoals systeemupdates en beveiliging).<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />De eigenaar kan deze functie beheren via Instellingen &gt; Geavanceerd &gt; Automatisch diagnostische en gebruiksgegevens sturen naar Google.<ph name="END_PARAGRAPH3" />
     <ph name="BEGIN_PARAGRAPH4" />Als je de instelling Aanvullende web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account. Je kunt je gegevens bekijken, deze verwijderen en je accountinstellingen wijzigen op account.google.com.<ph name="END_PARAGRAPH4" /></translation>
-<translation id="5585019845078534178">Passen</translation>
+<translation id="5585019845078534178">Kaarten</translation>
 <translation id="5585118885427931890">Kan bookmarkmap niet maken.</translation>
 <translation id="558563010977877295">Een specifieke pagina of reeks pagina's openen</translation>
 <translation id="5585898376467608182">Op je apparaat is weinig opslagruimte beschikbaar. Je hebt ten minste <ph name="MINIMUM_SPACE" /> vrije opslagruimte nodig om <ph name="APP_NAME" /> te gebruiken. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
