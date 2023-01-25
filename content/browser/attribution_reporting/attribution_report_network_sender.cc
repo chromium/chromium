@@ -74,7 +74,7 @@ void AttributionReportNetworkSender::SendReport(
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
       std::move(url), body, net::HttpRequestHeaders(),
-      base::BindOnce(&AttributionReportNetworkSender::OnDebugReportSent,
+      base::BindOnce(&AttributionReportNetworkSender::OnVerboseDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
 }
@@ -236,17 +236,20 @@ void AttributionReportNetworkSender::OnReportSent(
                               headers ? headers->response_code() : 0));
 }
 
-void AttributionReportNetworkSender::OnDebugReportSent(
+void AttributionReportNetworkSender::OnVerboseDebugReportSent(
     base::OnceCallback<void(int status)> callback,
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   // HTTP statuses are positive; network errors are negative.
   int status = headers ? headers->response_code() : (*it)->NetError();
+
+  // Since net errors are always negative and HTTP errors are always positive,
+  // it is fine to combine these in a single histogram.
+  base::UmaHistogramSparse(
+      "Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode", status);
+
   loaders_in_progress_.erase(it);
   std::move(callback).Run(status);
-
-  // TODO(crbug.com/1371970): Consider recording metric for debug report
-  // sending.
 }
 
 }  // namespace content

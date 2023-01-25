@@ -64,6 +64,9 @@ const char kDebugAggregatableReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/debug/"
     "report-aggregate-attribution";
 
+const char kVerboseDebugReportMetricName[] =
+    "Conversions.VerboseDebugReport.HttpResponseOrNetErrorCode";
+
 AttributionReport DefaultEventLevelReport() {
   return ReportBuilder(
              AttributionInfoBuilder(SourceBuilder(base::Time()).BuildStored())
@@ -1001,6 +1004,8 @@ TEST_F(AttributionReportNetworkSenderTest,
 
 TEST_F(AttributionReportNetworkSenderTest,
        ErrorReportSent_ReportBodySetCorrectly) {
+  base::HistogramTester histograms;
+
   static constexpr char kExpectedReportBody[] =
       R"([{)"
       R"("body":{)"
@@ -1035,10 +1040,15 @@ TEST_F(AttributionReportNetworkSenderTest,
   EXPECT_EQ(kExpectedReportBody, network::GetUploadData(*pending_request));
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
       kErrorReportUrl, ""));
+
+  histograms.ExpectUniqueSample(kVerboseDebugReportMetricName,
+                                net::HttpStatusCode::HTTP_OK, 1);
 }
 
 TEST_F(AttributionReportNetworkSenderTest,
        ErrorReportSent_CallbackInvokedWithNetworkError) {
+  base::HistogramTester histograms;
+
   static constexpr char kErrorReportUrl[] =
       "https://report.test/.well-known/attribution-reporting/debug/verbose";
 
@@ -1065,6 +1075,9 @@ TEST_F(AttributionReportNetworkSenderTest,
       GURL(kErrorReportUrl),
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_ABORTED),
       network::mojom::URLResponseHead::New(), "");
+
+  histograms.ExpectUniqueSample(kVerboseDebugReportMetricName,
+                                net::ERR_CONNECTION_ABORTED, 1);
 }
 
 }  // namespace content
