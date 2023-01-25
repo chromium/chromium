@@ -87,6 +87,7 @@ class ToolbarView;
 class TopContainerLoadingBar;
 class TopContainerView;
 class TopControlsSlideControllerTest;
+class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
@@ -130,7 +131,12 @@ class BrowserView : public BrowserWindow,
   BrowserView& operator=(const BrowserView&) = delete;
   ~BrowserView() override;
 
-  void set_frame(BrowserFrame* frame) { frame_ = frame; }
+  void set_frame(BrowserFrame* frame) {
+    frame_ = frame;
+    paint_as_active_subscription_ =
+        frame_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+            &BrowserView::PaintAsActiveChanged, base::Unretained(this)));
+  }
   BrowserFrame* frame() const { return frame_; }
 
   // Returns a pointer to the BrowserView* interface implementation (an
@@ -419,6 +425,8 @@ class BrowserView : public BrowserWindow,
   // prefs::kSidePanelHorizontalAlignment is changed from the appearance
   // settings page.
   void UpdateSidePanelHorizontalAlignment();
+
+  void UpdateWebAppStatusIconsVisiblity();
 
   // BrowserWindow:
   void Show() override;
@@ -952,6 +960,11 @@ class BrowserView : public BrowserWindow,
   // Updates whether the web app is an isolated web app.
   void UpdateIsIsolatedWebApp();
 
+  WebAppFrameToolbarView* web_app_frame_toolbar();
+  const WebAppFrameToolbarView* web_app_frame_toolbar() const;
+
+  void PaintAsActiveChanged();
+
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame, DanglingUntriaged> frame_ = nullptr;
 
@@ -1206,6 +1219,8 @@ class BrowserView : public BrowserWindow,
   bool is_isolated_web_app_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
       window_management_subscription_id_;
+
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

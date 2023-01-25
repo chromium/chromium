@@ -274,7 +274,6 @@ void OpaqueBrowserFrameView::WindowControlsOverlayEnabledChanged() {
   UpdateCaptionButtonToolTipsForWindowControlsOverlay();
 #endif
 
-  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   layout_->SetWindowControlsOverlayEnabled(enabled, this);
   InvalidateLayout();
 }

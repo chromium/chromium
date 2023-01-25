@@ -199,7 +199,6 @@ gfx::Size GlassBrowserFrameView::GetMinimumSize() const {
 
 void GlassBrowserFrameView::WindowControlsOverlayEnabledChanged() {
   caption_button_container_->OnWindowControlsOverlayEnabledChanged();
-  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   InvalidateLayout();
 }
 

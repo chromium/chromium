@@ -379,7 +379,6 @@ void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {
 
 void BrowserNonClientFrameViewChromeOS::WindowControlsOverlayEnabledChanged() {
   bool enabled = browser_view()->IsWindowControlsOverlayEnabled();
-  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   caption_button_container_->OnWindowControlsOverlayEnabledChanged(
       enabled, GetFrameHeaderColor(browser_view()->IsActive()));
   browser_view()->InvalidateLayout();

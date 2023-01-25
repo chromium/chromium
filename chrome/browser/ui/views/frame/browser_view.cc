@@ -1430,6 +1430,10 @@ void BrowserView::UpdateTitleBar() {
 }
 
 void BrowserView::UpdateFrameColor() {
+  // Only web-app windows support dynamic frame colors set by HTML meta tags.
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->UpdateCaptionColors();
+  }
   frame_->GetFrameView()->UpdateFrameColor();
 }
 
@@ -2089,17 +2093,24 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
                  browser()->app_controller() &&
                  browser()->app_controller()->IsWindowControlsOverlayEnabled();
 
-  if (enabled == window_controls_overlay_enabled_)
+  if (enabled == window_controls_overlay_enabled_) {
     return;
+  }
 
   window_controls_overlay_enabled_ = enabled;
 
   // Clear the title-bar-area rect when window controls overlay is disabled.
-  if (!window_controls_overlay_enabled_)
+  if (!window_controls_overlay_enabled_) {
     GetActiveWebContents()->UpdateWindowControlsOverlay(gfx::Rect());
+  }
 
-  if (frame_ && frame_->GetFrameView())
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
+  }
+
+  if (frame_ && frame_->GetFrameView()) {
     frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
+  }
 
   const std::u16string& state_change_text =
       IsWindowControlsOverlayEnabled()
@@ -2130,22 +2141,25 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
     should_show = false;
 
 #if BUILDFLAG(IS_MAC)
-  // On macOS, when in fullscreen mode, window controls (the menu bar, tile bar,
-  // and toolbar) are attached to a separate NSView that slides down from the
-  // top of the screen, independent of, and overlapping the WebContents. Disable
-  // WCO when in fullscreen, because this space is inaccessible to WebContents.
-  // https://crbug.com/915110.
-  if (frame_ && IsFullscreen())
+  // On macOS, when in fullscreen mode, window controls (the menu bar, title
+  // bar, and toolbar) are attached to a separate NSView that slides down from
+  // the top of the screen, independent of, and overlapping the WebContents.
+  // Disable WCO when in fullscreen, because this space is inaccessible to
+  // WebContents. https://crbug.com/915110.
+  if (frame_ && IsFullscreen()) {
     should_show = false;
+  }
 #endif
 
   if (should_show == should_show_window_controls_overlay_toggle_)
     return;
 
+  DCHECK(AppUsesWindowControlsOverlay());
   should_show_window_controls_overlay_toggle_ = should_show;
 
-  if (frame_ && frame_->GetFrameView())
-    frame_->GetFrameView()->SetWindowControlsOverlayToggleVisible(should_show);
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->SetWindowControlsOverlayToggleVisible(should_show);
+  }
 }
 
 void BrowserView::UpdateBorderlessModeEnabled() {
@@ -2186,8 +2200,8 @@ void BrowserView::UpdateBorderlessModeEnabled() {
     return;
   borderless_mode_enabled_ = borderless_mode_enabled;
 
-  if (frame_ && frame_->GetFrameView()) {
-    frame_->GetFrameView()->UpdateBorderlessModeEnabled();
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->UpdateBorderlessModeEnabled();
   }
 }
 
@@ -4516,6 +4530,12 @@ void BrowserView::ShowIncognitoHistoryDisclaimerDialog() {
                  kHistoryDisclaimerBubble);
 }
 
+void BrowserView::UpdateWebAppStatusIconsVisiblity() {
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->UpdateStatusIconsVisibility();
+  }
+}
+
 ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {
   return this;
 }
@@ -4776,6 +4796,28 @@ void BrowserView::OnImmersiveModeControllerDestroyed() {
 // BrowserView, webapps::AppBannerManager::Observer implementation:
 void BrowserView::OnInstallableWebAppStatusUpdated() {
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
+}
+
+WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
+  if (frame_ && frame_->GetFrameView()) {
+    return frame_->GetFrameView()->web_app_frame_toolbar(
+        base::PassKey<BrowserView>());
+  }
+  return nullptr;
+}
+
+const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
+  if (frame_ && frame_->GetFrameView()) {
+    return frame_->GetFrameView()->web_app_frame_toolbar(
+        base::PassKey<BrowserView>());
+  }
+  return nullptr;
+}
+
+void BrowserView::PaintAsActiveChanged() {
+  if (web_app_frame_toolbar()) {
+    web_app_frame_toolbar()->SetPaintAsActive(frame_->ShouldPaintAsActive());
+  }
 }
 
 BEGIN_METADATA(BrowserView, views::ClientView)

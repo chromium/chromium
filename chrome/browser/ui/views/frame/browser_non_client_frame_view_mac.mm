@@ -406,7 +406,6 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
     web_app_frame_toolbar_overlay_routing_view_ = nullptr;
   }
 
-  web_app_frame_toolbar()->OnWindowControlsOverlayEnabledChanged();
   frame()->client_view()->InvalidateLayout();
 }
 ///////////////////////////////////////////////////////////////////////////////

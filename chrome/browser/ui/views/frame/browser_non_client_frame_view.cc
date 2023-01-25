@@ -170,9 +170,6 @@ SkColor BrowserNonClientFrameView::GetFrameColor(
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {
-  // Only web-app windows support dynamic frame colors set by HTML meta tags.
-  if (web_app_frame_toolbar_)
-    web_app_frame_toolbar_->UpdateCaptionColors();
   SchedulePaint();
 }
 
@@ -202,16 +199,6 @@ absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
 }
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}
-
-void BrowserNonClientFrameView::SetWindowControlsOverlayToggleVisible(
-    bool visible) {
-  DCHECK(browser_view_->AppUsesWindowControlsOverlay());
-  web_app_frame_toolbar_->SetWindowControlsOverlayToggleVisible(visible);
-}
-
-void BrowserNonClientFrameView::UpdateBorderlessModeEnabled() {
-  web_app_frame_toolbar_->UpdateBorderlessModeEnabled();
-}
 
 void BrowserNonClientFrameView::Layout() {
   // BrowserView updates most UI visibility on layout based on fullscreen
@@ -245,11 +232,6 @@ int BrowserNonClientFrameView::NonClientHitTest(const gfx::Point& point) {
   return HTNOWHERE;
 }
 
-void BrowserNonClientFrameView::ResetWindowControls() {
-  if (web_app_frame_toolbar_)
-    web_app_frame_toolbar_->UpdateStatusIconsVisibility();
-}
-
 TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
   return nullptr;
 }
@@ -274,9 +256,6 @@ int BrowserNonClientFrameView::GetTranslucentTopAreaHeight() const {
 }
 
 void BrowserNonClientFrameView::PaintAsActiveChanged() {
-  if (web_app_frame_toolbar_)
-    web_app_frame_toolbar_->SetPaintAsActive(ShouldPaintAsActive());
-
   // Changing the activation state may change the visible frame color.
   SchedulePaint();
 }
