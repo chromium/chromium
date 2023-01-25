@@ -26,8 +26,8 @@
 namespace drivefs::pinning {
 namespace {
 
-bool InProgress(const SetupStage stage) {
-  return stage > SetupStage::kNotStarted && stage < SetupStage::kSuccess;
+bool InProgress(const Stage stage) {
+  return stage > Stage::kNotStarted && stage < Stage::kSuccess;
 }
 
 int Percentage(const int64_t a, const int64_t b) {
@@ -273,10 +273,10 @@ std::ostream& operator<<(std::ostream& out, HumanReadableSize size) {
   return out << base::StringPrintf(" (%.*f %c)", precision, d, *unit);
 }
 
-std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
+std::ostream& operator<<(std::ostream& out, const Stage stage) {
   switch (stage) {
-#define PRINT(s)         \
-  case SetupStage::k##s: \
+#define PRINT(s)    \
+  case Stage::k##s: \
     return out << #s;
     PRINT(NotStarted)
     PRINT(GettingFreeSpace)
@@ -290,13 +290,13 @@ std::ostream& operator<<(std::ostream& out, const SetupStage stage) {
 #undef PRINT
   }
 
-  return out << "SetupStage("
-             << static_cast<std::underlying_type_t<SetupStage>>(stage) << ")";
+  return out << "Stage(" << static_cast<std::underlying_type_t<Stage>>(stage)
+             << ")";
 }
 
-SetupProgress::SetupProgress() = default;
-SetupProgress::SetupProgress(const SetupProgress&) = default;
-SetupProgress& SetupProgress::operator=(const SetupProgress&) = default;
+Progress::Progress() = default;
+Progress::Progress(const Progress&) = default;
+Progress& Progress::operator=(const Progress&) = default;
 
 // TODO(b/261530666): This was chosen arbitrarily, this should be experimented
 // with and potentially made dynamic depending on feedback of the in progress
@@ -442,7 +442,7 @@ void PinManager::Start() {
 
   VLOG(1) << "Calculating free space...";
   timer_ = base::ElapsedTimer();
-  progress_.stage = SetupStage::kGettingFreeSpace;
+  progress_.stage = Stage::kGettingFreeSpace;
   NotifyProgress();
 
   space_getter_.Run(
@@ -455,7 +455,7 @@ void PinManager::Stop() {
 
   if (InProgress(progress_.stage)) {
     VLOG(1) << "Stopping";
-    Complete(SetupStage::kStopped);
+    Complete(Stage::kStopped);
   }
 }
 
@@ -481,7 +481,7 @@ void PinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
 
   if (free_space < 0) {
     LOG(ERROR) << "Cannot calculate free space";
-    return Complete(SetupStage::kCannotGetFreeSpace);
+    return Complete(Stage::kCannotGetFreeSpace);
   }
 
   progress_.free_space = free_space;
@@ -490,7 +490,7 @@ void PinManager::OnFreeSpaceRetrieved(const int64_t free_space) {
 
   VLOG(1) << "Calculating required space...";
   timer_ = base::ElapsedTimer();
-  progress_.stage = SetupStage::kListingFiles;
+  progress_.stage = Stage::kListingFiles;
   NotifyProgress();
 
   drivefs_->StartSearchQuery(search_query_.BindNewPipeAndPassReceiver(),
@@ -506,7 +506,7 @@ void PinManager::OnSearchResultForSizeCalculation(
 
   if (error != drive::FILE_ERROR_OK || !items) {
     LOG(ERROR) << "Cannot list files: " << error;
-    return Complete(SetupStage::kCannotListFiles);
+    return Complete(Stage::kCannotListFiles);
   }
 
   if (items->empty()) {
@@ -541,13 +541,13 @@ void PinManager::OnSearchResultForSizeCalculation(
       &PinManager::OnSearchResultForSizeCalculation, GetWeakPtr()));
 }
 
-void PinManager::Complete(const SetupStage stage) {
+void PinManager::Complete(const Stage stage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!InProgress(stage));
 
   progress_.stage = stage;
   switch (stage) {
-    case SetupStage::kSuccess:
+    case Stage::kSuccess:
       LOG_IF(ERROR, progress_.failed_files > 0)
           << "Failed to pin " << progress_.failed_files << " files";
       VLOG(1) << "Pinned " << progress_.pinned_files << " files and downloaded "
@@ -558,7 +558,7 @@ void PinManager::Complete(const SetupStage stage) {
       VLOG(1) << "Finished with success";
       break;
 
-    case SetupStage::kStopped:
+    case Stage::kStopped:
       VLOG(1) << "Stopped";
       break;
 
@@ -600,23 +600,23 @@ void PinManager::StartPinning() {
                << " is less than required space "
                << HumanReadableSize(progress_.required_space) << " + margin "
                << HumanReadableSize(margin);
-    return Complete(SetupStage::kNotEnoughSpace);
+    return Complete(Stage::kNotEnoughSpace);
   }
 
   if (!should_pin_) {
     VLOG(1) << "Should not pin files";
-    return Complete(SetupStage::kSuccess);
+    return Complete(Stage::kSuccess);
   }
 
   if (files_to_track_.empty() && files_to_pin_.empty()) {
     VLOG(1) << "Nothing to pin or track";
-    return Complete(SetupStage::kSuccess);
+    return Complete(Stage::kSuccess);
   }
 
   VLOG(1) << "Pinning and tracking "
           << (files_to_pin_.size() + files_to_track_.size()) << " files...";
   timer_ = base::ElapsedTimer();
-  progress_.stage = SetupStage::kSyncing;
+  progress_.stage = Stage::kSyncing;
   NotifyProgress();
 
   if (should_check_stalled_files_) {
@@ -633,7 +633,7 @@ void PinManager::PinSomeFiles() {
 
   if (files_to_track_.empty() && files_to_pin_.empty()) {
     VLOG(1) << "Nothing left to pin or track";
-    return Complete(SetupStage::kSuccess);
+    return Complete(Stage::kSuccess);
   }
 
   while (files_to_track_.size() < 50 && !files_to_pin_.empty()) {
@@ -681,7 +681,7 @@ void PinManager::OnFilePinned(const Id id,
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != SetupStage::kSyncing) {
+  if (progress_.stage != Stage::kSyncing) {
     VLOG(2) << "Ignored syncing status update";
     return;
   }
@@ -757,7 +757,7 @@ void PinManager::OnUnmounted() {
 void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != SetupStage::kSyncing) {
+  if (progress_.stage != Stage::kSyncing) {
     for (const mojom::FileChange& change : changes) {
       VLOG(1) << "Ignored FileChange " << Quote(change);
     }
@@ -833,7 +833,7 @@ void PinManager::OnMetadataRetrieved(const Id id,
                                      const mojom::FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != SetupStage::kSyncing) {
+  if (progress_.stage != Stage::kSyncing) {
     VLOG(1) << "Ignored metadata of " << id << " " << Quote(path);
     return;
   }

@@ -633,7 +633,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     }
   }
 
-  void OnProgress(const drivefs::pinning::SetupProgress& progress) override {
+  void OnProgress(const drivefs::pinning::Progress& progress) override {
     using drivefs::pinning::HumanReadableSize;
 
     base::Value::Dict d;

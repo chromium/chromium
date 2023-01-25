@@ -40,7 +40,7 @@ extern const base::TimeDelta kPeriodicRemovalInterval;
 // The PinManager first undergoes a setup phase, where it audits the current
 // disk space, pins all available files (disk space willing) then moves to
 // monitoring. This enum represents the various stages the setup goes through.
-enum class SetupStage {
+enum class Stage {
   // Initial stage.
   kNotStarted,
 
@@ -60,11 +60,11 @@ enum class SetupStage {
 };
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
-std::ostream& operator<<(std::ostream& out, SetupStage stage);
+std::ostream& operator<<(std::ostream& out, Stage stage);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.
-struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SetupProgress {
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of free bytes on the stateful partition. Estimated at the beginning
   // of the setup process and left unchanged afterwards.
   int64_t free_space = 0;
@@ -99,11 +99,11 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) SetupProgress {
   int32_t duplicated_events = 0;
 
   // Stage of the setup process.
-  SetupStage stage = SetupStage::kNotStarted;
+  Stage stage = Stage::kNotStarted;
 
-  SetupProgress();
-  SetupProgress(const SetupProgress&);
-  SetupProgress& operator=(const SetupProgress&);
+  Progress();
+  Progress(const Progress&);
+  Progress& operator=(const Progress&);
 };
 
 // Manages bulk pinning of items via DriveFS. This class handles the following:
@@ -135,7 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void Enable(bool enabled);
 
   // Gets the current progress status.
-  SetupProgress GetProgress() const {
+  Progress GetProgress() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return progress_;
   }
@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   class Observer : public base::CheckedObserver {
    public:
     // Called when the setup progresses.
-    virtual void OnProgress(const SetupProgress& progress) {}
+    virtual void OnProgress(const Progress& progress) {}
 
     // Called when the PinManager is getting deleted.
     virtual void OnDrop() {}
@@ -183,7 +183,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // Sets the completion callback, which will be called once the initial pinning
   // has completed.
-  using CompletionCallback = base::OnceCallback<void(SetupStage)>;
+  using CompletionCallback = base::OnceCallback<void(Stage)>;
   void SetCompletionCallback(CompletionCallback f) {
     completion_callback_ = std::move(f);
   }
@@ -262,7 +262,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   // When the pinning has finished, this ensures appropriate cleanup happens on
   // the underlying search query mojo connection.
-  void Complete(SetupStage stage);
+  void Complete(Stage stage);
 
   // Once the verification that the files to pin will not exceed available disk
   // space, the files to pin can be batch pinned.
@@ -307,7 +307,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   SpaceGetter space_getter_;
   CompletionCallback completion_callback_;
 
-  SetupProgress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
+  Progress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ObserverList<Observer> observers_;
 
   const base::FilePath profile_path_;
