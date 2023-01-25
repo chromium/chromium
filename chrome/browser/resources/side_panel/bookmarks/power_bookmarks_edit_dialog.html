@@ -1,0 +1,64 @@
+<style include="cr-shared-style">
+  :host {
+    --cr-dialog-body-padding-horizontal: 16px;
+    --cr-dialog-title-slot-padding-start: 16px;
+    --cr-dialog-width: 300px;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .button-row {
+    font-size: 12px;
+    justify-content: space-between;
+  }
+
+  .folder-header {
+    color: var(--cr-primary-text-color);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .folder-row {
+    display: flex;
+    width: auto;
+  }
+
+  .folder-selector {
+    border: 1px solid var(--scrollable-border-color);
+    border-radius: 2px;
+    height: 160px;
+  }
+</style>
+
+<cr-dialog id="dialog">
+  <div slot="title">$i18n{editMoveFolderTo}</div>
+  <div slot="body" class="body">
+    <div class="folder-header">
+      <template is="dom-if" if="[[activeFolder_]]" restamp>
+        TODO: Back Button
+      </template>
+      [[getActiveFolderTitle_(activeFolder_)]]
+    </div>
+    <div id="folder-selector" class="folder-selector">
+      <iron-list scroll-target="folder-selector"
+          items="[[getShownFolders_(activeFolder_, topLevelBookmarks_)]]">
+        <template>
+          <div class="folder-row">TODO: Folder row</div>
+        </template>
+      </iron-list>
+    </div>
+  </div>
+  <div class="button-row" slot="button-container">
+    <cr-button on-click="onNewFolder_">$i18n{editNewFolder}</cr-button>
+    <div>
+      <cr-button on-click="onCancel_">$i18n{editCancel}</cr-button>
+      <cr-button class="action-button cr-button-gap" on-click="onSave_">
+        $i18n{editSave}
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>

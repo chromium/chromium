@@ -55,6 +55,7 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"tooltipClose", IDS_CLOSE},
       {"tooltipDelete", IDS_DELETE},
       {"tooltipMore", IDS_BOOKMARKS_EDIT_MORE},
+      {"tooltipMove", IDS_BOOKMARKS_EDIT_MOVE_TO_ANOTHER_FOLDER},
       {"shoppingListFolderTitle", IDS_SIDE_PANEL_TRACKED_PRODUCTS},
       {"shoppingListTrackPriceButtonDescription",
        IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY},
@@ -98,6 +99,10 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       {"newFolderTitle", IDS_BOOKMARK_EDITOR_NEW_FOLDER_NAME},
       {"undoBookmarkDeletion", IDS_UNDO_BOOKMARK_DELETION},
       {"urlFolderDescription", IDS_BOOKMARKS_URL_FOLDER_DESCRIPTION},
+      {"editMoveFolderTo", IDS_BOOKMARKS_EDIT_MOVE_TO},
+      {"editNewFolder", IDS_BOOKMARKS_EDIT_NEW_FOLDER},
+      {"editCancel", IDS_BOOKMARKS_EDIT_CANCEL},
+      {"editSave", IDS_BOOKMARKS_EDIT_SAVE},
   };
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);

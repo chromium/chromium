@@ -11,65 +11,11 @@ import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/po
 import {BookmarkProductInfo} from 'chrome://bookmarks-side-panel.top-chrome/shopping_list.mojom-webui.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
 import {TestShoppingListApiProxy} from './commerce/test_shopping_list_api_proxy.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
-
-class TestPowerBookmarksDelegate extends TestBrowserProxy {
-  constructor() {
-    super([
-      'setCurrentUrl',
-      'setCompactDescription',
-      'setExpandedDescription',
-      'onBookmarksLoaded',
-      'onBookmarkChanged',
-      'onBookmarkCreated',
-      'onBookmarkMoved',
-      'onBookmarkRemoved',
-    ]);
-  }
-
-  setCurrentUrl(url: string|undefined) {
-    this.methodCalled('setCurrentUrl', url);
-  }
-
-  setCompactDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.methodCalled('setCompactDescription', bookmark, description);
-  }
-
-  setExpandedDescription(
-      bookmark: chrome.bookmarks.BookmarkTreeNode, description: string) {
-    this.methodCalled('setExpandedDescription', bookmark, description);
-  }
-
-  onBookmarksLoaded() {
-    this.methodCalled('onBookmarksLoaded');
-  }
-
-  onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
-    this.methodCalled('onBookmarkChanged', id, changedInfo);
-  }
-
-  onBookmarkCreated(
-      bookmark: chrome.bookmarks.BookmarkTreeNode,
-      parent: chrome.bookmarks.BookmarkTreeNode) {
-    this.methodCalled('onBookmarkCreated', bookmark, parent);
-  }
-
-  onBookmarkMoved(
-      bookmark: chrome.bookmarks.BookmarkTreeNode,
-      oldParent: chrome.bookmarks.BookmarkTreeNode,
-      newParent: chrome.bookmarks.BookmarkTreeNode) {
-    this.methodCalled('onBookmarkMoved', bookmark, oldParent, newParent);
-  }
-
-  onBookmarkRemoved(bookmark: chrome.bookmarks.BookmarkTreeNode) {
-    this.methodCalled('onBookmarkRemoved', bookmark);
-  }
-}
+import {TestPowerBookmarksDelegate} from './test_power_bookmarks_delegate.js';
 
 suite('SidePanelPowerBookmarksServiceTest', () => {
   let delegate: TestPowerBookmarksDelegate;
@@ -145,10 +91,11 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     delegate = new TestPowerBookmarksDelegate();
     service = new PowerBookmarksService(delegate);
     service.startListening();
+
+    await delegate.whenCalled('onBookmarksLoaded');
   });
 
   test('FiltersTopLevelBookmarks', () => {
-    assertEquals(1, delegate.getCallCount('onBookmarksLoaded'));
     const defaultBookmarks =
         service.filterBookmarks(undefined, 0, undefined, []);
     assertEquals(folders[0]!.children!.length, defaultBookmarks.length);

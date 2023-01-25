@@ -117,6 +117,21 @@ export class PowerBookmarksService {
   }
 
   /**
+   * Returns a list of all root bookmark folders.
+   */
+  getFolders() {
+    return this.folders_;
+  }
+
+  /**
+   * Returns a list of all bookmarks defaulted to if no filter criteria are
+   * provided.
+   */
+  getTopLevelBookmarks() {
+    return this.filterBookmarks(undefined, 0, undefined, []);
+  }
+
+  /**
    * Returns a list of bookmarks and folders filtered by the provided criteria.
    */
   filterBookmarks(

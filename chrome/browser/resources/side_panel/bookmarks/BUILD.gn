@@ -23,6 +23,7 @@ build_webui("build") {
     "commerce/shopping_list.ts",
     "power_bookmark_row.ts",
     "power_bookmarks_context_menu.ts",
+    "power_bookmarks_edit_dialog.ts",
     "power_bookmarks_list.ts",
   ]
 

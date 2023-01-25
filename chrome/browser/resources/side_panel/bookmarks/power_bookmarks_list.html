@@ -202,6 +202,11 @@
           title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
           on-click="onDeleteClicked_">
       </cr-icon-button>
+      <cr-icon-button iron-icon="bookmarks:move"
+          disabled="[[!selectedBookmarks_.length]]"
+          title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
+          on-click="onMoveClicked_">
+      </cr-icon-button>
       <cr-icon-button iron-icon="cr:more-vert"
           disabled="[[!selectedBookmarks_.length]]"
           title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
@@ -230,6 +235,8 @@
     $i18n{compactView}
   </button>
 </cr-action-menu>
+
+<power-bookmarks-edit-dialog id="editDialog"></power-bookmarks-edit-dialog>
 
 <cr-lazy-render id="contextMenu">
   <template>

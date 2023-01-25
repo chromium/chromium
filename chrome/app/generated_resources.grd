@@ -7406,8 +7406,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARK_FOLDER_CHILD_COUNT" desc="Text description for the number of children of a bookmark folder">
         {NUM_BOOKMARKS, plural, =1 {1 bookmark} other {# bookmarks}}
       </message>
+      <message name="IDS_BOOKMARKS_EDIT_MOVE_TO_ANOTHER_FOLDER" desc="Tooltip for the button in the bookmarks side panel bulk edit mode that allows the user to move the selected bookmarks to a different folder.">
+        Move to another folder
+      </message>
       <message name="IDS_BOOKMARKS_EDIT_MORE" desc="Tooltip for the menu button in the bookmarks side panel bulk edit mode that shows more actions the user can take on selected bookmarks.">
         More
+      </message>
+      <message name="IDS_BOOKMARKS_EDIT_MOVE_TO" desc="Title for the bookmarks side panel edit dialog when there are multiple selected bookmarks">
+        Move to…
+      </message>
+      <message name="IDS_BOOKMARKS_EDIT_NEW_FOLDER" desc="Label for the button to add a new folder in the bookmarks side panel edit dialog">
+        New Folder
+      </message>
+      <message name="IDS_BOOKMARKS_EDIT_CANCEL" desc="Label for the button to close the bookmarks side panel edit dialog">
+        Cancel
+      </message>
+      <message name="IDS_BOOKMARKS_EDIT_SAVE" desc="Label for the button to save changes from the bookmarks side panel edit dialog">
+        Save
       </message>
       <message name="IDS_BOOKMARK_DELETION_COUNT" desc="Text description for the number of deleted bookmarks">
         {NUM_BOOKMARKS, plural, =1 {1 bookmark deleted} other {# bookmarks deleted}}

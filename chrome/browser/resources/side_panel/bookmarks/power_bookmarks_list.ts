@@ -7,6 +7,8 @@ import './commerce/shopping_list.js';
 import './icons.html.js';
 import './power_bookmarks_context_menu.js';
 import './power_bookmark_row.js';
+import './power_bookmarks_context_menu.js';
+import './power_bookmarks_edit_dialog.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_empty_state.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_filter_chip.js';
 import '//bookmarks-side-panel.top-chrome/shared/sp_footer.js';
@@ -34,6 +36,7 @@ import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
+import {PowerBookmarksEditDialogElement} from './power_bookmarks_edit_dialog.js';
 import {getTemplate} from './power_bookmarks_list.html.js';
 import {Label, PowerBookmarksService} from './power_bookmarks_service.js';
 
@@ -47,6 +50,7 @@ export interface PowerBookmarksListElement {
     deletionToast: CrLazyRenderElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
     sortMenu: CrActionMenuElement,
+    editDialog: PowerBookmarksEditDialogElement,
   };
 }
 
@@ -526,6 +530,14 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onUndoClicked_() {
     this.bookmarksApi_.undo();
     this.$.deletionToast.get().hide();
+  }
+
+  private onMoveClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.editDialog.showDialog(
+        this.getActiveFolder_(), this.bookmarksService_.getTopLevelBookmarks(),
+        this.selectedBookmarks_);
   }
 
   private onEditMenuClicked_(event: MouseEvent) {
