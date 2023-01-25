@@ -312,7 +312,14 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
       visible_preferred_ ? "Ash.StatusArea.TrayBackgroundView.Shown"
                          : "Ash.StatusArea.TrayBackgroundView.Hidden",
       catalog_name_);
-  StartVisibilityAnimation(GetEffectiveVisibility());
+
+  // Calling `StartVisibilityAnimation(GetEffectiveVisibility())` doesn't work
+  // for the case of a collapsed status area (see b/265165818). Passing
+  // `visible_preferred_` is better, but also means that animations happen for
+  // all trays, even those that would show/hide in the "hidden" part of a
+  // collapsed status area (but note that those animations are not visible until
+  // the status area is expanded).
+  StartVisibilityAnimation(visible_preferred_);
 
   // We need to update which trays overflow after showing or hiding a tray.
   // If the hide animation is still playing, we do the `UpdateStatusArea(bool

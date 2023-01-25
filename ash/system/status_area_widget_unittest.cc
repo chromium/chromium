@@ -599,6 +599,9 @@ TEST_F(StatusAreaWidgetCollapseStateTest, NewTrayShownWhileCollapsed) {
   EXPECT_FALSE(ime_menu_->GetVisible());
   EXPECT_FALSE(virtual_keyboard_->GetVisible());
   EXPECT_TRUE(palette_->GetVisible());
+  // We should also check the opacity to make sure the tray isn't visible with
+  // zero opacity; see b/265165818.
+  EXPECT_EQ(palette_->layer()->opacity(), 1);
 }
 
 TEST_F(StatusAreaWidgetCollapseStateTest, TrayHiddenWhileCollapsed) {
