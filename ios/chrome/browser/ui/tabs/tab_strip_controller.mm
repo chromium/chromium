@@ -89,6 +89,7 @@ const CGFloat kTabOverlapUnstacked = 30.0;
 const CGFloat kNewTabOverlap = 13.0;
 const CGFloat kMaxTabWidthStacked = 265.0;
 const CGFloat kMaxTabWidthUnstacked = 225.0;
+const CGFloat kPinnedTabWidth = 78.0;
 
 const CGFloat kMinTabWidthStacked = 200.0;
 const CGFloat kMinTabWidthUnstacked = 160.0;
@@ -203,7 +204,7 @@ const CGFloat kSymbolSize = 18;
   // and cleared in layoutSubviews.
   BOOL _animateLayout;
 
-  // The current tab width.  Recomputed whenever a tab is added or removed.
+  // The current tab width. Recomputed whenever a tab is added or removed.
   CGFloat _currentTabWidth;
 
   // View used to dim unselected tabs when in reordering mode.  Nil when not
@@ -236,6 +237,9 @@ const CGFloat kSymbolSize = 18;
   // The WebStateList index of the placeholder gap, if one exists. This value is
   // used as the new WebStateList index of the dragged tab when it is dropped.
   int _placeholderGapWebStateListIndex;
+
+  // The number of pinned tabs.
+  NSUInteger _pinnedTabCount;
 
   // YES if this tab strip is representing an incognito browser.
   BOOL _isIncognito;
@@ -446,6 +450,8 @@ const CGFloat kSymbolSize = 18;
         std::make_unique<AllWebStateObservationForwarder>(
             _webStateList, _webStateObserver.get());
     _style = style;
+
+    _pinnedTabCount = _webStateList->GetIndexOfFirstNonPinnedWebState();
 
     // `self.view` setup.
     _useTabStacking = [self shouldUseTabStacking];
@@ -1219,6 +1225,15 @@ const CGFloat kSymbolSize = 18;
   [self updateTabView:view withWebState:newWebState];
 }
 
+- (void)webStateList:(WebStateList*)webStateList
+    didChangePinnedStateForWebState:(web::WebState*)webState
+                            atIndex:(int)index {
+  DCHECK_EQ(_webStateList, webStateList);
+  _pinnedTabCount = webStateList->GetIndexOfFirstNonPinnedWebState();
+
+  [self layoutTabStripSubviews];
+}
+
 #pragma mark -
 #pragma mark WebStateFaviconDriverObserver
 
@@ -1277,7 +1292,8 @@ const CGFloat kSymbolSize = 18;
 - (void)updateContentSizeAndRepositionViews {
   // TODO(rohitrao): The following lines are duplicated in
   // layoutTabStripSubviews.  Find a way to consolidate this logic.
-  const NSUInteger tabCount = [_tabArray count] - [_closingTabs count];
+  const NSUInteger tabCount =
+      [_tabArray count] - [_closingTabs count] - _pinnedTabCount;
   if (!tabCount)
     return;
   const CGFloat tabHeight = CGRectGetHeight([_tabStripView bounds]);
@@ -1290,7 +1306,8 @@ const CGFloat kSymbolSize = 18;
   // Set the content size to be large enough to contain all the tabs at the
   // desired width, with the standard overlap, plus the new tab button.
   CGSize contentSize = CGSizeMake(
-      _currentTabWidth * tabCount - ([self tabOverlap] * (tabCount - 1)) +
+      (_currentTabWidth * tabCount) + (kPinnedTabWidth * _pinnedTabCount) -
+          ([self tabOverlap] * (tabCount + _pinnedTabCount - 1)) +
           CGRectGetWidth([_buttonNewTab frame]) - kNewTabOverlap,
       tabHeight);
   if (CGSizeEqualToSize([_tabStripView contentSize], contentSize))
@@ -1309,11 +1326,23 @@ const CGFloat kSymbolSize = 18;
 }
 
 - (CGRect)scrollViewFrameForTab:(TabView*)view {
-  int index = [self webStateListIndexForTabView:view];
+  NSUInteger index = [self webStateListIndexForTabView:view];
 
   CGRect frame = [view frame];
-  frame.origin.x =
-      (_currentTabWidth * index) - ([self tabOverlap] * (index - 1));
+
+  if (_pinnedTabCount > 0) {
+    if (index < _pinnedTabCount) {
+      frame.origin.x = (kPinnedTabWidth * index);
+    } else {
+      frame.origin.x = (kPinnedTabWidth * _pinnedTabCount) +
+                       (_currentTabWidth * (index - _pinnedTabCount)) -
+                       ([self tabOverlap] * (index - 1));
+    }
+  } else {
+    frame.origin.x =
+        (_currentTabWidth * index) - ([self tabOverlap] * (index - 1));
+  }
+
   return frame;
 }
 
@@ -1378,21 +1407,28 @@ const CGFloat kSymbolSize = 18;
   }
 
   NSUInteger numNonClosingTabsToLeft = 0;
+  NSUInteger numPinnedTabsToLeft = 0;
+
   int i = 0;
   for (TabView* tab in _tabArray) {
     if ([_closingTabs containsObject:tab])
       ++i;
 
-    if (i == tabIndex)
+    if (i == static_cast<int>(tabIndex)) {
       break;
-
-    ++numNonClosingTabsToLeft;
+    }
+    if (i < static_cast<int>(_pinnedTabCount)) {
+      ++numPinnedTabsToLeft;
+    } else {
+      ++numNonClosingTabsToLeft;
+    }
     ++i;
   }
 
   const CGFloat tabHeight = CGRectGetHeight([_tabStripView bounds]);
   CGRect scrollRect =
-      CGRectMake(_currentTabWidth * numNonClosingTabsToLeft -
+      CGRectMake((_currentTabWidth * numNonClosingTabsToLeft) +
+                     (kPinnedTabWidth * numPinnedTabsToLeft) -
                      ([self tabOverlap] * (numNonClosingTabsToLeft - 1)),
                  0, _currentTabWidth, tabHeight);
   [_tabStripView scrollRectToVisible:scrollRect animated:YES];
@@ -1500,6 +1536,10 @@ const CGFloat kSymbolSize = 18;
        ++arrayIndex) {
     TabView* view = (TabView*)[_tabArray objectAtIndex:arrayIndex];
 
+    CGFloat currentTabWith =
+        arrayIndex < _pinnedTabCount ? kPinnedTabWidth : _currentTabWidth;
+    view.pinned = arrayIndex < _pinnedTabCount;
+
     // Arrange the tabs in a V going backwards from the selected tab.  This
     // differs from desktop in order to make the tab overflow behavior work (on
     // desktop, the tabs are arranged going backwards from left to right, with
@@ -1583,8 +1623,8 @@ const CGFloat kSymbolSize = 18;
     // If this tab is to the right of the currently dragged tab, add a
     // placeholder gap.
     if (_isReordering && !hasPlaceholderGap &&
-        CGRectGetMinX(dragFrame) < virtualMinX + (_currentTabWidth / 2.0)) {
-      virtualMinX += _currentTabWidth - [self tabOverlap];
+        CGRectGetMinX(dragFrame) < virtualMinX + (currentTabWith / 2.0)) {
+      virtualMinX += currentTabWith - [self tabOverlap];
       hasPlaceholderGap = YES;
 
       // Fix up the z-ordering of the current view.  It was placed assuming that
@@ -1604,12 +1644,13 @@ const CGFloat kSymbolSize = 18;
     // by trying to place the tab at the computed `virtualMinX`, then constrain
     // that by `realMinX` and `realMaxX`.
     CGFloat tabX = MAX(virtualMinX, realMinX);
-    if (tabX + _currentTabWidth > realMaxX)
-      tabX = realMaxX - _currentTabWidth;
+    if (tabX + currentTabWith > realMaxX) {
+      tabX = realMaxX - currentTabWith;
+    }
 
     CGRect frame = CGRectMake(AlignValueToPixel(tabX), 0,
-                              AlignValueToPixel(_currentTabWidth), tabHeight);
-    virtualMinX += (_currentTabWidth - [self tabOverlap]);
+                              AlignValueToPixel(currentTabWith), tabHeight);
+    virtualMinX += (currentTabWith - [self tabOverlap]);
     virtualMaxX = CGRectGetMaxX(frame);
 
 // TODO(rohitrao): Temporarily disabled this logic as it does not play well with

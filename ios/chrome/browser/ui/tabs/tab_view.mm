@@ -72,7 +72,11 @@ UIImage* DefaultFaviconImage() {
 
   // Background image for this tab.
   UIImageView* _backgroundImageView;
+
   BOOL _incognitoStyle;
+
+  // Whether the Tab is pinned or not.
+  BOOL _pinned;
 
   // Set to YES when the layout constraints have been initialized.
   BOOL _layoutConstraintsInitialized;
@@ -110,6 +114,7 @@ UIImage* DefaultFaviconImage() {
 
 - (id)initWithEmptyView:(BOOL)emptyView selected:(BOOL)selected {
   if ((self = [super initWithFrame:CGRectZero])) {
+    _pinned = NO;
     [self setOpaque:NO];
     [self createCommonViews];
     if (!emptyView)
@@ -139,8 +144,10 @@ UIImage* DefaultFaviconImage() {
 }
 
 - (void)setCollapsed:(BOOL)collapsed {
-  if (_collapsed != collapsed)
+  // If the item is pinned the `_closeButton` should remain hidden.
+  if (_collapsed != collapsed && !_pinned) {
     [_closeButton setHidden:collapsed];
+  }
 
   _collapsed = collapsed;
 }
@@ -178,6 +185,16 @@ UIImage* DefaultFaviconImage() {
                                         ? UIUserInterfaceStyleDark
                                         : UIUserInterfaceStyleUnspecified;
   return;
+}
+
+- (void)setPinned:(BOOL)pinned {
+  if (_pinned == pinned) {
+    return;
+  }
+  _pinned = pinned;
+  _titleLabel.hidden = pinned;
+  _closeButton.hidden = pinned;
+  [self setFrame:self.frame];
 }
 
 - (void)startProgressSpinner {

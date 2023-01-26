@@ -20,6 +20,7 @@
 @property(nonatomic, assign, getter=isCollapsed) BOOL collapsed;
 @property(nonatomic, strong) UIImage* background;
 @property(nonatomic, assign) BOOL incognitoStyle;
+@property(nonatomic, assign) BOOL pinned;
 
 // Designated initializer.  Creates a TabView with frame equal to CGRectZero.
 // If `emptyView` is YES, it creates a TabView without buttons or spinner.
