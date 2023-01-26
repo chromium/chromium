@@ -142,28 +142,26 @@ Internals>Network>VPN
 
 ## Management
 
-* Your rotation will appear in Google Calendar as two days. You are expected to
-  work on it full-time (as best you can) during those calendar days, during your
-  ordinary working hours.
+* Your rotation will appear in Google Calendar for three days, as a full day 
+  event. However you should work on it during normal business hours only. 
+  The bug triage work should be considered P1 during this period, but you 
+  should feel free to work on project work once you triage outstanding issues.
 
-* Google Calendar [google.com_52n2p39ad82hah9v7j26vek830@group.calendar.google.com](https://calendar.google.com/calendar/embed?src=google.com_52n2p39ad82hah9v7j26vek830%40group.calendar.google.com&ctz=America%2FLos_Angeles)
+* Google Calendar [c_c76b86b0356db19c1e06879b16d84a2fb7b9747f066b671c46875261c9e7f17a@group.calendar.google.com](https://calendar.google.com/calendar/embed?src=c_c76b86b0356db19c1e06879b16d84a2fb7b9747f066b671c46875261c9e7f17a%40group.calendar.google.com&ctz=Asia%2FTokyo)
 
 * Owners for the network bug triage rotation can find instructions on
-generating and modifying shifts
-[here (internal-only)](https://goto.google.com/pflvb).
+  generating and modifying shifts
+[here (internal-only)](https://goto.google.com/net-triage-setup).
 
 * An overview of bug trends can be seen on [Chromium
   Dashboard](https://chromiumdash.appspot.com/components/Internals/Network?project=Chromium)
 
-* There is also an [internal dashboard with bug trends for Web
-  Platform](https://goto.google.com/blink-untriaged-by-team) that includes network issues.
-
-* And another [internal dashboard breaking down the bug trends for the
-  networking stack by components](https://goto.google.com/chrome-network-untriaged-by-component)
-
 * The issue tracker doesn't track any official mappings between components and
   OWNERS. This [internal document](https://goto.google.com/kojfj) enumerates
-  the known owners for subcomponents.
+  the known owners for subcomponents. Owners information is dynamic, and the 
+  document might become outdated, you can always go to the source, search for 
+  the component in a DIR_METADATA file and look for an OWNERS file in the same, 
+  or parent directory.
 
 * [Web Platform Team SLOs](https://docs.google.com/document/d/18ylPve6jd43m8B7Dil6xmS4G9MHL2_DhQon72je-O9o/edit)
 
