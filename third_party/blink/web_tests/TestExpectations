@@ -3053,6 +3053,7 @@ crbug.com/626703 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-
 crbug.com/626703 [ Linux ] external/wpt/web-nfc/NDEFReader_make-read-only.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/web-nfc/NDEFReader_scan.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
+crbug.com/1410224 [ Mac10.14 ] external/wpt/webxr/ar-module/xrSession_interactionMode.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/dom-overlay/ar_dom_overlay_hit_test.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/webxr/events_input_source_recreation.https.html [ Timeout ]
