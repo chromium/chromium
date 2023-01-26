@@ -9,10 +9,11 @@ import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTheme, installMock} from './test_support.js';
+import {createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 function createTestCollection(name: string): BackgroundCollection {
   const testCollection: BackgroundCollection = {
@@ -176,4 +177,46 @@ suite('ThemesTest', () => {
         await callbackRouterRemote.$.flushForTesting();
         assertTrue(themesElement.$.refreshDailyToggle.checked);
       });
+
+  test('checks selected theme', async () => {
+    await setCollection('test_collection', 2);
+
+    // Set theme outside of collection.
+    const theme = createTheme();
+    let backgroundImage = createBackgroundImage('https://test.jpg');
+    theme.backgroundImage = backgroundImage;
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(themesElement);
+
+    // Check that nothing is selected.
+    let checkedThemes =
+        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+    assertEquals(0, checkedThemes.length);
+
+    // Set theme within collection.
+    backgroundImage = createBackgroundImage('https://image_1.jpg');
+    theme.backgroundImage = backgroundImage;
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(themesElement);
+
+    // Check that 1 theme is selected.
+    checkedThemes =
+        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+    assertEquals(1, checkedThemes.length);
+    const checkedTile = checkedThemes[0]!.parentElement as HTMLElement;
+    assertEquals(checkedTile!.title, 'attribution1_1');
+
+    // Set daily refresh.
+    theme.dailyRefreshCollectionId = 'test_collection_id';
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(themesElement);
+
+    // Check that nothing is selected.
+    checkedThemes =
+        themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
+    assertEquals(0, checkedThemes.length);
+  });
 });

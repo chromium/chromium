@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import './check_mark_wrapper.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -128,6 +129,12 @@ export class ThemesElement extends PolymerElement {
     } else {
       this.pageHandler_.setDailyRefreshCollectionId('');
     }
+  }
+
+  private isThemeSelected_(url: string) {
+    return this.theme_ && this.theme_.backgroundImage &&
+        this.theme_.backgroundImage.url.url === url &&
+        !this.isRefreshToggleChecked_;
   }
 }
 

@@ -150,13 +150,13 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   private onDefaultColorClick_() {
-    this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setDefaultColor();
+    this.pageHandler_.removeBackgroundImage();
   }
 
   private onChromeColorClick_(e: DomRepeatEvent<ChromeColor>) {
-    this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setSeedColor(e.model.item.seed);
+    this.pageHandler_.removeBackgroundImage();
   }
 
   private onCustomColorClick_() {
@@ -165,9 +165,9 @@ export class ChromeColorsElement extends PolymerElement {
   }
 
   private onCustomColorChange_(e: Event) {
-    this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setSeedColor(
         hexColorToSkColor((e.target as HTMLInputElement).value));
+    this.pageHandler_.removeBackgroundImage();
   }
 
   private updateCustomColor_() {

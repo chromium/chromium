@@ -38,6 +38,7 @@
   }
 
   .image-container {
+    border-radius: 12px;
     overflow: hidden;
     padding-top: 100%;
     position: relative;
@@ -62,10 +63,6 @@
     transform: translateX(-50%);
   }
 
-  .image-container {
-    border-radius: 12px;
-  }
-
   #refreshDailyToggleContainer {
     display: flex;
     justify-content: space-between;
@@ -75,6 +72,17 @@
   #refreshDailyToggleTitle {
     font-size: 13px;
     line-height: 20px;
+  }
+
+  customize-chrome-check-mark-wrapper {
+    --customize-chrome-check-mark-wrapper-end: -4px;
+    --customize-chrome-check-mark-wrapper-size: 20px;
+    --customize-chrome-check-mark-wrapper-top: -6px;
+  }
+
+  customize-chrome-check-mark-wrapper[checked] .image-container {
+    padding-top: calc(100% - 4px);
+    width: calc(100% - 4px);
   }
 </style>
 <div id="headerContainer">
@@ -93,13 +101,17 @@
 <cr-grid columns="3">
   <template is="dom-repeat" id="themesRepeat" items="[[themes_]]">
     <div class="tile theme" tabindex="0" role="button"
-        on-click="onSelectTheme_" title="[[item.attribution1]]">
-      <div class="image-container">
-        <img is="cr-auto-img"
-            auto-src="[[item.previewImageUrl.url]]"
-            draggable="false">
-        </img>
-      </div>
+        on-click="onSelectTheme_" title$="[[item.attribution1]]"
+        aria-checked$="[[isThemeSelected_(item.attribution1, theme_)]]">
+      <customize-chrome-check-mark-wrapper
+          checked="[[isThemeSelected_(item.imageUrl.url, theme_)]]">
+        <div class="image-container">
+          <img is="cr-auto-img"
+              auto-src="[[item.previewImageUrl.url]]"
+              draggable="false">
+          </img>
+        </div>
+      </customize-chrome-check-mark-wrapper>
     </div>
   </template>
 </cr-grid>
