@@ -14,6 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
+#import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/app_store_rating/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
@@ -294,6 +295,22 @@
       [alertProvider promoWasDisplayed];
     }
   } else {
+    // Early return (and avoid calling NOTREACHED) when promos are
+    // forced for display (via Experimental Settings toggle) but not properly
+    // enabled (via chrome://flags). This is a niche edge case—likely to only
+    // occur during local, manual testing.
+    absl::optional<promos_manager::Promo> maybeForcedPromo =
+        promos_manager::PromoForName(base::SysNSStringToUTF8(
+            experimental_flags::GetForcedPromoToDisplay()));
+
+    if (maybeForcedPromo.has_value()) {
+      promos_manager::Promo forcedPromo = maybeForcedPromo.value();
+
+      if ([self isPromoUnregistered:forcedPromo]) {
+        return;
+      }
+    }
+
     NOTREACHED();
   }
 }
@@ -490,6 +507,19 @@
       result[promo] = alertProvider.impressionLimits;
 
   return result;
+}
+
+// Checks if `promo` is properly registered within this coordinator.
+- (BOOL)isPromoUnregistered:(promos_manager::Promo)promo {
+  auto handler_it = _displayHandlerPromos.find(promo);
+  auto provider_it = _viewProviderPromos.find(promo);
+  auto bannered_provider_it = _banneredViewProviderPromos.find(promo);
+  auto alert_provider_it = _alertProviderPromos.find(promo);
+
+  return handler_it == _displayHandlerPromos.end() &&
+         provider_it == _viewProviderPromos.end() &&
+         bannered_provider_it == _banneredViewProviderPromos.end() &&
+         alert_provider_it == _alertProviderPromos.end();
 }
 
 @end
