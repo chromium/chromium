@@ -23,6 +23,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    base::Token token,
                                    SavedTabGroupModel* model);
+  ~SavedTabGroupWebContentsListener() override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
@@ -59,6 +60,7 @@ class SavedTabGroupBrowserListener : public TabStripModelObserver {
   void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
                               content::WebContents* contents,
                               int index) override;
+  void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   Browser* browser() { return browser_; }
   SavedTabGroupModel* saved_tab_group_model() { return model_; }

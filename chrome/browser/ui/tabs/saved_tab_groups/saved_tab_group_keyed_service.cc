@@ -171,7 +171,6 @@ void SavedTabGroupKeyedService::SaveGroup(
   // Build the SavedTabGroupTabs, track the webcontents, and add them to the
   // group.
   const gfx::Range tab_range = tab_group->ListTabs();
-  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = tab_strip_model->GetWebContentsAt(i);
     CHECK(web_contents);
@@ -219,7 +218,6 @@ void SavedTabGroupKeyedService::DisconnectLocalTabGroup(
 
   // Stop listening to all of the webcontents in the group.
   const gfx::Range tab_range = tab_group->ListTabs();
-  const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents =
         browser_owning_tab_group->tab_strip_model()->GetWebContentsAt(i);

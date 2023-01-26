@@ -11,6 +11,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -26,6 +28,8 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     : token_(token), web_contents_(web_contents), model_(model) {
   Observe(web_contents_);
 }
+
+SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
 
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -178,6 +182,36 @@ void SavedTabGroupBrowserListener::TabGroupedStateChanged(
 
   // save the contents in the mapping
   web_contents_to_tab_id_map_.try_emplace(contents, contents, token, model_);
+}
+
+void SavedTabGroupBrowserListener::WillCloseAllTabs(
+    TabStripModel* tab_strip_model) {
+  CHECK(tab_strip_model);
+  CHECK(saved_tab_group_model());
+
+  if (!tab_strip_model->group_model()) {
+    return;
+  }
+
+  const std::vector<tab_groups::TabGroupId>& groups =
+      tab_strip_model->group_model()->ListTabGroups();
+
+  // Stop tracking web contents changes for groups which are saved and about to
+  // be removed.
+  for (const tab_groups::TabGroupId& group : groups) {
+    if (saved_tab_group_model()->Contains(group)) {
+      TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(group);
+      CHECK(tab_group);
+
+      // Stop listening to all of the webcontents in the group.
+      const gfx::Range tab_range = tab_group->ListTabs();
+      for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+        content::WebContents* web_contents =
+            tab_strip_model->GetWebContentsAt(i);
+        StopTrackingWebContents(web_contents);
+      }
+    }
+  }
 }
 
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
