@@ -58,8 +58,8 @@ void Bitmap::Resize(int num_bits, bool clear_bits) {
     new_map[array_size_ - 1] = 0;
     memcpy(new_map.get(), map_,
            sizeof(*map_) * std::min(array_size_, old_array_size));
+    map_ = new_map.get();
     allocated_map_ = std::move(new_map);
-    map_ = allocated_map_.get();
   }
 
   num_bits_ = num_bits;
