@@ -64,7 +64,6 @@ include_rules = [
     "+mojo/public/cpp/bindings",
     "+mojo/public/cpp/system",
     "+mojo/public/mojom/base",
-    "+services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h",
     "+services/device/public/mojom/device_posture_provider.mojom-blink-forward.h",
     "+services/device/public/mojom/device_posture_provider.mojom-blink.h",
     "+services/device/public/mojom/wake_lock.mojom-blink.h",

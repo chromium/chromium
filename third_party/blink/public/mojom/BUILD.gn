@@ -257,7 +257,6 @@ mojom("mojom_platform") {
     "//components/schema_org/common:mojom",
     "//components/services/filesystem/public/mojom",
     "//mojo/public/mojom/base",
-    "//services/data_decoder/public/mojom:mojom_resource_snapshot_for_web_bundle",
     "//services/device/public/mojom",
     "//services/network/public/mojom",
     "//services/network/public/mojom:mojom_ip_address",
@@ -1223,7 +1222,6 @@ mojom("mojom_core") {
   if (is_android) {
     # Direct deps (instead of transitive deps) are necessary for java targets.
     public_deps += [
-      "//services/data_decoder/public/mojom:mojom_resource_snapshot_for_web_bundle",
       "//services/network/public/mojom:cookies_mojom",
       "//services/network/public/mojom:url_loader_base",
       "//third_party/blink/public/mojom/tokens",

@@ -10,7 +10,6 @@ import "mojo/public/mojom/base/text_direction.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
@@ -756,13 +755,6 @@ interface LocalFrame {
 
   // Notifies this frame to clear the focused element (if any).
   ClearFocusedElement();
-
-  // Gets the resource snapshot of the frame for creating Web Bundle.
-  // The instance of ResourceSnapshotForWebBundle in the renderer process will
-  // be kept alive as far as the Mojo endpoint is held and the renderer process
-  // is alive.
-  GetResourceSnapshotForWebBundle(
-      pending_receiver<data_decoder.mojom.ResourceSnapshotForWebBundle> receiver);
 
   // Copies the image at |window_point| to the clipboard (if there indeed is an
   // image at that |window_point|).
