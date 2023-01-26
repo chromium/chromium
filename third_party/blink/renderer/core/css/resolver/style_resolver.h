@@ -140,14 +140,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // state, instead we should pass a context object during recalcStyle.
   SelectorFilter& GetSelectorFilter() { return selector_filter_; }
 
-  struct FindKeyframesRuleResult {
-    StyleRuleKeyframes* rule = nullptr;
-    const TreeScope* tree_scope = nullptr;
-    STACK_ALLOCATED();
-  };
-  FindKeyframesRuleResult FindKeyframesRule(const Element*,
-                                            const Element* animating_element,
-                                            const AtomicString& animation_name);
+  StyleRuleKeyframes* FindKeyframesRule(const Element*,
+                                        const Element* animating_element,
+                                        const AtomicString& animation_name);
 
   // These methods will give back the set of rules that matched for a given
   // element (or a pseudo-element).

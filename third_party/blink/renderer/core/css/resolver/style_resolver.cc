@@ -1910,7 +1910,7 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   return apply;
 }
 
-StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
+StyleRuleKeyframes* StyleResolver::FindKeyframesRule(
     const Element* element,
     const Element* animating_element,
     const AtomicString& animation_name) {
@@ -1924,14 +1924,14 @@ StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
   for (auto& resolver : resolvers) {
     if (StyleRuleKeyframes* keyframes_rule =
             resolver->KeyframeStylesForAnimation(animation_name)) {
-      return FindKeyframesRuleResult{keyframes_rule, &resolver->GetTreeScope()};
+      return keyframes_rule;
     }
   }
 
   if (StyleRuleKeyframes* keyframes_rule =
           GetDocument().GetStyleEngine().KeyframeStylesForAnimation(
               animation_name)) {
-    return FindKeyframesRuleResult{keyframes_rule, nullptr};
+    return keyframes_rule;
   }
 
   // Match UA keyframe rules after user and author rules.
@@ -1946,13 +1946,13 @@ StyleResolver::FindKeyframesRuleResult StyleResolver::FindKeyframesRule(
   };
   ForEachUARulesForElement(*animating_element, nullptr, func);
   if (matched_keyframes_rule) {
-    return FindKeyframesRuleResult{matched_keyframes_rule, nullptr};
+    return matched_keyframes_rule;
   }
 
   for (auto& resolver : resolvers) {
     resolver->SetHasUnresolvedKeyframesRule();
   }
-  return FindKeyframesRuleResult();
+  return nullptr;
 }
 
 void StyleResolver::InvalidateMatchedPropertiesCache() {

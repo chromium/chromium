@@ -445,10 +445,8 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   ASSERT_TRUE(t5);
 
   // There's no @keyframes rule named dummy-animation
-  ASSERT_FALSE(GetStyleEngine()
-                   .GetStyleResolver()
-                   .FindKeyframesRule(t5, t5, AtomicString("dummy-animation"))
-                   .rule);
+  ASSERT_FALSE(GetStyleEngine().GetStyleResolver().FindKeyframesRule(
+      t5, t5, AtomicString("dummy-animation")));
 
   auto* keyframes_parsed_sheet = MakeGarbageCollected<StyleSheetContents>(
       MakeGarbageCollected<CSSParserContext>(GetDocument()));
@@ -461,10 +459,8 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   // After injecting the style sheet, a @keyframes rule named dummy-animation
   // is found with one keyframe.
   StyleRuleKeyframes* keyframes =
-      GetStyleEngine()
-          .GetStyleResolver()
-          .FindKeyframesRule(t5, t5, AtomicString("dummy-animation"))
-          .rule;
+      GetStyleEngine().GetStyleResolver().FindKeyframesRule(
+          t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
@@ -476,20 +472,16 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
 
   // Author @keyframes rules take precedence; now there are two keyframes (from
   // and to).
-  keyframes = GetStyleEngine()
-                  .GetStyleResolver()
-                  .FindKeyframesRule(t5, t5, AtomicString("dummy-animation"))
-                  .rule;
+  keyframes = GetStyleEngine().GetStyleResolver().FindKeyframesRule(
+      t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(2u, keyframes->Keyframes().size());
 
   GetDocument().body()->RemoveChild(style_element);
   UpdateAllLifecyclePhases();
 
-  keyframes = GetStyleEngine()
-                  .GetStyleResolver()
-                  .FindKeyframesRule(t5, t5, AtomicString("dummy-animation"))
-                  .rule;
+  keyframes = GetStyleEngine().GetStyleResolver().FindKeyframesRule(
+      t5, t5, AtomicString("dummy-animation"));
   ASSERT_TRUE(keyframes);
   EXPECT_EQ(1u, keyframes->Keyframes().size());
 
@@ -497,10 +489,8 @@ TEST_F(StyleEngineTest, AnalyzedInject) {
   UpdateAllLifecyclePhases();
 
   // Injected @keyframes rules are no longer available once removed.
-  ASSERT_FALSE(GetStyleEngine()
-                   .GetStyleResolver()
-                   .FindKeyframesRule(t5, t5, AtomicString("dummy-animation"))
-                   .rule);
+  ASSERT_FALSE(GetStyleEngine().GetStyleResolver().FindKeyframesRule(
+      t5, t5, AtomicString("dummy-animation")));
 
   // Custom properties
 
