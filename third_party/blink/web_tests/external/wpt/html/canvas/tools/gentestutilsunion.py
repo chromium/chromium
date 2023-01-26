@@ -28,7 +28,7 @@
 #
 # * Test the tests, add new ones to Git, remove deleted ones from Git, etc.
 
-from typing import List
+from typing import List, Mapping
 
 import re
 import codecs
@@ -61,7 +61,6 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
     CANVASIMAGEOUTPUTDIR = '../element'
     OFFSCREENCANVASOUTPUTDIR = '../offscreen'
     OFFSCREENCANVASIMAGEOUTPUTDIR = '../offscreen'
-    MISCOUTPUTDIR = './output'
 
     def simpleEscapeJS(string: str) -> str:
         return string.replace('\\', '\\\\').replace('"', '\\"')
@@ -150,23 +149,10 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         else:
             tests.append(t)
 
-    category_names = []
-    category_contents_direct = {}
-    category_contents_all = {}
-
-    def backref_html(name: str) -> str:
-        backrefs = []
-        c = ''
-        for p in name.split('.')[:-1]:
-            c += '.' + p
-            backrefs.append('<a href="index%s.html">%s</a>.' % (c, p))
-        backrefs.append(name.split('.')[-1])
-        return ''.join(backrefs)
-
     # Ensure the test output directories exist.
     testdirs = [
         CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR,
-        OFFSCREENCANVASIMAGEOUTPUTDIR, MISCOUTPUTDIR
+        OFFSCREENCANVASIMAGEOUTPUTDIR
     ]
     for map_dir in set(name_mapping.values()):
         testdirs.append('%s/%s' % (CANVASOUTPUTDIR, map_dir))
@@ -177,9 +163,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         except FileExistsError:
             pass  # Ignore if it already exists,
 
-    used_images = {}
-
-    def map_name(name: str) -> str:
+    def map_name(test: Mapping[str, str], name: str) -> str:
         mapped_name = None
         for mn in sorted(name_mapping.keys(), key=len, reverse=True):
             if name.startswith(mn):
@@ -241,8 +225,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         return code
 
     used_tests = {}
-    for i in range(len(tests)):
-        test = tests[i]
+    for test in tests:
         HTMLCanvas_test = True
         OffscreenCanvas_test = True
         if test.get('canvasType', []):
@@ -261,15 +244,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
             print('Test %s is defined twice' % name)
         used_tests[name] = 1
 
-        mapped_name = map_name(name)
-
-        cat_total = ''
-        for cat_part in [''] + name.split('.')[:-1]:
-            cat_total += cat_part + '.'
-            if not cat_total in category_names:
-                category_names.append(cat_total)
-            category_contents_all.setdefault(cat_total, []).append(name)
-        category_contents_direct.setdefault(cat_total, []).append(name)
+        mapped_name = map_name(test, name)
 
         if test.get('expected', '') == 'green' and re.search(
                 r'@assert pixel .* 0,0,0,0;', test['code']):
@@ -322,11 +297,6 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
 
         canvas = test.get('canvas', 'width="100" height="50"')
 
-        prev_test = tests[i - 1]['name'] if i != 0 else 'index'
-        next_test = tests[i + 1]['name'] if i != len(tests) - 1 else 'index'
-
-        name_wrapped = name.replace('.', '.&#8203;')
-
         notes = '<p class="notes">%s' % test['notes'] if 'notes' in test else ''
 
         timeout = ('\n<meta name="timeout" content="%s">' %
@@ -336,24 +306,16 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         for s in test.get('scripts', []):
             scripts += '<script src="%s"></script>\n' % (s)
 
-        variants = test.get('script-variants', {})
-        script_variants = [(v, '<script src="%s"></script>\n' % (s))
-                           for (v, s) in variants.items()]
-        if not script_variants:
-            script_variants = [('', '')]
-
         images = ''
         for src in test.get('images', []):
             img_id = src.split('/')[-1]
             if '/' not in src:
-                used_images[src] = 1
                 src = '../images/%s' % src
             images += '<img src="%s" id="%s" class="resource">\n' % (src,
                                                                      img_id)
         for src in test.get('svgimages', []):
             img_id = src.split('/')[-1]
             if '/' not in src:
-                used_images[src] = 1
                 src = '../images/%s' % src
             images += ('<svg><image xlink:href="%s" id="%s" class="resource">'
                        '</svg>\n' % (src, img_id))
@@ -384,62 +346,49 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         else:
             context_args = "'2d'"
 
-        for (variant, extra_script) in script_variants:
-            name_variant = '' if not variant else '.' + variant
+        template_params = {
+            'name': name,
+            'desc': desc,
+            'escaped_desc': escaped_desc,
+            'notes': notes,
+            'images': images,
+            'fonts': fonts,
+            'fonthack': fonthack,
+            'timeout': timeout,
+            'canvas': canvas,
+            'expected': expectation_html,
+            'code': code_canvas,
+            'scripts': scripts,
+            'fallback': fallback,
+            'attributes': attributes,
+            'context_args': context_args
+        }
 
-            template_params = {
-                'name': name + name_variant,
-                'name_wrapped': name_wrapped,
-                'backrefs': backref_html(name),
-                'mapped_name': mapped_name,
-                'desc': desc,
-                'escaped_desc': escaped_desc,
-                'prev': prev_test,
-                'next': next_test,
-                'notes': notes,
-                'images': images,
-                'fonts': fonts,
-                'fonthack': fonthack,
-                'timeout': timeout,
-                'canvas': canvas,
-                'expected': expectation_html,
-                'code': code_canvas,
-                'scripts': scripts + extra_script,
-                'fallback': fallback,
-                'attributes': attributes,
-                'context_args': context_args
-            }
-
-            # Create test cases for canvas and offscreencanvas.
-            if HTMLCanvas_test:
-                f = codecs.open(
-                    '%s/%s%s.html' %
-                    (CANVASOUTPUTDIR, mapped_name, name_variant), 'w', 'utf-8')
-                f.write(templates['w3ccanvas'] % template_params)
-            if OffscreenCanvas_test:
-                f_html = codecs.open(
-                    '%s/%s%s.html' %
-                    (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w',
-                    'utf-8')
-                f_worker = codecs.open(
-                    '%s/%s%s.worker.js' %
-                    (OFFSCREENCANVASOUTPUTDIR, mapped_name, name_variant), 'w',
-                    'utf-8')
-                if ('then(t_pass, t_fail);' in code_canvas):
-                    temp_offscreen = templates['w3coffscreencanvas'].replace(
-                        't.done();\n', '')
-                    temp_worker = templates['w3cworker'].replace(
-                        't.done();\n', '')
-                    f_html.write(temp_offscreen % template_params)
-                    timeout = ('// META: timeout=%s\n' %
-                               test['timeout'] if 'timeout' in test else '')
-                    template_params['timeout'] = timeout
-                    f_worker.write(temp_worker % template_params)
-                else:
-                    f_html.write(templates['w3coffscreencanvas'] %
-                                 template_params)
-                    timeout = ('// META: timeout=%s\n' %
-                               test['timeout'] if 'timeout' in test else '')
-                    template_params['timeout'] = timeout
-                    f_worker.write(templates['w3cworker'] % template_params)
+        # Create test cases for canvas and offscreencanvas.
+        if HTMLCanvas_test:
+            f = codecs.open('%s/%s.html' % (CANVASOUTPUTDIR, mapped_name), 'w',
+                            'utf-8')
+            f.write(templates['w3ccanvas'] % template_params)
+        if OffscreenCanvas_test:
+            f_html = codecs.open(
+                '%s/%s.html' % (OFFSCREENCANVASOUTPUTDIR, mapped_name), 'w',
+                'utf-8')
+            f_worker = codecs.open(
+                '%s/%s.worker.js' % (OFFSCREENCANVASOUTPUTDIR, mapped_name),
+                'w', 'utf-8')
+            if ('then(t_pass, t_fail);' in code_canvas):
+                temp_offscreen = templates['w3coffscreencanvas'].replace(
+                    't.done();\n', '')
+                temp_worker = templates['w3cworker'].replace('t.done();\n', '')
+                f_html.write(temp_offscreen % template_params)
+                timeout = ('// META: timeout=%s\n' %
+                           test['timeout'] if 'timeout' in test else '')
+                template_params['timeout'] = timeout
+                f_worker.write(temp_worker % template_params)
+            else:
+                f_html.write(templates['w3coffscreencanvas'] % template_params)
+                timeout = ('// META: timeout=%s\n' %
+                           test['timeout'] if 'timeout' in test else '')
+                template_params['timeout'] = timeout
+                f_worker.write(templates['w3cworker'] % template_params)
     print()
