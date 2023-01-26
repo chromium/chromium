@@ -275,6 +275,7 @@ crashpad_static_library("util") {
     "stream/zlib_output_stream.h",
     "string/split_string.cc",
     "string/split_string.h",
+    "synchronization/scoped_spin_guard.h",
     "synchronization/semaphore.h",
     "thread/stoppable.h",
     "thread/thread.cc",
@@ -569,7 +570,8 @@ crashpad_static_library("util") {
 
   # Include generated files starting with "util".
   if (crashpad_is_in_fuchsia) {
-    include_dirs = [ "$root_gen_dir/third_party/crashpad" ]
+    include_dirs =
+        [ "$root_gen_dir/" + rebase_path(fuchsia_crashpad_root, "//") ]
   } else {
     include_dirs = [ "$root_gen_dir/third_party/crashpad/crashpad" ]
   }
@@ -783,6 +785,7 @@ source_set("util_test") {
     "stream/test_output_stream.h",
     "stream/zlib_output_stream_test.cc",
     "string/split_string_test.cc",
+    "synchronization/scoped_spin_guard_test.cc",
     "synchronization/semaphore_test.cc",
     "thread/thread_log_messages_test.cc",
     "thread/thread_test.cc",

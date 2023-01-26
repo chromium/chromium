@@ -37,7 +37,9 @@ crashpad_is_standalone = crashpad_dependencies == "standalone"
 # This is the parent directory that contains the mini_chromium source dir.
 # This variable is not used when crashpad_is_in_chromium.
 if (crashpad_is_in_fuchsia) {
-  mini_chromium_source_parent = "//third_party/crashpad/third_party/mini_chromium"
+  import("//third_party/crashpad/fuchsia_buildconfig.gni")
+  mini_chromium_source_parent =
+      fuchsia_crashpad_root + "/third_party/mini_chromium"
 } else {
   mini_chromium_source_parent = "../third_party/mini_chromium"
 }
@@ -49,7 +51,7 @@ _mini_chromium_source_root = "$mini_chromium_source_parent/mini_chromium"
 if (crashpad_is_external || crashpad_is_in_dart) {
   mini_chromium_import_root = "../../../$_mini_chromium_source_root"
 } else if (crashpad_is_in_fuchsia) {
-  mini_chromium_import_root = "//third_party/mini_chromium"
+  mini_chromium_import_root = fuchsia_mini_chromium_root
 } else {
   mini_chromium_import_root = _mini_chromium_source_root
 }

@@ -9,7 +9,7 @@ set -eu
 OS="$(uname -s)"
 THIS_DIR="$(dirname "${0}")"
 
-function print_help() {
+print_help() {
 cat <<EOF >&2
 No ninja binary is available for this system.
 Try building your own binary by doing:

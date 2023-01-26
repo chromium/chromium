@@ -20,7 +20,7 @@ group("base") {
   } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/base" ]
   } else if (crashpad_is_in_fuchsia) {
-    public_deps = [ "//third_party/mini_chromium/base" ]
+    public_deps = [ mini_chromium_import_root + "/base" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/base" ]
   } else if (crashpad_is_in_dart) {
@@ -42,7 +42,7 @@ group("build") {
   } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/build" ]
   } else if (crashpad_is_in_fuchsia) {
-    public_deps = [ "//third_party/mini_chromium/build" ]
+    public_deps = [ mini_chromium_import_root + "/build" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/build" ]
   } else if (crashpad_is_in_dart) {
@@ -56,11 +56,10 @@ group("chromeos_buildflags") {
   } else if (crashpad_is_standalone) {
     public_deps = [ "mini_chromium/build:chromeos_buildflags" ]
   } else if (crashpad_is_in_fuchsia) {
-    public_deps = [ "//third_party/mini_chromium/build:chromeos_buildflags" ]
+    public_deps = [ mini_chromium_import_root + "/build:chromeos_buildflags" ]
   } else if (crashpad_is_external) {
     public_deps = [ "../../../../mini_chromium/mini_chromium/build:chromeos_buildflags" ]
   } else if (crashpad_is_in_dart) {
     public_deps = [ "//third_party/mini_chromium/mini_chromium/build:chromeos_buildflags" ]
   }
 }
-

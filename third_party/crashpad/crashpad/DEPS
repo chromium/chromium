@@ -14,7 +14,7 @@
 
 vars = {
   'chromium_git': 'https://chromium.googlesource.com',
-  'gn_version': 'git_revision:2ecd43a10266bd091c98e6dcde507c64f6a0dad3',
+  'gn_version': 'git_revision:5e19d2fb166fbd4f6f32147fbb2f497091a54ad8',
   # ninja CIPD package version.
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   'ninja_version': 'version:2@1.8.2.chromium.3',
@@ -168,7 +168,7 @@ deps = {
         'version': Var('ninja_version'),
       }
     ],
-    'condition': 'host_os == "mac" and host_cpu == "amd64"',
+    'condition': 'host_os == "mac" and host_cpu == "x64"',
     'dep_type': 'cipd',
   },
   'crashpad/third_party/ninja/mac-arm64': {

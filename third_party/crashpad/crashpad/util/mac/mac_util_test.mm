@@ -23,17 +23,6 @@
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 
-#ifdef __GLIBCXX__
-// When C++ exceptions are disabled, libstdc++ from GCC 4.2 defines |try| and
-// |catch| so as to allow exception-expecting C++ code to build properly when
-// language support for exceptions is not present. These macros interfere with
-// the use of |@try| and |@catch| in Objective-C files such as this one.
-// Undefine these macros here, after everything has been #included, since there
-// will be no C++ uses and only Objective-C uses from this point on.
-#undef try
-#undef catch
-#endif
-
 namespace crashpad {
 namespace test {
 namespace {

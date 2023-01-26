@@ -505,6 +505,10 @@ crashpad_loadable_module("crashpad_snapshot_test_module") {
     "$mini_chromium_source_parent:base",
     "../client",
   ]
+  if (crashpad_is_in_fuchsia) {
+    # TODO(fxbug.dev/108368): Remove this once the underlying issue is addressed.
+    exclude_toolchain_tags = [ "hwasan" ]
+  }
 }
 
 crashpad_loadable_module("crashpad_snapshot_test_module_large") {
@@ -519,6 +523,11 @@ crashpad_loadable_module("crashpad_snapshot_test_module_large") {
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_LARGE" ]
   deps += [ "$mini_chromium_source_parent:base" ]
+
+  if (crashpad_is_in_fuchsia) {
+    # TODO(fxbug.dev/108368): Remove this once the underlying issue is addressed.
+    exclude_toolchain_tags = [ "hwasan" ]
+  }
 }
 
 crashpad_loadable_module("crashpad_snapshot_test_module_small") {
@@ -533,6 +542,11 @@ crashpad_loadable_module("crashpad_snapshot_test_module_small") {
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_SMALL" ]
   deps += [ "$mini_chromium_source_parent:base" ]
+
+  if (crashpad_is_in_fuchsia) {
+    # TODO(fxbug.dev/108368): Remove this once the underlying issue is addressed.
+    exclude_toolchain_tags = [ "hwasan" ]
+  }
 }
 
 if ((crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) &&
@@ -543,6 +557,11 @@ if ((crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) &&
 
     # This makes `ld` emit both .hash and .gnu.hash sections.
     ldflags = [ "-Wl,--hash-style=both" ]
+
+    if (crashpad_is_in_fuchsia) {
+      # TODO(fxbug.dev/108368): Remove this once the underlying issue is addressed.
+      exclude_toolchain_tags = [ "hwasan" ]
+    }
   }
 }
 

@@ -42,6 +42,8 @@ if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
     if (crashpad_is_in_fuchsia) {
       # TODO(fuchsia:46559): Fix the leaks and remove this.
       deps += [ "//build/config/sanitizers:suppress-lsan.DO-NOT-USE-THIS" ]
+      # TODO(fxbug.dev/108368): Remove this once the underlying issue is addressed.
+      exclude_toolchain_tags = [ "hwasan" ]
     }
     if (crashpad_is_android) {
       use_raw_android_executable = true

@@ -20,7 +20,7 @@
 #elif defined(CRASHPAD_LSS_SOURCE_EMBEDDED)
 #include "third_party/lss/lss/linux_syscall_support.h"
 #elif defined(CRASHPAD_LSS_SOURCE_FUCHSIA)
-#include "../../../../third_party/linux-syscall-support/linux_syscall_support.h"
+#include "../../../../../third_party/linux-syscall-support/src/linux_syscall_support.h"
 #else
 #error Unknown lss source
 #endif

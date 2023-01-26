@@ -26,7 +26,11 @@
 #include "client/annotation_list.h"
 #include "client/simple_string_dictionary.h"
 #include "snapshot/snapshot_constants.h"
+#if BUILDFLAG(IS_FUCHSIA)
+#include "util/fuchsia/traits.h"
+#else
 #include "util/linux/traits.h"
+#endif
 
 namespace crashpad {
 
