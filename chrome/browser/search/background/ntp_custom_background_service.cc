@@ -339,7 +339,8 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
 
   background_updated_timestamp_ = base::TimeTicks::Now();
 
-  if (!collection_id.empty() && is_backdrop_collection) {
+  if (!background_url.is_valid() && !collection_id.empty() &&
+      is_backdrop_collection) {
     background_service_->FetchNextCollectionImage(collection_id, absl::nullopt);
   } else if (background_url.is_valid() && is_backdrop_url) {
     if (base::FeatureList::IsEnabled(
@@ -350,7 +351,7 @@ void NtpCustomBackgroundService::SetCustomBackgroundInfo(
     }
     base::Value::Dict background_info = GetBackgroundInfoAsDict(
         background_url, attribution_line_1, attribution_line_2, action_url,
-        absl::nullopt, absl::nullopt, absl::nullopt);
+        collection_id, absl::nullopt, absl::nullopt);
     pref_service_->SetDict(prefs::kNtpCustomBackgroundDict,
                            std::move(background_info));
   } else {
@@ -436,6 +437,8 @@ NtpCustomBackgroundService::GetCustomBackground() {
 
     // Set custom background information in theme info (attributions are
     // optional).
+    const base::Value* daily_refresh_timestamp =
+        background_info.Find(kNtpCustomBackgroundRefreshTimestamp);
     const base::Value* attribution_line_1 =
         background_info.Find(kNtpCustomBackgroundAttributionLine1);
     const base::Value* attribution_line_2 =
@@ -450,6 +453,8 @@ NtpCustomBackgroundService::GetCustomBackground() {
     custom_background->custom_background_url = custom_background_url;
     custom_background->is_uploaded_image = false;
     custom_background->collection_id = collection_id;
+    custom_background->daily_refresh_enabled =
+        daily_refresh_timestamp && daily_refresh_timestamp->GetInt() != 0;
     std::string custom_background_url_spec = custom_background_url.spec();
     size_t image_options_index = custom_background_url_spec.find("=");
     if (image_options_index != std::string::npos) {
