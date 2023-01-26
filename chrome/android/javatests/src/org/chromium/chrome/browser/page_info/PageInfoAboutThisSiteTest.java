@@ -308,9 +308,10 @@ public class PageInfoAboutThisSiteTest {
 
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
+        // %2C is used to escape the comma in the url.
         verify(mMockEphemeralTabCoordinator)
                 .requestOpenSheetWithFullPageUrl(
-                        /*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
+                        /*url=*/new GURL(moreAboutUrl + "?ilrm=minimal%2Cnohead"),
                         /*fullPageUrl=*/new GURL(moreAboutUrl), /*title=*/"About this page",
                         /*isIncognito=*/false);
         verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);

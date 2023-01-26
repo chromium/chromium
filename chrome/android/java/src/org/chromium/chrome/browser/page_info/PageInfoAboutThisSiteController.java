@@ -104,7 +104,7 @@ public class PageInfoAboutThisSiteController implements PageInfoSubpageControlle
             // Append parameter to open the page with reduced UI elements in the bottomsheet.
             Uri.Builder builder = Uri.parse(url).buildUpon();
             if (mSiteInfo.hasMoreAbout() && url.equals(mSiteInfo.getMoreAbout().getUrl())) {
-                builder.appendQueryParameter("ilrm", "minimal");
+                builder.appendQueryParameter("ilrm", "minimal,nohead");
             }
             GURL bottomSheetUrl = new GURL(builder.toString());
             GURL fullPageUrl = new GURL(url);
