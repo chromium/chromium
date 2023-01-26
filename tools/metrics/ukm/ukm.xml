@@ -16024,6 +16024,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PageLoadInitiatorForAdTagging" singular="True">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Metrics about the initiator context of a page load (e.g. whether certain
+    condition was true and/or what triggered the page load). Recorded when a
+    page commits. The metrics are specific to ad related conditions or purposes.
+  </summary>
+  <metric name="FromAdClick" enum="Boolean">
+    <summary>
+      Whether the page was opened due to a click on an ad.
+    </summary>
+  </metric>
+  <metric name="FromUser" enum="Boolean">
+    <summary>
+      Whether the navigation occurred due to a user action. This includes
+      omnibox navigations as well as renderer initiated navigations with user
+      activation.
+    </summary>
+  </metric>
+</event>
+
 <event name="PageWithPassword">
   <owner>battre@chromium.org</owner>
   <summary>

@@ -1022,7 +1022,7 @@ INSTANTIATE_TEST_SUITE_P(
                           NavigationInitiationType::kAnchorLinkActivate),
         ::testing::Bool()));
 
-class AdClickNavigationHandleStatusBrowserTest : public AdTaggingBrowserTest {
+class AdClickLandingPageMetricsBrowserTest : public AdTaggingBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Popups without user gesture is blocked by default. Turn off the switch
@@ -1031,8 +1031,9 @@ class AdClickNavigationHandleStatusBrowserTest : public AdTaggingBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
-                       BrowserInitiated) {
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest, BrowserInitiated) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
 
@@ -1043,9 +1044,21 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
       navigation_observer.last_navigation_initiator_activation_and_ad_status(),
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kDidNotStartWithTransientActivation);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest, WindowOpen) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1072,6 +1085,16 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
                   .last_navigation_initiator_activation_and_ad_status(),
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kDidNotStartWithTransientActivation);
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+    EXPECT_EQ(entries.size(), 2u);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 0);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
   }
 
   // Popup from non-ad script with gesture
@@ -1093,6 +1116,16 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
                   .last_navigation_initiator_activation_and_ad_status(),
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kStartedWithTransientActivationFromNonAd);
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+    EXPECT_EQ(entries.size(), 3u);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 1);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
   }
 
   // Popup from ad script with gesture
@@ -1114,6 +1147,16 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
                   .last_navigation_initiator_activation_and_ad_status(),
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kStartedWithTransientActivationFromAd);
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+    EXPECT_EQ(entries.size(), 4u);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 1);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
   }
 
   RenderFrameHost* child =
@@ -1139,6 +1182,16 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
                   .last_navigation_initiator_activation_and_ad_status(),
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kDidNotStartWithTransientActivation);
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+    EXPECT_EQ(entries.size(), 5u);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 0);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
   }
 
   // Popup from ad iframe with gesture
@@ -1159,11 +1212,23 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest, WindowOpen) {
                   .last_navigation_initiator_activation_and_ad_status(),
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kStartedWithTransientActivationFromAd);
+
+    auto entries = ukm_recorder.GetEntriesByName(
+        ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+    EXPECT_EQ(entries.size(), 6u);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 1);
+    ukm_recorder.ExpectEntryMetric(
+        entries.back(),
+        ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest,
                        SetTopLocationFromCrossOriginAdIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1185,10 +1250,22 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
       navigation_observer.last_navigation_initiator_activation_and_ad_status(),
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kStartedWithTransientActivationFromAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest,
                        SetTopLocationFromCrossOriginNonAdIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1209,10 +1286,22 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
       navigation_observer.last_navigation_initiator_activation_and_ad_status(),
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kStartedWithTransientActivationFromNonAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entries.back(),
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest,
                        NavigateCrossOriginIframeFromNonAdScript) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1245,10 +1334,18 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kStartedWithTransientActivationFromNonAd);
   }
+
+  // No event is recorded for subframe navigation. The recorded event is for the
+  // initial page load.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
 }
 
-IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
+IN_PROC_BROWSER_TEST_F(AdClickLandingPageMetricsBrowserTest,
                        NavigateCrossOriginIframeFromAdScript) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL url =
       embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1281,6 +1378,12 @@ IN_PROC_BROWSER_TEST_F(AdClickNavigationHandleStatusBrowserTest,
               blink::mojom::NavigationInitiatorActivationAndAdStatus::
                   kStartedWithTransientActivationFromAd);
   }
+
+  // No event is recorded for subframe navigation. The recorded event is for the
+  // initial page load.
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 1u);
 }
 
 class AdTaggingEventFromSubframeBrowserTest
@@ -1629,7 +1732,9 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
-                       AdClickNavigationHandleStatus_PopupFromAdFencedFrame) {
+                       AdClickLandingPageMetrics_PopupFromAdFencedFrame) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetURL("frame_factory.html?primary")));
 
@@ -1654,11 +1759,22 @@ IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
       navigation_observer.last_navigation_initiator_activation_and_ad_status(),
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kStartedWithTransientActivationFromAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    AdTaggingFencedFrameBrowserTest,
-    AdClickNavigationHandleStatus_PopupFromNonAdFencedFrame) {
+IN_PROC_BROWSER_TEST_F(AdTaggingFencedFrameBrowserTest,
+                       AdClickLandingPageMetrics_PopupFromNonAdFencedFrame) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GetURL("frame_factory.html?primary")));
 
@@ -1683,11 +1799,23 @@ IN_PROC_BROWSER_TEST_F(
       navigation_observer.last_navigation_initiator_activation_and_ad_status(),
       blink::mojom::NavigationInitiatorActivationAndAdStatus::
           kStartedWithTransientActivationFromNonAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(
     AdTaggingFencedFrameBrowserTest,
-    AdClickNavigationHandleStatus_TopNavigationFromOpaqueModeAdFencedFrame) {
+    AdClickLandingPageMetrics_TopNavigationFromOpaqueModeAdFencedFrame) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL main_url = GetURL("frame_factory.html?primary");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
@@ -1709,11 +1837,23 @@ IN_PROC_BROWSER_TEST_F(
                 .last_navigation_initiator_activation_and_ad_status(),
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kStartedWithTransientActivationFromAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
     AdTaggingFencedFrameBrowserTest,
-    AdClickNavigationHandleStatus_TopNavigationFromOpaqueModeNonAdFencedFrame) {
+    AdClickLandingPageMetrics_TopNavigationFromOpaqueModeNonAdFencedFrame) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   GURL main_url = GetURL("frame_factory.html?primary");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
@@ -1735,6 +1875,16 @@ IN_PROC_BROWSER_TEST_F(
                 .last_navigation_initiator_activation_and_ad_status(),
             blink::mojom::NavigationInitiatorActivationAndAdStatus::
                 kStartedWithTransientActivationFromNonAd);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::PageLoadInitiatorForAdTagging::kEntryName);
+  EXPECT_EQ(entries.size(), 2u);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], ukm::builders::PageLoadInitiatorForAdTagging::kFromUserName,
+      1);
+  ukm_recorder.ExpectEntryMetric(
+      entries[1],
+      ukm::builders::PageLoadInitiatorForAdTagging::kFromAdClickName, 0);
 }
 
 }  // namespace

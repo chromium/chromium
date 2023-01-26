@@ -162,6 +162,30 @@ int64_t GetExponentialBucketForDistributionMoment(double sample) {
          ukm::GetExponentialBucketMin(rounded.Abs(), kBucketSpacing);
 }
 
+void RecordPageLoadInitiatorForAdTaggingUkm(
+    content::NavigationHandle* navigation_handle) {
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  ukm::builders::PageLoadInitiatorForAdTagging builder(
+      navigation_handle->GetRenderFrameHost()->GetPageUkmSourceId());
+
+  bool renderer_initiated = navigation_handle->IsRendererInitiated();
+  bool renderer_initiated_with_user_activation =
+      (navigation_handle->GetNavigationInitiatorActivationAndAdStatus() !=
+       blink::mojom::NavigationInitiatorActivationAndAdStatus::
+           kDidNotStartWithTransientActivation);
+  bool renderer_initiated_with_user_activation_from_ad =
+      (navigation_handle->GetNavigationInitiatorActivationAndAdStatus() ==
+       blink::mojom::NavigationInitiatorActivationAndAdStatus::
+           kStartedWithTransientActivationFromAd);
+
+  builder.SetFromUser(!renderer_initiated ||
+                      renderer_initiated_with_user_activation);
+  builder.SetFromAdClick(renderer_initiated_with_user_activation_from_ad);
+
+  builder.Record(ukm_recorder->Get());
+}
+
 }  // namespace
 
 // static
@@ -302,6 +326,8 @@ AdsPageLoadMetricsObserver::OnFencedFramesStart(
 PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   DCHECK(ad_frames_data_.empty());
+
+  RecordPageLoadInitiatorForAdTaggingUkm(navigation_handle);
 
   page_load_is_reload_ =
       navigation_handle->GetReloadType() != content::ReloadType::NONE;
