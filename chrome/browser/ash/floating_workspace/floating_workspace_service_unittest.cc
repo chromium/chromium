@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/desk_template.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -30,6 +33,18 @@ std::unique_ptr<sync_sessions::SyncedSession> CreateNewSession(
   session->SetSessionName(session_name);
   session->SetModifiedTime(session_time);
   return session;
+}
+
+std::unique_ptr<ash::DeskTemplate> MakeTestFloatingWorkspaceDeskTemplate(
+    std::string name) {
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      std::make_unique<ash::DeskTemplate>(
+          base::GUID::ParseCaseInsensitive(
+              "c098bdcf-5803-484b-9bfd-d3a9a4b497ab"),
+          ash::DeskTemplateSource::kUser, name, base::Time::Now(),
+          DeskTemplateType::kFloatingWorkspace);
+
+  return desk_template;
 }
 
 class MockOpenTabsUIDelegate : public sync_sessions::OpenTabsUIDelegate {
@@ -115,11 +130,22 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
     mock_open_tabs_->SetForeignSessionsForTesting(foreign_sessions);
   }
 
+  const DeskTemplate* GetRestoredFloatingWorkspaceTemplate() {
+    return restored_floating_workspace_template_;
+  }
+
  private:
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate() override {
     return mock_open_tabs_.get();
   }
+
+  void LaunchFloatingWorkspaceTemplate(
+      const DeskTemplate* desk_template) override {
+    restored_floating_workspace_template_ = desk_template;
+  }
+
   const sync_sessions::SyncedSession* restored_session_ = nullptr;
+  const DeskTemplate* restored_floating_workspace_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
 };
 
@@ -131,7 +157,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
   TestingProfile* profile() const { return profile_.get(); }
 
-  const base::TimeDelta GetMaxRestoreTime() { return max_restore_time_; }
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -144,9 +172,9 @@ class FloatingWorkspaceServiceTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
-  const base::TimeDelta max_restore_time_ = base::Seconds(3);
 };
 
 TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
@@ -170,11 +198,10 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSession) {
   test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
-  run_loop.Run();
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
   EXPECT_EQ(
       remote_session_1_name,
@@ -202,11 +229,10 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreLocalSession) {
   test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
-  run_loop.Run();
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
   EXPECT_EQ(
       local_session_name,
@@ -234,24 +260,21 @@ TEST_F(FloatingWorkspaceServiceTest, RestoreRemoteSessionAfterUpdated) {
   test_floating_workspace_service.SetForeignSessionForTesting(foreign_sessions);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
-  base::RunLoop first_run_loop;
-  base::TimeDelta first_run_loop_delay_time = base::Seconds(1);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, first_run_loop.QuitClosure(), first_run_loop_delay_time);
-  first_run_loop.Run();
+  // Simulate remote session update arrives 1 seconds after service
+  // initialization.
+  base::TimeDelta remote_session_update_arrival_time = base::Seconds(1);
+  task_environment().FastForwardBy(remote_session_update_arrival_time);
   // Remote session got updated during the 3 second delay of dispatching task
   // and updated remote session is most recent.
   base::Time remote_session_updated_time = most_recent_time + base::Seconds(5);
-  std::vector<const sync_sessions::SyncedSession*> updated_foreign_sessions;
   // Now previously less recent remote session becomes most recent
   // and should be restored.
   less_recent_remote_session->SetModifiedTime(remote_session_updated_time);
-  base::RunLoop second_run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, second_run_loop.QuitClosure(),
-      GetMaxRestoreTime() - first_run_loop_delay_time);
-  second_run_loop.Run();
+
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get() -
+      remote_session_update_arrival_time);
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
   EXPECT_EQ(
       less_recent_remote_session->GetSessionName(),
@@ -274,11 +297,11 @@ TEST_F(FloatingWorkspaceServiceTest, NoLocalSession) {
 
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
-  run_loop.Run();
+  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get());
+
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
   EXPECT_EQ(
       most_recent_remote_session->GetSessionName(),
@@ -294,11 +317,11 @@ TEST_F(FloatingWorkspaceServiceTest, NoRemoteSession) {
       local_session.get());
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
-  run_loop.Run();
+  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get());
+
   EXPECT_TRUE(test_floating_workspace_service.GetRestoredSession());
   EXPECT_EQ(
       local_session_name,
@@ -310,11 +333,48 @@ TEST_F(FloatingWorkspaceServiceTest, NoSession) {
       profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV1Enabled);
   test_floating_workspace_service
       .RestoreBrowserWindowsFromMostRecentlyUsedDevice();
-  // Wait for 3 seconds which is kMaxTimeAvailableForRestoreAfterLogin.
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), GetMaxRestoreTime());
-  run_loop.Run();
+  // Wait for kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin seconds.
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceMaxTimeAvaliableForRestoreAfterLogin
+          .Get());
+
   EXPECT_FALSE(test_floating_workspace_service.GetRestoredSession());
 }
+
+TEST_F(FloatingWorkspaceServiceTest, RestoreFloatingWorkspaceTemplate) {
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  std::vector<const DeskTemplate*> desk_template_entries;
+  const std::string template_name = "floating_workspace_template";
+  std::unique_ptr<const DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+  desk_template_entries.push_back(floating_workspace_template.get());
+  test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
+      desk_template_entries);
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
+          ->template_name(),
+      base::UTF8ToUTF16(template_name));
+}
+
+TEST_F(FloatingWorkspaceServiceTest, FloatingWorkspaceTemplateTimeOut) {
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), TestFloatingWorkspaceVersion::kFloatingWorkspaceV2Enabled);
+  std::vector<const DeskTemplate*> desk_template_entries;
+  const std::string template_name = "floating_workspace_template";
+  std::unique_ptr<const DeskTemplate> floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(template_name);
+  desk_template_entries.push_back(floating_workspace_template.get());
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2MaxTimeAvaliableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
+  test_floating_workspace_service_v2.EntriesAddedOrUpdatedRemotely(
+      desk_template_entries);
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetRestoredFloatingWorkspaceTemplate());
+}
+
 }  // namespace ash
