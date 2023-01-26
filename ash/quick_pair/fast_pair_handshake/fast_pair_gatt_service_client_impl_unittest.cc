@@ -63,6 +63,14 @@ const char kWriteAccountKeyTimeMetric[] =
 const char kFastPairGattConnectionStep[] = "FastPair.GattConnection";
 const char kFastPairGattRetryFailureReason[] =
     "Bluetooth.ChromeOS.FastPair.GattConnection.RetryFailureReason";
+const char kGattServiceDiscoveryTime[] =
+    "FastPair.GattServiceDiscovery.Latency";
+const char kPasskeyNotify[] = "FastPair.PasskeyNotify.Latency";
+const char kKeyBasedNotify[] = "FastPair.KeyBasedNotify.Latency";
+const char kPasskeyWriteRequest[] = "FastPair.PasskeyWriteRequest.Latency";
+const char kKeyBasedWriteRequest[] = "FastPair.KeyBasedWriteRequest.Latency";
+/*
+ */
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(15);
 constexpr base::TimeDelta kSimulateStackFrameHangSeconds = base::Seconds(90);
@@ -703,6 +711,7 @@ TEST_F(FastPairGattServiceClientTest, GattConnectionSuccess) {
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionEffectiveSuccessRate, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionAttemptCount, 1);
+  histogram_tester().ExpectTotalCount(kGattServiceDiscoveryTime, 1);
   histogram_tester().ExpectTotalCount(kGattConnectionErrorMetric, 0);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
@@ -834,6 +843,8 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequest) {
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 4);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 1);
+  histogram_tester().ExpectTotalCount(kKeyBasedNotify, 1);
+  histogram_tester().ExpectTotalCount(kKeyBasedWriteRequest, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestError) {
@@ -880,6 +891,8 @@ TEST_F(FastPairGattServiceClientTest, WritePasskeyRequest) {
   EXPECT_EQ(GetWriteCallbackResult(), absl::nullopt);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyNotify, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyWriteRequest, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, WritePasskeyRequestError) {

@@ -194,6 +194,7 @@ void FastPairPairerImpl::StartPairing() {
         return;
       }
 
+      create_bond_start_time_ = base::TimeTicks::Now();
       create_bond_timeout_timer_.Start(
           FROM_HERE, kCreateBondTimeout,
           base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
@@ -671,6 +672,7 @@ void FastPairPairerImpl::OnConfirmPasskeyTimeout() {
 
 bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {
   if (create_bond_timeout_timer_.IsRunning()) {
+    RecordCreateBondTime(base::TimeTicks::Now() - create_bond_start_time_);
     create_bond_timeout_timer_.Stop();
     return true;
   }

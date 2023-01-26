@@ -179,6 +179,12 @@ class FastPairGattServiceClientImpl : public FastPairGattServiceClient {
   base::OneShotTimer key_based_write_request_timer_;
   base::OneShotTimer account_key_write_request_timer_;
 
+  base::TimeTicks gatt_service_discovery_start_time_;
+  base::TimeTicks passkey_notify_session_start_time_;
+  base::TimeTicks keybased_notify_session_start_time_;
+  base::TimeTicks passkey_write_request_start_time_;
+  base::TimeTicks key_based_write_request_start_time_;
+
   base::OnceCallback<void(absl::optional<PairFailure>)>
       on_initialized_callback_;
   base::OnceCallback<void(std::vector<uint8_t>, absl::optional<PairFailure>)>

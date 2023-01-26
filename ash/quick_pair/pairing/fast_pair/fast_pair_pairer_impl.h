@@ -185,6 +185,8 @@ class FastPairPairerImpl : public FastPairPairer,
   // timeout if necessary.
   base::OneShotTimer create_bond_timeout_timer_;
 
+  base::TimeTicks create_bond_start_time_;
+
   // A timer which allows this pairer to time out while waiting to confirm
   // |device_|'s passkey.
   base::OneShotTimer confirm_passkey_timeout_timer_;

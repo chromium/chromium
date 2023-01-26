@@ -260,7 +260,7 @@ void FastPairGattServiceClientImpl::CreateGattConnection() {
         PairFailure::kPairingDeviceLostBetweenGattConnectionAttempts);
     return;
   }
-
+  gatt_service_discovery_start_time_ = base::TimeTicks::Now();
   gatt_service_discovery_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(
@@ -394,6 +394,8 @@ void FastPairGattServiceClientImpl::GattDiscoveryCompleteForService(
   // Verify that the discovered service and device are the ones we care about.
   if (service->GetUUID() == kFastPairBluetoothUuid &&
       service->GetDevice()->GetAddress() == device_address_) {
+    RecordGattServiceDiscoveryTime(base::TimeTicks::Now() -
+                                   gatt_service_discovery_start_time_);
     gatt_service_discovery_timer_.Stop();
     QP_LOG(INFO) << __func__
                  << ": Completed discovery for Fast Pair GATT service";
@@ -466,6 +468,8 @@ FastPairGattServiceClientImpl::SetGattCharacteristics() {
 void FastPairGattServiceClientImpl::OnKeyBasedRequestNotifySession(
     const std::vector<uint8_t>& request_data,
     std::unique_ptr<device::BluetoothGattNotifySession> session) {
+  RecordKeyBasedNotifyTime(base::TimeTicks::Now() -
+                           keybased_notify_session_start_time_);
   keybased_notify_session_timer_.Stop();
   notify_keybased_start_time_ = base::TimeTicks::Now();
 
@@ -473,6 +477,7 @@ void FastPairGattServiceClientImpl::OnKeyBasedRequestNotifySession(
   // scope and being destroyed.
   key_based_notify_session_ = std::move(session);
 
+  key_based_write_request_start_time_ = base::TimeTicks::Now();
   key_based_write_request_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWriteRequestError,
@@ -491,6 +496,8 @@ void FastPairGattServiceClientImpl::OnKeyBasedRequestNotifySession(
 void FastPairGattServiceClientImpl::OnPasskeyNotifySession(
     const std::vector<uint8_t>& passkey_data,
     std::unique_ptr<device::BluetoothGattNotifySession> session) {
+  RecordPasskeyNotifyTime(base::TimeTicks::Now() -
+                          passkey_notify_session_start_time_);
   passkey_notify_session_timer_.Stop();
   notify_passkey_start_time_ = base::TimeTicks::Now();
 
@@ -501,6 +508,7 @@ void FastPairGattServiceClientImpl::OnPasskeyNotifySession(
   RecordGattInitializationStep(
       FastPairGattConnectionSteps::kNotifiationsEnabledForKeybasedPairing);
 
+  passkey_write_request_start_time_ = base::TimeTicks::Now();
   passkey_write_request_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWritePasskeyError,
@@ -621,6 +629,7 @@ void FastPairGattServiceClientImpl::WriteRequestAsync(
                              public_key_vec.end());
   }
 
+  keybased_notify_session_start_time_ = base::TimeTicks::Now();
   keybased_notify_session_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(
@@ -658,6 +667,7 @@ void FastPairGattServiceClientImpl::WritePasskeyAsync(
   std::vector<uint8_t> data_to_write_vec(data_to_write.begin(),
                                          data_to_write.end());
 
+  passkey_notify_session_start_time_ = base::TimeTicks::Now();
   passkey_notify_session_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyWritePasskeyError,
@@ -713,6 +723,8 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
   // we get response bytes here.
   if (characteristic == key_based_characteristic_ &&
       key_based_write_response_callback_) {
+    RecordKeyBasedWriteRequestTime(base::TimeTicks::Now() -
+                                   key_based_write_request_start_time_);
     key_based_write_request_timer_.Stop();
     std::move(key_based_write_response_callback_)
         .Run(value, /*failure=*/absl::nullopt);
@@ -720,6 +732,8 @@ void FastPairGattServiceClientImpl::GattCharacteristicValueChanged(
                                            notify_keybased_start_time_);
   } else if (characteristic == passkey_characteristic_ &&
              passkey_write_response_callback_) {
+    RecordPasskeyWriteRequestTime(base::TimeTicks::Now() -
+                                  passkey_write_request_start_time_);
     passkey_write_request_timer_.Stop();
     RecordNotifyPasskeyCharacteristicTime(base::TimeTicks::Now() -
                                           notify_passkey_start_time_);

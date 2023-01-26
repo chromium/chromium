@@ -825,6 +825,13 @@ constexpr char kInitializePairingProcessRetriesBeforeSuccessRetroactive[] =
 const char kHandshakeEffectiveSuccessRate[] =
     "FastPair.Handshake.EffectiveSuccessRate";
 const char kHandshakeAttemptCount[] = "FastPair.Handshake.AttemptCount";
+const char kGattServiceDiscoveryTime[] =
+    "FastPair.GattServiceDiscovery.Latency";
+const char kCreateBondTime[] = "FastPair.CreateBond.Latency";
+const char kPasskeyNotify[] = "FastPair.PasskeyNotify.Latency";
+const char kKeyBasedNotify[] = "FastPair.KeyBasedNotify.Latency";
+const char kPasskeyWriteRequest[] = "FastPair.PasskeyWriteRequest.Latency";
+const char kKeyBasedWriteRequest[] = "FastPair.KeyBasedWriteRequest.Latency";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
@@ -1459,6 +1466,36 @@ void RecordConfirmPasskeyConfirmTime(base::TimeDelta total_confirm_time) {
 
 void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time) {
   base::UmaHistogramTimes(kConfirmPasskeyAskTime, total_ask_time);
+}
+
+void RecordGattServiceDiscoveryTime(
+    base::TimeDelta total_gatt_service_discovery_time) {
+  base::UmaHistogramTimes(kGattServiceDiscoveryTime,
+                          total_gatt_service_discovery_time);
+}
+
+void RecordCreateBondTime(base::TimeDelta total_create_bond_time) {
+  base::UmaHistogramTimes(kCreateBondTime, total_create_bond_time);
+}
+
+void RecordPasskeyNotifyTime(base::TimeDelta total_passkey_notify_time) {
+  base::UmaHistogramTimes(kPasskeyNotify, total_passkey_notify_time);
+}
+
+void RecordKeyBasedNotifyTime(base::TimeDelta total_key_based_notify_time) {
+  base::UmaHistogramTimes(kKeyBasedNotify, total_key_based_notify_time);
+}
+
+void RecordPasskeyWriteRequestTime(
+    base::TimeDelta total_passkey_write_request_time) {
+  base::UmaHistogramTimes(kPasskeyWriteRequest,
+                          total_passkey_write_request_time);
+}
+
+void RecordKeyBasedWriteRequestTime(
+    base::TimeDelta total_key_based_write_request_time) {
+  base::UmaHistogramTimes(kKeyBasedWriteRequest,
+                          total_key_based_write_request_time);
 }
 
 void RecordPairFailureRetry(int num_retries) {

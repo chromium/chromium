@@ -22,6 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="FastPair.CreateBond.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for Fast Pair to finish creating a bond with
+    the peripheral. Emitted when bonding completes. No metric is emitted on
+    failure.
+  </summary>
+</histogram>
+
 <histogram name="FastPair.GattConnection" enum="FastPairGattConnectionSteps"
     expires_after="2023-06-01">
   <owner>jackshira@chromium.org</owner>
@@ -31,6 +43,17 @@ chromium-metrics-reviews@google.com.
     connection start, on connection ready, on key-based characteristic found, on
     notifications enabled for the key-based pairing characteristic, and on
     connection established.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.GattServiceDiscovery.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for GATT service discovery. Emitted when
+    GATT discovery is completed for service. No metric is emitted on failure.
   </summary>
 </histogram>
 
@@ -69,6 +92,54 @@ chromium-metrics-reviews@google.com.
     complete, V1 device detected, guest mode detected, device already associated
     with the user's account, preparing to write the account key, account key
     written successfully, and on completion of the entire pairing process.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.KeyBasedNotify.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for the Fast Pair key based pairing notify
+    session to begin. Emitted when a key based notify session has been
+    successfully started. No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.KeyBasedWriteRequest.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for the Fast Pair key based write request to
+    complete. Emitted when a key based write request has completed successfully.
+    No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.PasskeyNotify.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for the Fast Pair passkey notify session to
+    begin. Emitted when a passkey notify session has been successfully started.
+    No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="FastPair.PasskeyWriteRequest.Latency" units="ms"
+    expires_after="2023-07-02">
+  <owner>jackshira@google.com</owner>
+  <owner>akingsb@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for the Fast Pair passkey request to
+    complete. Emitted when a passkey write request has completed successfully.
+    No metric is emitted on failure.
   </summary>
 </histogram>
 

@@ -110,6 +110,7 @@ constexpr char kProtocolPairingStepSubsequent[] =
     "FastPair.SubsequentPairing.Pairing";
 constexpr char kInitializePairingProcessInitial[] =
     "FastPair.InitialPairing.Initialization";
+const char kCreateBondTime[] = "FastPair.CreateBond.Latency";
 
 class FakeBluetoothDevice
     : public testing::NiceMock<device::MockBluetoothDevice> {
@@ -535,6 +536,7 @@ TEST_F(FastPairPairerImplTest, PairByDeviceSuccess_Initial) {
   ExpectStepMetrics(kProtocolPairingStepInitial,
                     {FastPairProtocolPairingSteps::kPairingStarted,
                      FastPairProtocolPairingSteps::kBondSuccessful});
+  histogram_tester().ExpectTotalCount(kCreateBondTime, 1);
 }
 
 TEST_F(FastPairPairerImplTest,

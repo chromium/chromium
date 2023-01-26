@@ -436,6 +436,27 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordGattServiceDiscoveryTime(
+    base::TimeDelta total_gatt_service_discovery_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordCreateBondTime(base::TimeDelta total_create_bond_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPasskeyNotifyTime(base::TimeDelta total_passkey_notify_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordKeyBasedNotifyTime(base::TimeDelta total_key_based_notify_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPasskeyWriteRequestTime(
+    base::TimeDelta total_passkey_write_request_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordKeyBasedWriteRequestTime(
+    base::TimeDelta total_key_based_write_request_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairFailureRetry(int num_retries);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
