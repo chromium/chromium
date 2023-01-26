@@ -18,6 +18,7 @@
 #include "net/disk_cache/blockfile/file_lock.h"
 #include "net/disk_cache/blockfile/stress_support.h"
 #include "net/disk_cache/cache_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using base::TimeTicks;
 
@@ -354,18 +355,24 @@ void BlockFiles::DeleteBlock(Addr address, bool deep) {
   if (deep)
     file->Write(zero_buffer_.data(), size, offset);
 
-  BlockHeader file_header(file);
-  file_header.DeleteMapBlock(address.start_block(), address.num_blocks());
-  file->Flush();
+  absl::optional<FileType> type_to_delete;
+  {
+    // Block Header can't outlive file's buffer.
+    BlockHeader file_header(file);
+    file_header.DeleteMapBlock(address.start_block(), address.num_blocks());
+    file->Flush();
 
-  if (!file_header.Header()->num_entries) {
-    // This file is now empty. Let's try to delete it.
-    FileType type = Addr::RequiredFileType(file_header.Header()->entry_size);
-    if (Addr::BlockSizeForFileType(RANKINGS) ==
-        file_header.Header()->entry_size) {
-      type = RANKINGS;
+    if (!file_header.Header()->num_entries) {
+      // This file is now empty. Let's try to delete it.
+      type_to_delete = Addr::RequiredFileType(file_header.Header()->entry_size);
+      if (Addr::BlockSizeForFileType(RANKINGS) ==
+          file_header.Header()->entry_size) {
+        type_to_delete = RANKINGS;
+      }
     }
-    RemoveEmptyFile(type);  // Ignore failures.
+  }
+  if (type_to_delete.has_value()) {
+    RemoveEmptyFile(type_to_delete.value());  // Ignore failures.
   }
 }
 
