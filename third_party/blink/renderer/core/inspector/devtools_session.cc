@@ -254,6 +254,8 @@ void DevToolsSession::DidFailProvisionalLoad(LocalFrame* frame) {
 }
 
 void DevToolsSession::DidCommitLoad(LocalFrame* frame, DocumentLoader*) {
+  recordreplay::Assert("[RUN-966] DevToolsSession::DidCommitLoad");
+
   for (wtf_size_t i = 0; i < agents_.size(); i++)
     agents_[i]->DidCommitLoadForLocalFrame(frame);
   if (v8_session_ && agent_->inspected_frames_->Root() == frame)

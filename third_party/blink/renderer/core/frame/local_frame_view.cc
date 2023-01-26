@@ -3662,6 +3662,8 @@ void LocalFrameView::ServiceScriptedAnimations(base::TimeTicks start_time) {
 
 void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,
                                        base::Location location) {
+  recordreplay::Assert("[RUN-966] LocalFrameView::ScheduleAnimation");
+
   TRACE_EVENT("cc", "LocalFrameView::ScheduleAnimation", "frame", GetFrame(),
               "delay", delay, "location", location);
   if (auto* client = GetChromeClient())

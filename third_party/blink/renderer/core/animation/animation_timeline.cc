@@ -192,6 +192,8 @@ Animation* AnimationTimeline::Play(AnimationEffect* child,
 }
 
 void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
+  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending");
+
   for (const auto& animation : animations_) {
     animation->SetCompositorPending(source_changed);
   }

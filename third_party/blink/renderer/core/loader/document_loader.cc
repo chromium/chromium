@@ -1886,6 +1886,8 @@ void DocumentLoader::WillCommitNavigation() {
 }
 
 void DocumentLoader::DidCommitNavigation() {
+  recordreplay::Assert("[RUN-966] DocumentLoader::DidCommitNavigation");
+
   if (commit_reason_ != CommitReason::kRegular)
     return;
 
@@ -1923,6 +1925,8 @@ void DocumentLoader::DidCommitNavigation() {
 
   DEVTOOLS_TIMELINE_TRACE_EVENT("CommitLoad", inspector_commit_load_event::Data,
                                 frame_);
+
+  recordreplay::Assert("[RUN-966] DocumentLoader::DidCommitNavigation #1");
 
   // Needs to run before dispatching preloads, as it may evict the memory cache.
   probe::DidCommitLoad(frame_, this);

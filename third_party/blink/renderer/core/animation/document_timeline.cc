@@ -188,6 +188,8 @@ void DocumentTimeline::PauseAnimationsForTesting(
 }
 
 void DocumentTimeline::SetPlaybackRate(double playback_rate) {
+  recordreplay::Assert("[RUN-966] DocumentTimeline::SetPlaybackRate");
+
   if (!IsActive())
     return;
   base::TimeDelta current_time = CurrentPhaseAndTime().time.value();

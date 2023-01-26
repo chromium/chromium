@@ -41,6 +41,8 @@
 namespace blink {
 
 void PendingAnimations::Add(Animation* animation) {
+  recordreplay::Assert("[RUN-966] PendingAnimations::Add");
+
   DCHECK(animation);
   DCHECK_EQ(pending_.Find(animation), kNotFound);
   pending_.push_back(animation);
