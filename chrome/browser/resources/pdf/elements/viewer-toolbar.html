@@ -276,7 +276,7 @@
 <if expr="enable_ink">
       disabled="[[annotationMode]]"
 </if>
-      aria-checked="[[getTwoPageViewAriaChecked_(twoUpViewEnabled)]]">
+      aria-checked="[[getAriaChecked_(twoUpViewEnabled)]]">
     <span class="check-container">
       <iron-icon icon="pdf:check" hidden="[[!twoUpViewEnabled]]"></iron-icon>
     </span>
@@ -286,7 +286,7 @@
   <button id="show-annotations-button"
       class="dropdown-item" on-click="toggleDisplayAnnotations_"
       role="checkbox"
-      aria-checked="[[getShowAnnotationsAriaChecked_(displayAnnotations_)]]">
+      aria-checked="[[getAriaChecked_(displayAnnotations_)]]">
     <span class="check-container">
       <iron-icon icon="pdf:check" hidden="[[!displayAnnotations_]]"></iron-icon>
     </span>
