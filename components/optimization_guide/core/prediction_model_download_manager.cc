@@ -224,7 +224,10 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
 
   base::UmaHistogramBoolean(
       "OptimizationGuide.PredictionModelDownloadManager.DownloadSucceeded",
-      true);
+      optimization_target.has_value());
+  if (!optimization_target) {
+    return;
+  }
 
   base::FilePath base_model_dir =
       get_base_model_dir_for_download_callback_.Run(*optimization_target);
@@ -235,7 +238,7 @@ void PredictionModelDownloadManager::OnDownloadSucceeded(
                      download_file_path, base_model_dir,
                      /*delete_file_on_error=*/true),
       base::BindOnce(&PredictionModelDownloadManager::StartUnzipping,
-                     ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                     ui_weak_ptr_factory_.GetWeakPtr(), *optimization_target,
                      download_file_path, base_model_dir));
 }
 
@@ -312,16 +315,14 @@ bool PredictionModelDownloadManager::VerifyDownload(
 }
 
 void PredictionModelDownloadManager::StartUnzipping(
-    absl::optional<proto::OptimizationTarget> optimization_target,
+    proto::OptimizationTarget optimization_target,
     const base::FilePath& download_file_path,
     const base::FilePath& base_model_dir,
     bool is_verify_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_verify_success) {
-    if (optimization_target) {
-      NotifyModelDownloadFailed(*optimization_target);
-    }
+    NotifyModelDownloadFailed(optimization_target);
     return;
   }
 
@@ -338,7 +339,7 @@ void PredictionModelDownloadManager::StartUnzipping(
 }
 
 void PredictionModelDownloadManager::OnDownloadUnzipped(
-    absl::optional<proto::OptimizationTarget> optimization_target,
+    proto::OptimizationTarget optimization_target,
     const base::FilePath& original_file_path,
     const base::FilePath& base_model_dir,
     bool success) {
@@ -349,9 +350,7 @@ void PredictionModelDownloadManager::OnDownloadUnzipped(
       FROM_HERE, base::GetDeleteFileCallback(original_file_path));
 
   if (!success) {
-    if (optimization_target) {
-      NotifyModelDownloadFailed(*optimization_target);
-    }
+    NotifyModelDownloadFailed(optimization_target);
     RecordPredictionModelDownloadStatus(
         PredictionModelDownloadStatus::kFailedCrxUnzip);
     return;
@@ -429,7 +428,7 @@ PredictionModelDownloadManager::ProcessUnzippedContents(
 }
 
 void PredictionModelDownloadManager::NotifyModelReady(
-    absl::optional<proto::OptimizationTarget> optimization_target,
+    proto::OptimizationTarget optimization_target,
     const base::FilePath& base_model_dir,
     const absl::optional<proto::PredictionModel>& model) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -438,9 +437,7 @@ void PredictionModelDownloadManager::NotifyModelReady(
     // Clean up model dir.
     background_task_runner_->PostTask(
         FROM_HERE, base::GetDeletePathRecursivelyCallback(base_model_dir));
-    if (optimization_target) {
-      NotifyModelDownloadFailed(*optimization_target);
-    }
+    NotifyModelDownloadFailed(optimization_target);
     return;
   }
 

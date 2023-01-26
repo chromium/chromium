@@ -132,19 +132,17 @@ class PredictionModelDownloadManager {
 
   // Starts unzipping the contents of |download_file_path|, to |base_model_dir|,
   // when the previous step |is_verify_success| is true.
-  void StartUnzipping(
-      absl::optional<proto::OptimizationTarget> optimization_target,
-      const base::FilePath& download_file_path,
-      const base::FilePath& base_model_dir,
-      bool is_verify_success);
+  void StartUnzipping(proto::OptimizationTarget optimization_target,
+                      const base::FilePath& download_file_path,
+                      const base::FilePath& base_model_dir,
+                      bool is_verify_success);
 
   // Invoked when the contents of |original_file_path| have been unzipped to
   // |base_model_dir|.
-  void OnDownloadUnzipped(
-      absl::optional<proto::OptimizationTarget> optimization_target,
-      const base::FilePath& original_file_path,
-      const base::FilePath& base_model_dir,
-      bool success);
+  void OnDownloadUnzipped(proto::OptimizationTarget optimization_target,
+                          const base::FilePath& original_file_path,
+                          const base::FilePath& base_model_dir,
+                          bool success);
 
   // Processes the contents in |base_model_dir|.
   //
@@ -156,10 +154,9 @@ class PredictionModelDownloadManager {
   // Notifies |observers_| that a model is ready for |optimization_target|.
   //
   // Must be invoked on the UI thread.
-  void NotifyModelReady(
-      absl::optional<proto::OptimizationTarget> optimization_target,
-      const base::FilePath& base_model_dir,
-      const absl::optional<proto::PredictionModel>& model);
+  void NotifyModelReady(proto::OptimizationTarget optimization_target,
+                        const base::FilePath& base_model_dir,
+                        const absl::optional<proto::PredictionModel>& model);
 
   // Notifies |observers_| that a model download failed for
   // |optimization_target|.
