@@ -130,12 +130,14 @@ class TrustSafetySentimentService
   virtual void InteractedWithPrivacySandbox4(FeatureArea feature_area);
 
   // Checks that this feature area is valid for the current version.
-  static bool VersionCheck(
-      TrustSafetySentimentService::FeatureArea feature_area);
+  static bool VersionCheck(FeatureArea feature_area);
 
   // Gets the HaTS trigger for a feature area.
-  static std::string GetHatsTriggerForFeatureArea(
-      TrustSafetySentimentService::FeatureArea feature_area);
+  static std::string GetHatsTriggerForFeatureArea(FeatureArea feature_area);
+
+  // Performs a FeatureArea and Version-specific dice roll.
+  // Returns true if succeeds, else false.
+  static bool ProbabilityCheck(FeatureArea feature_area);
 
  private:
   friend class TrustSafetySentimentServiceTest;
