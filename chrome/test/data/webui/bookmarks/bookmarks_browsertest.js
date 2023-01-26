@@ -57,18 +57,6 @@ TEST_F('BookmarksCommandManagerTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
-var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://bookmarks/test_loader.html?module=bookmarks/dnd_manager_test.js';
-  }
-};
-
-// TODO(https://crbug.com/1409439): Test is flaky.
-TEST_F('BookmarksDNDManagerTest', 'DISABLED_All', function() {
-  mocha.run();
-});
-
 var BookmarksEditDialogTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {

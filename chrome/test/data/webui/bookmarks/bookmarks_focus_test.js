@@ -55,3 +55,15 @@ GEN('#define MAYBE_All DISABLED_All');
 TEST_F('BookmarksDialogFocusManagerTest', 'MAYBE_All', function() {
   mocha.run();
 });
+
+var BookmarksDNDManagerTest = class extends BookmarksFocusTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://bookmarks/test_loader.html?module=bookmarks/dnd_manager_test.js';
+  }
+};
+
+// TODO(https://crbug.com/1409439): Test is flaky.
+TEST_F('BookmarksDNDManagerTest', 'All', function() {
+  mocha.run();
+});
