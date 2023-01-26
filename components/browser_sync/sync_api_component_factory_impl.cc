@@ -32,8 +32,6 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/sync/password_model_type_controller.h"
-#include "components/power_bookmarks/core/power_bookmark_features.h"
-#include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/features/reading_list_switches.h"
@@ -158,8 +156,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
         profile_password_store,
     const scoped_refptr<password_manager::PasswordStoreInterface>&
         account_password_store,
-    sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
-    power_bookmarks::PowerBookmarkService* power_bookmark_service)
+    sync_bookmarks::BookmarkSyncService* bookmark_sync_service)
     : sync_client_(sync_client),
       channel_(channel),
       ui_thread_(ui_thread),
@@ -172,8 +169,7 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
       web_data_service_in_memory_(web_data_service_in_memory),
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
-      bookmark_sync_service_(bookmark_sync_service),
-      power_bookmark_service_(power_bookmark_service) {
+      bookmark_sync_service_(bookmark_sync_service) {
   DCHECK(sync_client_);
 }
 
@@ -302,14 +298,6 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
               bookmark_sync_service_
                   ->GetBookmarkSyncControllerDelegate(favicon_service)
                   .get())));
-    }
-
-    if (!disabled_types.Has(syncer::POWER_BOOKMARK) &&
-        power_bookmark_service_ &&
-        base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
-      controllers.push_back(std::make_unique<ModelTypeController>(
-          syncer::POWER_BOOKMARK,
-          power_bookmark_service_->CreateSyncControllerDelegate()));
     }
   }
 

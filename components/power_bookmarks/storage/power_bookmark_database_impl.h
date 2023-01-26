@@ -56,7 +56,7 @@ class PowerBookmarkDatabaseImpl : public PowerBookmarkDatabase {
   std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
   bool CreateOrMergePowerFromSync(const Power& power) override;
   bool DeletePowerFromSync(const std::string& guid) override;
-  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() override;
+  syncer::SyncMetadataStore* GetSyncMetadataDatabase() override;
   std::unique_ptr<Transaction> BeginTransaction() override;
 
  private:

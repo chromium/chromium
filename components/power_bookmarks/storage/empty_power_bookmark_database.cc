@@ -101,7 +101,7 @@ bool EmptyPowerBookmarkDatabase::DeletePowerFromSync(const std::string& guid) {
   return false;
 }
 
-PowerBookmarkSyncMetadataDatabase*
+syncer::SyncMetadataStore*
 EmptyPowerBookmarkDatabase::GetSyncMetadataDatabase() {
   return nullptr;
 }

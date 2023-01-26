@@ -53,21 +53,12 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
   bool success = db_->Init();
   DCHECK(success);
-
-  if (bridge_) {
-    bridge_->Init();
-  }
 }
 
 void PowerBookmarkBackend::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.reset();
-}
-
-base::WeakPtr<syncer::ModelTypeControllerDelegate>
-PowerBookmarkBackend::GetSyncControllerDelegate() {
-  return bridge_->change_processor()->GetControllerDelegate();
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForURL(
@@ -203,8 +194,7 @@ bool PowerBookmarkBackend::DeletePowerFromSync(const std::string& guid) {
   return db_->DeletePowerFromSync(guid);
 }
 
-PowerBookmarkSyncMetadataDatabase*
-PowerBookmarkBackend::GetSyncMetadataDatabase() {
+syncer::SyncMetadataStore* PowerBookmarkBackend::GetSyncMetadataDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetSyncMetadataDatabase();
 }

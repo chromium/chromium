@@ -693,7 +693,7 @@ bool PowerBookmarkDatabaseImpl::DeletePowerFromSync(const std::string& guid) {
   return DeletePower(base::GUID::ParseLowercase(guid));
 }
 
-PowerBookmarkSyncMetadataDatabase*
+syncer::SyncMetadataStore*
 PowerBookmarkDatabaseImpl::GetSyncMetadataDatabase() {
   return sync_db_.get();
 }

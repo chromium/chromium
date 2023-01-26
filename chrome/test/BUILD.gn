@@ -10201,7 +10201,6 @@ source_set("sync_integration_test_support") {
     "//chrome/browser",
     "//chrome/browser/favicon",
     "//components/autofill/content/browser",
-    "//components/power_bookmarks/core:features",
   ]
   deps = [
     "//base",

@@ -22,7 +22,6 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
-#include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
@@ -266,8 +265,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       web_data_service_thread_, profile_web_data_service_,
       account_web_data_service_, profile_password_store_,
       account_password_store_,
-      BookmarkSyncServiceFactory::GetForProfile(profile_),
-      PowerBookmarkServiceFactory::GetForBrowserContext(profile_));
+      BookmarkSyncServiceFactory::GetForProfile(profile_));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
