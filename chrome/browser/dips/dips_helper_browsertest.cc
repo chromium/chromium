@@ -631,6 +631,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, PrepopulateTest) {
   ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->user_interaction_times.has_value());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        ChromeBrowsingDataRemover_Basic) {
@@ -673,4 +674,3 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   absl::optional<StateValue> state_final = GetDIPSState(GURL("http://a.test"));
   EXPECT_FALSE(state_final.has_value());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
