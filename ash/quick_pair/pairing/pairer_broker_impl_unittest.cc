@@ -825,7 +825,9 @@ TEST_F(PairerBrokerImplTest, PairAfterTwoHandshakeFailures_Initial) {
                    /*protocol=*/Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
@@ -850,7 +852,9 @@ TEST_F(PairerBrokerImplTest, PairAfterTwoHandshakeFailures_Subsequent) {
                    /*protocol=*/Protocol::kFastPairSubsequent);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
@@ -875,7 +879,9 @@ TEST_F(PairerBrokerImplTest, PairAfterTwoHandshakeFailures_Retroactive) {
                    /*protocol=*/Protocol::kFastPairRetroactive);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback();
   EXPECT_TRUE(pairer_broker_->IsPairing());
 
@@ -884,7 +890,9 @@ TEST_F(PairerBrokerImplTest, PairAfterTwoHandshakeFailures_Retroactive) {
   EXPECT_EQ(device_paired_count_, 1);
   EXPECT_EQ(pair_failure_count_, 0);
   histogram_tester_.ExpectTotalCount(kHandshakeEffectiveSuccessRate, 1);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   histogram_tester_.ExpectTotalCount(kHandshakeAttemptCount, 1);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   histogram_tester_.ExpectBucketCount(kHandshakeAttemptCount, 3, 1);
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
@@ -900,7 +908,9 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Initial) {
                    /*protocol=*/Protocol::kFastPairInitial);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
   EXPECT_FALSE(pairer_broker_->IsPairing());
 
@@ -921,7 +931,9 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Subsequent) {
                    /*protocol=*/Protocol::kFastPairSubsequent);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
   EXPECT_FALSE(pairer_broker_->IsPairing());
 
@@ -942,7 +954,9 @@ TEST_F(PairerBrokerImplTest, NoPairingIfHandshakeFailed_Retroactive) {
                    /*protocol=*/Protocol::kFastPairRetroactive);
   pairer_broker_->PairDevice(device_);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
+  task_environment()->FastForwardBy(kRetryHandshakeDelay);
   fake_fast_pair_handshake_->InvokeCallback(PairFailure::kCreateGattConnection);
   EXPECT_FALSE(pairer_broker_->IsPairing());
 
