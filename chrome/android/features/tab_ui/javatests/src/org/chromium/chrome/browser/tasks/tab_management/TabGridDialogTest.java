@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -642,12 +643,14 @@ public class TabGridDialogTest {
     public void
     testDialogSelectionEditorV2_BookmarkSingleTabView() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open the selection editor.
@@ -681,12 +684,14 @@ public class TabGridDialogTest {
     public void
     testDialogSelectionEditorV2_BookmarkTabsView() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = cta.getSnackbarManager();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
         verifyTabSwitcherCardCount(cta, 2);
 
         // Create a tab group.
         mergeAllNormalTabsToAGroup(cta);
+        TestThreadUtils.runOnUiThreadBlocking(() -> snackbarManager.dismissAllSnackbars());
         verifyTabSwitcherCardCount(cta, 1);
 
         // Open the selection editor.
