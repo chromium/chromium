@@ -1,0 +1,223 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
+
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
+#include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_info_tracker.h"
+
+namespace segmentation_platform::processing {
+
+using OsType = syncer::DeviceInfo::OsType;
+using FormFactor = syncer ::DeviceInfo::FormFactor;
+
+namespace {
+
+constexpr int kDefaultActiveDaysThreshold = 14;
+
+#define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
+
+base::TimeDelta GetActivePeriodForMetrics() {
+  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
+      kSegmentationDeviceCountByOsType, "active_days_threshold",
+      kDefaultActiveDaysThreshold));
+}
+
+base::TimeDelta Age(base::Time last_update, base::Time now) {
+  // Don't allow negative age for things somehow updated in the future.
+  return std::max(base::TimeDelta(), now - last_update);
+}
+
+// Determines if a device with |last_update| timestamp should be considered
+// active, given the current time.
+bool IsDeviceActive(base::Time last_update,
+                    base::Time now,
+                    base::TimeDelta active_threshold) {
+  base::TimeDelta active_days_threshold = GetActivePeriodForMetrics();
+  return Age(last_update, now) < active_days_threshold;
+}
+
+// Keep the following in sync with variants in
+// //tools/metrics/histograms/metadata/segmentation_platform/histograms.xml.
+const char* ConvertOsTypeToString(OsType os_type) {
+  switch (os_type) {
+    case OsType::kWindows:
+      return "Windows";
+    case OsType::kMac:
+      return "Mac";
+    case OsType::kLinux:
+      return "Linux";
+    case OsType::kIOS:
+      return "iOS";
+    case OsType::kAndroid:
+      return "Android";
+    case OsType::kChromeOsAsh:
+      return "ChromeOsAsh";
+    case OsType::kChromeOsLacros:
+      return "ChromeOsLacros";
+    case OsType::kFuchsia:
+      return "Fuchsia";
+    case OsType::kUnknown:
+      return "Unknown";
+  }
+}
+
+}  // namespace
+
+BASE_FEATURE(kSegmentationDeviceCountByOsType,
+             "SegmentationDeviceCountByOsType",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+SyncDeviceInfoObserver::SyncDeviceInfoObserver(
+    syncer::DeviceInfoTracker* device_info_tracker)
+    : device_info_tracker_(device_info_tracker) {
+  DCHECK(device_info_tracker_);
+  device_info_tracker_->AddObserver(this);
+}
+
+SyncDeviceInfoObserver::~SyncDeviceInfoObserver() {
+  device_info_tracker_->RemoveObserver(this);
+}
+
+// Count device by os types and record them in UMA only if not recorded yet.
+void SyncDeviceInfoObserver::OnDeviceInfoChange() {
+  if (!device_info_tracker_->IsSyncing() || device_info_received_) {
+    return;
+  }
+
+  device_info_received_ = true;
+
+  // Run any method calls that were received during initialization.
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+  }
+
+  // Record device count by OS types.
+  std::map<OsType, int> count_by_os_type =
+      CountActiveDevicesByOsType(GetActivePeriodForMetrics());
+
+  // Record UMA metrics of device counts by OS types.
+  // Record 0 when there are no devices associated with one OS type.
+  for (int os_type_idx = static_cast<int>(OsType::kUnknown);
+       os_type_idx <= static_cast<int>(OsType::kFuchsia); ++os_type_idx) {
+    OsType os_type = static_cast<OsType>(os_type_idx);
+    int count = count_by_os_type[os_type];
+    base::UmaHistogramSparse(
+        base::StringPrintf("SegmentationPlatform.DeviceCountByOsType.%s",
+                           ConvertOsTypeToString(os_type)),
+        std::min(count, 100));
+  }
+}
+
+std::map<OsType, int> SyncDeviceInfoObserver::CountActiveDevicesByOsType(
+    base::TimeDelta active_threshold) const {
+  std::map<OsType, int> count_by_os_type;
+  const base::Time now = base::Time::Now();
+  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+    if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
+                        active_threshold)) {
+      continue;
+    }
+
+    auto os_type = device_info->os_type();
+    count_by_os_type[os_type] += 1;
+  }
+  return count_by_os_type;
+}
+
+void SyncDeviceInfoObserver::Process(
+    const proto::CustomInput& input,
+    const FeatureProcessorState& feature_processor_state,
+    ProcessedCallback callback) {
+  int wait_for_device_info_in_seconds = 0;
+  auto it = input.additional_args().find("wait_for_device_info_in_seconds");
+  if (it != input.additional_args().end()) {
+    if (!base::StringToInt(it->second, &wait_for_device_info_in_seconds)) {
+      wait_for_device_info_in_seconds = 0;
+    }
+  }
+  if (wait_for_device_info_in_seconds && !device_info_received_) {
+    // Maybe remove this check so that the client can call any time, just
+    // timeout is sufficient.
+    if (!device_info_tracker_->IsSyncing()) {
+      Tensor inputs(10, ProcessedValue(0));
+      inputs[0] = AS_FLOAT_VAL(1);  // failure.
+      std::move(callback).Run(/*error=*/false, std::move(inputs));
+      return;
+    }
+
+    // TODO(ssid): add timeout, and run callback with failure.
+    pending_actions_.push_back(base::BindOnce(
+        &SyncDeviceInfoObserver::ReadyToFinishProcessing,
+        weak_ptr_factory_.GetWeakPtr(), input, std::move(callback)));
+    return;
+  }
+  ReadyToFinishProcessing(input, std::move(callback));
+}
+
+void SyncDeviceInfoObserver::ReadyToFinishProcessing(
+    const proto::CustomInput& input,
+    ProcessedCallback callback) {
+  int active_threshold = kDefaultActiveDaysThreshold;
+  auto it2 = input.additional_args().find("active_days_limit");
+  if (it2 != input.additional_args().end()) {
+    if (!base::StringToInt(it2->second, &active_threshold)) {
+      active_threshold = kDefaultActiveDaysThreshold;
+    }
+  }
+  std::map<
+      std::pair<syncer::DeviceInfo::FormFactor, syncer::DeviceInfo::OsType>,
+      int>
+      device_count_by_type;
+  int total_count = 0;
+  const base::Time now = base::Time::Now();
+  for (const auto& device_info : device_info_tracker_->GetAllDeviceInfo()) {
+    if (!IsDeviceActive(device_info->last_updated_timestamp(), now,
+                        base::Days(active_threshold))) {
+      continue;
+    }
+
+    auto os_type = device_info->os_type();
+    device_count_by_type[{device_info->form_factor(), os_type}] += 1;
+    total_count++;
+  }
+
+  Tensor inputs(10, ProcessedValue(0));
+  inputs[0] = AS_FLOAT_VAL(0);  // success.
+  inputs[1] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kPhone, OsType::kAndroid}]));
+  inputs[2] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kTablet, OsType::kAndroid}]));
+  inputs[3] =
+      AS_FLOAT_VAL((device_count_by_type[{FormFactor::kPhone, OsType::kIOS}]));
+  inputs[4] =
+      AS_FLOAT_VAL((device_count_by_type[{FormFactor::kTablet, OsType::kIOS}]));
+  inputs[5] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kDesktop, OsType::kLinux}]));
+  inputs[6] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kDesktop, OsType::kMac}]));
+  inputs[7] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kDesktop, OsType::kWindows}]));
+  inputs[8] = AS_FLOAT_VAL(
+      (device_count_by_type[{FormFactor::kDesktop, OsType::kChromeOsLacros}]));
+  int known_type_count = 0;
+  for (unsigned i = 1; i <= 8; ++i) {
+    known_type_count += inputs[i].float_val;
+  }
+  inputs[9] = AS_FLOAT_VAL(total_count - known_type_count);
+  std::move(callback).Run(/*error=*/false, std::move(inputs));
+}
+
+}  // namespace segmentation_platform::processing

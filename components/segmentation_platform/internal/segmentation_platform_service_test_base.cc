@@ -138,6 +138,8 @@ void SegmentationPlatformServiceTestBase::InitPlatform(
   params->configs = std::move(configs);
   params->field_trial_register = std::make_unique<MockFieldTrialRegister>();
   params->device_info_tracker = device_info_tracker_.get();
+  params->input_delegate_holder =
+      std::make_unique<processing::InputDelegateHolder>();
   segmentation_platform_service_impl_ =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 }
