@@ -584,6 +584,8 @@ source_set("ash") {
     "arc/user_session/arc_user_session_service.h",
     "arc/video/gpu_arc_video_service_host.cc",
     "arc/video/gpu_arc_video_service_host.h",
+    "arc/vmm/arc_vmm_manager.cc",
+    "arc/vmm/arc_vmm_manager.h",
     "arc/wallpaper/arc_wallpaper_service.cc",
     "arc/wallpaper/arc_wallpaper_service.h",
     "arc/window_predictor/arc_predictor_app_launch_handler.cc",

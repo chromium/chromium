@@ -67,6 +67,7 @@ extern const base::FeatureParam<int> kVmMemorySizeShiftMiB;
 extern const base::FeatureParam<int> kVmMemorySizeMaxMiB;
 BASE_DECLARE_FEATURE(kVmBroadcastPreNotifyANR);
 BASE_DECLARE_FEATURE(kVmGmsCoreLowMemoryKillerProtection);
+BASE_DECLARE_FEATURE(kVmmSwapKeyboardShortcut);
 
 }  // namespace arc
 

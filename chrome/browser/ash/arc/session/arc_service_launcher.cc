@@ -92,6 +92,7 @@
 #include "chrome/browser/ash/arc/tts/arc_tts_service.h"
 #include "chrome/browser/ash/arc/user_session/arc_user_session_service.h"
 #include "chrome/browser/ash/arc/video/gpu_arc_video_service_host.h"
+#include "chrome/browser/ash/arc/vmm/arc_vmm_manager.h"
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -307,6 +308,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   if (arc::IsArcVmEnabled()) {
     // ARCVM-only services.
     ArcMemoryPressureBridge::GetForBrowserContext(profile);
+    ArcVmmManager::GetForBrowserContext(profile);
 
     if (base::FeatureList::IsEnabled(kEnableArcVmDataMigration)) {
       arc_vm_data_migration_notifier_ =

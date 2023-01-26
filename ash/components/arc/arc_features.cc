@@ -318,4 +318,8 @@ BASE_FEATURE(kVmBroadcastPreNotifyANR,
              "ArcVmBroadcastPreAnrHandling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls experimental key to enable Vmm swap for ARCVM by keyboard shortcut.
+BASE_FEATURE(kVmmSwapKeyboardShortcut,
+             "ArcvmSwapoutKeyboardShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace arc
