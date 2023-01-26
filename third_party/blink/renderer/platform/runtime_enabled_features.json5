@@ -1656,7 +1656,7 @@
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
       depends_on: ["LayoutMediaNGContainer", "LayoutNGReplacedNoBoxSetters"],
-      status: "stable",
+      status: "test",
       base_feature: "LayoutNGNoCopyBack",
     },
     {
