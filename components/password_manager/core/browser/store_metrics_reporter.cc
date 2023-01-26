@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
@@ -519,6 +520,21 @@ void ReportAllMetrics(bool custom_passphrase_sync_enabled,
   }
 }
 
+void OnMetricsReportingCompleted(
+    base::WeakPtr<StoreMetricsReporter> reporter_weak_ptr,
+    base::OnceClosure done_callback) {
+  // Metrics reporting is performed asynchronously on a background thread. By
+  // the time metrics reporting is completed, it could be the case that the
+  // StoreMetricsReporter has been destructed already (e.g. if the user closes
+  // the browser profile for which metrics are being reported). If the reporter
+  // doesn't exist anymore, it's pointless (and wrong) to run the
+  // `done_callback` since the main purpose of the `done_callback` is to
+  // destroy the reporter (as in password_store_utils.cc).
+  if (reporter_weak_ptr) {
+    std::move(done_callback).Run();
+  }
+}
+
 void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::UmaHistogramBoolean(
@@ -629,13 +645,18 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
     return;
   }
 
-  ReportAllMetrics(custom_passphrase_sync_enabled_, sync_username_,
-                   bulk_check_done_, is_opted_in_account_storage_,
-                   std::exchange(profile_store_results_, absl::nullopt),
-                   std::exchange(account_store_results_, absl::nullopt));
-
   DCHECK(done_callback_);
-  std::move(done_callback_).Run();
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&ReportAllMetrics, custom_passphrase_sync_enabled_,
+                     sync_username_, bulk_check_done_,
+                     is_opted_in_account_storage_,
+                     std::exchange(profile_store_results_, absl::nullopt),
+                     std::exchange(account_store_results_, absl::nullopt)),
+      base::BindOnce(&OnMetricsReportingCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(done_callback_)));
 }
 
 StoreMetricsReporter::~StoreMetricsReporter() = default;
