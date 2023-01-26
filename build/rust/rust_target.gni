@@ -259,6 +259,8 @@ template("rust_target") {
       _rust_public_deps += [ ":${_target_name}_cxx_generated" ]
     }
 
+    _rust_deps += [ "//build/rust/std:std_for_rustc" ]
+
     # You must go through the groups above to get to these targets.
     _visibility = []
     _visibility = [ ":${_target_name}" ]

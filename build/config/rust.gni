@@ -57,6 +57,10 @@ declare_args() {
   # Rust toolchain. Typically used with 'use_unverified_rust_toolchain' = true
   removed_rust_stdlib_libs = []
 
+  # Non-rlib libs provided in the toolchain sysroot. Usually this is empty, but
+  # e.g. the Android Rust Toolchain provides a libunwind.a that rustc expects.
+  extra_sysroot_libs = []
+
   # Use goma for Rust builds. Experimental. The only known problem is
   # b/193072381, but then again, we don't expect a build speedup before much
   # more work is done.
@@ -137,24 +141,31 @@ if (enable_rust) {
 
     rust_sysroot = "//third_party/android_rust_toolchain/toolchain"
     use_unverified_rust_toolchain = false
+    extra_sysroot_libs += [ "libunwind.a" ]
   }
 }
 
 # Figure out the Rust target triple (aka 'rust_abi_target')
 #
-# This is here rather than in the toolchain files because it's used
-# also by //build/rust/std to find the Rust standard library.
+# This is here rather than in the toolchain files because it's used also by
+# //build/rust/std to find the Rust standard library and construct a sysroot for
+# rustc invocations.
 #
 # The list of architectures supported by Rust is here:
-# https://doc.rust-lang.org/nightly/rustc/platform-support.html.
-# We map Chromium targets to Rust targets comprehensively despite not having
-# official support (see '*_toolchain_supports_platform above') to enable
-# experimentation with other toolchains.
-#
-# It's OK if rust_abi_target is blank. That means we're building for the host
-# and the host stdlib will be used.
+# https://doc.rust-lang.org/nightly/rustc/platform-support.html. We map Chromium
+# targets to Rust targets comprehensively despite not having official support
+# (see '*_toolchain_supports_platform above') to enable experimentation with
+# other toolchains.
 rust_abi_target = ""
-if (is_android) {
+if (is_linux) {
+  cpu = current_cpu
+  if (cpu == "arm64") {
+    cpu = "aarch64"
+  } else if (cpu == "x64") {
+    cpu = "x86_64"
+  }
+  rust_abi_target = cpu + "-unknown-linux-gnu"
+} else if (is_android) {
   import("//build/config/android/abi.gni")
   rust_abi_target = android_abi_target
   if (rust_abi_target == "arm-linux-androideabi") {
@@ -187,6 +198,8 @@ if (is_android) {
     assert(false, "Architecture not supported")
   }
 }
+
+assert(!toolchain_has_rust || rust_abi_target != "")
 
 # Arguments for Rust invocation.
 # This is common between gcc/clang, Mac and Windows toolchains so specify once,

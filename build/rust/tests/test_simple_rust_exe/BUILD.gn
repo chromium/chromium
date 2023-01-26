@@ -8,4 +8,5 @@
 # //build/rust/rust_executable.gni.
 executable("test_simple_rust_exe") {
   crate_root = "main.rs"
+  deps = [ "//build/rust/std:std_for_rustc" ]
 }

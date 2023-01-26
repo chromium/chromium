@@ -35,9 +35,8 @@ def main():
                       required=True)
   parser.add_argument("--stdlibs",
                       help="Expected list of standard library libraries")
-  parser.add_argument("--skip-stdlibs",
-                      help="Standard library files to skip",
-                      default="")
+  parser.add_argument("--extra-libs",
+                      help="List of extra non-libstd sysroot libraries")
   parser.add_argument("--expected-rustc-version",
                       help="The string we expect to be reported by 'rustc -V'")
   args = parser.parse_args()
@@ -57,7 +56,10 @@ def main():
   else:
     rlibs_expected = None
 
-  rlibs_to_skip = set(args.skip_stdlibs.split(','))
+  extra_libs = set()
+  if args.extra_libs:
+    for lib in args.extra_libs.split(','):
+      extra_libs.add(lib)
 
   # First, ask rustc to confirm it's the version expected.
   rustc = os.path.join(args.rust_bin_dir, "rustc")
@@ -90,6 +92,15 @@ def main():
     depfile.write(
         "%s:" % (os.path.join(args.output, "lib%s.rlib" % args.depfile_target)))
 
+    def copy_file(infile, outfile):
+      depfile.write(f" {infile}")
+      if (not os.path.exists(outfile)
+          or os.stat(infile).st_mtime != os.stat(outfile).st_mtime):
+        if os.path.exists(outfile):
+          st = os.stat(outfile)
+          os.chmod(outfile, st.st_mode | stat.S_IWUSR)
+        shutil.copy(infile, outfile)
+
     # Each rlib is named "lib<crate_name>-<metadata>.rlib". The metadata
     # disambiguates multiple crates of the same name. We want to throw away the
     # metadata and use stable names. To do so, we replace the metadata bit with
@@ -116,8 +127,6 @@ def main():
       # that, and it would prevent us having the predictable filenames
       # which we need for statically computable gn dependency rules.
       (crate_name, metadata) = RLIB_NAME_REGEX.match(f).group(1, 2)
-      if crate_name in rlibs_to_skip:
-        continue
 
       # Use the number of times we've seen this name to disambiguate the output
       # filenames. Since we sort the input filenames including the metadata,
@@ -141,13 +150,12 @@ def main():
 
       infile = os.path.join(rustlib_dir, f)
       outfile = os.path.join(args.output, output_filename)
-      depfile.write(" %s" % infile)
-      if (not os.path.exists(outfile)
-          or os.stat(infile).st_mtime != os.stat(outfile).st_mtime):
-        if os.path.exists(outfile):
-          st = os.stat(outfile)
-          os.chmod(outfile, st.st_mode | stat.S_IWUSR)
-        shutil.copy(infile, outfile)
+      copy_file(infile, outfile)
+
+    for f in extra_libs:
+      infile = os.path.join(rustlib_dir, f)
+      outfile = os.path.join(args.output, f)
+      copy_file(infile, outfile)
 
     depfile.write("\n")
     if rlibs_expected:
