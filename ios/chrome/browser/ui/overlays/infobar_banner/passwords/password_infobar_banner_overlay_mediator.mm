@@ -80,7 +80,7 @@
   [self.consumer setIconImage:[self iconImageWithConfig:config]];
   if (base::FeatureList::IsEnabled(
           password_manager::features::kIOSShowPasswordStorageInSaveInfobar)) {
-    [self.consumer setUseIconBackgroundTint:NO];
+    [self.consumer setIgnoreIconColorWithTint:NO];
   }
   [self.consumer setPresentsModal:YES];
   [self.consumer setTitleText:title];
