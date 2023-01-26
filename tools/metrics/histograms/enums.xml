@@ -99713,6 +99713,11 @@ would be helpful to identify which type is being sent.
   <int value="2" label="BOTTOM"/>
 </enum>
 
+<enum name="ToolbarInMotionStage">
+  <int value="0" label="SUPPRESSION_ENABLED"/>
+  <int value="1" label="READINESS_CHECKED"/>
+</enum>
+
 <enum name="ToolbarSnapshotDifference">
   <int value="0" label="NONE">
     This value will not be reported, only other actaul differences will be

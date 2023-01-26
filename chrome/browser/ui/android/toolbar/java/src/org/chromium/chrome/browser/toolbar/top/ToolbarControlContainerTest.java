@@ -30,10 +30,13 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotState.ToolbarSnapshotDifference;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
@@ -314,6 +317,13 @@ public class ToolbarControlContainerTest {
     @Test
     public void testIsDirty_InMotion2() {
         ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+        // Unfortunately this gets emitted once during initialization and we cannot easily reset.
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.SUPPRESSION_ENABLED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.READINESS_CHECKED));
 
         Mockito.when(mToolbar.isReadyForTextureCapture())
                 .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
@@ -326,6 +336,12 @@ public class ToolbarControlContainerTest {
                         "Android.TopToolbar.BlockCaptureReason",
                         TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION));
         changeInMotion(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        Assert.assertEquals(2,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.SUPPRESSION_ENABLED));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.READINESS_CHECKED));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.TopToolbar.BlockCaptureReason",
@@ -333,7 +349,37 @@ public class ToolbarControlContainerTest {
         Assert.assertTrue(didAdapterLockControls());
 
         changeInMotion(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        Assert.assertEquals(3,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.SUPPRESSION_ENABLED));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting("Android.TopToolbar.InMotionStage",
+                        ToolbarInMotionStage.READINESS_CHECKED));
         Assert.assertFalse(didAdapterLockControls());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.RECORD_SUPPRESSION_METRICS)
+    public void testIsDirty_InMotion2_NoMetrics() {
+        Assert.assertFalse(ToolbarFeatures.shouldRecordSuppressionMetrics());
+        ToolbarViewResourceAdapter adapter = makeAndInitAdapter();
+
+        Mockito.when(mToolbar.isReadyForTextureCapture())
+                .thenReturn(CaptureReadinessResult.readyWithSnapshotDifference(
+                        ToolbarSnapshotDifference.URL_TEXT));
+        Mockito.when(mTab.isNativePage()).thenReturn(false);
+        mIsVisible = true;
+
+        changeInMotion(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        Assert.assertTrue(didAdapterLockControls());
+        changeInMotion(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        Assert.assertFalse(didAdapterLockControls());
+
+        Assert.assertEquals(
+                0, RecordHistogram.getHistogramTotalCountForTesting("Android.TopToolbar.InMotion"));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Android.TopToolbar.InMotionStage"));
     }
 
     @Test
