@@ -1086,6 +1086,8 @@ bool IndexedDBBackingStore::ShouldSyncOnCommit(
     blink::mojom::IDBTransactionDurability durability) {
   switch (durability) {
     case blink::mojom::IDBTransactionDurability::Default:
+      NOTREACHED();
+      ABSL_FALLTHROUGH_INTENDED;
     case blink::mojom::IDBTransactionDurability::Strict:
       return true;
     case blink::mojom::IDBTransactionDurability::Relaxed:
@@ -3039,6 +3041,8 @@ IndexedDBBackingStore::Transaction::Transaction(
                          : nullptr),
       durability_(durability),
       mode_(mode) {
+  // `Default` should have already been converted to the bucket's setting.
+  DCHECK(durability_ != blink::mojom::IDBTransactionDurability::Default);
   DCHECK(!backing_store_ ||
          backing_store_->idb_task_runner()->RunsTasksInCurrentSequence());
 }
