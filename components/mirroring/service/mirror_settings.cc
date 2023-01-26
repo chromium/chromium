@@ -28,15 +28,6 @@ namespace {
 // TODO(openscreen/44): Re-enable in port to Open Screen.
 constexpr base::TimeDelta kDefaultPlayoutDelay = base::Milliseconds(400);
 
-// The default "slow" interval since the last video frame was received from the
-// video source, before requesting a refresh frame.
-// TODO(crbug.com/1394392): Remove after launching CastFastRefreshFrames.
-constexpr base::TimeDelta kDefaultSlowRefreshInterval = base::Milliseconds(250);
-
-// The default "fast" interval since the last video frame was received from the
-// video source, before requesting a refresh frame.
-constexpr base::TimeDelta kDefaultFastRefreshInterval = base::Milliseconds(50);
-
 constexpr int kAudioTimebase = 48000;
 constexpr int kVidoTimebase = 90000;
 constexpr int kAudioChannels = 2;
@@ -89,12 +80,7 @@ MirrorSettings::MirrorSettings()
     : min_width_(kMinWidth),
       min_height_(kMinHeight),
       max_width_(kMaxWidth),
-      max_height_(kMaxHeight) {
-  refresh_interval_ =
-      base::FeatureList::IsEnabled(features::kCastFastRefreshFrames)
-          ? kDefaultFastRefreshInterval
-          : kDefaultSlowRefreshInterval;
-}
+      max_height_(kMaxHeight) {}
 
 MirrorSettings::~MirrorSettings() {}
 

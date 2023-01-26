@@ -51,13 +51,6 @@ struct SessionParameters {
   // querying the receiver device for its capabilities.
   bool is_remote_playback;
 
-  // The interval elapsed before the service requests a refresh frame from the
-  // video capture source.  Refresh frames help the video encoder converge to a
-  // quality image when the video source is static content.  Omission of this
-  // parameter uses the default value defined in mirror_settings.cc.  A value of
-  // zero disables refresh frame requests.
-  mojo_base.mojom.TimeDelta? refresh_interval;
-
   // If true, all video frames sent will be letterboxed/pillarboxed to fit the
   // aspect ratio of the negotiated resolution.  This is to allow letterboxing
   // to be selectively applied to receivers that have outstanding bugs with

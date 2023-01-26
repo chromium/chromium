@@ -380,10 +380,6 @@ Session::Session(
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
                                             max_resolution.height());
 
-  if (session_params_.refresh_interval) {
-    mirror_settings_.set_refresh_interval(*(session_params_.refresh_interval));
-  }
-
   resource_provider_->GetNetworkContext(
       network_context_.BindNewPipeAndPassReceiver());
 
@@ -784,9 +780,15 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
                               weak_factory_.GetWeakPtr()),
           base::BindRepeating(&Session::ProcessFeedback,
                               weak_factory_.GetWeakPtr()));
+
       video_stream_ = std::make_unique<VideoRtpStream>(
           std::move(video_sender), weak_factory_.GetWeakPtr(),
           mirror_settings_.refresh_interval());
+      LogInfoMessage(base::StringPrintf(
+          "Created video stream with refresh interval of %d ms",
+          static_cast<int>(
+              mirror_settings_.refresh_interval().InMilliseconds())));
+
       if (!video_capture_client_) {
         mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
         resource_provider_->GetVideoCaptureHost(

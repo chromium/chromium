@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MEDIA_ROUTER_FEATURE_H_
 
 #include "base/feature_list.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -76,12 +74,6 @@ bool DialMediaRouteProviderEnabled();
 // Returns true if global media controls are used to start and stop casting and
 // Media Router is enabled for |context|.
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
-
-// Returns the command-line flag value to override the default mirroring refresh
-// interval, if set.
-// TODO(crbug.com/1394392): Remove this after CastFastRefreshFrames is launched.
-absl::optional<base::TimeDelta> GetMirroringRefreshInterval();
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

@@ -16,6 +16,10 @@ class AudioParameters;
 
 namespace mirroring {
 
+// The interval since the last video frame was received from the video source,
+// before requesting a refresh frame.
+constexpr base::TimeDelta kFrameRefreshInterval = base::Milliseconds(50);
+
 // Holds the default settings for a mirroring session. This class provides the
 // audio/video configs that this sender supports. And also provides the
 // audio/video constraints used for capturing.
@@ -62,7 +66,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MirrorSettings {
   int max_width_;
   int max_height_;
   bool enable_sender_side_letterboxing_ = true;
-  base::TimeDelta refresh_interval_;
+  base::TimeDelta refresh_interval_{kFrameRefreshInterval};
 };
 
 }  // namespace mirroring

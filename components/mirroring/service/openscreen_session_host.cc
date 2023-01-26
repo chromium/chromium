@@ -267,11 +267,6 @@ OpenscreenSessionHost::OpenscreenSessionHost(
 
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
                                             max_resolution.height());
-
-  if (session_params_.refresh_interval) {
-    mirror_settings_.set_refresh_interval(*(session_params_.refresh_interval));
-  }
-
   resource_provider_->GetNetworkContext(
       network_context_.BindNewPipeAndPassReceiver());
 
