@@ -20,6 +20,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_filters.h"
+#include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
 #include "media/base/timestamp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,6 +28,7 @@
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AtMost;
+using ::testing::HasSubstr;
 using ::testing::Return;
 using ::testing::StrictMock;
 
@@ -260,7 +262,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  NullMediaLog media_log_;
+  StrictMock<MockMediaLog> media_log_;
   std::unique_ptr<DecryptingAudioDecoder> decoder_;
   std::unique_ptr<StrictMock<MockCdmContext>> cdm_context_;
   std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;
@@ -323,6 +325,22 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_Normal) {
   EnterNormalDecodingState();
 }
 
+// Test the case where the decryptor errors for mismatched subsamples
+TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_SubsampleError) {
+  Initialize();
+
+  scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
+      CreateMismatchedBufferForTest();
+
+  EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
+      .WillRepeatedly(
+          RunOnceCallback<1>(Decryptor::kError, Decryptor::AudioFrames()));
+  EXPECT_MEDIA_LOG(
+      HasSubstr("DecryptingAudioDecoder: Subsamples for Buffer do not match"));
+
+  DecodeAndExpect(mismatched_encrypted_buffer, DecoderStatus::Codes::kFailed);
+}
+
 // Test the case where the decryptor returns error when doing decrypt and
 // decode.
 TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_DecodeError) {
@@ -331,6 +349,7 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_DecodeError) {
   EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
       .WillRepeatedly(
           RunOnceCallback<1>(Decryptor::kError, Decryptor::AudioFrames()));
+  EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: decode error"));
 
   DecodeAndExpect(encrypted_buffer_, DecoderStatus::Codes::kFailed);
 }
@@ -414,6 +433,7 @@ TEST_F(DecryptingAudioDecoderTest, Reinitialize_EncryptedToClear) {
 // kWaitingForKey state.
 TEST_F(DecryptingAudioDecoderTest, KeyAdded_DuringWaitingForKey) {
   Initialize();
+  EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterWaitingForKeyState();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
@@ -421,14 +441,17 @@ TEST_F(DecryptingAudioDecoderTest, KeyAdded_DuringWaitingForKey) {
           RunOnceCallback<1>(Decryptor::kSuccess, decoded_frame_list_));
   EXPECT_CALL(*this, FrameReady(decoded_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
+  EXPECT_MEDIA_LOG(
+      HasSubstr("DecryptingAudioDecoder: key added, resuming decode"));
   event_cb_.Run(CdmContext::Event::kHasAdditionalUsableKey);
   base::RunLoop().RunUntilIdle();
 }
 
 // Test the case where the a key is added when the decryptor is in
 // kPendingDecode state.
-TEST_F(DecryptingAudioDecoderTest, KeyAdded_DruingPendingDecode) {
+TEST_F(DecryptingAudioDecoderTest, KeyAdded_DuringPendingDecode) {
   Initialize();
+  EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterPendingDecodeState();
 
   EXPECT_CALL(*decryptor_, DecryptAndDecodeAudio(_, _))
@@ -436,6 +459,8 @@ TEST_F(DecryptingAudioDecoderTest, KeyAdded_DruingPendingDecode) {
           RunOnceCallback<1>(Decryptor::kSuccess, decoded_frame_list_));
   EXPECT_CALL(*this, FrameReady(decoded_frame_));
   EXPECT_CALL(*this, DecodeDone(IsOkStatus()));
+  EXPECT_MEDIA_LOG(
+      HasSubstr("DecryptingAudioDecoder: key was added, resuming decode"));
   // The audio decode callback is returned after the correct decryption key is
   // added.
   event_cb_.Run(CdmContext::Event::kHasAdditionalUsableKey);
@@ -472,6 +497,7 @@ TEST_F(DecryptingAudioDecoderTest, Reset_DuringPendingDecode) {
 // Test resetting when the decoder is in kWaitingForKey state.
 TEST_F(DecryptingAudioDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
+  EXPECT_MEDIA_LOG(HasSubstr("DecryptingAudioDecoder: no key for key"));
   EnterWaitingForKeyState();
 
   EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));

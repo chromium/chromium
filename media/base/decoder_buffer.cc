@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "base/debug/alias.h"
+#include "media/base/subsample_entry.h"
 
 namespace media {
 
@@ -142,6 +143,27 @@ scoped_refptr<DecoderBuffer> DecoderBuffer::FromExternalMemory(
 // static
 scoped_refptr<DecoderBuffer> DecoderBuffer::CreateEOSBuffer() {
   return base::WrapRefCounted(new DecoderBuffer(nullptr, 0, nullptr, 0));
+}
+
+// static
+bool DecoderBuffer::DoSubsamplesMatch(const DecoderBuffer& encrypted) {
+  // If buffer is at end of stream, no subsamples to verify
+  if (encrypted.end_of_stream()) {
+    return true;
+  }
+
+  // If stream is unencrypted, we do not have to verify subsamples size.
+  const DecryptConfig* decrypt_config = encrypted.decrypt_config();
+  if (decrypt_config == nullptr ||
+      decrypt_config->encryption_scheme() == EncryptionScheme::kUnencrypted) {
+    return true;
+  }
+
+  const auto& subsamples = decrypt_config->subsamples();
+  if (subsamples.empty()) {
+    return true;
+  }
+  return VerifySubsamplesMatchSize(subsamples, encrypted.data_size());
 }
 
 bool DecoderBuffer::MatchesMetadataForTesting(

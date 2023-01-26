@@ -231,6 +231,14 @@ void DecryptingAudioDecoder::DecodePendingBuffer() {
     buffer_size = pending_buffer_to_decode_->data_size();
   }
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*pending_buffer_to_decode_)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "DecryptingAudioDecoder: Subsamples for Buffer do not match";
+    state_ = kError;
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   decryptor_->DecryptAndDecodeAudio(
       pending_buffer_to_decode_, BindToCurrentLoop(base::BindRepeating(
                                      &DecryptingAudioDecoder::DeliverFrame,

@@ -470,6 +470,20 @@ scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
   return buffer;
 }
 
+scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest() {
+  std::vector<uint8_t> data = {42, 22, 26, 13, 7, 16, 8, 2};
+  std::vector<uint8_t> kFakeData = {36, 23, 36};
+  scoped_refptr<media::DecoderBuffer> mismatched_encrypted_buffer =
+      media::DecoderBuffer::CopyFrom(data.data(), data.size());
+  mismatched_encrypted_buffer->set_timestamp(base::Seconds(42));
+  mismatched_encrypted_buffer->set_duration(base::Seconds(64));
+  mismatched_encrypted_buffer->set_decrypt_config(
+      media::DecryptConfig::CreateCencConfig("fake_key_id", "fake_iv_16_bytes",
+                                             {{1, 1}, {2, 2}, {3, 3}}));
+
+  return mismatched_encrypted_buffer;
+}
+
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.

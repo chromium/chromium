@@ -223,6 +223,14 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
           ? 0
           : pending_buffer_to_decode_->timestamp().InMicroseconds());
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*pending_buffer_to_decode_)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "DecryptingVideoDecoder: Subsamples for Buffer do not match";
+    state_ = kError;
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kPlatformDecodeFailure);
+    return;
+  }
+
   decryptor_->DecryptAndDecodeVideo(
       pending_buffer_to_decode_,
       BindToCurrentLoop(base::BindRepeating(

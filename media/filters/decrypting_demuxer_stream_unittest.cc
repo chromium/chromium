@@ -381,6 +381,22 @@ TEST_F(DecryptingDemuxerStreamTest, Read_DecryptError) {
   ReadAndExpectBufferReadyWith(DemuxerStream::kError, nullptr);
 }
 
+// Test the case where the decryptor errors for mismatched subsamples
+TEST_F(DecryptingDemuxerStreamTest, Read_MismatchedSubsampleError) {
+  Initialize();
+
+  encrypted_buffer_ = CreateMismatchedBufferForTest();
+
+  EXPECT_CALL(*input_audio_stream_, OnRead(_))
+      .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
+  EXPECT_CALL(*decryptor_, Decrypt(_, encrypted_buffer_, _))
+      .WillRepeatedly(RunOnceCallback<2>(Decryptor::kError,
+                                         scoped_refptr<DecoderBuffer>()));
+  EXPECT_MEDIA_LOG(
+      HasSubstr("DecryptingDemuxerStream: Subsamples for Buffer do not match"));
+  ReadAndExpectBufferReadyWith(DemuxerStream::kError, nullptr);
+}
+
 // Test the case where the decryptor returns kNeedMoreData during read.
 TEST_F(DecryptingDemuxerStreamTest, Read_DecryptNeedMoreData) {
   Initialize();

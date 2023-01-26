@@ -134,6 +134,9 @@ class MEDIA_EXPORT DecoderBuffer
   // is disallowed.
   static scoped_refptr<DecoderBuffer> CreateEOSBuffer();
 
+  // Method to verify if subsamples of a DecoderBuffer match.
+  static bool DoSubsamplesMatch(const DecoderBuffer& encrypted);
+
   const TimeInfo& time_info() const {
     DCHECK(!end_of_stream());
     return time_info_;

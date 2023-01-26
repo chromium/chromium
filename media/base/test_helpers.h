@@ -227,6 +227,10 @@ scoped_refptr<DecoderBuffer> CreateFakeVideoBufferForTest(
     base::TimeDelta timestamp,
     base::TimeDelta duration);
 
+// Create a mismatched DecoderBuffer to verify in unit tests that we error
+// out and do not continue to decode or decrypt if subsamples do not match.
+scoped_refptr<DecoderBuffer> CreateMismatchedBufferForTest();
+
 // Verify if a fake video DecoderBuffer is valid.
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config);

@@ -263,6 +263,15 @@ void DecryptingDemuxerStream::DecryptPendingBuffer() {
       "media", "DecryptingDemuxerStream::DecryptPendingBuffer", this, "type",
       DemuxerStream::GetTypeName(demuxer_stream_->type()), "timestamp_us",
       pending_buffer_to_decrypt_->timestamp().InMicroseconds());
+
+  if (!DecoderBuffer::DoSubsamplesMatch(*pending_buffer_to_decrypt_)) {
+    MEDIA_LOG(ERROR, media_log_)
+        << "DecryptingDemuxerStream: Subsamples for Buffer do not match";
+    state_ = kIdle;
+    std::move(read_cb_).Run(kError, {});
+    return;
+  }
+
   decryptor_->Decrypt(GetDecryptorStreamType(), pending_buffer_to_decrypt_,
                       BindToCurrentLoop(base::BindOnce(
                           &DecryptingDemuxerStream::OnBufferDecrypted,
