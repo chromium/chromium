@@ -55,11 +55,6 @@ const char kAppDeduplicationServiceFondueDescription[] =
     "Enables pulling app duplicate data from a Google server to allow clients "
     "to determine app duplicates.";
 
-const char kLauncherAppSortName[] = "Productivity experiment: Reorder Apps";
-const char kLauncherAppSortDescription[] =
-    "To evaluate an enhanced Launcher experience that enables users to reorder "
-    "their apps in order to find them more easily.";
-
 const char kAlignWakeUpsName[] = "Align delayed wake ups at 125 Hz";
 const char kAlignWakeUpsDescription[] =
     "Run most delayed tasks with a non-zero delay (including DOM Timers) on a "

@@ -34,7 +34,6 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
 #include "base/functional/callback.h"
@@ -195,14 +194,12 @@ AppListFolderView* GetAppListFolderView() {
 }
 
 AppListToastContainerView* GetToastContainerViewFromBubble() {
-  DCHECK(features::IsLauncherAppSortEnabled());
   return GetAppListBubbleView()
       ->apps_page_for_test()
       ->toast_container_for_test();
 }
 
 AppListToastContainerView* GetToastContainerViewFromFullscreenAppList() {
-  DCHECK(features::IsLauncherAppSortEnabled());
   return GetAppsContainerView()->toast_container();
 }
 
@@ -543,19 +540,16 @@ views::View* AppListTestApi::GetToastContainerView() {
 
 void AppListTestApi::AddReorderAnimationCallback(
     AppsGridView::TestReorderDoneCallbackType callback) {
-  DCHECK(features::IsLauncherAppSortEnabled());
   GetTopLevelAppsGridView()->AddReorderCallbackForTest(std::move(callback));
 }
 
 void AppListTestApi::AddFadeOutAnimationStartClosure(
     base::OnceClosure closure) {
-  DCHECK(features::IsLauncherAppSortEnabled());
   GetTopLevelAppsGridView()->AddFadeOutAnimationStartClosureForTest(
       std::move(closure));
 }
 
 bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
-  DCHECK(features::IsLauncherAppSortEnabled());
   return GetTopLevelAppsGridView()->HasAnyWaitingReorderDoneCallbackForTest();
 }
 

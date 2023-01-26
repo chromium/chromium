@@ -266,14 +266,12 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 
   // Add a empty container view. A toast view should be added to
   // `toast_container_` when the app list starts temporary sorting.
-  if (features::IsLauncherAppSortEnabled()) {
-    toast_container_ = scrollable_container_->AddChildView(
-        std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(),
-            app_list_keyboard_controller_.get(), a11y_announcer, view_delegate,
-            /*delegate=*/this, /*tablet_mode=*/true));
-    toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  }
+  toast_container_ = scrollable_container_->AddChildView(
+      std::make_unique<AppListToastContainerView>(
+          app_list_nudge_controller_.get(), app_list_keyboard_controller_.get(),
+          a11y_announcer, view_delegate,
+          /*delegate=*/this, /*tablet_mode=*/true));
+  toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
   apps_grid_view_ =
       scrollable_container_->AddChildView(std::make_unique<PagedAppsGridView>(
@@ -671,7 +669,6 @@ void AppsContainerView::UpdateForNewSortingOrder(
     bool animate,
     base::OnceClosure update_position_closure,
     base::OnceClosure animation_done_closure) {
-  DCHECK(features::IsLauncherAppSortEnabled());
   DCHECK_EQ(animate, !update_position_closure.is_null());
   DCHECK(!animation_done_closure || animate);
 

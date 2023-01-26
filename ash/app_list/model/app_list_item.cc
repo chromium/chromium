@@ -148,16 +148,6 @@ void AppListItem::SetName(const std::string& name) {
     observer.ItemNameChanged();
 }
 
-void AppListItem::SetNameAndShortName(const std::string& name,
-                                      const std::string& short_name) {
-  if (metadata_->name == name && short_name_ == short_name)
-    return;
-  metadata_->name = name;
-  short_name_ = short_name;
-  for (auto& observer : observers_)
-    observer.ItemNameChanged();
-}
-
 void AppListItem::UpdateNotificationBadge(bool has_badge) {
   if (has_notification_badge_ == has_badge)
     return;

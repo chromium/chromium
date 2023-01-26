@@ -392,11 +392,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLacrosMoveProfileMigration);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLacrosProfileBackwardMigration);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kLauncherAppSort);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLauncherFolderRenameKeepsSortOrder);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kLauncherDismissButtonsOnSortNudgeAndToast);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kLauncherNudgeShortInterval);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -670,7 +665,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptivePortalErrorPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChromadAvailableEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryRefreshEnabled();
@@ -760,11 +754,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsJellyrollEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLanguagePacksEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherAppSortEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsLauncherFolderRenameKeepsSortOrderEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeShortIntervalEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherNudgeSessionResetEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLicensePackagedOobeFlowEnabled();

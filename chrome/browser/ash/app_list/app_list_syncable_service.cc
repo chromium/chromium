@@ -92,8 +92,7 @@ void GetSyncSpecificsFromSyncItem(const AppListSyncableService::SyncItem* item,
                                       ? item->item_pin_ordinal.ToInternalValue()
                                       : std::string());
 
-  if (ash::features::IsLauncherItemColorSyncEnabled() &&
-      item->item_color.IsValid()) {
+  if (item->item_color.IsValid()) {
     specifics->mutable_item_color()->set_background_color(
         item->item_color.background_color());
     specifics->mutable_item_color()->set_hue(item->item_color.hue());
@@ -190,18 +189,16 @@ void UpdateSyncItemInLocalStorage(
                  base::Value(sync_item->item_ordinal.IsValid() ||
                              sync_item->empty_item_ordinal_fixable));
 
-  if (ash::features::IsLauncherItemColorSyncEnabled()) {
-    // Handle the item color.
-    if (sync_item->item_color.IsValid()) {
-      dict_item->Set(kBackgroundColorKey,
-                     base::Value(sync_pb::AppListSpecifics::ColorGroup_Name(
-                         sync_item->item_color.background_color())));
-      dict_item->Set(kHueKey, base::Value(sync_item->item_color.hue()));
-    } else if (dict_item->Find(kBackgroundColorKey)) {
-      dict_item->Remove(kBackgroundColorKey);
-      DCHECK(dict_item->Find(kHueKey));
-      dict_item->Remove(kHueKey);
-    }
+  // Handle the item color.
+  if (sync_item->item_color.IsValid()) {
+    dict_item->Set(kBackgroundColorKey,
+                   base::Value(sync_pb::AppListSpecifics::ColorGroup_Name(
+                       sync_item->item_color.background_color())));
+    dict_item->Set(kHueKey, base::Value(sync_item->item_color.hue()));
+  } else if (dict_item->Find(kBackgroundColorKey)) {
+    dict_item->Remove(kBackgroundColorKey);
+    DCHECK(dict_item->Find(kHueKey));
+    dict_item->Remove(kHueKey);
   }
 }
 
@@ -382,14 +379,11 @@ AppListSyncableService::AppListSyncableService(Profile* profile)
       extension_system_(extensions::ExtensionSystem::Get(profile)),
       extension_registry_(extensions::ExtensionRegistry::Get(profile)) {
   sync_model_sanitizer_ = std::make_unique<AppListSyncModelSanitizer>(this);
-  reorder::AppListReorderDelegate* reorder_delegate =
-      ash::features::IsLauncherAppSortEnabled() ? this : nullptr;
   if (g_model_updater_factory_callback_for_test_) {
-    model_updater_ =
-        g_model_updater_factory_callback_for_test_->Run(reorder_delegate);
+    model_updater_ = g_model_updater_factory_callback_for_test_->Run(this);
   } else {
     model_updater_ = std::make_unique<ChromeAppListModelUpdater>(
-        profile, reorder_delegate, sync_model_sanitizer_.get());
+        profile, this, sync_model_sanitizer_.get());
   }
 
   model_updater_observer_ = std::make_unique<ModelUpdaterObserver>(this);
@@ -466,8 +460,7 @@ void AppListSyncableService::InitFromLocalStorage() {
         item_dict.FindBool(kEmptyItemOrdinalFixable).value_or(true);
 
     // Fetch icon colors from `dict_item` if any.
-    if (ash::features::IsLauncherItemColorSyncEnabled() &&
-        item.second.FindKey(kBackgroundColorKey)) {
+    if (item.second.FindKey(kBackgroundColorKey)) {
       // Retrieve the background color.
       const std::string* background_color_internal_string =
           item_dict.FindString(kBackgroundColorKey);
@@ -573,9 +566,7 @@ bool AppListSyncableService::TransferItemAttributes(
   attributes->parent_id = from_item->parent_id;
   attributes->item_ordinal = from_item->item_ordinal;
   attributes->item_pin_ordinal = from_item->item_pin_ordinal;
-
-  if (ash::features::IsLauncherItemColorSyncEnabled())
-    attributes->item_color = from_item->item_color;
+  attributes->item_color = from_item->item_color;
 
   SyncItem* to_item = FindSyncItem(to_app_id);
   if (to_item) {
@@ -605,9 +596,7 @@ void AppListSyncableService::ApplyAppAttributes(
   item->parent_id = attributes->parent_id;
   item->item_ordinal = attributes->item_ordinal;
   item->item_pin_ordinal = attributes->item_pin_ordinal;
-
-  if (ash::features::IsLauncherItemColorSyncEnabled())
-    item->item_color = attributes->item_color;
+  item->item_color = attributes->item_color;
 
   UpdateSyncItemInLocalStorage(profile_, item);
   SendSyncChange(item, SyncChange::ACTION_UPDATE);
@@ -1200,9 +1189,7 @@ void AppListSyncableService::SetAppListPreferredOrder(
   profile_->GetPrefs()->SetInteger(prefs::kAppListPreferredOrder,
                                    static_cast<int>(order));
 
-  if (order == ash::AppListSortOrder::kCustom ||
-      (order == ash::AppListSortOrder::kColor &&
-       !ash::features::IsLauncherItemColorSyncEnabled())) {
+  if (order == ash::AppListSortOrder::kCustom) {
     return;
   }
 
@@ -1231,7 +1218,7 @@ void AppListSyncableService::SetAppListPreferredOrder(
                    SyncChange::ACTION_UPDATE);
   }
 
-  sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
+  sync_model_sanitizer_->SanitizePageBreaks(
       model_updater_->GetTopLevelItemIds(), /*reset_page_breaks=*/true);
 }
 
@@ -1563,8 +1550,7 @@ void AppListSyncableService::UpdateSyncItemFromSync(
         syncer::StringOrdinal(specifics.item_pin_ordinal());
   }
 
-  if (ash::features::IsLauncherItemColorSyncEnabled() &&
-      specifics.has_item_color()) {
+  if (specifics.has_item_color()) {
     const sync_pb::AppListSpecifics_IconColor& specifics_icon_color =
         specifics.item_color();
     const bool has_data = (specifics_icon_color.has_background_color() &&
@@ -1602,8 +1588,7 @@ bool AppListSyncableService::UpdateSyncItemFromAppItem(
     changed = true;
   }
 
-  if (ash::features::IsLauncherItemColorSyncEnabled() &&
-      SetIconColorIfChanged(app_item->icon_color(), &sync_item->item_color)) {
+  if (SetIconColorIfChanged(app_item->icon_color(), &sync_item->item_color)) {
     changed = true;
   }
 
@@ -1640,8 +1625,7 @@ void AppListSyncableService::InitNewItemPosition(ChromeAppListItem* new_item) {
   // position due to the concern over the possible regression in OEM folders.
   bool use_first_available_position =
       new_item->is_folder() && new_item->id() != ash::kCrostiniFolderId;
-  if (!ash::features::IsLauncherAppSortEnabled() ||
-      use_first_available_position) {
+  if (use_first_available_position) {
     new_item->SetChromePosition(model_updater_->GetFirstAvailablePosition());
     return;
   }

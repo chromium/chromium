@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -159,8 +158,7 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
-    if (trimmed_query.empty() &&
-        ash::features::IsProductivityLauncherEnabled()) {
+    if (trimmed_query.empty()) {
       search_controller_->ClearSearch();
     } else {
       search_controller_->StartSearch(trimmed_query);

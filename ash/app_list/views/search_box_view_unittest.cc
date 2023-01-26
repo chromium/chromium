@@ -867,13 +867,10 @@ TEST_P(SearchBoxViewAutocompleteTest, SearchBoxAutocompletesNotHandledForIME) {
     EXPECT_EQ("", view()->GetSearchBoxGhostTextForTest());
 }
 
-// TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase, then
-// parameterize them based on the ProductivityLauncher flag.
+// TODO(crbug.com/1216082): Refactor the above tests to use AshTestBase.
 class SearchBoxViewAppListBubbleTest : public AshTestBase {
  public:
-  SearchBoxViewAppListBubbleTest() {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+  SearchBoxViewAppListBubbleTest() = default;
   ~SearchBoxViewAppListBubbleTest() override = default;
 
   static void AddSearchResult(const std::string& id,
@@ -896,8 +893,6 @@ class SearchBoxViewAppListBubbleTest : public AshTestBase {
     search_result->SetTitle(title);
     search_results->Add(std::move(search_result));
   }
-
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 TEST_F(SearchBoxViewAppListBubbleTest, AutocompleteCategoricalResult) {
@@ -1013,9 +1008,7 @@ TEST_F(SearchBoxViewTabletTest, SearchBoxInactiveByDefault) {
 
 class SearchBoxViewAnimationTest : public AshTestBase {
  public:
-  SearchBoxViewAnimationTest() {
-    scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
-  }
+  SearchBoxViewAnimationTest() = default;
   ~SearchBoxViewAnimationTest() override = default;
 
   void SetUp() override {
@@ -1028,7 +1021,6 @@ class SearchBoxViewAnimationTest : public AshTestBase {
   }
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> non_zero_duration_mode_;
-  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Test that the search box image buttons fade in and out correctly when the

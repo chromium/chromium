@@ -431,9 +431,6 @@ void AppListControllerImpl::OnSessionStateChanged(
 }
 
 void AppListControllerImpl::OnUserSessionAdded(const AccountId& account_id) {
-  if (!features::IsLauncherAppSortEnabled())
-    return;
-
   if (!client_)
     return;
 
@@ -481,8 +478,6 @@ void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
-  DCHECK(features::IsLauncherAppSortEnabled());
-
   if (new_order) {
     RecordAppListSortAction(*new_order, IsInTabletMode());
 

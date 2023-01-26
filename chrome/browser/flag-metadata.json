@@ -5819,11 +5819,6 @@
     "expiry_milestone": 106
   },
   {
-    "name":"productivity-reorder-apps",
-    "owners":["andrewxu", "cros-system-ui-eng@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "prominent-dark-mode-active-tab-title",
     "owners": [ "dfried" ],
     "expiry_milestone": 82

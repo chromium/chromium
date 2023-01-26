@@ -130,9 +130,6 @@ extern const char kIdentityStatusConsistencyDescription[];
 extern const char kTangibleSyncName[];
 extern const char kTangibleSyncDescription[];
 
-extern const char kLauncherAppSortName[];
-extern const char kLauncherAppSortDescription[];
-
 extern const char kMainThreadCompositingPriorityName[];
 extern const char kMainThreadCompositingPriorityDescription[];
 

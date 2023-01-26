@@ -4973,8 +4973,7 @@ AutotestPrivateWaitForLauncherStateFunction::Run() {
   // Exceptionally, allow waiting for kClosed state in clamshell mode, so tests
   // can wait for fullscreen launcher state change to finish when exiting tablet
   // mode.
-  if (ash::features::IsProductivityLauncherEnabled() &&
-      !ash::TabletMode::Get()->InTabletMode() &&
+  if (!ash::TabletMode::Get()->InTabletMode() &&
       target_state != ash::AppListViewState::kClosed) {
     return RespondNow(Error("Not supported for bubble launcher"));
   }

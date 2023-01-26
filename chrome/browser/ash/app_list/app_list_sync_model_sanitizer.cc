@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -36,12 +35,9 @@ AppListSyncModelSanitizer::AppListSyncModelSanitizer(
 
 AppListSyncModelSanitizer::~AppListSyncModelSanitizer() = default;
 
-void AppListSyncModelSanitizer::SanitizePageBreaksForProductivityLauncher(
+void AppListSyncModelSanitizer::SanitizePageBreaks(
     const std::set<std::string>& top_level_items,
     bool reset_page_breaks) {
-  if (!ash::features::IsProductivityLauncherEnabled())
-    return;
-
   const std::vector<AppListSyncableService::SyncItem*> sync_items =
       syncable_service_->GetSortedTopLevelSyncItems();
 

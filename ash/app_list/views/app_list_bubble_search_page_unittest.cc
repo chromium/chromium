@@ -6,9 +6,7 @@
 
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
-#include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -20,10 +18,7 @@
 namespace ash {
 namespace {
 
-class AppListBubbleSearchPageTest : public AshTestBase {
- private:
-  base::test::ScopedFeatureList features_{features::kProductivityLauncher};
-};
+using AppListBubbleSearchPageTest = AshTestBase;
 
 TEST_F(AppListBubbleSearchPageTest, AnimateShowPage) {
   // Open the app list without animation.

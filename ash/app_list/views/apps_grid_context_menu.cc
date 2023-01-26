@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -50,9 +49,6 @@ void AppsGridContextMenu::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  if (!features::IsLauncherAppSortEnabled())
-    return;
-
   // Build the menu model and save it to `context_menu_model_`.
   BuildMenuModel();
   menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(

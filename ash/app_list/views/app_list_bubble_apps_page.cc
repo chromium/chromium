@@ -24,7 +24,6 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
 #include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/metrics_util.h"
@@ -230,14 +229,12 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
 
   // Add a empty container view. A toast view should be added to
   // `toast_container_` when the app list starts temporary sorting.
-  if (features::IsLauncherAppSortEnabled()) {
-    toast_container_ = scroll_contents->AddChildView(
-        std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(),
-            app_list_keyboard_controller_.get(), a11y_announcer, view_delegate,
-            /*delegate=*/this,
-            /*tablet_mode=*/false));
-  }
+  toast_container_ =
+      scroll_contents->AddChildView(std::make_unique<AppListToastContainerView>(
+          app_list_nudge_controller_.get(), app_list_keyboard_controller_.get(),
+          a11y_announcer, view_delegate,
+          /*delegate=*/this,
+          /*tablet_mode=*/false));
 
   // All apps section.
   scrollable_apps_grid_view_ =
@@ -510,7 +507,6 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
     bool animate,
     base::OnceClosure update_position_closure,
     base::OnceClosure animation_done_closure) {
-  DCHECK(features::IsLauncherAppSortEnabled());
   DCHECK_EQ(animate, !update_position_closure.is_null());
   DCHECK(!animation_done_closure || animate);
 
@@ -595,17 +591,16 @@ void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
     scrollable_apps_grid_view_->CancelDragWithNoDropAnimation();
   }
 
-  if (features::IsLauncherAppSortEnabled()) {
-    // Updates the visibility state in toast container.
-    AppListToastContainerView::VisibilityState state =
-        is_visible ? AppListToastContainerView::VisibilityState::kShown
-                   : AppListToastContainerView::VisibilityState::kHidden;
-    toast_container_->UpdateVisibilityState(state);
+  // Updates the visibility state in toast container.
+  AppListToastContainerView::VisibilityState state =
+      is_visible ? AppListToastContainerView::VisibilityState::kShown
+                 : AppListToastContainerView::VisibilityState::kHidden;
+  toast_container_->UpdateVisibilityState(state);
 
-    // Check if the reorder nudge view needs update if the bubble apps page is
-    // showing.
-    if (is_visible)
-      toast_container_->MaybeUpdateReorderNudgeView();
+  // Check if the reorder nudge view needs update if the bubble apps page is
+  // showing.
+  if (is_visible) {
+    toast_container_->MaybeUpdateReorderNudgeView();
   }
 }
 

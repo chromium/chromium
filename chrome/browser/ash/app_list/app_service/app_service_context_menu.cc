@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_list/app_service/app_service_context_menu.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -426,8 +425,7 @@ void AppServiceContextMenu::OnGetMenuModel(GetMenuModelCallback callback,
   }
 
   const ui::ColorId color_id = apps::GetColorIdForMenuItemIcon();
-  if (item_context_ == ash::AppListItemContext::kAppsGrid &&
-      ash::features::IsLauncherAppSortEnabled()) {
+  if (item_context_ == ash::AppListItemContext::kAppsGrid) {
     reorder_submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
     // As all the options below are only for tests and are expected to change in
     // the future, the strings are directly written as the parameters.

@@ -37,18 +37,15 @@ class AppListSyncModelSanitizer {
   ~AppListSyncModelSanitizer();
 
   // Updates page breaks in the app list sync data to ensure items in the app
-  // list model respect legacy max page size - productivity launcher UI ignores
-  // page breaks, and will not itself manage pagination state. This method
+  // list model respect legacy max page size - launcher UI ignores page breaks,
+  // and will not itself manage pagination state. This method
   // ensures that app list model change synced to other devices have sane
   // pagination structure.
   // `reset_page_breaks` indicates whether all existing page breaks can be
   // removed. If false, only page breaks previously created by a model
   // sanitization can be removed.
-  // Used when order of apps in top level app list changes with
-  // kProductivityLauncher enabled.
-  void SanitizePageBreaksForProductivityLauncher(
-      const std::set<std::string>& top_level_items,
-      bool reset_page_breaks);
+  void SanitizePageBreaks(const std::set<std::string>& top_level_items,
+                          bool reset_page_breaks);
 
  private:
   // For items in sync_items that have identical position ordinals starting at

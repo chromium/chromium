@@ -1109,12 +1109,6 @@ BASE_FEATURE(kProductivityLauncherImageSearch,
              "ProductivityLauncherImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables the flag to synchronize launcher item colors. It is
-// in effect only when kLauncherAppSort is enabled.
-BASE_FEATURE(kLauncherItemColorSync,
-             "LauncherItemColorSync",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables a privacy improvement that removes wrongly configured hidden
 // networks and mitigates the creation of these networks. crbug/1327803.
 BASE_FEATURE(kHiddenNetworkMigration,
@@ -1321,23 +1315,6 @@ BASE_FEATURE(kLacrosMoveProfileMigration,
 BASE_FEATURE(kLacrosProfileBackwardMigration,
              "LacrosProfileBackwardMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables or disables sorting app icons shown on the launcher.
-BASE_FEATURE(kLauncherAppSort,
-             "LauncherAppSort",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, app list folders will be moved so app list remains sorted when
-// they get renamed, or created.
-BASE_FEATURE(kLauncherFolderRenameKeepsSortOrder,
-             "LauncherFolderRenameKeepsSortOrder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When enabled, the app list sort nudge and toast will have additional
-// buttons for dismissal.
-BASE_FEATURE(kLauncherDismissButtonsOnSortNudgeAndToast,
-             "LauncherDismissButtonsOnSortNudgeAndToast",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Uses short intervals for launcher nudge for testing if enabled.
 BASE_FEATURE(kLauncherNudgeShortInterval,
@@ -2458,11 +2435,6 @@ bool IsDnsOverHttpsWithIdentifiersEnabled() {
   return base::FeatureList::IsEnabled(kDnsOverHttpsWithIdentifiers);
 }
 
-bool IsLauncherItemColorSyncEnabled() {
-  return IsLauncherAppSortEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherItemColorSync);
-}
-
 bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
 }
@@ -2769,21 +2741,6 @@ bool IsKeyboardBacklightToggleEnabled() {
 bool IsLanguagePacksEnabled() {
   return base::FeatureList::IsEnabled(kHandwritingLegacyRecognition) ||
          base::FeatureList::IsEnabled(kHandwritingLegacyRecognitionAllLang);
-}
-
-bool IsLauncherAppSortEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherAppSort);
-}
-
-bool IsLauncherFolderRenameKeepsSortOrderEnabled() {
-  return IsLauncherAppSortEnabled() &&
-         base::FeatureList::IsEnabled(kLauncherFolderRenameKeepsSortOrder);
-}
-
-bool IsLauncherDismissButtonsOnSortNudgeAndToastEnabled() {
-  return IsLauncherAppSortEnabled() &&
-         base::FeatureList::IsEnabled(
-             kLauncherDismissButtonsOnSortNudgeAndToast);
 }
 
 bool IsLauncherNudgeShortIntervalEnabled() {

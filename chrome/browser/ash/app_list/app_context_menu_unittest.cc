@@ -404,9 +404,6 @@ TEST_F(AppContextMenuTest, ChromeApp) {
 }
 
 TEST_F(AppContextMenuTest, ChromeAppInRecentAppsList) {
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kProductivityLauncher);
-
   app_service_test().SetUp(profile());
 
   scoped_refptr<extensions::Extension> app = MakeChromeApp();

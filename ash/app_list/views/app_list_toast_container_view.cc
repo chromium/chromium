@@ -14,7 +14,6 @@
 #include "ash/app_list/views/app_list_nudge_controller.h"
 #include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_grid_context_menu.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
@@ -157,13 +156,11 @@ void AppListToastContainerView::CreateReorderNudgeView() {
   AppListToastView::Builder toast_view_builder(
       l10n_util::GetStringUTF16(IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_TITLE));
 
-  if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
-    toast_view_builder.SetButton(
-        l10n_util::GetStringUTF16(
-            IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON),
-        base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
-                            base::Unretained(this)));
-  }
+  toast_view_builder.SetButton(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_LAUNCHER_APP_LIST_REORDER_NUDGE_DISMISS_BUTTON),
+      base::BindRepeating(&AppListToastContainerView::FadeOutToastView,
+                          base::Unretained(this)));
 
   FeatureDiscoveryDurationReporter* reporter =
       FeatureDiscoveryDurationReporter::GetInstance();
@@ -274,11 +271,9 @@ void AppListToastContainerView::OnTemporarySortOrderChanged(
 
   AppListToastView::Builder toast_view_builder(toast_text);
 
-  if (features::IsLauncherDismissButtonsOnSortNudgeAndToastEnabled()) {
-    toast_view_builder.SetCloseButton(base::BindRepeating(
-        &AppListToastContainerView::OnReorderCloseButtonClicked,
-        base::Unretained(this)));
-  }
+  toast_view_builder.SetCloseButton(base::BindRepeating(
+      &AppListToastContainerView::OnReorderCloseButtonClicked,
+      base::Unretained(this)));
 
   toast_view_ = AddChildView(
       toast_view_builder.SetStyleForTabletMode(tablet_mode_)

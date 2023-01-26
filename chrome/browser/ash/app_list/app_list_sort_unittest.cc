@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
-
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/constants/ash_features.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
@@ -24,11 +21,7 @@ using crx_file::id_util::GenerateId;
 
 class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
  public:
-  TemporaryAppListSortTest() {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLauncherAppSort, ash::features::kProductivityLauncher},
-        {});
-  }
+  TemporaryAppListSortTest() = default;
   ~TemporaryAppListSortTest() override = default;
 
   void SetUp() override {
@@ -69,7 +62,6 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_lists_;
   std::unique_ptr<test::TestAppListController> app_list_controller_;
 };
 
