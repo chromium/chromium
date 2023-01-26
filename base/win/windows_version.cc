@@ -312,13 +312,16 @@ Version OSInfo::MajorMinorBuildToVersion(uint32_t major,
                                          uint32_t minor,
                                          uint32_t build) {
   if (major == 11) {
-    if (build >= 22621) {
-      return Version::WIN11_22H2;
-    }
+    // We know nothing about this version of Windows or even if it exists.
+    // Known Windows 11 versions have a major number 10 and are thus handled by
+    // the == 10 block below.
     return Version::WIN11;
   }
 
   if (major == 10) {
+    if (build >= 22621) {
+      return Version::WIN11_22H2;
+    }
     if (build >= 22000) {
       return Version::WIN11;
     }
