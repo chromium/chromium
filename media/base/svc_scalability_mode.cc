@@ -58,6 +58,8 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
       return "S3T2h";
     case SVCScalabilityMode::kS3T3h:
       return "S3T3h";
+    case SVCScalabilityMode::kL2T1Key:
+      return "L2T1_KEY";
     case SVCScalabilityMode::kL2T2Key:
       return "L2T2_KEY";
     case SVCScalabilityMode::kL2T2KeyShift:
@@ -66,6 +68,8 @@ const char* GetScalabilityModeName(SVCScalabilityMode scalability_mode) {
       return "L2T3_KEY";
     case SVCScalabilityMode::kL2T3KeyShift:
       return "L2T3_KEY_SHIFT";
+    case SVCScalabilityMode::kL3T1Key:
+      return "L3T1_KEY";
     case SVCScalabilityMode::kL3T2Key:
       return "L3T2_KEY";
     case SVCScalabilityMode::kL3T2KeyShift:

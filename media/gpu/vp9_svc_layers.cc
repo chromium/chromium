@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vp9_picture.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 namespace {
@@ -27,6 +28,63 @@ enum FrameFlags : uint8_t {
   kUpdate = 2,
   kReferenceAndUpdate = kReference | kUpdate,
 };
+
+const char* GetSVCName(size_t begin_active_layer,
+                       size_t end_active_layer,
+                       size_t num_temporal_layers) {
+  DCHECK_LT(begin_active_layer, end_active_layer);
+  size_t num_spatial_layers = end_active_layer - begin_active_layer;
+  absl::optional<SVCScalabilityMode> svc_mode;
+  switch (num_spatial_layers) {
+    case 1:
+      switch (num_temporal_layers) {
+        case 1:
+          return "L1T1";
+        case 2:
+          svc_mode = SVCScalabilityMode::kL1T2;
+          break;
+        case 3:
+          svc_mode = SVCScalabilityMode::kL1T3;
+          break;
+      }
+      break;
+    case 2:
+      switch (num_temporal_layers) {
+        case 1:
+          svc_mode = SVCScalabilityMode::kL2T1Key;
+          break;
+        case 2:
+          svc_mode = SVCScalabilityMode::kL2T2Key;
+          break;
+        case 3:
+          svc_mode = SVCScalabilityMode::kL2T3Key;
+          break;
+      }
+      break;
+    case 3:
+      switch (num_temporal_layers) {
+        case 1:
+          svc_mode = SVCScalabilityMode::kL3T1Key;
+          break;
+        case 2:
+          svc_mode = SVCScalabilityMode::kL3T2Key;
+          break;
+        case 3:
+          svc_mode = SVCScalabilityMode::kL3T3Key;
+          break;
+      }
+      break;
+  }
+
+  if (!svc_mode) {
+    DVLOGF(1) << "Unexpected SVC config: "
+              << "begin_active_layer=" << begin_active_layer
+              << ", end_active_layer=" << end_active_layer
+              << ", num_temporal_layers=" << num_temporal_layers;
+    return "INVALID SVC";
+  }
+  return GetScalabilityModeName(*svc_mode);
+}
 }  // namespace
 
 struct VP9SVCLayers::FrameConfig {
@@ -274,6 +332,13 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   if (begin_active_layer != begin_active_layer_ ||
       end_active_layer != end_active_layer_ ||
       new_num_temporal_layers != num_temporal_layers_) {
+    DVLOGF(2) << "SVC structure is changed from "
+              << GetSVCName(begin_active_layer_, end_active_layer_,
+                            num_temporal_layers_)
+              << " to "
+              << GetSVCName(begin_active_layer, end_active_layer,
+                            new_num_temporal_layers);
+
     // Update the stored active layer range.
     begin_active_layer_ = begin_active_layer;
     end_active_layer_ = end_active_layer;

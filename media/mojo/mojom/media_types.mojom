@@ -125,8 +125,10 @@ enum SVCScalabilityMode {
   kL1T1,
   kL1T2,
   kL1T3,
+  kL2T1Key,
   kL2T2Key,
   kL2T3Key,
+  kL3T1Key,
   kL3T2Key,
   kL3T3Key,
 };
