@@ -123,9 +123,10 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
                base::MemoryMappedFile* mmap) {
     // Bind the file channel to a file descriptor so that we can use it for
     // reading.
-    int fd = -1;
-    zx_status_t status = fdio_fd_create(file.TakeChannel().release(), &fd);
-    if (status != ZX_OK) {
+    base::ScopedFD fd;
+    if (zx_status_t status = fdio_fd_create(file.TakeChannel().release(),
+                                            base::ScopedFD::Receiver(fd).get());
+        status != ZX_OK) {
       // File-not-found errors are expected in some cases, so handle this result
       // w/o logging error text.
       ZX_DLOG_IF(WARNING, status != ZX_ERR_PEER_CLOSED, status)
@@ -134,7 +135,7 @@ class ContentDirectoryURLLoader final : public network::mojom::URLLoader {
     }
 
     // Map the file into memory.
-    return mmap->Initialize(base::File(base::ScopedFD(fd)),
+    return mmap->Initialize(base::File(std::move(fd)),
                             base::MemoryMappedFile::READ_ONLY);
   }
 
