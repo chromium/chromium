@@ -1768,7 +1768,7 @@ void CameraDeviceDelegate::DoGetPhotoState(
   // configuration setting if the feature flag is enabled.
   //
   // https://w3c.github.io/mediacapture-extensions/#exposing-mediastreamtrack-source-background-blur-support
-  if (ash::features::IsBackgroundBlurEnabled()) {
+  if (ash::features::IsVideoConferenceEnabled()) {
     callback = base::BindOnce(
         [](VideoCaptureDevice::GetPhotoStateCallback callback,
            media::mojom::PhotoStatePtr photo_state) {
