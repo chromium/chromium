@@ -81,6 +81,7 @@ test_files = [
   "google_assistant_page_test.js",
   "guest_os_shared_paths_test.js",
   "guest_os_shared_usb_devices_test.js",
+  "input_device_mojo_interface_provider_test.js",
   "input_method_options_page_test.js",
   "input_page_test.js",
   "internet_config_test.js",

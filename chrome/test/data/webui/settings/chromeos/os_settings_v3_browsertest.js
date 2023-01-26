@@ -407,6 +407,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'hotspot_summary_item_tests.js',
    {enabled: ['ash::features::kHotspot']},
  ],
+ [
+   'InputDeviceMojoInterfaceProvider',
+   'input_device_mojo_interface_provider_test.js'
+ ],
  ['InputMethodOptionPage', 'input_method_options_page_test.js'],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
