@@ -234,6 +234,14 @@ void ClipboardNudgeController::HandleNudgeShown() {
 
 void ClipboardNudgeController::OnClipboardHistoryMenuShown(
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
+  // The clipboard history nudges specifically suggest trying the Search+V
+  // shortcut. Opening the menu any other way should not count as the user
+  // responding to the nudge.
+  if (show_source !=
+      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator) {
+    return;
+  }
+
   if (LogFeatureOpenTime(last_shown_time_, kOnboardingNudge_OpenTime)) {
     last_shown_time_.set_was_logged_as_opened();
   }
@@ -246,16 +254,12 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
     screenshot_notification_last_shown_time_.set_was_logged_as_opened();
   }
 
-  if (show_source ==
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator) {
-    // The "nudge action" is recorded only when showing the menu through the
-    // accelerator since that is the nudge's suggested action.
-    // The metric will not be recorded if the nudge hasn't been shown before.
-    SystemNudgeController::RecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryOnboarding);
-    SystemNudgeController::RecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryZeroState);
-  }
+  // These metrics will not be recorded if the respective nudges have not been
+  // shown before.
+  SystemNudgeController::RecordNudgeAction(
+      NudgeCatalogName::kClipboardHistoryOnboarding);
+  SystemNudgeController::RecordNudgeAction(
+      NudgeCatalogName::kClipboardHistoryZeroState);
 }
 
 void ClipboardNudgeController::OnClipboardHistoryPasted() {

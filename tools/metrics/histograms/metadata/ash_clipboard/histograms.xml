@@ -242,11 +242,42 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
     units="seconds" expires_after="2023-04-25">
+  <obsolete>
+    Replaced by version 2 in January 2023. This histogram can be deleted once
+    the new version has enough stable channel data.
+  </obsolete>
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
     The delay between the user being shown the clipboard history {NudgeType} and
     the user's {Action} action. Recorded at the time of the {Action}.
+  </summary>
+  <token key="NudgeType">
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+  <token key="Action">
+    <variant name="Open" summary="opening the clipboard history menu"/>
+    <variant name="Paste" summary="pasting from the clipboard history menu"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}TimeV2"
+    units="seconds" expires_after="2023-04-25">
+  <owner>ckincaid@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The delay between the user being shown the clipboard history {NudgeType} and
+    the user's {Action} action. Recorded at the time of the {Action}.
+
+    Note: Version 1 of this histogram counted opening the clipboard history menu
+    via context menu as an &quot;open&quot; action. However, the nudges suggest
+    opening clipboard history via accelerator; they do not mention a context
+    menu option. This histogram only records opens that the nudge may have
+    actually led to.
   </summary>
   <token key="NudgeType">
     <variant name="OnboardingNudge" summary="onboarding nudge"/>

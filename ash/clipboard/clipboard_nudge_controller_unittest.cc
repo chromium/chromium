@@ -28,8 +28,7 @@ namespace ash {
 
 namespace {
 
-constexpr crosapi::mojom::ClipboardHistoryControllerShowSource default_source =
-    crosapi::mojom::ClipboardHistoryControllerShowSource::kUnknown;
+using crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator;
 
 }  // namespace
 
@@ -276,8 +275,7 @@ TEST_F(ClipboardNudgeControllerTest, ShowMenuAfterNudges_LogsOpenNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
   histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 1);
@@ -294,8 +292,7 @@ TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -310,8 +307,7 @@ TEST_F(ClipboardNudgeControllerTest, PasteAfterNudges_LogsPasteNudgeMetrics) {
 // onboarding nudge histograms.
 TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -326,8 +322,7 @@ TEST_F(ClipboardNudgeControllerTest, OnboardingNudge_DoesNotLogOtherMetrics) {
 // zero state nudge histograms.
 TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
@@ -343,8 +338,7 @@ TEST_F(ClipboardNudgeControllerTest, ZeroStateNudge_DoesNotLogOtherMetrics) {
 TEST_F(ClipboardNudgeControllerTest,
        ScreenshotNotification_DoesNotLogOtherMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
@@ -361,11 +355,9 @@ TEST_F(ClipboardNudgeControllerTest, SecondTimeAction_DoesNotLogNudgeMetrics) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 1);
@@ -381,14 +373,12 @@ TEST_F(ClipboardNudgeControllerTest, ShowNudgeTwice_LogsMetricsTwoTimes) {
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
   ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
   ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
   ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
-  nudge_controller_->OnClipboardHistoryMenuShown(
-      /*show_source=*/default_source);
+  nudge_controller_->OnClipboardHistoryMenuShown(/*show_source=*/kAccelerator);
   nudge_controller_->OnClipboardHistoryPasted();
 
   histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 2);
@@ -397,6 +387,34 @@ TEST_F(ClipboardNudgeControllerTest, ShowNudgeTwice_LogsMetricsTwoTimes) {
   histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 2);
   histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 2);
   histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 2);
+}
+
+// Tests that showing clipboard history from a source other than the accelerator
+// does not log any metrics, because the nudge only mentions the accelerator as
+// an option for opening the menu.
+TEST_F(ClipboardNudgeControllerTest,
+       NonAcceleratorShowMenuAfterNudges_DoesNotLogNudgeMetrics) {
+  using crosapi::mojom::ClipboardHistoryControllerShowSource;
+
+  ShowNudgeForType(ClipboardNudgeType::kOnboardingNudge);
+  ShowNudgeForType(ClipboardNudgeType::kZeroStateNudge);
+  ShowNudgeForType(ClipboardNudgeType::kScreenshotNotificationNudge);
+  for (size_t i =
+           static_cast<size_t>(ClipboardHistoryControllerShowSource::kMinValue);
+       i < static_cast<size_t>(ClipboardHistoryControllerShowSource::kMaxValue);
+       ++i) {
+    auto show_source = static_cast<ClipboardHistoryControllerShowSource>(i);
+    if (show_source != kAccelerator) {
+      nudge_controller_->OnClipboardHistoryMenuShown(show_source);
+    }
+  }
+
+  histograms().ExpectTotalCount(kOnboardingNudge_OpenTime, 0);
+  histograms().ExpectTotalCount(kZeroStateNudge_OpenTime, 0);
+  histograms().ExpectTotalCount(kScreenshotNotification_OpenTime, 0);
+  histograms().ExpectTotalCount(kOnboardingNudge_PasteTime, 0);
+  histograms().ExpectTotalCount(kZeroStateNudge_PasteTime, 0);
+  histograms().ExpectTotalCount(kScreenshotNotification_PasteTime, 0);
 }
 
 // Tests that nudge `TimeToAction` metric is logged after the nudge has been
