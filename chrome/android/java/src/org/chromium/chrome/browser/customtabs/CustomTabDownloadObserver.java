@@ -54,10 +54,12 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_NEW_DOWNLOAD_TAB)
                 && navigation.isDownload()) {
-            Runnable urlRegistration = ()
-                    -> DownloadManagerService.getDownloadManagerService()
-                               .getMessageUiController(/* otrProfileId */ null)
-                               .addDownloadInterstitialSource(tab.getOriginalUrl());
+            Runnable urlRegistration = () -> {
+                if (mActivity.isFinishing() || mActivity.isDestroyed() || tab.isDestroyed()) return;
+                DownloadManagerService.getDownloadManagerService()
+                        .getMessageUiController(/* otrProfileId */ null)
+                        .addDownloadInterstitialSource(tab.getOriginalUrl());
+            };
 
             DownloadInterstitialCoordinator coordinator =
                     DownloadInterstitialCoordinatorFactory.create(tab::getContext,

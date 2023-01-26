@@ -2025,6 +2025,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     protected void initDeferredStartupForActivity() {
         super.initDeferredStartupForActivity();
         DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            if (isActivityFinishingOrDestroyed()) return;
+
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             RecordHistogram.recordSparseHistogram(
                     "MemoryAndroid.DeviceMemoryClass", am.getMemoryClass());

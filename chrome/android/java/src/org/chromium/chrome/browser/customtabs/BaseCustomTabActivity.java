@@ -513,8 +513,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
         if (mWebappActivityCoordinator != null) {
             mWebappActivityCoordinator.initDeferredStartupForActivity();
         }
-        DeferredStartupHandler.getInstance().addDeferredTask(
-                () -> { mBaseCustomTabRootUiCoordinator.onDeferredStartup(); });
+        DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+            if (isActivityFinishingOrDestroyed()) return;
+            mBaseCustomTabRootUiCoordinator.onDeferredStartup();
+        });
         super.initDeferredStartupForActivity();
     }
 

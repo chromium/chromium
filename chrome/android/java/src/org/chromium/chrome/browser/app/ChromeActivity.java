@@ -1332,8 +1332,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // GSA connection is not needed on low-end devices because Icing is disabled.
         if (!SysUtils.isLowEndDevice()) {
-            if (isActivityFinishingOrDestroyed()) return;
             DeferredStartupHandler.getInstance().addDeferredTask(() -> {
+                if (isActivityFinishingOrDestroyed()) return;
                 if (!GSAState.getInstance().isGsaAvailable()) {
                     ContextReporter.reportStatus(ContextReporter.STATUS_GSA_NOT_AVAILABLE);
                     return;
