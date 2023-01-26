@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS Permissions grants are observable across same-origin iframes
+FAIL Permission default state can be queried assert_equals: expected "prompt" but got "denied"
+PASS Permission granted state can be queried
+PASS Permission denied state can be queried
+PASS Permission state can be observed
+Harness: the test ran to completion.
+
