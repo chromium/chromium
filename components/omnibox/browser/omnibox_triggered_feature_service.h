@@ -36,10 +36,11 @@ class OmniboxTriggeredFeatureService {
   OmniboxTriggeredFeatureService();
   ~OmniboxTriggeredFeatureService();
 
-  // Records `features_` for this session to `feature_triggered_in_session`.
-  // Records UMA histograms for any non-omnibox-event-protobuf features (i.e.
+  // Records `features_triggered_[in_session_]` to the params. Records UMA
+  // histograms for any non-omnibox-event-protobuf features (i.e.
   // `rich_autocompletion_types_`).
-  void RecordToLogs(Features* feature_triggered_in_session) const;
+  void RecordToLogs(Features* features_triggered,
+                    Features* features_triggered_in_session) const;
 
   // Invoked to indicate `feature` was triggered.
   void FeatureTriggered(Feature feature);
@@ -52,21 +53,26 @@ class OmniboxTriggeredFeatureService {
 
   // Returns whether `FeatureTriggered()` was called with `feature` since the
   // last `ResetSession()`.
-  bool GetFeatureTriggered(Feature feature) const;
+  bool GetFeatureTriggeredInSession(Feature feature) const;
 
-  // Invoked when a new omnibox session starts. Clears `features_` and
-  // `rich_autocompletion_types_`.
+  // Invoked when a new omnibox input starts. Clears `features_triggered_`.
+  void ResetInput();
+
+  // Invoked when a new omnibox session starts. Clears `features_triggered_`,
+  // `features_triggered_in_session_`, and
+  // `rich_autocompletion_types_in_session_`.
   void ResetSession();
 
  private:
   // The set of features triggered in the current omnibox session via
   // `FeatureTriggered()`.
-  std::set<Feature> features_;
+  std::set<Feature> features_triggered_;
+  std::set<Feature> features_triggered_in_session_;
 
   // The set of rich autocompletion types triggered in the current omnibox
   // session via `RichAutocompletionTypeTriggered()`.
   std::set<AutocompleteMatch::RichAutocompletionType>
-      rich_autocompletion_types_;
+      rich_autocompletion_types_in_session_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_TRIGGERED_FEATURE_SERVICE_H_

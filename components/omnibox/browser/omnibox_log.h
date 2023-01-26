@@ -119,7 +119,8 @@ struct OmniboxLog {
 
   // The features that have been triggered (see
   // OmniboxTriggeredFeatureService::Feature).
-  OmniboxTriggeredFeatureService::Features feature_triggered_in_session;
+  OmniboxTriggeredFeatureService::Features features_triggered;
+  OmniboxTriggeredFeatureService::Features features_triggered_in_session;
 
   // Whether the omnibox input is a search query that is started
   // by clicking on a image tile. Currently only used on Android.

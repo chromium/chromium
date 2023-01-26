@@ -200,8 +200,8 @@ class BookmarkProviderTest : public testing::Test {
   void TestNumMatchesAndTriggeredFeature(
       std::string input_text,
       size_t expected_matches_count,
-      absl::optional<OmniboxTriggeredFeatureService::Feature>
-          expected_triggered_feature = {});
+      bool expect_short_bookmarks_feature_triggered = false,
+      bool expect_bookmark_paths_feature_triggered = false);
 
   std::unique_ptr<MockAutocompleteProviderClient> provider_client_;
   std::unique_ptr<BookmarkModel> model_;
@@ -236,27 +236,27 @@ void BookmarkProviderTest::SetUp() {
 void BookmarkProviderTest::TestNumMatchesAndTriggeredFeature(
     std::string input_text,
     size_t expected_matches_count,
-    absl::optional<OmniboxTriggeredFeatureService::Feature>
-        expected_triggered_feature) {
+    bool expect_short_bookmarks_feature_triggered,
+    bool expect_bookmark_paths_feature_triggered) {
   SCOPED_TRACE("[" + input_text + "]");  // Wrap |input_text| in `[]` to make
                                          // trailing whitespace apparent.
 
+  auto* triggered_feature_service =
+      provider_client_->GetOmniboxTriggeredFeatureService();
+  triggered_feature_service->ResetSession();
   AutocompleteInput input(base::UTF8ToUTF16(input_text),
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   provider_->Start(input, false);
   EXPECT_EQ(provider_->matches().size(), expected_matches_count);
 
-  auto* triggered_feature_service =
-      provider_client_->GetOmniboxTriggeredFeatureService();
-  OmniboxTriggeredFeatureService::Features triggered_features;
-  triggered_feature_service->RecordToLogs(&triggered_features);
-  triggered_feature_service->ResetSession();
-  if (expected_triggered_feature) {
-    ASSERT_TRUE(!triggered_features.empty());
-    EXPECT_EQ(*triggered_features.begin(), *expected_triggered_feature);
-  } else
-    EXPECT_TRUE(triggered_features.empty());
+  EXPECT_EQ(triggered_feature_service->GetFeatureTriggeredInSession(
+                OmniboxTriggeredFeatureService::Feature::
+                    kShortBookmarkSuggestionsByTotalInputLength),
+            expect_short_bookmarks_feature_triggered);
+  EXPECT_EQ(triggered_feature_service->GetFeatureTriggeredInSession(
+                OmniboxTriggeredFeatureService::Feature::kBookmarkPaths),
+            expect_bookmark_paths_feature_triggered);
 }
 
 TEST_F(BookmarkProviderTest, Positions) {
@@ -556,10 +556,6 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
   // Test the 2 short bookmark features that determine when short inputs should
   // be allowed to prefix match. These tests are trying to match the mock
   // bookmark "testing short bookmarks".
-
-  auto trigger_feature = OmniboxTriggeredFeatureService::Feature::
-      kShortBookmarkSuggestionsByTotalInputLength;
-
   {
     SCOPED_TRACE("Default.");
     TestNumMatchesAndTriggeredFeature("te", 0);
@@ -584,9 +580,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     feature_list.InitAndEnableFeature(
         omnibox::kShortBookmarkSuggestionsByTotalInputLength);
     TestNumMatchesAndTriggeredFeature("te", 0);
-    TestNumMatchesAndTriggeredFeature("te ", 1, trigger_feature);
-    TestNumMatchesAndTriggeredFeature("tes", 1, trigger_feature);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te ", 1, true);
+    TestNumMatchesAndTriggeredFeature("tes", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
   }
 
   {
@@ -599,9 +595,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "5"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, true);
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
   }
 
   {
@@ -613,9 +609,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
               kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
-    TestNumMatchesAndTriggeredFeature("te ", 0, trigger_feature);
-    TestNumMatchesAndTriggeredFeature("tes", 1, trigger_feature);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te ", 0, true);
+    TestNumMatchesAndTriggeredFeature("tes", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, true);
   }
 
   {
@@ -632,9 +628,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te   ", 0, true);
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, true);
   }
 
   {
@@ -671,9 +667,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, true);
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
   }
 
   {
@@ -690,9 +686,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te  ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, true);
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
   }
 
   {
@@ -714,16 +710,13 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te  ", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, true);
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
   }
 }
 
 TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
-  auto trigger_feature =
-      OmniboxTriggeredFeatureService::Feature::kBookmarkPaths;
-
   {
     // When the feature is off, should not return path matched bookmarks nor
     // trigger counterfactual logging.
@@ -752,7 +745,7 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
         omnibox::kBookmarkPaths,
         {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}});
     TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 0, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("carefully other", 0, false, true);
   }
 
   {
@@ -765,7 +758,7 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
         omnibox::kBookmarkPaths,
         {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}});
     TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 1, trigger_feature);
+    TestNumMatchesAndTriggeredFeature("carefully other", 1, false, true);
   }
 }
 

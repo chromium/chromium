@@ -2523,8 +2523,9 @@ TEST_F(SearchProviderTest, FieldTrialTriggeredParsing) {
     AutocompleteMatch match;
     EXPECT_TRUE(FindMatchWithContents(u"foo bar", &match));
     EXPECT_EQ(
-        client_->GetOmniboxTriggeredFeatureService()->GetFeatureTriggered(
-            OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature),
+        client_->GetOmniboxTriggeredFeatureService()
+            ->GetFeatureTriggeredInSession(
+                OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature),
         trigger);
   };
 

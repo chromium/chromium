@@ -553,12 +553,14 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   DCHECK(!input.omit_asynchronous_matches() ||
          input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT);
 
+  provider_client_->GetOmniboxTriggeredFeatureService()->ResetInput();
+
   // When input.omit_asynchronous_matches() is true, the AutocompleteController
   // is being used for text classification, which should not notify observers.
   // TODO(manukh): This seems unnecessary; `AutocompleteClassifier` and
   //   `OmniboxController` use separate instances of `AutocompleteController`,
   //   the former doesn't add observers, the latter always uses
-  //   `omit_asynchrous_matches()` set to false. Besides, if that weren't the
+  //   `omit_asynchronous_matches()` set to false. Besides, if that weren't the
   //   case, e.g. the classifier did add an observer, then
   //   `AutocompleteController` should respect that, not assume it's a mistake
   //   and silently ignore the observer. Audit all call paths of `::Start()` to
@@ -790,7 +792,7 @@ void AutocompleteController::AddProviderAndTriggeringLogs(
 
   // Add any features that have been triggered.
   provider_client_->GetOmniboxTriggeredFeatureService()->RecordToLogs(
-      &logs->feature_triggered_in_session);
+      &logs->features_triggered, &logs->features_triggered_in_session);
 }
 
 void AutocompleteController::ResetSession() {
@@ -822,11 +824,12 @@ void AutocompleteController::
   // parameter.
   bool search_feature_triggered =
       provider_client_->GetOmniboxTriggeredFeatureService()
-          ->GetFeatureTriggered(
+          ->GetFeatureTriggeredInSession(
               OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature) ||
       provider_client_->GetOmniboxTriggeredFeatureService()
-          ->GetFeatureTriggered(OmniboxTriggeredFeatureService::Feature::
-                                    kRemoteZeroSuggestFeature);
+          ->GetFeatureTriggeredInSession(
+              OmniboxTriggeredFeatureService::Feature::
+                  kRemoteZeroSuggestFeature);
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());

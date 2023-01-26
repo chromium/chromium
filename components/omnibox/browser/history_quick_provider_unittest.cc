@@ -1070,12 +1070,12 @@ TEST_F(HQPDomainSuggestionsTest, DomainSuggestions) {
         [](const auto& match) { return match.description; });
     EXPECT_THAT(match_titles, testing::ElementsAreArray(expected_matches));
 
-    OmniboxTriggeredFeatureService::Features triggered_features;
-    client().GetOmniboxTriggeredFeatureService()->RecordToLogs(
-        &triggered_features);
-    bool was_triggered = triggered_features.count(
-        OmniboxTriggeredFeatureService::Feature::kDomainSuggestions);
-    EXPECT_EQ(was_triggered, expected_triggered);
+    EXPECT_EQ(
+        client()
+            .GetOmniboxTriggeredFeatureService()
+            ->GetFeatureTriggeredInSession(
+                OmniboxTriggeredFeatureService::Feature::kDomainSuggestions),
+        expected_triggered);
   };
 
   // When matching a popular domain, its top 3 suggestions should be suggested

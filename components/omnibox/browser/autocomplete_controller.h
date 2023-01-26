@@ -164,9 +164,9 @@ class AutocompleteController : public AutocompleteProviderListener,
   void OnProviderUpdate(bool updated_matches,
                         const AutocompleteProvider* provider) override;
 
-  // Called when an omnibox event log entry is generated.
-  // Populates |log.provider_info| with diagnostic information about the status
-  // of various providers and |log.feature_triggered_in_session| with triggered
+  // Called when an omnibox event log entry is generated. Populates
+  // `log.provider_info` with diagnostic information about the status of various
+  // providers and `log.features_triggered[_in_session]` with triggered
   // features.
   void AddProviderAndTriggeringLogs(OmniboxLog* logs) const;
 

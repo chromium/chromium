@@ -212,17 +212,19 @@ void OmniboxMetricsProvider::RecordOmniboxOpenedURL(const OmniboxLog& log) {
       suggestion->mutable_scoring_signals()->CopyFrom(i->scoring_signals);
     }
   }
-  for (auto i(log.providers_info.begin()); i != log.providers_info.end(); ++i) {
+  for (const auto& info : log.providers_info) {
     OmniboxEventProto::ProviderInfo* provider_info =
         omnibox_event->add_provider_info();
-    provider_info->CopyFrom(*i);
+    provider_info->CopyFrom(info);
   }
   omnibox_event->set_in_keyword_mode(log.in_keyword_mode);
   if (log.in_keyword_mode)
     omnibox_event->set_keyword_mode_entry_method(log.keyword_mode_entry_method);
   if (log.is_query_started_from_tile)
     omnibox_event->set_is_query_started_from_tile(true);
-  for (auto feature : log.feature_triggered_in_session) {
+  for (auto feature : log.features_triggered)
+    omnibox_event->add_feature_triggered(static_cast<size_t>(feature));
+  for (auto feature : log.features_triggered_in_session) {
     omnibox_event->add_feature_triggered_in_session(
         static_cast<size_t>(feature));
   }

@@ -99,18 +99,11 @@ class HistoryClustersProviderTest : public testing::Test,
   }
 
   void VerifyFeatureTriggered(bool expected) {
-    auto* triggered_feature_service =
-        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService();
-    OmniboxTriggeredFeatureService::Features triggered_features;
-    triggered_feature_service->RecordToLogs(&triggered_features);
-    triggered_feature_service->ResetSession();
-    if (expected) {
-      ASSERT_TRUE(!triggered_features.empty());
-      EXPECT_EQ(
-          *triggered_features.begin(),
-          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
-    } else
-      EXPECT_TRUE(triggered_features.empty());
+    EXPECT_EQ(autocomplete_provider_client_->GetOmniboxTriggeredFeatureService()
+                  ->GetFeatureTriggeredInSession(
+                      OmniboxTriggeredFeatureService::Feature::
+                          kHistoryClusterSuggestion),
+              expected);
   }
 
   // Tracks `OnProviderUpdate()` invocations.
