@@ -2109,7 +2109,7 @@ def main(argv):
         GetDepConfig(p) for p in GetAllDepsConfigsInOrder(
             deps_configs_paths, filter_func=ExcludeRecursiveResourcesDeps)
     ]
-    config['extra_android_manifests'] = []
+    config['extra_android_manifests'] = list(mergeable_android_manifests)
     for c in extra_manifest_deps:
       config['extra_android_manifests'].extend(
           c.get('mergeable_android_manifests', []))
