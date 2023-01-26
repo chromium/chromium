@@ -557,25 +557,18 @@ absl::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
 
 base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
   // We use the following order of priority if multiple values exist:
-  // - The programmatical value set in params. Used in specific tests.
-  //   The TTL set in BackForwardCacheTimeToLiveControl takes precedence over
-  //   the TTL set in the main BackForwardCache feature if both are present.
+  // - The TTL set in `kBackForwardCacheTimeToLiveControl` takes precedence over
+  //   the default value.
   // - Infinite if kBackForwardCacheNoTimeEviction is enabled.
   // - Default value otherwise, kDefaultTimeToLiveInBackForwardCacheInSeconds.
 
-  if (base::FeatureList::IsEnabled(kBackForwardCacheTimeToLiveControl)) {
+  if (base::FeatureList::IsEnabled(
+          features::kBackForwardCacheTimeToLiveControl)) {
     absl::optional<int> time_to_live = GetFieldTrialParamByFeatureAsOptionalInt(
-        kBackForwardCacheTimeToLiveControl, "time_to_live_seconds");
+        features::kBackForwardCacheTimeToLiveControl, "time_to_live_seconds");
     if (time_to_live.has_value()) {
       return base::Seconds(time_to_live.value());
     }
-  }
-
-  absl::optional<int> old_time_to_live =
-      GetFieldTrialParamByFeatureAsOptionalInt(
-          features::kBackForwardCache, "TimeToLiveInBackForwardCacheInSeconds");
-  if (old_time_to_live.has_value()) {
-    return base::Seconds(old_time_to_live.value());
   }
 
   if (base::FeatureList::IsEnabled(kBackForwardCacheNoTimeEviction)) {

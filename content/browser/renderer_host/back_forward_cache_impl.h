@@ -64,13 +64,6 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables controlling the time to live for pages in the backforward cache.
-// The time to live is defined by the param 'time_to_live_seconds'; if this
-// param is not specified then this feature is ignored and the default is used.
-BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
-             "BackForwardCacheTimeToLiveControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheSize);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kBackForwardCacheSizeCacheSize;

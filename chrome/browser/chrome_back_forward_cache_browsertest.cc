@@ -83,8 +83,8 @@ class ChromeBackForwardCacheBrowserTest : public InProcessBrowserTest {
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
 
-    EnableFeatureAndSetParams(features::kBackForwardCache,
-                              "TimeToLiveInBackForwardCacheInSeconds", "3600");
+    EnableFeatureAndSetParams(features::kBackForwardCacheTimeToLiveControl,
+                              "time_to_live_seconds", "3600");
     // Navigating quickly between cached pages can fail flakily with:
     // CanStorePageNow: <URL> : No: blocklisted features: outstanding network
     // request (others)

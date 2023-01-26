@@ -162,8 +162,8 @@ void BackForwardCacheBrowserTest::SetUpCommandLine(
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableExperimentalWebPlatformFeatures);
   // TODO(sreejakshetty): Initialize ScopedFeatureLists from test constructor.
-  EnableFeatureAndSetParams(features::kBackForwardCache,
-                            "TimeToLiveInBackForwardCacheInSeconds", "3600");
+  EnableFeatureAndSetParams(features::kBackForwardCacheTimeToLiveControl,
+                            "time_to_live_seconds", "3600");
   // Entry to the cache can be slow during testing and cause flakiness.
   DisableFeature(features::kBackForwardCacheEntryTimeout);
   EnableFeatureAndSetParams(features::kBackForwardCache,

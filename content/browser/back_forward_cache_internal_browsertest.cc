@@ -3721,24 +3721,10 @@ IN_PROC_BROWSER_TEST_F(
   ExpectCached(rfhs[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
-class CustomTTLBackForwardCacheBrowserTest
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(kBackForwardCacheTimeToLiveControl,
-                              "time_to_live_seconds",
-                              base::NumberToString(kTimeToLiveSeconds));
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  const int kTimeToLiveSeconds = 4000;
-};
-
 // Test that the BackForwardCacheTimeToLiveControl feature works and takes
-// precedence over the main BackForwardCache's TimeToLiveInBackForwardCache
-// parameter.
-IN_PROC_BROWSER_TEST_F(CustomTTLBackForwardCacheBrowserTest,
-                       TestTimeToLiveParameter) {
+// precedence over the default value
+// `kDefaultTimeToLiveInBackForwardCacheInSeconds`.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TestTimeToLiveParameter) {
   // Inject mock time task runner to be used in the eviction timer, so we can,
   // check for the functionality we are interested before and after the time to
   // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
@@ -3751,8 +3737,9 @@ IN_PROC_BROWSER_TEST_F(CustomTTLBackForwardCacheBrowserTest,
 
   base::TimeDelta time_to_live_in_back_forward_cache =
       BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
-  // This should match the value set in EnableFeatureAndSetParams.
-  EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(4000));
+  // This should match the value set via EnableFeatureAndSetParams by
+  // parent test class `BackForwardCacheBrowserTest`.
+  EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 
   base::TimeDelta delta = base::Milliseconds(1);
 

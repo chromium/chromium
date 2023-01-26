@@ -250,8 +250,9 @@ class LocationBarViewGeolocationBackForwardCacheBrowserTest
   LocationBarViewGeolocationBackForwardCacheBrowserTest()
       : geo_override_(0.0, 0.0) {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+        {{features::kBackForwardCache, {{}}},
+         {features::kBackForwardCacheTimeToLiveControl,
+          {{"time_to_live_seconds", "3600"}}},
          {blink::features::kLoadingTasksUnfreezable, {}},
          {features::kBackForwardCacheMemoryControls, {}}},
         {});

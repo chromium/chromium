@@ -1471,8 +1471,9 @@ class PrerenderTaskBrowserTest : public TaskManagerBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {
-            {features::kBackForwardCache,
-             {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
+            {features::kBackForwardCache, {{}}},
+            {features::kBackForwardCacheTimeToLiveControl,
+             {{"time_to_live_seconds", "3600"}}},
             {features::kOmniboxTriggerForPrerender2, {}},
         },
         /*disabled_features=*/{});

@@ -6625,10 +6625,6 @@ class PrerenderWithBackForwardCacheBrowserTest
       public testing::WithParamInterface<BackForwardCacheType> {
  public:
   PrerenderWithBackForwardCacheBrowserTest() {
-    // Set up the common params for the BFCache.
-    base::FieldTrialParams feature_params;
-    feature_params["TimeToLiveInBackForwardCacheInSeconds"] = "3600";
-
     // Allow the BFCache for all devices regardless of their memory.
     std::vector<base::test::FeatureRef> disabled_features{
         features::kBackForwardCacheMemoryControls};
@@ -6639,7 +6635,10 @@ class PrerenderWithBackForwardCacheBrowserTest
         break;
       case BackForwardCacheType::kEnabled:
         feature_list_.InitWithFeaturesAndParameters(
-            {{features::kBackForwardCache, feature_params}}, disabled_features);
+            {{features::kBackForwardCache, {{}}},
+             {features::kBackForwardCacheTimeToLiveControl,
+              {{"time_to_live_seconds", "3600"}}}},
+            disabled_features);
         break;
     }
   }

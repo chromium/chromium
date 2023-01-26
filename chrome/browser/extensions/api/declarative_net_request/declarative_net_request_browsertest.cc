@@ -6741,9 +6741,10 @@ class DeclarativeNetRequestBackForwardCacheBrowserTest
   DeclarativeNetRequestBackForwardCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"ignore_outstanding_network_request_for_testing", "true"},
-           {"all_extensions_allowed", "true"}}}},
+          {{"ignore_outstanding_network_request_for_testing", "true"},
+           {"all_extensions_allowed", "true"}}},
+         {features::kBackForwardCacheTimeToLiveControl,
+          {{"time_to_live_seconds", "3600"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 

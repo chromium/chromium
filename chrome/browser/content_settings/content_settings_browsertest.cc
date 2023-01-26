@@ -873,11 +873,12 @@ class ContentSettingsBackForwardCacheBrowserTest : public ContentSettingsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
-          {// Set a very long TTL before expiration (longer than the test
-           // timeout) so tests that are expecting deletion don't pass when
-           // they shouldn't.
-           {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-           {"ignore_outstanding_network_request_for_testing", "true"}}}},
+          {{"ignore_outstanding_network_request_for_testing", "true"}}},
+         // Set a very long TTL before expiration (longer than the test
+         // timeout) so tests that are expecting deletion don't pass when
+         // they shouldn't.
+         {features::kBackForwardCacheTimeToLiveControl,
+          {{"time_to_live_seconds", "3600"}}}},
         // Allow BackForwardCache for all devices regardless of their memory.
         {features::kBackForwardCacheMemoryControls});
     ContentSettingsTest::SetUpCommandLine(command_line);

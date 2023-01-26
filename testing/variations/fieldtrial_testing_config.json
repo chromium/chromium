@@ -1704,7 +1704,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "TimeToLiveInBackForwardCacheInSeconds": "180",
                         "allowed_websites": "",
                         "cache_size": "6",
                         "check_eligibility_after_pagehide": "true",
@@ -1735,7 +1734,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "TimeToLiveInBackForwardCacheInSeconds": "180",
                         "all_extensions_allowed": "true",
                         "allowed_websites": "",
                         "cache_size": "6",

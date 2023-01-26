@@ -454,8 +454,9 @@ class PendingBeaconBackgroundTimeoutBrowserTest
          {{"PendingBeaconMaxBackgroundTimeoutInMs", "60000"},
           // Don't force sending out beacons on pagehide.
           {"send_on_navigation", "false"}}},
-        {features::kBackForwardCache,
-         {{"TimeToLiveInBackForwardCacheInSeconds", "5"}}},
+        {features::kBackForwardCache, {{}}},
+        {features::kBackForwardCacheTimeToLiveControl,
+         {{"time_to_live_seconds", "5"}}},
         // Forces BFCache to work in low memory device.
         {features::kBackForwardCacheMemoryControls,
          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};
@@ -695,8 +696,9 @@ class PendingBeaconMutualTimeoutWithLongBackForwardCacheTTLBrowserTest
         {blink::features::kPendingBeaconAPI,
          {// Don't force sending out beacons on pagehide.
           {"send_on_navigation", "false"}}},
-        {features::kBackForwardCache,
-         {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
+        {features::kBackForwardCache, {{}}},
+        {features::kBackForwardCacheTimeToLiveControl,
+         {{"time_to_live_seconds", "60"}}},
         // Forces BFCache to work in low memory device.
         {features::kBackForwardCacheMemoryControls,
          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};
@@ -787,8 +789,9 @@ class PendingBeaconSendOnPagehideBrowserTest
         {blink::features::kPendingBeaconAPI,
          {{"PendingBeaconMaxBackgroundTimeoutInMs", "60000"},
           {"send_on_navigation", "true"}}},
-        {features::kBackForwardCache,
-         {{"TimeToLiveInBackForwardCacheInSeconds", "60"}}},
+        {features::kBackForwardCache, {{}}},
+        {features::kBackForwardCacheTimeToLiveControl,
+         {{"time_to_live_seconds", "60"}}},
         // Forces BFCache to work in low memory device.
         {features::kBackForwardCacheMemoryControls,
          {{"memory_threshold_for_back_forward_cache_in_mb", "0"}}}};

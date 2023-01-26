@@ -114,6 +114,13 @@ BASE_FEATURE(kBackForwardCacheEntryTimeout,
              "BackForwardCacheEntryTimeout",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables controlling the time to live for pages in the BackForwardCache.
+// The time to live is defined by the param 'time_to_live_seconds'; if this
+// param is not specified then this feature is ignored and the default is used.
+BASE_FEATURE(kBackForwardCacheTimeToLiveControl,
+             "BackForwardCacheTimeToLiveControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable back/forward cache for screen reader users. This flag should be
 // removed once the https://crbug.com/1271450 is resolved.
 BASE_FEATURE(kEnableBackForwardCacheForScreenReader,

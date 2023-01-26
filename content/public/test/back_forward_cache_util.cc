@@ -69,7 +69,7 @@ DefaultEnabledBackForwardCacheParametersForTests(
   std::vector<base::test::FeatureRefAndParams> default_features_and_params = {
       {features::kBackForwardCache,
        {{"ignore_outstanding_network_request_for_testing", "true"}}},
-      {kBackForwardCacheTimeToLiveControl,
+      {features::kBackForwardCacheTimeToLiveControl,
        {{"time_to_live_in_seconds", "3600"}}}};
   std::vector<base::test::FeatureRefAndParams> final_params;
   // Go over the additional features/params - if they match a default feature,

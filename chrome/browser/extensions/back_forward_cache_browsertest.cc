@@ -50,11 +50,12 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
             allow_content_scripts ? "true" : "false"},
            {"extension_message_supported",
             extension_message_support ? "true" : "false"},
-           {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"all_extensions_allowed",
             all_extensions_allowed ? "true" : "false"},
            {"blocked_extensions", blocked_extensions},
-           {"ignore_outstanding_network_request_for_testing", "true"}}}},
+           {"ignore_outstanding_network_request_for_testing", "true"}}},
+         {features::kBackForwardCacheTimeToLiveControl,
+          {{"time_to_live_seconds", "3600"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 

@@ -87,8 +87,9 @@ class BFCachePolicyBrowserTest
     EnableFeature(::features::kBackForwardCache,
                   {{"foreground_cache_size", "10"},
                    {"cache_size", "10"},
-                   {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
                    {"ignore_outstanding_network_request_for_testing", "true"}});
+    EnableFeature(::features::kBackForwardCacheTimeToLiveControl,
+                  {{"time_to_live_seconds", "3600"}});
     DisableFeature(::features::kBackForwardCacheMemoryControls);
     // Occlusion can cause the web_contents to be marked visible between the
     // time the test calls WasHidden and BFCachePolicy::MaybeFlushBFCache is

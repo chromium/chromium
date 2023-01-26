@@ -3676,9 +3676,10 @@ class ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest
  protected:
   ServiceWorkerBackForwardCacheAndKeepActiveFreezingBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{{features::kBackForwardCache,
-           {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
-            {"process_binding_strength", "NORMAL"}}}}},
+        {{features::kBackForwardCache,
+          {{"process_binding_strength", "NORMAL"}}},
+         {features::kBackForwardCacheTimeToLiveControl,
+          {{"time_to_live_seconds", "3600"}}}},
         {features::kBackForwardCacheMemoryControls});
   }
 
