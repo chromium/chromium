@@ -263096,16 +263096,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "f9b0b4180d2c4674132652e6c8dc7bf314dbd0f8",
-     []
-    ],
-    "mtime.json": [
-     "c43d0da67738c0b2e400c2c1be1168be17aec4ed",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -380245,7 +380235,7 @@
     },
     "view-timelines": {
      "testcommon.js": [
-      "12693c35d768263b9db625702f174d7cf79606c0",
+      "65301215c4732720f578140b32b6207a7325f400",
       []
      ]
     }
@@ -394364,7 +394354,7 @@
      []
     ],
     "supported-stats.https-expected.txt": [
-     "369a0a7499aaceaa41d7f9aab855597f393fbdc7",
+     "6920be4920c99d495662d3ba320351bd7e553ad0",
      []
     ],
     "supported-stats.https.html.ini": [
@@ -553091,6 +553081,13 @@
          {}
         ]
        ],
+       "valid-invalid-fieldset-disconnected.html": [
+        "6ad329438a86b411ebdab81a2a35a6ce8e95d6c9",
+        [
+         null,
+         {}
+        ]
+       ],
        "valid-invalid.html": [
         "d93407707f07e99dec7a45a9c2b5df388c17d98d",
         [
@@ -593171,6 +593168,13 @@
        {}
       ]
      ],
+     "view-timeline-animation-range-update.tentative.html": [
+      "41386bd7c55baff1062e3d0caa7f663cf80c0637",
+      [
+       null,
+       {}
+      ]
+     ],
      "view-timeline-animation.html": [
       "b816bb689732b3be59df48c0653ed892dc70cdd4",
       [
@@ -593487,14 +593491,14 @@
       ]
      ],
      "inline-view-timeline-current-time.tentative.html": [
-      "412145b04c0a951aa96312afb641159884ae5756",
+      "5b37798fe89035a5eb459ae479fc94ac42a05689",
       [
        null,
        {}
       ]
      ],
      "view-timeline-get-current-time-range-name.html": [
-      "8f385e7b6ebaa208582bc3bec068cc1beb791fd8",
+      "09714b572bc742607e030fc4d8934f5cbecded8d",
       [
        null,
        {}
@@ -593543,7 +593547,7 @@
       ]
      ],
      "view-timeline-subject-size-changes.html": [
-      "553facb52fa18323369c8061ce934ceb74d50f0e",
+      "a47fed8e4467093807ecc080686bd80501abade8",
       [
        null,
        {}
@@ -631638,14 +631642,14 @@
      ]
     ],
     "rtp-stats-creation.html": [
-     "c12f266362ea432bff5f657413f8fbf612332a11",
+     "df672a7f0d99d6bddf19a857d1a1aeba17de2646",
      [
       null,
       {}
      ]
     ],
     "supported-stats.https.html": [
-     "2fdd3ad9094cc6436232d4d8ea78b379d4bfb480",
+     "24b4d3f06f04d740d3b45b4813222d97f891cbcc",
      [
       null,
       {
