@@ -62,7 +62,7 @@ class ZeroSuggestCacheService : public KeyedService {
   // Read/write zero suggest cache entries.
   CacheEntry ReadZeroSuggestResponse(const std::string& page_url) const;
   void StoreZeroSuggestResponse(const std::string& page_url,
-                                const CacheEntry& response);
+                                const std::string& response_json);
 
   // Remove all zero suggest cache entries.
   void ClearCache();

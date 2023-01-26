@@ -38,7 +38,7 @@ ZeroSuggestCacheService::ZeroSuggestCacheService(PrefService* prefs,
     for (auto it = prefs_dict.begin(); it != prefs_dict.end(); ++it) {
       const auto& page_url = it->first;
       const auto& response_json = (it->second).GetString();
-      StoreZeroSuggestResponse(page_url, CacheEntry(response_json));
+      StoreZeroSuggestResponse(page_url, response_json);
     }
   }
 }
@@ -79,13 +79,15 @@ CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
 
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
-    const CacheEntry& response) {
+    const std::string& response_json) {
+  auto entry = CacheEntry(response_json);
+
   if (page_url.empty()) {
     // Write ZPS response for NTP to cache.
-    ntp_entry_ = response;
+    ntp_entry_ = entry;
   } else {
     // Write ZPS response for SRP/Web to cache.
-    cache_.Put(page_url, response);
+    cache_.Put(page_url, entry);
   }
 
   base::UmaHistogramCounts1M(
@@ -94,7 +96,7 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
           base::trace_event::EstimateMemoryUsage(ntp_entry_));
 
   for (auto& observer : observers_) {
-    observer.OnZeroSuggestResponseUpdated(page_url, response);
+    observer.OnZeroSuggestResponseUpdated(page_url, entry);
   }
 }
 

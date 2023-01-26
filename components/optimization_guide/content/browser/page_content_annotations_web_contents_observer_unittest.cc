@@ -613,10 +613,8 @@ class PageContentAnnotationsWebContentsObserverRelatedSearchesFromZPSCacheTest
       const std::string& page_url,
       const std::string& response_json) {
     DCHECK(zero_suggest_cache_service);
-
-    ZeroSuggestCacheService::CacheEntry entry;
-    entry.response_json = response_json;
-    zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, entry);
+    zero_suggest_cache_service->StoreZeroSuggestResponse(page_url,
+                                                         response_json);
   }
 
   // Performs synchronous call of `HistoryService::QueryHistory()`.

@@ -252,8 +252,8 @@ bool StoreRemoteResponse(const std::string& response_json,
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
     auto* zero_suggest_cache_service = client->GetZeroSuggestCacheService();
     if (zero_suggest_cache_service != nullptr) {
-      ZeroSuggestCacheService::CacheEntry entry(response_json);
-      zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, entry);
+      zero_suggest_cache_service->StoreZeroSuggestResponse(page_url,
+                                                           response_json);
       LogEvent(Event::kRemoteResponseCached, result_type, is_prefetch);
     }
   } else {
