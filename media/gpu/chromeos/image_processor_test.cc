@@ -39,6 +39,11 @@
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_bindings.h"
+#include "ui/gl/gl_context.h"
+#include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
+#include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #define MM21_TILE_WIDTH 32
@@ -148,6 +153,31 @@ bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
+bool SupportsNecessaryGLExtension() {
+  bool ret;
+
+  scoped_refptr<gl::GLSurface> gl_surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
+  if (!gl_surface) {
+    LOG(ERROR) << "Error creating GL surface";
+    return false;
+  }
+  scoped_refptr<gl::GLContext> gl_context = gl::init::CreateGLContext(
+      nullptr, gl_surface.get(), gl::GLContextAttribs());
+  if (!gl_context) {
+    LOG(ERROR) << "Error creating GL context";
+    return false;
+  }
+  if (!gl_context->MakeCurrent(gl_surface.get())) {
+    LOG(ERROR) << "Error making GL context current";
+    return false;
+  }
+  ret = gl_context->HasExtension("GL_EXT_YUV_target");
+  gl_context->ReleaseCurrent(gl_surface.get());
+
+  return ret;
+}
+
 scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
                                           VideoFrame::StorageType type) {
   const gfx::Rect visible_rect(size);
@@ -561,6 +591,10 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       /*fallback_to_software_gl=*/false);
+
+  if (!SupportsNecessaryGLExtension()) {
+    GTEST_SKIP() << "Skipping GL Backend test, unsupported platform.";
+  }
 
   constexpr gfx::Size kTestImageSize(1920, 1088);
   constexpr gfx::Rect kTestImageVisibleRect(kTestImageSize);
