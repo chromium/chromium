@@ -7,8 +7,6 @@
 dictionary OptionalEffectTiming {
     (double or CSSNumericValue)                           delay;
     (double or CSSNumericValue)                           endDelay;
-    (DOMString or TimelineRangeOffset)                    rangeStart;
-    (DOMString or TimelineRangeOffset)                    rangeEnd;
     FillMode                                              fill;
     double                                                iterationStart;
     unrestricted double                                   iterations;

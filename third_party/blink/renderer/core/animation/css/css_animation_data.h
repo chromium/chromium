@@ -49,6 +49,13 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   const Vector<EAnimPlayState>& PlayStateList() const {
     return play_state_list_;
   }
+  const Vector<absl::optional<TimelineOffset>>& RangeStartList() const {
+    return range_start_list_;
+  }
+  const Vector<absl::optional<TimelineOffset>>& RangeEndList() const {
+    return range_end_list_;
+  }
+
   const Vector<EffectModel::CompositeOperation>& CompositionList() const {
     return composition_list_;
   }
@@ -67,6 +74,13 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   Vector<Timing::PlaybackDirection>& DirectionList() { return direction_list_; }
   Vector<Timing::FillMode>& FillModeList() { return fill_mode_list_; }
   Vector<EAnimPlayState>& PlayStateList() { return play_state_list_; }
+
+  Vector<absl::optional<TimelineOffset>>& RangeStartList() {
+    return range_start_list_;
+  }
+  Vector<absl::optional<TimelineOffset>>& RangeEndList() {
+    return range_end_list_;
+  }
   Vector<EffectModel::CompositeOperation>& CompositionList() {
     return composition_list_;
   }
@@ -79,6 +93,12 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
   static Timing::FillMode InitialFillMode() { return Timing::FillMode::NONE; }
   static double InitialIterationCount() { return 1.0; }
   static EAnimPlayState InitialPlayState() { return EAnimPlayState::kPlaying; }
+  static absl::optional<TimelineOffset> InitialRangeStart() {
+    return absl::nullopt;
+  }
+  static absl::optional<TimelineOffset> InitialRangeEnd() {
+    return absl::nullopt;
+  }
   static EffectModel::CompositeOperation InitialComposition() {
     return EffectModel::CompositeOperation::kCompositeReplace;
   }
@@ -86,6 +106,8 @@ class CORE_EXPORT CSSAnimationData final : public CSSTimingData {
  private:
   Vector<AtomicString> name_list_;
   Vector<StyleTimeline> timeline_list_;
+  Vector<absl::optional<TimelineOffset>> range_start_list_;
+  Vector<absl::optional<TimelineOffset>> range_end_list_;
   Vector<double> iteration_count_list_;
   Vector<Timing::PlaybackDirection> direction_list_;
   Vector<Timing::FillMode> fill_mode_list_;

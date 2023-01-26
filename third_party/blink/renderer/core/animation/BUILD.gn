@@ -278,6 +278,8 @@ blink_core_sources("animation") {
     "svg_transform_list_interpolation_type.h",
     "svg_value_interpolation_type.cc",
     "svg_value_interpolation_type.h",
+    "timeline_offset.cc",
+    "timeline_offset.h",
     "timing.cc",
     "timing.h",
     "timing_calculations.h",

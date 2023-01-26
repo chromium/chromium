@@ -36,16 +36,18 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_effect_owner.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
+#include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -209,6 +211,28 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   AnimationTimeline* timeline() { return timeline_; }
   AnimationTimeline* timeline() const { return timeline_; }
   virtual void setTimeline(AnimationTimeline* timeline);
+
+  // Animation options for ViewTimelines.
+  // TODO(kevers): Add web-animation-API methods once specced.
+  const absl::optional<TimelineOffset>& GetRangeStart() const {
+    return range_start_;
+  }
+  const absl::optional<TimelineOffset>& GetRangeEnd() const {
+    return range_end_;
+  }
+  void SetRangeStart(const absl::optional<TimelineOffset>& range_start) {
+    range_start_ = range_start;
+    if (content_) {
+      content_->InvalidateNormalizedTiming();
+    }
+  }
+  void SetRangeEnd(const absl::optional<TimelineOffset>& range_end) {
+    range_end_ = range_end;
+    if (content_) {
+      content_->InvalidateNormalizedTiming();
+    }
+  }
+
   Document* GetDocument() const;
 
   V8CSSNumberish* startTime() const;
@@ -439,6 +463,9 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   // Otherwise it refers to the document for the execution context.
   Member<Document> document_;
   Member<AnimationTimeline> timeline_;
+
+  absl::optional<TimelineOffset> range_start_;
+  absl::optional<TimelineOffset> range_end_;
 
   ReplaceState replace_state_;
 

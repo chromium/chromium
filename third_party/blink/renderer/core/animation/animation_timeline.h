@@ -73,6 +73,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // consideration here: https://github.com/w3c/csswg-drafts/issues/2075.
   virtual absl::optional<base::TimeDelta> InitialStartTimeForAnimations() = 0;
   virtual AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const Animation*,
       const Timing&) {
     return AnimationTimeDelta();
   }
@@ -82,7 +83,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // of a view timeline, the delays are zero.
   using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
   virtual TimeDelayPair TimelineOffsetsToTimeDelays(
-      const Timing& timing) const {
+      const Animation* animation) const {
     return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
   }
 

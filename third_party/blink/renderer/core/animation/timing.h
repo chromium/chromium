@@ -94,27 +94,6 @@ struct CORE_EXPORT Timing {
   using V8TimelineRangeOffset = V8UnionStringOrTimelineRangeOffset;
   using TimelineNamedRange = V8TimelineRange::Enum;
 
-  struct TimelineOffset {
-    TimelineOffset() = default;
-    TimelineOffset(TimelineNamedRange name, Length offset)
-        : name(name), offset(offset) {}
-
-    V8TimelineRangeOffset* ToV8TimelineRangeOffset() const;
-
-    void UpdateOffset();
-
-    TimelineNamedRange name = TimelineNamedRange::kNone;
-    Length offset = Length::Fixed();
-
-    bool operator==(const TimelineOffset& other) const {
-      return name == other.name && offset == other.offset;
-    }
-
-    bool operator!=(const TimelineOffset& other) const {
-      return !(*this == other);
-    }
-  };
-
   // Delay can be directly expressed as time delays or calculated based on a
   // position on a view timeline. As part of the normalization process, a
   // timeline offsets are converted to time-based delays.
@@ -171,7 +150,6 @@ struct CORE_EXPORT Timing {
 
   bool operator==(const Timing& other) const {
     return start_delay == other.start_delay && end_delay == other.end_delay &&
-           range_start == other.range_start && range_end == other.range_end &&
            fill_mode == other.fill_mode &&
            iteration_start == other.iteration_start &&
            iteration_count == other.iteration_count &&
@@ -201,8 +179,6 @@ struct CORE_EXPORT Timing {
   // TODO(crbug.com/1216527): Support CSSNumberish delays
   Delay start_delay;
   Delay end_delay;
-  absl::optional<TimelineOffset> range_start;
-  absl::optional<TimelineOffset> range_end;
   FillMode fill_mode = FillMode::AUTO;
   double iteration_start = 0;
   double iteration_count = 1;

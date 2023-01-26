@@ -10,8 +10,6 @@ CSSTimingData::CSSTimingData() {
   delay_start_list_.push_back(InitialDelayStart());
   delay_end_list_.push_back(InitialDelayEnd());
   duration_list_.push_back(InitialDuration());
-  range_start_list_.push_back(InitialRangeStart());
-  range_end_list_.push_back(InitialRangeEnd());
   timing_function_list_.push_back(InitialTimingFunction());
 }
 
@@ -28,8 +26,6 @@ Timing CSSTimingData::ConvertToTiming(size_t index) const {
           ? absl::make_optional(
                 ANIMATION_TIME_DELTA_FROM_SECONDS(duration.value()))
           : absl::nullopt;
-  timing.range_start = GetRepeated(range_start_list_, index);
-  timing.range_end = GetRepeated(range_end_list_, index);
   timing.timing_function = GetRepeated(timing_function_list_, index);
   timing.AssertValid();
   return timing;
@@ -43,12 +39,6 @@ bool CSSTimingData::TimingMatchForStyleRecalc(
     return false;
   if (duration_list_ != other.duration_list_)
     return false;
-  if (range_start_list_ != other.range_start_list_) {
-    return false;
-  }
-  if (range_end_list_ != other.range_end_list_) {
-    return false;
-  }
   if (timing_function_list_.size() != other.timing_function_list_.size())
     return false;
 

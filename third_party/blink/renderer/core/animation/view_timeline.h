@@ -53,6 +53,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   CSSNumericValue* getCurrentTime(const String& rangeName) override;
 
   AnimationTimeDelta CalculateIntrinsicIterationDuration(
+      const Animation*,
       const Timing&) override;
 
   // IDL API implementation.
@@ -60,11 +61,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   // Converts a delay that is expressed as a (phase,percentage) pair to
   // a fractional offset.
-  double ToFractionalOffset(
-      const Timing::TimelineOffset& timeline_offset) const;
+  double ToFractionalOffset(const TimelineOffset& timeline_offset) const;
 
   AnimationTimeline::TimeDelayPair TimelineOffsetsToTimeDelays(
-      const Timing& timing) const override;
+      const Animation* animation) const override;
 
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;

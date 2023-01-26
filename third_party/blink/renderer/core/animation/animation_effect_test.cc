@@ -56,30 +56,6 @@ Timing::V8Delay* CreateTimeDelay(double delay_in_ms) {
   return MakeGarbageCollected<Timing::V8Delay>(delay_in_ms);
 }
 
-bool TimelineOffsetEquals(const Timing::V8TimelineRangeOffset* value,
-                          String expected_range,
-                          double expected_offset_as_percent) {
-  if (!value->IsTimelineRangeOffset()) {
-    return false;
-  }
-
-  TimelineRangeOffset* timeline_range_offset =
-      value->GetAsTimelineRangeOffset();
-  if (!timeline_range_offset->hasRangeName() ||
-      !timeline_range_offset->hasOffset()) {
-    return false;
-  }
-
-  if (timeline_range_offset->rangeName() != expected_range) {
-    return false;
-  }
-
-  double percent = timeline_range_offset->offset()
-                       ->to(CSSPrimitiveValue::UnitType::kPercentage)
-                       ->value();
-  return std::abs(percent - expected_offset_as_percent) < 1e-6;
-}
-
 class MockAnimationEffectOwner
     : public GarbageCollected<MockAnimationEffectOwner>,
       public AnimationEffectOwner {
@@ -801,23 +777,9 @@ TEST(AnimationAnimationEffectTest, UpdateTiming) {
   effect->updateTiming(effect_timing);
   EXPECT_EQ(2, effect->getTiming()->delay()->GetAsDouble());
   effect_timing = OptionalEffectTiming::Create();
-
-  effect_timing->setRangeStart(CreateTimelineOffset("enter", 0));
-  effect->updateTiming(effect_timing);
-  EXPECT_TRUE(
-      TimelineOffsetEquals(effect->getTiming()->rangeStart(), "enter", 0));
-  EXPECT_EQ(0, effect->getTiming()->endDelay()->GetAsDouble());
-
-  effect_timing = OptionalEffectTiming::Create();
   effect_timing->setEndDelay(CreateTimeDelay(0.5));
   effect->updateTiming(effect_timing);
   EXPECT_EQ(0.5, effect->getTiming()->endDelay()->GetAsDouble());
-  effect_timing = OptionalEffectTiming::Create();
-  effect_timing->setRangeEnd(CreateTimelineOffset("exit", 50));
-  effect->updateTiming(effect_timing);
-  EXPECT_TRUE(
-      TimelineOffsetEquals(effect->getTiming()->rangeEnd(), "exit", 50));
-  EXPECT_EQ("auto", effect->getTiming()->fill());
   effect_timing = OptionalEffectTiming::Create();
   effect_timing->setFill("backwards");
   effect->updateTiming(effect_timing);

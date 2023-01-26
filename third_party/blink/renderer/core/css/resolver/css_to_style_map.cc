@@ -479,9 +479,8 @@ EAnimPlayState CSSToStyleMap::MapAnimationPlayState(StyleResolverState& state,
 
 namespace {
 
-absl::optional<Timing::TimelineOffset> MapAnimationRange(
-    StyleResolverState& state,
-    const CSSValue& value) {
+absl::optional<TimelineOffset> MapAnimationRange(StyleResolverState& state,
+                                                 const CSSValue& value) {
   if (auto* ident = DynamicTo<CSSIdentifierValue>(value);
       ident && ident->GetValueID() == CSSValueID::kAuto) {
     return absl::nullopt;
@@ -489,20 +488,20 @@ absl::optional<Timing::TimelineOffset> MapAnimationRange(
   const auto& list = To<CSSValueList>(value);
   DCHECK_EQ(list.length(), 2u);
   const auto& range_name = To<CSSIdentifierValue>(list.Item(0));
-  return Timing::TimelineOffset(
-      range_name.ConvertTo<Timing::TimelineNamedRange>(),
+  return TimelineOffset(
+      range_name.ConvertTo<TimelineOffset::NamedRange>(),
       StyleBuilderConverter::ConvertLength(state, list.Item(1)));
 }
 
 }  // namespace
 
-absl::optional<Timing::TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
+absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeStart(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value);
 }
 
-absl::optional<Timing::TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
+absl::optional<TimelineOffset> CSSToStyleMap::MapAnimationRangeEnd(
     StyleResolverState& state,
     const CSSValue& value) {
   return MapAnimationRange(state, value);

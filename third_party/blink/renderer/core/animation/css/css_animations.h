@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_transition_data.h"
 #include "third_party/blink/renderer/core/animation/inert_effect.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -154,6 +155,12 @@ class CORE_EXPORT CSSAnimations final {
     }
 
     AnimationTimeline* Timeline() const { return animation->timeline(); }
+    const absl::optional<TimelineOffset>& RangeStart() const {
+      return animation->GetRangeStart();
+    }
+    const absl::optional<TimelineOffset>& RangeEnd() const {
+      return animation->GetRangeEnd();
+    }
 
     void Update(UpdatedCSSAnimation update) {
       DCHECK_EQ(update.animation, animation);
@@ -161,7 +168,6 @@ class CORE_EXPORT CSSAnimations final {
       style_rule_version = update.style_rule_version;
       play_state_list = update.play_state_list;
       specified_timing = update.specified_timing;
-
       if (update.animation->timeline() &&
           update.animation->timeline()->IsViewTimeline()) {
         scroll_offsets = To<ViewTimeline>(update.animation->timeline())

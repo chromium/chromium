@@ -4,7 +4,19 @@
 
 // https://w3.org/TR/web-animations-1/#dictdef-keyframeanimationoptions
 
+// TODO(kevers): Add scroll-animations-1 link once range(Start|End) are fully
+// speced.
+
+enum TimelineRange { "none", "cover", "contain", "enter", "exit" };
+
+dictionary TimelineRangeOffset {
+    TimelineRange rangeName;
+    CSSNumericValue offset;
+};
+
 dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
     DOMString id = "";
     AnimationTimeline? timeline;
+    (DOMString or TimelineRangeOffset) rangeStart = "auto";
+    (DOMString or TimelineRangeOffset) rangeEnd =  "auto";
 };

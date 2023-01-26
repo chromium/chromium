@@ -672,9 +672,11 @@ void KeyframeEffect::DetachTarget(Animation* animation) {
 }
 
 AnimationTimeDelta KeyframeEffect::IntrinsicIterationDuration() const {
-  if (GetAnimation() && GetAnimation()->timeline()) {
-    return GetAnimation()->timeline()->CalculateIntrinsicIterationDuration(
-        timing_);
+  if (auto* animation = GetAnimation()) {
+    auto* timeline = animation->timeline();
+    if (timeline) {
+      return timeline->CalculateIntrinsicIterationDuration(animation, timing_);
+    }
   }
   return AnimationTimeDelta();
 }

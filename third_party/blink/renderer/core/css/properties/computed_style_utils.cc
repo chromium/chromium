@@ -2139,7 +2139,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationPlayStateList(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
-    const absl::optional<Timing::TimelineOffset>& offset,
+    const absl::optional<TimelineOffset>& offset,
     const ComputedStyle& style) {
   if (!offset.has_value()) {
     return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
@@ -2151,30 +2151,30 @@ CSSValue* ComputedStyleUtils::ValueForAnimationRangeStart(
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeStartList(
-    const CSSTimingData* timing_data,
+    const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
   return CreateAnimationValueList(
-      timing_data
-          ? timing_data->RangeStartList()
-          : Vector<absl::optional<
-                Timing::TimelineOffset>>{CSSTimingData::InitialRangeStart()},
+      animation_data
+          ? animation_data->RangeStartList()
+          : Vector<absl::optional<TimelineOffset>>{CSSAnimationData::
+                                                       InitialRangeStart()},
       &ValueForAnimationRangeStart, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEnd(
-    const absl::optional<Timing::TimelineOffset>& offset,
+    const absl::optional<TimelineOffset>& offset,
     const ComputedStyle& style) {
   return ValueForAnimationRangeStart(offset, style);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationRangeEndList(
-    const CSSTimingData* timing_data,
+    const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
   return CreateAnimationValueList(
-      timing_data
-          ? timing_data->RangeEndList()
-          : Vector<absl::optional<
-                Timing::TimelineOffset>>{CSSTimingData::InitialRangeEnd()},
+      animation_data
+          ? animation_data->RangeEndList()
+          : Vector<absl::optional<TimelineOffset>>{CSSAnimationData::
+                                                       InitialRangeEnd()},
       &ValueForAnimationRangeEnd, style);
 }
 

@@ -224,6 +224,7 @@ ScrollTimeline::InitialStartTimeForAnimations() {
 }
 
 AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
+    const Animation* animation,
     const Timing& timing) {
   absl::optional<AnimationTimeDelta> duration = GetDuration();
 

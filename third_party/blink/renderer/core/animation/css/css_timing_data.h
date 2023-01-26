@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_CSS_CSS_TIMING_DATA_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -28,12 +29,6 @@ class CSSTimingData {
   const Vector<absl::optional<double>>& DurationList() const {
     return duration_list_;
   }
-  const Vector<absl::optional<Timing::TimelineOffset>>& RangeStartList() const {
-    return range_start_list_;
-  }
-  const Vector<absl::optional<Timing::TimelineOffset>>& RangeEndList() const {
-    return range_end_list_;
-  }
   const Vector<scoped_refptr<TimingFunction>>& TimingFunctionList() const {
     return timing_function_list_;
   }
@@ -41,12 +36,6 @@ class CSSTimingData {
   Vector<Timing::Delay>& DelayStartList() { return delay_start_list_; }
   Vector<Timing::Delay>& DelayEndList() { return delay_end_list_; }
   Vector<absl::optional<double>>& DurationList() { return duration_list_; }
-  Vector<absl::optional<Timing::TimelineOffset>>& RangeStartList() {
-    return range_start_list_;
-  }
-  Vector<absl::optional<Timing::TimelineOffset>>& RangeEndList() {
-    return range_end_list_;
-  }
   Vector<scoped_refptr<TimingFunction>>& TimingFunctionList() {
     return timing_function_list_;
   }
@@ -54,12 +43,6 @@ class CSSTimingData {
   static Timing::Delay InitialDelayStart() { return Timing::Delay(); }
   static Timing::Delay InitialDelayEnd() { return Timing::Delay(); }
   static absl::optional<double> InitialDuration() { return 0; }
-  static absl::optional<Timing::TimelineOffset> InitialRangeStart() {
-    return absl::nullopt;
-  }
-  static absl::optional<Timing::TimelineOffset> InitialRangeEnd() {
-    return absl::nullopt;
-  }
   static scoped_refptr<TimingFunction> InitialTimingFunction() {
     return CubicBezierTimingFunction::Preset(
         CubicBezierTimingFunction::EaseType::EASE);
@@ -81,8 +64,6 @@ class CSSTimingData {
   Vector<Timing::Delay> delay_start_list_;
   Vector<Timing::Delay> delay_end_list_;
   Vector<absl::optional<double>> duration_list_;
-  Vector<absl::optional<Timing::TimelineOffset>> range_start_list_;
-  Vector<absl::optional<Timing::TimelineOffset>> range_end_list_;
   Vector<scoped_refptr<TimingFunction>> timing_function_list_;
 };
 

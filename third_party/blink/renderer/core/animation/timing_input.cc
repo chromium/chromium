@@ -47,71 +47,6 @@ absl::optional<AnimationTimeDelta> ConvertIterationDuration(
   return absl::nullopt;
 }
 
-Timing::TimelineOffset ConvertRangeOffset(
-    const Timing::V8TimelineRangeOffset* range_offset,
-    double default_percent,
-    ExceptionState& exception_state) {
-  Timing::TimelineOffset result;
-  if (range_offset->IsString()) {
-    // TODO(kevers): Implement once we have CSS support for animation-range.
-    result.name = Timing::TimelineNamedRange::kNone;
-    result.offset = Length(default_percent, Length::Type::kPercent);
-  } else {
-    TimelineRangeOffset* value = range_offset->GetAsTimelineRangeOffset();
-    result.name = value->hasRangeName() ? value->rangeName().AsEnum()
-                                        : Timing::TimelineNamedRange::kNone;
-    if (value->hasOffset()) {
-      CSSNumericValue* offset = value->offset();
-      const CSSPrimitiveValue* css_value =
-          DynamicTo<CSSPrimitiveValue>(offset->ToCSSValue());
-
-      if (!css_value || (!css_value->IsPx() && !css_value->IsPercentage() &&
-                         !css_value->IsCalculatedPercentageWithLength())) {
-        exception_state.ThrowTypeError(
-            "CSSNumericValue must be a length or percentage for animation "
-            "range.");
-        return result;
-      }
-
-      if (css_value->IsPx()) {
-        result.offset = Length::Fixed(css_value->GetDoubleValue());
-      } else if (css_value->IsPercentage()) {
-        result.offset = Length::Percent(css_value->GetDoubleValue());
-      } else {
-        // TODO(kevers): Resolve if we need to handle style-dependent lengths
-        // such as em. If so, what is the reference element for resolving the
-        // style?
-        DCHECK(css_value->IsCalculatedPercentageWithLength());
-        CSSLengthArray length_array;
-        css_value->AccumulateLengthArray(length_array);
-        double percent = 0;
-        double px = 0;
-        for (wtf_size_t i = 0; i < length_array.values.size(); ++i) {
-          double array_value = length_array.values[i];
-          if (array_value == 0) {
-            continue;
-          }
-          if (i == CSSPrimitiveValue::kUnitTypePercentage) {
-            percent = array_value;
-          } else if (i == CSSPrimitiveValue::kUnitTypePixels) {
-            px = array_value;
-          } else {
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                "Unsupported range offset");
-            return result;
-          }
-        }
-        result.offset = Length(CalculationValue::Create(
-            PixelsAndPercent(px, percent), Length::ValueRange::kAll));
-      }
-    } else {
-      result.offset = Length::Percent(default_percent);
-    }
-  }
-  return result;
-}
-
 Timing::Delay ConvertDelay(const Timing::V8Delay* delay,
                            double default_percent,
                            ExceptionState& exception_state) {
@@ -289,24 +224,6 @@ bool TimingInput::Update(Timing& timing,
         timing.end_delay,
         ConvertDelay(input->endDelay(), 100, exception_state));
     timing.SetTimingOverride(Timing::kOverrideEndDelay);
-  }
-  if (input->hasRangeStart()) {
-    Timing::TimelineOffset timeline_offset =
-        ConvertRangeOffset(input->rangeStart(), 0, exception_state);
-    if (!timing.range_start || timing.range_start.value() != timeline_offset) {
-      timing.range_start = timeline_offset;
-      changed = true;
-    }
-    timing.SetTimingOverride(Timing::kOverrideRangeStart);
-  }
-  if (input->hasRangeEnd()) {
-    Timing::TimelineOffset timeline_offset =
-        ConvertRangeOffset(input->rangeEnd(), 100, exception_state);
-    if (!timing.range_end || timing.range_end.value() != timeline_offset) {
-      timing.range_end = timeline_offset;
-      changed = true;
-    }
-    timing.SetTimingOverride(Timing::kOverrideRangeEnd);
   }
   if (input->hasFill()) {
     changed |= UpdateValueIfChanged(timing.fill_mode,

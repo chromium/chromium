@@ -15,6 +15,8 @@ CSSAnimationData::CSSAnimationData() {
   direction_list_.push_back(InitialDirection());
   fill_mode_list_.push_back(InitialFillMode());
   play_state_list_.push_back(InitialPlayState());
+  range_start_list_.push_back(InitialRangeStart());
+  range_end_list_.push_back(InitialRangeEnd());
   composition_list_.push_back(InitialComposition());
 }
 

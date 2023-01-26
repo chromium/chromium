@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_KEYFRAME_H_
 
 #include <memory>
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -18,7 +19,7 @@ class ExecutionContext;
 
 struct KeyframeOffset {
   explicit KeyframeOffset(
-      Timing::TimelineNamedRange name = Timing::TimelineNamedRange::kNone,
+      TimelineOffset::NamedRange name = TimelineOffset::NamedRange::kNone,
       double percent = 0)
       : name(name), percent(percent) {}
 
@@ -28,7 +29,7 @@ struct KeyframeOffset {
 
   bool operator!=(const KeyframeOffset& b) const { return !(*this == b); }
 
-  Timing::TimelineNamedRange name;
+  TimelineOffset::NamedRange name;
   double percent;
 };
 

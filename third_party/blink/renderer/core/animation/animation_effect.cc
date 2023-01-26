@@ -371,7 +371,8 @@ const Animation* AnimationEffect::GetAnimation() const {
 AnimationEffect::TimeDelayPair AnimationEffect::TimelineOffsetsToTimeDelays()
     const {
   if (GetAnimation() && GetAnimation()->timeline()) {
-    return GetAnimation()->timeline()->TimelineOffsetsToTimeDelays(timing_);
+    return GetAnimation()->timeline()->TimelineOffsetsToTimeDelays(
+        owner_->GetAnimation());
   }
   return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
 }

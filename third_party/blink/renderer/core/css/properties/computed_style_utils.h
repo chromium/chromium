@@ -7,6 +7,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
@@ -155,10 +156,10 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationIterationCount(double iteration_count);
   static CSSValue* ValueForAnimationPlayState(EAnimPlayState);
   static CSSValue* ValueForAnimationRangeStart(
-      const absl::optional<Timing::TimelineOffset>&,
+      const absl::optional<TimelineOffset>&,
       const ComputedStyle&);
   static CSSValue* ValueForAnimationRangeEnd(
-      const absl::optional<Timing::TimelineOffset>&,
+      const absl::optional<TimelineOffset>&,
       const ComputedStyle&);
   static CSSValue* ValueForAnimationTimingFunction(
       const scoped_refptr<TimingFunction>&);
@@ -171,9 +172,9 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationFillModeList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationIterationCountList(const CSSAnimationData*);
   static CSSValue* ValueForAnimationPlayStateList(const CSSAnimationData*);
-  static CSSValue* ValueForAnimationRangeStartList(const CSSTimingData*,
+  static CSSValue* ValueForAnimationRangeStartList(const CSSAnimationData*,
                                                    const ComputedStyle&);
-  static CSSValue* ValueForAnimationRangeEndList(const CSSTimingData*,
+  static CSSValue* ValueForAnimationRangeEndList(const CSSAnimationData*,
                                                  const ComputedStyle&);
   static CSSValue* ValueForAnimationTimingFunctionList(const CSSTimingData*);
   static CSSValue* ValueForAnimationTimelineList(const CSSAnimationData*);

@@ -33,6 +33,7 @@
 
 #include "base/notreached.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/renderer/core/animation/timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -1736,19 +1737,19 @@ inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
 
 template <>
 inline CSSIdentifierValue::CSSIdentifierValue(
-    Timing::TimelineNamedRange named_range)
+    TimelineOffset::NamedRange named_range)
     : CSSValue(kIdentifierClass) {
   switch (named_range) {
-    case Timing::TimelineNamedRange::kCover:
+    case TimelineOffset::NamedRange::kCover:
       value_id_ = CSSValueID::kCover;
       break;
-    case Timing::TimelineNamedRange::kContain:
+    case TimelineOffset::NamedRange::kContain:
       value_id_ = CSSValueID::kContain;
       break;
-    case Timing::TimelineNamedRange::kEnter:
+    case TimelineOffset::NamedRange::kEnter:
       value_id_ = CSSValueID::kEnter;
       break;
-    case Timing::TimelineNamedRange::kExit:
+    case TimelineOffset::NamedRange::kExit:
       value_id_ = CSSValueID::kExit;
       break;
     default:
@@ -1759,21 +1760,21 @@ inline CSSIdentifierValue::CSSIdentifierValue(
 }
 
 template <>
-inline Timing::TimelineNamedRange CSSIdentifierValue::ConvertTo() const {
+inline TimelineOffset::NamedRange CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kCover:
-      return Timing::TimelineNamedRange::kCover;
+      return TimelineOffset::NamedRange::kCover;
     case CSSValueID::kContain:
-      return Timing::TimelineNamedRange::kContain;
+      return TimelineOffset::NamedRange::kContain;
     case CSSValueID::kEnter:
-      return Timing::TimelineNamedRange::kEnter;
+      return TimelineOffset::NamedRange::kEnter;
     case CSSValueID::kExit:
-      return Timing::TimelineNamedRange::kExit;
+      return TimelineOffset::NamedRange::kExit;
     default:
       break;
   }
   NOTREACHED();
-  return Timing::TimelineNamedRange::kCover;
+  return TimelineOffset::NamedRange::kCover;
 }
 
 }  // namespace blink

@@ -85,10 +85,10 @@ class CSSToStyleMap {
                                             const ScopedCSSValue&);
   static EAnimPlayState MapAnimationPlayState(StyleResolverState&,
                                               const CSSValue&);
-  static absl::optional<Timing::TimelineOffset> MapAnimationRangeStart(
+  static absl::optional<TimelineOffset> MapAnimationRangeStart(
       StyleResolverState&,
       const CSSValue&);
-  static absl::optional<Timing::TimelineOffset> MapAnimationRangeEnd(
+  static absl::optional<TimelineOffset> MapAnimationRangeEnd(
       StyleResolverState&,
       const CSSValue&);
   static EffectModel::CompositeOperation MapAnimationComposition(

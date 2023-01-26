@@ -15,14 +15,6 @@
 
 namespace blink {
 
-namespace {
-
-Timing::V8TimelineRangeOffset* DefaultBoundary() {
-  return MakeGarbageCollected<Timing::V8TimelineRangeOffset>("auto");
-}
-
-}  // namespace
-
 String Timing::TimelineRangeNameToString(
     Timing::TimelineNamedRange range_name) {
   switch (range_name) {
@@ -46,17 +38,6 @@ String Timing::TimelineRangeNameToString(
 Timing::V8Delay* Timing::Delay::ToV8Delay() const {
   // TODO(crbug.com/1216527) support delay as percentage.
   return MakeGarbageCollected<V8Delay>(AsTimeValue().InMillisecondsF());
-}
-
-Timing::V8TimelineRangeOffset* Timing::TimelineOffset::ToV8TimelineRangeOffset()
-    const {
-  TimelineRangeOffset* timeline_range =
-      MakeGarbageCollected<TimelineRangeOffset>();
-  timeline_range->setRangeName(name);
-  const CSSPrimitiveValue* primitive_value =
-      CSSPrimitiveValue::CreateFromLength(offset, 1);
-  timeline_range->setOffset(CSSNumericValue::FromCSSValue(*primitive_value));
-  return MakeGarbageCollected<V8TimelineRangeOffset>(timeline_range);
 }
 
 String Timing::FillModeString(FillMode fill_mode) {
@@ -120,16 +101,6 @@ EffectTiming* Timing::ConvertToEffectTiming() const {
   // Specified values used here so that inputs match outputs for JS API calls
   effect_timing->setDelay(start_delay.ToV8Delay());
   effect_timing->setEndDelay(end_delay.ToV8Delay());
-  if (range_start) {
-    effect_timing->setRangeStart(range_start->ToV8TimelineRangeOffset());
-  } else {
-    effect_timing->setRangeStart(DefaultBoundary());
-  }
-  if (range_end) {
-    effect_timing->setRangeEnd(range_end->ToV8TimelineRangeOffset());
-  } else {
-    effect_timing->setRangeEnd(DefaultBoundary());
-  }
   effect_timing->setFill(FillModeString(fill_mode));
   effect_timing->setIterationStart(iteration_start);
   effect_timing->setIterations(iteration_count);
