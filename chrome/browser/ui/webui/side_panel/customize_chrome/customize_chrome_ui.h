@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
 
 namespace content {
@@ -33,6 +36,11 @@ class CustomizeChromeUI
   CustomizeChromeUI& operator=(const CustomizeChromeUI&) = delete;
 
   ~CustomizeChromeUI() override;
+
+  void ScrollToSection(CustomizeChromeSection section);
+
+  // Gets a weak pointer to this object.
+  base::WeakPtr<CustomizeChromeUI> GetWeakPtr();
 
   // Instantiates the implementor of the
   // mojom::CustomizeChromePageHandler mojo interface passing the pending
@@ -60,6 +68,11 @@ class CustomizeChromeUI
   const std::vector<std::pair<const std::string, int>> module_id_names_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandlerFactory>
       page_factory_receiver_;
+  // Caches a request to scroll to a section in case the request happens before
+  // the front-end is ready to receive the request.
+  absl::optional<CustomizeChromeSection> section_;
+
+  base::WeakPtrFactory<CustomizeChromeUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

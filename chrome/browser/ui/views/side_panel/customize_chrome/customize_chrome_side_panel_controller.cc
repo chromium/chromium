@@ -74,10 +74,15 @@ void CustomizeChromeSidePanelController::SetCustomizeChromeSidePanelVisible(
   if (visible) {
     browser_view->side_panel_coordinator()->Show(
         SidePanelEntry::Id::kCustomizeChrome);
+    if (customize_chrome_ui_) {
+      customize_chrome_ui_->ScrollToSection(section);
+      section_.reset();
+    } else {
+      section_ = section;
+    }
   } else {
     browser_view->side_panel_coordinator()->Close();
   }
-  // TODO(crbug.com/1402251): Scroll to requested `section`.
 }
 
 bool CustomizeChromeSidePanelController::IsCustomizeChromeEntryShowing() const {
@@ -122,6 +127,13 @@ CustomizeChromeSidePanelController::CreateCustomizeChromeWebView() {
               /*webui_resizes_host=*/false,
               /*esc_closes_ui=*/false));
   customize_chrome_web_view->ShowUI();
+  customize_chrome_ui_ = customize_chrome_web_view->contents_wrapper()
+                             ->GetWebUIController()
+                             ->GetWeakPtr();
+  if (section_.has_value()) {
+    customize_chrome_ui_->ScrollToSection(*section_);
+    section_.reset();
+  }
   return customize_chrome_web_view;
 }
 

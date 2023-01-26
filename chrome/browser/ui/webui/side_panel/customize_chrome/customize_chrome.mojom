@@ -95,6 +95,12 @@ struct ModuleSettings {
   bool enabled;
 };
 
+enum CustomizeChromeSection {
+  kAppearance,
+  kShortcuts,
+  kModules,
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface CustomizeChromePageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -160,6 +166,9 @@ interface CustomizeChromePageHandler {
 
   // Disables module with ID `module_id` if `disabled`. Enables otherwise.
   SetModuleDisabled(string module_id, bool disabled);
+
+  // Triggers a call to |CustomizeChromePage.UpdateScrollToSection()|.
+  UpdateScrollToSection();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -172,4 +181,7 @@ interface CustomizeChromePage {
   SetMostVisitedSettings(bool custom_links_enabled, bool visible);
    // Sets the current theme.
    SetTheme(Theme theme);
+  // Scrolls side panel to |section|. Possibly a response to a call to
+  // |CustomizeChromePageHandler.UpdateScrollToSection()|.
+  ScrollToSection(CustomizeChromeSection section);
 };

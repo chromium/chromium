@@ -14,6 +14,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/search/ntp_logging_events.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,6 +52,8 @@ class CustomizeChromePageHandler
 
   ~CustomizeChromePageHandler() override;
 
+  void ScrollToSection(CustomizeChromeSection section);
+
   // side_panel::mojom::CustomizeChromePageHandler:
   void SetDefaultColor() override;
   void SetSeedColor(SkColor seed_color) override;
@@ -78,6 +81,7 @@ class CustomizeChromePageHandler
   void SetModulesVisible(bool visible) override;
   void SetModuleDisabled(const std::string& module_id, bool disabled) override;
   void UpdateModulesSettings() override;
+  void UpdateScrollToSection() override;
 
  private:
   void LogEvent(NTPLoggingEventType event);
@@ -120,6 +124,10 @@ class CustomizeChromePageHandler
   base::TimeTicks background_images_request_start_time_;
   raw_ptr<ThemeService> theme_service_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
+  // Caches a request to scroll to a section in case the front-end queries the
+  // last requested section, e.g. during load.
+  CustomizeChromeSection last_requested_section_ =
+      CustomizeChromeSection::kUnspecified;
 
   PrefChangeRegistrar pref_change_registrar_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>

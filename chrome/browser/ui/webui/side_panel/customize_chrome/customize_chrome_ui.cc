@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
+#include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/webui/web_ui_util.h"
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
@@ -96,6 +98,18 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
 
 CustomizeChromeUI::~CustomizeChromeUI() = default;
 
+void CustomizeChromeUI::ScrollToSection(CustomizeChromeSection section) {
+  if (customize_chrome_page_handler_) {
+    customize_chrome_page_handler_->ScrollToSection(section);
+  } else {
+    section_ = section;
+  }
+}
+
+base::WeakPtr<CustomizeChromeUI> CustomizeChromeUI::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(CustomizeChromeUI)
 
 void CustomizeChromeUI::BindInterface(
@@ -123,4 +137,8 @@ void CustomizeChromeUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
       module_id_names_);
+  if (section_.has_value()) {
+    customize_chrome_page_handler_->ScrollToSection(*section_);
+    section_.reset();
+  }
 }
