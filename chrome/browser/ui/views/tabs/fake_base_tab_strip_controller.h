@@ -61,7 +61,7 @@ class FakeBaseTabStripController : public TabStripController {
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;
   int HasAvailableDragActions() const override;
-  void OnDropIndexUpdate(int index, bool drop_before) override;
+  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override;
   void CreateNewTab() override;
   void CreateNewTabWithLocation(const std::u16string& loc) override;
   void OnStartedDragging(bool dragging_window) override;

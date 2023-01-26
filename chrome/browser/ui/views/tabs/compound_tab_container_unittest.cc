@@ -57,7 +57,7 @@ class FakeTabContainerController final : public TabContainerController {
     return tab_strip_controller_->GetCount();
   }
 
-  void OnDropIndexUpdate(int index, bool drop_before) override {
+  void OnDropIndexUpdate(absl::optional<int> index, bool drop_before) override {
     tab_strip_controller_->OnDropIndexUpdate(index, drop_before);
   }
 

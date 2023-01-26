@@ -1352,7 +1352,8 @@ int TabStrip::NumPinnedTabsInModel() const {
   return controller_->GetCount();
 }
 
-void TabStrip::OnDropIndexUpdate(int index, bool drop_before) {
+void TabStrip::OnDropIndexUpdate(const absl::optional<int> index,
+                                 const bool drop_before) {
   controller_->OnDropIndexUpdate(index, drop_before);
 }
 

@@ -123,7 +123,8 @@ class TabStripController {
   virtual int HasAvailableDragActions() const = 0;
 
   // Notifies controller of a drop index update.
-  virtual void OnDropIndexUpdate(int index, bool drop_before) = 0;
+  virtual void OnDropIndexUpdate(absl::optional<int> index,
+                                 bool drop_before) = 0;
 
   // Creates the new tab.
   virtual void CreateNewTab() = 0;

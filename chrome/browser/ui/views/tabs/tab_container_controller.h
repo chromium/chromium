@@ -38,7 +38,8 @@ class TabContainerController {
   virtual int NumPinnedTabsInModel() const = 0;
 
   // Notifies controller of a drop index update.
-  virtual void OnDropIndexUpdate(int index, bool drop_before) = 0;
+  virtual void OnDropIndexUpdate(absl::optional<int> index,
+                                 bool drop_before) = 0;
 
   // Returns the |group| collapsed state. Returns false if the group does not
   // exist or is not collapsed.

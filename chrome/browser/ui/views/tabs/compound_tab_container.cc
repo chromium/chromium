@@ -53,7 +53,8 @@ class PinnedTabContainerController final : public TabContainerController {
     return base_controller_->NumPinnedTabsInModel();
   }
 
-  void OnDropIndexUpdate(int index, bool drop_before) override {
+  void OnDropIndexUpdate(const absl::optional<int> index,
+                         const bool drop_before) override {
     base_controller_->OnDropIndexUpdate(index, drop_before);
   }
 
@@ -121,9 +122,21 @@ class UnpinnedTabContainerController final : public TabContainerController {
 
   int NumPinnedTabsInModel() const override { return 0; }
 
-  void OnDropIndexUpdate(int index, bool drop_before) override {
-    base_controller_->OnDropIndexUpdate(ContainerToModelIndex(index).value(),
-                                        drop_before);
+  void OnDropIndexUpdate(const absl::optional<int> index,
+                         const bool drop_before) override {
+    // We can't use ContainerIndexToModelIndex here because `index` might be
+    // after the last tab (i.e. the drop would open a new tab at the end of the
+    // tabstrip).
+    absl::optional<int> model_index = absl::nullopt;
+    if (index.has_value() && index > 0) {
+      model_index = index.value() + base_controller_->NumPinnedTabsInModel();
+      // The adjusted index must be either a valid index in the model, or be the
+      // next index after the end of the model.
+      CHECK(base_controller_->IsValidModelIndex(model_index.value()) ||
+            base_controller_->IsValidModelIndex(model_index.value() - 1));
+    }
+
+    base_controller_->OnDropIndexUpdate(model_index, drop_before);
   }
 
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override {
@@ -741,7 +754,6 @@ BrowserRootView::DropIndex CompoundTabContainer::GetDropIndex(
 BrowserRootView::DropTarget* CompoundTabContainer::GetDropTarget(
     gfx::Point loc_in_local_coords) {
   NOTREACHED();  // TODO(1346023): Implement text drag and drop.
-
   // This might be a starting point for implementation though.
   TabContainer* const tab_container = GetTabContainerAt(loc_in_local_coords);
   return tab_container ? tab_container : this;

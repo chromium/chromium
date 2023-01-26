@@ -450,12 +450,13 @@ int BrowserTabStripController::HasAvailableDragActions() const {
   return model_->delegate()->GetDragActions();
 }
 
-void BrowserTabStripController::OnDropIndexUpdate(int index,
-                                                  bool drop_before) {
+void BrowserTabStripController::OnDropIndexUpdate(
+    const absl::optional<int> index,
+    const bool drop_before) {
   // Perform a delayed tab transition if hovering directly over a tab.
   // Otherwise, cancel the pending one.
-  if (index != -1 && !drop_before) {
-    hover_tab_selector_.StartTabTransition(index);
+  if (index.has_value() && !drop_before) {
+    hover_tab_selector_.StartTabTransition(index.value());
   } else {
     hover_tab_selector_.CancelTabTransition();
   }

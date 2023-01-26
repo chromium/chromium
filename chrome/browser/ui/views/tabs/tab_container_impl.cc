@@ -1574,7 +1574,7 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
 void TabContainerImpl::SetDropArrow(
     const absl::optional<BrowserRootView::DropIndex>& index) {
   if (!index) {
-    controller_->OnDropIndexUpdate(-1, false);
+    controller_->OnDropIndexUpdate(absl::nullopt, false);
     drop_arrow_.reset();
     return;
   }
