@@ -10,6 +10,7 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/common/url_constants.h"
@@ -60,6 +61,36 @@ void IsolatedWebAppResponseReaderFactory::CreateResponseReader(
           &IsolatedWebAppResponseReaderFactory::OnIntegrityBlockAndMetadataRead,
           weak_ptr_factory_.GetWeakPtr(), std::move(reader), web_bundle_path,
           web_bundle_id, std::move(callback)));
+}
+
+// static
+std::string IsolatedWebAppResponseReaderFactory::ErrorToString(
+    const Error& error) {
+  return (absl::visit(
+      base::Overloaded{
+          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
+                 error) {
+            return base::StringPrintf("Failed to parse integrity block: %s",
+                                      error->message.c_str());
+          },
+          [](const IntegrityBlockError& error) {
+            return base::StringPrintf("Failed to validate integrity block: %s",
+                                      error.message.c_str());
+          },
+          [](const web_package::SignedWebBundleSignatureVerifier::Error&
+                 error) {
+            return base::StringPrintf("Failed to verify signatures: %s",
+                                      error.message.c_str());
+          },
+          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
+            return base::StringPrintf("Failed to parse metadata: %s",
+                                      error->message.c_str());
+          },
+          [](const MetadataError& error) {
+            return base::StringPrintf("Failed to validate metadata: %s",
+                                      error.message.c_str());
+          }},
+      error));
 }
 
 void IsolatedWebAppResponseReaderFactory::OnIntegrityBlockRead(

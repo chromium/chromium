@@ -11,9 +11,11 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
@@ -22,6 +24,10 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -34,12 +40,15 @@
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/prefs/pref_service.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -63,6 +72,20 @@ absl::optional<std::string> UTF16ToUTF8(base::StringPiece16 src) {
   return dest;
 }
 
+std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+CreateDefaultResponseReaderFactory(content::BrowserContext& browser_context) {
+  Profile& profile = *Profile::FromBrowserContext(&browser_context);
+  PrefService& pref_service = *profile.GetPrefs();
+
+  auto trust_checker =
+      std::make_unique<IsolatedWebAppTrustChecker>(pref_service);
+  auto validator =
+      std::make_unique<IsolatedWebAppValidator>(std::move(trust_checker));
+
+  return std::make_unique<IsolatedWebAppResponseReaderFactory>(
+      std::move(validator));
+}
+
 }  // namespace
 
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
@@ -74,11 +97,32 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
                                            InstallIsolatedWebAppCommandError>)>
         callback)
+    : InstallIsolatedWebAppCommand(
+          isolation_info,
+          isolation_data,
+          std::move(web_contents),
+          std::move(url_loader),
+          browser_context,
+          std::move(callback),
+          CreateDefaultResponseReaderFactory(browser_context)) {}
+
+InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
+    const IsolatedWebAppUrlInfo& isolation_info,
+    const IsolationData& isolation_data,
+    std::unique_ptr<content::WebContents> web_contents,
+    std::unique_ptr<WebAppUrlLoader> url_loader,
+    content::BrowserContext& browser_context,
+    base::OnceCallback<void(base::expected<InstallIsolatedWebAppCommandSuccess,
+                                           InstallIsolatedWebAppCommandError>)>
+        callback,
+    std::unique_ptr<IsolatedWebAppResponseReaderFactory>
+        response_reader_factory)
     : WebAppCommandTemplate<AppLock>("InstallIsolatedWebAppCommand"),
       lock_description_(
           std::make_unique<AppLockDescription>(isolation_info.app_id())),
       isolation_info_(isolation_info),
       isolation_data_(isolation_data),
+      response_reader_factory_(std::move(response_reader_factory)),
       web_contents_(std::move(web_contents)),
       url_loader_(std::move(url_loader)),
       browser_context_(browser_context),
@@ -124,6 +168,73 @@ void InstallIsolatedWebAppCommand::StartWithLock(
     std::unique_ptr<AppLock> lock) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   lock_ = std::move(lock);
+
+  CheckTrustAndSignatures();
+}
+
+void InstallIsolatedWebAppCommand::CheckTrustAndSignatures() {
+  absl::visit(
+      base::Overloaded{
+          [&](const IsolationData::InstalledBundle& content) {
+            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+                      web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+            CheckTrustAndSignaturesOfBundle(content.path);
+          },
+          [&](const IsolationData::DevModeBundle& content) {
+            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+                      web_package::SignedWebBundleId::Type::kEd25519PublicKey);
+            CheckTrustAndSignaturesOfBundle(content.path);
+          },
+          [&](const IsolationData::DevModeProxy& content) {
+            DCHECK_EQ(isolation_info_.web_bundle_id().type(),
+                      web_package::SignedWebBundleId::Type::kDevelopment);
+            // Dev mode proxy mode does not use Web Bundles, hence there is no
+            // bundle to validate / trust and no signatures to check.
+            OnTrustAndSignaturesChecked(absl::nullopt);
+          }},
+      isolation_data_.content);
+}
+
+void InstallIsolatedWebAppCommand::CheckTrustAndSignaturesOfBundle(
+    const base::FilePath& path) {
+  // To check whether the bundle is valid and trusted, we attempt to create a
+  // `IsolatedWebAppResponseReader`. If a response reader is created
+  // successfully, then this means that the Signed Web Bundle...
+  // - ...is well formatted and uses a supported Web Bundle version.
+  // - ...contains a valid integrity block with a trusted public key.
+  // - ...has signatures that were verified successfully (as long as
+  //   `skip_signature_verification` below is set to `false`).
+  // - ...contains valid metadata / no invalid URLs.
+  response_reader_factory_->CreateResponseReader(
+      path, isolation_info_.web_bundle_id(),
+      // During installation, we always want to verify signatures, regardless
+      // of the OS.
+      /*skip_signature_verification=*/false,
+      base::BindOnce(
+          [](base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
+                            IsolatedWebAppResponseReaderFactory::Error> reader)
+              -> absl::optional<IsolatedWebAppResponseReaderFactory::Error> {
+            // Convert expected<Reader,Error> into optional<Error> to match the
+            // signature of `OnTrustAndSignaturesChecked`. This is necessary for
+            // compatibility with the dev mode proxy case, where
+            // `OnTrustAndSignaturesChecked` is called with `absl::nullopt` to
+            // indicate success.
+            if (!reader.has_value()) {
+              return std::move(reader.error());
+            }
+            return absl::nullopt;
+          })
+          .Then(base::BindOnce(
+              &InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked,
+              weak_factory_.GetWeakPtr())));
+}
+
+void InstallIsolatedWebAppCommand::OnTrustAndSignaturesChecked(
+    absl::optional<IsolatedWebAppResponseReaderFactory::Error> error) {
+  if (error) {
+    ReportFailure(IsolatedWebAppResponseReaderFactory::ErrorToString(*error));
+    return;
+  }
 
   CreateStoragePartition();
   LoadUrl();

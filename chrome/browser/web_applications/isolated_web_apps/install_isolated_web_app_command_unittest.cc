@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -25,8 +26,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -43,6 +48,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -90,6 +96,20 @@ using ::testing::WithArg;
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
       web_package::SignedWebBundleId::CreateRandomForDevelopment();
+  base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(signed_web_bundle_id);
+  if (!url_info.has_value()) {
+    CHECK(false) << "Failed to create testing web app url info: "
+                 << url_info.error();
+  }
+  return url_info.value();
+}
+
+IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
+  web_package::SignedWebBundleId signed_web_bundle_id =
+      web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+          web_package::Ed25519PublicKey::Create(
+              base::make_span(kTestPublicKey)));
   base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(signed_web_bundle_id);
   if (!url_info.has_value()) {
@@ -159,6 +179,34 @@ std::unique_ptr<MockDataRetriever> CreateDefaultDataRetriever(
   return fake_data_retriever;
 }
 
+class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
+ public:
+  explicit FakeResponseReaderFactory(
+      absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error)
+      : IsolatedWebAppResponseReaderFactory(
+            nullptr,
+            base::BindRepeating(
+                []() -> std::unique_ptr<
+                         web_package::SignedWebBundleSignatureVerifier> {
+                  return nullptr;
+                })),
+        bundle_error_(std::move(bundle_error)) {}
+
+  void CreateResponseReader(const base::FilePath& web_bundle_path,
+                            const web_package::SignedWebBundleId& web_bundle_id,
+                            bool skip_signature_verification,
+                            Callback callback) override {
+    if (bundle_error_) {
+      std::move(callback).Run(base::unexpected(std::move(*bundle_error_)));
+    } else {
+      std::move(callback).Run(nullptr);
+    }
+  }
+
+ private:
+  absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error_;
+};
+
 class InstallIsolatedWebAppCommandTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -200,6 +248,7 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
     std::unique_ptr<content::WebContents> web_contents;
     absl::optional<IsolationData> isolation_data;
     raw_ptr<WebAppInstallFinalizer> install_finalizer = nullptr;
+    absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error;
   };
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -232,7 +281,8 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
 
     auto command = CreateCommand(
         parameters.url_info, std::move(web_contents), parameters.isolation_data,
-        std::move(url_loader), test_future.GetCallback());
+        std::move(url_loader), test_future.GetCallback(),
+        std::move(parameters.bundle_error));
 
     command->SetDataRetrieverForTesting(
         data_retriever != nullptr ? std::move(data_retriever)
@@ -249,14 +299,17 @@ class InstallIsolatedWebAppCommandTest : public ::testing::Test {
       std::unique_ptr<WebAppUrlLoader> url_loader,
       base::OnceCallback<
           void(base::expected<InstallIsolatedWebAppCommandSuccess,
-                              InstallIsolatedWebAppCommandError>)> callback) {
+                              InstallIsolatedWebAppCommandError>)> callback,
+      absl::optional<IsolatedWebAppResponseReaderFactory::Error> bundle_error =
+          absl::nullopt) {
     if (!isolation_data.has_value()) {
       isolation_data = CreateIsolationDataDevProxy();
     }
 
     return std::make_unique<InstallIsolatedWebAppCommand>(
         url_info, isolation_data.value(), std::move(web_contents),
-        std::move(url_loader), *profile(), std::move(callback));
+        std::move(url_loader), *profile(), std::move(callback),
+        std::make_unique<FakeResponseReaderFactory>(std::move(bundle_error)));
   }
 
   base::expected<InstallIsolatedWebAppCommandSuccess,
@@ -957,7 +1010,7 @@ TEST_F(InstallIsolatedWebAppCommandTest,
 
 TEST_F(InstallIsolatedWebAppCommandTest,
        SetInstalledBundleIsolationDataBeforeUrlLoading) {
-  IsolatedWebAppUrlInfo url_info = CreateRandomIsolatedWebAppUrlInfo();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
   auto url_loader = std::make_unique<TestWebAppUrlLoader>();
   url_loader->SetNextLoadUrlResult(
       url_info.origin().GetURL().Resolve(
@@ -1098,6 +1151,52 @@ TEST_F(InstallIsolatedWebAppCommandMetricsTest,
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Install.Result"),
               BucketsAre(base::Bucket(false, 1)));
 }
+
+class InstallIsolatedWebAppCommandBundleTest
+    : public InstallIsolatedWebAppCommandTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  InstallIsolatedWebAppCommandBundleTest()
+      : isolation_data_(GetParam()
+                            ? IsolationData{IsolationData::InstalledBundle{
+                                  .path = base::FilePath{FILE_PATH_LITERAL(
+                                      "/testing/path/to/a/bundle")},
+                              }}
+                            : IsolationData{IsolationData::DevModeBundle{
+                                  .path = base::FilePath{FILE_PATH_LITERAL(
+                                      "/testing/path/to/a/bundle")},
+                              }}) {}
+
+ protected:
+  IsolationData isolation_data_;
+};
+
+TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+  EXPECT_THAT(ExecuteCommand(Parameters{
+                  .url_info = url_info,
+                  .isolation_data = isolation_data_,
+                  .bundle_error = absl::nullopt,
+              }),
+              IsInstallationOk());
+}
+
+TEST_P(InstallIsolatedWebAppCommandBundleTest, ErrorsOnBundleError) {
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+  EXPECT_THAT(
+      ExecuteCommand(Parameters{.url_info = url_info,
+                                .isolation_data = isolation_data_,
+                                .bundle_error = MetadataError("test error")}),
+      IsInstallationError(HasSubstr("test error")));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         InstallIsolatedWebAppCommandBundleTest,
+                         ::testing::Bool(),
+                         [](::testing::TestParamInfo<bool> param_info) {
+                           return param_info.param ? "InstalledBundle"
+                                                   : "DevModeBundle";
+                         });
 
 }  // namespace
 }  // namespace web_app

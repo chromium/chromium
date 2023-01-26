@@ -53,12 +53,15 @@ struct MetadataError {
 // `skip_signature_verification` is set).
 class IsolatedWebAppResponseReaderFactory {
  public:
-  IsolatedWebAppResponseReaderFactory(
+  explicit IsolatedWebAppResponseReaderFactory(
       std::unique_ptr<IsolatedWebAppValidator> validator,
       base::RepeatingCallback<
           std::unique_ptr<web_package::SignedWebBundleSignatureVerifier>()>
-          signature_verifier_factory);
-  ~IsolatedWebAppResponseReaderFactory();
+          signature_verifier_factory = base::BindRepeating([]() {
+            return std::make_unique<
+                web_package::SignedWebBundleSignatureVerifier>();
+          }));
+  virtual ~IsolatedWebAppResponseReaderFactory();
 
   IsolatedWebAppResponseReaderFactory(
       const IsolatedWebAppResponseReaderFactory&) = delete;
@@ -82,10 +85,13 @@ class IsolatedWebAppResponseReaderFactory {
   using Callback = base::OnceCallback<void(
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>, Error>)>;
 
-  void CreateResponseReader(const base::FilePath& web_bundle_path,
-                            const web_package::SignedWebBundleId& web_bundle_id,
-                            bool skip_signature_verification,
-                            Callback callback);
+  virtual void CreateResponseReader(
+      const base::FilePath& web_bundle_path,
+      const web_package::SignedWebBundleId& web_bundle_id,
+      bool skip_signature_verification,
+      Callback callback);
+
+  static std::string ErrorToString(const Error& error);
 
   // This enum represents every error type that can occur during integrity block
   // and metadata parsing, before responses are read from Signed Web Bundles.

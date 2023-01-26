@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -225,31 +224,8 @@ IsolatedWebAppReaderRegistry::GetStatusFromError(
 IsolatedWebAppReaderRegistry::ReadResponseError
 IsolatedWebAppReaderRegistry::ReadResponseError::ForError(
     const IsolatedWebAppResponseReaderFactory::Error& error) {
-  return ForOtherError(absl::visit(
-      base::Overloaded{
-          [](const web_package::mojom::BundleIntegrityBlockParseErrorPtr&
-                 error) {
-            return base::StringPrintf("Failed to parse integrity block: %s",
-                                      error->message.c_str());
-          },
-          [](const IntegrityBlockError& error) {
-            return base::StringPrintf("Failed to validate integrity block: %s",
-                                      error.message.c_str());
-          },
-          [](const web_package::SignedWebBundleSignatureVerifier::Error&
-                 error) {
-            return base::StringPrintf("Failed to verify signatures: %s",
-                                      error.message.c_str());
-          },
-          [](const web_package::mojom::BundleMetadataParseErrorPtr& error) {
-            return base::StringPrintf("Failed to parse metadata: %s",
-                                      error->message.c_str());
-          },
-          [](const MetadataError& error) {
-            return base::StringPrintf("Failed to validate metadata: %s",
-                                      error.message.c_str());
-          }},
-      error));
+  return ForOtherError(
+      IsolatedWebAppResponseReaderFactory::ErrorToString(error));
 }
 
 // static
