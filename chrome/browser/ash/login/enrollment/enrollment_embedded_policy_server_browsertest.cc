@@ -9,6 +9,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -37,7 +38,7 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
+#include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -1080,7 +1081,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
   WizardController::default_controller()
       ->GetAutoEnrollmentControllerForTesting()
       ->SetRlweClientFactoryForTesting(
-          policy::psm::testing::CreateClientFactory(/*is_member=*/true));
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
 
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
@@ -1122,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   WizardController::default_controller()
       ->GetAutoEnrollmentControllerForTesting()
       ->SetRlweClientFactoryForTesting(
-          policy::psm::testing::CreateClientFactory(/*is_member=*/true));
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
 
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
@@ -1162,7 +1163,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   WizardController::default_controller()
       ->GetAutoEnrollmentControllerForTesting()
       ->SetRlweClientFactoryForTesting(
-          policy::psm::testing::CreateClientFactory(/*is_member=*/true));
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepDeviceAttributes);
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,

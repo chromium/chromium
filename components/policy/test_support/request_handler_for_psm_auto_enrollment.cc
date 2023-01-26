@@ -4,82 +4,30 @@
 
 #include "components/policy/test_support/request_handler_for_psm_auto_enrollment.h"
 
-#include <vector>
-
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
+#include "base/containers/contains.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/policy/test_support/client_storage.h"
+#include "components/policy/test_support/policy_storage.h"
 #include "components/policy/test_support/test_server_helpers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 
 namespace em = enterprise_management;
-using RlweTestData =
-    private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData;
 
 namespace policy {
+
 namespace {
 
-const RlweTestData::TestCase* FindOprfTestCase(
-    const RlweTestData& test_data,
-    const private_membership::rlwe::PrivateMembershipRlweOprfRequest& request) {
-  for (const auto& test_case : test_data.test_cases()) {
-    if (request.SerializeAsString() ==
-        test_case.expected_oprf_request().SerializeAsString()) {
-      return &test_case;
-    }
-  }
-  return nullptr;
-}
-
-const RlweTestData::TestCase* FindQueryTestCase(
-    const RlweTestData& test_data,
-    const private_membership::rlwe::PrivateMembershipRlweQueryRequest&
-        request) {
-  for (const auto& test_case : test_data.test_cases()) {
-    if (request.SerializeAsString() ==
-        test_case.expected_query_request().SerializeAsString()) {
-      return &test_case;
-    }
-  }
-  return nullptr;
-}
+constexpr const char* kPsmMembershipEncryptedTestIds[] = {
+    "54455354/111111",  // Brand code "TEST" (as hex), serial number "111111".
+};
 
 }  // namespace
-
-// static
-std::unique_ptr<RlweTestData>
-RequestHandlerForPsmAutoEnrollment::LoadTestData() {
-  base::FilePath src_root_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
-  const base::FilePath path_to_test_data =
-      src_root_dir.AppendASCII("third_party")
-          .AppendASCII("private_membership")
-          .AppendASCII("src")
-          .AppendASCII("internal")
-          .AppendASCII("testing")
-          .AppendASCII("regression_test_data")
-          .AppendASCII("test_data.binarypb");
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  CHECK(base::PathExists(path_to_test_data))
-      << " path_to_test_data: " << path_to_test_data;
-
-  std::string serialized_test_data;
-  CHECK(base::ReadFileToString(path_to_test_data, &serialized_test_data));
-
-  auto test_data = std::make_unique<RlweTestData>();
-  CHECK(test_data->ParseFromString(serialized_test_data));
-
-  return test_data;
-}
 
 RequestHandlerForPsmAutoEnrollment::RequestHandlerForPsmAutoEnrollment(
     EmbeddedPolicyTestServer* parent)
@@ -94,35 +42,42 @@ std::string RequestHandlerForPsmAutoEnrollment::RequestType() {
 
 std::unique_ptr<HttpResponse> RequestHandlerForPsmAutoEnrollment::HandleRequest(
     const HttpRequest& request) {
-  if (!test_data_) {
-    test_data_ = LoadTestData();
-  }
   em::DeviceManagementRequest device_management_request;
   device_management_request.ParseFromString(request.content);
+  const em::PrivateSetMembershipRequest& psm_request =
+      device_management_request.private_set_membership_request();
 
   em::DeviceManagementResponse device_management_response;
   em::PrivateSetMembershipResponse* psm_response =
       device_management_response.mutable_private_set_membership_response();
-  const auto& rlwe_request =
-      device_management_request.private_set_membership_request().rlwe_request();
+  const auto& rlwe_request = psm_request.rlwe_request();
   if (rlwe_request.has_oprf_request()) {
-    const auto* test_case =
-        FindOprfTestCase(*test_data_, rlwe_request.oprf_request());
-    if (!test_case) {
-      return CreateHttpResponse(net::HTTP_BAD_REQUEST,
-                                "PSM RLWE OPRF request not as expected");
+    if (rlwe_request.oprf_request().encrypted_ids_size() == 0) {
+      return CreateHttpResponse(
+          net::HTTP_BAD_REQUEST,
+          "PSM RLWE OPRF request must contain encrypted_ids field");
     }
-    *psm_response->mutable_rlwe_response()->mutable_oprf_response() =
-        test_case->oprf_response();
+    psm_response->mutable_rlwe_response()
+        ->mutable_oprf_response()
+        ->add_doubly_encrypted_ids()
+        ->set_queried_encrypted_id(
+            rlwe_request.oprf_request().encrypted_ids(0));
   } else if (rlwe_request.has_query_request()) {
-    const auto* test_case =
-        FindQueryTestCase(*test_data_, rlwe_request.query_request());
-    if (!test_case) {
-      return CreateHttpResponse(net::HTTP_BAD_REQUEST,
-                                "PSM RLWE query request not as expected");
+    if (rlwe_request.query_request().queries_size() == 0) {
+      return CreateHttpResponse(
+          net::HTTP_BAD_REQUEST,
+          "PSM RLWE query request must contain queries field");
     }
-    *psm_response->mutable_rlwe_response()->mutable_query_response() =
-        test_case->query_response();
+    auto* pir_response = psm_response->mutable_rlwe_response()
+                             ->mutable_query_response()
+                             ->add_pir_responses();
+    const auto& encrypted_id =
+        rlwe_request.query_request().queries(0).queried_encrypted_id();
+    pir_response->set_queried_encrypted_id(encrypted_id);
+    pir_response->mutable_pir_response()->set_plaintext_entry_size(
+        base::Contains(kPsmMembershipEncryptedTestIds, encrypted_id)
+            ? kPirResponseHasMembership
+            : kPirResponseHasNoMembership);
   } else {
     return CreateHttpResponse(
         net::HTTP_BAD_REQUEST,

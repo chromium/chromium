@@ -45,7 +45,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
-#include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
+#include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_client.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_api.h"
@@ -888,7 +888,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   WizardController::default_controller()
       ->GetAutoEnrollmentControllerForTesting()
       ->SetRlweClientFactoryForTesting(
-          policy::psm::testing::CreateClientFactory());
+          base::BindRepeating(&policy::psm::FakeRlweClient::Create));
 
   PerformStepsBeforeEnrollmentCheck();
 

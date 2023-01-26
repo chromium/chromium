@@ -7,19 +7,16 @@
 
 #include "components/policy/test_support/embedded_policy_test_server.h"
 
-#include <memory>
-
-namespace private_membership::rlwe {
-class PrivateMembershipRlweClientRegressionTestData;
-}
 namespace policy {
 
 // Handler for request type `enterprise_psm_check`.
 class RequestHandlerForPsmAutoEnrollment
     : public EmbeddedPolicyTestServer::RequestHandler {
  public:
-  using RlweTestData =
-      private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData;
+  enum PirResponse {
+    kPirResponseHasMembership = 1,
+    kPirResponseHasNoMembership = 2,
+  };
 
   explicit RequestHandlerForPsmAutoEnrollment(EmbeddedPolicyTestServer* parent);
   RequestHandlerForPsmAutoEnrollment(
@@ -32,12 +29,6 @@ class RequestHandlerForPsmAutoEnrollment
   std::string RequestType() override;
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) override;
-
-  // Required for unit tests
-  static std::unique_ptr<RlweTestData> LoadTestData();
-
- private:
-  std::unique_ptr<RlweTestData> test_data_;
 };
 
 }  // namespace policy
