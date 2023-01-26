@@ -90,7 +90,11 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
   // Member. Prefer compressing raw pointers instead of decompressing Members,
   // assuming the former is cheaper.
   static unsigned GetHash(const T* key) {
-    cppgc::internal::MemberBase::RawStorage st(key);
+#if defined(CPPGC_POINTER_COMPRESSION)
+    cppgc::internal::CompressedPointer st(key);
+#else
+    cppgc::internal::RawPointer st(key);
+#endif
     return WTF::GetHash(st.GetAsInteger());
   }
   template <typename Member,
