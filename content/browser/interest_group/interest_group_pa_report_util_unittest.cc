@@ -5,7 +5,6 @@
 #include "content/browser/interest_group/interest_group_pa_report_util.h"
 
 #include <stdint.h>
-#include <cmath>
 #include <string>
 #include <utility>
 
@@ -183,46 +182,43 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionReservedEventType) {
   EXPECT_EQ(kExpectedRequest,
             FillInPrivateAggregationRequest(
                 CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                      /*event_type=*/"reserved.always"),
+                                      /*event_type=*/kReservedAlways),
                 /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
   EXPECT_EQ(kExpectedRequest,
             FillInPrivateAggregationRequest(
                 CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                      /*event_type=*/"reserved.always"),
+                                      /*event_type=*/kReservedAlways),
                 /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
 
   EXPECT_EQ(kExpectedRequest,
             FillInPrivateAggregationRequest(
                 CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                      /*event_type=*/"reserved.win"),
+                                      /*event_type=*/kReservedWin),
                 /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                            /*event_type=*/"reserved.win"),
+                            /*event_type=*/kReservedWin),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
       /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
 
   EXPECT_EQ(kExpectedRequest,
             FillInPrivateAggregationRequest(
                 CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                      /*event_type=*/"reserved.loss"),
+                                      /*event_type=*/kReservedLoss),
                 /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                            /*event_type=*/"reserved.loss"),
+                            /*event_type=*/kReservedLoss),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
       /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
-}
 
-TEST_F(InterestGroupPaReportUtilTest,
-       ForEventContributionNonReservedEventType) {
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                            /*event_type=*/"non-reserved"),
+                            /*event_type=*/"reserved.not-supported"),
       /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
       /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 }
@@ -235,7 +231,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueWinningBid) {
                     CreateSignalBucket(/*scale=*/10, /*offset_value=*/23,
                                        /*is_negative=*/false),
                     /*value=*/45,
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/10, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 
@@ -245,7 +241,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionBaseValueWinningBid) {
                 CreateForEventRequestWithValueObject(
                     /*bucket=*/123,
                     /*value=*/CreateSignalValue(/*scale=*/10, /*offset=*/23),
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/2.2, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 }
@@ -262,7 +258,7 @@ TEST_F(InterestGroupPaReportUtilTest,
                   /*base_value=*/
                   auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
               /*value=*/45,
-              /*event_type=*/"reserved.win"),
+              /*event_type=*/kReservedWin),
           /*winning_bid=*/15, /*highest_scoring_other_bid=*/14.6,
           /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 
@@ -275,7 +271,7 @@ TEST_F(InterestGroupPaReportUtilTest,
               CreateSignalValue(
                   /*scale=*/10.0, /*offset=*/-23, /*base_value=*/
                   auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
-              /*event_type=*/"reserved.win"),
+              /*event_type=*/kReservedWin),
           /*winning_bid=*/15, /*highest_scoring_other_bid=*/6.8,
           /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 }
@@ -296,7 +292,7 @@ TEST_F(InterestGroupPaReportUtilTest,
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithBucketObject(
               /*bucket=*/signal_bucket.Clone(), /*value=*/45,
-              /*event_type=*/"reserved.loss"),
+              /*event_type=*/kReservedLoss),
           /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
           /*reject_reason=*/
           auction_worklet::mojom::RejectReason::kPendingApprovalByExchange,
@@ -311,7 +307,7 @@ TEST_F(InterestGroupPaReportUtilTest,
               CreateSignalValue(
                   /*scale=*/39.0, /*offset=*/6, /*base_value=*/
                   auction_worklet::mojom::BaseValue::kBidRejectReason),
-              /*event_type=*/"reserved.loss"),
+              /*event_type=*/kReservedLoss),
           /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
           /*reject_reason=*/auction_worklet::mojom::RejectReason::kInvalidBid,
           /*is_winner=*/false));
@@ -329,7 +325,7 @@ TEST_F(InterestGroupPaReportUtilTest,
       FillInPrivateAggregationRequest(
           CreateForEventRequestWithBucketObject(
               /*bucket=*/signal_bucket.Clone(), /*value=*/45,
-              /*event_type=*/"reserved.loss"),
+              /*event_type=*/kReservedLoss),
           /*winning_bid=*/2, /*highest_scoring_other_bid=*/1,
           /*reject_reason=*/auction_worklet::mojom::RejectReason::kNotAvailable,
           /*is_winner=*/false));
@@ -340,7 +336,7 @@ TEST_F(InterestGroupPaReportUtilTest,
   EXPECT_FALSE(FillInPrivateAggregationRequest(
       CreateForEventRequestWithBucketObject(
           /*bucket=*/signal_bucket.Clone(), /*value=*/45,
-          /*event_type=*/"reserved.loss"),
+          /*event_type=*/kReservedLoss),
       /*winning_bid=*/0, /*highest_scoring_other_bid=*/0,
       /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
 }
@@ -355,7 +351,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNoScaleOrOffset) {
             FillInPrivateAggregationRequest(
                 CreateForEventRequestWithBucketObject(
                     /*bucket=*/bucket.Clone(), /*value=*/45,
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/123, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 
@@ -368,7 +364,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNoScaleOrOffset) {
             FillInPrivateAggregationRequest(
                 CreateForEventRequestWithValueObject(
                     /*bucket=*/123, value.Clone(),
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/45, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 }
@@ -385,7 +381,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
                 CreateForEventRequestWithBucketObject(
                     /*bucket=*/bucket.Clone(),
                     /*value=*/45,
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/123, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 
@@ -400,7 +396,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionZeroScale) {
                 CreateForEventRequestWithValueObject(
                     /*bucket=*/123,
                     /*value=*/value.Clone(),
-                    /*event_type=*/"reserved.win"),
+                    /*event_type=*/kReservedWin),
                 /*winning_bid=*/45, /*highest_scoring_other_bid=*/1,
                 /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
 }
@@ -484,7 +480,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateBucket) {
                       CreateSignalBucket(test_case.scale, test_case.offset,
                                          test_case.offset_is_negative),
                       /*value=*/45,
-                      /*event_type=*/"reserved.always"),
+                      /*event_type=*/kReservedAlways),
                   /*winning_bid=*/test_case.base,
                   /*highest_scoring_other_bid=*/0,
                   /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
@@ -549,7 +545,7 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
                   CreateForEventRequestWithValueObject(
                       /*bucket=*/123,
                       CreateSignalValue(test_case.scale, test_case.offset),
-                      /*event_type=*/"reserved.always"),
+                      /*event_type=*/kReservedAlways),
                   /*winning_bid=*/test_case.base,
                   /*highest_scoring_other_bid=*/0,
                   /*reject_reason=*/absl::nullopt, /*is_winner=*/true));

@@ -25,6 +25,10 @@
 
 namespace content {
 
+const char kReservedAlways[] = "reserved.always";
+const char kReservedWin[] = "reserved.win";
+const char kReservedLoss[] = "reserved.loss";
+
 namespace {
 
 // Returns the actual value of `base_value` with corresponding post auction
@@ -231,8 +235,21 @@ FillInPrivateAggregationRequest(
     // TODO(crbug.com/1410340): Supports requests with non-reserved event types.
     return nullptr;
   }
-  if ((is_winner && event_type == "reserved.loss") ||
-      (!is_winner && event_type == "reserved.win")) {
+
+  // Rejects invalid reserved event type. The worklet code should prevent this,
+  // but the process may be compromised. This is largely preventing the owner
+  // from messing up its own private aggregation reporting function.
+  //
+  // Note that the data received here has no effect on the result of the
+  // auction, so just reject the data and continue with the auction to keep
+  // the code simple.
+  if (event_type != kReservedWin && event_type != kReservedLoss &&
+      event_type != kReservedAlways) {
+    return nullptr;
+  }
+
+  if ((is_winner && event_type == kReservedLoss) ||
+      (!is_winner && event_type == kReservedWin)) {
     return nullptr;
   }
   auction_worklet::mojom::AggregatableReportContributionPtr

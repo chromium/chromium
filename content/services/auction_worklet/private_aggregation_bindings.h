@@ -18,6 +18,11 @@ namespace auction_worklet {
 
 class AuctionV8Helper;
 
+// Reserved event types for aggregatable report's for-event contribution.
+CONTENT_EXPORT extern const char kReservedAlways[];
+CONTENT_EXPORT extern const char kReservedWin[];
+CONTENT_EXPORT extern const char kReservedLoss[];
+
 // Class to manage bindings for the Private Aggregation API. Expected to be used
 // for a context managed by `ContextRecycler`. Throws exceptions when invalid
 // arguments are detected.

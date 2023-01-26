@@ -990,6 +990,22 @@ BuildPrivateAggregationRequest(absl::uint128 bucket, int value) {
       content::mojom::DebugModeDetails::New());
 }
 
+auction_worklet::mojom::PrivateAggregationRequestPtr
+BuildPrivateAggregationForEventRequest(absl::uint128 bucket,
+                                       int value,
+                                       std::string event_type) {
+  auction_worklet::mojom::AggregatableReportForEventContribution contribution(
+      auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
+      auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
+      event_type);
+
+  return auction_worklet::mojom::PrivateAggregationRequest::New(
+      auction_worklet::mojom::AggregatableReportContribution::
+          NewForEventContribution(contribution.Clone()),
+      content::mojom::AggregationServiceMode::kDefault,
+      content::mojom::DebugModeDetails::New());
+}
+
 // Marks `ad` in `group` k-anonymous, double-checking that its url is `url`.
 void AuthorizeKAnon(const blink::InterestGroup::Ad& ad,
                     const char* url,
@@ -10922,6 +10938,105 @@ TEST_F(AuctionRunnerTest,
                   BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/20),
                   BuildPrivateAggregationRequest(/*bucket=*/9, /*value=*/19),
                   BuildPrivateAggregationRequest(/*bucket=*/0, /*value=*/1)))));
+}
+
+TEST_F(AuctionRunnerTest,
+       PrivateAggregationReportGenerateBidInvalidReservedEventType) {
+  StartStandardAuctionWithMockService();
+
+  auto seller_worklet = mock_auction_process_manager_->TakeSellerWorklet();
+  ASSERT_TRUE(seller_worklet);
+  auto bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  ASSERT_TRUE(bidder1_worklet);
+  auto bidder2_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+  ASSERT_TRUE(bidder2_worklet);
+
+  // Only Bidder1 bids, to keep things simple.
+  PrivateAggregationRequests bidder_1_pa_requests;
+  bidder_1_pa_requests.push_back(
+      BuildPrivateAggregationForEventRequest(
+          /*bucket=*/10, /*value=*/20, /*event_type=*/"reserved.always")
+          .Clone());
+  bidder_1_pa_requests.push_back(
+      BuildPrivateAggregationForEventRequest(
+          /*bucket=*/11, /*value=*/21, /*event_type=*/"reserved.not-supported")
+          .Clone());
+
+  // Bidder1 returns a bid with a private aggregation request whose reserved
+  // event type is not a supported one. This could only happen when the bidder
+  // worklet is compromised.
+  bidder1_worklet->InvokeGenerateBidCallback(
+      /*bid=*/5, GURL("https://ad1.com"), /*mojo_kanon_bid=*/nullptr,
+      /*ad_component_urls=*/absl::nullopt,
+      /*duration=*/base::TimeDelta(),
+      /*bidding_signals_data_version=*/absl::nullopt,
+      /*debug_loss_report_url=*/absl::nullopt,
+      /*debug_win_report_url=*/absl::nullopt,
+      /*pa_requests=*/
+      std::move(bidder_1_pa_requests));
+  bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
+
+  auto score_ad_params = seller_worklet->WaitForScoreAd();
+  EXPECT_EQ(kBidder1, score_ad_params.interest_group_owner);
+  EXPECT_EQ(5, score_ad_params.bid);
+  PrivateAggregationRequests score_ad_1_pa_requests;
+  score_ad_1_pa_requests.push_back(
+      kExpectedScoreAdPrivateAggregationRequest.Clone());
+  mojo::Remote<auction_worklet::mojom::ScoreAdClient>(
+      std::move(score_ad_params.score_ad_client))
+      ->OnScoreAdComplete(
+          /*score=*/10,
+          /*reject_reason=*/
+          auction_worklet::mojom::RejectReason::kNotAvailable,
+          auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr(),
+          /*scoring_signals_data_version=*/0,
+          /*has_scoring_signals_data_version=*/false,
+          /*debug_loss_report_url=*/absl::nullopt,
+          /*debug_win_report_url=*/absl::nullopt,
+          std::move(score_ad_1_pa_requests),
+          /*errors=*/{});
+
+  PrivateAggregationRequests report_win_pa_requests;
+  report_win_pa_requests.push_back(
+      kExpectedReportWinPrivateAggregationRequest.Clone());
+  PrivateAggregationRequests report_result_pa_requests;
+  report_result_pa_requests.push_back(
+      kExpectedReportResultPrivateAggregationRequest.Clone());
+
+  seller_worklet->WaitForReportResult();
+  seller_worklet->InvokeReportResultCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, std::move(report_result_pa_requests));
+  mock_auction_process_manager_->WaitForWinningBidderReload();
+  bidder1_worklet =
+      mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+  bidder1_worklet->WaitForReportWin();
+  bidder1_worklet->InvokeReportWinCallback(
+      /*report_url=*/absl::nullopt,
+      /*ad_beacon_map=*/{}, /*pa_requests=*/std::move(report_win_pa_requests));
+  auction_run_loop_->Run();
+
+  EXPECT_EQ(kBidder1Key, result_.winning_group_id);
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+  EXPECT_THAT(result_.interest_groups_that_bid,
+              testing::UnorderedElementsAre(kBidder1Key));
+  EXPECT_EQ(R"({"render_url":"https://ad1.com/","metadata":{"ads": true}})",
+            result_.winning_group_ad_metadata);
+
+  EXPECT_THAT(
+      result_.private_aggregation_requests,
+      testing::UnorderedElementsAre(
+          testing::Pair(
+              kBidder1,
+              ElementsAreRequests(
+                  BuildPrivateAggregationRequest(/*bucket=*/10, /*value=*/20),
+                  kExpectedReportWinPrivateAggregationRequest)),
+          testing::Pair(kSeller,
+                        ElementsAreRequests(
+                            kExpectedScoreAdPrivateAggregationRequest,
+                            kExpectedReportResultPrivateAggregationRequest))));
 }
 
 // Enable and test forDebuggingOnly.reportAdAuctionLoss() and

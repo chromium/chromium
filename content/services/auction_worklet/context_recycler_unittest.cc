@@ -1558,6 +1558,13 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
       privateAggregation.reportContributionForEvent(args, 'reserved.win');
     }
 
+    function testInvalidReservedEventType(args) {
+      if (typeof args.bucket === "string") {
+        args.bucket = BigInt(args.bucket);
+      }
+      privateAggregation.reportContributionForEvent("reserved.something", args);
+    }
+
     function doNothing() {}
   )";
 
@@ -1587,13 +1594,13 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     ASSERT_EQ(pa_requests.size(), 4u);
     EXPECT_EQ(pa_requests[0],
               CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                    /*event_type=*/"reserved.win"));
+                                    /*event_type=*/kReservedWin));
     EXPECT_EQ(pa_requests[1],
               CreateForEventRequest(/*bucket=*/123, /*value=*/46,
-                                    /*event_type=*/"reserved.loss"));
+                                    /*event_type=*/kReservedLoss));
     EXPECT_EQ(pa_requests[2],
               CreateForEventRequest(/*bucket=*/123, /*value=*/47,
-                                    /*event_type=*/"reserved.always"));
+                                    /*event_type=*/kReservedAlways));
     EXPECT_EQ(pa_requests[3],
               CreateForEventRequest(/*bucket=*/123, /*value=*/48,
                                     /*event_type=*/"click"));
@@ -1672,6 +1679,26 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     .empty());
   }
 
+  // Invalid reserved event type.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", std::string("123"));
+    dict.Set("value", 45);
+
+    Run(scope, script, "testInvalidReservedEventType", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    // Don't throw an error if an invalid reserved event type is provided, to
+    // provide forward compatibility with new reserved event types added later.
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
+  }
+
   // Large bucket
   {
     ContextRecyclerScope scope(context_recycler);
@@ -1691,7 +1718,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewIdBucket(absl::MakeUint128(/*high=*/1, /*low=*/0)),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -1718,7 +1745,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewIdBucket(absl::Uint128Max()),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -1745,7 +1772,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewIdBucket(0),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -1772,7 +1799,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewIdBucket(123),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(0),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -1810,10 +1837,10 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     ASSERT_EQ(pa_requests.size(), 2u);
     EXPECT_EQ(pa_requests[0],
               CreateForEventRequest(/*bucket=*/123, /*value=*/45,
-                                    /*event_type=*/"reserved.win"));
+                                    /*event_type=*/kReservedWin));
     EXPECT_EQ(pa_requests[1],
               CreateForEventRequest(/*bucket=*/678, /*value=*/90,
-                                    /*event_type=*/"reserved.win"));
+                                    /*event_type=*/kReservedWin));
   }
 
   // Too large bucket
@@ -1869,7 +1896,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewSignalBucket(std::move(signal_bucket)),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -1905,7 +1932,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                 NewSignalBucket(signal_bucket.Clone()),
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
@@ -2042,7 +2069,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
             /*value=*/
             auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
                 std::move(signal_value)),
-            /*event_type=*/"reserved.win");
+            /*event_type=*/kReservedWin);
 
     ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()

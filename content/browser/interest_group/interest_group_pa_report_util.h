@@ -12,6 +12,11 @@
 
 namespace content {
 
+// Reserved event types for aggregatable report's for-event contribution.
+CONTENT_EXPORT extern const char kReservedAlways[];
+CONTENT_EXPORT extern const char kReservedWin[];
+CONTENT_EXPORT extern const char kReservedLoss[];
+
 // If request's contribution is an AggregatableReportForEventContribution, fills
 // the contribution in with post-auction signals such as winning_bid, converts
 // it to an AggregatableReportHistogramContribution and returns the resulting
