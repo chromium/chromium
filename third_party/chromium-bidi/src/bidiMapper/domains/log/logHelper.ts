@@ -151,7 +151,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
 }
 
 function stringFromArg(arg: CommonDataTypes.RemoteValue): string {
-  if (!arg.hasOwnProperty('value')) {
+  if (!Object.hasOwn(arg, 'value')) {
     return arg.type;
   }
 

@@ -306,11 +306,11 @@ function webDriverValueToBiDi(
   }
 
   if (result.type == 'node') {
-    if (bidiValue.hasOwnProperty('backendNodeId')) {
+    if (Object.hasOwn(bidiValue, 'backendNodeId')) {
       bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
       delete bidiValue['backendNodeId'];
     }
-    if (bidiValue.hasOwnProperty('children')) {
+    if (Object.hasOwn(bidiValue, 'children')) {
       for (const i in bidiValue.children) {
         bidiValue.children[i] = webDriverValueToBiDi(
           bidiValue.children[i],

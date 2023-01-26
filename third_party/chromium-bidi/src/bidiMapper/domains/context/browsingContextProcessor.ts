@@ -291,7 +291,7 @@ export class BrowsingContextProcessor {
       );
     }
 
-    const detachedFromTargetPromise = new Promise<void>(async (resolve) => {
+    const detachedFromTargetPromise = new Promise<void>((resolve) => {
       const onContextDestroyed = (
         eventParams: Protocol.Target.DetachedFromTargetEvent
       ) => {
