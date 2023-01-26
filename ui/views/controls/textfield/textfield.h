@@ -751,6 +751,21 @@ class VIEWS_EXPORT Textfield : public View,
   gfx::Point drag_start_location_;
   int drag_start_display_offset_ = 0;
 
+  // Tracks the selection extent, which is used to determine the logical end of
+  // the selection. Roughly, this corresponds to the last drag position of the
+  // touch handle used to update the selection range. Note that the extent may
+  // be different to the logical end of the selection due to "expand by word,
+  // shrink by character" behaviour, in which the selection end can move to the
+  // next word boundary from the extent when expanding.
+  gfx::SelectionModel extent_caret_;
+
+  // Break type which selection endpoints can be moved to when updating the
+  // selection extent. For "expand by word, shrink by character" behaviour, the
+  // break type is set to WORD_BREAK if the selection has expanded past the
+  // current word boundary and back to CHARACTER_BREAK if the selection is
+  // shrinking.
+  gfx::BreakType break_type_ = gfx::CHARACTER_BREAK;
+
   // Tracks if touch editing handles are hidden because user has started
   // scrolling. If |true|, handles are shown after scrolling ends.
   bool touch_handles_hidden_due_to_scroll_ = false;

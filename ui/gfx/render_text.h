@@ -621,6 +621,10 @@ class GFX_EXPORT RenderText {
   // resulting range. Maintains directionality of |range|.
   Range ExpandRangeToGraphemeBoundary(const Range& range) const;
 
+  // Expands |range| to its nearest word boundaries and returns the resulting
+  // range. Maintains directionality of |range|.
+  Range ExpandRangeToWordBoundary(const Range& range) const;
+
   // Specify the width/height of a glyph for test. The width/height of glyphs is
   // very platform-dependent and environment-dependent. Otherwise multiline text
   // will become really flaky.
@@ -873,10 +877,6 @@ class GFX_EXPORT RenderText {
   // CURSOR_BACKWARD direction, then in the CURSOR_FORWARD direction. Returns
   // the text length if no valid boundary is found.
   size_t GetNearestWordStartBoundary(size_t index) const;
-
-  // Expands |range| to its nearest word boundaries and returns the resulting
-  // range. Maintains directionality of |range|.
-  Range ExpandRangeToWordBoundary(const Range& range) const;
 
   // Returns an implementation-specific run list, if implemented.
   virtual internal::TextRunList* GetRunList() = 0;

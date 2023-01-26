@@ -1371,6 +1371,46 @@ Range RenderText::ExpandRangeToGraphemeBoundary(const Range& range) const {
                              : Range(min_index, max_index);
 }
 
+Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
+  const size_t length = text().length();
+  DCHECK_LE(range.GetMax(), length);
+  if (obscured()) {
+    return range.is_reversed() ? Range(length, 0) : Range(0, length);
+  }
+
+  base::i18n::BreakIterator iter(text(), base::i18n::BreakIterator::BREAK_WORD);
+  const bool success = iter.Init();
+  DCHECK(success);
+  if (!success) {
+    return range;
+  }
+
+  size_t range_min = range.GetMin();
+  if (range_min == length && range_min != 0) {
+    --range_min;
+  }
+
+  for (; range_min != 0; --range_min) {
+    if (iter.IsStartOfWord(range_min) || iter.IsEndOfWord(range_min)) {
+      break;
+    }
+  }
+
+  size_t range_max = range.GetMax();
+  if (range_min == range_max && range_max != length) {
+    ++range_max;
+  }
+
+  for (; range_max < length; ++range_max) {
+    if (iter.IsEndOfWord(range_max) || iter.IsStartOfWord(range_max)) {
+      break;
+    }
+  }
+
+  return range.is_reversed() ? Range(range_max, range_min)
+                             : Range(range_min, range_max);
+}
+
 bool RenderText::IsNewlineSegment(const internal::LineSegment& segment) const {
   return IsNewlineSegment(text_, segment);
 }
@@ -2314,38 +2354,6 @@ size_t RenderText::GetNearestWordStartBoundary(size_t index) const {
       return i;
 
   return length;
-}
-
-Range RenderText::ExpandRangeToWordBoundary(const Range& range) const {
-  const size_t length = text().length();
-  DCHECK_LE(range.GetMax(), length);
-  if (obscured())
-    return range.is_reversed() ? Range(length, 0) : Range(0, length);
-
-  base::i18n::BreakIterator iter(text(), base::i18n::BreakIterator::BREAK_WORD);
-  const bool success = iter.Init();
-  DCHECK(success);
-  if (!success)
-    return range;
-
-  size_t range_min = range.GetMin();
-  if (range_min == length && range_min != 0)
-    --range_min;
-
-  for (; range_min != 0; --range_min)
-    if (iter.IsStartOfWord(range_min) || iter.IsEndOfWord(range_min))
-      break;
-
-  size_t range_max = range.GetMax();
-  if (range_min == range_max && range_max != length)
-    ++range_max;
-
-  for (; range_max < length; ++range_max)
-    if (iter.IsEndOfWord(range_max) || iter.IsStartOfWord(range_max))
-      break;
-
-  return range.is_reversed() ? Range(range_max, range_min)
-                             : Range(range_min, range_max);
 }
 
 }  // namespace gfx

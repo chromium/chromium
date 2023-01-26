@@ -18,6 +18,7 @@
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -34,6 +35,7 @@
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/events/event.h"
@@ -3840,6 +3842,138 @@ TEST_F(TextfieldTest, MoveRangeSelectionExtent) {
   textfield_->GetEditableSelectionRange(&range);
   EXPECT_EQ(range, gfx::Range(2, 0));
 }
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtentToTextEnd) {
+  InitTextfield();
+  textfield_->SetText(u"hello world a");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(13), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 13));
+}
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtentByCharacter) {
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{::features::kTouchTextEditingRedesign});
+#endif
+
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(4), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 4));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"ll");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(8), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 8));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo wo");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(1), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 1));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"e");
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(TextfieldTest, MoveRangeSelectionExtentExpandByWord) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(9), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 11));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(10), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 11));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(5), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 5));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(7), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 6));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo ");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(9), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 11));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+}
+
+TEST_F(TextfieldTest, MoveRangeSelectionExtentShrinkByCharacter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{::features::kTouchTextEditingRedesign},
+      /*disabled_features=*/{});
+
+  InitTextfield();
+  textfield_->SetText(u"hello world");
+  const int cursor_y = GetCursorYForTesting();
+  gfx::Range range;
+
+  textfield_->SelectBetweenCoordinates(
+      gfx::Point(GetCursorPositionX(2), cursor_y),
+      gfx::Point(GetCursorPositionX(3), cursor_y));
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(11), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 11));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo world");
+
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(9), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 9));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo wor");
+
+  // Check that selection can be adjusted by character within a word after the
+  // selection has shrunk.
+  textfield_->MoveRangeSelectionExtent(
+      gfx::Point(GetCursorPositionX(10), cursor_y));
+  textfield_->GetEditableSelectionRange(&range);
+  EXPECT_EQ(range, gfx::Range(2, 10));
+  EXPECT_EQ(textfield_->GetSelectedText(), u"llo worl");
+}
+#endif
 
 TEST_F(TextfieldTest, SelectBetweenCoordinates) {
   InitTextfield();

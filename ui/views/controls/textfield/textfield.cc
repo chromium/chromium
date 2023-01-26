@@ -1193,17 +1193,66 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
     return;
   }
 
+  gfx::SelectionModel new_extent_caret =
+      GetRenderText()->FindCursorPosition(extent);
+  size_t new_extent_pos = new_extent_caret.caret_pos();
+  size_t extent_pos = extent_caret_.caret_pos();
+  if (new_extent_pos == extent_pos) {
+    return;
+  }
+
   gfx::SelectionModel base_caret =
       GetRenderText()->GetSelectionModelForSelectionStart();
-  gfx::SelectionModel extent_caret =
-      GetRenderText()->FindCursorPosition(extent);
-  gfx::SelectionModel selection(
-      gfx::Range(base_caret.caret_pos(), extent_caret.caret_pos()),
-      extent_caret.caret_affinity());
+  size_t base_pos = base_caret.caret_pos();
+  size_t end_pos = new_extent_pos;
+  gfx::LogicalCursorDirection cursor_direction =
+      new_extent_pos > base_pos ? gfx::CURSOR_FORWARD : gfx::CURSOR_BACKWARD;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bool selection_shrinking = cursor_direction == gfx::CURSOR_FORWARD
+                                 ? new_extent_pos < extent_pos
+                                 : new_extent_pos > extent_pos;
+
+  gfx::Range word_range =
+      GetRenderText()->ExpandRangeToWordBoundary(gfx::Range(extent_pos));
+  bool extent_moved_past_next_word_boundary =
+      (cursor_direction == gfx::CURSOR_BACKWARD &&
+       new_extent_pos <= word_range.start()) ||
+      (cursor_direction == gfx::CURSOR_FORWARD &&
+       new_extent_pos >= word_range.end());
+
+  if (::features::IsTouchTextEditingRedesignEnabled()) {
+    if (selection_shrinking) {
+      break_type_ = gfx::CHARACTER_BREAK;
+    } else if (extent_moved_past_next_word_boundary) {
+      // Switch to using word breaks only after the selection has expanded past
+      // a word boundary. This ensures that the selection can be adjusted by
+      // character when adjusting within a word after the selection has shrunk.
+      break_type_ = gfx::WORD_BREAK;
+    }
+  }
+
+  if (break_type_ == gfx::WORD_BREAK) {
+    // Compute the closest word boundary to the new extent position.
+    gfx::Range new_word_range =
+        GetRenderText()->ExpandRangeToWordBoundary(gfx::Range(new_extent_pos));
+    DCHECK(new_extent_pos >= new_word_range.start() &&
+           new_extent_pos <= new_word_range.end());
+    end_pos = new_extent_pos - new_word_range.start() <
+                      new_word_range.end() - new_extent_pos
+                  ? new_word_range.start()
+                  : new_word_range.end();
+  }
+#endif
+
+  gfx::SelectionModel selection(gfx::Range(base_pos, end_pos),
+                                cursor_direction);
 
   OnBeforeUserAction();
   SelectSelectionModel(selection);
   OnAfterUserAction();
+
+  extent_caret_ = new_extent_caret;
 }
 
 void Textfield::SelectBetweenCoordinates(const gfx::Point& base,
@@ -1222,6 +1271,9 @@ void Textfield::SelectBetweenCoordinates(const gfx::Point& base,
   OnBeforeUserAction();
   SelectSelectionModel(selection);
   OnAfterUserAction();
+
+  extent_caret_ = extent_caret;
+  break_type_ = gfx::CHARACTER_BREAK;
 }
 
 void Textfield::GetSelectionEndPoints(gfx::SelectionBound* anchor,
