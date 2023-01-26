@@ -7,6 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_view_controller.h"
@@ -92,6 +93,7 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear"));
   UmaHistogramEnumeration("IOS.DefaultBrowserPromo.TailoredFullscreen.Appear",
                           DefaultPromoTypeForUMA(_promoType));
+  [self recordDefaultBrowserPromoShown];
 
   self.tailoredPromoViewController = [[TailoredPromoViewController alloc] init];
 
@@ -202,6 +204,14 @@ DefaultPromoTypeForUMA DefaultPromoTypeForUMA(DefaultPromoType type) {
       NOTREACHED();
       break;
   }
+}
+
+#pragma mark - private
+
+// Records that a default browser promo has been shown.
+- (void)recordDefaultBrowserPromoShown {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  LogToFETDefaultBrowserPromoShown(browserState);
 }
 
 @end

@@ -9,6 +9,8 @@
 
 #import "base/feature_list.h"
 
+class ChromeBrowserState;
+
 namespace feature_engagement {
 class Tracker;
 }
@@ -50,6 +52,9 @@ void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 // Logs the timestamp of a user tap on the "Remind Me Later" button in the
 // Fullscreen Promo.
 void LogRemindMeLaterPromoActionInteraction();
+
+// Logs to the FET that a default browser promo has been shown.
+void LogToFETDefaultBrowserPromoShown(ChromeBrowserState* browserState);
 
 // Returns true if the user has tapped on the "Remind Me Later" button and the
 // delay time threshold has been met.

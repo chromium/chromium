@@ -76,6 +76,7 @@
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
   // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
+  [self recordDefaultBrowserPromoShown];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -96,6 +97,7 @@
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
   LogUserInteractionWithFullscreenPromo();
+  [self recordDefaultBrowserPromoShown];
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -121,12 +123,14 @@
                 IOSDefaultBrowserFullscreenPromoAction::kCancel];
       base::RecordAction(base::UserMetricsAction(
           "IOS.DefaultBrowserFullscreenPromo.Dismissed"));
+      [self recordDefaultBrowserPromoShown];
     }
   } else {
     [self logDefaultBrowserFullscreenPromoHistogramForAction:
               IOSDefaultBrowserFullscreenPromoAction::kCancel];
     base::RecordAction(
         base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
+    [self recordDefaultBrowserPromoShown];
   }
   [self.handler hidePromo];
 }
@@ -138,12 +142,14 @@
   base::RecordAction(
       base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
   LogUserInteractionWithFullscreenPromo();
+  [self recordDefaultBrowserPromoShown];
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
       "IOS.DefaultBrowserFullscreen.PromoMoreInfoTapped"));
+  [self recordDefaultBrowserPromoShown];
   NSString* message = GetDefaultBrowserLearnMoreText();
   self.learnMoreViewController =
       [[PopoverLabelViewController alloc] initWithMessage:message];
@@ -189,6 +195,16 @@
 
   feature_engagement::TrackerFactory::GetForBrowserState(browserState)
       ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+}
+
+// Records that a default browser promo has been shown. This needs to be called
+// for any action the user takes other than "remind me later", since this event
+// is used by the FET to block the blue dot default browser promo, and clicking
+// "remind me later" should not block that promo. This is why this method isn't
+// simply called in something more generic like `start`.
+- (void)recordDefaultBrowserPromoShown {
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  LogToFETDefaultBrowserPromoShown(browserState);
 }
 
 @end

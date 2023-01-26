@@ -9,8 +9,11 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -342,6 +345,16 @@ void LogRemindMeLaterPromoActionInteraction() {
                              [NSDate date]);
 }
 
+void LogToFETDefaultBrowserPromoShown(ChromeBrowserState* browserState) {
+  // OTR browsers are ignored because they can sometimes cause a nullptr tracker
+  // to be returned from the tracker factory.
+  if (!browserState || browserState->IsOffTheRecord()) {
+    return;
+  }
+  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
+      ->NotifyEvent(feature_engagement::events::kDefaultBrowserPromoShown);
+}
+
 bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
   if (!IsInRemindMeLaterGroup()) {
     return false;
@@ -354,6 +367,7 @@ bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo() {
 bool ShouldTriggerDefaultBrowserBlueDotBadgeFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker) {
+  // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
   if (!IsInBlueDotExperimentEnabledGroup() || IsChromeLikelyDefaultBrowser()) {
     return false;
   }
