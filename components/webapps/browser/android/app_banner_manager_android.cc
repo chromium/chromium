@@ -48,6 +48,7 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertJavaStringToUTF8;
+using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 
@@ -588,14 +589,19 @@ void AppBannerManagerAndroid::HideAmbientBadge() {
 
 bool AppBannerManagerAndroid::IsSupportedNonWebAppPlatform(
     const std::u16string& platform) const {
-  // TODO(https://crbug.com/949430): Implement for Android apps.
-  return false;
+  return base::EqualsASCII(platform, kPlatformPlay);
 }
 
 bool AppBannerManagerAndroid::IsRelatedNonWebAppInstalled(
     const blink::Manifest::RelatedApplication& related_app) const {
-  // TODO(https://crbug.com/949430): Implement for Android apps.
-  return false;
+  if (!related_app.id || related_app.id->empty()) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> java_id(
+      ConvertUTF16ToJavaString(env, related_app.id.value()));
+  return Java_AppBannerManager_isRelatedNonWebAppInstalled(env, java_id);
 }
 
 bool AppBannerManagerAndroid::IsWebAppConsideredInstalled() const {

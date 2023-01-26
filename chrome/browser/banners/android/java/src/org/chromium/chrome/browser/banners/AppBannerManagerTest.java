@@ -21,11 +21,15 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.Instrumentation.ActivityResult;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,6 +55,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -60,6 +65,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -154,6 +160,9 @@ public class AppBannerManagerTest {
     private static final String WEB_APP_MANIFEST_WITH_UNSUPPORTED_PLATFORM =
             "/chrome/test/data/banners/manifest_prefer_related_chrome_app.json";
 
+    private static final String WEB_APP_MANIFEST_WITH_RELATED_APP_LIST =
+            "/chrome/test/data/banners/manifest_listing_related_android_app.json";
+
     private static final String WEB_APP_MANIFEST_FOR_BOTTOM_SHEET_INSTALL =
             "/chrome/test/data/banners/manifest_with_screenshots.json";
 
@@ -166,6 +175,8 @@ public class AppBannerManagerTest {
     private static final String NATIVE_APP_REFERRER = "chrome_inline&playinline=chrome_inline";
 
     private static final String NATIVE_APP_BLANK_REFERRER = "playinline=chrome_inline";
+
+    private static final String NATIVE_APP_PACKAGE_NAME = "com.example.app";
 
     private static final String INSTALL_ACTION = "INSTALL_ACTION";
 
@@ -349,6 +360,20 @@ public class AppBannerManagerTest {
                 Criteria.checkThat(
                         infobars.get(0), Matchers.instanceOf(InstallableAmbientBadgeInfoBar.class));
             });
+        }
+    }
+
+    private void checkAmbientBadgePromptNotExist(
+            ChromeActivityTestRule<? extends ChromeActivity> rule) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_MESSAGE)) {
+            WindowAndroid windowAndroid = rule.getActivity().getWindowAndroid();
+            TestThreadUtils.runOnUiThreadBlocking(
+                    ()
+                            -> Assert.assertEquals(
+                                    0, MessagesTestHelper.getMessageCount(windowAndroid)));
+        } else if (ChromeFeatureList.isEnabled(
+                           ChromeFeatureList.INSTALLABLE_AMBIENT_BADGE_INFOBAR)) {
+            Assert.assertEquals(0, rule.getInfoBars().size());
         }
     }
 
@@ -1268,5 +1293,71 @@ public class AppBannerManagerTest {
 
         mTabbedActivityTestRule.loadUrl(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         waitUntilNoDialogsShowing(tab);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    public void testAmbientBadgeTriggeredWithListedRelatedApp() throws Exception {
+        // The ambient badge should show if there is play app in related applications list but
+        // preferred_related_applications is false.
+        String webBannerUrl = WebappTestPage.getServiceWorkerUrlWithAction(
+                mTestServer, "call_stashed_prompt_on_click");
+        resetEngagementForUrl(webBannerUrl, 10);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, webBannerUrl);
+
+        waitUntilAmbientBadgePromptAppears(mTabbedActivityTestRule);
+
+        // Calls prompt() on the beforeinstallprompt event, we expect to see the modal banner.
+        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        tapAndWaitForModalBanner(tab);
+    }
+
+    private static class TestContext extends ContextWrapper {
+        public TestContext(Context baseContext) {
+            super(baseContext);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public PackageInfo getPackageInfo(String packageName, int flags)
+                        throws PackageManager.NameNotFoundException {
+                    if (TextUtils.equals(NATIVE_APP_PACKAGE_NAME, packageName)) {
+                        PackageInfo packageInfo = new PackageInfo();
+                        packageInfo.packageName = NATIVE_APP_PACKAGE_NAME;
+                        return packageInfo;
+                    }
+
+                    return TestContext.super.getPackageManager().getPackageInfo(packageName, flags);
+                }
+            };
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AppBanners"})
+    public void testAmbientBadgeDoesNotAppearWhenRelatedAppInstalled() throws Exception {
+        String url = WebappTestPage.getServiceWorkerUrlWithManifestAndAction(mTestServer,
+                WEB_APP_MANIFEST_WITH_RELATED_APP_LIST, "call_stashed_prompt_on_click");
+
+        final Context contextToRestore = ContextUtils.getApplicationContext();
+        ContextUtils.initApplicationContextForTests(new TestContext(contextToRestore));
+
+        resetEngagementForUrl(url, 10);
+        navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule, url);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+            Assert.assertEquals(11 /* COMPLETE */,
+                    getAppBannerManager(tab.getWebContents()).getPipelineStatusForTesting());
+        });
+
+        // The web app banner not show if a play app in related applications list is installed.
+        checkAmbientBadgePromptNotExist(mTabbedActivityTestRule);
+
+        ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 }

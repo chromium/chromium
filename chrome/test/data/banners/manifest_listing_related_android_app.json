@@ -2,7 +2,7 @@
   "name": "Manifest listing related android app",
   "icons": [
     {
-      "src": "/banners/image-512px.png",
+      "src": "image-512px.png",
       "sizes": "512x512",
       "type": "image/png"
     }
