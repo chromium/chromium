@@ -40,10 +40,7 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
 _PUSH_URL = 'gs://chrome-supersize/milestones/'
 
 _DESIRED_CPUS = ['arm', 'arm_64']
-_DESIRED_APKS = [
-    'ChromeModern.apk', 'Monochrome.apk', 'AndroidWebview.apk',
-    'TrichromeGoogle'
-]
+_DESIRED_APKS = ['Monochrome.apk', 'AndroidWebview.apk', 'TrichromeGoogle']
 
 # Versions are manually gathered from
 # https://omahaproxy.appspot.com/history?os=android&channel=stable
@@ -108,8 +105,6 @@ def _VersionMajor(version):
 
 def _IsBundle(apk, version):
   version = _VersionMajor(version)
-  if apk == 'ChromeModern.apk' and version >= 73:
-    return True
   if apk == 'Monochrome.apk' and version >= 73:
     return True
   if apk == 'AndroidWebview.apk' and version >= 89:
@@ -125,8 +120,6 @@ def _EnumerateReports():
       versions = [v for v in versions if _VersionMajor(v) >= 71]
     elif apk == 'TrichromeGoogle':
       versions = [v for v in versions if _VersionMajor(v) >= 88]
-    elif apk == 'ChromeModern.apk':
-      versions = [v for v in versions if _VersionMajor(v) <= 108]
 
     for version in versions:
       yield Report(cpu, apk, version)
@@ -225,6 +218,9 @@ def main():
       '--sync',
       action='store_true',
       help='Sync data files to GCS (otherwise just prints out command to run).')
+  parser.add_argument('--wait',
+                      action='store_true',
+                      help='Allow user to examine staged content before exit.')
   args = parser.parse_args()
 
   size_file_bucket = args.size_file_bucket.rstrip('/')
@@ -235,9 +231,10 @@ def main():
 
   logging.warning('Downloading %d size files.', len(reports_to_make))
   with _DownloadSizeFiles(args.size_file_bucket, reports_to_make) as sizes_dir:
-
     staging_dir = os.path.join(sizes_dir, 'staging')
     _MakeDirectory(staging_dir)
+    if not args.sync:
+      logging.warning('Staging dir: %s', staging_dir)
 
     for r in reports_to_make:
       _BuildOneReport(r, staging_dir, sizes_dir)
@@ -256,6 +253,8 @@ def main():
           [_GSUTIL, 'setmeta', '-h', 'Cache-Control:no-cache', milestones_json])
     else:
       logging.warning('Finished dry run. Run with --sync to upload.')
+    if args.wait:
+      input('Press <enter> to delete staging dir %s, and finish.' % staging_dir)
 
 
 if __name__ == '__main__':
