@@ -2553,12 +2553,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20220824",
+                    "name": "Enabled",
                     "params": {
-                        "allow_list": "alhngdkjgnedakdlnamimgfihgkmenbh"
+                        "allow_list": "alhngdkjgnedakdlnamimgfihgkmenbh,gnddkmpjjjcimefninepfmmddpgaaado"
                     },
                     "enable_features": [
-                        "ChromeAppsDeprecation",
+                        "ChromeAppsDeprecation"
+                    ],
+                    "disable_features": [
                         "KeepForceInstalledPreinstalledApps"
                     ]
                 }

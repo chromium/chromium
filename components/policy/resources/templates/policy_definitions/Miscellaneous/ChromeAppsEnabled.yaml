@@ -22,7 +22,7 @@ owners:
 - mattm@chromium.org
 schema:
   type: boolean
-supported_on:
+supported_on: # Disable in m114: b/266505189
 - chrome.win:104-
 - chrome.mac:104-
 - chrome.linux:104-
