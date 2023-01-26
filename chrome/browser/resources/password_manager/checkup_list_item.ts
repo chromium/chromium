@@ -41,6 +41,8 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
     return {
       item: Object,
 
+      group: Object,
+
       first: Boolean,
 
       showDetails: Boolean,
@@ -48,13 +50,9 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   }
 
   item: chrome.passwordsPrivate.PasswordUiEntry;
+  group: chrome.passwordsPrivate.CredentialGroup;
   first: boolean;
   showDetails: boolean;
-
-  private getShownDomain_(): string {
-    // TODO(crbug.com/1401001): Use group name here.
-    return this.item.urls.shown;
-  }
 
   private getPasswordValue_(): string|undefined {
     return this.isPasswordVisible ? this.item.password : ' '.repeat(10);

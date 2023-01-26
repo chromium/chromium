@@ -67,6 +67,7 @@ export class CheckupDetailsSectionElement extends
 
   private pageTitle_: string;
   private insecurityType_: CheckupSubpage|undefined;
+  private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
   private allInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
   private shownInsecureCredentials_: chrome.passwordsPrivate.PasswordUiEntry[];
   private mutedCompromisedCredentials_:
@@ -83,10 +84,17 @@ export class CheckupDetailsSectionElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    this.insecureCredentialsChangedListener_ = insecureCredentials => {
-      this.allInsecureCredentials_ = insecureCredentials;
+    const updateGroups = () => {
+      PasswordManagerImpl.getInstance().getCredentialGroups().then(
+          groups => this.groups_ = groups);
     };
 
+    this.insecureCredentialsChangedListener_ = insecureCredentials => {
+      this.allInsecureCredentials_ = insecureCredentials;
+      updateGroups();
+    };
+
+    updateGroups();
     PasswordManagerImpl.getInstance().getInsecureCredentials().then(
         this.insecureCredentialsChangedListener_);
     PasswordManagerImpl.getInstance().addInsecureCredentialsListener(
@@ -208,6 +216,12 @@ export class CheckupDetailsSectionElement extends
           this.activeListItem_.item);
     }
     this.$.moreActionsMenu.close();
+  }
+
+  private getCurrentGroup_(id: number): chrome.passwordsPrivate.CredentialGroup
+      |undefined {
+    return this.groups_.find(
+        group => group.entries.some(entry => entry.id === id));
   }
 }
 

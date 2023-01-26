@@ -44,12 +44,11 @@
 </style>
 <div id="separator" class="hr" hidden="[[first]]"></div>
 <div id="list-item" focus-row-container>
-  <!-- TODO(crbug.com/): Consider using group icon. -->
-  <site-favicon domain="[[item.changePasswordUrl]]"></site-favicon>
+  <site-favicon url="[[group.iconUrl]]" domain="[[group.name]]"></site-favicon>
   <div id="credentialInfo">
     <div id="infoColumn">
       <div id="shownUrl" class="label">
-        [[getShownDomain_(item)]]
+        [[group.name]]
       </div>
       <div class="cr-secondary-text label">
         <span id="username">[[item.username]]</span>

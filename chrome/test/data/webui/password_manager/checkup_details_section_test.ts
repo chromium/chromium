@@ -14,7 +14,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
-import {makeInsecureCredential, makePasswordManagerPrefs} from './test_util.js';
+import {createCredentialGroup, makeInsecureCredential, makePasswordManagerPrefs} from './test_util.js';
 
 suite('CheckupDetailsSectionTest', function() {
   const CompromiseType = chrome.passwordsPrivate.CompromiseType;
@@ -104,10 +104,17 @@ suite('CheckupDetailsSectionTest', function() {
         elapsedMinSinceCompromise: 100,
       }),
     ];
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'Affiliation.com',
+        credentials: passwordManager.data.insecureCredentials,
+      }),
+    ];
 
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
+    await passwordManager.whenCalled('getCredentialGroups');
     const params = await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -133,7 +140,7 @@ suite('CheckupDetailsSectionTest', function() {
 
       assertTrue(!!listItemElement);
       assertEquals(
-          expectedCredential.urls.shown,
+          passwordManager.data.groups[0]?.name,
           listItemElement.$.shownUrl.textContent!.trim());
       assertEquals(
           expectedCredential.username,
@@ -165,10 +172,17 @@ suite('CheckupDetailsSectionTest', function() {
       ],
       elapsedMinSinceCompromise: 1,
     })];
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'Best test site',
+        credentials: passwordManager.data.insecureCredentials,
+      }),
+    ];
 
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
+    await passwordManager.whenCalled('getCredentialGroups');
     const params = await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -181,7 +195,9 @@ suite('CheckupDetailsSectionTest', function() {
     const weakItem = listItemElements[0];
 
     assertTrue(!!weakItem);
-    assertEquals('test.com', weakItem.$.shownUrl.textContent!.trim());
+    assertEquals(
+        passwordManager.data.groups[0]!.name,
+        weakItem.$.shownUrl.textContent!.trim());
     assertEquals('viking', weakItem.$.username.textContent!.trim());
 
     assertFalse(!!weakItem.shadowRoot!.querySelector('#compromiseType'));
