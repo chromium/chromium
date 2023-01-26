@@ -169,7 +169,7 @@ int RelaunchForWebInstanceHost(const base::CommandLine& command_line) {
   auto realm = realm_builder.Build();
 
   fuchsia::component::BinderPtr binder_proxy =
-      realm.Connect<fuchsia::component::Binder>();
+      realm.component().Connect<fuchsia::component::Binder>();
 
   // Wait for binder_proxy to be closed.
   base::RunLoop run_loop;
