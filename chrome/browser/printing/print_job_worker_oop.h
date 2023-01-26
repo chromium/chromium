@@ -41,6 +41,10 @@ class PrintJobWorkerOop : public PrintJobWorker {
   ~PrintJobWorkerOop() override;
 
   // `PrintJobWorker` overrides.
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  void SetPrintDocumentClient(
+      PrintBackendServiceManager::ClientId client_id) override;
+#endif
   void StartPrinting(PrintedDocument* new_document) override;
 
  protected:

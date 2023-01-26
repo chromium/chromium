@@ -69,6 +69,14 @@ PrintJobWorkerOop::~PrintJobWorkerOop() {
   DCHECK(!service_manager_client_id_.has_value());
 }
 
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+void PrintJobWorkerOop::SetPrintDocumentClient(
+    PrintBackendServiceManager::ClientId client_id) {
+  DCHECK(!service_manager_client_id_.has_value());
+  service_manager_client_id_ = client_id;
+}
+#endif
+
 void PrintJobWorkerOop::StartPrinting(PrintedDocument* new_document) {
   if (!StartPrintingSanityCheck(new_document))
     return;
@@ -361,9 +369,12 @@ void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
 
-  // Register this worker as a printing client.
-  service_manager_client_id_ =
-      service_mgr.RegisterPrintDocumentClient(device_name_);
+  // Register this worker as a printing client, if registration wasn't already
+  // performed earlier.
+  if (!service_manager_client_id_.has_value()) {
+    service_manager_client_id_ =
+        service_mgr.RegisterPrintDocumentClient(device_name_);
+  }
 
   service_mgr.StartPrinting(
       device_name_, document_cookie, document_name_, print_target_type_,

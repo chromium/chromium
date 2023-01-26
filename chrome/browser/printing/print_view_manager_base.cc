@@ -389,11 +389,22 @@ void PrintViewManagerBase::ScriptedPrintReply(
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+    if (params->params->document_cookie) {
+      // Want the same PrintBackend service as the query so that we use the
+      // same device context.
+      DCHECK(query_with_ui_client_id_.has_value());
+      print_document_client_id_ =
+          PrintBackendServiceManager::GetInstance()
+              .RegisterPrintDocumentClientReusingClientRemote(
+                  *query_with_ui_client_id_);
+    }
+#endif
     // Finished getting all settings (defaults and from user), no further need
     // to be registered as a system print client.
     UnregisterSystemPrintClient();
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
   if (!content::RenderProcessHost::FromID(process_id)) {
     // Early return if the renderer is not alive.
     return;
@@ -545,7 +556,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
       !snapshotting_for_content_analysis_ &&
 #endif
-      !service_manager_client_id_.has_value()) {
+      !query_with_ui_client_id_.has_value()) {
     // Renderer process has requested settings outside of the expected setup.
     GetDefaultPrintSettingsReply(std::move(callback),
                                  mojom::PrintParams::New());
@@ -651,7 +662,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-      !service_manager_client_id_.has_value()) {
+      !query_with_ui_client_id_.has_value()) {
     // Renderer process has requested settings outside of the expected setup.
     std::move(callback).Run(CreateEmptyPrintPagesParamsPtr());
     return;
@@ -1009,6 +1020,14 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
     return true;
 #endif
 
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+  if (print_document_client_id_) {
+    // Ensure that the print job knows it is already registered as a client.
+    print_job_->SetPrintDocumentClient(*print_document_client_id_);
+    print_document_client_id_.reset();
+  }
+#endif
+
   // Settings are already loaded. Go ahead. This will set
   // print_job_->is_job_pending() to true.
   print_job_->StartPrinting();
@@ -1044,10 +1063,10 @@ void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
 bool PrintViewManagerBase::RegisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
-  DCHECK(!service_manager_client_id_.has_value());
-  service_manager_client_id_ =
+  DCHECK(!query_with_ui_client_id_.has_value());
+  query_with_ui_client_id_ =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
-  if (!service_manager_client_id_.has_value()) {
+  if (!query_with_ui_client_id_.has_value()) {
     DVLOG(1) << "Multiple system print clients not allowed, skipping user "
                 "request.";
     return false;
@@ -1058,12 +1077,13 @@ bool PrintViewManagerBase::RegisterSystemPrintClient() {
 void PrintViewManagerBase::UnregisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
-  if (!service_manager_client_id_.has_value())
+  if (!query_with_ui_client_id_.has_value()) {
     return;
+  }
 
   PrintBackendServiceManager::GetInstance().UnregisterClient(
-      *service_manager_client_id_);
-  service_manager_client_id_.reset();
+      *query_with_ui_client_id_);
+  query_with_ui_client_id_.reset();
 }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 

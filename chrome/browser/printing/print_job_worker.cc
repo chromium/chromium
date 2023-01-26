@@ -77,6 +77,15 @@ PrintJobWorker::~PrintJobWorker() {
   Stop();
 }
 
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
+void PrintJobWorker::SetPrintDocumentClient(
+    PrintBackendServiceManager::ClientId client_id) {
+  // This call should only be made for configurations that use
+  // `PrintJobWorkerOop`.
+  NOTREACHED();
+}
+#endif
+
 bool PrintJobWorker::StartPrintingSanityCheck(
     const PrintedDocument* new_document) const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
