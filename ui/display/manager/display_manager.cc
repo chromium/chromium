@@ -333,7 +333,7 @@ DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
 
 DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
     : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
-  configure_displays_ = chromeos::IsRunningAsSystemCompositor();
+  SetConfigureDisplays(chromeos::IsRunningAsSystemCompositor());
   change_display_upon_host_resize_ = !configure_displays_;
   unified_desktop_enabled_ = base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableUnifiedDesktop);
@@ -344,6 +344,13 @@ DisplayManager::~DisplayManager() {
   // Reset the font params.
   gfx::SetFontRenderParamsDeviceScaleFactor(1.0f);
   on_display_zoom_modify_timeout_.Cancel();
+}
+
+void DisplayManager::SetConfigureDisplays(bool configure_displays) {
+  configure_displays_ = configure_displays;
+  if (display_configurator_) {
+    display_configurator_->SetConfigureDisplays(configure_displays);
+  }
 }
 
 bool DisplayManager::InitFromCommandLine() {
@@ -1447,6 +1454,7 @@ void DisplayManager::InitConfigurator(
   display_configurator_ = std::make_unique<display::DisplayConfigurator>();
   display_configurator_->Init(std::move(delegate),
                               false /* is_panel_fitting_enabled */);
+  display_configurator_->SetConfigureDisplays(configure_displays_);
 }
 
 void DisplayManager::ForceInitialConfigureWithObservers(

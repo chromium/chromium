@@ -28,7 +28,6 @@ class Size;
 namespace display {
 
 class ContentProtectionManager;
-class DisplayLayoutManager;
 class DisplayMode;
 class DisplaySnapshot;
 class ManagedDisplayMode;
@@ -178,9 +177,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   void set_mirroring_controller(SoftwareMirroringController* controller) {
     mirroring_controller_ = controller;
   }
-  void set_configure_display(bool configure_display) {
-    configure_display_ = configure_display;
-  }
+  void SetConfigureDisplays(bool configure_displays);
   bool has_unassociated_display() const { return has_unassociated_display_; }
   chromeos::DisplayPowerState current_power_state() const {
     return current_power_state_;
@@ -303,7 +300,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   class DisplayLayoutManagerImpl;
 
   bool configurator_disabled() const {
-    return !configure_display_ || display_externally_controlled_;
+    return !configure_displays_ || display_externally_controlled_;
   }
 
   // Updates |pending_*| members and applies the passed-in state. |callback| is
@@ -388,7 +385,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // This is detected by the constructor to determine whether or not we should
   // be enabled. If this flag is set to false, any attempts to change the
   // display configuration will immediately fail without changing the state.
-  bool configure_display_;
+  bool configure_displays_;
 
   // Current configuration state.
   MultipleDisplayState current_display_state_;
@@ -448,7 +445,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // Whether the displays are currently suspended.
   bool displays_suspended_;
 
-  std::unique_ptr<DisplayLayoutManager> layout_manager_;
+  std::unique_ptr<DisplayLayoutManagerImpl> layout_manager_;
   std::unique_ptr<ContentProtectionManager> content_protection_manager_;
 
   std::unique_ptr<UpdateDisplayConfigurationTask> configuration_task_;

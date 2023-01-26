@@ -20,6 +20,7 @@
 namespace display {
 
 class DisplaySnapshot;
+class DisplayLayoutManager;
 class NativeDisplayDelegate;
 
 class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask

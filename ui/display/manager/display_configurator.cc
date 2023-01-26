@@ -130,6 +130,10 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
   DisplayStateList GetDisplayStates() const override;
   bool IsMirroring() const override;
 
+  void set_configure_displays(bool configure_displays) {
+    configure_displays_ = configure_displays;
+  }
+
  private:
   // Parses the |displays| into a list of DisplayStates. This effectively adds
   // |mirror_mode| and |selected_mode| to the returned results.
@@ -161,6 +165,8 @@ class DisplayConfigurator::DisplayLayoutManagerImpl
                                    bool preserve_native_aspect_ratio) const;
 
   DisplayConfigurator* configurator_;  // Not owned.
+
+  bool configure_displays_ = false;
 };
 
 DisplayConfigurator::DisplayLayoutManagerImpl::DisplayLayoutManagerImpl(
@@ -209,8 +215,9 @@ DisplayConfigurator::DisplayLayoutManagerImpl::ParseDisplays(
 
   // Hardware mirroring doesn't work on desktop-linux Chrome OS's fake displays.
   // Skip mirror mode setup in that case to fall back on software mirroring.
-  if (!chromeos::IsRunningAsSystemCompositor())
+  if (!configure_displays_) {
     return cached_displays;
+  }
 
   if (cached_displays.size() <= 1)
     return cached_displays;
@@ -575,7 +582,7 @@ DisplayConfigurator::DisplayConfigurator()
     : state_controller_(nullptr),
       mirroring_controller_(nullptr),
       is_panel_fitting_enabled_(false),
-      configure_display_(chromeos::IsRunningAsSystemCompositor()),
+      configure_displays_(chromeos::IsRunningAsSystemCompositor()),
       current_display_state_(MULTIPLE_DISPLAY_STATE_INVALID),
       current_power_state_(chromeos::DISPLAY_POWER_ALL_ON),
       requested_display_state_(MULTIPLE_DISPLAY_STATE_INVALID),
@@ -610,7 +617,7 @@ void DisplayConfigurator::SetDelegateForTesting(
   DCHECK(!native_display_delegate_);
 
   native_display_delegate_ = std::move(display_delegate);
-  configure_display_ = true;
+  SetConfigureDisplays(true);
 }
 
 void DisplayConfigurator::SetInitialDisplayPower(
@@ -656,6 +663,11 @@ void DisplayConfigurator::Init(
 
   content_protection_manager_->set_native_display_delegate(
       native_display_delegate_.get());
+}
+
+void DisplayConfigurator::SetConfigureDisplays(bool configure_displays) {
+  configure_displays_ = configure_displays;
+  layout_manager_->set_configure_displays(configure_displays);
 }
 
 void DisplayConfigurator::TakeControl(DisplayControlCallback callback) {
@@ -814,7 +826,7 @@ chromeos::DisplayPowerState DisplayConfigurator::GetRequestedPowerState()
 }
 
 void DisplayConfigurator::PrepareForExit() {
-  configure_display_ = false;
+  configure_displays_ = false;
 }
 
 void DisplayConfigurator::SetDisplayPowerInternal(

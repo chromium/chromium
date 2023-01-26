@@ -242,11 +242,9 @@ class DisplayConfiguratorTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         features::kEnableHardwareMirrorMode);
 
-    // Force system compositor mode to simulate on-device configurator behavior.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kEnableRunningAsSystemCompositor);
-
     native_display_delegate_ = new TestNativeDisplayDelegate(log_.get());
+    // Force configuring displays to simulate on-device configurator behavior.
+    configurator_.SetConfigureDisplays(true);
     configurator_.SetDelegateForTesting(
         std::unique_ptr<NativeDisplayDelegate>(native_display_delegate_));
 
