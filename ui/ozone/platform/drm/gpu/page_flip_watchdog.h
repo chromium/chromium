@@ -44,7 +44,7 @@ constexpr uint32_t kPlaneAssignmentFlakeThreshold = 3;
 constexpr uint32_t kPlaneAssignmentMaximumFailures = 20;
 
 // Tracks the failures and successes of interactions with DRM and handles
-// unrecoverble errors by crashing the process.
+// unrecoverable errors by crashing the process.
 class PageFlipWatchdog {
  public:
   PageFlipWatchdog();

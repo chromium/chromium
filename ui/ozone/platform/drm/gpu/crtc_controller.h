@@ -53,7 +53,7 @@ class CrtcController {
   // one way or another or maybe compressed. Except for generic
   // modifiers such as DRM_FORMAT_MOD_NONE (linear), the modifier
   // values are 64 bit values that we don't understand at this
-  // level. We pass the modifers to gbm_bo_create_with_modifiers() and
+  // level. We pass the modifiers to gbm_bo_create_with_modifiers() and
   // gbm will pick a modifier as it allocates the bo.
   std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format);
 

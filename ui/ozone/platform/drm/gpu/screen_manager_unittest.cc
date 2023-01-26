@@ -237,12 +237,12 @@ TEST_F(ScreenManagerTest, CheckForSecondValidController) {
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t primary_crtc_id = drm_->crtc_property(0).id;
   uint32_t primary_connector_id = drm_->connector_property(0).id;
-  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
   uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
   screen_manager_->AddDisplayController(drm_, primary_crtc_id,
                                         primary_connector_id);
-  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
                                         secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
@@ -252,7 +252,7 @@ TEST_F(ScreenManagerTest, CheckForSecondValidController) {
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   screen_manager_->ConfigureDisplayControllers(
@@ -275,12 +275,12 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysWithinModifiersLimit) {
                                 /*use_modifiers_list=*/true);
   uint32_t primary_crtc_id = drm_->crtc_property(0).id;
   uint32_t primary_connector_id = drm_->connector_property(0).id;
-  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
   uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
   screen_manager_->AddDisplayController(drm_, primary_crtc_id,
                                         primary_connector_id);
-  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
                                         secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
@@ -290,7 +290,7 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysWithinModifiersLimit) {
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
@@ -309,12 +309,12 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysOutsideModifiersLimit) {
                                 /*use_modifiers_list=*/true);
   uint32_t primary_crtc_id = drm_->crtc_property(0).id;
   uint32_t primary_connector_id = drm_->connector_property(0).id;
-  uint32_t seconday_crtc_id = drm_->crtc_property(1).id;
+  uint32_t secondary_crtc_id = drm_->crtc_property(1).id;
   uint32_t secondary_connector_id = drm_->connector_property(1).id;
 
   screen_manager_->AddDisplayController(drm_, primary_crtc_id,
                                         primary_connector_id);
-  screen_manager_->AddDisplayController(drm_, seconday_crtc_id,
+  screen_manager_->AddDisplayController(drm_, secondary_crtc_id,
                                         secondary_connector_id);
 
   ScreenManager::ControllerConfigsList controllers_to_enable;
@@ -324,7 +324,7 @@ TEST_F(ScreenManagerTest, CheckMultipleDisplaysOutsideModifiersLimit) {
       std::make_unique<drmModeModeInfo>(kDefaultMode));
   drmModeModeInfo secondary_mode = kDefaultMode;
   controllers_to_enable.emplace_back(
-      kSecondaryDisplayId, drm_, seconday_crtc_id, secondary_connector_id,
+      kSecondaryDisplayId, drm_, secondary_crtc_id, secondary_connector_id,
       GetSecondaryBounds().origin(),
       std::make_unique<drmModeModeInfo>(secondary_mode));
   EXPECT_TRUE(screen_manager_->ConfigureDisplayControllers(
@@ -1735,7 +1735,7 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
 
-  drm_->set_overlay_modeset_expecation(false);
+  drm_->set_overlay_modeset_expectation(false);
   screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
   ScreenManager::ControllerConfigsList controllers_to_enable;
   controllers_to_enable.emplace_back(

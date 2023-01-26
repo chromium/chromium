@@ -195,7 +195,7 @@ class DrmDevice : public base::RefCountedThreadSafe<DrmDevice> {
                                  uint32_t property_value);
 
   // Can be used to query device/driver |capability|. Sets the value of
-  // |capability| to |value|. Returns true in case of a succesful query.
+  // |capability| to |value|. Returns true in case of a successful query.
   virtual bool GetCapability(uint64_t capability, uint64_t* value);
 
   // Set the cursor to be displayed in CRTC |crtc_id|. (width, height) is the

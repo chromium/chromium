@@ -178,7 +178,7 @@ class MockDrmDevice : public DrmDevice {
     legacy_gamma_ramp_expectation_ = state;
   }
   void set_commit_expectation(bool state) { commit_expectation_ = state; }
-  void set_overlay_modeset_expecation(bool state) {
+  void set_overlay_modeset_expectation(bool state) {
     modeset_with_overlays_expectation_ = state;
   }
 

@@ -37,8 +37,7 @@ class DrmFramebuffer;
 class DrmDumbBuffer;
 class DrmDevice;
 
-// The HDCOz will handle modesettings and scannout operations for hardware
-// devices.
+// The HDC will handle modesetting and scanout operations for hardware devices.
 //
 // In the DRM world there are 3 components that need to be paired up to be able
 // to display an image to the monitor: CRTC (cathode ray tube controller),
@@ -119,7 +118,7 @@ class HardwareDisplayController {
   // event. The event will be posted on the graphics card file descriptor |fd_|
   // and it can be read and processed by |drmHandleEvent|. That function can
   // define the callback for the page flip event. A generic data argument will
-  // be presented to the callback. We use that argument to pass in the HDCO
+  // be presented to the callback. We use that argument to pass in the HDC
   // object the event belongs to.
   //
   // Between this call and the callback, the framebuffers used in this call
@@ -144,8 +143,8 @@ class HardwareDisplayController {
   std::vector<uint64_t> GetFormatModifiersForTestModeset(
       uint32_t fourcc_format);
 
-  void UpdatePreferredModiferForFormat(gfx::BufferFormat buffer_format,
-                                       uint64_t modifier);
+  void UpdatePreferredModifierForFormat(gfx::BufferFormat buffer_format,
+                                        uint64_t modifier);
 
   // Moves the hardware cursor to |location|.
   void MoveCursor(const gfx::Point& location);

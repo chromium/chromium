@@ -507,7 +507,7 @@ void ScreenManager::SetPreferredModifiers(
             crtcs_preferred_modifier.at(params.crtc).second;
         auto it = FindDisplayController(params.drm, params.crtc);
         DCHECK(*it);
-        it->get()->UpdatePreferredModiferForFormat(
+        it->get()->UpdatePreferredModifierForFormat(
             display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
       }
     }
