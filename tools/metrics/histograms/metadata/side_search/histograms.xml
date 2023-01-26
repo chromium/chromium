@@ -59,17 +59,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SideSearch.CloseAction" enum="SideSearchCloseActionType"
-    expires_after="2023-12-13">
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
-  <summary>
-    The type of action taken to close Side Search. Recorded when side search
-    panel is closed.
-  </summary>
-</histogram>
-
 <histogram name="SideSearch.LoadCompletedTime" units="ms"
     expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
@@ -148,17 +137,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SideSearch.OpenAction" enum="SideSearchOpenActionType"
-    expires_after="2023-12-13">
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <owner>romanarora@chromium.org</owner>
-  <summary>
-    The type of action taken to open Side Search. Recorded when side search
-    panel is open.
-  </summary>
-</histogram>
-
 <histogram name="SideSearch.PageActionIcon.LabelVisibleWhenToggled"
     enum="SideSearchPageActionLabelVisibility" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
@@ -193,21 +171,6 @@ chromium-metrics-reviews@google.com.
     entry point. Emitted when the current search journey ends (i.e. the side
     panel was explicitly closed by the user).
   </summary>
-</histogram>
-
-<histogram name="SideSearch.SidePanel.TimeShownOpenedVia{OpenAction}"
-    units="ms" expires_after="2023-12-13">
-  <owner>tluk@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <summary>
-    Tracks the duration that a given tab's side search side panel was open for
-    when opened via a {OpenAction} action. This metric is emitted when the tab's
-    side search side panel is hidden.
-  </summary>
-  <token key="OpenAction">
-    <variant name="Entrypoint"/>
-    <variant name="TabSwitch"/>
-  </token>
 </histogram>
 
 <histogram name="SideSearch.TimeSinceSidePanelAvailableToFirstOpen" units="ms"

@@ -5076,8 +5076,6 @@ static_library("ui") {
       "views/side_panel/webview/webview_side_panel_coordinator.h",
       "views/side_search/default_search_icon_source.cc",
       "views/side_search/default_search_icon_source.h",
-      "views/side_search/side_search_browser_controller.cc",
-      "views/side_search/side_search_browser_controller.h",
       "views/side_search/side_search_icon_view.cc",
       "views/side_search/side_search_icon_view.h",
       "views/side_search/side_search_views_utils.cc",

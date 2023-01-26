@@ -47,8 +47,6 @@ class UnifiedSideSearchController
       const content::OpenURLParams& params) override;
   void SidePanelAvailabilityChanged(bool should_close) override;
   void OpenSidePanel() override;
-  void CloseSidePanel(
-      absl::optional<SideSearchCloseActionType> action = absl::nullopt);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -59,6 +57,7 @@ class UnifiedSideSearchController
   void OnEntryHidden(SidePanelEntry* entry) override;
 
   base::WeakPtr<UnifiedSideSearchController> GetWeakPtr();
+  void CloseSidePanel();
 
   // Gets the URL needed to open the current side search side panel contents
   // into a new tab.

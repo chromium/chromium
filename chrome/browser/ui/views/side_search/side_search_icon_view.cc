@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_search/default_search_icon_source.h"
-#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/side_search/side_search_views_utils.h"
 #include "chrome/browser/ui/views/side_search/unified_side_search_controller.h"
 #include "chrome/grit/generated_resources.h"

@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 
 namespace side_search {
 

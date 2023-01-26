@@ -152,7 +152,6 @@ class ToolbarView : public views::AccessiblePaneView,
   }
   ExtensionsToolbarButton* GetExtensionsButton() const;
   ReloadButton* reload_button() const { return reload_; }
-  ToolbarButton* left_side_panel_button() { return left_side_panel_button_; }
   LocationBarView* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
   BatterySaverButton* battery_saver_button() const {
@@ -264,7 +263,6 @@ class ToolbarView : public views::AccessiblePaneView,
   // Controls. Most of these can be null, e.g. in popup windows. Only
   // |location_bar_| is guaranteed to exist. These pointers are owned by the
   // view hierarchy.
-  raw_ptr<ToolbarButton> left_side_panel_button_ = nullptr;
   raw_ptr<ToolbarButton> back_ = nullptr;
   raw_ptr<ToolbarButton> forward_ = nullptr;
   raw_ptr<ReloadButton> reload_ = nullptr;

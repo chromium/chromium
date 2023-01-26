@@ -78,7 +78,6 @@ BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kSideSearchFeedback);
 BASE_DECLARE_FEATURE(kSearchWebInSidePanel);
-BASE_DECLARE_FEATURE(kClobberAllSideSearchSidePanels);
 
 BASE_DECLARE_FEATURE(kSideSearchAutoTriggering);
 extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;

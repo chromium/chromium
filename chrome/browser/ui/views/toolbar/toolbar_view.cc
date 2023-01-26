@@ -60,7 +60,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
-#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -282,14 +281,6 @@ void ToolbarView::Init() {
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
   home_ = AddChildView(std::move(home));
-
-  // The side search button (if enabled) should sit between the location bar and
-  // the other navigation buttons.
-  if (browser_view_->side_search_controller() &&
-      !IsSideSearchEnabled(browser_->profile())) {
-    left_side_panel_button_ = AddChildView(
-        browser_view_->side_search_controller()->CreateToolbarButton());
-  }
 
   location_bar_ = AddChildView(std::move(location_bar));
 

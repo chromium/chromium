@@ -224,8 +224,7 @@ void UnifiedSideSearchController::OpenSidePanel() {
   }
 }
 
-void UnifiedSideSearchController::CloseSidePanel(
-    absl::optional<SideSearchCloseActionType> action) {
+void UnifiedSideSearchController::CloseSidePanel() {
   auto* browser_view = GetBrowserView();
   if (browser_view) {
     browser_view->side_panel_coordinator()->Close();

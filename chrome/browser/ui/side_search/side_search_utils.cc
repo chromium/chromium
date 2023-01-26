@@ -40,16 +40,6 @@ std::string SerializeSideSearchTabDataAsString(
   return side_search_tab_data.SerializeAsString();
 }
 
-void MaybeAddSideSearchTabRestoreData(
-    content::WebContents* web_contents,
-    std::map<std::string, std::string>& extra_data) {
-  SideSearchTabContentsHelper* helper =
-      SideSearchTabContentsHelper::FromWebContents(web_contents);
-  if (helper && helper->last_search_url().has_value())
-    extra_data[kSideSearchExtraDataKey] =
-        SerializeSideSearchTabDataAsString(helper);
-}
-
 absl::optional<std::pair<std::string, std::string>>
 MaybeGetSideSearchTabRestoreData(content::WebContents* web_contents) {
   SideSearchTabContentsHelper* helper =

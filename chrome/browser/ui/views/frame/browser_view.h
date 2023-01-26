@@ -91,8 +91,6 @@ class WebAppFrameToolbarView;
 class WebContentsCloseHandler;
 class WebUITabStripContainerView;
 
-class SideSearchBrowserController;
-
 namespace ui {
 class NativeTheme;
 }  // namespace ui
@@ -212,10 +210,6 @@ class BrowserView : public BrowserWindow,
 
   SidePanelCoordinator* side_panel_coordinator() {
     return side_panel_coordinator_.get();
-  }
-
-  SideSearchBrowserController* side_search_controller() {
-    return side_search_controller_.get();
   }
 
   void set_contents_border_widget(views::Widget* contents_border_widget) {
@@ -775,10 +769,6 @@ class BrowserView : public BrowserWindow,
   // side panel being closed.
   bool CloseOpenRightAlignedSidePanel(bool exclude_side_search = false);
 
-  // Clobbers all right aligned side search side panels if
-  // kClobberAllSideSearchSidePanels is enabled.
-  void MaybeClobberAllSideSearchSidePanels();
-
   bool should_show_window_controls_overlay_toggle() const {
     return should_show_window_controls_overlay_toggle_;
   }
@@ -1092,9 +1082,6 @@ class BrowserView : public BrowserWindow,
   // the contextual panel interacts as expected with the global panels.
   std::unique_ptr<SidePanelVisibilityController>
       side_panel_visibility_controller_;
-
-  // Controls the browser window's side panel for the Side Search feature.
-  std::unique_ptr<SideSearchBrowserController> side_search_controller_;
 
   // Provides access to the toolbar buttons this browser view uses. Buttons may
   // appear in a hosted app frame or in a tabbed UI toolbar.

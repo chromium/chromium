@@ -142,7 +142,6 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_search/side_search_browser_controller.h"
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -1574,16 +1573,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   if (app_banner_manager)
     ObserveAppBannerManager(app_banner_manager);
 
-  // Update the side panel before performing a layout on the BrowserView so that
-  // the layout takes into account the presence (or absence) of the side panel.
-  // This avoids unnecessary resize events propagating to the WebContents if it
-  // was added first and the layout was adjusted to accommodate the side panel
-  // later on.
-  if (side_search_controller_) {
-    side_search_controller_->UpdateSidePanelForContents(new_contents,
-                                                        old_contents);
-  }
-
   UpdateUIForContents(new_contents);
   RevealTabStripIfNeeded();
 
@@ -1670,17 +1659,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
   UpdateDevToolsForContents(nullptr, true);
-
-  // We must ensure that we propagate an update to the side search controller
-  // so that it removes the now detached tab WebContents from the side panel's
-  // WebView. This is necessary as BrowserView::OnActiveTabChanged() will fire
-  // for the destination window before the source window is destroyed during a
-  // tab dragging operation which could lead to the dragged WebContents being
-  // added to the destination panel's WebView before it is removed from the
-  // source panel's WebView. Failing to so so can lead to visual artifacts
-  // (see crbug.com/1306793).
-  if (side_search_controller_)
-    side_search_controller_->UpdateSidePanelForContents(contents, nullptr);
 }
 
 void BrowserView::OnTabRestored(int command_id) {
@@ -3608,27 +3586,9 @@ bool BrowserView::CloseOpenRightAlignedSidePanel(bool exclude_side_search) {
     return false;
   }
 
-  // Ensure all side panels are closed. Close contextual panels first.
-
-  // Hide side search panel if it's right aligned.
-  if (!exclude_side_search && side_search_controller_) {
-    side_search_controller_->CloseSidePanel();
-  }
-
   toolbar()->side_panel_button()->HideSidePanel();
 
   return true;
-}
-
-void BrowserView::MaybeClobberAllSideSearchSidePanels() {
-  if (!base::FeatureList::IsEnabled(
-          features::kClobberAllSideSearchSidePanels)) {
-    return;
-  }
-
-  if (side_search_controller_) {
-    side_search_controller_->ClobberAllInCurrentBrowser();
-  }
 }
 
 void BrowserView::RevealTabStripIfNeeded() {

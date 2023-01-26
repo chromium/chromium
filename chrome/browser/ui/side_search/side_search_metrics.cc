@@ -17,14 +17,6 @@ void RecordSideSearchPageActionLabelVisibilityOnToggle(
       "SideSearch.PageActionIcon.LabelVisibleWhenToggled", label_visibility);
 }
 
-void RecordSideSearchOpenAction(SideSearchOpenActionType action) {
-  base::UmaHistogramEnumeration("SideSearch.OpenAction", action);
-}
-
-void RecordSideSearchCloseAction(SideSearchCloseActionType action) {
-  base::UmaHistogramEnumeration("SideSearch.CloseAction", action);
-}
-
 void RecordSideSearchNavigation(SideSearchNavigationType type) {
   base::UmaHistogramEnumeration("SideSearch.Navigation", type);
 }
@@ -61,14 +53,6 @@ void RecordRedirectionToTabCountPerJourney(
   }
   base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney2",
                               count);
-}
-
-void RecordSideSearchSidePanelTimeShown(bool shown_via_entrypoint,
-                                        base::TimeDelta sample) {
-  base::UmaHistogramMediumTimes(
-      shown_via_entrypoint ? "SideSearch.SidePanel.TimeShownOpenedViaEntrypoint"
-                           : "SideSearch.SidePanel.TimeShownOpenedViaTabSwitch",
-      sample);
 }
 
 void RecordSideSearchNumTimesReturnedBackToSRP(int count) {
