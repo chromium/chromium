@@ -120,10 +120,11 @@ void GetTemporalLayer(bool keyframe,
 
 VideoBitrateAllocation CreateBitrateAllocationWithActiveLayers(
     const VideoBitrateAllocation& bitrate_allocation,
-    const std::vector<size_t>& active_layers) {
+    const std::vector<size_t>& active_layers,
+    size_t num_temporal_layers) {
   VideoBitrateAllocation new_bitrate_allocation;
   for (size_t si : active_layers) {
-    for (size_t ti = 0; ti < VideoBitrateAllocation::kMaxTemporalLayers; ++ti) {
+    for (size_t ti = 0; ti < num_temporal_layers; ++ti) {
       const uint32_t bps = bitrate_allocation.GetBitrateBps(si, ti);
       new_bitrate_allocation.SetBitrate(si, ti, bps);
     }
@@ -603,40 +604,60 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
   InitializeVP9VaapiVideoEncoderDelegate(num_spatial_layers,
                                          num_temporal_layers);
 
-  const std::vector<std::vector<size_t>> kActivateExercise[2] = {
+  struct ActivationQuery {
+    size_t num_temporal_layers;
+    std::vector<size_t> active_layers;
+  };
+  std::vector<ActivationQuery> kQueries[2] = {
       {
           // Two spatial layers.
-          {0},     // Deactivate the top layer.
-          {0, 1},  // Activate the top layer.
-          {1},     // Deactivate the bottom layer.
-          {0, 1},  // Activate the bottom layer.
+          {num_temporal_layers, {0}},     // Deactivate the top layer.
+          {num_temporal_layers, {0, 1}},  // Activate the top layer.
+          {num_temporal_layers, {1}},     // Deactivate the bottom layer.
+          {num_temporal_layers, {0, 1}},  // Activate the bottom layer.
+          {1, {0}},                       // L1T1
+          {3, {0, 1}},                    // L2T3
+          {1, {1}},                       // L1T1
+          {3, {0}},                       // L1T3
+          {2, {0, 1}},                    // L2T2
       },
       {
           // Three spatial layers.
-          {0, 1},  // Deactivate the top layer.
-          {1},     // Deactivate the bottom layer.
-          {0},  // Activate the bottom layer and deactivate the top two layers.
-          {1,
-           2},  // Activate the top two layers and deactivate the bottom layer.
-          {0, 1, 2},  // Activate the bottom layer.
-          {2},        // Deactivate the bottom two layers.
-          {0, 1, 2},  // Activate the bottom two layers.
+          {num_temporal_layers, {0, 1}},     // Deactivate the top layer.
+          {num_temporal_layers, {1}},        // Deactivate the bottom layer.
+          {num_temporal_layers, {0}},        // Activate the bottom layer and
+                                             // deactivate the top two layers.
+          {num_temporal_layers, {1, 2}},     // Activate the top two layers and
+                                             // deactivate the bottom layer.
+          {num_temporal_layers, {0, 1, 2}},  // Activate the bottom layer.
+          {num_temporal_layers, {2}},  // Deactivate the bottom two layers.
+          {num_temporal_layers, {0, 1, 2}},  // Activate the bottom two layers.
+          {3, {1}},                          // L1T3
+          {3, {0, 1, 2}},                    // L3T3
+          {2, {0, 1}},                       // L2T2
+          {1, {0, 1}},                       // L2T1
+          {1, {0}},                          // L1T1
+          {1, {0, 1, 2}},                    // L3T1
       },
   };
 
+  // Allocate a default bitrate allocation with the maximum temporal layers so
+  // that it has non-zero bitrate up to the maximum supported temporal layers.
   const VideoBitrateAllocation kDefaultBitrateAllocation =
       AllocateDefaultBitrateForTesting(
-          num_spatial_layers, num_temporal_layers,
+          num_spatial_layers, VP9SVCLayers::kMaxSupportedTemporalLayers,
           kDefaultVideoEncodeAcceleratorConfig.bitrate);
   const std::vector<gfx::Size> kDefaultSpatialLayers =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
   const uint32_t kFramerate =
       *kDefaultVideoEncodeAcceleratorConfig.initial_framerate;
 
-  for (auto& active_layers : kActivateExercise[num_spatial_layers - 2]) {
+  for (const auto& query : kQueries[num_spatial_layers - 2]) {
+    const auto& active_layers = query.active_layers;
     const VideoBitrateAllocation bitrate_allocation =
         CreateBitrateAllocationWithActiveLayers(kDefaultBitrateAllocation,
-                                                active_layers);
+                                                query.active_layers,
+                                                query.num_temporal_layers);
     std::vector<gfx::Size> spatial_layer_resolutions;
     for (size_t active_sid : active_layers)
       spatial_layer_resolutions.emplace_back(kDefaultSpatialLayers[active_sid]);
@@ -646,7 +667,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
     UpdateRatesAndEncode(bitrate_allocation, kFramerate,
                          /*valid_rates_request=*/true,
                          /*is_key_pic=*/true, spatial_layer_resolutions,
-                         num_temporal_layers,
+                         query.num_temporal_layers,
                          /*expected_temporal_layer_id=*/0u);
   }
 }
@@ -672,22 +693,6 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, FailsWithInvalidSpatialLayers) {
     bitrate_allocation = kDefaultBitrateAllocation;
     for (size_t ti = 0; ti < VideoBitrateAllocation::kMaxTemporalLayers; ++ti)
       bitrate_allocation.SetBitrate(1, ti, 0u);
-    invalid_bitrate_allocations.push_back(bitrate_allocation);
-  }
-
-  // Increase the number of temporal layers.
-  bitrate_allocation = kDefaultBitrateAllocation;
-  ASSERT_LE(num_temporal_layers + 1,
-            VideoBitrateAllocation::kMaxTemporalLayers);
-  for (size_t si = 0; si < num_spatial_layers; ++si)
-    bitrate_allocation.SetBitrate(si, num_temporal_layers, kBitrate);
-  invalid_bitrate_allocations.push_back(bitrate_allocation);
-
-  // Decrease the number of temporal layers.
-  if (num_temporal_layers > 1) {
-    bitrate_allocation = kDefaultBitrateAllocation;
-    for (size_t si = 0; si < num_spatial_layers; ++si)
-      bitrate_allocation.SetBitrate(si, num_temporal_layers - 1, 0u);
     invalid_bitrate_allocations.push_back(bitrate_allocation);
   }
 

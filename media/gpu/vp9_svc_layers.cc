@@ -126,7 +126,6 @@ VP9SVCLayers::VP9SVCLayers(const std::vector<SpatialLayer>& spatial_layers)
     : num_temporal_layers_(spatial_layers[0].num_of_temporal_layers),
       temporal_layers_reference_pattern_(
           GetTemporalLayersReferencePattern(num_temporal_layers_)),
-      pattern_index_(0u),
       temporal_pattern_size_(temporal_layers_reference_pattern_.size()) {
   for (const auto spatial_layer : spatial_layers) {
     spatial_layer_resolutions_.emplace_back(
@@ -168,35 +167,49 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   // encoding.
   if (spatial_idx_ != 0 &&
       spatial_idx_ != active_spatial_layer_resolutions_.size()) {
+    DVLOGF(1)
+        << "MaybeUpdateActiveLayer() is called in non bottom spatial layer";
     return false;
   }
 
   size_t begin_active_layer = kMaxSpatialLayers;
   size_t end_active_layer = spatial_layer_resolutions_.size();
+  size_t new_num_temporal_layers = 0;
   for (size_t sid = 0; sid < spatial_layer_resolutions_.size(); ++sid) {
-    size_t sum = 0;
-    for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
+    size_t num_active_temporal_layers_of_current_layer = 0;
+    for (int tid = kMaxSupportedTemporalLayers - 1; tid >= 0; tid--) {
       const uint32_t tl_bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
-      // A bitrate of a temporal layer must be zero if the bitrates of lower
-      // temporal layers are zero, e.g. {0, 0, 100}.
-      if (tid > 0 && tl_bitrate > 0 && sum == 0)
-        return false;
-      // A bitrate of a temporal layer must not be zero if the bitrates of lower
-      // temporal layers are not zero, e.g. {100, 0, 0}.
-      if (tid > 0 && tl_bitrate == 0 && sum != 0)
-        return false;
-
-      sum += static_cast<size_t>(tl_bitrate);
+      if (tl_bitrate != 0) {
+        num_active_temporal_layers_of_current_layer = tid + 1;
+        break;
+      }
     }
 
-    // Check if the temporal layers larger than |num_temporal_layers_| are zero.
-    for (size_t tid = num_temporal_layers_;
+    // Now, |active_num_temporal_layers_| is zero if the current spatial layer
+    // is deactivated, or the bitrates of the current spatial layer is [X_i]
+    for (size_t tid = 0; tid < num_active_temporal_layers_of_current_layer;
+         ++tid) {
+      const uint32_t tl_bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
+      // A bitrate of a lower temporal layer than |active_num_temporal_layers|
+      // must not be zero, e.g. {0, 0, 100}.
+      if (tl_bitrate == 0) {
+        DVLOGF(1) << "The bitrate of a lower temporal layer is zero while the "
+                  << "bitrate of an upper temporal layer is non zero";
+        return false;
+      }
+    }
+
+    // Check if the temporal layers higher than |kMaxSupportedTemporalLayers|
+    // are zero.
+    for (size_t tid = kMaxSupportedTemporalLayers;
          tid < VideoBitrateAllocation::kMaxTemporalLayers; ++tid) {
-      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0u)
+      if (bitrate_allocation->GetBitrateBps(sid, tid) != 0u) {
+        DVLOGF(1) << "Unsupported temporal layers";
         return false;
+      }
     }
 
-    if (sum == 0) {
+    if (num_active_temporal_layers_of_current_layer == 0) {
       // This is the first non-active spatial layer in the end side.
       if (begin_active_layer != kMaxSpatialLayers) {
         end_active_layer = sid;
@@ -205,9 +218,24 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
       // No active spatial layer is found yet. Try the upper spatial layer.
       continue;
     }
+
+    // Check if the number of active temporal layers is same among spatial
+    // layers.
+    if (new_num_temporal_layers != 0 &&
+        num_active_temporal_layers_of_current_layer !=
+            new_num_temporal_layers) {
+      DVLOGF(1) << "The invalid active temporal layers: "
+                << "num_active_temporal_layers_of_current_layer="
+                << num_active_temporal_layers_of_current_layer
+                << ", new_num_temporal_layers=" << new_num_temporal_layers;
+      return false;
+    }
+
     // This is the lowest active layer.
-    if (begin_active_layer == kMaxSpatialLayers)
+    if (begin_active_layer == kMaxSpatialLayers) {
       begin_active_layer = sid;
+      new_num_temporal_layers = num_active_temporal_layers_of_current_layer;
+    }
   }
   // Check if all the bitrates of unsupported temporal and spatial layers are
   // zero.
@@ -220,17 +248,20 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
     }
   }
   // No active layer is found.
-  if (begin_active_layer == kMaxSpatialLayers)
+  if (begin_active_layer == kMaxSpatialLayers) {
+    DVLOGF(1) << "No active spatial layers";
     return false;
+  }
 
-  DCHECK_LT(begin_active_layer_, end_active_layer_);
-  DCHECK_LE(end_active_layer_ - begin_active_layer_,
+  DCHECK_NE(new_num_temporal_layers, 0u);
+  DCHECK_LT(begin_active_layer, end_active_layer);
+  DCHECK_LE(end_active_layer - begin_active_layer,
             spatial_layer_resolutions_.size());
 
   // Remove non active spatial layer bitrate if |begin_active_layer| > 0.
   if (begin_active_layer > 0) {
     for (size_t sid = begin_active_layer; sid < end_active_layer; ++sid) {
-      for (size_t tid = 0; tid < num_temporal_layers_; ++tid) {
+      for (size_t tid = 0; tid < new_num_temporal_layers; ++tid) {
         uint32_t bitrate = bitrate_allocation->GetBitrateBps(sid, tid);
         bitrate_allocation->SetBitrate(sid - begin_active_layer, tid, bitrate);
         bitrate_allocation->SetBitrate(sid, tid, 0u);
@@ -241,7 +272,8 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
   // Reset SVC parameters and force to produce key frame if active layer
   // changed.
   if (begin_active_layer != begin_active_layer_ ||
-      end_active_layer != end_active_layer_) {
+      end_active_layer != end_active_layer_ ||
+      new_num_temporal_layers != num_temporal_layers_) {
     // Update the stored active layer range.
     begin_active_layer_ = begin_active_layer;
     end_active_layer_ = end_active_layer;
@@ -249,8 +281,17 @@ bool VP9SVCLayers::MaybeUpdateActiveLayer(
         spatial_layer_resolutions_.begin() + begin_active_layer,
         spatial_layer_resolutions_.begin() + end_active_layer};
     force_key_frame_ = true;
-  }
 
+    // Only updating the number of temporal layers don't have to force keyframe.
+    // But we produce keyframe in the case to not complex the code, assuming
+    // updating the number of temporal layers don't often happen.
+    // If this is not true, we should avoid producing keyframe in this case.
+    num_temporal_layers_ = new_num_temporal_layers;
+    temporal_layers_reference_pattern_ =
+        GetTemporalLayersReferencePattern(num_temporal_layers_);
+    temporal_pattern_size_ = temporal_layers_reference_pattern_.size();
+    // |pattern_index_| is updated to zero in FillUsedRefFramesAndMetadata().
+  }
   return true;
 }
 

@@ -19,10 +19,10 @@ class VP9Picture;
 struct Vp9Metadata;
 
 // This class manages a state of K-SVC encoding up to three spatial and temporal
-// layers. This supports activating/deactivating spatial layers while the
-// temporal layer sizes must be unchanged. The temporal layer sizes among
-// spatial layers must be identical. Temporal layers and spatial layers are
-// described in https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
+// layers. This supports activating/deactivating spatial layers and changing the
+// number of temporal layers. The temporal layer sizes among spatial layers must
+// be identical. Temporal layers and spatial layers are described in
+// https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
 class MEDIA_GPU_EXPORT VP9SVCLayers {
  public:
   struct FrameConfig;
@@ -71,16 +71,12 @@ class MEDIA_GPU_EXPORT VP9SVCLayers {
   void UpdateRefFramesPatternIndex(
       const std::vector<uint8_t>& refresh_frame_indices);
 
-  // Following variables are configured upon construction, containing the amount
-  // of temporal layers/spatial layers, the associated temporal layers indices
-  // and the nature (reference, update, both, none) of each frame in the
-  // temporal group, respectively.
-  const size_t num_temporal_layers_;
-  const std::vector<FrameConfig> temporal_layers_reference_pattern_;
+  // The variables of handling temporal layers structure.
+  size_t num_temporal_layers_;
+  std::vector<FrameConfig> temporal_layers_reference_pattern_;
+  size_t temporal_pattern_size_;
+  uint8_t pattern_index_ = 0;
 
-  // The current index into the |temporal_layers_reference_pattern_|.
-  uint8_t pattern_index_;
-  const size_t temporal_pattern_size_;
   size_t spatial_idx_ = 0;
   size_t frame_num_ = 0;
   bool force_key_frame_ = false;
