@@ -2343,8 +2343,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
 
   // Validate checksums for each script, and ServiceWorkerVersion's one.
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  version->script_cache_map()->GetResources(&resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
+      version->script_cache_map()->GetResources();
   std::set<std::string> expected_checksums;
   for (auto& sw_script : sw_scripts) {
     expected_checksums.insert(sw_script.second.second);
@@ -2376,8 +2376,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, updated_version->running_status());
 
   // Validate updated checksums for each script, and ServiceWorkerVersion's one.
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> updated_resources;
-  updated_version->script_cache_map()->GetResources(&updated_resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
+      updated_resources = updated_version->script_cache_map()->GetResources();
   std::set<std::string> updated_expected_checksums;
   for (auto& sw_script : updated_sw_scripts) {
     updated_expected_checksums.insert(sw_script.second.second);
@@ -2423,8 +2423,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
   EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
 
   // Validate checksums for each script, and ServiceWorkerVersion's one.
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  version->script_cache_map()->GetResources(&resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
+      version->script_cache_map()->GetResources();
   std::set<std::string> expected_checksums;
   for (auto& sw_script : sw_scripts) {
     expected_checksums.insert(sw_script.second.second);

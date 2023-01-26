@@ -33,8 +33,8 @@ blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
 ServiceWorkerInstalledScriptsSender::CreateInfoAndBind() {
   DCHECK_EQ(State::kNotStarted, state_);
 
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  owner_->script_cache_map()->GetResources(&resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
+      owner_->script_cache_map()->GetResources();
   std::vector<GURL> installed_urls;
   for (const auto& resource : resources) {
     installed_urls.emplace_back(resource->url);

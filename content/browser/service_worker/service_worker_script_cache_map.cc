@@ -77,15 +77,14 @@ void ServiceWorkerScriptCacheMap::NotifyFinishedCaching(
   }
 }
 
-void ServiceWorkerScriptCacheMap::GetResources(
-    std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>* resources)
-    const {
-  DCHECK(resources->empty());
-  for (ResourceMap::const_iterator it = resource_map_.begin();
-       it != resource_map_.end();
-       ++it) {
-    resources->push_back(it->second->Clone());
+std::vector<storage::mojom::ServiceWorkerResourceRecordPtr>
+ServiceWorkerScriptCacheMap::GetResources() const {
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+  for (const auto& it : resource_map_) {
+    resources.push_back(it.second->Clone());
   }
+
+  return resources;
 }
 
 void ServiceWorkerScriptCacheMap::SetResources(

@@ -215,8 +215,8 @@ std::string MergeResourceRecordSHA256ScriptChecksum(
     const ServiceWorkerScriptCacheMap& script_cache_map) {
   const std::unique_ptr<crypto::SecureHash> checksum =
       crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  script_cache_map.GetResources(&resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
+      script_cache_map.GetResources();
   // Sort |resources| by |sha256_checksum| value not to make the merged value
   // inconsistent based on the script order.
   std::sort(resources.begin(), resources.end(),
@@ -2703,14 +2703,11 @@ ServiceWorkerVersion::RebindStorageReference() {
     case ServiceWorkerRegistration::Status::kIntact:
       break;
     case ServiceWorkerRegistration::Status::kUninstalling:
-    case ServiceWorkerRegistration::Status::kUninstalled: {
-      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-      script_cache_map_.GetResources(&resources);
-      for (auto& resource : resources) {
+    case ServiceWorkerRegistration::Status::kUninstalled:
+      for (auto& resource : script_cache_map_.GetResources()) {
         purgeable_resources.push_back(resource->resource_id);
       }
       break;
-    }
   }
 
   remote_reference_.reset();

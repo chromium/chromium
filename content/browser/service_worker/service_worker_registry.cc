@@ -456,9 +456,7 @@ void ServiceWorkerRegistry::StoreRegistration(
                 .ToMojoPolicyContainerPolicies()
           : blink::mojom::PolicyContainerPolicies::New();
 
-  ResourceList resources;
-  version->script_cache_map()->GetResources(&resources);
-
+  ResourceList resources = version->script_cache_map()->GetResources();
   if (resources.empty()) {
     RunSoon(FROM_HERE,
             base::BindOnce(std::move(callback),
@@ -523,9 +521,7 @@ void ServiceWorkerRegistry::NotifyDoneInstallingRegistration(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   installing_registrations_.erase(registration->id());
   if (status != blink::ServiceWorkerStatusCode::kOk && version) {
-    ResourceList resources;
-    version->script_cache_map()->GetResources(&resources);
-
+    ResourceList resources = version->script_cache_map()->GetResources();
     std::vector<int64_t> resource_ids;
     for (const auto& resource : resources)
       resource_ids.push_back(resource->resource_id);

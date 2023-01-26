@@ -617,8 +617,8 @@ void ServiceWorkerRegisterJob::UpdateAndContinue() {
   ServiceWorkerVersion* version_to_update = registration()->GetNewestVersion();
   base::TimeDelta time_since_last_check =
       base::Time::Now() - registration()->last_update_check();
-  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
-  version_to_update->script_cache_map()->GetResources(&resources);
+  std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources =
+      version_to_update->script_cache_map()->GetResources();
   int64_t script_resource_id =
       version_to_update->script_cache_map()->LookupResourceId(script_url_);
   DCHECK_NE(script_resource_id, blink::mojom::kInvalidServiceWorkerResourceId);
