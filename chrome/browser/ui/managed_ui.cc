@@ -146,8 +146,6 @@ std::u16string GetDeviceManagedUiWebUILabel() {
 }
 #endif
 
-// TODO(crbug.com/1409028): Modify this function so it would not return
-// absl::nullopt if the device is managed.
 absl::optional<std::string> GetDeviceManagerIdentity() {
   if (!policy::ManagementServiceFactory::GetForPlatform()->IsManaged())
     return absl::nullopt;
@@ -159,8 +157,13 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
              ? connector->GetRealm()
              : connector->GetEnterpriseDomainManager();
 #else
+  // The device is managed as
+  // policy::ManagementServiceFactory::GetForPlatform()->IsManaged() returned
+  // true. policy::GetManagedBy might return absl::nullopt if
+  // policy::CloudPolicyStore hasn't fully initialized yet.
   return policy::GetManagedBy(g_browser_process->browser_policy_connector()
-                                  ->machine_level_user_cloud_policy_manager());
+                                  ->machine_level_user_cloud_policy_manager())
+      .value_or(std::string());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
