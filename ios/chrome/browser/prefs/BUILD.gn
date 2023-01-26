@@ -70,6 +70,7 @@ source_set("browser_prefs") {
     "//components/reading_list/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
+    "//components/segmentation_platform/embedder/default_model:default_model",
     "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/signin/public/identity_manager",

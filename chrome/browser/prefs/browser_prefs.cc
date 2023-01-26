@@ -141,6 +141,7 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/security_interstitials/content/insecure_form_blocking_page.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "components/services/storage/public/cpp/storage_prefs.h"
@@ -1439,6 +1440,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   security_interstitials::InsecureFormBlockingPage::RegisterProfilePrefs(
       registry);
   segmentation_platform::SegmentationPlatformService::RegisterProfilePrefs(
+      registry);
+  segmentation_platform::DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
       registry);
   SessionStartupPref::RegisterProfilePrefs(registry);
   SharingSyncPreference::RegisterProfilePrefs(registry);

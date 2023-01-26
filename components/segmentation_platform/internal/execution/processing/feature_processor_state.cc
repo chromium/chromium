@@ -31,9 +31,7 @@ FeatureProcessorState::FeatureProcessorState(
       input_context_(std::move(input_context)),
       callback_(std::move(callback)) {}
 
-FeatureProcessorState::~FeatureProcessorState() {
-  DCHECK(callback_.is_null());
-}
+FeatureProcessorState::~FeatureProcessorState() = default;
 
 void FeatureProcessorState::SetError(stats::FeatureProcessingError error,
                                      const std::string& message) {
