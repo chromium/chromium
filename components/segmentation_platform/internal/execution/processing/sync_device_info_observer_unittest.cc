@@ -4,13 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
-#include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
-#include "components/segmentation_platform/internal/metadata/metadata_writer.h"
-#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
@@ -19,10 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::processing {
-
 namespace {
-
-#define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
 
 using syncer::DeviceInfo;
 using OsType = syncer::DeviceInfo::OsType;
@@ -54,7 +45,7 @@ std::unique_ptr<DeviceInfo> CreateDeviceInfo(
 }
 
 class SyncDeviceInfoObserverTest : public testing::Test {
- public:
+ protected:
   SyncDeviceInfoObserverTest() = default;
   ~SyncDeviceInfoObserverTest() override = default;
 
@@ -69,23 +60,8 @@ class SyncDeviceInfoObserverTest : public testing::Test {
     device_info_tracker_.reset();
   }
 
-  void OnProcessFinishedCallback(base::OnceClosure closure,
-                                 bool expected_error,
-                                 std::vector<float> expected_result,
-                                 bool actual_error,
-                                 Tensor actual_result) {
-    EXPECT_EQ(expected_error, actual_error);
-    for (int index = 0; index < 10; index++) {
-      EXPECT_EQ(actual_result[index].type, ProcessedValue::Type::FLOAT);
-      EXPECT_EQ(expected_result[index], actual_result[index].float_val);
-    }
-    std::move(closure).Run();
-  }
-
- protected:
   std::unique_ptr<FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<SyncDeviceInfoObserver> sync_device_info_observer_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(SyncDeviceInfoObserverTest, OnDeviceInfoChange_LocalDevice) {
@@ -152,147 +128,6 @@ TEST_F(SyncDeviceInfoObserverTest, OnDeviceInfoChange_InactiveDevice) {
       "SegmentationPlatform.DeviceCountByOsType.Mac", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SegmentationPlatform.DeviceCountByOsType.Windows", 0, 1);
-}
-
-TEST_F(SyncDeviceInfoObserverTest, AddingDeviceBeforeProcess) {
-  FeatureProcessorState state;
-  proto::SegmentationModelMetadata metadata;
-  MetadataWriter writer(&metadata);
-
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
-
-  std::unique_ptr<DeviceInfo> local_device_info =
-      CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
-  // Adding a device triggers OnDeviceInfoChange().
-  device_info_tracker_->Add(local_device_info.get());
-
-  std::vector<float> expected_result = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
-  base::RunLoop loop;
-  sync_device_info_observer_->Process(
-      *sync_input, state,
-      base::BindOnce(&SyncDeviceInfoObserverTest::OnProcessFinishedCallback,
-                     base::Unretained(this), loop.QuitClosure(), false,
-                     expected_result));
-  loop.Run();
-}
-
-TEST_F(SyncDeviceInfoObserverTest,
-       ProcessWithTimeoutAndAddingDeviceWithoutWait) {
-  FeatureProcessorState state;
-  proto::SegmentationModelMetadata metadata;
-  MetadataWriter writer(&metadata);
-
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
-
-  std::vector<float> expected_result = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
-  base::RunLoop loop;
-  sync_device_info_observer_->Process(
-      *sync_input, state,
-      base::BindOnce(&SyncDeviceInfoObserverTest::OnProcessFinishedCallback,
-                     base::Unretained(this), loop.QuitClosure(), false,
-                     expected_result));
-  std::unique_ptr<DeviceInfo> local_device_info =
-      CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
-  // Adding a device triggers OnDeviceInfoChange().
-  device_info_tracker_->Add(local_device_info.get());
-  loop.Run();
-}
-
-TEST_F(SyncDeviceInfoObserverTest, ProcessWithNoTimeout) {
-  FeatureProcessorState state;
-  proto::SegmentationModelMetadata metadata;
-  MetadataWriter writer(&metadata);
-
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "0";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
-
-  // Failure flag is set.
-  std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  base::RunLoop loop;
-  sync_device_info_observer_->Process(
-      *sync_input, state,
-      base::BindOnce(&SyncDeviceInfoObserverTest::OnProcessFinishedCallback,
-                     base::Unretained(this), loop.QuitClosure(), false,
-                     expected_result));
-  std::unique_ptr<DeviceInfo> local_device_info =
-      CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
-  // Adding a device triggers OnDeviceInfoChange().
-  device_info_tracker_->Add(local_device_info.get());
-  loop.Run();
-}
-
-TEST_F(SyncDeviceInfoObserverTest, ProcessWithNotIntegerTimeout) {
-  FeatureProcessorState state;
-  proto::SegmentationModelMetadata metadata;
-  MetadataWriter writer(&metadata);
-
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "true";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
-
-  // Failure flag is set.
-  std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  base::RunLoop loop;
-  sync_device_info_observer_->Process(
-      *sync_input, state,
-      base::BindOnce(&SyncDeviceInfoObserverTest::OnProcessFinishedCallback,
-                     base::Unretained(this), loop.QuitClosure(), false,
-                     expected_result));
-
-  std::unique_ptr<DeviceInfo> local_device_info =
-      CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
-  // Adding a device triggers OnDeviceInfoChange().
-  device_info_tracker_->Add(local_device_info.get());
-  loop.Run();
-}
-
-TEST_F(SyncDeviceInfoObserverTest, ProcessWithTimeoutBeforeAddingDevice) {
-  FeatureProcessorState state;
-  proto::SegmentationModelMetadata metadata;
-  MetadataWriter writer(&metadata);
-
-  auto* sync_input = writer.AddCustomInput(MetadataWriter::CustomInput{
-      .tensor_length = 10,
-      .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      .name = "SyncDeviceInfo"});
-  (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "2";
-  (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
-
-  // Failure flag is set.
-  std::vector<float> expected_result = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  base::RunLoop loop;
-  sync_device_info_observer_->Process(
-      *sync_input, state,
-      base::BindOnce(&SyncDeviceInfoObserverTest::OnProcessFinishedCallback,
-                     base::Unretained(this), loop.QuitClosure(), false,
-                     expected_result));
-  loop.Run();
-  std::unique_ptr<DeviceInfo> local_device_info =
-      CreateDeviceInfo("local_device", kLocalDeviceType, kLocalDeviceOS);
-  // Adding a device triggers OnDeviceInfoChange().
-  device_info_tracker_->Add(local_device_info.get());
 }
 
 }  // namespace

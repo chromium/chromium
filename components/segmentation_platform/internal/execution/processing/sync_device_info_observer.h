@@ -34,14 +34,6 @@ class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
                ProcessedCallback callback) override;
 
  private:
-  // Describes device info status for processing.
-  enum DeviceInfoStatus {
-    TIMEOUT_NOT_POSTED,
-    TIMEOUT_POSTED_BUT_NOT_HIT,
-    INFO_UNAVAILABLE,
-    INFO_AVAILABLE,
-  };
-
   // Returns the count of active devices per os type. Each device is identified
   // by one unique guid. No deduping is applied.
   std::map<syncer::DeviceInfo::OsType, int> CountActiveDevicesByOsType(
@@ -49,10 +41,7 @@ class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
 
   // Called when ready to finish processing.
   void ReadyToFinishProcessing(const proto::CustomInput& input,
-                               ProcessedCallback callback,
-                               bool success);
-
-  void OnTimeout();
+                               ProcessedCallback callback);
 
   // Device info tracker. Not owned. It is managed by
   // the DeviceInfoSynceService, which is guaranteed to outlive the
@@ -61,10 +50,10 @@ class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
   const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
 
   // Queue to put the pending actions request.
-  base::circular_deque<base::OnceCallback<void(bool)>> pending_actions_;
+  base::circular_deque<base::OnceClosure> pending_actions_;
 
-  // Describes device info status for processing.
-  DeviceInfoStatus device_info_status_{DeviceInfoStatus::TIMEOUT_NOT_POSTED};
+  // Flag indicating if device info has been recorded.
+  bool device_info_received_ = false;
 
   base::WeakPtrFactory<SyncDeviceInfoObserver> weak_ptr_factory_{this};
 };
