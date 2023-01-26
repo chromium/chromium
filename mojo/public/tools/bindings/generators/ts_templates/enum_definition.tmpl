@@ -1,7 +1,7 @@
 {%- macro enum_def(enum) -%}
 export const {{enum|ts_type}}Spec: { $: mojo.internal.MojomType } = { $: mojo.internal.Enum() };
 
-export enum {{enum.name}} {
+export enum {{enum|ts_type}} {
 {%- for field in enum.fields %}
   {{field.name}} = {{field.numeric_value}},
 {%- endfor %}

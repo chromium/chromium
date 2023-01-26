@@ -7,9 +7,9 @@ import("//tools/typescript/ts_library.gni")
 # Copy (via creating sym links) all the other files into the same folder for
 # ts_library.
 copy("copy_files") {
-  deps = [ "//content/browser/process_internals:mojo_bindings_js__generator" ]
+  deps = [ "//content/browser/process_internals:mojo_bindings_ts__generator" ]
   sources = [
-    "$root_gen_dir/mojom-webui/content/browser/process_internals/process_internals.mojom-webui.js",
+    "$root_gen_dir/content/browser/process_internals/process_internals.mojom-webui.ts",
     "process_internals.ts",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
@@ -18,10 +18,9 @@ copy("copy_files") {
 ts_library("build_ts") {
   root_dir = target_gen_dir
   out_dir = "$target_gen_dir/tsc"
-  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "process_internals.ts",
-    "process_internals.mojom-webui.js",
+    "process_internals.mojom-webui.ts",
   ]
   deps = [
     "//ui/webui/resources:library",
