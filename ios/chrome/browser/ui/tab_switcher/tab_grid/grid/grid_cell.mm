@@ -664,6 +664,8 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.titleHidden = cell.titleHidden;
   proxy.priceCardView = cell.priceCardView;
   proxy.opacity = cell.opacity;
+  // Remove dark corners from the transition animtation cell.
+  proxy.backgroundColor = [UIColor clearColor];
   return proxy;
 }
 #pragma mark - GridToTabTransitionView properties.
