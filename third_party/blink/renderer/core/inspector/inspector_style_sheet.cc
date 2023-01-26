@@ -609,7 +609,6 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
     // The result->append()'ed types should be exactly the same as in
     // collectFlatRules().
     switch (data->type) {
-      case StyleRule::kStyle:
       case StyleRule::kImport:
       case StyleRule::kPage:
       case StyleRule::kFontFace:
@@ -617,6 +616,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kFontFeature:
         result->push_back(data);
         break;
+      case StyleRule::kStyle:
       case StyleRule::kMedia:
       case StyleRule::kScope:
       case StyleRule::kSupports:
@@ -636,6 +636,10 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
 CSSRuleList* AsCSSRuleList(CSSRule* rule) {
   if (!rule)
     return nullptr;
+
+  if (auto* style_rule = DynamicTo<CSSStyleRule>(rule)) {
+    return style_rule->cssRules();
+  }
 
   if (auto* media_rule = DynamicTo<CSSMediaRule>(rule))
     return media_rule->cssRules();
@@ -669,7 +673,6 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
     // The result->append()'ed types should be exactly the same as in
     // flattenSourceData().
     switch (rule->GetType()) {
-      case CSSRule::kStyleRule:
       case CSSRule::kImportRule:
       case CSSRule::kCharsetRule:
       case CSSRule::kPageRule:
@@ -679,6 +682,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kFontFeatureRule:
         result->push_back(rule);
         break;
+      case CSSRule::kStyleRule:
       case CSSRule::kMediaRule:
       case CSSRule::kScopeRule:
       case CSSRule::kSupportsRule:

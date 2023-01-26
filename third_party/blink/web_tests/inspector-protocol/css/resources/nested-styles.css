@@ -1,0 +1,5 @@
+#parent {
+  #nested {
+    width: 42px;
+  }
+}
