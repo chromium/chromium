@@ -58,7 +58,7 @@ export class BrowsingContextProcessor {
       await this.#handleAttachedToTargetEvent(params, cdpClient);
     });
     cdpClient.on('Target.detachedFromTarget', async (params) => {
-      await BrowsingContextProcessor.#handleDetachedFromTargetEvent(params);
+      await this.#handleDetachedFromTargetEvent(params);
     });
   }
 
@@ -145,7 +145,7 @@ export class BrowsingContextProcessor {
   //   "params": {
   //     "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9",
   //     "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  static async #handleDetachedFromTargetEvent(
+  async #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
     // TODO: params.targetId is deprecated. Update this class to track using
@@ -221,7 +221,7 @@ export class BrowsingContextProcessor {
     );
   }
 
-  static async #getRealm(target: Script.Target): Promise<Realm> {
+  async #getRealm(target: Script.Target): Promise<Realm> {
     if ('realm' in target) {
       return Realm.getRealm({realmId: target.realm});
     }
@@ -232,7 +232,7 @@ export class BrowsingContextProcessor {
   async process_script_evaluate(
     params: Script.EvaluateParameters
   ): Promise<Script.EvaluateResult> {
-    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    const realm = await this.#getRealm(params.target);
     return await realm.scriptEvaluate(
       params.expression,
       params.awaitPromise,
@@ -257,7 +257,7 @@ export class BrowsingContextProcessor {
   async process_script_callFunction(
     params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    const realm = await this.#getRealm(params.target);
     return await realm.callFunction(
       params.functionDeclaration,
       params.this || {
@@ -272,7 +272,7 @@ export class BrowsingContextProcessor {
   async process_script_disown(
     params: Script.DisownParameters
   ): Promise<Script.DisownResult> {
-    const realm = await BrowsingContextProcessor.#getRealm(params.target);
+    const realm = await this.#getRealm(params.target);
     await Promise.all(params.handles.map(async (h) => await realm.disown(h)));
     return {result: {}};
   }
