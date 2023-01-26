@@ -22,11 +22,11 @@ const CROS_MD_DOC_URL =
 // </if>
 
 function getValueDivForButton(button) {
-  return $(button.id.substr(0, button.id.length - 4));
+  return $('div-' + button.id.substr(4));
 }
 
 function getButtonForValueDiv(valueDiv) {
-  return $(valueDiv.id + '-btn');
+  return $('btn-' + valueDiv.id.substr(4));
 }
 
 function handleDragOver(e) {
@@ -112,6 +112,15 @@ function importLog(file) {
 }
 
 /**
+ * Replace characters that are invalid as part of an id for querySelector.
+ * @param {string} name
+ * @return {string} The sanitized name
+ */
+function getSanitizedName(name) {
+  return name.replace(/[^a-zA-Z0-9]/g, '-');
+}
+
+/**
  * For a particular log entry, create the DOM node representing it in the
  * log entry table.
  * @param{log} A dictionary with the keys statName and statValue
@@ -150,7 +159,7 @@ function createNodeForLogEntry(log) {
   const buttonCell = document.createElement('td');
   buttonCell.className = 'button-cell';
   const button = document.createElement('button');
-  button.id = log.statName + '-value-btn';
+  button.id = 'btn-' + getSanitizedName(log.statName) + '-value';
   button.className = 'expand-status';
   button.onclick = changeCollapsedStatus;
   buttonCell.appendChild(button);
@@ -159,7 +168,7 @@ function createNodeForLogEntry(log) {
   const valueCell = document.createElement('td');
   const valueDiv = document.createElement('div');
   valueDiv.className = 'stat-value';
-  valueDiv.id = log.statName + '-value';
+  valueDiv.id = 'div-' + getSanitizedName(log.statName) + '-value';
   valueDiv.textContent = log.statValue;
   valueCell.appendChild(valueDiv);
   row.appendChild(valueCell);
