@@ -355,6 +355,7 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
                                                DiscoveryAction::kPairToDevice);
         mock_pairer_broker_->NotifyPairingStart(subsequent_device_);
         mock_pairer_broker_->NotifyHandshakeComplete(subsequent_device_);
+        mock_pairer_broker_->NotifyDevicePaired(initial_device_);
         mock_pairer_broker_->NotifyPairComplete(subsequent_device_);
         break;
       case Protocol::kFastPairInitial:
@@ -362,9 +363,10 @@ class QuickPairMetricsLoggerTest : public NoSessionAshTestBase {
                                                DiscoveryAction::kPairToDevice);
         mock_pairer_broker_->NotifyPairingStart(initial_device_);
         mock_pairer_broker_->NotifyHandshakeComplete(initial_device_);
-        mock_pairer_broker_->NotifyPairComplete(initial_device_);
+        mock_pairer_broker_->NotifyDevicePaired(initial_device_);
         mock_pairer_broker_->NotifyAccountKeyWrite(initial_device_,
                                                    /*error=*/absl::nullopt);
+        mock_pairer_broker_->NotifyPairComplete(initial_device_);
         break;
       case Protocol::kFastPairRetroactive:
         fake_retroactive_pairing_detector_->NotifyRetroactivePairFound(

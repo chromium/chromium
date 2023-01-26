@@ -1,5 +1,84 @@
 <structured-metrics>
 
+<project name="FastPair">
+  <owner>jackshira@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <id>none</id>
+  <scope>profile</scope>
+  <key-rotation>30</key-rotation>
+  <summary>
+    Metrics for the ChromeOS Fast Pair implementation.
+  </summary>
+
+  <event name="PairingStart">
+    <summary>
+      The starting of the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PairingComplete">
+    <summary>
+      The end of the pairing process.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+  </event>
+
+  <event name="PairFailure">
+    <summary>
+      The pairing process failed for the provided reason.
+    </summary>
+    <metric name="Protocol" type="int">
+      <summary>
+        The pairing protocol being started.
+      </summary>
+    </metric>
+    <metric name="FastPairVersion" type="int">
+      <summary>
+        The Fast Pair spec version the device implements.
+      </summary>
+    </metric>
+    <metric name="Reason" type="int">
+      <summary>
+        The pairing failure reason.
+      </summary>
+    </metric>
+    <metric name="ModelId" type="int">
+      <summary>
+        The model ID of the device being paired.
+      </summary>
+    </metric>
+  </event>
+</project>
+
 <project name="Hindsight">
   <owner>charleszhao@chromium.org</owner>
   <owner>tby@chromium.org</owner>

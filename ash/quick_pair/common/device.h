@@ -56,7 +56,9 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     display_name_ = display_name;
   }
 
-  absl::optional<DeviceFastPairVersion> version() { return version_; }
+  const absl::optional<DeviceFastPairVersion> version() const {
+    return version_;
+  }
 
   void set_version(absl::optional<DeviceFastPairVersion> version) {
     version_ = version;

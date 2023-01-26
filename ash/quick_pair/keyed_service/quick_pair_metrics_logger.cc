@@ -9,6 +9,7 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_feature_usage_metrics_logger.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/session/session_controller_impl.h"
@@ -139,14 +140,20 @@ void QuickPairMetricsLogger::OnDevicePaired(scoped_refptr<Device> device) {
   AttemptRecordingTotalUxPairTime(*device, total_pair_time);
   RecordPairingMethod(PairingMethod::kFastPair);
 
+  if (device->protocol() == Protocol::kFastPairInitial) {
+    RecordInitialSuccessFunnelFlow(
+        FastPairInitialSuccessFunnelEvent::kPairingComplete);
+  }
+
   // The classic address is assigned to the Device during the
   // initial Fast Pair pairing protocol during the key exchange, and if it
   // doesn't exist, then it wasn't properly paired during initial Fast Pair
   // pairing. We want to save the addresses here in the event that the
   // Bluetooth adapter pairing event fires, so we can detect when a device
   // was paired solely via classic bluetooth, instead of Fast Pair.
-  if (device->classic_address())
+  if (device->classic_address()) {
     fast_pair_addresses_.insert(device->classic_address().value());
+  }
 }
 
 void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
@@ -163,6 +170,7 @@ void QuickPairMetricsLogger::OnPairFailure(scoped_refptr<Device> device,
   feature_usage_metrics_logger_->RecordUsage(/*success=*/false);
   RecordPairingFailureReason(*device, failure);
   RecordPairingResult(*device, /*success=*/false);
+  RecordStructuredPairFailure(*device, failure);
 }
 
 void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
@@ -173,10 +181,12 @@ void QuickPairMetricsLogger::OnDiscoveryAction(scoped_refptr<Device> device,
         case Protocol::kFastPairSubsequent:
           RecordSubsequentSuccessFunnelFlow(
               FastPairSubsequentSuccessFunnelEvent::kNotificationsClicked);
+          RecordStructuredPairingStarted(*device);
           break;
         case Protocol::kFastPairInitial:
           RecordInitialSuccessFunnelFlow(
               FastPairInitialSuccessFunnelEvent::kNotificationsClicked);
+          RecordStructuredPairingStarted(*device);
           break;
         case Protocol::kFastPairRetroactive:
           break;
@@ -351,10 +361,12 @@ void QuickPairMetricsLogger::OnPairingComplete(scoped_refptr<Device> device) {
     case Protocol::kFastPairSubsequent:
       RecordSubsequentSuccessFunnelFlow(
           FastPairSubsequentSuccessFunnelEvent::kProcessComplete);
+      RecordStructuredPairingComplete(*device);
       break;
     case Protocol::kFastPairInitial:
       RecordInitialSuccessFunnelFlow(
-          FastPairInitialSuccessFunnelEvent::kPairingComplete);
+          FastPairInitialSuccessFunnelEvent::kProcessComplete);
+      RecordStructuredPairingComplete(*device);
       break;
     case Protocol::kFastPairRetroactive:
       break;
@@ -373,6 +385,7 @@ void QuickPairMetricsLogger::OnRetroactivePairFound(
       device, FastPairRetroactiveEngagementFlowEvent::kAssociateAccountUiShown);
   RecordRetroactiveSuccessFunnelFlow(
       FastPairRetroactiveSuccessFunnelEvent::kDeviceDetected);
+  RecordStructuredPairingStarted(*device);
 }
 
 void QuickPairMetricsLogger::OnAssociateAccountAction(
@@ -495,8 +508,6 @@ void QuickPairMetricsLogger::OnAccountKeyWrite(
       NOTREACHED();
       break;
     case Protocol::kFastPairInitial:
-      RecordInitialSuccessFunnelFlow(
-          FastPairInitialSuccessFunnelEvent::kProcessComplete);
       break;
     case Protocol::kFastPairRetroactive:
       RecordRetroactivePairingResult(/*success=*/!error.has_value());
@@ -504,7 +515,9 @@ void QuickPairMetricsLogger::OnAccountKeyWrite(
       if (!error.has_value()) {
         RecordRetroactiveSuccessFunnelFlow(
             FastPairRetroactiveSuccessFunnelEvent::kAccountKeyWrittenToDevice);
+        RecordStructuredPairingComplete(*device);
       }
+      // TODO(jackshira): Log new PairFailure case here.
       break;
   }
 

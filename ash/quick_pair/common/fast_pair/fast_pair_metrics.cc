@@ -5,10 +5,13 @@
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/metrics/structured/structured_events.h"
 
 namespace {
 
@@ -553,14 +556,17 @@ enum class ConnectToServiceError {
 };
 
 ConnectToServiceError GetConnectToServiceError(const std::string& error) {
-  if (error == kAcceptFailedString)
+  if (error == kAcceptFailedString) {
     return ConnectToServiceError::kAcceptFailed;
+  }
 
-  if (error == kInvalidUUIDString)
+  if (error == kInvalidUUIDString) {
     return ConnectToServiceError::kInvalidUUID;
+  }
 
-  if (error == kSocketNotListeningString)
+  if (error == kSocketNotListeningString) {
     return ConnectToServiceError::kSocketNotListening;
+  }
 
   DCHECK(error != kSocketNotListeningString && error != kInvalidUUIDString &&
          error != kAcceptFailedString);
@@ -1536,6 +1542,66 @@ void RecordSavedDevicesTotalUxLoadTime(base::TimeDelta total_load_time) {
 
 void RecordSavedDevicesCount(int num_devices) {
   base::UmaHistogramCounts100(kSavedDevicesCount, num_devices);
+}
+
+int ConvertFastPairVersionToInt(absl::optional<DeviceFastPairVersion> version) {
+  if (!version) {
+    return 0;
+  }
+
+  switch (version.value()) {
+    case DeviceFastPairVersion::kV1:
+      return 1;
+    case DeviceFastPairVersion::kHigherThanV1:
+      return 2;
+  }
+}
+
+// TODO(b/266739400): There is currently no way to properly unittest these
+// changes. The metrics team plans on implementing a way to mock out the
+// structured metrics client in the near future. We should follow up and
+// implement proper tests for these functions once that is available.
+void RecordStructuredPairingStarted(const Device& device) {
+  QP_LOG(INFO) << __func__;
+  int model_id;
+  if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
+    return;
+  }
+  int version = ConvertFastPairVersionToInt(device.version());
+  metrics::structured::events::v2::fast_pair::PairingStart()
+      .SetProtocol(static_cast<int>(device.protocol()))
+      .SetModelId(model_id)
+      .SetFastPairVersion(version)
+      .Record();
+}
+
+void RecordStructuredPairingComplete(const Device& device) {
+  QP_LOG(INFO) << __func__;
+  int model_id;
+  if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
+    return;
+  }
+  int version = ConvertFastPairVersionToInt(device.version());
+  metrics::structured::events::v2::fast_pair::PairingComplete()
+      .SetProtocol(static_cast<int>(device.protocol()))
+      .SetModelId(model_id)
+      .SetFastPairVersion(version)
+      .Record();
+}
+
+void RecordStructuredPairFailure(const Device& device, PairFailure failure) {
+  QP_LOG(INFO) << __func__;
+  int model_id;
+  if (!base::HexStringToInt(device.metadata_id(), &model_id)) {
+    return;
+  }
+  int version = ConvertFastPairVersionToInt(device.version());
+  metrics::structured::events::v2::fast_pair::PairFailure()
+      .SetProtocol(static_cast<int>(device.protocol()))
+      .SetModelId(model_id)
+      .SetReason(static_cast<int>(failure))
+      .SetFastPairVersion(version)
+      .Record();
 }
 
 }  // namespace quick_pair
