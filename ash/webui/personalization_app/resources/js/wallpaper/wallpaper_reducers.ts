@@ -12,7 +12,7 @@ import {PersonalizationState} from '../personalization_state.js';
 import {isImageDataUrl, isNonEmptyArray} from '../utils.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
-import {isDefaultImage, isFilePath} from './utils.js';
+import {findAlbumById, isDefaultImage, isFilePath} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 
@@ -416,17 +416,24 @@ function googlePhotosReducer(
     case WallpaperActionName.BEGIN_LOAD_GOOGLE_PHOTOS_ALBUM:
       // The list of photos for an album should be loaded only while additional
       // photos exist.
-      assert(!!state.albums);
-      assert(state.albums.some(album => album.id === action.albumId));
+      assert(
+          findAlbumById(action.albumId, state.albums) ||
+              findAlbumById(action.albumId, state.albumsShared),
+          'No matching album id found in Google Photos albums.');
       assert(
           !state.photosByAlbumId[action.albumId] ||
-          state.resumeTokens.photosByAlbumId[action.albumId]);
+              state.resumeTokens.photosByAlbumId[action.albumId],
+          'No photos available in the given Google Photos album.');
       return state;
     case WallpaperActionName.APPEND_GOOGLE_PHOTOS_ALBUM:
-      assert(!!state.albums);
-      assert(state.albums.some(album => album.id === action.albumId));
-      assert(action.albumId !== undefined);
-      assert(action.photos !== undefined);
+      assert(action.albumId !== undefined, 'Album id is undefined.');
+      assert(
+          action.photos !== undefined,
+          'List of Google Photos photos is undefined.');
+      assert(
+          findAlbumById(action.albumId, state.albums) ||
+              findAlbumById(action.albumId, state.albumsShared),
+          'No matching album id found in Google Photos albums.');
       // Case: First batch of photos.
       if (!Array.isArray(state.photosByAlbumId[action.albumId])) {
         return {

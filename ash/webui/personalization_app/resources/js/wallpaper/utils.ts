@@ -7,8 +7,8 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
-import {getNumberOfGridItemsPerRow} from '../utils.js';
+import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {getNumberOfGridItemsPerRow, isNonEmptyArray, isNonEmptyString} from '../utils.js';
 
 import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 
@@ -136,4 +136,17 @@ export function getWallpaperSrc(image: CurrentWallpaper|null): string|null {
   }
   // Add a key query parameter to cache bust when the image changes.
   return `/wallpaper.jpg?key=${encodeURIComponent(image.key)}`;
+}
+
+/**
+ * Finds and returns a Google Photos album from albums list with a matching id.
+ * Returns null in case invalid id or albums list or no album is found.
+ */
+export function findAlbumById(
+    albumId: string|undefined,
+    albums: GooglePhotosAlbum[]|null|undefined): GooglePhotosAlbum|null {
+  if (isNonEmptyString(albumId) && isNonEmptyArray(albums)) {
+    return albums.find(album => album.id === albumId) ?? null;
+  }
+  return null;
 }

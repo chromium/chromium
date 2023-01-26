@@ -25,7 +25,8 @@ import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personaliza
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {inBetween, isNonEmptyArray, isNonEmptyString} from './utils.js';
+import {inBetween, isNonEmptyArray} from './utils.js';
+import {findAlbumById} from './wallpaper/utils.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {
@@ -85,7 +86,7 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       breadcrumbs_: {
         type: Array,
         computed:
-            'computeBreadcrumbs_(path, collections_, collectionId, googlePhotosAlbums_, googlePhotosAlbumId, topicSource)',
+            'computeBreadcrumbs_(path, collections_, collectionId, albums_, albumsShared_, googlePhotosAlbumId, topicSource)',
       },
 
       collections_: {
@@ -93,7 +94,10 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       },
 
       /** The list of Google Photos albums. */
-      googlePhotosAlbums_: Array,
+      albums_: Array,
+
+      /** The list of shared Google Photos albums. */
+      albumsShared_: Array,
 
       /** The breadcrumb being highlighted by keyboard navigation. */
       selectedBreadcrumb_: {
@@ -109,7 +113,8 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   path: string;
   private breadcrumbs_: string[];
   private collections_: WallpaperCollection[]|null;
-  private googlePhotosAlbums_: GooglePhotosAlbum[]|null;
+  private albums_: GooglePhotosAlbum[]|null;
+  private albumsShared_: GooglePhotosAlbum[]|null;
   private selectedBreadcrumb_: HTMLElement;
 
   override ready() {
@@ -120,8 +125,9 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   override connectedCallback() {
     super.connectedCallback();
     this.watch('collections_', state => state.wallpaper.backdrop.collections);
+    this.watch('albums_', state => state.wallpaper.googlePhotos.albums);
     this.watch(
-        'googlePhotosAlbums_', state => state.wallpaper.googlePhotos.albums);
+        'albumsShared_', state => state.wallpaper.googlePhotos.albumsShared);
     this.updateFromStore();
   }
 
@@ -183,14 +189,15 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       case Paths.GOOGLE_PHOTOS_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
         breadcrumbs.push(this.i18n('googlePhotosLabel'));
-        if (isNonEmptyString(this.googlePhotosAlbumId) &&
-            isNonEmptyArray(this.googlePhotosAlbums_)) {
-          const googlePhotosAlbum = this.googlePhotosAlbums_.find(
-              googlePhotosAlbum =>
-                  googlePhotosAlbum.id === this.googlePhotosAlbumId);
-          if (googlePhotosAlbum) {
-            breadcrumbs.push(googlePhotosAlbum.title);
-          }
+        const googlePhotosAlbum =
+            findAlbumById(this.googlePhotosAlbumId, this.albums_) ??
+            findAlbumById(this.googlePhotosAlbumId, this.albumsShared_);
+        if (googlePhotosAlbum) {
+          breadcrumbs.push(googlePhotosAlbum.title);
+        } else if (this.googlePhotosAlbumId) {
+          console.warn(
+              'Can\'t find a matching album with id:',
+              this.googlePhotosAlbumId);
         }
         break;
       case Paths.LOCAL_COLLECTION:
