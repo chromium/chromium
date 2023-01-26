@@ -284,12 +284,6 @@ Config::Config() {
     content_clustering_enabled = base::FeatureList::IsEnabled(
         features::kOnDeviceClusteringContentClustering);
 
-    content_clustering_entity_similarity_weight =
-        GetFieldTrialParamByFeatureAsDouble(
-            features::kOnDeviceClusteringContentClustering,
-            "content_clustering_entity_similarity_weight",
-            content_clustering_entity_similarity_weight);
-
     content_clustering_similarity_threshold =
         GetFieldTrialParamByFeatureAsDouble(
             features::kOnDeviceClusteringContentClustering,
@@ -298,22 +292,6 @@ Config::Config() {
     // Ensure that the value is [0.0 and 1.0].
     DCHECK_GE(content_clustering_similarity_threshold, 0.0f);
     DCHECK_LE(content_clustering_similarity_threshold, 1.0f);
-
-    content_cluster_on_intersection_similarity =
-        GetFieldTrialParamByFeatureAsBool(
-            features::kOnDeviceClusteringContentClustering,
-            "use_content_clustering_intersection_similarity",
-            content_cluster_on_intersection_similarity);
-
-    cluster_interaction_threshold = GetFieldTrialParamByFeatureAsInt(
-        features::kOnDeviceClusteringContentClustering,
-        "content_clustering_intersection_threshold",
-        cluster_interaction_threshold);
-
-    content_cluster_using_cosine_similarity = GetFieldTrialParamByFeatureAsBool(
-        features::kOnDeviceClusteringContentClustering,
-        "use_content_clustering_cosine_similarity",
-        content_cluster_using_cosine_similarity);
 
     exclude_entities_that_have_no_collections_from_content_clustering =
         GetFieldTrialParamByFeatureAsBool(

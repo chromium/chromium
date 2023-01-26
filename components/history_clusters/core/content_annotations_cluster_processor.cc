@@ -52,61 +52,13 @@ float CalculateCosineSimiliarity(
   return dot_product / (mag_cluster1 * mag_cluster2);
 }
 
-// Return the Jaccard Similarity between two sets of
-// strings.
-float CalculateJaccardSimilarity(
-    const base::flat_map<std::string, float>& cluster1,
-    const base::flat_map<std::string, float>& cluster2) {
-  // If either cluster is empty, just say that they are different.
-  if (cluster1.empty() || cluster2.empty())
-    return 0.0;
-
-  base::flat_set<std::string> cluster_union;
-  int intersection_size = 0;
-  for (const auto& token : cluster1) {
-    if (cluster2.find(token.first) != cluster2.end()) {
-      intersection_size++;
-    }
-    cluster_union.insert(token.first);
-  }
-  for (const auto& token : cluster2) {
-    cluster_union.insert(token.first);
-  }
-
-  return cluster_union.empty()
-             ? 0.0
-             : intersection_size / (1.0 * cluster_union.size());
-}
-
-// Calculates the similarity of two clusters using an intersection similarity.
-// Returns 1 if the clusters share more than a threshold number of tokens in
-// common and 0 otherwise.
-float CalculateIntersectionSimilarity(
-    const base::flat_map<std::string, float>& cluster1,
-    const base::flat_map<std::string, float>& cluster2) {
-  // If either clusters is empty, just say that they're different.
-  if (cluster1.empty() || cluster2.empty())
-    return 0.0;
-
-  int intersection_size = 0;
-  for (const auto& token : cluster1) {
-    if (cluster2.find(token.first) != cluster2.end()) {
-      intersection_size++;
-    }
-  }
-  return intersection_size >= GetConfig().cluster_interaction_threshold ? 1.0
-                                                                        : 0.0;
-}
-
 // Returns the similarity score based on the configured similarity metric.
 float CalculateSimilarityScore(
     const base::flat_map<std::string, float>& cluster1,
     const base::flat_map<std::string, float>& cluster2) {
-  if (GetConfig().content_cluster_on_intersection_similarity)
-    return CalculateIntersectionSimilarity(cluster1, cluster2);
-  if (GetConfig().content_cluster_using_cosine_similarity)
-    return CalculateCosineSimiliarity(cluster1, cluster2);
-  return CalculateJaccardSimilarity(cluster1, cluster2);
+  // TODO(b/244505276): Add more similarity metrics here if we can find one that
+  // makes more sense than cosine similarity.
+  return CalculateCosineSimiliarity(cluster1, cluster2);
 }
 
 }  // namespace

@@ -256,6 +256,10 @@ struct Config {
   // visit.
   int entity_relevance_threshold = 60;
 
+  // Returns the threshold for which we should mark a cluster as being able to
+  // show on prominent UI surfaces.
+  float content_visibility_threshold = 0.7;
+
   // Returns the threshold used to determine if a cluster, and its visits, has
   // too high site engagement to be likely useful.
   float noisy_cluster_visits_engagement_threshold = 15.0;
@@ -265,45 +269,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // The `kOnDeviceClusteringContentClustering` feature and child params.
-
-  // Returns whether content clustering is enabled and
-  // should be performed by the clustering backend.
-  bool content_clustering_enabled = false;
-
-  // Returns the weight that should be placed on entity similarity for
-  // determining if two clusters are similar enough to be combined into one.
-  float content_clustering_entity_similarity_weight = 1.0;
-
-  // Returns the similarity threshold, between 0 and 1, used to determine if
-  // two clusters are similar enough to be combined into
-  // a single cluster.
-  float content_clustering_similarity_threshold = 0.2;
-
-  // Returns the threshold for which we should mark a cluster as being able to
-  // show on prominent UI surfaces.
-  float content_visibility_threshold = 0.7;
-
-  // Returns true if content clustering should use the intersection similarity
-  // score.
-  bool content_cluster_on_intersection_similarity = false;
-
-  // Returns the threshold, in terms of the number of overlapping keywords, to
-  // use when clustering based on intersection score.
-  int cluster_interaction_threshold = 2;
-
-  // Returns true if content clustering should use the cosine similarity
-  // algorithm.
-  bool content_cluster_using_cosine_similarity = false;
-
-  // Returns whether we should exclude entities that do not have associated
-  // collections from content clustering.
-  bool exclude_entities_that_have_no_collections_from_content_clustering =
-      false;
-
-  // The set of collections to block from being content clustered.
-  base::flat_set<std::string> collections_to_block_from_content_clustering;
-
   // The `kUseEngagementScoreCache` feature and child params.
 
   // The max number of hosts that should be stored in the engagement score
@@ -312,6 +277,25 @@ struct Config {
 
   // The max time a host should be stored in the engagement score cache.
   base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
+
+  // The `kOnDeviceClusteringContentClustering` feature and child params.
+
+  // Returns whether content clustering is enabled and
+  // should be performed by the clustering backend.
+  bool content_clustering_enabled = false;
+
+  // Returns the similarity threshold, between 0 and 1, used to determine if
+  // two clusters are similar enough to be combined into
+  // a single cluster.
+  float content_clustering_similarity_threshold = 0.2;
+
+  // Returns whether we should exclude entities that do not have associated
+  // collections from content clustering.
+  bool exclude_entities_that_have_no_collections_from_content_clustering = true;
+
+  // The set of collections to block from being content clustered.
+  base::flat_set<std::string> collections_to_block_from_content_clustering = {
+      "/collection/it_glosssary", "/collection/software"};
 
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
