@@ -24,6 +24,12 @@ public class StartSurfaceUserData implements UserData {
      * overview page is showing at the startup.
      */
     private boolean mUnusedTabRestoredAtStartup;
+    // Whether the singleton instance has been created.
+    private static boolean sHasInstance;
+
+    private StartSurfaceUserData() {
+        sHasInstance = true;
+    }
 
     /**
      * Static class that implements the initialization-on-demand holder idiom.
@@ -37,6 +43,15 @@ public class StartSurfaceUserData implements UserData {
      */
     public static StartSurfaceUserData getInstance() {
         return LazyHolder.INSTANCE;
+    }
+
+    /**
+     * Cleans up any state which should be reset when recreating the ChromeTabbedActivity.
+     */
+    public static void reset() {
+        if (sHasInstance) {
+            getInstance().saveFeedInstanceState(null);
+        }
     }
 
     /**
@@ -124,5 +139,9 @@ public class StartSurfaceUserData implements UserData {
      */
     public boolean getUnusedTabRestoredAtStartup() {
         return mUnusedTabRestoredAtStartup;
+    }
+
+    static boolean hasInstanceForTesting() {
+        return sHasInstance;
     }
 }

@@ -1028,6 +1028,18 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    public void testResetFeedInstanceState() {
+        String instanceState = "state";
+        StartSurfaceUserData.getInstance().saveFeedInstanceState(instanceState);
+        assertTrue(StartSurfaceUserData.hasInstanceForTesting());
+        assertEquals(StartSurfaceUserData.getInstance().restoreFeedInstanceState(), instanceState);
+
+        StartSurfaceUserData.reset();
+        assertTrue(StartSurfaceUserData.hasInstanceForTesting());
+        assertNull(StartSurfaceUserData.getInstance().restoreFeedInstanceState());
+    }
+
+    @Test
     public void defaultStateSinglePane() {
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
