@@ -195,7 +195,7 @@ class ZoomController : public content::WebContentsObserver,
   scoped_refptr<const ZoomRequestClient> last_client_;
 
   // Observer receiving notifications on state changes.
-  base::ObserverList<ZoomObserver>::Unchecked observers_;
+  base::ObserverList<ZoomObserver> observers_;
 
   raw_ptr<content::BrowserContext> browser_context_;
   // Keep track of the HostZoomMap we're currently subscribed to.

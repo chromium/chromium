@@ -93,7 +93,6 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -1097,6 +1096,10 @@ void ChromeAutofillClient::OnWebContentsFocused(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+void ChromeAutofillClient::OnZoomControllerDestroyed() {
+  zoom_observation_.Reset();
+}
+
 void ChromeAutofillClient::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideAutofillPopup(PopupHidingReason::kContentAreaMoved);
@@ -1125,16 +1128,11 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   GetStrikeDatabase();
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Since ZoomController is also a WebContentsObserver, we need to be careful
-  // about disconnecting from it since the relative order of destruction of
-  // WebContentsObservers is not guaranteed. ZoomController silently clears
-  // its ZoomObserver list during WebContentsDestroyed() so there's no need
-  // to explicitly remove ourselves on destruction.
-  zoom::ZoomController* zoom_controller =
-      zoom::ZoomController::FromWebContents(web_contents);
   // There may not always be a ZoomController, e.g. in tests.
-  if (zoom_controller)
-    zoom_controller->AddObserver(this);
+  if (auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(web_contents)) {
+    zoom_observation_.Observe(zoom_controller);
+  }
 #endif
 }
 

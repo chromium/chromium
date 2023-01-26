@@ -10,14 +10,14 @@
 namespace zoom {
 
 // Interface for objects that wish to be notified of changes in ZoomController.
-class ZoomObserver {
+class ZoomObserver : public base::CheckedObserver {
  public:
+  // Fired when the WebContents or the ZoomController is destructed.
+  virtual void OnZoomControllerDestroyed() {}
+
   // Notification that the zoom percentage has changed.
   virtual void OnZoomChanged(const ZoomController::ZoomChangedEventData& data) {
   }
-
- protected:
-  virtual ~ZoomObserver() {}
 };
 
 }  // namespace zoom

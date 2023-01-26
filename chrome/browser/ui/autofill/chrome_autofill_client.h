@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_gstatic_reader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -253,10 +254,11 @@ class ChromeAutofillClient
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // ZoomObserver implementation.
+  // ZoomObserver:
+  void OnZoomControllerDestroyed() override;
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
  private:
   friend class content::WebContentsUserData<ChromeAutofillClient>;
@@ -294,6 +296,11 @@ class ChromeAutofillClient
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
   std::unique_ptr<AutofillProgressDialogControllerImpl>
       autofill_progress_dialog_controller_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  base::ScopedObservation<zoom::ZoomController, zoom::ZoomObserver>
+      zoom_observation_{this};
+#endif
 
   // True if and only if the associated web_contents() is currently focused.
   bool has_focus_ = false;
