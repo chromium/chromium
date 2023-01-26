@@ -465,6 +465,15 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
     if (!field->IsFieldFillable() || value.empty())
       continue;
 
+    // When `kAutofillImportFromAutoccompleteUnrecognized` is enabled, Autofill
+    // imports from fields despite an unrecognized autocomplete attribute.
+    if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
+      if (!features::kAutofillImportFromAutoccompleteUnrecognized.Get()) {
+        continue;
+      }
+      import_metadata.num_autocomplete_unrecognized_fields++;
+    }
+
     AutofillType field_type = field->Type();
 
     // Credit card fields are handled by ExtractCreditCard().

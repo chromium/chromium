@@ -155,10 +155,14 @@ class AutofillField : public FormFieldData {
   // field).
   bool IsFieldFillable() const;
 
-  // Returns true if suggestion prompts should not be shown for this field.
-  // Currently, prompts are suppressed if the autocomplete attribute is
-  // unrecognized unless it is a credit card form related field.
-  bool ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute() const;
+  // Address Autofill gets disabled by an unrecognized autocomplete attribute.
+  // If `kAutofillFillAndImportFromMoreFields` is enabled, this changes and the
+  // server/heuristic predictions overwrite the unrecognized autocomplete
+  // attribute. Depending on the feature's parameters, Autofill then fills or
+  // imports from these fields.
+  // This function returns true if the field's type prediction is only available
+  // due to the aforementioned feature.
+  bool HasPredictionDespiteUnrecognizedAutocompleteAttribute() const;
 
   void set_initial_value_hash(uint32_t value) { initial_value_hash_ = value; }
   absl::optional<uint32_t> initial_value_hash() { return initial_value_hash_; }

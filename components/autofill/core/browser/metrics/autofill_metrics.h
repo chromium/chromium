@@ -1372,6 +1372,10 @@ class AutofillMetrics {
   static void LogNewProfileWithIgnoredCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
 
+  // Logs the number of fields with an unrecognized autocomplete attributed that
+  // were considered for the import due to AutofillFillAndImportFromMoreFields.
+  static void LogNewProfileNumberOfAutocompleteUnrecognizedFields(int count);
+
   // Logs that a specific type was edited in a save prompt.
   static void LogNewProfileEditedType(ServerFieldType edited_type);
 
@@ -1386,6 +1390,10 @@ class AutofillMetrics {
   // be imported after an invalid country was ignored.
   static void LogProfileUpdateWithIgnoredCountryImportDecision(
       AutofillClient::SaveAddressProfileOfferUserDecision decision);
+
+  // Logs the number of fields with an unrecognized autocomplete attributed that
+  // were considered for the update due to AutofillFillAndImportFromMoreFields.
+  static void LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(int count);
 
   // Logs that a specific type changed in a profile update that received the
   // user |decision|. Note that additional manual edits in the update prompt are

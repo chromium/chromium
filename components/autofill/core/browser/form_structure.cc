@@ -1158,12 +1158,12 @@ void FormStructure::LogQualityMetrics(
     // launched.
     if (field->is_autofilled) {
       ++num_of_accepted_autofilled_fields;
-      if (field->ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()) {
+      if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
         ++num_of_accepted_autofilled_fields_with_autocomplete_unrecognized;
       }
     } else if (field->previously_autofilled()) {
       ++num_of_corrected_autofilled_fields;
-      if (field->ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()) {
+      if (field->HasPredictionDespiteUnrecognizedAutocompleteAttribute()) {
         ++num_of_corrected_autofilled_fields_with_autocomplete_unrecognized;
       }
     }

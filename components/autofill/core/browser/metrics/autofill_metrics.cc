@@ -3024,6 +3024,13 @@ void AutofillMetrics::LogNewProfileWithIgnoredCountryImportDecision(
       "Autofill.ProfileImport.NewProfileWithIgnoredCountryDecision", decision);
 }
 
+void AutofillMetrics::LogNewProfileNumberOfAutocompleteUnrecognizedFields(
+    int count) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.NewProfileNumberOfAutocompleteUnrecognizedFields",
+      count, /*exclusive_max=*/20);
+}
+
 void AutofillMetrics::LogNewProfileEditedType(ServerFieldType edited_type) {
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.NewProfileEditedType",
@@ -3048,6 +3055,14 @@ void AutofillMetrics::LogProfileUpdateWithIgnoredCountryImportDecision(
   base::UmaHistogramEnumeration(
       "Autofill.ProfileImport.UpdateProfileWithIgnoredCountryDecision",
       decision);
+}
+
+void AutofillMetrics::LogProfileUpdateNumberOfAutocompleteUnrecognizedFields(
+    int count) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport."
+      "UpdateProfileNumberOfAutocompleteUnrecognizedFields",
+      count, /*exclusive_max=*/20);
 }
 
 void AutofillMetrics::LogProfileUpdateAffectedType(

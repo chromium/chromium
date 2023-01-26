@@ -365,7 +365,7 @@ bool AutofillField::IsFieldFillable() const {
   return IsFillableFieldType(field_type);
 }
 
-bool AutofillField::ShouldSuppressPromptDueToUnrecognizedAutocompleteAttribute()
+bool AutofillField::HasPredictionDespiteUnrecognizedAutocompleteAttribute()
     const {
   return html_type_ == HtmlFieldType::kUnrecognized &&
          !IsCreditCardPrediction() &&
