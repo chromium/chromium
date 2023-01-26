@@ -156,27 +156,33 @@ config("default_sanitizer_ldflags") {
   ]
 
   if (is_posix || is_fuchsia) {
-    ldflags = []
+    sanitizers = []
     if (is_asan) {
-      ldflags += [ "-fsanitize=address" ]
+      sanitizers += [ "address" ]
     }
     if (is_hwasan) {
-      ldflags += [ "-fsanitize=hwaddress" ]
+      sanitizers += [ "hwaddress" ]
     }
     if (is_lsan) {
-      ldflags += [ "-fsanitize=leak" ]
+      sanitizers += [ "leak" ]
     }
     if (is_tsan) {
-      ldflags += [ "-fsanitize=thread" ]
+      sanitizers += [ "thread" ]
     }
     if (is_msan) {
-      ldflags += [ "-fsanitize=memory" ]
+      sanitizers += [ "memory" ]
     }
     if (is_ubsan || is_ubsan_security) {
-      ldflags += [ "-fsanitize=undefined" ]
+      sanitizers += [ "undefined" ]
     }
     if (is_ubsan_vptr) {
-      ldflags += [ "-fsanitize=vptr" ]
+      sanitizers += [ "vptr" ]
+    }
+    ldflags = []
+    rustflags = []
+    foreach(sanitizer, sanitizers) {
+      ldflags += [ "-fsanitize=$sanitizer" ]
+      rustflags += [ "-Zsanitizer=$sanitizer" ]
     }
 
     if (use_sanitizer_coverage) {
