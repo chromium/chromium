@@ -21,10 +21,8 @@ jobs:
         with:
           node-version: 16
           cache: npm
-      - name: Install dependencies
+      - name: Install and build npm dependencies
         run: npm ci
-      - name: Build
-        run: npm run build
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
