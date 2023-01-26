@@ -1922,10 +1922,16 @@ template("mojom") {
     }
   }
 
+  # Closure libraries are needed for mojom_closure_compile, and when
+  # js_type_check is enabled on Ash.
+  generate_closure_libraries =
+      enable_mojom_closure_compile || (is_chromeos_ash && enable_js_type_check)
+
   # js_library() closure compiler targets, primarily used on ChromeOS. Only
   # generate these targets if the mojom target is not C++ only and is not using
   # TypeScript.
-  if ((!defined(invoker.cpp_only) || !invoker.cpp_only) &&
+  if (generate_closure_libraries &&
+      (!defined(invoker.cpp_only) || !invoker.cpp_only) &&
       !use_typescript_for_target) {
     js_library_target_name = "${target_name}_js_library"
     if (sources_list != []) {

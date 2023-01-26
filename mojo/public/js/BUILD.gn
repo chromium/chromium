@@ -101,17 +101,20 @@ concatenate_files("generate_interface_support_js") {
   output = "interface_support.js"
 }
 
-js_library("bindings_lite_sources") {
-  sources = [
-    "$target_gen_dir/interface_support.js",
-    "$target_gen_dir/mojo_internal.js",
-    "compile_preamble.js",
-  ]
-  deps = [ "//mojo/public/interfaces/bindings:bindings_js_library_for_compile" ]
-  extra_deps = [
-    ":generate_interface_support_js",
-    ":generate_mojo_internal_js",
-  ]
+if (enable_mojom_closure_compile || (is_chromeos_ash && enable_js_type_check)) {
+  js_library("bindings_lite_sources") {
+    sources = [
+      "$target_gen_dir/interface_support.js",
+      "$target_gen_dir/mojo_internal.js",
+      "compile_preamble.js",
+    ]
+    deps =
+        [ "//mojo/public/interfaces/bindings:bindings_js_library_for_compile" ]
+    extra_deps = [
+      ":generate_interface_support_js",
+      ":generate_mojo_internal_js",
+    ]
+  }
 }
 
 # All generated mojom JS modules consume the API defined by this module. The
@@ -127,10 +130,10 @@ concatenate_files("bindings_uncompiled_module") {
     "bindings_uncompiled_module_export.js.part",
   ]
   output = "bindings_uncompiled.js"
-  deps = [ "//mojo/public/interfaces/bindings:bindings_js_library" ]
+  deps = [ "//mojo/public/interfaces/bindings:bindings_js__generator" ]
 }
 
-if (enable_mojom_closure_compile || enable_js_type_check) {
+if (enable_mojom_closure_compile || (enable_js_type_check && is_chromeos_ash)) {
   js_binary("bindings_lite") {
     outputs = [ "$target_gen_dir/mojo_bindings_lite.js" ]
     sources = []
