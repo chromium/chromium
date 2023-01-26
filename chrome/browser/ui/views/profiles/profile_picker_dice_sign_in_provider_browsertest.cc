@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -71,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
   EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
 
   {
-    ProfilePickerDiceSignInProvider provider{host()};
+    ProfilePickerDiceSignInProvider provider{
+        host(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
         .WillOnce([&](content::WebContents* contents, const GURL& url,
@@ -107,8 +109,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
   EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
 
   {
-    ProfilePickerDiceSignInProvider provider{host(),
-                                             browser()->profile()->GetPath()};
+    ProfilePickerDiceSignInProvider provider{
+        host(), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+        browser()->profile()->GetPath()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
         .WillOnce([&](content::WebContents* contents, const GURL& url,

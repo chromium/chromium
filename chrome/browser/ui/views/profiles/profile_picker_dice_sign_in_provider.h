@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +51,7 @@ class ProfilePickerDiceSignInProvider
   // will be created.
   explicit ProfilePickerDiceSignInProvider(
       ProfilePickerWebContentsHost* host,
+      signin_metrics::AccessPoint signin_access_point,
       absl::optional<base::FilePath> profile_path = absl::nullopt);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
@@ -121,6 +123,9 @@ class ProfilePickerDiceSignInProvider
 
   // The host must outlive this object.
   const raw_ptr<ProfilePickerWebContentsHost> host_;
+
+  const signin_metrics::AccessPoint signin_access_point_;
+
   // The path to the profile in which to perform the sign-in. If absent, a new
   // profile will be created.
   const absl::optional<base::FilePath> profile_path_;

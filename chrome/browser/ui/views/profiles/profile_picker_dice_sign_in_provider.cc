@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/context_menu_params.h"
@@ -56,8 +57,11 @@ bool IsExternalURL(const GURL& url) {
 
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
     ProfilePickerWebContentsHost* host,
+    signin_metrics::AccessPoint signin_access_point,
     absl::optional<base::FilePath> profile_path)
-    : host_(host), profile_path_(profile_path) {
+    : host_(host),
+      signin_access_point_(signin_access_point),
+      profile_path_(profile_path) {
   // If the path is provided, it must be non-empty.
   DCHECK(!(profile_path.has_value() && profile_path->empty()));
 }
@@ -184,8 +188,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     // Use |redirect_url| and not |continue_url|, so that the DiceTabHelper can
     // redirect to chrome:// URLs such as the NTP.
     tab_helper->InitializeSigninFlow(
-        GetSigninURL(host_->ShouldUseDarkColors()),
-        signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+        GetSigninURL(host_->ShouldUseDarkColors()), signin_access_point_,
         signin_metrics::Reason::kSigninPrimaryAccount,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
         GURL(chrome::kChromeUINewTabURL));
@@ -258,10 +261,9 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   // Record that the sign in process starts (its end is recorded automatically
   // by the instance of DiceTurnSyncOnHelper constructed later on in
   // ProfilePickerSignedInFlowController).
-  signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER);
+  signin_metrics::RecordSigninUserActionForAccessPoint(signin_access_point_);
   signin_metrics::LogSigninAccessPointStarted(
-      signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
 
   // Apply the default theme to get consistent colors for toolbars in newly

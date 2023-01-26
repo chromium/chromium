@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
@@ -54,10 +55,12 @@ class LacrosFirstRunSignedInFlowController
       std::unique_ptr<content::WebContents> contents,
       base::OnceClosure sync_confirmation_seen_callback,
       FinishFlowCallback finish_flow_callback)
-      : ProfilePickerSignedInFlowController(host,
-                                            profile,
-                                            std::move(contents),
-                                            absl::optional<SkColor>()),
+      : ProfilePickerSignedInFlowController(
+            host,
+            profile,
+            std::move(contents),
+            signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE,
+            absl::optional<SkColor>()),
         sync_confirmation_seen_callback_(
             std::move(sync_confirmation_seen_callback)),
         finish_flow_callback_(std::move(finish_flow_callback)) {}

@@ -152,6 +152,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "NTPFeedBottomSigninPromo";
       case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
         return "DesktopSigninManager";
+      case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+        return "ForYouFre";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

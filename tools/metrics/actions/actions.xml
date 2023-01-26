@@ -30657,6 +30657,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromForYouFre">
+  <owner>dgn@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded when a user taps in the sign-in promo in the Desktop First Run
+    Experience
+  </description>
+</action>
+
 <action name="Signin_Signin_FromGoogleServicesSettings">
   <owner>bsazonov@chromium.org</owner>
   <owner>jlebel@chromium.org</owner>

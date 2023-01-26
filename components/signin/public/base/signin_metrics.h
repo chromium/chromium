@@ -203,6 +203,8 @@ enum class AccessPoint : int {
   // component. We should replace its usage with actual access points once we
   // find ways to attribute the changes accurately.
   ACCESS_POINT_DESKTOP_SIGNIN_MANAGER = 44,
+
+  ACCESS_POINT_FOR_YOU_FRE = 45,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.

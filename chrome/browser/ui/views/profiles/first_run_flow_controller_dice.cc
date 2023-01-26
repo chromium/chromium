@@ -17,10 +17,15 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
+
 namespace {
+
+const signin_metrics::AccessPoint kAccessPoint =
+    signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE;
 
 class IntroStepController : public ProfileManagementStepController {
  public:
@@ -106,6 +111,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
       : ProfilePickerSignedInFlowController(host,
                                             profile,
                                             std::move(contents),
+                                            kAccessPoint,
                                             /*profile_color=*/absl::nullopt),
         finish_flow_callback_(std::move(finish_flow_callback)) {
     DCHECK(finish_flow_callback_.value());
@@ -207,7 +213,7 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
 
 std::unique_ptr<ProfilePickerDiceSignInProvider>
 FirstRunFlowControllerDice::CreateDiceSignInProvider() {
-  return std::make_unique<ProfilePickerDiceSignInProvider>(host(),
+  return std::make_unique<ProfilePickerDiceSignInProvider>(host(), kAccessPoint,
                                                            profile_->GetPath());
 }
 

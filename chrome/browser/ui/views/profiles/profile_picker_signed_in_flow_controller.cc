@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/context_menu_params.h"
@@ -24,10 +25,12 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
+    signin_metrics::AccessPoint signin_access_point,
     absl::optional<SkColor> profile_color)
     : host_(host),
       profile_(profile),
       contents_(std::move(contents)),
+      signin_access_point_(signin_access_point),
       profile_color_(profile_color) {
   DCHECK(profile_);
   DCHECK(contents_);
@@ -63,7 +66,7 @@ void ProfilePickerSignedInFlowController::Init() {
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(
-      profile_, signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER,
+      profile_, signin_access_point_,
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
       signin_metrics::Reason::kSigninPrimaryAccount, account_info.account_id,
       TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,

@@ -27,12 +27,16 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #endif
 
 namespace {
+
+const signin_metrics::AccessPoint kAccessPoint =
+    signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER;
 
 // Returns the URL to load as initial content for the profile picker. If an
 // empty URL is returned, the profile picker should not be shown until
@@ -123,6 +127,7 @@ class ProfileCreationSignedInFlowController
       : ProfilePickerSignedInFlowController(host,
                                             profile,
                                             std::move(contents),
+                                            kAccessPoint,
                                             profile_color),
         finish_flow_callback_(std::move(finish_flow_callback)) {}
 
@@ -344,7 +349,8 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfilePickerDiceSignInProvider>
 ProfilePickerFlowController::CreateDiceSignInProvider() {
-  return std::make_unique<ProfilePickerDiceSignInProvider>(host());
+  return std::make_unique<ProfilePickerDiceSignInProvider>(host(),
+                                                           kAccessPoint);
 }
 
 absl::optional<SkColor> ProfilePickerFlowController::GetProfileColor() {
