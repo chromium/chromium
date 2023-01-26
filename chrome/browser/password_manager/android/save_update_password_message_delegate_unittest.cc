@@ -16,6 +16,7 @@
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,6 +28,7 @@
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -52,6 +54,8 @@ constexpr char16_t kUsername2[] = u"username2";
 constexpr char16_t kPassword[] = u"password";
 constexpr char kAccountEmail[] = "account@example.com";
 constexpr char16_t kAccountEmail16[] = u"account@example.com";
+constexpr char kAccountFullName[] = "First Last";
+constexpr char16_t kAccountFullName16[] = u"First Last";
 constexpr char kSaveUIDismissalReasonHistogramName[] =
     "PasswordManager.SaveUIDismissalReason";
 constexpr char kUpdateUIDismissalReasonHistogramName[] =
@@ -113,7 +117,8 @@ class SaveUpdatePasswordMessageDelegateTest
 
   void EnqueueMessage(std::unique_ptr<PasswordFormManagerForUI> form_to_save,
                       bool user_signed_in,
-                      bool update_password);
+                      bool update_password,
+                      absl::optional<AccountInfo> account_info = {});
   void TriggerActionClick();
   void TriggerPasswordEditDialog(bool update_password);
   void TriggerNeverSaveMenuItem();
@@ -245,6 +250,10 @@ void SaveUpdatePasswordMessageDelegateTest::InitFeatureList() {
         password_manager::features::kExploratorySaveUpdatePasswordStrings);
   }
 
+  // This feature only concerns AccountInfo with configured AccountCapabilities.
+  enabled_features.push_back(
+      {chrome::android::kHideNonDisplayableAccountEmail, {}});
+
   scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                      disabled_features);
 }
@@ -292,9 +301,9 @@ PasswordForm SaveUpdatePasswordMessageDelegateTest::CreatePasswordForm(
 void SaveUpdatePasswordMessageDelegateTest::EnqueueMessage(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool user_signed_in,
-    bool update_password) {
-  absl::optional<AccountInfo> account_info;
-  if (user_signed_in) {
+    bool update_password,
+    absl::optional<AccountInfo> account_info) {
+  if (user_signed_in && !account_info) {
     account_info = AccountInfo();
     account_info.value().email = kAccountEmail;
   }
@@ -503,7 +512,7 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
               GetMessageWrapper()->GetDescription().find(kAccountEmail16));
   }
 
-  // Validate remainig message fields
+  // Validate remaining message fields
   if (GetParam().with_unified_password_manager_android) {
     // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
     EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
@@ -664,6 +673,50 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
   DismissMessage(messages::DismissReason::UNKNOWN);
 }
 
+// Tests that the description is set correctly when the signed-in user with a
+// non-displayable email saves a password.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_SavePasswordNonDisplayableEmail) {
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  const bool is_signed_in = true;
+  const bool is_update = false;
+
+  absl::optional<AccountInfo> account_info;
+  account_info = AccountInfo();
+  account_info.value().email = kAccountEmail;
+  account_info.value().full_name = kAccountFullName;
+  AccountCapabilitiesTestMutator mutator(&account_info.value().capabilities);
+  mutator.set_can_have_email_address_displayed(false);
+
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/is_signed_in,
+                 /*update_password=*/is_update, account_info);
+  if (GetParam().with_exploratory_save_update_password_strings) {
+    // password_manager::features::kExploratorySaveUpdatePasswordStrings is
+    // enabled
+    EXPECT_EQ(GetExploratoryStringsMessageDescription(
+                  is_update, is_signed_in, kAccountFullName16,
+                  GetParam().save_update_prompt_syncing_string_version),
+              GetMessageWrapper()->GetDescription());
+  } else if (GetParam().with_unified_password_manager_android) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(GetUnifiedPasswordManagerMessageDescription(
+                  is_update, is_signed_in, kAccountFullName16),
+              GetMessageWrapper()->GetDescription());
+  } else {
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kUsername));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kPassword));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+    EXPECT_NE(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountFullName16));
+  }
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
 // Tests that the description is set correctly when signed-in user updates a
 // password.
 TEST_P(SaveUpdatePasswordMessageDelegateTest,
@@ -695,6 +748,50 @@ TEST_P(SaveUpdatePasswordMessageDelegateTest,
               GetMessageWrapper()->GetDescription().find(kPassword));
     EXPECT_NE(std::u16string::npos,
               GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+  }
+  DismissMessage(messages::DismissReason::UNKNOWN);
+}
+
+// Tests that the description is set correctly when the signed-in user with a
+// non-displayable email updates a password.
+TEST_P(SaveUpdatePasswordMessageDelegateTest,
+       SignedInDescription_UpdatePasswordNonDisplayableEmail) {
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  const bool is_signed_in = true;
+  const bool is_update = true;
+
+  absl::optional<AccountInfo> account_info;
+  account_info = AccountInfo();
+  account_info.value().email = kAccountEmail;
+  account_info.value().full_name = kAccountFullName;
+  AccountCapabilitiesTestMutator mutator(&account_info.value().capabilities);
+  mutator.set_can_have_email_address_displayed(false);
+
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/is_signed_in,
+                 /*update_password=*/is_update, account_info);
+  if (GetParam().with_exploratory_save_update_password_strings) {
+    // password_manager::features::kExploratorySaveUpdatePasswordStrings is
+    // enabled
+    EXPECT_EQ(GetExploratoryStringsMessageDescription(
+                  is_update, is_signed_in, kAccountFullName16,
+                  GetParam().save_update_prompt_syncing_string_version),
+              GetMessageWrapper()->GetDescription());
+  } else if (GetParam().with_unified_password_manager_android) {
+    // password_manager::features::kUnifiedPasswordManagerAndroid is enabled
+    EXPECT_EQ(GetUnifiedPasswordManagerMessageDescription(
+                  is_update, is_signed_in, kAccountFullName16),
+              GetMessageWrapper()->GetDescription());
+  } else {
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kUsername));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kPassword));
+    EXPECT_EQ(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountEmail16));
+    EXPECT_NE(std::u16string::npos,
+              GetMessageWrapper()->GetDescription().find(kAccountFullName16));
   }
   DismissMessage(messages::DismissReason::UNKNOWN);
 }

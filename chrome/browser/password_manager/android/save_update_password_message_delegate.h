@@ -153,6 +153,8 @@ class SaveUpdatePasswordMessageDelegate {
   PasswordEditDialogFactory password_edit_dialog_factory_;
 
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+
+  // Can be the empty string, the account email, or the account full name.
   std::string account_email_;
   bool update_password_ = false;
 

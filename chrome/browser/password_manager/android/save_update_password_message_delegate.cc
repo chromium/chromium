@@ -146,10 +146,10 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
   }
 
   if (account_info.has_value()) {
-    if (base::FeatureList::IsEnabled(
-            chrome::android::kHideNonDisplayableAccountEmail) &&
-        account_info->capabilities.can_have_email_address_displayed() ==
-            signin::Tribool::kFalse) {
+    if (account_info->capabilities.can_have_email_address_displayed() ==
+            signin::Tribool::kFalse &&
+        base::FeatureList::IsEnabled(
+            chrome::android::kHideNonDisplayableAccountEmail)) {
       account_email_ = account_info.value().full_name;
     } else {
       account_email_ = account_info.value().email;
