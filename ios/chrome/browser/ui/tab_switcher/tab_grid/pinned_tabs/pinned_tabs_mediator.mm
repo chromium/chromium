@@ -447,7 +447,8 @@ NSArray* CreatePinnedTabConsumerItems(WebStateList* web_state_list) {
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,
                                       DragItemOrigin::kOtherBrwoser);
-        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex);
+        MoveTabToBrowser(tabInfo.tabID, self.browser, destinationIndex,
+                         WebStateList::INSERT_PINNED);
         return;
       }
       base::UmaHistogramEnumeration(kUmaPinnedViewDragOrigin,

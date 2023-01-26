@@ -7,7 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+
 class Browser;
+
+// Moves the tab to the `destination_tab_index` in `destination_browser` with
+// the given flag. It is an error to try to move a tab across profiles
+// (incognito <-> regular).
+void MoveTabToBrowser(NSString* tab_id,
+                      Browser* destination_browser,
+                      int destination_tab_index,
+                      WebStateList::InsertionFlags flags);
 
 // Moves the tab to the `destination_tab_index` in `destination_browser`. It is
 // an error to try to move a tab across profiles (incognito <-> regular).

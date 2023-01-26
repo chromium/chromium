@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/web_state.h"
 
@@ -85,7 +84,8 @@ void MoveSnapshot(NSString* snapshot_id,
 
 void MoveTabToBrowser(NSString* tab_id,
                       Browser* destination_browser,
-                      int destination_tab_index) {
+                      int destination_tab_index,
+                      WebStateList::InsertionFlags flags) {
   DCHECK(tab_id.length);
   ChromeBrowserState* browser_state = destination_browser->GetBrowserState();
   BrowserList* browser_list =
@@ -107,11 +107,23 @@ void MoveTabToBrowser(NSString* tab_id,
   MoveSnapshot(tab_id, source_browser, destination_browser);
   std::unique_ptr<web::WebState> web_state =
       source_browser->GetWebStateList()->DetachWebStateAt(source_tab_index);
-  int insertion_flags = WebStateList::INSERT_FORCE_INDEX;
-  if (destination_browser->GetWebStateList()->empty()) {
-    insertion_flags = WebStateList::INSERT_ACTIVATE;
+
+  int insertion_flags = flags;
+  if (insertion_flags == WebStateList::InsertionFlags::INSERT_NO_FLAGS) {
+    insertion_flags = WebStateList::INSERT_FORCE_INDEX;
+    if (destination_browser->GetWebStateList()->empty()) {
+      insertion_flags = WebStateList::INSERT_ACTIVATE;
+    }
   }
+
   destination_browser->GetWebStateList()->InsertWebState(
       destination_tab_index, std::move(web_state), insertion_flags,
       WebStateOpener());
+}
+
+void MoveTabToBrowser(NSString* tab_id,
+                      Browser* destination_browser,
+                      int destination_tab_index) {
+  MoveTabToBrowser(tab_id, destination_browser, destination_tab_index,
+                   WebStateList::InsertionFlags::INSERT_NO_FLAGS);
 }
