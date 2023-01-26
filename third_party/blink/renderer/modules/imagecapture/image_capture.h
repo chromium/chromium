@@ -99,9 +99,9 @@ class MODULES_EXPORT ImageCapture final
                            PromiseResolverFunction,
                            bool trigger_take_photo,
                            media::mojom::blink::PhotoStatePtr);
-  void OnMojoSetOptions(ScriptPromiseResolver*,
-                        bool trigger_take_photo,
-                        bool result);
+  void OnMojoSetPhotoOptions(ScriptPromiseResolver*,
+                             bool trigger_take_photo,
+                             bool result);
   void OnMojoTakePhoto(ScriptPromiseResolver*, media::mojom::blink::BlobPtr);
 
   // If getUserMedia contains either pan, tilt, or zoom constraints, the

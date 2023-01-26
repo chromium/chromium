@@ -254,8 +254,7 @@ interface ImageCapture
         => (PhotoState state);
 
     // Sets the |settings| on the associated video capture device.
-    // https://www.w3.org/TR/image-capture/#dom-imagecapture-setoptions
-    SetOptions(string source_id, PhotoSettings settings)
+    SetPhotoOptions(string source_id, PhotoSettings settings)
         => (bool success);
 
     // Takes a Photo from the given |source_id|, returning it encoded in |blob|

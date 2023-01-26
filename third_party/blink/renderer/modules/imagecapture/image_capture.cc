@@ -367,9 +367,9 @@ ScriptPromise ImageCapture::takePhoto(ScriptState* script_state,
     settings->fill_light_mode = ParseFillLightMode(fill_light_mode);
   }
 
-  service_->SetOptions(
+  service_->SetPhotoOptions(
       SourceId(), std::move(settings),
-      WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
+      WTF::BindOnce(&ImageCapture::OnMojoSetPhotoOptions, WrapPersistent(this),
                     WrapPersistent(resolver), /*trigger_take_photo=*/true));
   return promise;
 }
@@ -783,9 +783,9 @@ void ImageCapture::SetMediaTrackConstraints(
 
   service_requests_.insert(resolver);
 
-  service_->SetOptions(
+  service_->SetPhotoOptions(
       SourceId(), std::move(settings),
-      WTF::BindOnce(&ImageCapture::OnMojoSetOptions, WrapPersistent(this),
+      WTF::BindOnce(&ImageCapture::OnMojoSetPhotoOptions, WrapPersistent(this),
                     WrapPersistent(resolver), /*trigger_take_photo=*/false));
 }
 
@@ -842,7 +842,7 @@ void ImageCapture::SetPanTiltZoomSettingsFromTrack(
     settings->zoom = zoom.value();
   }
 
-  service_->SetOptions(
+  service_->SetPhotoOptions(
       SourceId(), std::move(settings),
       WTF::BindOnce(&ImageCapture::OnSetPanTiltZoomSettingsFromTrack,
                     WrapPersistent(this), std::move(initialized_callback)));
@@ -1023,17 +1023,17 @@ void ImageCapture::OnMojoGetPhotoState(
   service_requests_.erase(resolver);
 }
 
-void ImageCapture::OnMojoSetOptions(ScriptPromiseResolver* resolver,
-                                    bool trigger_take_photo,
-                                    bool result) {
+void ImageCapture::OnMojoSetPhotoOptions(ScriptPromiseResolver* resolver,
+                                         bool trigger_take_photo,
+                                         bool result) {
   DCHECK(service_requests_.Contains(resolver));
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "ImageCapture::OnMojoSetOptions",
+                       "ImageCapture::OnMojoSetPhotoOptions",
                        TRACE_EVENT_SCOPE_PROCESS);
 
   if (!result) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, "setOptions failed"));
+        DOMExceptionCode::kUnknownError, "setPhotoOptions failed"));
     service_requests_.erase(resolver);
     return;
   }

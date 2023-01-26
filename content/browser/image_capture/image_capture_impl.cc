@@ -42,10 +42,11 @@ void GetPhotoStateOnIOThread(const std::string& source_id,
       session_id, std::move(callback));
 }
 
-void SetOptionsOnIOThread(const std::string& source_id,
-                          MediaStreamManager* media_stream_manager,
-                          media::mojom::PhotoSettingsPtr settings,
-                          ImageCaptureImpl::SetOptionsCallback callback) {
+void SetPhotoOptionsOnIOThread(
+    const std::string& source_id,
+    MediaStreamManager* media_stream_manager,
+    media::mojom::PhotoSettingsPtr settings,
+    ImageCaptureImpl::SetPhotoOptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const base::UnguessableToken session_id =
@@ -106,12 +107,12 @@ void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
                      std::move(scoped_callback)));
 }
 
-void ImageCaptureImpl::SetOptions(const std::string& source_id,
-                                  media::mojom::PhotoSettingsPtr settings,
-                                  SetOptionsCallback callback) {
+void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
+                                       media::mojom::PhotoSettingsPtr settings,
+                                       SetPhotoOptionsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-                       "ImageCaptureImpl::SetOptions",
+                       "ImageCaptureImpl::SetPhotoOptions",
                        TRACE_EVENT_SCOPE_PROCESS);
 
   if ((settings->has_pan || settings->has_tilt || settings->has_zoom) &&
@@ -120,12 +121,12 @@ void ImageCaptureImpl::SetOptions(const std::string& source_id,
     return;
   }
 
-  SetOptionsCallback scoped_callback =
+  SetPhotoOptionsCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           media::BindToCurrentLoop(std::move(callback)), false);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SetOptionsOnIOThread, source_id,
+      base::BindOnce(&SetPhotoOptionsOnIOThread, source_id,
                      BrowserMainLoop::GetInstance()->media_stream_manager(),
                      std::move(settings), std::move(scoped_callback)));
 }

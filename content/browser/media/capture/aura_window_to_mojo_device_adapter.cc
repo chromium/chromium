@@ -60,7 +60,7 @@ void AuraWindowToMojoDeviceAdapter::GetPhotoState(
 void AuraWindowToMojoDeviceAdapter::SetPhotoOptions(
     media::mojom::PhotoSettingsPtr settings,
     SetPhotoOptionsCallback callback) {
-  media::mojom::ImageCapture::SetOptionsCallback scoped_callback =
+  media::mojom::ImageCapture::SetPhotoOptionsCallback scoped_callback =
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           media::BindToCurrentLoop(std::move(callback)), false);
   device_->SetPhotoOptions(std::move(settings), std::move(scoped_callback));

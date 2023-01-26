@@ -23,9 +23,9 @@ class FakeImageCapture : public media::mojom::blink::ImageCapture {
   void GetPhotoState(const WTF::String& source_id,
                      GetPhotoStateCallback callback) override;
 
-  void SetOptions(const WTF::String& source_id,
-                  media::mojom::blink::PhotoSettingsPtr settings,
-                  SetOptionsCallback callback) override {}
+  void SetPhotoOptions(const WTF::String& source_id,
+                       media::mojom::blink::PhotoSettingsPtr settings,
+                       SetPhotoOptionsCallback callback) override {}
 
   void TakePhoto(const WTF::String& source_id,
                  TakePhotoCallback callback) override {}
