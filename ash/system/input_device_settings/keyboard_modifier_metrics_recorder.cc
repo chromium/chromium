@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 
+#include <cstdint>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -16,6 +17,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece_forward.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -28,6 +30,61 @@ constexpr base::StringPiece kModifierMetricIndividualChangedSuffix =
     "RemappedTo.Changed";
 constexpr base::StringPiece kModifierMetricIndividualInitSuffix =
     "RemappedTo.Started";
+constexpr base::StringPiece kModifierMetricHash =
+    "ChromeOS.Settings.Keyboard.Modifiers.Hash";
+
+// The modifier hash is made up of `kNumModifiers` blocks of
+// `kModifierHashWidth` bits. Each modifier is assigned a `kModifierHashWidth`
+// width block to track its user configured setting. These user configured
+// settings are contained within [0, `kMaxModifierValue`] and are assigned in
+// /ash/public/input_device_settings.mojom in the `mojom::ModifierKey` struct.
+// Indices are assigned to each modifier based on the order of the table
+// `KeyboardModifierMetricsRecorder::kKeyboardModifierPrefs`.
+
+// To decode, break up the hash into `kModifierHashWidth` bit integers.
+// For example, if `kModifierHashWidth` is 3, use the following bit ranges to
+// extract the value of the remapped modifier:
+
+// | Index in kKeyboardModifierPrefs | Bit Range |
+// | 0                               | [0, 2]    |
+// | 1                               | [3, 5]    |
+// | 2                               | [6, 8]    |
+// | 3                               | [9, 11]   |
+// | 4                               | [12, 14]  |
+// | 5                               | [15, 17]  |
+// | 6                               | [18, 20]  |
+// | 7                               | [21, 23]  |
+// | 8                               | [24, 26]  |
+// | 9                               | [27, 29]  |
+
+constexpr int kModifierHashWidth = 3;
+constexpr int kMaxModifierValue = (1 << kModifierHashWidth) - 1;
+constexpr int kNumModifiers =
+    std::size(KeyboardModifierMetricsRecorder::kKeyboardModifierPrefs);
+
+// Verify that the number of modifiers we are trying to hash together into a
+// 32-bit int will fit without any overflow or UB.
+// Modifier hash is limited to 32 bits as metrics can only handle 32 bit ints.
+static_assert((sizeof(int32_t) * 8) >= (kModifierHashWidth * kNumModifiers));
+static_assert(static_cast<int>(mojom::ModifierKey::kMaxValue) <=
+              kMaxModifierValue);
+
+constexpr mojom::ModifierKey GetDefaultModifier(size_t index) {
+  return KeyboardModifierMetricsRecorder::kKeyboardModifierPrefs[index]
+      .default_modifier_key;
+}
+
+// Precomputes the value of the modifier hash when all prefs are configured to
+// their default value.
+constexpr int32_t PrecalculateDefaultModifierHash() {
+  uint32_t hash = 0;
+  for (ssize_t i = kNumModifiers - 1u; i >= 0; i--) {
+    hash <<= kModifierHashWidth;
+    hash += static_cast<int>(GetDefaultModifier(i));
+  }
+  return static_cast<uint32_t>(hash);
+}
+constexpr int32_t kDefaultModifierHash = PrecalculateDefaultModifierHash();
 }  // namespace
 
 KeyboardModifierMetricsRecorder::KeyboardModifierMetricsRecorder() {
@@ -89,6 +146,7 @@ void KeyboardModifierMetricsRecorder::OnActiveUserPrefServiceChanged(
       RecordModifierRemappingInit(index,
                                   static_cast<mojom::ModifierKey>(value));
     }
+    RecordModifierRemappingHash();
   }
 }
 
@@ -119,7 +177,7 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingInit(
     mojom::ModifierKey modifier_key) {
   DCHECK_LT(index, std::size(kKeyboardModifierPrefs));
   // Skip publishing the metric if the pref is set to its default value.
-  if (kKeyboardModifierPrefs[index].default_modifier_key == modifier_key) {
+  if (GetDefaultModifier(index) == modifier_key) {
     return;
   }
 
@@ -132,6 +190,30 @@ void KeyboardModifierMetricsRecorder::RecordModifierRemappingInit(
 void KeyboardModifierMetricsRecorder::ResetPrefMembers() {
   for (auto& pref_member : pref_members_) {
     pref_member = std::make_unique<IntegerPrefMember>();
+  }
+}
+
+void KeyboardModifierMetricsRecorder::RecordModifierRemappingHash() {
+  // Compute hash by left-shifting by `kModifierHashWidth` and then inserting
+  // the modifier value from prefs at into the lowest `kModifierHashWidth` bits.
+  // Repeat for all prefs in `kKeyboardModifierPrefs`.
+  uint32_t hash = 0;
+  for (ssize_t i = pref_members_.size() - 1; i >= 0; i--) {
+    const int value = pref_members_[i]->GetValue();
+
+    // Check that shifting and adding value will not overflow `hash`.
+    DCHECK(value <= kMaxModifierValue && value >= 0);
+    DCHECK(hash < (1u << ((sizeof(uint32_t) * 8u) - kModifierHashWidth)));
+
+    hash <<= kModifierHashWidth;
+    hash += value;
+  }
+
+  // If the computed hash matches the hash when settings are in a default state,
+  // the metric should not be published.
+  if (hash != kDefaultModifierHash) {
+    base::UmaHistogramSparse(std::string(kModifierMetricHash),
+                             static_cast<int>(hash));
   }
 }
 

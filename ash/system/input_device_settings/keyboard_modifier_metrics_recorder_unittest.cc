@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -265,6 +266,139 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 0);
   }
+}
+
+// Contains a list of modifier remappings to apply and then the expected hash
+// value after a user signs in. If `expected_value` is empty, then no metric is
+// expected.
+struct KeyboardModifierMetricsRecorderHashTestData {
+  base::flat_map<std::string, mojom::ModifierKey> modifier_remappings;
+  absl::optional<int32_t> expected_value;
+};
+
+class KeyboardModifierMetricsRecorderHashTest
+    : public KeyboardModifierMetricsRecorderTest,
+      public testing::WithParamInterface<
+          KeyboardModifierMetricsRecorderHashTestData> {
+  void SetUp() override {
+    KeyboardModifierMetricsRecorderTest::SetUp();
+    data_ = GetParam();
+    ResetHistogramTester();
+  }
+
+ protected:
+  KeyboardModifierMetricsRecorderHashTestData data_;
+};
+
+// Contains lists of modifier remappings to apply before signing in the user and
+// then the expected computed hash once the user signs in.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    KeyboardModifierMetricsRecorderHashTest,
+    testing::ValuesIn(std::vector<KeyboardModifierMetricsRecorderHashTestData>{
+        // With only default remappings, no metric is expected.
+        {{}, absl::nullopt},
+
+        // All keys remapped to `mojom::ModifierKey::kMeta` should hash to 0.
+        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapCapsLockKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapBackspaceKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapAssistantKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapExternalMetaKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapExternalCommandKeyTo,
+           mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kMeta}},
+         0x0},
+
+        // All keys remapped to `mojom::ModifierKey::kBackspace` should hash to
+        // 0x6db6db6.
+        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapCapsLockKeyTo,
+           mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapBackspaceKeyTo,
+           mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapAssistantKeyTo,
+           mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapExternalMetaKeyTo,
+           mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapExternalCommandKeyTo,
+           mojom::ModifierKey::kBackspace},
+          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kBackspace}},
+         0x6db6db6},
+
+        // Random assortment of keys with a manually computed hash.
+        {{{::prefs::kLanguageRemapAltKeyTo, mojom::ModifierKey::kControl},
+          {::prefs::kLanguageRemapCapsLockKeyTo, mojom::ModifierKey::kAlt},
+          {::prefs::kLanguageRemapBackspaceKeyTo,
+           mojom::ModifierKey::kAssistant},
+          {::prefs::kLanguageRemapEscapeKeyTo, mojom::ModifierKey::kVoid},
+          {::prefs::kLanguageRemapControlKeyTo, mojom::ModifierKey::kMeta},
+          {::prefs::kLanguageRemapAssistantKeyTo, mojom::ModifierKey::kAlt},
+          {::prefs::kLanguageRemapExternalMetaKeyTo,
+           mojom::ModifierKey::kControl},
+          {::prefs::kLanguageRemapExternalCommandKeyTo,
+           mojom::ModifierKey::kCapsLock},
+          {::prefs::kLanguageRemapSearchKeyTo, mojom::ModifierKey::kAlt}},
+         0x4452ec1},
+    }));
+
+TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
+  // Initialize two pref services with the initial value of the metric.
+  const AccountId account_id1 = AccountId::FromUserEmail(kUserEmail1);
+  const AccountId account_id2 = AccountId::FromUserEmail(kUserEmail2);
+
+  std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service1->registry(), true);
+
+  std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
+      std::make_unique<TestingPrefServiceSimple>();
+  ash::RegisterUserProfilePrefs(pref_service2->registry(), true);
+
+  for (const auto& [pref, remapping] : data_.modifier_remappings) {
+    pref_service1->SetInteger(pref, static_cast<int>(remapping));
+    pref_service2->SetInteger(pref, static_cast<int>(remapping));
+  }
+
+  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
+      account_id1, std::move(pref_service1));
+  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
+      account_id2, std::move(pref_service2));
+
+  ResetHistogramTester();
+
+  // Sign into first account and verify the metric is emitted.
+  SimulateUserLogin(account_id1);
+  if (data_.expected_value.has_value()) {
+    histogram_tester_->ExpectUniqueSample(
+        "ChromeOS.Settings.Keyboard.Modifiers.Hash",
+        data_.expected_value.value(), 1);
+  } else {
+    histogram_tester_->ExpectTotalCount(
+        "ChromeOS.Settings.Keyboard.Modifiers.Hash", 0);
+  }
+
+  // Sign into second account and verify the metric is emitted.
+  SimulateUserLogin(account_id2);
+  if (data_.expected_value.has_value()) {
+    histogram_tester_->ExpectUniqueSample(
+        "ChromeOS.Settings.Keyboard.Modifiers.Hash",
+        data_.expected_value.value(), 2);
+  } else {
+    histogram_tester_->ExpectTotalCount(
+        "ChromeOS.Settings.Keyboard.Modifiers.Hash", 0);
+  }
+
+  ResetHistogramTester();
+
+  // Sign back into first  account and verify the metric is not emitted again.
+  SimulateUserLogin(account_id1);
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Keyboard.Modifiers.Hash", 0);
 }
 
 }  // namespace ash

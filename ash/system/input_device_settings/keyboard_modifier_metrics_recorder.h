@@ -24,6 +24,8 @@ namespace ash {
 // user session is first initialized.
 class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
  public:
+  // Do not change ordering of this list as the ordering is used to compute
+  // modifier hash in `RecordModifierRemappingHash()`.
   static constexpr struct {
     const char* key_name;
     const char* pref_name;
@@ -55,6 +57,8 @@ class ASH_EXPORT KeyboardModifierMetricsRecorder : public SessionObserver {
   ~KeyboardModifierMetricsRecorder() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test);
+
+  void RecordModifierRemappingHash();
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
