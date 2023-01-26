@@ -402,54 +402,6 @@ suite('NewTabPageAppTest', () => {
             assertEquals(true, applyLightTheme);
           });
     });
-
-    suite('theming metrics', () => {
-      test('having no theme produces correct metric', async () => {
-        // Arrange.
-        const theme = createTheme();
-        theme.isCustomBackground = false;
-
-        // Act.
-        callbackRouterRemote.setTheme(theme);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Assert.
-        assertEquals(1, metrics.count('NewTabPage.Collections.IdOnLoad', ''));
-      });
-
-      test('having first party theme produces correct metric', async () => {
-        // Arrange.
-        const theme = createTheme();
-        theme.dailyRefreshEnabled = false;
-        theme.backgroundImageCollectionId = 'foo_collection';
-
-        // Act.
-        callbackRouterRemote.setTheme(theme);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Assert.
-        assertEquals(
-            1,
-            metrics.count('NewTabPage.Collections.IdOnLoad', 'foo_collection'));
-      });
-
-
-      test('having refresh daily enabled produces correct metric', async () => {
-        // Arrange.
-        const theme = createTheme();
-        theme.dailyRefreshEnabled = true;
-        theme.backgroundImageCollectionId = 'foo_collection';
-
-        // Act.
-        callbackRouterRemote.setTheme(theme);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Assert.
-        assertEquals(
-            1,
-            metrics.count('NewTabPage.Collections.IdOnLoad', 'foo_collection'));
-      });
-    });
   });
 
   suite('promo', () => {

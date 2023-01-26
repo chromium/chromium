@@ -73536,36 +73536,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="ELM collection view containing feed header fixed"/>
 </enum>
 
-<enum name="NTPCollectionId">
-  <summary>
-    Hash values for the IDs of NTP background image collections. Each of these
-    values is computed by casting the output of
-    base::PersistentHash(collection_id) to base::HistogramBase::Sample.
-  </summary>
-  <int value="-2050365685" label="geometric_shapes">Geometric shapes</int>
-  <int value="-2012565742" label="nahm_collection">
-    Native American Artists Collection
-  </int>
-  <int value="-1854628278" label="landscape">Landscapes</int>
-  <int value="-1343974988" label="lgbtq_artists_collection">
-    LGBTQ Artists Collection
-  </int>
-  <int value="-1108481773" label="art">Art</int>
-  <int value="-1059944606" label="satellite">Earth</int>
-  <int value="-67630116" label="abstract">Life</int>
-  <int value="-55617381" label="solidcolors">Colors</int>
-  <int value="0" label="">Unknown collection ID</int>
-  <int value="324372171" label="material-texture">Textures</int>
-  <int value="325491925" label="black_artists_collection">
-    Black Artists Collection
-  </int>
-  <int value="596779358" label="city">Cityscapes</int>
-  <int value="1223583762" label="latinx_artists_collection">
-    Latino Artists Collection
-  </int>
-  <int value="1395980614" label="underwater">Seascapes</int>
-</enum>
-
 <enum name="NTPCustomizeAction">
   <obsolete>
     Removed 2022-10.

@@ -373,11 +373,6 @@ export class AppElement extends PolymerElement {
     super.connectedCallback();
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
-          if (!this.theme_) {
-            chrome.metricsPrivate.recordSparseValueWithPersistentHash(
-                'NewTabPage.Collections.IdOnLoad',
-                theme.backgroundImageCollectionId ?? '');
-          }
           performance.measure('theme-set');
           this.theme_ = theme;
         });
