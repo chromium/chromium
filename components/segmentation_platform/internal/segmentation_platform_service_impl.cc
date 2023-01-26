@@ -13,12 +13,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/execution/processing/sync_device_info_observer.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
@@ -27,6 +27,7 @@
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/sync_device_info_observer.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -127,10 +128,8 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Create sync device info observer.
-  input_delegate_holder_->SetDelegate(
-      proto::CustomInput::FILL_SYNC_DEVICE_INFO,
-      std::make_unique<processing::SyncDeviceInfoObserver>(
-          init_params->device_info_tracker));
+  sync_device_info_observer_ = std::make_unique<SyncDeviceInfoObserver>(
+      init_params->device_info_tracker);
 }
 
 SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
