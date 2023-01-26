@@ -2168,7 +2168,9 @@ void WebFormControlElementToFormField(
       field->name = field->name_attribute.empty() ? field->id_attribute
                                                   : field->name_attribute;
     }
-    ValidateAutocompleteAttributeForElement(element);
+    if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+      ValidateAutocompleteAttributeForElement(element);
+    }
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
       field->parsed_autocomplete = ParseAutocompleteAttribute(
