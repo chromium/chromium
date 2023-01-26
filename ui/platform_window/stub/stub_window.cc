@@ -41,7 +41,6 @@ void StubWindow::Close() {
 }
 
 bool StubWindow::IsVisible() const {
-  NOTIMPLEMENTED_LOG_ONCE();
   return true;
 }
 
@@ -95,11 +94,17 @@ PlatformWindowState StubWindow::GetPlatformWindowState() const {
 }
 
 void StubWindow::Activate() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (activation_state_ != ActivationState::kActive) {
+    activation_state_ = ActivationState::kActive;
+    delegate_->OnActivationChanged(/*active=*/true);
+  }
 }
 
 void StubWindow::Deactivate() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  if (activation_state_ != ActivationState::kInactive) {
+    activation_state_ = ActivationState::kInactive;
+    delegate_->OnActivationChanged(/*active=*/false);
+  }
 }
 
 void StubWindow::SetUseNativeFrame(bool use_native_frame) {}
