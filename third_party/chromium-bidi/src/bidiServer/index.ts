@@ -65,7 +65,7 @@ function parseArguments() {
     const headless = args.headless !== 'false';
     const chromeChannel = args.channel;
 
-    BidiServerRunner.run(bidiPort, (bidiServer) => {
+    new BidiServerRunner().run(bidiPort, (bidiServer) => {
       return _onNewBidiConnectionOpen(headless, chromeChannel, bidiServer);
     });
     console.log('BiDi server launched.');

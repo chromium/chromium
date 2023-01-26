@@ -34,12 +34,10 @@ export class BidiServerRunner {
    * `onConnectionClose` delegate, which will be called after the connection is
    * closed.
    */
-  static run(
+  run(
     bidiPort: number,
     onNewBidiConnectionOpen: (bidiServer: ITransport) => Promise<() => void>
   ) {
-    const self = this;
-
     const server = http.createServer(
       async (request: http.IncomingMessage, response: http.ServerResponse) => {
         debugInternal(
@@ -121,7 +119,7 @@ export class BidiServerRunner {
       connection.on('message', (message) => {
         // 1. If |type| is not text, return.
         if (message.type !== 'utf8') {
-          self.#respondWithError(
+          this.#respondWithError(
             connection,
             {},
             'invalid argument',
@@ -145,7 +143,7 @@ export class BidiServerRunner {
       });
 
       bidiServer.initialise((messageStr) => {
-        return self.#sendClientMessageStr(messageStr, connection);
+        return this.#sendClientMessageStr(messageStr, connection);
       });
     });
   }
@@ -164,7 +162,7 @@ export class BidiServerRunner {
     });
   }
 
-  static #sendClientMessageStr(
+  #sendClientMessageStr(
     messageStr: string,
     connection: websocket.connection
   ): Promise<void> {
@@ -173,7 +171,7 @@ export class BidiServerRunner {
     return Promise.resolve();
   }
 
-  static #sendClientMessage(
+  #sendClientMessage(
     messageObj: any,
     connection: websocket.connection
   ): Promise<void> {
@@ -181,7 +179,7 @@ export class BidiServerRunner {
     return this.#sendClientMessageStr(messageStr, connection);
   }
 
-  static #respondWithError(
+  #respondWithError(
     connection: websocket.connection,
     plainCommandData: any,
     errorCode: string,
@@ -195,7 +193,7 @@ export class BidiServerRunner {
     this.#sendClientMessage(errorResponse, connection);
   }
 
-  static #getErrorResponse(
+  #getErrorResponse(
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
