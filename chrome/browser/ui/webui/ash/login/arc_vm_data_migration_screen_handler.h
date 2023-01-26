@@ -21,13 +21,15 @@ class ArcVmDataMigrationScreenView
       "arc-vm-data-migration", "ArcVmDataMigrationScreen"};
 
   enum class UIState {
-    kWelcome = 0,
+    kLoading = 0,
+    kWelcome = 1,
   };
 
   virtual ~ArcVmDataMigrationScreenView() = default;
 
   virtual void Show() = 0;
   virtual void SetUIState(UIState state) = 0;
+  virtual void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) = 0;
 };
 
 class ArcVmDataMigrationScreenHandler : public BaseScreenHandler,
@@ -50,6 +52,7 @@ class ArcVmDataMigrationScreenHandler : public BaseScreenHandler,
   // ArcVmDataMigrationScreenView overrides:
   void Show() override;
   void SetUIState(UIState state) override;
+  void SetRequiredFreeDiskSpace(int64_t required_free_disk_space) override;
 };
 
 }  // namespace ash

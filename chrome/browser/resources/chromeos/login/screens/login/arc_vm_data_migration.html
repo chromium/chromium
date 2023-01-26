@@ -8,7 +8,20 @@ found in the LICENSE file.
   #description-body {
     margin: 8px 0 8px 0;
   }
+  div.warning {
+    border-bottom: var(--cr-separator-line);
+    padding-bottom: 11px;
+    padding-top: 22px;
+  }
+  .warning-message {
+    margin-inline-start: 20px;
+  }
 </style>
+
+<oobe-loading-dialog id="loading-dialog" for-step="loading" role="dialog"
+    title-key="loadingDialogTitle">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
 
 <oobe-adaptive-dialog id="welcome-dialog" for-step="welcome" role="dialog">
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
@@ -20,6 +33,15 @@ found in the LICENSE file.
     <div id="description-body">
       [[i18nDynamic(locale, 'welcomeScreenDescriptionBody')]]
     </div>
+    <div class="message-container">
+      <div class="warning" hidden="[[hasEnoughFreeDiskSpace]]">
+        <iron-icon slot="icon" icon="oobe-32:warning"></iron-icon>
+        <span class="warning-message">
+          [[i18nDynamic(locale, 'notEnoughFreeDiskSpaceMessage',
+                        requiredFreeDiskSpaceInString)]]
+        </span>
+      </div>
+    </div>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="skip-button"
@@ -27,6 +49,7 @@ found in the LICENSE file.
         text-key="skipButtonLabel">
     </oobe-text-button>
     <oobe-text-button inverse id="update-button"
+        disabled="[[!hasEnoughFreeDiskSpace]]"
         on-click="onUpdateButtonClicked_"
         text-key="updateButtonLabel">
     </oobe-text-button>
