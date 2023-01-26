@@ -30,6 +30,10 @@ export function generateOrientationData(alpha, beta, gamma, absolute) {
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
 
+export function sleep(t, timeMs) {
+  return new Promise(resolve => t.step_timeout(resolve, timeMs));
+}
+
 export function setMockMotionData(sensorProvider, motionData) {
   const degToRad = Math.PI / 180;
   return Promise.all([

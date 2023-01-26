@@ -4,12 +4,8 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script type="module">
-import {generateOrientationData, setMainWindowHidden, setMockOrientationData, waitForOrientation} from '../resources/device-orientation-helpers.js';
+import {generateOrientationData, setMainWindowHidden, setMockOrientationData, sleep, waitForOrientation} from '../resources/device-orientation-helpers.js';
 import {sensor_test} from '../resources/sensor-helpers.js';
-
-function sleep(time_ms) {
-  return new Promise(resolve => window.setTimeout(resolve, time_ms));
-}
 
 sensor_test(async (t, sensorProvider) => {
   const orientationData = generateOrientationData(1, 2, 3, false);
@@ -35,7 +31,7 @@ sensor_test(async (t, sensorProvider) => {
 
   // Sleep for a while to make sure no deviceorientation events are fired
   // while the page is hidden.
-  await sleep(100);
+  await sleep(t, 100);
   hidden = false;
   await setMainWindowHidden(false);
   return Promise.all([hiddenEventPromise, waitForOrientation(orientationData)]);
