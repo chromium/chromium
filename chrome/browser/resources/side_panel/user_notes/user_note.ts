@@ -98,7 +98,7 @@ export class UserNoteElement extends PolymerElement {
   }
 
   private getContentEditable_() {
-    return this.editing_ ? 'true' : 'false';
+    return this.editing_ ? 'plaintext-only' : 'false';
   }
 
   private clearInput_() {

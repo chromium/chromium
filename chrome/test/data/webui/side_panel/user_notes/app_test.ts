@@ -61,7 +61,8 @@ suite('UserNotesAppTest', () => {
     }
     const entryNote = notesElements[(notesElements.length - 1)]!;
     assertEquals(
-        'true', entryNote.$.noteContent.getAttribute('contenteditable'));
+        'plaintext-only',
+        entryNote.$.noteContent.getAttribute('contenteditable'));
     assertEquals(entryNote.$.noteContent.textContent, '');
   });
 
@@ -71,7 +72,8 @@ suite('UserNotesAppTest', () => {
     const sampleNoteContent = 'sample note content';
     entryNote.$.noteContent.textContent = sampleNoteContent;
     assertEquals(
-        'true', entryNote.$.noteContent.getAttribute('contenteditable'));
+        'plaintext-only',
+        entryNote.$.noteContent.getAttribute('contenteditable'));
     entryNote.$.noteContent.focus();
     const notesAddButton =
         entryNote.shadowRoot!.querySelector('#addButton')! as HTMLButtonElement;
@@ -96,7 +98,8 @@ suite('UserNotesAppTest', () => {
     const editButton =
         noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
     editButton.click();
-    assertEquals('true', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(
+        'plaintext-only', note.$.noteContent.getAttribute('contenteditable'));
     assertEquals(originalContent, note.$.noteContent.textContent);
     // Update content.
     const newContent = 'different content';
@@ -130,7 +133,8 @@ suite('UserNotesAppTest', () => {
     const editButton =
         noteMenu.querySelectorAll('.dropdown-item')[0]! as HTMLButtonElement;
     editButton.click();
-    assertEquals('true', note.$.noteContent.getAttribute('contenteditable'));
+    assertEquals(
+        'plaintext-only', note.$.noteContent.getAttribute('contenteditable'));
     assertEquals(originalContent, note.$.noteContent.textContent);
     // Update content.
     note.$.noteContent.textContent = 'different content';
