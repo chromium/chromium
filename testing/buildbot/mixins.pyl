@@ -218,6 +218,29 @@
       ]
     },
   },
+  '13-x64-emulator': {
+    '$mixin_append': {
+      'args': [
+        '--avd-config=../../tools/android/avd/proto/generic_android33.textpb',
+      ],
+    },
+    'swarming': {
+      # soft affinity so that bots with caches will be picked first
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'generic_android33',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'generic_android33',
+          'path': '.android_emulator/generic_android33',
+        },
+      ]
+    },
+  },
   'android_r': {
     'swarming': {
       'dimensions': {

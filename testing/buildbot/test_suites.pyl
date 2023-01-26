@@ -6479,11 +6479,7 @@
       'webview_ui_instrumentation_tests': {},
     },
 
-    'android_12_emulator_fyi_gtests': {
-      'oop_network_service_tests': {},
-    },
-
-    'android_12_emulator_gtests': {
+    'android_12_13_emulator_gtests': {
       'android_emulator_specific_chrome_public_tests': {},
       'android_monochrome_smoke_tests': {},
       'android_smoke_tests': {},
@@ -6499,6 +6495,10 @@
         ]
       },
       'webview_ui_instrumentation_tests': {},
+    },
+
+    'android_12_emulator_fyi_gtests': {
+      'oop_network_service_tests': {},
     },
 
     'android_12l_emulator_gtests': {
