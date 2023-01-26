@@ -1723,7 +1723,7 @@ TEST_F(GestureProviderTest, NoStylusScrollWithinSlop) {
 // slop.
 //
 // TODO(mustaq@chromium.org): Refactor SnapScrollController states to fix this.
-TEST_F(GestureProviderTest, DISABLED_ScrollSnappingWithStylusSlop) {
+TEST_F(GestureProviderTest, SnapScrollWithStylusSlop) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kStylusSpecificTapSlop);
 

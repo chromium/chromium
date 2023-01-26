@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
@@ -76,6 +77,14 @@ gfx::RectF ClampBoundingBox(const gfx::RectF& bounds,
       center.x() - width / 2.f, center.y() - height / 2.f, width, height);
 }
 
+float EffectiveSlopDistance(const MotionEvent& event,
+                            const GestureProvider::Config& config) {
+  return (base::FeatureList::IsEnabled(features::kStylusSpecificTapSlop) &&
+          event.GetToolType() == MotionEvent::ToolType::STYLUS)
+             ? config.gesture_detector_config.stylus_slop
+             : config.gesture_detector_config.touch_slop;
+}
+
 }  // namespace
 
 // GestureProviderClient:
@@ -112,8 +121,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
         gesture_provider_(gesture_provider),
         gesture_detector_(config.gesture_detector_config, this, this),
         scale_gesture_detector_(config.scale_gesture_detector_config, this),
-        snap_scroll_controller_(config.gesture_detector_config.touch_slop,
-                                gfx::SizeF(config.display.size())),
+        snap_scroll_controller_(gfx::SizeF(config.display.size())),
         ignore_multitouch_zoom_events_(false),
         ignore_single_tap_(false),
         pinch_event_sent_(false),
@@ -126,9 +134,11 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
   void OnTouchEvent(const MotionEvent& event) {
     const bool in_scale_gesture = IsScaleGestureDetectionInProgress();
-    snap_scroll_controller_.SetSnapScrollMode(event, in_scale_gesture);
-    if (in_scale_gesture)
+    snap_scroll_controller_.SetSnapScrollMode(
+        event, in_scale_gesture, EffectiveSlopDistance(event, config_));
+    if (in_scale_gesture) {
       SetIgnoreSingleTap(true);
+    }
 
     const MotionEvent::Action action = event.GetAction();
     if (action == MotionEvent::Action::DOWN) {
@@ -391,7 +401,8 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       distance_y = delta.y();
     }
 
-    snap_scroll_controller_.UpdateSnapScrollMode(distance_x, distance_y);
+    snap_scroll_controller_.UpdateSnapScrollMode(
+        distance_x, distance_y, EffectiveSlopDistance(e2, config_));
     if (snap_scroll_controller_.IsSnappingScrolls()) {
       if (snap_scroll_controller_.IsSnapHorizontal())
         distance_y = 0;
