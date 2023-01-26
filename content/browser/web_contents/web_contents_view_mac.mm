@@ -145,6 +145,15 @@ void WebContentsViewMac::OnCapturerCountChanged() {}
 
 void WebContentsViewMac::FullscreenStateChanged(bool is_fullscreen) {}
 
+void WebContentsViewMac::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) {
+  if (remote_ns_view_) {
+    remote_ns_view_->UpdateWindowControlsOverlay(bounding_rect);
+  } else {
+    in_process_ns_view_bridge_->UpdateWindowControlsOverlay(bounding_rect);
+  }
+}
+
 void WebContentsViewMac::StartDragging(
     const DropData& drop_data,
     DragOperationsMask allowed_operations,

@@ -819,22 +819,6 @@ NSView* NativeWidgetMacNSWindowHost::GetGlobalCaptureView() {
       [remote_cocoa::CocoaMouseCapture::GetGlobalCaptureWindow() contentView];
 }
 
-void NativeWidgetMacNSWindowHost::AddRemoteWindowControlsOverlayView(
-    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
-  GetNSWindowMojo()->CreateWindowControlsOverlayNSView(overlay_type);
-}
-
-void NativeWidgetMacNSWindowHost::UpdateRemoteWindowControlsOverlayView(
-    const gfx::Rect& bounds,
-    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
-  GetNSWindowMojo()->UpdateWindowControlsOverlayNSView(bounds, overlay_type);
-}
-
-void NativeWidgetMacNSWindowHost::RemoveRemoteWindowControlsOverlayView(
-    remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type) {
-  GetNSWindowMojo()->RemoveWindowControlsOverlayNSView(overlay_type);
-}
-
 void NativeWidgetMacNSWindowHost::CanGoBack(bool can_go_back) {
   GetNSWindowMojo()->SetCanGoBack(can_go_back);
 }

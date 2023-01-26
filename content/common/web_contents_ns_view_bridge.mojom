@@ -40,6 +40,11 @@ interface WebContentsNSView {
             gfx.mojom.ImageSkia? image,
             gfx.mojom.Vector2d image_offset);
 
+  // Intended for desktop PWAs with manifest entry of window-controls-overlay,
+  // this informs the view of which area at the top of the view is available for
+  // web contents.
+  UpdateWindowControlsOverlay(gfx.mojom.Rect bounding_rect);
+
   // TODO(https://crbug.com/1327478): This is a work around for a bug in mojo
   // where close notifications for associated messages pipes can sometimes be
   // delivered later than they should. This method is called before closing the

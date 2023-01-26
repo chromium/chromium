@@ -32,7 +32,6 @@
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_host_helper.h"
 #include "components/remote_cocoa/app_shim/select_file_dialog_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
-#import "components/remote_cocoa/app_shim/window_controls_overlay_nsview.h"
 #import "components/remote_cocoa/app_shim/window_move_loop.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -1159,49 +1158,6 @@ bool NativeWidgetNSWindowBridge::ShouldRunCustomAnimationFor(
 
 bool NativeWidgetNSWindowBridge::RedispatchKeyEvent(NSEvent* event) {
   return [[window_ commandDispatcher] redispatchKeyEvent:event];
-}
-
-void NativeWidgetNSWindowBridge::CreateWindowControlsOverlayNSView(
-    const mojom::WindowControlsOverlayNSViewType overlay_type) {
-  switch (overlay_type) {
-    case mojom::WindowControlsOverlayNSViewType::kCaptionButtonContainer:
-      caption_buttons_overlay_nsview_.reset(
-          [[WindowControlsOverlayNSView alloc] initWithBridge:this]);
-      [bridged_view_ addSubview:caption_buttons_overlay_nsview_];
-      break;
-    case mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar:
-      web_app_frame_toolbar_overlay_nsview_.reset(
-          [[WindowControlsOverlayNSView alloc] initWithBridge:this]);
-      [bridged_view_ addSubview:web_app_frame_toolbar_overlay_nsview_];
-      break;
-  }
-}
-
-void NativeWidgetNSWindowBridge::UpdateWindowControlsOverlayNSView(
-    const gfx::Rect& bounds,
-    const mojom::WindowControlsOverlayNSViewType overlay_type) {
-  switch (overlay_type) {
-    case mojom::WindowControlsOverlayNSViewType::kCaptionButtonContainer:
-      [caption_buttons_overlay_nsview_ updateBounds:bounds];
-      break;
-    case mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar:
-      [web_app_frame_toolbar_overlay_nsview_ updateBounds:bounds];
-      break;
-  }
-}
-
-void NativeWidgetNSWindowBridge::RemoveWindowControlsOverlayNSView(
-    const mojom::WindowControlsOverlayNSViewType overlay_type) {
-  switch (overlay_type) {
-    case mojom::WindowControlsOverlayNSViewType::kCaptionButtonContainer:
-      [caption_buttons_overlay_nsview_ removeFromSuperview];
-      caption_buttons_overlay_nsview_.reset();
-      break;
-    case mojom::WindowControlsOverlayNSViewType::kWebAppFrameToolbar:
-      [web_app_frame_toolbar_overlay_nsview_ removeFromSuperview];
-      web_app_frame_toolbar_overlay_nsview_.reset();
-      break;
-  }
 }
 
 NSWindow* NativeWidgetNSWindowBridge::ns_window() {

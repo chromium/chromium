@@ -110,4 +110,9 @@ void WebContentsNSViewBridge::StartDrag(const content::DropData& drop_data,
                            offset:offset];
 }
 
+void WebContentsNSViewBridge::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) {
+  [ns_view_ updateWindowControlsOverlay:bounding_rect];
+}
+
 }  // namespace remote_cocoa

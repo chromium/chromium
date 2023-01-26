@@ -294,6 +294,9 @@ void WebContentsViewAndroid::FullscreenStateChanged(bool is_fullscreen) {
     select_popup_->HideMenu();
 }
 
+void WebContentsViewAndroid::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) {}
+
 void WebContentsViewAndroid::ShowContextMenu(RenderFrameHost& render_frame_host,
                                              const ContextMenuParams& params) {
   if (is_active_drag_ && drag_exceeded_movement_threshold_)

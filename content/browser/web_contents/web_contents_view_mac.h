@@ -91,6 +91,7 @@ class WebContentsViewMac : public WebContentsView,
   bool CloseTabAfterEventTrackingIfNeeded() override;
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
 
   // RenderViewHostDelegateView:
   void StartDragging(const DropData& drop_data,

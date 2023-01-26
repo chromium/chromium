@@ -8547,6 +8547,8 @@ void WebContentsImpl::UpdateWindowControlsOverlay(
   if (RenderWidgetHost* render_widget_host =
           GetPrimaryMainFrame()->GetRenderWidgetHost())
     render_widget_host->SynchronizeVisualProperties();
+
+  view_->UpdateWindowControlsOverlay(bounding_rect);
 }
 
 BrowserPluginEmbedder* WebContentsImpl::GetBrowserPluginEmbedder() const {

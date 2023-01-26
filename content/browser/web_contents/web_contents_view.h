@@ -114,6 +114,11 @@ class WebContentsView {
 #endif
 
   virtual void FullscreenStateChanged(bool is_fullscreen) = 0;
+
+  // Intended for desktop PWAs with manifest entry of window-controls-overlay,
+  // this informs the view of which area at the top of the view is available for
+  // web contents.
+  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
 };
 
 // Factory function to create `WebContentsView`s. Implemented in the platform

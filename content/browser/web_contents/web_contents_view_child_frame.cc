@@ -129,6 +129,9 @@ void WebContentsViewChildFrame::OnCapturerCountChanged() {}
 
 void WebContentsViewChildFrame::FullscreenStateChanged(bool is_fullscreen) {}
 
+void WebContentsViewChildFrame::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) {}
+
 void WebContentsViewChildFrame::RestoreFocus() {
   NOTREACHED();
 }

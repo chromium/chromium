@@ -59,6 +59,7 @@ class WebContentsViewChildFrame : public WebContentsView,
 #endif
   void OnCapturerCountChanged() override;
   void FullscreenStateChanged(bool is_fullscreen) override;
+  void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) override;
 
   // Backend implementation of RenderViewHostDelegateView.
   void ShowContextMenu(RenderFrameHost& render_frame_host,

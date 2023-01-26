@@ -86,11 +86,6 @@ struct NativeWidgetNSWindowInitParams {
   bool is_tooltip;
 };
 
-enum WindowControlsOverlayNSViewType {
-  kCaptionButtonContainer,
-  kWebAppFrameToolbar,
-};
-
 // The visibility style of the toolbar in immersive fullscreen.
 enum ToolbarVisibilityStyle {
   // No toolbar. Used for content fullscreen.
@@ -255,21 +250,6 @@ interface NativeWidgetNSWindow {
 
   // Enable or disable this widget's local event monitor.
   SetLocalEventMonitorEnabled(bool enabled);
-
-  // Add the overlay NSView for a PWA with window controls overlay
-  // display override given a |overlay_type|.
-  CreateWindowControlsOverlayNSView(
-      WindowControlsOverlayNSViewType overlay_type);
-
-  // Update the overlay NSView with |bounds| for a PWA with window controls
-  // overlay display override for a |overlay_type|.
-  UpdateWindowControlsOverlayNSView(
-    gfx.mojom.Rect bounds, WindowControlsOverlayNSViewType overlay_type);
-
-  // Remove the overlay NSView with |bounds| for a PWA with window controls
-  // overlay display override for a |overlay_type|.
-  RemoveWindowControlsOverlayNSView(
-      WindowControlsOverlayNSViewType overlay_type);
 
   // Set the cursor type to display.
   SetCursor(ui.mojom.Cursor cursor);

@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/caption_button_placeholder_container.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/frame/window_controls_overlay_input_routing_mac.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
@@ -92,8 +91,6 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
       if (browser_view->IsWindowControlsOverlayEnabled()) {
         caption_button_placeholder_container_ =
             AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
-
-        AddRoutingForWindowControlsOverlayViews();
       }
     }
 
@@ -385,20 +382,9 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
     caption_button_placeholder_container_ =
         AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     UpdateCaptionButtonPlaceholderContainerBackground();
-
-    AddRoutingForWindowControlsOverlayViews();
-
-    caption_buttons_overlay_input_routing_view_->Enable();
-    web_app_frame_toolbar_overlay_routing_view_->Enable();
   } else {
-    caption_buttons_overlay_input_routing_view_->Disable();
-    web_app_frame_toolbar_overlay_routing_view_->Disable();
-
     RemoveChildView(caption_button_placeholder_container_);
     caption_button_placeholder_container_ = nullptr;
-
-    caption_buttons_overlay_input_routing_view_ = nullptr;
-    web_app_frame_toolbar_overlay_routing_view_ = nullptr;
   }
 
   frame()->client_view()->InvalidateLayout();
@@ -419,13 +405,6 @@ gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   client_size.SetToMax(gfx::Size(0, (client_size.width() * 3) / 4));
 
   return client_size;
-}
-
-void BrowserNonClientFrameViewMac::AddedToWidget() {
-  if (browser_view()->IsWindowControlsOverlayEnabled()) {
-    caption_buttons_overlay_input_routing_view_->Enable();
-    web_app_frame_toolbar_overlay_routing_view_->Enable();
-  }
 }
 
 void BrowserNonClientFrameViewMac::PaintChildren(const views::PaintInfo& info) {
@@ -640,20 +619,6 @@ void BrowserNonClientFrameViewMac::
         views::CreateSolidBackground(
             GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
-}
-
-void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
-  caption_buttons_overlay_input_routing_view_ =
-      std::make_unique<WindowControlsOverlayInputRoutingMac>(
-          this, caption_button_placeholder_container_,
-          remote_cocoa::mojom::WindowControlsOverlayNSViewType::
-              kCaptionButtonContainer);
-
-  web_app_frame_toolbar_overlay_routing_view_ =
-      std::make_unique<WindowControlsOverlayInputRoutingMac>(
-          this, web_app_frame_toolbar(),
-          remote_cocoa::mojom::WindowControlsOverlayNSViewType::
-              kWebAppFrameToolbar);
 }
 
 bool BrowserNonClientFrameViewMac::AlwaysShowToolbarInFullscreen() const {

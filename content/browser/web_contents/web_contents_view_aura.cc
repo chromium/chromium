@@ -1132,6 +1132,9 @@ void WebContentsViewAura::OnCapturerCountChanged() {
 
 void WebContentsViewAura::FullscreenStateChanged(bool is_fullscreen) {}
 
+void WebContentsViewAura::UpdateWindowControlsOverlay(
+    const gfx::Rect& bounding_rect) {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 

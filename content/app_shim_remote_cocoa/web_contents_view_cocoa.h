@@ -50,6 +50,8 @@ CONTENT_EXPORT
   NSDragOperation _dragOperation;
   NSPoint _dragOffset;
   CGFloat _dragImageHeight;
+
+  gfx::Rect _windowControlsOverlayRect;
 }
 
 // Set or un-set the mojo interface through which to communicate with the
@@ -85,6 +87,8 @@ CONTENT_EXPORT
 // Updates the WCVC's web contents's visibility state. The update may occur
 // immediately or in the near future.
 - (void)updateWebContentsVisibility:(remote_cocoa::mojom::Visibility)visibility;
+
+- (void)updateWindowControlsOverlay:(const gfx::Rect&)boundingRect;
 
 @end
 

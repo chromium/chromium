@@ -241,15 +241,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Used by NativeWidgetPrivate::GetGlobalCapture.
   static NSView* GetGlobalCaptureView();
 
-  // Add, update and remove the remote window controls overlay view for a PWA.
-  void AddRemoteWindowControlsOverlayView(
-      remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type);
-  void UpdateRemoteWindowControlsOverlayView(
-      const gfx::Rect& bounds,
-      remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type);
-  void RemoveRemoteWindowControlsOverlayView(
-      remote_cocoa::mojom::WindowControlsOverlayNSViewType overlay_type);
-
   // Notify PWA whether can GoBack/GoForward.
   void CanGoBack(bool can_go_back);
   void CanGoForward(bool can_go_forward);
