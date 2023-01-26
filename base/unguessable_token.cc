@@ -33,8 +33,8 @@ const UnguessableToken& UnguessableToken::Null() {
 }
 
 // static
-absl::optional<UnguessableToken> UnguessableToken::Deserialize2(uint64_t high,
-                                                                uint64_t low) {
+absl::optional<UnguessableToken> UnguessableToken::Deserialize(uint64_t high,
+                                                               uint64_t low) {
   // Receiving a zeroed out UnguessableToken from another process means that it
   // was never initialized via Create(). Since this method might also be used to
   // create an UnguessableToken from data on disk, we will handle this case more

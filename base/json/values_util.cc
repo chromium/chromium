@@ -113,7 +113,7 @@ absl::optional<UnguessableToken> ValueToUnguessableToken(const Value& value) {
   if (!HexStringToSpan(value.GetString(), repr.buffer))
     return absl::nullopt;
   absl::optional<base::UnguessableToken> token =
-      UnguessableToken::Deserialize2(repr.field.high, repr.field.low);
+      UnguessableToken::Deserialize(repr.field.high, repr.field.low);
   if (!token.has_value()) {
     return absl::nullopt;
   }

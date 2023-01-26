@@ -132,7 +132,7 @@ base::WritableSharedMemoryRegion Broker::GetWritableSharedMemoryRegion(
     if (!GetBrokerMessageData(message.get(), &data))
       return base::WritableSharedMemoryRegion();
     absl::optional<base::UnguessableToken> guid =
-        base::UnguessableToken::Deserialize2(data->guid_high, data->guid_low);
+        base::UnguessableToken::Deserialize(data->guid_high, data->guid_low);
     if (!guid.has_value()) {
       return base::WritableSharedMemoryRegion();
     }

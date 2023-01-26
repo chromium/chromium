@@ -23,7 +23,7 @@ const base::UnguessableToken& DeviceId() {
   // TODO(https://crbug.com/1406986): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken device_id(
-      base::UnguessableToken::Deserialize2(1, 1).value());
+      base::UnguessableToken::Deserialize(1, 1).value());
   return device_id;
 }
 
@@ -32,7 +32,7 @@ const base::UnguessableToken& SessionId() {
   // TODO(https://crbug.com/1406986): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken session_id(
-      base::UnguessableToken::Deserialize2(1, 1).value());
+      base::UnguessableToken::Deserialize(1, 1).value());
   return session_id;
 }
 

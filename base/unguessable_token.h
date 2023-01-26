@@ -62,8 +62,8 @@ class BASE_EXPORT UnguessableToken {
   // NOTE: If the returned `absl::optional` does not have a value, it means that
   // `high` and `low` correspond to an `UnguesssableToken` that was never
   // initialized via Create(). This is a security issue, and should be handled.
-  static absl::optional<UnguessableToken> Deserialize2(uint64_t high,
-                                                       uint64_t low);
+  static absl::optional<UnguessableToken> Deserialize(uint64_t high,
+                                                      uint64_t low);
 
   // Creates an empty UnguessableToken.
   // Assign to it with Create() before using it.
@@ -107,7 +107,7 @@ class BASE_EXPORT UnguessableToken {
 
 #if defined(UNIT_TEST)
   static UnguessableToken CreateForTesting(uint64_t high, uint64_t low) {
-    absl::optional<UnguessableToken> token = Deserialize2(high, low);
+    absl::optional<UnguessableToken> token = Deserialize(high, low);
     DCHECK(token.has_value());
     return token.value();
   }

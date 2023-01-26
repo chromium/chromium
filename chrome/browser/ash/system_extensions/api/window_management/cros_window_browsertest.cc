@@ -66,7 +66,7 @@ base::UnguessableToken GetUnguessableToken(base::StringPiece str) {
   DCHECK(token.has_value());
 
   absl::optional<base::UnguessableToken> unguessable_token =
-      base::UnguessableToken::Deserialize2(token->high(), token->low());
+      base::UnguessableToken::Deserialize(token->high(), token->low());
   return unguessable_token.value();
 }
 

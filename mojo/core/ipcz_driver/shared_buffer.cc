@@ -133,7 +133,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::CreateForMojoWrapper(
   }
 
   absl::optional<base::UnguessableToken> guid =
-      base::UnguessableToken::Deserialize2(mojo_guid.high, mojo_guid.low);
+      base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
   if (!guid.has_value()) {
     return nullptr;
   }
@@ -251,7 +251,7 @@ scoped_refptr<SharedBuffer> SharedBuffer::Deserialize(
   }
 
   absl::optional<base::UnguessableToken> guid =
-      base::UnguessableToken::Deserialize2(header.guid_high, header.guid_low);
+      base::UnguessableToken::Deserialize(header.guid_high, header.guid_low);
   if (!guid.has_value()) {
     return nullptr;
   }

@@ -191,7 +191,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
         EXPECT_EQ(returned_guid, expected_guid);
         EXPECT_EQ(status, mojom::PaintPreviewStatus::kOk);
 
-        auto token = base::UnguessableToken::Deserialize2(
+        auto token = base::UnguessableToken::Deserialize(
                          result->proto.root_frame().embedding_token_high(),
                          result->proto.root_frame().embedding_token_low())
                          .value();

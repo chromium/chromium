@@ -203,7 +203,7 @@ bool DeserializeGUIDFromStringPieces(StringPiece first,
     return false;
 
   absl::optional<UnguessableToken> token =
-      UnguessableToken::Deserialize2(high, low);
+      UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
   }

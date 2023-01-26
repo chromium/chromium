@@ -20,7 +20,7 @@ void TestSmallerThanOperator(const UnguessableToken& a,
 }
 
 TEST(UnguessableTokenTest, VerifyEveryBit) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize2(1, 2);
+  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(1, 2);
   ASSERT_TRUE(token.has_value());
   uint64_t high = 1;
   uint64_t low = 2;
@@ -28,7 +28,7 @@ TEST(UnguessableTokenTest, VerifyEveryBit) {
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_high = high ^ bit;
     absl::optional<UnguessableToken> new_token =
-        UnguessableToken::Deserialize2(new_high, low);
+        UnguessableToken::Deserialize(new_high, low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
   }
@@ -36,7 +36,7 @@ TEST(UnguessableTokenTest, VerifyEveryBit) {
   for (uint64_t bit = 1; bit != 0; bit <<= 1) {
     uint64_t new_low = low ^ bit;
     absl::optional<UnguessableToken> new_token =
-        UnguessableToken::Deserialize2(high, new_low);
+        UnguessableToken::Deserialize(high, new_low);
     ASSERT_TRUE(new_token.has_value());
     EXPECT_FALSE(*token == *new_token);
   }
@@ -45,9 +45,9 @@ TEST(UnguessableTokenTest, VerifyEveryBit) {
 TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   // Deserialize is used for testing purposes.
   // Use UnguessableToken::Create() in production code instead.
-  UnguessableToken token = UnguessableToken::Deserialize2(1, 2).value();
-  UnguessableToken same_token = UnguessableToken::Deserialize2(1, 2).value();
-  UnguessableToken diff_token = UnguessableToken::Deserialize2(1, 3).value();
+  UnguessableToken token = UnguessableToken::Deserialize(1, 2).value();
+  UnguessableToken same_token = UnguessableToken::Deserialize(1, 2).value();
+  UnguessableToken diff_token = UnguessableToken::Deserialize(1, 3).value();
   UnguessableToken empty_token;
 
   EXPECT_TRUE(token == token);
@@ -96,7 +96,7 @@ TEST(UnguessableTokenTest, VerifySerialization) {
   EXPECT_TRUE(low);
 
   absl::optional<UnguessableToken> Deserialized =
-      UnguessableToken::Deserialize2(high, low);
+      UnguessableToken::Deserialize(high, low);
   ASSERT_TRUE(Deserialized.has_value());
   EXPECT_EQ(token, *Deserialized);
 }
@@ -104,7 +104,7 @@ TEST(UnguessableTokenTest, VerifySerialization) {
 // Common case (~88% of the time) - no leading zeroes in high_ nor low_.
 TEST(UnguessableTokenTest, VerifyToString1) {
   UnguessableToken token =
-      UnguessableToken::Deserialize2(0x1234567890ABCDEF, 0xFEDCBA0987654321)
+      UnguessableToken::Deserialize(0x1234567890ABCDEF, 0xFEDCBA0987654321)
           .value();
   std::string expected = "1234567890ABCDEFFEDCBA0987654321";
 
@@ -118,7 +118,7 @@ TEST(UnguessableTokenTest, VerifyToString1) {
 
 // Less common case - leading zeroes in high_ or low_ (testing with both).
 TEST(UnguessableTokenTest, VerifyToString2) {
-  UnguessableToken token = UnguessableToken::Deserialize2(0x123, 0xABC).value();
+  UnguessableToken token = UnguessableToken::Deserialize(0x123, 0xABC).value();
   std::string expected = "00000000000001230000000000000ABC";
 
   EXPECT_EQ(expected, token.ToString());
@@ -131,16 +131,16 @@ TEST(UnguessableTokenTest, VerifyToString2) {
 
 TEST(UnguessableTokenTest, VerifyToStringUniqueness) {
   const UnguessableToken token1 =
-      UnguessableToken::Deserialize2(0x0000000012345678, 0x0000000123456789)
+      UnguessableToken::Deserialize(0x0000000012345678, 0x0000000123456789)
           .value();
   const UnguessableToken token2 =
-      UnguessableToken::Deserialize2(0x0000000123456781, 0x0000000023456789)
+      UnguessableToken::Deserialize(0x0000000123456781, 0x0000000023456789)
           .value();
   EXPECT_NE(token1.ToString(), token2.ToString());
 }
 
 TEST(UnguessableTokenTest, VerifyDeserializeZeroes) {
-  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize2(0, 0);
+  absl::optional<UnguessableToken> token = UnguessableToken::Deserialize(0, 0);
 
   EXPECT_FALSE(token.has_value());
 }
@@ -150,23 +150,23 @@ TEST(UnguessableTokenTest, VerifySmallerThanOperator) {
   // Use UnguessableToken::Create() in production code instead.
   {
     SCOPED_TRACE("a.low < b.low and a.high == b.high.");
-    TestSmallerThanOperator(UnguessableToken::Deserialize2(0, 1).value(),
-                            UnguessableToken::Deserialize2(0, 5).value());
+    TestSmallerThanOperator(UnguessableToken::Deserialize(0, 1).value(),
+                            UnguessableToken::Deserialize(0, 5).value());
   }
   {
     SCOPED_TRACE("a.low == b.low and a.high < b.high.");
-    TestSmallerThanOperator(UnguessableToken::Deserialize2(1, 0).value(),
-                            UnguessableToken::Deserialize2(5, 0).value());
+    TestSmallerThanOperator(UnguessableToken::Deserialize(1, 0).value(),
+                            UnguessableToken::Deserialize(5, 0).value());
   }
   {
     SCOPED_TRACE("a.low < b.low and a.high < b.high.");
-    TestSmallerThanOperator(UnguessableToken::Deserialize2(1, 1).value(),
-                            UnguessableToken::Deserialize2(5, 5).value());
+    TestSmallerThanOperator(UnguessableToken::Deserialize(1, 1).value(),
+                            UnguessableToken::Deserialize(5, 5).value());
   }
   {
     SCOPED_TRACE("a.low > b.low and a.high < b.high.");
-    TestSmallerThanOperator(UnguessableToken::Deserialize2(1, 10).value(),
-                            UnguessableToken::Deserialize2(10, 1).value());
+    TestSmallerThanOperator(UnguessableToken::Deserialize(1, 10).value(),
+                            UnguessableToken::Deserialize(10, 1).value());
   }
 }
 

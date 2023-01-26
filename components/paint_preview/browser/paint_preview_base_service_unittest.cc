@@ -240,7 +240,7 @@ TEST_P(PaintPreviewBaseServiceTest, CaptureMainFrame) {
             EXPECT_TRUE(result->proto.has_root_frame());
             EXPECT_EQ(result->proto.subframes_size(), 0);
             EXPECT_TRUE(result->proto.root_frame().is_main_frame());
-            auto token = base::UnguessableToken::Deserialize2(
+            auto token = base::UnguessableToken::Deserialize(
                              result->proto.root_frame().embedding_token_high(),
                              result->proto.root_frame().embedding_token_low())
                              .value();

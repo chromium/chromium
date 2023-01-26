@@ -164,8 +164,8 @@ scoped_refptr<SharedBufferDispatcher> SharedBufferDispatcher::Deserialize(
   handles[0] = std::move(platform_handles[0]);
 
   absl::optional<base::UnguessableToken> guid =
-      base::UnguessableToken::Deserialize2(serialized_state->guid_high,
-                                           serialized_state->guid_low);
+      base::UnguessableToken::Deserialize(serialized_state->guid_high,
+                                          serialized_state->guid_low);
   if (!guid.has_value()) {
     AssertNotExtractingHandlesFromMessage();
     return nullptr;

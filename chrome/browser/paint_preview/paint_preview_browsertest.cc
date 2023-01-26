@@ -162,8 +162,8 @@ class PaintPreviewBrowserTest
     base::ScopedAllowBlockingForTesting scoped_blocking;
 
     auto it = recording_map->find(
-        base::UnguessableToken::Deserialize2(frame_proto.embedding_token_high(),
-                                             frame_proto.embedding_token_low())
+        base::UnguessableToken::Deserialize(frame_proto.embedding_token_high(),
+                                            frame_proto.embedding_token_low())
             .value());
     ASSERT_NE(it, recording_map->end());
 

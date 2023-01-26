@@ -49,7 +49,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
   });
 
   absl::optional<base::UnguessableToken> token =
-      base::UnguessableToken::Deserialize2(high, low);
+      base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return base::UnguessableToken();
   }

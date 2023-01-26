@@ -199,7 +199,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       if (!base::StringToUint64(low_digits, &nonce_low))
         return absl::nullopt;
 
-      nonce = base::UnguessableToken::Deserialize2(nonce_high, nonce_low);
+      nonce = base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
       if (!nonce.has_value()) {
         return absl::nullopt;
@@ -255,7 +255,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       }
 
       const absl::optional<base::UnguessableToken> site_nonce =
-          base::UnguessableToken::Deserialize2(nonce_high, nonce_low);
+          base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
       // Make sure we found the final separator, it's valid, that it's the
       // correct attribute.

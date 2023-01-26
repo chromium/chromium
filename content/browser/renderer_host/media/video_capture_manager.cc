@@ -44,8 +44,8 @@ const base::UnguessableToken& FakeSessionId() {
   // TODO(https://crbug.com/1406985): Investigate whether there's a better way
   // to accomplish this (without using UnguessableToken::Deserialize).
   static const base::UnguessableToken fake_session_id(
-      base::UnguessableToken::Deserialize2(0xFFFFFFFFFFFFFFFFU,
-                                           0xFFFFFFFFFFFFFFFFU)
+      base::UnguessableToken::Deserialize(0xFFFFFFFFFFFFFFFFU,
+                                          0xFFFFFFFFFFFFFFFFU)
           .value());
   return fake_session_id;
 }

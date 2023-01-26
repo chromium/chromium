@@ -391,8 +391,8 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
   }
 
   absl::optional<base::UnguessableToken> buffer_guid =
-      base::UnguessableToken::Deserialize2(state->buffer_guid_high,
-                                           state->buffer_guid_low);
+      base::UnguessableToken::Deserialize(state->buffer_guid_high,
+                                          state->buffer_guid_low);
   if (!buffer_guid.has_value()) {
     AssertNotExtractingHandlesFromMessage();
     return nullptr;

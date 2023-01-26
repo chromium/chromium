@@ -2071,7 +2071,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
   uint64_t high = uint64_t(c.high_high) << 32 | uint64_t(c.high_low);
   uint64_t low = uint64_t(c.low_high) << 32 | uint64_t(c.low_low);
   absl::optional<base::UnguessableToken> unguessable_token =
-      base::UnguessableToken::Deserialize2(high, low);
+      base::UnguessableToken::Deserialize(high, low);
   if (!unguessable_token.has_value()) {
     return error::kInvalidArguments;
   }

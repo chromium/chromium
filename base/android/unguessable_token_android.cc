@@ -30,7 +30,7 @@ UnguessableTokenAndroid::FromJavaUnguessableToken(
       Java_UnguessableToken_getLowForSerialization(env, token));
   DCHECK(high);
   DCHECK(low);
-  return base::UnguessableToken::Deserialize2(high, low);
+  return base::UnguessableToken::Deserialize(high, low);
 }
 
 ScopedJavaLocalRef<jobject>

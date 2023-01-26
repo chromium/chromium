@@ -376,7 +376,7 @@ absl::optional<Origin> Origin::Deserialize(const std::string& value) {
     return absl::nullopt;
 
   absl::optional<base::UnguessableToken> nonce_token =
-      base::UnguessableToken::Deserialize2(nonce_high, nonce_low);
+      base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
   Origin::Nonce nonce;
   if (nonce_token.has_value()) {

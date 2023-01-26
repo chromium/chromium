@@ -266,7 +266,7 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
   if (!ReadUint64(&high) || !ReadUint64(&low))
     return false;
   absl::optional<base::UnguessableToken> token =
-      base::UnguessableToken::Deserialize2(high, low);
+      base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
   }

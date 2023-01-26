@@ -68,7 +68,7 @@ base::UnguessableToken DecodeToken(base::StringPiece input) {
 
   const uint64_t* data = reinterpret_cast<const uint64_t*>(buffer.data());
   absl::optional<base::UnguessableToken> token =
-      base::UnguessableToken::Deserialize2(data[0], data[1]);
+      base::UnguessableToken::Deserialize(data[0], data[1]);
   if (!token.has_value()) {
     return base::UnguessableToken();
   }

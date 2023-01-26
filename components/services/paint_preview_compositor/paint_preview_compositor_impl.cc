@@ -75,8 +75,8 @@ absl::optional<PaintPreviewFrame> BuildFrame(
 
     mojom::SubframeClipRect rect;
     absl::optional<base::UnguessableToken> maybe_deserialized_token =
-        base::UnguessableToken::Deserialize2(id_pair.embedding_token_high(),
-                                             id_pair.embedding_token_low());
+        base::UnguessableToken::Deserialize(id_pair.embedding_token_high(),
+                                            id_pair.embedding_token_low());
     if (!maybe_deserialized_token.has_value()) {
       continue;
     }
@@ -201,7 +201,7 @@ void PaintPreviewCompositorImpl::BeginSeparatedFrameComposite(
 
   DCHECK(paint_preview.has_value());
   absl::optional<base::UnguessableToken> embedding_token =
-      base::UnguessableToken::Deserialize2(
+      base::UnguessableToken::Deserialize(
           paint_preview->root_frame().embedding_token_high(),
           paint_preview->root_frame().embedding_token_low());
   if (!embedding_token.has_value()) {
@@ -295,7 +295,7 @@ void PaintPreviewCompositorImpl::BeginMainFrameComposite(
 
   DCHECK(paint_preview.has_value());
   absl::optional<base::UnguessableToken> maybe_root_frame_guid =
-      base::UnguessableToken::Deserialize2(
+      base::UnguessableToken::Deserialize(
           paint_preview->root_frame().embedding_token_high(),
           paint_preview->root_frame().embedding_token_low());
   if (!maybe_root_frame_guid.has_value()) {
@@ -387,8 +387,8 @@ bool PaintPreviewCompositorImpl::AddFrame(
     const base::flat_map<base::UnguessableToken, SkpResult>& skp_map,
     mojom::PaintPreviewBeginCompositeResponsePtr* response) {
   absl::optional<base::UnguessableToken> maybe_guid =
-      base::UnguessableToken::Deserialize2(frame_proto.embedding_token_high(),
-                                           frame_proto.embedding_token_low());
+      base::UnguessableToken::Deserialize(frame_proto.embedding_token_high(),
+                                          frame_proto.embedding_token_low());
   if (!maybe_guid.has_value()) {
     return false;
   }
@@ -448,8 +448,8 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
     RecordingMap* recording_map,
     bool* subframe_failed) {
   absl::optional<base::UnguessableToken> maybe_frame_guid =
-      base::UnguessableToken::Deserialize2(frame_proto.embedding_token_high(),
-                                           frame_proto.embedding_token_low());
+      base::UnguessableToken::Deserialize(frame_proto.embedding_token_high(),
+                                          frame_proto.embedding_token_low());
   if (!maybe_frame_guid.has_value()) {
     return nullptr;
   }
@@ -471,8 +471,8 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
   *subframe_failed = false;
   for (const auto& id_pair : frame_proto.content_id_to_embedding_tokens()) {
     absl::optional<base::UnguessableToken> maybe_subframe_embedding_token =
-        base::UnguessableToken::Deserialize2(id_pair.embedding_token_high(),
-                                             id_pair.embedding_token_low());
+        base::UnguessableToken::Deserialize(id_pair.embedding_token_high(),
+                                            id_pair.embedding_token_low());
 
     if (!maybe_subframe_embedding_token.has_value()) {
       DVLOG(1) << "Subframe has invalid embedding token";
@@ -493,7 +493,7 @@ sk_sp<SkPicture> PaintPreviewCompositorImpl::DeserializeFrameRecursive(
         base::ranges::find(subframes, subframe_embedding_token,
                            [](const PaintPreviewFrameProto& frame_proto) {
                              absl::optional<base::UnguessableToken> token =
-                                 base::UnguessableToken::Deserialize2(
+                                 base::UnguessableToken::Deserialize(
                                      frame_proto.embedding_token_high(),
                                      frame_proto.embedding_token_low());
                              if (!token.has_value()) {

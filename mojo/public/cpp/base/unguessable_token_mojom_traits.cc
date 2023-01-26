@@ -18,7 +18,7 @@ bool StructTraits<mojo_base::mojom::UnguessableTokenDataView,
   // deserialized by the traits should always yield a non-empty token.
   // If deserialization results in an empty token, the data is malformed.
   absl::optional<base::UnguessableToken> token =
-      base::UnguessableToken::Deserialize2(high, low);
+      base::UnguessableToken::Deserialize(high, low);
   if (!token.has_value()) {
     return false;
   }
