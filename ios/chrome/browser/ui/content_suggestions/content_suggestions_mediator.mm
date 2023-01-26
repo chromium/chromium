@@ -226,10 +226,11 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     [self.consumer
         showReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
-  if ([self.mostVisitedItems count]) {
+  if ([self.mostVisitedItems count] && !IsHideMVTAndShortcutsEnabled()) {
     [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
   }
-  if (!ShouldHideShortcutsForTrendingQueries()) {
+  if (!ShouldHideShortcutsForTrendingQueries() &&
+      !IsHideMVTAndShortcutsEnabled()) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
   if (IsTrendingQueriesModuleEnabled()) {
@@ -476,6 +477,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)onMostVisitedURLsAvailable:
     (const ntp_tiles::NTPTilesVector&)mostVisited {
+  if (IsHideMVTAndShortcutsEnabled()) {
+    return;
+  }
+
   // This is used by the content widget.
   content_suggestions_tile_saver::SaveMostVisitedToDisk(
       mostVisited, self.faviconMediator.mostVisitedAttributesProvider,
@@ -522,6 +527,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
+  if (IsHideMVTAndShortcutsEnabled()) {
+    return;
+  }
   self.mostVisitedItems = self.freshMostVisitedItems;
   [self.consumer setMostVisitedTilesWithConfigs:self.mostVisitedItems];
 
