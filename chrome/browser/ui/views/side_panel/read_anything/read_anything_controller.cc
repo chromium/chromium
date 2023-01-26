@@ -200,9 +200,18 @@ void ReadAnythingController::OnUIDestroyed() {
   ui_ready_ = false;
 }
 
-void ReadAnythingController::OnLinkClicked(const GURL& url,
-                                           bool open_in_new_tab) {
-  // TODO(abigailbklein): Reimplement with AccessibilityPerformAction.
+void ReadAnythingController::OnLinkClicked(const ui::AXTreeID& target_tree_id,
+                                           const ui::AXNodeID& target_node_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromAXTreeID(target_tree_id);
+  if (!render_frame_host) {
+    return;
+  }
+  ui::AXActionData action_data;
+  action_data.target_tree_id = target_tree_id;
+  action_data.action = ax::mojom::Action::kDoDefault;
+  action_data.target_node_id = target_node_id;
+  render_frame_host->AccessibilityPerformAction(action_data);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -54,6 +54,8 @@ declare namespace chrome {
     // element is added to the document.
     function onConnected(): void;
 
+    // Called when a user clicks a link. NodeID is an AXNodeID which identifies
+    // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
 
     // Set the content. Used by tests only.

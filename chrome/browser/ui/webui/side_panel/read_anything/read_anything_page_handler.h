@@ -34,7 +34,8 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
    public:
     virtual void OnUIReady() = 0;
     virtual void OnUIDestroyed() = 0;
-    virtual void OnLinkClicked(const GURL& url, bool open_in_new_tab) = 0;
+    virtual void OnLinkClicked(const ui::AXTreeID& target_tree_id,
+                               const ui::AXNodeID& target_node_id) = 0;
   };
 
   ReadAnythingPageHandler(
@@ -46,7 +47,8 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   ~ReadAnythingPageHandler() override;
 
   // read_anything::mojom::PageHandler:
-  void OnLinkClicked(const GURL& url, bool open_in_new_tab) override;
+  void OnLinkClicked(const ui::AXTreeID& target_tree_id,
+                     ui::AXNodeID target_node_id) override;
 
   // ReadAnythingModel::Observer:
   void AccessibilityEventReceived(

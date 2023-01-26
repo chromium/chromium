@@ -161,6 +161,8 @@ class ReadAnythingAppController
                           int letter_spacing);
   AXTreeDistiller* SetDistillerForTesting(
       std::unique_ptr<AXTreeDistiller> distiller);
+  void SetPageHandlerForTesting(
+      mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler);
 
   double GetLetterSpacingValue(
       read_anything::mojom::Spacing letter_spacing) const;

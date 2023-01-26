@@ -799,15 +799,15 @@ void ReadAnythingAppController::OnConnected() {
 }
 
 void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
-  static const char* const kLinkElementTarget = "target";
-  static const char* const kLinkElementBlank = "_blank";
-  std::string url = GetUrl(ax_node_id);
-  ui::AXNode* ax_node = GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-  std::u16string target_attribute =
-      ax_node->GetHtmlAttribute(kLinkElementTarget);
-  bool open_in_new_tab = base::EqualsASCII(target_attribute, kLinkElementBlank);
-  page_handler_->OnLinkClicked(GURL(url), open_in_new_tab);
+  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  // Prevent link clicks while distillation is in progress, as it means that the
+  // tree may have changed in an unexpected way.
+  // TODO(crbug.com/1266555): Consider how to show this in a more user-friendly
+  // way.
+  if (distillation_in_progress_) {
+    return;
+  }
+  page_handler_->OnLinkClicked(active_tree_id_, ax_node_id);
 }
 
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
@@ -840,6 +840,12 @@ AXTreeDistiller* ReadAnythingAppController::SetDistillerForTesting(
     std::unique_ptr<AXTreeDistiller> distiller) {
   distiller_ = std::move(distiller);
   return distiller_.get();
+}
+
+void ReadAnythingAppController::SetPageHandlerForTesting(
+    mojo::PendingRemote<read_anything::mojom::PageHandler> page_handler) {
+  page_handler_.reset();
+  page_handler_.Bind(std::move(page_handler));
 }
 
 double ReadAnythingAppController::GetLetterSpacingValue(

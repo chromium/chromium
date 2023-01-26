@@ -73,7 +73,8 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   // ReadAnythingPageHandler::Delegate:
   void OnUIReady() override;
   void OnUIDestroyed() override;
-  void OnLinkClicked(const GURL& url, bool open_in_new_tab) override;
+  void OnLinkClicked(const ui::AXTreeID& target_tree_id,
+                     const ui::AXNodeID& target_node_id) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
