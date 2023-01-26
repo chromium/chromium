@@ -347,7 +347,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
     }
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   override handleFindShortcut(modalContextOpen: boolean) {
     if (modalContextOpen || !this.showToolbar_) {
       return false;
@@ -358,7 +358,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
     return true;
   }
 
-  // Override FindShortcutBehavior methods.
+  // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     if (!this.showToolbar_) {
       return false;

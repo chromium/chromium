@@ -73,7 +73,6 @@ test_files = [
   "fake_system_display.js",
   "fake_user_action_recorder.js",
   "fake_users_private.js",
-  "find_shortcut_behavior_test.js",
   "fingerprint_browsertest_chromeos.js",
   "hotspot_config_dialog_tests.js",
   "hotspot_subpage_tests.js",
