@@ -2405,6 +2405,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool BackgroundClipBorderBoxIsEquivalentToPaddingBox() const;
 
+  // Compute the border-box size from physical fragments.
+  LayoutSize ComputeSize() const;
+
   // The CSS border box rect for this box.
   //
   // The rectangle is in LocationContainer's physical coordinates in flipped

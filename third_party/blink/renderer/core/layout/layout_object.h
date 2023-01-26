@@ -3973,6 +3973,17 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetMightTraversePhysicalFragments(b);
   }
 
+  // See LayoutObjectBitfields::has_valid_cached_geometry_.
+  void SetHasValidCachedGeometry(bool b) {
+    NOT_DESTROYED();
+    bitfields_.SetHasValidCachedGeometry(b);
+  }
+  // See LayoutObjectBitfields::has_valid_cached_geometry_.
+  bool HasValidCachedGeometry() const {
+    NOT_DESTROYED();
+    return bitfields_.HasValidCachedGeometry();
+  }
+
  private:
   gfx::QuadF LocalToAncestorQuadInternal(const gfx::QuadF&,
                                          const LayoutBoxModelObject* ancestor,
@@ -4194,7 +4205,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           whitespace_children_may_change_(false),
           needs_devtools_info_(false),
           may_have_anchor_query_(false),
-          has_broken_spine_(false) {}
+          has_broken_spine_(false),
+          has_valid_cached_geometry_(false) {}
 
     // Self needs layout for style means that this layout object is marked for a
     // full layout. This is the default layout but it is expensive as it
@@ -4556,6 +4568,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // the vertebra for this object at that point - i.e. update the associated
     // layout results, by reading out the post-layout results from the children.
     ADD_BOOLEAN_BITFIELD(has_broken_spine_, HasBrokenSpine);
+
+    // True if LayoutBox::frame_size_ has the latest value computed from its
+    // physical fragments.
+    // This is set to false when LayoutBox::layout_results_ is updated.
+    ADD_BOOLEAN_BITFIELD(has_valid_cached_geometry_, HasValidCachedGeometry);
   };
 
 #undef ADD_BOOLEAN_BITFIELD

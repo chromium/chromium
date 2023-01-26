@@ -3400,6 +3400,7 @@ void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
+  SetHasValidCachedGeometry(false);
   CheckDidAddFragment(*this, fragment);
 
   if (layout_results_.size() > 1)
@@ -3430,6 +3431,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
+  SetHasValidCachedGeometry(false);
   CheckDidAddFragment(*this, fragment, index);
 
   if (got_new_fragment && !fragment.BreakToken()) {
@@ -3507,6 +3509,7 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   if (layout_results_.size() > 1)
     FragmentCountOrSizeDidChange();
   layout_results_.Shrink(results_to_keep);
+  SetHasValidCachedGeometry(false);
 }
 
 void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
@@ -7676,9 +7679,17 @@ LayoutUnit LayoutBox::OffsetTop(const Element* parent) const {
 
 LayoutSize LayoutBox::Size() const {
   NOT_DESTROYED();
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    return frame_size_;
+  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
+      !HasValidCachedGeometry()) {
+    // const_cast in order to update the cached value.
+    const_cast<LayoutBox*>(this)->SetHasValidCachedGeometry(true);
+    const_cast<LayoutBox*>(this)->frame_size_ = ComputeSize();
   }
+  return frame_size_;
+}
+
+LayoutSize LayoutBox::ComputeSize() const {
+  NOT_DESTROYED();
   const auto& results = GetLayoutResults();
   if (results.size() == 0) {
     return LayoutSize();
