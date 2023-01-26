@@ -77,6 +77,15 @@ const char kReferenceSpaceNotSupported[] =
 const char kIncompatibleLayer[] =
     "XRWebGLLayer was created with a different session.";
 
+const char kBaseLayerAndLayers[] =
+    "Both baseLayer and layers should not be set at the same time when "
+    "updating render state.";
+
+const char kMultiLayersNotEnabled[] =
+    "This session does not support multiple layers.";
+
+const char kDuplicateLayer[] = "All layers in render state must be unique.";
+
 const char kInlineVerticalFOVNotSupported[] =
     "This session does not support inlineVerticalFieldOfView";
 
@@ -488,6 +497,42 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kIncompatibleLayer);
     return;
+  }
+
+  if (RuntimeEnabledFeatures::WebXRLayersEnabled() && init->hasLayers() &&
+      init->layers() && !init->layers()->empty()) {
+    // Validate that we don't have both layers and baseLayer set.
+    if (init->hasBaseLayer() && init->baseLayer()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        kBaseLayerAndLayers);
+      return;
+    }
+
+    // Validate that the session was created with the layers feature enabled
+    // when the user wishes to render multiple layers at once.
+    if (init->layers()->size() > 1 &&
+        !IsFeatureEnabled(device::mojom::XRSessionFeature::LAYERS)) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        kMultiLayersNotEnabled);
+      return;
+    }
+
+    HeapHashSet<Member<const XRLayer>> unique_layers;
+    for (const XRLayer* layer : *init->layers()) {
+      // Check for duplicate layers.
+      if (!unique_layers.insert(layer).is_new_entry) {
+        exception_state.ThrowException(ToExceptionCode(ESErrorType::kTypeError),
+                                       kDuplicateLayer);
+        return;
+      }
+
+      // Validate that all layers were created with this session.
+      if (layer->session() != this) {
+        exception_state.ThrowException(ToExceptionCode(ESErrorType::kTypeError),
+                                       kIncompatibleLayer);
+        return;
+      }
+    }
   }
 
   pending_render_state_.push_back(init);
