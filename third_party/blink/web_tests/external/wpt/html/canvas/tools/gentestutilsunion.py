@@ -32,6 +32,7 @@ from typing import List, Mapping
 
 import re
 import codecs
+import collections
 import dataclasses
 import enum
 import importlib
@@ -383,17 +384,20 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         except FileExistsError:
             pass  # Ignore if it already exists,
 
-    used_tests = {}
+    used_tests = collections.defaultdict(set)
     for test in tests:
         name = test['name']
         print('\r(%s)' % name, ' ' * 32, '\t')
 
-        if name in used_tests:
-            print('Test %s is defined twice' % name)
-        used_tests[name] = 1
+        enabled_canvas_types = _get_enabled_canvas_types(test)
+
+        already_tested = used_tests[name].intersection(enabled_canvas_types)
+        if already_tested:
+            raise InvalidTestDefinitionError(
+                f'Test {name} is defined twice for types {already_tested}')
+        used_tests[name].update(enabled_canvas_types)
 
         sub_dir = _get_test_sub_dir(name, name_to_sub_dir)
-        enabled_canvas_types = _get_enabled_canvas_types(test)
         _generate_test(
             test,
             templates,
