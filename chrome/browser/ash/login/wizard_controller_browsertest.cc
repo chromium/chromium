@@ -3156,6 +3156,22 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
   FakeRollbackNetworkConfig* network_config_;
 };
 
+IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
+                       RestartChromeAfterRollbackEnrollment) {
+  base::RunLoop run_loop;
+  auto subscription =
+      browser_shutdown::AddAppTerminatingCallback(run_loop.QuitClosure());
+
+  CheckCurrentScreen(WelcomeView::kScreenId);
+  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
+  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  WizardController::default_controller()->AdvanceToScreen(
+      EnrollmentScreenView::kScreenId);
+  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+  mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
+  run_loop.Run();
+}
+
 // TODO(crbug.com/1324410): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(WizardControllerRollbackFlowTest,
                        DISABLED_SkipEnrollmentAfterRollback) {
