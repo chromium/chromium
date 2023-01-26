@@ -300,7 +300,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %d argument', () => {
     const FORMAT_STRING = '%d';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.d);
       });
     }
@@ -309,7 +309,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %f argument', () => {
     const FORMAT_STRING = '%f';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.f);
       });
     }
@@ -318,7 +318,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %s argument', () => {
     const FORMAT_STRING = '%s';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.s);
       });
     }
@@ -327,7 +327,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %o argument', () => {
     const FORMAT_STRING = '%o';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.o);
       });
     }
@@ -336,7 +336,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %O argument', () => {
     const FORMAT_STRING = '%O';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.O);
       });
     }
@@ -345,7 +345,7 @@ describe('test logMessageFormatter', () => {
   describe('respect %c argument', () => {
     const FORMAT_STRING = '%c';
     for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(testcase.name + ' value', () => {
+      it(`${testcase.name} value`, () => {
         testPattern(FORMAT_STRING, testcase.arg, testcase.expected.c);
       });
     }

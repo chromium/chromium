@@ -56,7 +56,7 @@ export class BidiServerRunner {
               value: {
                 sessionId: '1',
                 capabilities: {
-                  webSocketUrl: 'ws://localhost:' + bidiPort,
+                  webSocketUrl: `ws://localhost:${bidiPort}`,
                 },
               },
             })
@@ -136,7 +136,7 @@ export class BidiServerRunner {
 
       connection.on('close', () => {
         debugInternal(
-          new Date() + ' Peer ' + connection.remoteAddress + ' disconnected.'
+          `${new Date()} Peer ${connection.remoteAddress} disconnected.`
         );
 
         onBidiConnectionClosed();

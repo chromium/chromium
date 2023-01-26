@@ -94,12 +94,12 @@ export class CdpConnection {
 
       const messageStr = JSON.stringify(messageObj);
       this.#transport.sendMessage(messageStr);
-      this.#log('sent > ' + messageStr);
+      this.#log(`sent > ${messageStr}`);
     });
   }
 
   private _onMessage = async (message: string) => {
-    this.#log('received < ' + message);
+    this.#log(`received < ${message}`);
 
     const parsed = JSON.parse(message);
 

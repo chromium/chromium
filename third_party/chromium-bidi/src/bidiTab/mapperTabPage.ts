@@ -35,7 +35,7 @@ const mapperPageSource =
  * <div id="${name}_log" class="log">
  */
 function findOrCreateTypeLogContainer(logType: string): HTMLElement {
-  const containerId = logType + '_log';
+  const containerId = `${logType}_log`;
 
   const existingContainer = document.getElementById(containerId);
   if (existingContainer) {

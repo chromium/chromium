@@ -106,11 +106,10 @@ async function deserializeToCdpArg(
         return {unserializableValue: 'Infinity'};
       } else if (argumentValue.value === '-Infinity') {
         return {unserializableValue: '-Infinity'};
-      } else {
-        return {
-          value: argumentValue.value,
-        };
       }
+      return {
+        value: argumentValue.value,
+      };
     }
     case 'boolean': {
       return {value: !!argumentValue.value};
@@ -305,7 +304,7 @@ function webDriverValueToBiDi(
     return result;
   }
 
-  if (result.type == 'node') {
+  if (result.type === 'node') {
     if (Object.hasOwn(bidiValue, 'backendNodeId')) {
       bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
       delete bidiValue['backendNodeId'];

@@ -34,11 +34,11 @@ export function logMessageFormatter(
   const argFormat = (args[0] as {type: string; value: string}).value.toString();
   const argValues = args.slice(1, undefined);
   const tokens = argFormat.split(
-    new RegExp(specifiers.map((spec) => '(' + spec + ')').join('|'), 'g')
+    new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g')
   );
 
   for (const token of tokens) {
-    if (token === undefined || token == '') {
+    if (token === undefined || token === '') {
       continue;
     }
     if (isFormmatSpecifier(token)) {
@@ -46,7 +46,7 @@ export function logMessageFormatter(
       // raise an exception when less value is provided
       if (arg === undefined) {
         throw new Error(
-          'Less value is provided: "' + getRemoteValuesText(args, false) + '"'
+          `Less value is provided: "${getRemoteValuesText(args, false)}"`
         );
       }
       if (token === '%s') {
@@ -83,7 +83,7 @@ export function logMessageFormatter(
   // raise an exception when more value is provided
   if (argValues.length > 0) {
     throw new Error(
-      'More value is provided: "' + getRemoteValuesText(args, false) + '"'
+      `More value is provided: "${getRemoteValuesText(args, false)}"`
     );
   }
 
@@ -120,7 +120,7 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   }
 
   if (arg.type === 'bigint') {
-    return arg.value.toString() + 'n';
+    return `${arg.value.toString()}n`;
   }
 
   if (arg.type === 'number') {
@@ -132,22 +132,18 @@ function toJson(arg: CommonDataTypes.RemoteValue): string {
   }
 
   if (arg.type === 'object') {
-    return (
-      '{' +
-      (arg.value as any[][])
-        .map((pair) => {
-          return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
-        })
-        .join(',') +
-      '}'
-    );
+    return `{${(arg.value as any[][])
+      .map((pair) => {
+        return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
+      })
+      .join(',')}}`;
   }
 
   if (arg.type === 'array') {
-    return '[' + (arg.value as any[]).map((val) => toJson(val)).join(',') + ']';
+    return `[${(arg.value as any[]).map((val) => toJson(val)).join(',')}]`;
   }
 
-  throw Error('Invalid value type: ' + arg.toString());
+  throw Error(`Invalid value type: ${arg.toString()}`);
 }
 
 function stringFromArg(arg: CommonDataTypes.RemoteValue): string {

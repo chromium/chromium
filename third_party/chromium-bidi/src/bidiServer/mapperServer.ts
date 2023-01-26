@@ -88,7 +88,7 @@ export class MapperServer {
 
   private async _sendBidiMessage(bidiMessageJson: string): Promise<void> {
     await this._mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: 'onBidiMessage(' + JSON.stringify(bidiMessageJson) + ')',
+      expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
     });
   }
 
@@ -176,7 +176,7 @@ export class MapperServer {
 
     // Let Mapper know what is it's TargetId to filter out related targets.
     await mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: 'window.setSelfTargetId(' + JSON.stringify(targetId) + ')',
+      expression: `window.setSelfTargetId(${JSON.stringify(targetId)})`,
     });
 
     await launchedPromise;

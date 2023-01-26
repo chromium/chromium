@@ -13,7 +13,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
-    'no-empty': ['error', {allowEmptyCatch: true}],
+    // https://denar90.github.io/eslint.github.io/docs/rules/
     '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/no-empty-function': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
@@ -21,5 +21,10 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-this-alias': 'off',
+    'no-else-return': 'error',
+    'no-empty': ['error', {allowEmptyCatch: true}],
+    'prefer-promise-reject-errors': 'error',
+    'prefer-template': 'error',
+    eqeqeq: 'error',
   },
 };

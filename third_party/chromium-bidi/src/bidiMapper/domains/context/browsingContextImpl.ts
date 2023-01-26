@@ -519,7 +519,7 @@ export class BrowsingContextImpl {
       sandbox,
     });
 
-    if (maybeSandboxes.length == 0) {
+    if (maybeSandboxes.length === 0) {
       await this.#cdpClient.sendCommand('Page.createIsolatedWorld', {
         frameId: this.contextId,
         worldName: sandbox,

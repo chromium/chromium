@@ -307,7 +307,7 @@ class BidiParserImpl implements BidiParser {
 async function _waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
     window.setSelfTargetId = (targetId) => {
-      logSystem('current target ID: ' + targetId);
+      logSystem(`current target ID: ${targetId}`);
       resolve(targetId);
     };
   });

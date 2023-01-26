@@ -52,7 +52,8 @@ describe('test ProcessingQueue', () => {
     expect(processedValues).to.deep.equal([1, 2, 3]);
   });
   it('rejects should not stop processing', async () => {
-    const processor = sinon.stub().returns(Promise.reject('Processor reject'));
+    const error = new Error('Processor reject');
+    const processor = sinon.stub().returns(Promise.reject(error));
     const _catch = sinon.spy();
     const queue = new ProcessingQueue<number>(processor, _catch);
     const deferred1 = new Deferred<number>();
@@ -70,7 +71,7 @@ describe('test ProcessingQueue', () => {
 
     // Assert `_catch` was called for waiting entry and processor call.
     const processedValues = _catch.getCalls().map((c) => c.firstArg);
-    expect(processedValues).to.deep.equal([1, 'Processor reject']);
+    expect(processedValues).to.deep.equal([1, error]);
   });
   it('processing starts over when new values are added', async () => {
     const processor = sinon.stub().returns(Promise.resolve());

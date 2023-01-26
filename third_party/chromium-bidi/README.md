@@ -1,7 +1,7 @@
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
-![E2E Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/e2e.js.yml/badge.svg)
-![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.js.yml/badge.svg)
+![E2E Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/e2e.yml/badge.svg)
+![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
 ![WPT Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt.yml/badge.svg)
 
 ![pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)

@@ -120,7 +120,7 @@ export class BrowsingContextProcessor {
       return;
     }
 
-    logContext('AttachedToTarget event received: ' + JSON.stringify(params));
+    logContext(`AttachedToTarget event received: ${JSON.stringify(params)}`);
 
     this.#setSessionEventListeners(sessionId);
 

@@ -53,7 +53,7 @@ export class ProcessingQueue<T> {
         await entryPromise
           .then((entry) => this.#processor(entry))
           .catch((e) => {
-            logSystem('Event was not processed:' + e);
+            logSystem(`Event was not processed:${e}`);
             this.#catch(e);
           })
           .finally();
