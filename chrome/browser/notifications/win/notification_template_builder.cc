@@ -50,14 +50,17 @@ const char kBindingElement[] = "binding";
 const char kBindingElementTemplateAttribute[] = "template";
 const char kContent[] = "content";
 const char kContextMenu[] = "contextMenu";
+const char kCritical[] = "Critical";
 const char kDuration[] = "duration";
 const char kDurationLong[] = "long";
 const char kForeground[] = "foreground";
 const char kHero[] = "hero";
+const char kHintButtonStyle[] = "hint-buttonStyle";
 const char kHintCrop[] = "hint-crop";
 const char kHintCropNone[] = "none";
 const char kImageElement[] = "image";
 const char kImageUri[] = "imageUri";
+const char kIncomingCall[] = "incomingCall";
 const char kIndeterminate[] = "indeterminate";
 const char kInputElement[] = "input";
 const char kInputId[] = "id";
@@ -71,10 +74,12 @@ const char kReminder[] = "reminder";
 const char kScenario[] = "scenario";
 const char kSilent[] = "silent";
 const char kSrc[] = "src";
+const char kSuccess[] = "Success";
 const char kText[] = "text";
 const char kTextElement[] = "text";
 const char kToastElementDisplayTimestamp[] = "displayTimestamp";
 const char kTrue[] = "true";
+const char kUseButtonStyle[] = "useButtonStyle";
 const char kUserResponse[] = "userResponse";
 const char kValue[] = "value";
 const char kVisualElement[] = "visual";
@@ -103,7 +108,13 @@ void StartToastElement(XmlWriter* xml_writer,
   xml_writer->StartElement(kNotificationToastElement);
   xml_writer->AddAttribute(kNotificationLaunchAttribute, launch_id.Serialize());
 
-  if (notification.never_timeout()) {
+  // Only notifications created by an installed web app should be allowed to
+  // have increased priority, colored buttons, and a ringtone.
+  if (notification.scenario() ==
+      message_center::NotificationScenario::INCOMING_CALL) {
+    xml_writer->AddAttribute(kScenario, kIncomingCall);
+    xml_writer->AddAttribute(kUseButtonStyle, kTrue);
+  } else if (notification.never_timeout()) {
     if (base::FeatureList::IsEnabled(
             features::kNotificationDurationLongForRequireInteraction)) {
       xml_writer->AddAttribute(kDuration, kDurationLong);
@@ -256,9 +267,25 @@ void WriteActionElement(XmlWriter* xml_writer,
                         int index,
                         NotificationLaunchId copied_launch_id) {
   xml_writer->StartElement(kActionElement);
-  xml_writer->AddAttribute(kActivationType, kForeground);
+
+  // All notifications buttons in the incoming-call scenario should be green,
+  // except for the default dismiss button added by Chromium (not by the Action
+  // Center), which should be red. This attribute will take effect only if the
+  // 'useButtonStyle' attribute has been added to the toast XML element - i.e.,
+  // when the notification scenario is INCOMING_CALL.
+  if (button.type == message_center::ButtonType::DISMISS) {
+    xml_writer->AddAttribute(kActivationType, kBackground);
+    copied_launch_id.set_is_for_dismiss_button();
+    xml_writer->AddAttribute(kHintButtonStyle, kCritical);
+  } else {
+    xml_writer->AddAttribute(kActivationType, kForeground);
+    copied_launch_id.set_button_index(index);
+    if (button.type == message_center::ButtonType::ACKNOWLEDGE) {
+      xml_writer->AddAttribute(kHintButtonStyle, kSuccess);
+    }
+  }
+
   xml_writer->AddAttribute(kContent, base::UTF16ToUTF8(button.title));
-  copied_launch_id.set_button_index(index);
   xml_writer->AddAttribute(kArguments, copied_launch_id.Serialize());
 
   if (!button.icon.IsEmpty()) {
@@ -296,8 +323,9 @@ void AddActions(XmlWriter* xml_writer,
     xml_writer->EndElement();
   }
 
-  for (size_t i = 0; i < buttons.size(); ++i)
+  for (size_t i = 0; i < buttons.size(); ++i) {
     WriteActionElement(xml_writer, image_retainer, buttons[i], i, launch_id);
+  }
 }
 
 // Writes the <audio silent="true"> element.

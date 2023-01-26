@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -47,8 +48,10 @@
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -528,6 +531,35 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   if (notification_data.require_interaction)
     notification.set_never_timeout(true);
 
+  notification.set_scenario(message_center::NotificationScenario::DEFAULT);
+  if (base::FeatureList::IsEnabled(features::kIncomingCallNotifications) &&
+      notification_data.scenario ==
+          blink::mojom::NotificationScenario::INCOMING_CALL) {
+    // If the origin is not installed, the notification scenario should be set
+    // to DEFAULT.
+    if (IsActivelyInstalledWebAppScope(web_app_hint_url)) {
+      notification.set_scenario(
+          message_center::NotificationScenario::INCOMING_CALL);
+    } else {
+      notification.set_scenario(message_center::NotificationScenario::DEFAULT);
+    }
+
+    // Create the default incoming call dismiss button and set the button types
+    // accordingly to fit the incoming call scenario - i.e., developer supplied
+    // action buttond are of type ButtonType::ACKNOWLEDGE and the default dimiss
+    // button is of type ButtonType::DISMISS
+    message_center::ButtonInfo default_dismiss_button(
+        l10n_util::GetStringUTF16(IDS_APP_CLOSE));
+    default_dismiss_button.type = message_center::ButtonType::DISMISS;
+    for (auto& button : buttons) {
+      button.type = message_center::ButtonType::ACKNOWLEDGE;
+    }
+    // Insert the default dismiss button at the end of the vector and reset the
+    // notification buttons.
+    buttons.push_back(default_dismiss_button);
+    notification.set_buttons(buttons);
+  }
+
   return notification;
 }
 
@@ -572,4 +604,25 @@ PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
 #endif
 
   return absl::nullopt;
+}
+
+bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
+    const GURL& web_app_url) const {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(peter): Investigate whether it makes sense to consider installed
+  // WebAPKs and TWAs on Android here, when depending features are considered.
+  return false;
+#else
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  if (!web_app_provider) {
+    return false;
+  }
+
+  const absl::optional<web_app::AppId> app_id =
+      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(web_app_url);
+  return app_id.has_value() &&
+         web_app_provider->registrar_unsafe().IsActivelyInstalled(
+             app_id.value());
+#endif
 }

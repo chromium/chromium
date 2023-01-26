@@ -9549,6 +9549,7 @@ if (!is_android) {
       "//ui/events:events_interactive_ui_tests",
       "//ui/events:gesture_detection",
       "//ui/events:test_support",
+      "//ui/strings:ui_strings_grit",
       "//ui/views",
       "//ui/web_dialogs:test_support",
     ]

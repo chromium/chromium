@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
 #include "chrome/browser/notifications/metrics/notification_metrics_logger_factory.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
@@ -349,6 +351,44 @@ TEST_F(PlatformNotificationServiceTest, NextPersistentNotificationId) {
   int64_t second_id = service()->ReadNextPersistentNotificationId();
   EXPECT_LT(first_id, second_id);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PlatformNotificationServiceTest, IncomingCallWebApp) {
+  // If there is no WebAppProvider, IsActivelyInstalledWebAppScope should return
+  // false.
+  const GURL web_app_url{"https://example.org/"};
+  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(web_app_url));
+
+  // If there is no web app installed for the provided url,
+  // IsActivelyInstalledWebAppScope should return false.
+  web_app::FakeWebAppProvider* provider =
+      web_app::FakeWebAppProvider::Get(profile_.get());
+  provider->Start();
+  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(web_app_url));
+
+  // IsActivelyInstalledWebAppScope should return true only if there is an
+  // installed web app for the provided URL.
+  std::unique_ptr<web_app::WebApp> web_app = web_app::test::CreateWebApp();
+  const GURL installed_web_app_url = web_app->start_url();
+  const web_app::AppId app_id = web_app->app_id();
+  web_app->SetName("Web App Title");
+
+  provider->GetRegistrarMutable().registry().emplace(app_id,
+                                                     std::move(web_app));
+
+  EXPECT_TRUE(service()->IsActivelyInstalledWebAppScope(installed_web_app_url));
+
+  // If the app is not installed anymore, IsActivelyInstalledWebAppScope should
+  // return false.
+  raw_ptr<web_app::WebApp> installed_web_app =
+      provider->GetRegistrarMutable().GetAppByIdMutable(app_id);
+  installed_web_app->SetIsUninstalling(true);
+  EXPECT_FALSE(
+      service()->IsActivelyInstalledWebAppScope(installed_web_app_url));
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 

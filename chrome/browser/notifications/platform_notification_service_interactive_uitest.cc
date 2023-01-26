@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -34,6 +35,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -50,8 +53,11 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -396,6 +402,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_FALSE(default_notification.silent());
   EXPECT_FALSE(default_notification.never_timeout());
   EXPECT_EQ(0u, default_notification.buttons().size());
+  EXPECT_EQ(message_center::NotificationScenario::DEFAULT,
+            default_notification.scenario());
 
   // Verifies that the notification's default timestamp is set in the last 30
   // seconds. This number has no significance, but it needs to be significantly
@@ -441,6 +449,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_FALSE(all_options_notification.buttons()[0].icon.IsEmpty());
   EXPECT_EQ(kIconWidth, all_options_notification.buttons()[0].icon.Width());
   EXPECT_EQ(kIconHeight, all_options_notification.buttons()[0].icon.Height());
+  EXPECT_EQ(message_center::ButtonType::DEFAULT,
+            all_options_notification.buttons()[0].type);
 }
 
 // Chrome OS shows the notification settings inline.
@@ -1143,4 +1153,179 @@ IN_PROC_BROWSER_TEST_F(
   // Since the kNotificationContentImage kill switch has disabled images, the
   // notification should be shown without an image.
   EXPECT_TRUE(notifications[0].image().IsEmpty());
+}
+
+class PlatformNotificationServiceIncomingCallTest
+    : public PlatformNotificationServiceBrowserTest {
+ public:
+  // InProcessBrowserTest overrides.
+  void SetUpInProcessBrowserTestFixture() override {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kIncomingCallNotifications,
+         features::kIncomingCallNotifications},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
+                       DisplayIncomingCallNotificationWithActionButtons) {
+  GrantNotificationPermissionForTest();
+
+  std::string script_result;
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotificationWithActionButton()",
+                        &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(1u, notifications.size());
+
+  // When sent from an origin that does not have an installed web app, the
+  // scenario should be set to DEFAULT and the default dismiss button should be
+  // present.
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::DEFAULT,
+            notification.scenario());
+  ASSERT_EQ(2u, notification.buttons().size());
+  EXPECT_EQ("actionTitle1", base::UTF16ToUTF8(notification.buttons()[0].title));
+  EXPECT_EQ(message_center::ButtonType::ACKNOWLEDGE,
+            notification.buttons()[0].type);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            notification.buttons()[1].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            notification.buttons()[1].type);
+
+  // Install the web app.
+  const GURL web_app_url = TestPageUrl();
+  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      browser()->profile(), "Web App Title", web_app_url);
+
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotificationWithActionButton()",
+                        &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  notifications = GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(2u, notifications.size());
+
+  // After installing the origin's web app, the scenario is set to
+  // INCOMING_CALL.
+  const message_center::Notification& app_notification = notifications[1];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(app_notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(app_notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::INCOMING_CALL,
+            app_notification.scenario());
+  ASSERT_EQ(2u, app_notification.buttons().size());
+  EXPECT_EQ("actionTitle1",
+            base::UTF16ToUTF8(app_notification.buttons()[0].title));
+  EXPECT_EQ(message_center::ButtonType::ACKNOWLEDGE,
+            app_notification.buttons()[0].type);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            app_notification.buttons()[1].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            app_notification.buttons()[1].type);
+
+  web_app::test::UninstallWebApp(browser()->profile(), app_id);
+
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotificationWithActionButton()",
+                        &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  notifications = GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(3u, notifications.size());
+
+  // After uninstalling the origin's web app, the scenario should be set
+  // back to DEFAULT.
+  const message_center::Notification& uninstall_notification = notifications[2];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(uninstall_notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(uninstall_notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::DEFAULT,
+            uninstall_notification.scenario());
+  ASSERT_EQ(2u, uninstall_notification.buttons().size());
+  EXPECT_EQ("actionTitle1",
+            base::UTF16ToUTF8(uninstall_notification.buttons()[0].title));
+  EXPECT_EQ(message_center::ButtonType::ACKNOWLEDGE,
+            uninstall_notification.buttons()[0].type);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            uninstall_notification.buttons()[1].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            uninstall_notification.buttons()[1].type);
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceIncomingCallTest,
+                       DisplayIncomingCallNotificationWithoutActionButtons) {
+  GrantNotificationPermissionForTest();
+
+  std::string script_result;
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotification()", &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(1u, notifications.size());
+
+  // When sent from an origin that does not have an installed web app, the
+  // scenario should be set to DEFAULT and the default dismiss button should be
+  // present, even though no action button was supplied by the origin.
+  const message_center::Notification& notification = notifications[0];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::DEFAULT,
+            notification.scenario());
+  ASSERT_EQ(1u, notification.buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            notification.buttons()[0].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            notification.buttons()[0].type);
+
+  // Install the web app.
+  const GURL web_app_url = TestPageUrl();
+  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      browser()->profile(), "Web App Title", web_app_url);
+
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotification()", &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  notifications = GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(2u, notifications.size());
+
+  // After installing the origin's web app, the scenario is set to
+  // INCOMING_CALL and the default dismiss button should be
+  // present, even though no action button was supplied by the origin.
+  const message_center::Notification& app_notification = notifications[1];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(app_notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(app_notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::INCOMING_CALL,
+            app_notification.scenario());
+  ASSERT_EQ(1u, app_notification.buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            app_notification.buttons()[0].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            app_notification.buttons()[0].type);
+
+  web_app::test::UninstallWebApp(browser()->profile(), app_id);
+
+  ASSERT_TRUE(RunScript("DisplayIncomingCallNotification()", &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  notifications = GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(3u, notifications.size());
+
+  // After uninstalling the origin's web app, the scenario should be set
+  // back to DEFAULT and the default dismiss button should be
+  // present, even though no action button was supplied by the origin.
+  const message_center::Notification& uninstall_notification = notifications[2];
+  EXPECT_EQ("Title", base::UTF16ToUTF8(uninstall_notification.title()));
+  EXPECT_EQ("Contents", base::UTF16ToUTF8(uninstall_notification.message()));
+  EXPECT_EQ(message_center::NotificationScenario::DEFAULT,
+            uninstall_notification.scenario());
+  ASSERT_EQ(1u, uninstall_notification.buttons().size());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_CLOSE),
+            uninstall_notification.buttons()[0].title);
+  EXPECT_EQ(message_center::ButtonType::DISMISS,
+            uninstall_notification.buttons()[0].type);
 }

@@ -80,6 +80,8 @@ BASE_DECLARE_FEATURE(kFlexOrgManagementDisclosure);
 
 BASE_DECLARE_FEATURE(kFedCmWithoutThirdPartyCookies);
 
+BASE_DECLARE_FEATURE(kIncomingCallNotifications);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

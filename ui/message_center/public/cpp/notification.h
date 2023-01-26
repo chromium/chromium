@@ -52,6 +52,21 @@ enum class SettingsButtonHandler {
 
 enum class SystemNotificationWarningLevel { NORMAL, WARNING, CRITICAL_WARNING };
 
+enum class NotificationScenario {
+  DEFAULT = 0,
+  INCOMING_CALL = 1,  // When created by an installed origin, the notification
+                      // should have increased priority, colored buttons, a
+                      // ringtone, and a default "close" button. If the origin
+                      // is not installed, it should behave like `DEFAULT`, but
+                      // with the added "Close" button.
+};
+
+enum class ButtonType {
+  DEFAULT = 0,      // Default notification button.
+  ACKNOWLEDGE = 1,  // Incoming call acknowledge button.
+  DISMISS = 2,      // Incoming call dismiss button.
+};
+
 // Represents a button to be shown as part of a notification.
 struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   explicit ButtonInfo(const std::u16string& title);
@@ -73,6 +88,10 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // text input type buttons until the user has entered a response themselves.
   // If the value is null, there is no input field associated with the button.
   absl::optional<std::u16string> placeholder;
+
+  // Describes the button intended usage. This is used by the underlying
+  // platform to take behavioral and stylistic decisions.
+  ButtonType type = ButtonType::DEFAULT;
 };
 
 enum class FullscreenVisibility {
@@ -214,6 +233,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Whether the notification should be removed from the MessageCenter when it's
   // clicked after the delegate has been executed (if any).
   bool remove_on_click = false;
+
+  // Changes notification behavior and look depending on the selected scenario
+  // and on whether the notification was created by an installed origin.
+  NotificationScenario scenario = NotificationScenario::DEFAULT;
 };
 
 class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
@@ -489,6 +512,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   }
   void set_fullscreen_visibility(FullscreenVisibility visibility) {
     optional_fields_.fullscreen_visibility = visibility;
+  }
+
+  NotificationScenario scenario() const { return optional_fields_.scenario; }
+  void set_scenario(NotificationScenario scenario) {
+    optional_fields_.scenario = scenario;
   }
 
   NotificationDelegate* delegate() const { return delegate_.get(); }

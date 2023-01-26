@@ -150,6 +150,28 @@
         });
       }
 
+      // Displays a persistent notification with scenario set to incoming-call.
+      function DisplayIncomingCallNotification() {
+        DisplayPersistentNotification('Title', {
+          body: 'Contents',
+          image: 'icon.png',
+          scenario: 'incoming-call',
+        });
+      }
+
+      // Displays a persistent notification with scenario set to incoming-call
+      // with an action button.
+      function DisplayIncomingCallNotificationWithActionButton() {
+        DisplayPersistentNotification('Title', {
+          body: 'Contents',
+          image: 'icon.png',
+          scenario: 'incoming-call',
+          actions: [
+            { action: 'actionId1', title: 'actionTitle1', icon: 'icon.png' }
+          ]
+        });
+      }
+
       // Gets a comma separated list of currently displayed notification titles
       function GetDisplayedNotifications() {
         GetActivatedServiceWorker('platform_notification_service.js',

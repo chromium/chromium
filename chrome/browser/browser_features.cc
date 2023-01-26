@@ -227,4 +227,14 @@ BASE_FEATURE(kFedCmWithoutThirdPartyCookies,
              "FedCmWithoutThirdPartyCookies",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the Incoming Call Notifications scenario. When created by an
+// installed origin, an incoming call notification should have increased
+// priority, colored buttons, a ringtone, and a default "close" button.
+// Otherwise, if the origin is not installed, it should behave like the default
+// notifications, but with the added "Close" button. See
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Notifications/notifications_actions_customization.md
+BASE_FEATURE(kIncomingCallNotifications,
+             "IncomingCallNotifications",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
