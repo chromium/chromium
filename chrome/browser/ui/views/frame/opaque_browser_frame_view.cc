@@ -511,6 +511,10 @@ bool OpaqueBrowserFrameView::IsTabStripVisible() const {
   return browser_view()->GetTabStripVisible();
 }
 
+bool OpaqueBrowserFrameView::GetBorderlessModeEnabled() const {
+  return browser_view()->IsBorderlessModeEnabled();
+}
+
 bool OpaqueBrowserFrameView::IsToolbarVisible() const {
   return browser_view()->IsToolbarVisible() &&
          !browser_view()->toolbar()->GetPreferredSize().IsEmpty();

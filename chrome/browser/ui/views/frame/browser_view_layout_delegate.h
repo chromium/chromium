@@ -21,6 +21,7 @@ class BrowserViewLayoutDelegate {
   virtual ~BrowserViewLayoutDelegate() {}
 
   virtual bool IsTabStripVisible() const = 0;
+  virtual bool GetBorderlessModeEnabled() const = 0;
   virtual gfx::Rect GetBoundsForTabStripRegionInBrowserView() const = 0;
   virtual int GetTopInsetInBrowserView() const = 0;
   virtual int GetThemeBackgroundXInset() const = 0;

@@ -59,6 +59,7 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual bool IsFullscreen() const = 0;
+  virtual bool GetBorderlessModeEnabled() const = 0;
 
   virtual bool IsTabStripVisible() const = 0;
   virtual int GetTabStripHeight() const = 0;

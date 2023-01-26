@@ -60,6 +60,7 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
 
   // BrowserViewLayout::Delegate overrides:
   bool IsTabStripVisible() const override { return tab_strip_visible_; }
+  bool GetBorderlessModeEnabled() const override { return false; }
   gfx::Rect GetBoundsForTabStripRegionInBrowserView() const override {
     return gfx::Rect();
   }
