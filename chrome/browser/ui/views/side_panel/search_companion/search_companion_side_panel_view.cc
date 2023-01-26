@@ -5,16 +5,21 @@
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_view.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/webui/side_panel/search_companion/search_companion_side_panel_ui.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -39,18 +44,17 @@ namespace {
 std::unique_ptr<views::WebView> CreateWebView(
     views::View* host,
     content::BrowserContext* browser_context) {
-  auto web_view = std::make_unique<views::WebView>(browser_context);
-  // Set a flex behavior for the WebView to always fill out the extra space in
-  // the parent view. In the minimum case, it will scale down to 0.
-  web_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  // Set background of webview to the same background as the toolbar. This is to
-  // prevent personal color themes from showing in the side panel when
-  // navigating to a new Suggest results panel.
-  web_view->SetBackground(views::CreateThemedSolidBackground(kColorToolbar));
-  return web_view;
+  auto search_companion_web_view =
+      std::make_unique<SidePanelWebUIViewT<SearchCompanionSidePanelUI>>(
+          base::NullCallback(), base::NullCallback(),
+          std::make_unique<BubbleContentsWrapperT<SearchCompanionSidePanelUI>>(
+              GURL(chrome::kChromeUISearchCompanionSidePanelURL),
+              browser_context,
+              /*webui_resizes_host=*/false,
+              /*esc_closes_ui=*/false));
+  search_companion_web_view->SetProperty(
+      views::kElementIdentifierKey, kSearchCompanionSidePanelWebViewElementId);
+  return search_companion_web_view;
 }
 
 void ReplaceAll(std::string& str,
