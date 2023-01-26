@@ -72,7 +72,7 @@ found in the LICENSE file.
         <item android:id="@id/divider_line_id"
             android:title="@null" />
         <item android:id="@+id/page_zoom_id"
-            android:title="@string/page_zoom_title"
+            android:title="@string/page_zoom_menu_title"
             android:icon="@drawable/ic_zoom" />
         <item android:id="@+id/share_row_menu_id"
             android:title="@null">

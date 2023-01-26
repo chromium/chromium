@@ -965,6 +965,9 @@
       <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents.">
         Make text and images larger or smaller for all sites you visit
       </message>
+      <message name="IDS_PAGE_ZOOM_MENU_TITLE" desc="Menu title of the tool that allows the user to update the accessibility page zoom level on a page's web contents.">
+        Zoom
+      </message>
       <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom">
         Decrease zoom
       </message>
