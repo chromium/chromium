@@ -1250,6 +1250,27 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
   DocumentRulePredicate* CreatePredicate(
       String where_text,
       KURL base_url = KURL("https://example.com/")) {
+    String parse_error;
+    auto* rule_set =
+        CreateRuleSetWithPredicate(where_text, base_url, &parse_error);
+    DCHECK(!rule_set->prefetch_rules().empty())
+        << "Invalid predicate: " << parse_error;
+    return rule_set->prefetch_rules()[0]->predicate();
+  }
+
+  String CreateInvalidPredicate(String where_text) {
+    String parse_error;
+    auto* rule_set = CreateRuleSetWithPredicate(
+        where_text, KURL("https://example.com"), &parse_error);
+    EXPECT_TRUE(!rule_set || rule_set->prefetch_rules().empty())
+        << "Rule set is valid.";
+    return parse_error;
+  }
+
+ private:
+  SpeculationRuleSet* CreateRuleSetWithPredicate(String where_text,
+                                                 KURL base_url,
+                                                 String* parse_error) {
     // clang-format off
     auto* rule_set =
         CreateRuleSet(
@@ -1260,14 +1281,12 @@ class DocumentRulesTest : public SpeculationRuleSetTest {
                 "where": {%s}
               }]
             })",
-            where_text.Latin1().c_str()), base_url, execution_context()
-        );
+            where_text.Latin1().c_str()),
+          base_url, execution_context(), parse_error);
     // clang-format on
-    DCHECK(!rule_set->prefetch_rules().empty()) << "Invalid predicate.";
-    return rule_set->prefetch_rules()[0]->predicate();
+    return rule_set;
   }
 
- private:
   ScopedSpeculationRulesDocumentRulesForTest enable_document_rules_{true};
 };
 
@@ -1562,6 +1581,132 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
                   And({Or({Href({URLPattern("/hello.html")}),
                            Selector({StyleRuleWithSelectorText(".valid")})}),
                        Neg(And({Href({URLPattern("https://world.com")})}))}))));
+}
+
+// Tests that errors of individual rules which cause them to be ignored are
+// logged to the console.
+TEST_F(DocumentRulesTest, ConsoleWarningForInvalidRule) {
+  auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
+  DummyPageHolder page_holder(/*initial_view_size=*/{}, chrome_client);
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+
+  Document& document = page_holder.GetDocument();
+  HTMLScriptElement* script =
+      MakeGarbageCollected<HTMLScriptElement>(document, CreateElementFlags());
+  script->setAttribute(html_names::kTypeAttr, "speculationrules");
+  script->setText(
+      R"({
+        "prefetch": [{
+          "source": "document",
+          "where": {"and": [], "or": []}
+        }]
+      })");
+  document.head()->appendChild(script);
+
+  EXPECT_TRUE(base::ranges::any_of(
+      chrome_client->ConsoleMessages(), [](const String& message) {
+        return message.Contains("Document rule predicate type is ambiguous");
+      }));
+}
+
+TEST_F(DocumentRulesTest, DocumentRuleParseErrors) {
+  String parse_error;
+  CreateRuleSet(R"({"prefetch": [{
+    "source": "document", "relative_to": "document"
+  }]})",
+                KURL("https://example.com"), execution_context(), &parse_error);
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("A document rule cannot have \"relative_to\" "
+                           "outside the \"where\" clause"));
+
+  parse_error = String();
+  CreateRuleSet(R"({"prefetch": [{
+    "source": "document",
+    "urls": ["/one",  "/two"]
+  }]})",
+                KURL("https://example.com"), execution_context(), &parse_error);
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("A document rule cannot have a \"urls\" key"));
+}
+
+TEST_F(DocumentRulesTest, DocumentRulePredicateParseErrors) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      selector_matches_enabled{true};
+  String parse_error;
+
+  parse_error = CreateInvalidPredicate(R"("and": [], "not": {})");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr(
+          "Document rule predicate type is ambiguous, two types found"));
+
+  parse_error = CreateInvalidPredicate(R"()");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("Could not infer type of document rule "
+                                   "predicate, no valid type specified"));
+
+  parse_error =
+      CreateInvalidPredicate(R"("not": [{"href_matches": "foo.com"}])");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("Document rule predicate must be an object"));
+
+  parse_error =
+      CreateInvalidPredicate(R"("and": [], "relative_to": "document")");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr(
+          "Document rule predicate with \"and\" key cannot have other keys."));
+
+  parse_error = CreateInvalidPredicate(R"("or": {})");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("\"or\" key should have a list value"));
+
+  parse_error = CreateInvalidPredicate(R"("href_matches": {"port": 1234})");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("Values for a URL pattern object must be strings"));
+
+  parse_error =
+      CreateInvalidPredicate(R"("href_matches": {"path_name": "foo"})");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("Invalid key \"path_name\" for a URL "
+                                   "pattern object found"));
+
+  parse_error =
+      CreateInvalidPredicate(R"("href_matches": [["bar.com/foo.html"]])");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("Value for \"href_matches\" should "
+                                   "either be a string"));
+
+  parse_error = CreateInvalidPredicate(
+      R"("href_matches": "/home", "relative_to": "window")");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("Unrecognized \"relative_to\" value: \"window\""));
+
+  parse_error = CreateInvalidPredicate(
+      R"("href_matches": "/home", "relativeto": "document")");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("Unrecognized key found: \"relativeto\""));
+
+  parse_error = CreateInvalidPredicate(R"("href_matches": "https//:")");
+  EXPECT_THAT(parse_error.Utf8(),
+              ::testing::HasSubstr("URL Pattern for \"href_matches\" could not "
+                                   "be parsed: \"https//:\""));
+
+  parse_error = CreateInvalidPredicate(R"("selector_matches": {})");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("Value for \"selector_matches\" must be a string"));
+
+  parse_error =
+      CreateInvalidPredicate(R"("selector_matches": "##bad_selector")");
+  EXPECT_THAT(
+      parse_error.Utf8(),
+      ::testing::HasSubstr("\"##bad_selector\" is not a valid selector"));
 }
 
 TEST_F(DocumentRulesTest, DefaultPredicate) {

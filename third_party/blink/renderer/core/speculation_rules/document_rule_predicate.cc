@@ -282,9 +282,18 @@ class CSSSelectorPredicate : public DocumentRulePredicate {
 };
 
 namespace {
+// If `out_error` is provided and hasn't already had a message set, sets it to
+// `message`.
+void SetParseErrorMessage(String* out_error, String message) {
+  if (out_error && out_error->IsNull()) {
+    *out_error = message;
+  }
+}
+
 URLPattern* ParseRawPattern(JSONValue* raw_pattern,
                             const KURL& base_url,
-                            ExceptionState& exception_state) {
+                            ExceptionState& exception_state,
+                            String* out_error) {
   // If rawPattern is a string, then:
   if (String raw_string; raw_pattern->AsString(&raw_string)) {
     // Set pattern to the result of constructing a URLPattern using the
@@ -307,30 +316,38 @@ URLPattern* ParseRawPattern(JSONValue* raw_pattern,
       String key = entry.first;
       String value;
       // If value is not a string
-      if (!entry.second->AsString(&value))
+      if (!entry.second->AsString(&value)) {
+        SetParseErrorMessage(
+            out_error, "Values for a URL pattern object must be strings.");
         return nullptr;
+      }
 
       // Set init[key] to value.
-      if (key == "protocol")
+      if (key == "protocol") {
         init->setProtocol(value);
-      else if (key == "username")
+      } else if (key == "username") {
         init->setUsername(value);
-      else if (key == "password")
+      } else if (key == "password") {
         init->setPassword(value);
-      else if (key == "hostname")
+      } else if (key == "hostname") {
         init->setHostname(value);
-      else if (key == "port")
+      } else if (key == "port") {
         init->setPort(value);
-      else if (key == "pathname")
+      } else if (key == "pathname") {
         init->setPathname(value);
-      else if (key == "search")
+      } else if (key == "search") {
         init->setSearch(value);
-      else if (key == "hash")
+      } else if (key == "hash") {
         init->setHash(value);
-      else if (key == "baseURL")
+      } else if (key == "baseURL") {
         init->setBaseURL(value);
-      else
+      } else {
+        SetParseErrorMessage(
+            out_error,
+            String::Format("Invalid key \"%s\" for a URL pattern object found.",
+                           key.Latin1().c_str()));
         return nullptr;
+      }
     }
 
     // Set pattern to the result of constructing a URLPattern using the
@@ -339,22 +356,37 @@ URLPattern* ParseRawPattern(JSONValue* raw_pattern,
         MakeGarbageCollected<V8URLPatternInput>(init);
     return URLPattern::Create(url_pattern_input, exception_state);
   }
+  SetParseErrorMessage(out_error,
+                       "Value for \"href_matches\" should either be a "
+                       "string, an object, or a list of strings and objects.");
   return nullptr;
 }
 
-String GetPredicateType(JSONObject* input) {
+String GetPredicateType(JSONObject* input, String* out_error) {
   String predicate_type;
   constexpr const char* kValidTypes[] = {"and", "or", "not", "href_matches",
                                          "selector_matches"};
   for (String type : kValidTypes) {
     if (input->Get(type)) {
       // If we'd already found one, then this is ambiguous.
-      if (!predicate_type.IsNull())
+      if (!predicate_type.IsNull()) {
+        SetParseErrorMessage(
+            out_error,
+            String::Format("Document rule predicate type is ambiguous, "
+                           "two types found: \"%s\" and \"%s\".",
+                           predicate_type.Latin1().c_str(),
+                           type.Latin1().c_str()));
         return String();
+      }
 
       // Otherwise, this is the predicate type.
       predicate_type = std::move(type);
     }
+  }
+  if (predicate_type.IsNull()) {
+    SetParseErrorMessage(out_error,
+                         "Could not infer type of document rule predicate, no "
+                         "valid type specified.");
   }
   return predicate_type;
 }
@@ -365,27 +397,41 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
     JSONObject* input,
     const KURL& ruleset_base_url,
     const ExecutionContext* execution_context,
-    ExceptionState& exception_state) {
+    ExceptionState& exception_state,
+    String* out_error) {
   // If input is not a map, then return null.
-  if (!input)
+  if (!input) {
+    SetParseErrorMessage(out_error,
+                         "Document rule predicate must be an object.");
     return nullptr;
+  }
 
   // If we can't get a valid predicate type, return null.
-  String predicate_type = GetPredicateType(input);
+  String predicate_type = GetPredicateType(input, out_error);
   if (predicate_type.IsNull())
     return nullptr;
 
   // If predicateType is "and" or "or"
   if (predicate_type == "and" || predicate_type == "or") {
     // "and" and "or" cannot be paired with any other keys.
-    if (input->size() != 1)
+    if (input->size() != 1) {
+      SetParseErrorMessage(
+          out_error,
+          String::Format(
+              "Document rule predicate with \"%s\" key cannot have other keys.",
+              predicate_type.Latin1().c_str()));
       return nullptr;
+    }
     // Let rawClauses be the input[predicateType].
     blink::JSONArray* raw_clauses = input->GetArray(predicate_type);
 
     // If rawClauses is not a list, then return null.
-    if (!raw_clauses)
+    if (!raw_clauses) {
+      SetParseErrorMessage(
+          out_error, String::Format("\"%s\" key should have a list value.",
+                                    predicate_type.Latin1().c_str()));
       return nullptr;
+    }
 
     // Let clauses be an empty list.
     HeapVector<Member<DocumentRulePredicate>> clauses;
@@ -395,8 +441,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       JSONObject* raw_clause = JSONObject::Cast(raw_clauses->at(i));
       // Let clause be the result of parsing a document rule predicate given
       // rawClause and baseURL.
-      DocumentRulePredicate* clause = Parse(raw_clause, ruleset_base_url,
-                                            execution_context, exception_state);
+      DocumentRulePredicate* clause =
+          Parse(raw_clause, ruleset_base_url, execution_context,
+                exception_state, out_error);
       // If clause is null, then return null.
       if (!clause)
         return nullptr;
@@ -417,15 +464,20 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
   // If predicateType is "not"
   if (predicate_type == "not") {
     // "not" cannot be paired with any other keys.
-    if (input->size() != 1)
+    if (input->size() != 1) {
+      SetParseErrorMessage(
+          out_error,
+          "Document rule predicate with \"not\" key cannot have other keys.");
       return nullptr;
+    }
     // Let rawClause be the input[predicateType].
     JSONObject* raw_clause = input->GetJSONObject(predicate_type);
 
     // Let clause be the result of parsing a document rule predicate given
     // rawClause and baseURL.
     DocumentRulePredicate* clause =
-        Parse(raw_clause, ruleset_base_url, execution_context, exception_state);
+        Parse(raw_clause, ruleset_base_url, execution_context, exception_state,
+              out_error);
 
     // If clause is null, then return null.
     if (!clause)
@@ -453,11 +505,20 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       } else if (key == "relative_to") {
         const char* const kKnownRelativeToValues[] = {"ruleset", "document"};
         String relative_to;
+        if (!relative_to_enabled) {
+          SetParseErrorMessage(out_error,
+                               "\"relative_to\" is currently unsupported.");
+          return nullptr;
+        }
         // If relativeTo is neither the string "ruleset" nor the string
         // "document", then return null.
-        if (!relative_to_enabled ||
-            !input->GetString("relative_to", &relative_to) ||
+        if (!input->GetString("relative_to", &relative_to) ||
             !base::Contains(kKnownRelativeToValues, relative_to)) {
+          SetParseErrorMessage(
+              out_error,
+              String::Format(
+                  "Unrecognized \"relative_to\" value: %s.",
+                  input->Get("relative_to")->ToJSONString().Latin1().c_str()));
           return nullptr;
         }
         // If relativeTo is "document", set baseURL to the document's
@@ -467,6 +528,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
         }
       } else {
         // Otherwise, this is an unrecognized key. The predicate is invalid.
+        SetParseErrorMessage(out_error,
+                             String::Format("Unrecognized key found: \"%s\".",
+                                            key.Latin1().c_str()));
         return nullptr;
       }
     }
@@ -487,10 +551,15 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
     // For each rawPattern of rawPatterns:
     for (JSONValue* raw_pattern : raw_patterns) {
       URLPattern* pattern =
-          ParseRawPattern(raw_pattern, base_url, exception_state);
+          ParseRawPattern(raw_pattern, base_url, exception_state, out_error);
       // If those steps throw, catch the exception and return null.
       if (exception_state.HadException()) {
         exception_state.ClearException();
+        SetParseErrorMessage(
+            out_error,
+            String::Format(
+                "URL Pattern for \"href_matches\" could not be parsed: %s.",
+                raw_pattern->ToJSONString().Latin1().c_str()));
         return nullptr;
       }
       if (!pattern)
@@ -507,6 +576,8 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
     const bool selector_matches_enabled = RuntimeEnabledFeatures::
         SpeculationRulesDocumentRulesSelectorMatchesEnabled(execution_context);
     if (!selector_matches_enabled) {
+      SetParseErrorMessage(out_error,
+                           "\"selector_matches\" is currently unsupported.");
       return nullptr;
     }
 
@@ -533,6 +604,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       String raw_selector_string;
       // If rawSelector is not a string, then return null.
       if (!raw_selector->AsString(&raw_selector_string)) {
+        SetParseErrorMessage(out_error,
+                             "Value for \"selector_matches\" must be a string "
+                             "or a list of strings.");
         return nullptr;
       }
 
@@ -541,6 +615,9 @@ DocumentRulePredicate* DocumentRulePredicate::Parse(
       base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
           css_parser_context, nullptr, nullptr, raw_selector_string, arena);
       if (selector_vector.empty()) {
+        SetParseErrorMessage(
+            out_error, String::Format("\"%s\" is not a valid selector.",
+                                      raw_selector_string.Latin1().c_str()));
         return nullptr;
       }
       StyleRule* selector =

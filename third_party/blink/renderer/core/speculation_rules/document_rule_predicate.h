@@ -30,7 +30,8 @@ class CORE_EXPORT DocumentRulePredicate
   static DocumentRulePredicate* Parse(JSONObject* input,
                                       const KURL& ruleset_base_url,
                                       const ExecutionContext* context,
-                                      ExceptionState& exception_state);
+                                      ExceptionState& exception_state,
+                                      String* out_error = nullptr);
   // Creates a predicate that matches with any link (i.e. Matches() below will
   // always returns true).
   static DocumentRulePredicate* MakeDefaultPredicate();
