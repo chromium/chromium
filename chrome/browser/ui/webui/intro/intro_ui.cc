@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
 #include "base/feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
@@ -57,7 +58,10 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
 
   AddStrings(source);
 
-  bool is_device_managed = chrome::GetDeviceManagerIdentity().has_value();
+  // TODO(crbug.com/1409028): Replace this function by a call to
+  // chrome::GetDeviceManagerIdentity()
+  bool is_device_managed =
+      chrome::ShouldDisplayManagedUi(Profile::FromWebUI(web_ui));
   source->AddBoolean("isDeviceManaged", is_device_managed);
 
   source->AddResourcePath("product-logo.svg", IDR_PRODUCT_LOGO_SVG);
