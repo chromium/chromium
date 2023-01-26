@@ -533,6 +533,12 @@ BASE_FEATURE(kOpenscreenCastStreamingSession,
              "OpenscreenCastStreamingSession",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether the Mirroring Service will fetch, analyze, and store
+// information on the quality of the session using RTCP logs.
+BASE_FEATURE(kEnableRtcpReporting,
+             "EnableRtcpReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.
 // This will hopefully reduce runtime memory bloat for pages that do not
