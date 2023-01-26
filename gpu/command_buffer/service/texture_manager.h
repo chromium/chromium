@@ -1108,11 +1108,6 @@ class GPU_GLES2_EXPORT TextureManager
                      gl::GLImage* image,
                      Texture::ImageState state);
 
-  void SetLevelImageState(TextureRef* ref,
-                          GLenum target,
-                          GLint level,
-                          Texture::ImageState state);
-
   size_t GetSignatureSize() const;
 
   void AddToSignature(

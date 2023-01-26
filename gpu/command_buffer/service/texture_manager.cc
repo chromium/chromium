@@ -2595,14 +2595,6 @@ void TextureManager::SetLevelImage(TextureRef* ref,
   ref->texture()->SetLevelImage(target, level, image, state);
 }
 
-void TextureManager::SetLevelImageState(TextureRef* ref,
-                                        GLenum target,
-                                        GLint level,
-                                        Texture::ImageState state) {
-  DCHECK(ref);
-  ref->texture()->SetLevelImageState(target, level, state);
-}
-
 size_t TextureManager::GetSignatureSize() const {
   return sizeof(TextureTag) + sizeof(TextureSignature);
 }
