@@ -297,6 +297,13 @@ struct Config {
   base::flat_set<std::string> collections_to_block_from_content_clustering = {
       "/collection/it_glosssary", "/collection/software"};
 
+  // Whether to merge similar clusters using pairwise merge.
+  bool use_pairwise_merge = false;
+
+  // The maximum number of iterations to run for the convergence of pairwise
+  // merging of similar clusters.
+  int max_pairwise_merge_iterations = 40;
+
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
   // Use host instead of heavily-stripped URL as URL for deduping.

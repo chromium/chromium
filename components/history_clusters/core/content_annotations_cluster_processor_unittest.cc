@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
@@ -25,6 +26,7 @@ class ContentAnnotationsClusterProcessorTest : public ::testing::Test {
     config_.content_clustering_similarity_threshold = 0.5;
     config_.exclude_entities_that_have_no_collections_from_content_clustering =
         false;
+    config_.use_pairwise_merge = true;
     config_.collections_to_block_from_content_clustering = {};
     SetConfigForTesting(config_);
   }
@@ -66,6 +68,8 @@ class ContentAnnotationsClusterProcessorTest : public ::testing::Test {
 };
 
 TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
+  base::HistogramTester histogram_tester;
+
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit =
@@ -95,16 +99,34 @@ TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
   clusters.push_back(cluster2);
 
+  // After the context clustering, visit5 will not be in the same cluster as
+  // visit, visit2, and visit4 but all of the visits have the same entity
+  // so they will be clustered in the content pass.
+  history::AnnotatedVisit visit6 = testing::CreateDefaultAnnotatedVisit(
+      6, GURL("https://nonexistentreferrer.com/"));
+  visit6.content_annotations.model_annotations.entities = {{"github", 1}};
+  history::Cluster cluster3;
+  cluster3.visits = {testing::CreateClusterVisit(visit6)};
+  clusters.push_back(cluster3);
+
   ProcessClusters(&clusters);
-  EXPECT_THAT(
-      testing::ToVisitResults(clusters),
-      ElementsAre(ElementsAre(
-          testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
-          testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0))));
+  EXPECT_THAT(testing::ToVisitResults(clusters),
+              ElementsAre(ElementsAre(
+                  testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
+                  testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0),
+                  testing::VisitResult(6, 1.0))));
   ASSERT_EQ(clusters.size(), 1u);
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ContentClustering.NumClustersBeforeMerge", 3,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ContentClustering.NumClustersAfterMerge", 1, 1);
 }
 
 TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
+  base::HistogramTester histogram_tester;
+
   std::vector<history::Cluster> clusters;
 
   history::AnnotatedVisit visit =
@@ -152,6 +174,12 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
                                       testing::VisitResult(4, 1.0)),
                           ElementsAre(testing::VisitResult(11, 1.0)),
                           ElementsAre(testing::VisitResult(12, 1.0))));
+
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ContentClustering.NumClustersBeforeMerge", 4,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "History.Clusters.Backend.ContentClustering.NumClustersAfterMerge", 3, 1);
 }
 
 class ContentAnnotationsSimilarityVariousCollectionsFilteringTest

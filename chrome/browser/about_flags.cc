@@ -1268,13 +1268,29 @@ const FeatureEntry::FeatureVariation
          kSidePanelJourneysOpensFromOmniboxParams,
          std::size(kSidePanelJourneysOpensFromOmniboxParams), nullptr},
 };
-const FeatureEntry::FeatureParam kJourneysCosineSimilarityParams[] = {
-    {"collections_blocklist", "/collection/it_glosssary,/collection/software"},
-    {"exclude_entities_that_have_no_collections", "true"},
+const FeatureEntry::FeatureParam
+    kJourneysCosineSimilarityNoPairwiseMergeParams[] = {
+        {"collections_blocklist",
+         "/collection/it_glosssary,/collection/software"},
+        {"exclude_entities_that_have_no_collections", "true"},
+        {"use_content_clustering_cosine_similarity", "true"},
+        {"use_pairwise_merge", "false"},
+};
+const FeatureEntry::FeatureParam
+    kJourneysCosineSimilarityWithPairwiseMergeParams[] = {
+        {"collections_blocklist",
+         "/collection/it_glosssary,/collection/software"},
+        {"exclude_entities_that_have_no_collections", "true"},
+        {"use_content_clustering_cosine_similarity", "true"},
+        {"use_pairwise_merge", "true"},
 };
 const FeatureEntry::FeatureVariation kJourneysContentClusteringVariations[] = {
-    {"Cosine Similarity With Blocklist", kJourneysCosineSimilarityParams,
-     std::size(kJourneysCosineSimilarityParams), nullptr},
+    {"Cosine Similarity With Blocklist and No Pairwise Merge",
+     kJourneysCosineSimilarityNoPairwiseMergeParams,
+     std::size(kJourneysCosineSimilarityNoPairwiseMergeParams), nullptr},
+    {"Cosine Similarity With Blocklist and Pairwise Merge",
+     kJourneysCosineSimilarityWithPairwiseMergeParams,
+     std::size(kJourneysCosineSimilarityWithPairwiseMergeParams), nullptr},
 };
 const FeatureEntry::FeatureParam kJourneysLabelsWithEntitiesParams[] = {
     {"labels_from_entities", "true"},

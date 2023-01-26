@@ -301,6 +301,14 @@ Config::Config() {
 
     collections_to_block_from_content_clustering =
         JourneysCollectionContentClusteringBlocklist();
+
+    use_pairwise_merge = GetFieldTrialParamByFeatureAsBool(
+        features::kOnDeviceClusteringContentClustering, "use_pairwise_merge",
+        use_pairwise_merge);
+
+    max_pairwise_merge_iterations = GetFieldTrialParamByFeatureAsInt(
+        features::kOnDeviceClusteringContentClustering,
+        "max_pairwise_merge_iterations", max_pairwise_merge_iterations);
   }
 
   // The `kHistoryClustersVisitDeduping` feature and child params.

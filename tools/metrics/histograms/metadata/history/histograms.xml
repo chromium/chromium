@@ -762,6 +762,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="History.Clusters.Backend.ContentClustering.NumClustersAfterMerge"
+    units="counts" expires_after="2023-06-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the number of clusters after merging similar clusters based on
+    content. Logged when clusters have been calculated based on any request to
+    cluster visits, which could be triggered from several things, including
+    loading the journeys UI, putting a query in the journeys page, etc...
+  </summary>
+</histogram>
+
+<histogram
+    name="History.Clusters.Backend.ContentClustering.NumClustersBeforeMerge"
+    units="counts" expires_after="2023-06-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the number of clusters before merging similar clusters based on
+    content. Logged when clusters have been calculated based on any request to
+    cluster visits, which could be triggered from several things, including
+    loading the journeys UI, putting a query in the journeys page, etc...
+  </summary>
+</histogram>
+
+<histogram
+    name="History.Clusters.Backend.ContentClustering.PairwiseMergeNumIterations"
+    units="counts" expires_after="2023-06-04">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-journeys@google.com</owner>
+  <component>UI&gt;Browser&gt;Journeys</component>
+  <summary>
+    Records the number of iterations it took for a batch of clusters to converge
+    during a pairwise merge of similar clusters based on content, up to a
+    Finch-configured maximum. Logged when clusters have been calculated based on
+    any request to cluster visits, which could be triggered from several things,
+    including loading the journeys UI, putting a query in the journeys page,
+    etc...
+  </summary>
+</histogram>
+
 <histogram name="History.Clusters.Backend.ContextClusterer.ThreadTime"
     units="ms" expires_after="2023-06-04">
   <owner>sophiechang@chromium.org</owner>
