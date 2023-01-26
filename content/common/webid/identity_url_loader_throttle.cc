@@ -26,7 +26,7 @@ static constexpr char kGoogleSignoutHeader[] = "Google-Accounts-SignOut";
 static constexpr char kIdpSigninStatusHeader[] = "IdP-SignIn-Status";
 
 static constexpr char kIdpHeaderValueSignin[] = "action=signin";
-static constexpr char kIdpHeaderValueSignout[] = "action=signout";
+static constexpr char kIdpHeaderValueSignout[] = "action=signout-all";
 
 bool IsFedCmIdpSigninStatusThrottleEnabled() {
   return GetFieldTrialParamByFeatureAsBool(

@@ -83,7 +83,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   } else {
     base::SStringPrintf(
         &header, "idp-signin-status: action=sign%s",
-        signin_status == IdpSigninStatus::kSignedIn ? "in" : "out");
+        signin_status == IdpSigninStatus::kSignedIn ? "in" : "out-all");
   }
 
   network::mojom::URLResponseHead response_head;
