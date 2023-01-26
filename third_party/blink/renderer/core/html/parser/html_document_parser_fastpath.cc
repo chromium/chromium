@@ -477,14 +477,41 @@ class HTMLFastPathParser {
     }
   }
 
+  struct ScanTextResult {
+    // HTML strings of the form '\n<space>*' are widespread on the web. Caching
+    // them saves us allocations, which improves the runtime.
+    String TryCanonicalizeString() const {
+      DCHECK(!text.empty());
+      if (is_newline_then_whitespace_string &&
+          text.size() < WTF::NewlineThenWhitespaceStringsTable::kTableSize) {
+#if DCHECK_IS_ON()
+        DCHECK(WTF::NewlineThenWhitespaceStringsTable::IsNewlineThenWhitespaces(
+            String(text.data(), static_cast<unsigned>(text.size()))));
+#endif  // DCHECK_IS_ON()
+        return WTF::NewlineThenWhitespaceStringsTable::GetStringForLength(
+            text.size());
+      }
+      return String(text.data(), static_cast<unsigned>(text.size()));
+    }
+
+    Span text;
+    USpan escaped_text;
+    bool is_newline_then_whitespace_string = false;
+  };
+
   // We first try to scan text as an unmodified subsequence of the input.
   // However, if there are escape sequences, we have to copy the text to a
   // separate buffer and we might go outside of `Char` range if we are in an
   // `LChar` parser. Therefore, this function returns either a `Span` or a
   // `USpan`. Callers distinguish the two cases by checking if the `Span` is
   // empty, as only one of them can be non-empty.
-  std::pair<Span, USpan> ScanText() {
+  ScanTextResult ScanText() {
     const Char* start = pos_;
+    bool is_newline_then_whitespace_string = false;
+    if (pos_ != end_ && *pos_ == '\n') {
+      is_newline_then_whitespace_string = true;
+      ++pos_;
+    }
     while (pos_ != end_ && *pos_ != '<') {
       // '&' indicates escape sequences, '\r' might require
       // https://infra.spec.whatwg.org/#normalize-newlines
@@ -493,11 +520,16 @@ class HTMLFastPathParser {
         return {Span{}, ScanEscapedText()};
       } else if (UNLIKELY(*pos_ == '\0')) {
         return Fail(HtmlFastPathResult::kFailedContainsNull,
-                    std::pair{Span{}, USpan{}});
+                    ScanTextResult{Span{}, USpan{}});
+      }
+      if (*pos_ != ' ') {
+        is_newline_then_whitespace_string = false;
       }
       ++pos_;
     }
-    return {{start, static_cast<size_t>(pos_ - start)}, USpan{}};
+    return {{start, static_cast<size_t>(pos_ - start)},
+            USpan{},
+            is_newline_then_whitespace_string};
   }
 
   // Slow-path of `ScanText()`, which supports escape sequences by copying to a
@@ -795,25 +827,26 @@ class HTMLFastPathParser {
   template <class ParentTag>
   void ParseChildren(ContainerNode* parent) {
     while (true) {
-      std::pair<Span, USpan> text = ScanText();
+      ScanTextResult scanned_text = ScanText();
       if (failed_) {
         return;
       }
-      DCHECK(text.first.empty() || text.second.empty());
-      if (!text.first.empty()) {
-        if (text.first.size() >= Text::kDefaultLengthLimit) {
+      DCHECK(scanned_text.text.empty() || scanned_text.escaped_text.empty());
+      if (!scanned_text.text.empty()) {
+        const auto text = scanned_text.text;
+        if (text.size() >= Text::kDefaultLengthLimit) {
+          return Fail(HtmlFastPathResult::kFailedBigText);
+        }
+        parent->ParserAppendChild(
+            Text::Create(document_, scanned_text.TryCanonicalizeString()));
+      } else if (!scanned_text.escaped_text.empty()) {
+        if (scanned_text.escaped_text.size() >= Text::kDefaultLengthLimit) {
           return Fail(HtmlFastPathResult::kFailedBigText);
         }
         parent->ParserAppendChild(Text::Create(
-            document_, String(text.first.data(),
-                              static_cast<unsigned>(text.first.size()))));
-      } else if (!text.second.empty()) {
-        if (text.second.size() >= Text::kDefaultLengthLimit) {
-          return Fail(HtmlFastPathResult::kFailedBigText);
-        }
-        parent->ParserAppendChild(Text::Create(
-            document_, String(text.second.data(),
-                              static_cast<unsigned>(text.second.size()))));
+            document_,
+            String(scanned_text.escaped_text.data(),
+                   static_cast<unsigned>(scanned_text.escaped_text.size()))));
       }
       if (pos_ == end_) {
         return;
