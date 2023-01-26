@@ -133,13 +133,16 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   zoom_map->SetTemporaryZoomLevel(rfh->GetGlobalId(),
                                   blink::PageZoomFactorToZoomLevel(1.0f));
 
-  auto width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
+  const int max_width = browser_->window()
+                            ->GetWebContentsModalDialogHost()
+                            ->GetMaximumDialogSize()
+                            .width();
+  const int width = views::LayoutProvider::Get()->GetSnappedDialogWidth(
       GetDialogWidth(prompt_type));
-  // TODO(crbug.com/1378703): Adjust default values for new prompt types.
-  auto height = prompt_type == PrivacySandboxService::PromptType::kConsent
-                    ? kDefaultConsentDialogHeight
-                    : kDefaultNoticeDialogHeight;
-  web_view_->SetPreferredSize(gfx::Size(width, height));
+  const int height = prompt_type == PrivacySandboxService::PromptType::kConsent
+                         ? kDefaultConsentDialogHeight
+                         : kDefaultNoticeDialogHeight;
+  web_view_->SetPreferredSize(gfx::Size(std::min(width, max_width), height));
 
   PrivacySandboxDialogUI* web_ui = web_view_->GetWebContents()
                                        ->GetWebUI()
