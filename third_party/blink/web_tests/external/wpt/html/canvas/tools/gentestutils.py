@@ -129,18 +129,18 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
         doctest.testmod()
         sys.exit()
 
-    templates = yaml.safe_load(open(TEMPLATEFILE, "r").read())
-    name_mapping = yaml.safe_load(open(NAME2DIRFILE, "r").read())
+    templates = yaml.safe_load(open(TEMPLATEFILE, 'r').read())
+    name_mapping = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
 
     tests = []
-    test_yaml_directory = "yaml/element"
+    test_yaml_directory = 'yaml/element'
     if ISOFFSCREENCANVAS:
-        test_yaml_directory = "yaml/offscreen"
+        test_yaml_directory = 'yaml/offscreen'
     TESTSFILES = [
         os.path.join(test_yaml_directory, f)
-        for f in os.listdir(test_yaml_directory) if f.endswith(".yaml")
+        for f in os.listdir(test_yaml_directory) if f.endswith('.yaml')
     ]
-    for t in sum([yaml.safe_load(open(f, "r").read()) for f in TESTSFILES],
+    for t in sum([yaml.safe_load(open(f, 'r').read()) for f in TESTSFILES],
                  []):
         if 'DISABLED' in t:
             continue
@@ -166,7 +166,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
     # Ensure the test output directories exist.
     testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR, MISCOUTPUTDIR]
     for map_dir in set(name_mapping.values()):
-        testdirs.append("%s/%s" % (TESTOUTPUTDIR, map_dir))
+        testdirs.append('%s/%s' % (TESTOUTPUTDIR, map_dir))
     for d in testdirs:
         try:
             os.mkdir(d)
@@ -179,14 +179,14 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
         mapped_name = None
         for mn in sorted(name_mapping.keys(), key=len, reverse=True):
             if name.startswith(mn):
-                mapped_name = "%s/%s" % (name_mapping[mn], name)
+                mapped_name = '%s/%s' % (name_mapping[mn], name)
                 break
         if not mapped_name:
-            print("LIKELY ERROR: %s has no defined target directory mapping" %
+            print('LIKELY ERROR: %s has no defined target directory mapping' %
                   name)
             return None
         if 'manual' in test:
-            mapped_name += "-manual"
+            mapped_name += '-manual'
         return mapped_name
 
     def expand_test_code(code: str) -> str:
@@ -230,7 +230,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
 
         code = re.sub(r' @moz-todo', '', code)
 
-        code = re.sub(r'@moz-UniversalBrowserRead;', "", code)
+        code = re.sub(r'@moz-UniversalBrowserRead;', '', code)
 
         assert ('@' not in code)
 
@@ -241,10 +241,10 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
         test = tests[i]
 
         name = test['name']
-        print("\r(%s)" % name, " " * 32, "\t")
+        print('\r(%s)' % name, ' ' * 32, '\t')
 
         if name in used_tests:
-            print("Test %s is defined twice" % name)
+            print('Test %s is defined twice' % name)
         used_tests[name] = 1
 
         mapped_name = map_name(name)
@@ -263,7 +263,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
 
         if test.get('expected', '') == 'green' and re.search(
                 r'@assert pixel .* 0,0,0,0;', test['code']):
-            print("Probable incorrect pixel test in %s" % name)
+            print('Probable incorrect pixel test in %s' % name)
 
         code = expand_test_code(test['code'])
 
@@ -272,26 +272,26 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
             expected = test['expected']
             expected_img = None
             if expected == 'green':
-                expected_img = "/images/green-100x50.png"
+                expected_img = '/images/green-100x50.png'
             elif expected == 'clear':
-                expected_img = "/images/clear-100x50.png"
+                expected_img = '/images/clear-100x50.png'
             else:
                 if ';' in expected:
-                    print("Found semicolon in %s" % name)
+                    print('Found semicolon in %s' % name)
                 expected = re.sub(
                     r'^size (\d+) (\d+)',
                     r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
                     r'\ncr = cairo.Context(surface)', expected)
 
-                if mapped_name.endswith("-manual"):
-                    png_name = mapped_name[:-len("-manual")]
+                if mapped_name.endswith('-manual'):
+                    png_name = mapped_name[:-len('-manual')]
                 else:
                     png_name = mapped_name
                 expected += "\nsurface.write_to_png('%s/%s.png')\n" % (
                     IMAGEOUTPUTDIR, png_name)
                 eval(compile(expected, '<test %s>' % test['name'], 'exec'), {},
                      {'cairo': cairo})
-                expected_img = "%s.png" % name
+                expected_img = '%s.png' % name
 
             if expected_img:
                 expectation_html = (
@@ -336,7 +336,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
                 src = '../images/%s' % src
             images += ('<svg><image xlink:href="%s" id="%s" class="resource">'
                        '</svg>\n' % (src, img_id))
-        images = images.replace("../images/", "/images/")
+        images = images.replace('../images/', '/images/')
 
         fonts = ''
         fonthack = ''
