@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/crx_file/crx_verifier.h"
@@ -110,7 +111,11 @@ class RecoveryComponentActionHandler : public update_client::ActionHandler {
   void Unpack();
   void UnpackComplete(const update_client::ComponentUnpacker::Result& result);
   void RunCommand(const base::CommandLine& cmdline);
-  void WaitForCommand(base::Process process);
+
+  // `process` contains the process object, if the process was successfully
+  // created or an error value otherwise (if the error is available on that
+  // platform).
+  void WaitForCommand(base::expected<base::Process, int> process_or_error);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

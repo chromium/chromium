@@ -29,11 +29,17 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/component_updater/component_updater_utils.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/patcher.h"
 #include "components/update_client/unzip/unzip_impl.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <errno.h>
+#endif
 
 namespace component_updater {
 
@@ -98,30 +104,48 @@ void RecoveryComponentActionHandler::UnpackComplete(
 void RecoveryComponentActionHandler::RunCommand(
     const base::CommandLine& cmdline) {
   VLOG(1) << "run command: " << cmdline.GetCommandLineString();
-  base::LaunchOptions options;
+  base::expected<base::Process, int> process_or_error =
+      [&cmdline]() -> base::expected<base::Process, int> {
+    base::LaunchOptions options;
 #if BUILDFLAG(IS_WIN)
-  options.start_hidden = true;
+    options.start_hidden = true;
 #endif
-  base::Process process = base::LaunchProcess(cmdline, options);
+    base::Process process = base::LaunchProcess(cmdline, options);
+    if (!process.IsValid()) {
+#if BUILDFLAG(IS_WIN)
+      return base::unexpected(::GetLastError());
+#elif BUILDFLAG(IS_POSIX)
+      return base::unexpected(errno);
+#else
+      return base::unexpected(0);
+#endif
+    }
+    return base::ok(std::move(process));
+  }();
   base::ThreadPool::PostTask(
       FROM_HERE, kThreadPoolTaskTraitsRunCommand,
       base::BindOnce(&RecoveryComponentActionHandler::WaitForCommand, this,
-                     std::move(process)));
+                     std::move(process_or_error)));
 }
 
-void RecoveryComponentActionHandler::WaitForCommand(base::Process process) {
+void RecoveryComponentActionHandler::WaitForCommand(
+    base::expected<base::Process, int> process_or_error) {
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
+  int extra_code1 = 0;
   bool succeeded = false;
-  if (!process.IsValid()) {
+  constexpr base::TimeDelta kMaxWaitTime = base::Seconds(600);
+  if (process_or_error.has_value()) {
+    succeeded =
+        process_or_error->WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
+  } else {
     exit_code =
         static_cast<int>(update_client::InstallError::LAUNCH_PROCESS_FAILED);
-  } else {
-    succeeded = process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
+    extra_code1 = process_or_error.error();
   }
   base::DeletePathRecursively(unpack_path_);
   main_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), succeeded, exit_code, 0));
+      FROM_HERE,
+      base::BindOnce(std::move(callback_), succeeded, exit_code, extra_code1));
 }
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the component CRX.
