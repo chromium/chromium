@@ -2730,7 +2730,7 @@ void AXTree::NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
     return;
 
   for (AXTreeObserver& observer : observers_)
-    observer.OnTreeManagerWillBeRemoved(previous_tree_id);
+    observer.OnTreeManagerWillBeRemoved(this);
 }
 
 void AXTree::RecordError(const AXTreeUpdateState& update_state,

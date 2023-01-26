@@ -149,9 +149,9 @@ class TestAXTreeObserver final : public AXTreeObserver {
   TestAXTreeObserver(const TestAXTreeObserver&) = delete;
   TestAXTreeObserver& operator=(const TestAXTreeObserver&) = delete;
 
-  void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override {
+  void OnTreeManagerWillBeRemoved(AXTree* tree) override {
     ++manager_remove_count_;
-    previous_tree_id_ = previous_tree_id;
+    previous_tree_id_ = tree->GetAXTreeID();
   }
 
   int manager_remove_count() const { return manager_remove_count_; }

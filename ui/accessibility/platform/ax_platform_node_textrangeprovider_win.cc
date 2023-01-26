@@ -1817,15 +1817,8 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::OnNodeDeleted(
 }
 
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
-    OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) {
-  if (start_->tree_id() == previous_tree_id ||
-      end_->tree_id() == previous_tree_id) {
-    AXTreeManager* ax_tree_manager = AXTreeManager::FromID(previous_tree_id);
-    if (ax_tree_manager) {
-      DCHECK(ax_tree_manager->ax_tree());
-      ax_tree_manager->ax_tree()->RemoveObserver(this);
-    }
-  }
+    OnTreeManagerWillBeRemoved(AXTree* tree) {
+  tree->RemoveObserver(this);
 }
 
 // Ensures that our endpoints are always valid (step 2, all scenarios). See
