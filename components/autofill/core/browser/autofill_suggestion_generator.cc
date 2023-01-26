@@ -67,16 +67,9 @@ std::map<std::string, AutofillOfferData*> GetCardLinkedOffers(
 }
 
 int GetObfuscationLength() {
-  // The kAutofillKeyboardAccessory feature is only available on Android. So for
-  // other platforms, we'd always use the obfuscation length of 4. This build
-  // flag also makes sure that tests involving kAutofillKeyboardAccessory
-  // feature is getting the correct obfuscation length.
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) ? 2
-                                                                            : 4;
-#else
-  return 4;
-#endif
+  // The obfuscation length is 2 for the Android keyboard accessory. It is 4 for
+  // other platforms.
+  return IsKeyboardAccessoryEnabled() ? 2 : 4;
 }
 
 bool ShouldSplitCardNameAndLastFourDigits() {
@@ -492,22 +485,21 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     // We don't show card linked offers for virtual card options.
     AdjustVirtualCardSuggestionContent(suggestion, credit_card, type);
   } else if (card_linked_offer_available) {
-    // If Keyboard Accessory is not enabled (i.e. Desktop or Clank dropdown),
-    // populate an offer label.
-    if (!base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
-      suggestion.labels.push_back(
-          std::vector<Suggestion::Text>{Suggestion::Text(
-              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
-
-      // Otherwise for Keyboard Accessory, set Suggestion::feature_for_iph and
-      // change the suggestion icon only if card linked offers are also enabled.
-    } else if (base::FeatureList::IsEnabled(
-                   features::kAutofillEnableOffersInClankKeyboardAccessory)) {
+    // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
+    // suggestion icon only if card linked offers are also enabled.
+    if (IsKeyboardAccessoryEnabled() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableOffersInClankKeyboardAccessory)) {
 #if BUILDFLAG(IS_ANDROID)
       suggestion.feature_for_iph =
           feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name;
       suggestion.icon = "offerTag";
 #endif
+    } else {
+      // On Desktop/Android dropdown, populate an offer label.
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
     }
   }
 
@@ -585,17 +577,15 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
   // If the focused field is not a card number field AND the card number is NOT
   // empty.
-#if BUILDFLAG(IS_ANDROID)
-  // On Android devices, the label is formatted as
-  // "Product Description/Nickname/Network  ••••1234" when the keyboard
-  // accessory experiment is disabled and as "••1234" when it's enabled.
-  if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
+  // On Android keyboard accessory, the label is formatted as "••1234".
+  if (IsKeyboardAccessoryEnabled()) {
     return {
         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetObfuscationLength()))};
   }
 
-  // E.g. "Product Description/Nickname/Network  ••••1234". If card name is too
+  // On Desktop/Android dropdown, the label is formatted as
+  // "Product Description/Nickname/Network  ••••1234". If the card name is too
   // long, it will be truncated from the tail.
   if (ShouldSplitCardNameAndLastFourDigits()) {
     return {
@@ -605,29 +595,20 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetObfuscationLength()))};
   }
-  // E.g. "Nickname/Network  ••••1234".
-  return {Suggestion::Text(
-      credit_card.CardIdentifierStringForAutofillDisplay(nickname))};
 
-#elif BUILDFLAG(IS_IOS)
-  // E.g. "••••1234"".
+#if BUILDFLAG(IS_IOS)
+  // On iOS, the label is formatted as "••••1234".
   return {
       Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
           GetObfuscationLength()))};
-
+#elif BUILDFLAG(IS_ANDROID)
+  // On Android dropdown, the label is formatted as
+  // "Nickname/Network  ••••1234".
+  return {Suggestion::Text(
+      credit_card.CardIdentifierStringForAutofillDisplay(nickname))};
 #else
-  // E.g. "Product Description/Nickname/Network  ••••1234". If card name is too
-  // long, it will be truncated from the tail.
-  if (ShouldSplitCardNameAndLastFourDigits()) {
-    return {
-        Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
-                         Suggestion::Text::IsPrimary(false),
-                         Suggestion::Text::ShouldTruncate(true)),
-        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))};
-  }
-
-  // E.g. "Product Description/Nickname/Network  ••••1234, expires on 01/25".
+  // On Desktop, the label is formatted as
+  // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
   return {Suggestion::Text(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))};
 #endif
