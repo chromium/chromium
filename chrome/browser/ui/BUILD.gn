@@ -5068,8 +5068,6 @@ static_library("ui") {
       "views/side_panel/side_panel_web_ui_view.h",
       "views/side_panel/user_note/user_note_ui_coordinator.cc",
       "views/side_panel/user_note/user_note_ui_coordinator.h",
-      "views/side_panel/user_note/user_note_view.cc",
-      "views/side_panel/user_note/user_note_view.h",
       "views/side_panel/webview/webview_side_panel_coordinator.cc",
       "views/side_panel/webview/webview_side_panel_coordinator.h",
       "views/side_search/default_search_icon_source.cc",
