@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_logging_settings.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 
 #include "build/build_config.h"
@@ -12,6 +13,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace {
 
@@ -27,6 +29,7 @@ class UseCounterPageLoadMetricsObserverBrowserTest
         content::DefaultEnabledBackForwardCacheParametersForTests(),
         content::DefaultDisabledBackForwardCacheParametersForTests());
     MetricIntegrationTest::SetUpCommandLine(command_line);
+    vmodule_switches_.InitWithSwitches("back_forward_cache_impl=1");
   }
 
  protected:
@@ -41,6 +44,7 @@ class UseCounterPageLoadMetricsObserverBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
+  logging::ScopedVmoduleSwitches vmodule_switches_;
 };
 
 }  // namespace
@@ -62,24 +66,23 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // Navigate to A.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHost* rfh_a = top_frame_host();
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a,
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(top_frame_host());
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a.get(),
                                                                     features_0);
 
   // Navigate to B.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  ASSERT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
   EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
 
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a,
+  page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(rfh_a.get(),
                                                                     features_1);
 
   // The RenderFrameHost for the page B was likely in the back-forward cache
@@ -87,13 +90,12 @@ IN_PROC_BROWSER_TEST_F(UseCounterPageLoadMetricsObserverBrowserTest,
   // outstanding-network request.
 
   // Navigate to B again.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  ASSERT_EQ(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   // Go back to A again.
-  web_contents()->GetController().GoBack();
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
   EXPECT_TRUE(rfh_a->IsInPrimaryMainFrame());
   EXPECT_NE(rfh_a->GetLifecycleState(),
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
