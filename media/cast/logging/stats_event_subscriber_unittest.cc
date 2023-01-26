@@ -528,11 +528,17 @@ bool CheckHistogramHasValue(const base::Value::List& values,
                             const std::string& bucket,
                             int expected_count) {
   for (const base::Value& value : values) {
-    if (!value.is_dict() || !value.FindKey(bucket))
+    if (!value.is_dict()) {
       continue;
-    absl::optional<int> bucket_count = value.FindIntKey(bucket);
-    if (!bucket_count.has_value())
+    }
+    const base::Value::Dict& dict = value.GetDict();
+    if (!dict.contains(bucket)) {
+      continue;
+    }
+    absl::optional<int> bucket_count = dict.FindInt(bucket);
+    if (!bucket_count.has_value()) {
       return false;
+    }
     return bucket_count == expected_count;
   }
   return false;
