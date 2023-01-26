@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "OnDeviceTailSuggestModelMetadataProto";
+
+package optimization_guide.proto;
+
+// Params needed to run the LSTM model.
+message LstmModelParams {
+  int32 state_size = 1;
+  int32 num_layer = 2;
+  int32 embedding_dimension = 3;
+}
+
+// The message contains a set of params to run a specific on device tail suggest
+// model.
+message OnDeviceTailSuggestModelMetadata {
+  optional LstmModelParams lstm_model_params = 1;
+}
