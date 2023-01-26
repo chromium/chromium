@@ -663,8 +663,11 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
           *va_device_, new_profile, GetFormatForColorConfig(color_config));
     }
 
-    ref_frames_.clear();
-    display_surfaces_.clear();
+    for (auto& frame : ref_frames_)
+      frame.reset();
+
+    for (auto& display_surface : display_surfaces_)
+      display_surface.reset();
 
     const gfx::Size new_frame_size(
         base::strict_cast<int>(current_sequence_header_->max_frame_width),
