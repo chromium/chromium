@@ -6,7 +6,9 @@ import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//third_party/node/node.gni")
 import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
 
 interfaces_bindings_gen_dir = "$root_gen_dir/mojo/public/interfaces/bindings"
 
@@ -58,6 +60,25 @@ template("concatenate_files") {
     outputs = [ output ]
     args = rebase_path(inputs, root_build_dir) +
            [ rebase_path(output, root_build_dir) ]
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+  }
+}
+
+template("minify_file") {
+  node(target_name) {
+    script = "//mojo/public/tools/bindings/minify_with_terser.py"
+    inputs = [ invoker.input ]
+    outputs = [ invoker.output ]
+
+    args = [
+      "--input",
+      rebase_path(invoker.input, root_build_dir),
+      "--output",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+
     if (defined(invoker.deps)) {
       deps = invoker.deps
     }
@@ -161,10 +182,18 @@ if (enable_mojom_closure_compile || enable_js_type_check) {
     ]
   }
 
-  copy("bindings_module") {
-    sources = [ "$target_gen_dir/bindings_uncompiled.js" ]
-    outputs = [ "$target_gen_dir/bindings.js" ]
-    deps = [ ":bindings_uncompiled_module" ]
+  if (optimize_webui) {
+    minify_file("bindings_module") {
+      input = "$target_gen_dir/bindings_uncompiled.js"
+      output = "$target_gen_dir/bindings.js"
+      deps = [ ":bindings_uncompiled_module" ]
+    }
+  } else {
+    copy("bindings_module") {
+      sources = [ "$target_gen_dir/bindings_uncompiled.js" ]
+      outputs = [ "$target_gen_dir/bindings.js" ]
+      deps = [ ":bindings_uncompiled_module" ]
+    }
   }
 }
 

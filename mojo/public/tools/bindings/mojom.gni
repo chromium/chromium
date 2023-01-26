@@ -42,7 +42,8 @@ declare_args() {
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
-  enable_mojom_closure_compile = enable_js_type_check && optimize_webui
+  enable_mojom_closure_compile =
+      is_chromeos_ash && enable_js_type_check && optimize_webui
 
   # Enables generating javascript fuzzing-related code and the bindings for the
   # MojoLPM fuzzer targets. Off by default.
