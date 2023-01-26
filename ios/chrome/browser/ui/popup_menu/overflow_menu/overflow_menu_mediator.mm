@@ -1213,6 +1213,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   // the followAction should be valid.
   if (!self.followAction) {
     self.followAction = [self createFollowActionIfNeeded];
+    DCHECK(!self.followAction || self.webState != nullptr);
   }
 
   if (self.followAction) {
@@ -1230,7 +1231,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     self.readLaterAction
   ]];
 
-  if (IsPriceNotificationsEnabled()) {
+  if (self.webState &&
+      IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
+          self.webState->GetBrowserState()))) {
     [pageActions addObject:self.openPriceNotificationsAction];
   }
 

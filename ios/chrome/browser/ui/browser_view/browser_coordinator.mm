@@ -1008,7 +1008,7 @@ enum class ToolbarKind {
   self.viewController.infobarBannerOverlayContainerViewController =
       self.infobarBannerOverlayContainerCoordinator.viewController;
 
-  if (IsPriceNotificationsEnabled()) {
+  if (IsPriceTrackingEnabled(self.browser->GetBrowserState())) {
     self.priceNotificationsIPHCoordinator =
         [[PriceNotificationsIPHCoordinator alloc]
             initWithBaseViewController:self.viewController

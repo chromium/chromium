@@ -279,7 +279,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
 
   CaptivePortalTabHelper::CreateForWebState(web_state);
 
-  if (IsPriceNotificationsEnabled()) {
+  if (IsPriceTrackingEnabled(browser_state)) {
     PriceNotificationsTabHelper::CreateForWebState(web_state);
   }
 }
