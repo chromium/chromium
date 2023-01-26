@@ -154,6 +154,8 @@ ExtensionContextMenuModel::ContextMenuAction CommandIdToContextMenuAction(
     case ExtensionContextMenuModel::PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED:
       NOTREACHED();
       break;
+    case ExtensionContextMenuModel::VIEW_WEB_PERMISSIONS:
+      return ContextMenuAction::kViewWebPermissions;
     default:
       break;
   }
@@ -350,8 +352,9 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case TOGGLE_VISIBILITY:
       return !browser_->profile()->IsOffTheRecord() &&
              !IsExtensionForcePinned(*extension, profile_);
-    // Manage extensions is always enabled.
+    // Manage extensions and view web permissions are always enabled.
     case MANAGE_EXTENSIONS:
+    case VIEW_WEB_PERMISSIONS:
       return true;
     default:
       NOTREACHED() << "Unknown command" << command_id;
@@ -398,6 +401,9 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       chrome::ShowExtensions(browser_, extension->id());
       break;
     }
+    case VIEW_WEB_PERMISSIONS:
+      chrome::ShowSiteSettings(browser_, extension->url());
+      break;
     case INSPECT_POPUP: {
       delegate_->InspectPopup();
       break;
@@ -498,6 +504,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   if (!is_component_) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithStringId(MANAGE_EXTENSIONS, IDS_MANAGE_EXTENSION);
+    AddItemWithStringId(VIEW_WEB_PERMISSIONS, IDS_VIEW_WEB_PERMISSIONS);
   }
 
   const ActionInfo* action_info = ActionInfo::GetExtensionActionInfo(extension);

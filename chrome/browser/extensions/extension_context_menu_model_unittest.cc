@@ -537,6 +537,11 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
         GetCommandState(menu, ExtensionContextMenuModel::MANAGE_EXTENSIONS),
         CommandState::kAbsent);
 
+    // A component extension's context menu should not link to site settings.
+    EXPECT_EQ(
+        GetCommandState(menu, ExtensionContextMenuModel::VIEW_WEB_PERMISSIONS),
+        CommandState::kAbsent);
+
     // The "name" option should be present, but not enabled for component
     // extensions.
     EXPECT_EQ(GetCommandState(menu, ExtensionContextMenuModel::HOME_PAGE),
@@ -563,10 +568,10 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   }
 }
 
-// Tests that the standard menu items (home page, uninstall, and manage
-// extensions) are always visible for any context menu source. NOTE:
-// other menu items visibility is dependent on context, and behavior is checked
-// in other tests.
+// Tests that the standard menu items (home page, uninstall, manage
+// extensions, view web permissions) are always visible for any context menu
+// source. NOTE: other menu items visibility is dependent on context, and
+// behavior is checked in other tests.
 TEST_F(ExtensionContextMenuModelTest,
        ExtensionContextMenuStandardItemsAlwaysVisible) {
   InitializeEmptyExtensionService();
@@ -586,6 +591,9 @@ TEST_F(ExtensionContextMenuModelTest,
               CommandState::kAbsent);
     EXPECT_NE(
         GetCommandState(menu, ExtensionContextMenuModel::MANAGE_EXTENSIONS),
+        CommandState::kAbsent);
+    EXPECT_NE(
+        GetCommandState(menu, ExtensionContextMenuModel::VIEW_WEB_PERMISSIONS),
         CommandState::kAbsent);
   }
 }

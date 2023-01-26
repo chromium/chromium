@@ -44,6 +44,7 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
     PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
     PAGE_ACCESS_PERMISSIONS_PAGE,
+    VIEW_WEB_PERMISSIONS,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -69,7 +70,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kPageAccessRunOnAllSites = 10,
     kPageAccessLearnMore = 11,
     kPageAccessPermissionsPage = 12,
-    kMaxValue = kPageAccessPermissionsPage,
+    kViewWebPermissions = 13,
+    kMaxValue = kViewWebPermissions,
   };
 
   // Location where the context menu is open from.
