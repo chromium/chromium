@@ -214,6 +214,19 @@ void CalendarViewController::OnEventListClosed() {
   is_event_list_showing_ = false;
 }
 
+void CalendarViewController::RecordEventListItemActivated(
+    const ui::Event& event) {
+  // The EventListItemView is used by both the event list view and the up next
+  // view. So if the event list view is not showing, then it's in the up next
+  // view.
+  if (is_event_list_showing_) {
+    calendar_metrics::RecordEventListItemActivated(event);
+    return;
+  }
+
+  calendar_metrics::RecordEventListItemInUpNextLaunched(event);
+}
+
 void CalendarViewController::OnCalendarEventWillLaunch() {
   UmaHistogramMediumTimes("Ash.Calendar.UserJourneyTime.EventLaunched",
                           base::TimeTicks::Now() - calendar_open_time_);

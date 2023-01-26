@@ -12,6 +12,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/time/calendar_event_list_item_view_jelly.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -235,6 +236,8 @@ void CalendarUpNextView::UpdateEvents(
     const std::list<google_apis::calendar::CalendarEvent>& events,
     views::BoxLayout* content_layout_manager) {
   content_view_->RemoveAllChildViews();
+
+  calendar_metrics::RecordUpNextEventCount(events.size());
 
   const auto now = base::Time::NowFromSystemTime();
   const auto [selected_date_midnight, selected_date_midnight_utc] =

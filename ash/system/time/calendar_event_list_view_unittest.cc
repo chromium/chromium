@@ -198,6 +198,7 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
 
   histogram_tester.ExpectTotalCount(
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
+  histogram_tester.ExpectTotalCount("Ash.Calendar.EventListItem.Activated", 1);
 }
 
 TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {

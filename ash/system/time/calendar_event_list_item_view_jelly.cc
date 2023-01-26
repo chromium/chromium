@@ -211,7 +211,7 @@ void CalendarEventListItemViewJelly::OnThemeChanged() {
 bool CalendarEventListItemViewJelly::PerformAction(const ui::Event& event) {
   DCHECK(event_url_.is_empty() || event_url_.is_valid());
 
-  calendar_metrics::RecordEventListItemActivated(event);
+  calendar_view_controller_->RecordEventListItemActivated(event);
   calendar_view_controller_->OnCalendarEventWillLaunch();
 
   GURL finalized_url;

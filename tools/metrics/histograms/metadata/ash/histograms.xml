@@ -960,6 +960,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Calendar.UpNextView.EventDisplayedCount" units="int"
+    expires_after="2024-01-24">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the number of currently visible upcoming events shown to the user
+    when the Calendar &quot;Up next&quot; view displays. i.e. the user opens the
+    sys tray calendar, &quot;Up next&quot; displays 2 upcoming events, this
+    metric will track a count of 2.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Calendar.UpNextView.EventListItem.Pressed"
+    enum="CalendarEventSource" expires_after="2024-01-24">
+  <owner>newcomer@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Recorded when an upcoming event is pressed from the Calendar &quot;Up
+    next&quot; view and launched in Google Calendar. i.e. the user opens the sys
+    tray calendar, &quot;Up next&quot; displays an event in the next 10 mins and
+    the user taps the event.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Calendar.UserJourneyTime.{EventLaunchState}" units="ms"
     expires_after="2023-09-18">
   <owner>newcomer@google.com</owner>

@@ -18,6 +18,7 @@
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/event.h"
 
 namespace ash {
 
@@ -69,6 +70,12 @@ class ASH_EXPORT CalendarViewController {
 
   // Gets called when the `CalendarEventListView` is closed.
   void OnEventListClosed();
+
+  // Records the event list item being pressed on and the type of event.
+  // Captures whether it was from the `CalendarEventListView` or implicitly the
+  // `CalendarUpNextView` (the only other place the `CalendarEventListItemView`
+  // is used currently).
+  void RecordEventListItemActivated(const ui::Event& event);
 
   // Called when a calendar event is about to launch. Used to record metrics.
   void OnCalendarEventWillLaunch();

@@ -11,6 +11,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -444,6 +445,62 @@ TEST_F(CalendarUpNextViewTest,
   LeftClickOn(GetTodaysEventsButton());
 
   EXPECT_TRUE(called);
+}
+
+TEST_F(CalendarUpNextViewTest, ShouldTrackLaunchingFromEventListItem) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add an upcoming event.
+  std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
+  auto event_in_ten_mins_start_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+      base::Minutes(10);
+  auto event_in_ten_mins_end_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() + base::Hours(1);
+  events.push_back(
+      CreateEvent(event_in_ten_mins_start_time, event_in_ten_mins_end_time));
+
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  CreateUpNextView(std::move(events));
+
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(1));
+
+  // Click event inside the scrollview contents.
+  LeftClickOn(GetContentsView()->children()[0]);
+
+  histogram_tester->ExpectTotalCount(
+      "Ash.Calendar.UpNextView.EventListItem.Pressed", 1);
+}
+
+TEST_F(CalendarUpNextViewTest, ShouldTrackEventDisplayedCount) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Add 5 upcoming events.
+  const int event_count = 5;
+  std::list<std::unique_ptr<google_apis::calendar::CalendarEvent>> events;
+  auto event_in_ten_mins_start_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() +
+      base::Minutes(10);
+  auto event_in_ten_mins_end_time =
+      base::subtle::TimeNowIgnoringOverride().LocalMidnight() + base::Hours(1);
+  for (int i = 0; i < event_count; ++i) {
+    events.push_back(
+        CreateEvent(event_in_ten_mins_start_time, event_in_ten_mins_end_time));
+  }
+
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  CreateUpNextView(std::move(events));
+
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(event_count));
+
+  histogram_tester->ExpectBucketCount(
+      "Ash.Calendar.UpNextView.EventDisplayedCount", event_count, 1);
 }
 
 class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {

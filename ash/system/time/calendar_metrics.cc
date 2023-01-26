@@ -33,6 +33,10 @@ constexpr char kCalendarMonthDwellTime[] = "Ash.Calendar.MonthDwellTime";
 constexpr char kCalendarScrollSource[] = "Ash.Calendar.ScrollSource";
 constexpr char kCalendarKeyboardNavigation[] =
     "Ash.Calendar.KeyboardNavigation";
+constexpr char kCalendarEventListItemInUpNextPressed[] =
+    "Ash.Calendar.UpNextView.EventListItem.Pressed";
+constexpr char kCalendarUpNextEventDisplayedCount[] =
+    "Ash.Calendar.UpNextView.EventDisplayedCount";
 
 }  // namespace
 
@@ -112,6 +116,15 @@ ui::AnimationThroughputReporter CreateAnimationReporter(
 void RecordCalendarKeyboardNavigation(
     const CalendarKeyboardNavigationSource key_source) {
   base::UmaHistogramEnumeration(kCalendarKeyboardNavigation, key_source);
+}
+
+void RecordEventListItemInUpNextLaunched(const ui::Event& event) {
+  base::UmaHistogramEnumeration(kCalendarEventListItemInUpNextPressed,
+                                GetEventType(event));
+}
+
+void RecordUpNextEventCount(const int event_count) {
+  base::UmaHistogramCounts100(kCalendarUpNextEventDisplayedCount, event_count);
 }
 
 }  // namespace calendar_metrics
