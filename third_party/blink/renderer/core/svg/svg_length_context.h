@@ -96,6 +96,11 @@ class CORE_EXPORT SVGLengthContext {
   float ValueForLength(const Length&, float zoom, SVGLengthMode) const;
   static float ValueForLength(const Length&, float zoom, float dimension);
 
+  double ConvertValueToUserUnitsUnclamped(
+      float value,
+      SVGLengthMode mode,
+      CSSPrimitiveValue::UnitType from_unit) const;
+
   const SVGElement* context_;
 };
 

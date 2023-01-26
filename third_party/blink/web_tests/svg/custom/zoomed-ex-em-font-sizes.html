@@ -28,7 +28,7 @@
         zoomLevels.forEach(function (zoom) {
             html.style.zoom = zoom;
             test(function () {
-                assert_approx_equals(elm.getStartPositionOfChar(0).y, reference_y, 1);
+                assert_approx_equals(elm.getStartPositionOfChar(0).y, reference_y, 2);
             }, "Unit " + elm.id + " not affected by zoom level " + zoom);
         });
 

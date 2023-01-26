@@ -28,13 +28,10 @@
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
-#include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -45,12 +42,8 @@ namespace blink {
 namespace {
 
 const ComputedStyle* ComputedStyleForLengthResolving(
-    const SVGElement* context) {
-  if (!context) {
-    return nullptr;
-  }
-
-  const ContainerNode* current_context = context;
+    const SVGElement& context) {
+  const ContainerNode* current_context = &context;
   do {
     if (current_context->GetLayoutObject()) {
       return current_context->GetLayoutObject()->Style();
@@ -63,6 +56,11 @@ const ComputedStyle* ComputedStyleForLengthResolving(
   return nullptr;
 }
 
+const ComputedStyle* ComputedStyleForLengthResolving(
+    const SVGElement* context) {
+  return context ? ComputedStyleForLengthResolving(*context) : nullptr;
+}
+
 const ComputedStyle* RootElementStyle(const SVGElement& element) {
   if (auto* document_element = element.GetDocument().documentElement()) {
     if (element != document_element) {
@@ -70,10 +68,6 @@ const ComputedStyle* RootElementStyle(const SVGElement& element) {
     }
   }
   return nullptr;
-}
-
-const ComputedStyle* RootElementStyle(const SVGElement* element) {
-  return element ? RootElementStyle(*element) : nullptr;
 }
 
 class SVGLengthConversionData : public CSSToLengthConversionData {
@@ -112,181 +106,6 @@ float ObjectBoundingBoxUnitToUserUnits(const Length& length,
     std::swap(unit_dimension, ref_dimension);
   }
   return FloatValueForLength(length, unit_dimension, nullptr) * ref_dimension;
-}
-
-float ConvertValueFromUserUnitsToEMS(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  float font_size = style->SpecifiedFontSize();
-  if (!font_size) {
-    return 0;
-  }
-  return value / font_size;
-}
-
-float ConvertValueFromEMSToUserUnits(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  return value * style->SpecifiedFontSize();
-}
-
-float ConvertValueFromUserUnitsToEXS(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  // Use of ceil allows a pixel match to the W3Cs expected output of
-  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
-  // would be best to remove this.
-  float x_height =
-      ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
-  if (!x_height) {
-    return 0;
-  }
-  return value / x_height;
-}
-
-float ConvertValueFromEXSToUserUnits(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  // Use of ceil allows a pixel match to the W3Cs expected output of
-  // coords-units-03-b.svg, if this causes problems in real world cases maybe it
-  // would be best to remove this.
-  return value *
-         ceilf(font_data->GetFontMetrics().XHeight() / style->EffectiveZoom());
-}
-
-float ConvertValueFromUserUnitsToCHS(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  float zero_width =
-      font_data->GetFontMetrics().ZeroWidth() / style->EffectiveZoom();
-  if (!zero_width) {
-    return 0;
-  }
-  return value / zero_width;
-}
-
-float ConvertValueFromCHSToUserUnits(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  return value * font_data->GetFontMetrics().ZeroWidth() /
-         style->EffectiveZoom();
-}
-
-float ConvertValueFromUserUnitsToICS(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  float ideographic_full_width =
-      font_data->GetFontMetrics().IdeographicFullWidth().value_or(
-          style->ComputedFontSize()) /
-      style->EffectiveZoom();
-  if (!ideographic_full_width) {
-    return 0;
-  }
-  return value / ideographic_full_width;
-}
-
-float ConvertValueFromICSToUserUnits(const ComputedStyle* style, float value) {
-  if (!style) {
-    return 0;
-  }
-  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
-  if (!font_data) {
-    return 0;
-  }
-  return value *
-         font_data->GetFontMetrics().IdeographicFullWidth().value_or(
-             style->ComputedFontSize()) /
-         style->EffectiveZoom();
-}
-
-float ConvertValueFromUserUnitsToLHS(const ComputedStyle* style, float value) {
-  return value / AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                                    *style);
-}
-
-float ConvertValueFromLHSToUserUnits(const ComputedStyle* style, float value) {
-  return value * AdjustForAbsoluteZoom::AdjustFloat(style->ComputedLineHeight(),
-                                                    *style);
-}
-
-inline float ViewportLengthPercent(const float width_or_height) {
-  return width_or_height / 100;
-}
-
-inline float ViewportMinPercent(const gfx::SizeF& viewport_size) {
-  return std::min(viewport_size.width(), viewport_size.height()) / 100;
-}
-
-inline float ViewportMaxPercent(const gfx::SizeF& viewport_size) {
-  return std::max(viewport_size.width(), viewport_size.height()) / 100;
-}
-
-inline float DimensionForViewportUnit(const SVGElement* context,
-                                      CSSPrimitiveValue::UnitType unit) {
-  if (!context) {
-    return 0;
-  }
-
-  const Document& document = context->GetDocument();
-  LocalFrameView* view = document.View();
-  if (!view) {
-    return 0;
-  }
-
-  const ComputedStyle* style = ComputedStyleForLengthResolving(context);
-  if (!style) {
-    return 0;
-  }
-
-  gfx::SizeF viewport_size(view->Width(), view->Height());
-
-  switch (unit) {
-    case CSSPrimitiveValue::UnitType::kViewportWidth:
-      return ViewportLengthPercent(viewport_size.width()) /
-             style->EffectiveZoom();
-
-    case CSSPrimitiveValue::UnitType::kViewportHeight:
-      return ViewportLengthPercent(viewport_size.height()) /
-             style->EffectiveZoom();
-
-    case CSSPrimitiveValue::UnitType::kViewportMin:
-      return ViewportMinPercent(viewport_size) / style->EffectiveZoom();
-
-    case CSSPrimitiveValue::UnitType::kViewportMax:
-      return ViewportMaxPercent(viewport_size) / style->EffectiveZoom();
-    default:
-      break;
-  }
-
-  NOTREACHED();
-  return 0;
 }
 
 }  // namespace
@@ -432,148 +251,71 @@ float SVGLengthContext::ValueForLength(const Length& length,
   return FloatValueForLength(length, dimension * zoom) / zoom;
 }
 
-float SVGLengthContext::ConvertValueToUserUnits(
+double SVGLengthContext::ConvertValueToUserUnitsUnclamped(
     float value,
     SVGLengthMode mode,
     CSSPrimitiveValue::UnitType from_unit) const {
-  double user_units = value;
+  // Handle absolute units.
   switch (from_unit) {
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kNumber:
     case CSSPrimitiveValue::UnitType::kInteger:
     case CSSPrimitiveValue::UnitType::kUserUnits:
-      user_units = value;
-      break;
-    case CSSPrimitiveValue::UnitType::kPercentage:
-      user_units = value * ViewportDimension(mode) / 100;
-      break;
-    case CSSPrimitiveValue::UnitType::kEms:
-      user_units = ConvertValueFromEMSToUserUnits(
-          ComputedStyleForLengthResolving(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kExs:
-      user_units = ConvertValueFromEXSToUserUnits(
-          ComputedStyleForLengthResolving(context_), value);
-      break;
+      return value;
     case CSSPrimitiveValue::UnitType::kCentimeters:
-      user_units = value * kCssPixelsPerCentimeter;
-      break;
+      return value * kCssPixelsPerCentimeter;
     case CSSPrimitiveValue::UnitType::kMillimeters:
-      user_units = value * kCssPixelsPerMillimeter;
-      break;
+      return value * kCssPixelsPerMillimeter;
     case CSSPrimitiveValue::UnitType::kQuarterMillimeters:
-      user_units = value * kCssPixelsPerQuarterMillimeter;
-      break;
+      return value * kCssPixelsPerQuarterMillimeter;
     case CSSPrimitiveValue::UnitType::kInches:
-      user_units = value * kCssPixelsPerInch;
-      break;
+      return value * kCssPixelsPerInch;
     case CSSPrimitiveValue::UnitType::kPoints:
-      user_units = value * kCssPixelsPerPoint;
-      break;
+      return value * kCssPixelsPerPoint;
     case CSSPrimitiveValue::UnitType::kPicas:
-      user_units = value * kCssPixelsPerPica;
-      break;
-    case CSSPrimitiveValue::UnitType::kRems:
-      user_units =
-          ConvertValueFromEMSToUserUnits(RootElementStyle(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kRexs:
-      user_units =
-          ConvertValueFromEXSToUserUnits(RootElementStyle(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kChs:
-      user_units = ConvertValueFromCHSToUserUnits(
-          ComputedStyleForLengthResolving(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kRchs:
-      user_units =
-          ConvertValueFromCHSToUserUnits(RootElementStyle(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kIcs:
-      user_units = ConvertValueFromICSToUserUnits(
-          ComputedStyleForLengthResolving(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kRics:
-      user_units =
-          ConvertValueFromICSToUserUnits(RootElementStyle(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kLhs:
-      user_units = ConvertValueFromLHSToUserUnits(
-          ComputedStyleForLengthResolving(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kRlhs:
-      user_units =
-          ConvertValueFromLHSToUserUnits(RootElementStyle(context_), value);
-      break;
-    case CSSPrimitiveValue::UnitType::kViewportWidth:
-    case CSSPrimitiveValue::UnitType::kViewportHeight:
-    case CSSPrimitiveValue::UnitType::kViewportMin:
-    case CSSPrimitiveValue::UnitType::kViewportMax:
-      user_units = value * DimensionForViewportUnit(context_, from_unit);
-      break;
-    case CSSPrimitiveValue::UnitType::kContainerWidth:
-    case CSSPrimitiveValue::UnitType::kContainerHeight:
-    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
-    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
-    case CSSPrimitiveValue::UnitType::kContainerMin:
-    case CSSPrimitiveValue::UnitType::kContainerMax:
-      NOTREACHED() << "Must be handled using ResolveValue";
-      break;
+      return value * kCssPixelsPerPica;
     default:
-      NOTREACHED();
       break;
   }
+  if (!context_) {
+    return 0;
+  }
+  // Handle the percentage unit.
+  if (from_unit == CSSPrimitiveValue::UnitType::kPercentage) {
+    return value * ViewportDimension(mode) / 100;
+  }
+  // For remaining units, just instantiate a CSSToLengthConversionData object
+  // and use that for resolving.
+  const ComputedStyle* style = ComputedStyleForLengthResolving(*context_);
+  if (!style) {
+    return 0;
+  }
+  const SVGLengthConversionData conversion_data(*context_, *style);
+  return conversion_data.ZoomedComputedPixels(value, from_unit);
+}
 
+float SVGLengthContext::ConvertValueToUserUnits(
+    float value,
+    SVGLengthMode mode,
+    CSSPrimitiveValue::UnitType from_unit) const {
   // Since we mix css <length> values with svg's length values we need to
   // clamp values to the narrowest range, otherwise it can result in
   // rendering issues.
-  return CSSPrimitiveValue::ClampToCSSLengthRange(user_units);
+  return CSSPrimitiveValue::ClampToCSSLengthRange(
+      ConvertValueToUserUnitsUnclamped(value, mode, from_unit));
 }
 
 float SVGLengthContext::ConvertValueFromUserUnits(
     float value,
     SVGLengthMode mode,
     CSSPrimitiveValue::UnitType to_unit) const {
+  // Handle absolute units.
   switch (to_unit) {
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kNumber:
     case CSSPrimitiveValue::UnitType::kInteger:
     case CSSPrimitiveValue::UnitType::kUserUnits:
       return value;
-    case CSSPrimitiveValue::UnitType::kPercentage: {
-      const float dimension = ViewportDimension(mode);
-      if (!dimension) {
-        return 0;
-      }
-      // LengthTypePercentage is represented with 100% = 100.0.
-      // Good for accuracy but could eventually be changed.
-      return value * 100 / dimension;
-    }
-    case CSSPrimitiveValue::UnitType::kEms:
-      return ConvertValueFromUserUnitsToEMS(
-          ComputedStyleForLengthResolving(context_), value);
-    case CSSPrimitiveValue::UnitType::kExs:
-      return ConvertValueFromUserUnitsToEXS(
-          ComputedStyleForLengthResolving(context_), value);
-    case CSSPrimitiveValue::UnitType::kRems:
-      return ConvertValueFromUserUnitsToEMS(RootElementStyle(context_), value);
-    case CSSPrimitiveValue::UnitType::kRexs:
-      return ConvertValueFromUserUnitsToEXS(RootElementStyle(context_), value);
-    case CSSPrimitiveValue::UnitType::kChs:
-      return ConvertValueFromUserUnitsToCHS(
-          ComputedStyleForLengthResolving(context_), value);
-    case CSSPrimitiveValue::UnitType::kRchs:
-      return ConvertValueFromUserUnitsToCHS(RootElementStyle(context_), value);
-    case CSSPrimitiveValue::UnitType::kIcs:
-      return ConvertValueFromUserUnitsToICS(
-          ComputedStyleForLengthResolving(context_), value);
-    case CSSPrimitiveValue::UnitType::kRics:
-      return ConvertValueFromUserUnitsToICS(RootElementStyle(context_), value);
-    case CSSPrimitiveValue::UnitType::kLhs:
-      return ConvertValueFromUserUnitsToLHS(
-          ComputedStyleForLengthResolving(context_), value);
-    case CSSPrimitiveValue::UnitType::kRlhs:
-      return ConvertValueFromUserUnitsToLHS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kCentimeters:
       return value / kCssPixelsPerCentimeter;
     case CSSPrimitiveValue::UnitType::kMillimeters:
@@ -586,25 +328,34 @@ float SVGLengthContext::ConvertValueFromUserUnits(
       return value / kCssPixelsPerPoint;
     case CSSPrimitiveValue::UnitType::kPicas:
       return value / kCssPixelsPerPica;
-    case CSSPrimitiveValue::UnitType::kViewportWidth:
-    case CSSPrimitiveValue::UnitType::kViewportHeight:
-    case CSSPrimitiveValue::UnitType::kViewportMin:
-    case CSSPrimitiveValue::UnitType::kViewportMax:
-      return value / DimensionForViewportUnit(context_, to_unit);
-    case CSSPrimitiveValue::UnitType::kContainerWidth:
-    case CSSPrimitiveValue::UnitType::kContainerHeight:
-    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
-    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
-    case CSSPrimitiveValue::UnitType::kContainerMin:
-    case CSSPrimitiveValue::UnitType::kContainerMax:
-      NOTREACHED() << "Must be handled using ResolveValue";
-      break;
     default:
       break;
   }
-
-  NOTREACHED();
-  return 0;
+  if (!context_) {
+    return 0;
+  }
+  // Handle the percentage unit.
+  if (to_unit == CSSPrimitiveValue::UnitType::kPercentage) {
+    const float dimension = ViewportDimension(mode);
+    if (!dimension) {
+      return 0;
+    }
+    // LengthTypePercentage is represented with 100% = 100.0.
+    // Good for accuracy but could eventually be changed.
+    return value * 100 / dimension;
+  }
+  // For remaining units, just instantiate a CSSToLengthConversionData object
+  // and use that for resolving.
+  const ComputedStyle* style = ComputedStyleForLengthResolving(*context_);
+  if (!style) {
+    return 0;
+  }
+  const SVGLengthConversionData conversion_data(*context_, *style);
+  const double reference = conversion_data.ZoomedComputedPixels(1, to_unit);
+  if (!reference) {
+    return 0;
+  }
+  return ClampTo<float>(value / reference);
 }
 
 gfx::SizeF SVGLengthContext::ResolveViewport() const {
