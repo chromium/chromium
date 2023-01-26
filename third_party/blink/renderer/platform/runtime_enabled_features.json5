@@ -2439,12 +2439,6 @@
       base_feature: "SanitizerAPI",
     },
     {
-      name: "SanitizerAPIv0",
-      status: "stable",
-      implied_by: ["SanitizerAPI"],
-      base_feature: "SanitizerAPIv0",
-    },
-    {
       // https://wicg.github.io/webcomponents/proposals/Scoped-Custom-Element-Registries
       name: "ScopedCustomElementRegistry",
       status: "test",

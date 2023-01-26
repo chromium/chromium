@@ -8,8 +8,7 @@ typedef (DocumentFragment or Document) SanitizerInput;
 
 [
   Exposed=Window,
-  SecureContext,
-  RuntimeEnabled=SanitizerAPIv0
+  SecureContext
 ] interface Sanitizer {
   [MeasureAs=SanitizerAPICreated, CallWith=ExecutionContext, RaisesException] constructor(optional SanitizerConfig config = {});
 
