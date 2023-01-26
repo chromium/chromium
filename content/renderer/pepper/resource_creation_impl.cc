@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_features.h"
@@ -310,6 +311,9 @@ PP_Resource ResourceCreationImpl::CreateVideoDecoderDev(
     PP_Instance instance,
     PP_Resource graphics3d_id,
     PP_VideoDecoder_Profile profile) {
+  base::UmaHistogramBoolean(
+      "NaCl.ResourceCreationImpl.CreateVideoDecoderDev_Invoked", true);
+
   if (IsVideoDecoderDevAPIEnabled()) {
     return create_video_decoder_dev_impl_callback_.Run(instance, graphics3d_id,
                                                        profile);
