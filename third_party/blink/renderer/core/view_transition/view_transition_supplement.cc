@@ -106,6 +106,11 @@ ViewTransition* ViewTransitionSupplement::StartTransition(
   DCHECK(!transition_)
       << "skipTransition() should finish existing |transition_|";
 
+  // We need to be connected to a view to have a transition.
+  if (!document.View()) {
+    return nullptr;
+  }
+
   transition_ =
       ViewTransition::CreateFromScript(&document, script_state, callback, this);
 
