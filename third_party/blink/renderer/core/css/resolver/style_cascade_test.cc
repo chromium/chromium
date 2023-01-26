@@ -2948,6 +2948,26 @@ TEST_F(StyleCascadeTest, WebkitTransformOriginMixedCascadeOrder) {
   EXPECT_EQ(nullptr, cascade.ComputedValue("-webkit-transform-origin-z"));
 }
 
+TEST_F(StyleCascadeTest, VerticalAlignBaselineSource) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("vertical-align", "top");
+  cascade.Add("baseline-source", "first");
+  cascade.Apply();
+
+  EXPECT_EQ("top", cascade.ComputedValue("vertical-align"));
+  EXPECT_EQ("first", cascade.ComputedValue("baseline-source"));
+}
+
+TEST_F(StyleCascadeTest, VerticalAlignBaselineSourceReversed) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("baseline-source", "first");
+  cascade.Add("vertical-align", "top");
+  cascade.Apply();
+
+  EXPECT_EQ("top", cascade.ComputedValue("vertical-align"));
+  EXPECT_EQ("auto", cascade.ComputedValue("baseline-source"));
+}
+
 TEST_F(StyleCascadeTest, InitialDirection) {
   TestCascade cascade(GetDocument());
   cascade.Add("margin-inline-start:10px");

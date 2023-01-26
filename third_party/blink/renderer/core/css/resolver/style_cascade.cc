@@ -523,6 +523,17 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
       maybe_skip(GetCSSPropertyWebkitTransformOriginZ(), *priority);
     }
   }
+
+  // vertical-align will become a shorthand in the future - in order to
+  // mitigate the forward compat risk, skip the baseline-source longhand.
+  const CSSProperty& vertical_align = GetCSSPropertyVerticalAlign();
+  if (!resolver.filter_.Rejects(vertical_align)) {
+    if (const CascadePriority* priority =
+            map_.Find(vertical_align.GetCSSPropertyName())) {
+      LookupAndApply(vertical_align, resolver);
+      maybe_skip(GetCSSPropertyBaselineSource(), *priority);
+    }
+  }
 }
 
 // Go through all properties that were found during the analyze phase
