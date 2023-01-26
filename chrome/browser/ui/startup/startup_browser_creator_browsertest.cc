@@ -73,6 +73,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -3588,9 +3589,17 @@ class StartupBrowserCreatorInfobarsTest
       const base::CommandLine& command_line) {
     BrowserAddedObserver added_observer;
 
+    base::test::TestFuture<void> app_launch_done;
+    if (command_line.HasSwitch(switches::kAppId)) {
+      web_app::startup::SetStartupDoneCallbackForTesting(
+          app_launch_done.GetCallback());
+    } else {
+      std::move(app_launch_done.GetCallback()).Run();
+    }
     EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
         command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
         {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
+    EXPECT_TRUE(app_launch_done.Wait());
 
     // Wait until the new browser window has been created. Using
     // `FindOneOtherBrowser` is not sufficient here, because the window may be
