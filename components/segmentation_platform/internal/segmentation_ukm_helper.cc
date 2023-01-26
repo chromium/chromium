@@ -99,7 +99,8 @@ base::flat_set<SegmentId> GetSegmentIdsAllowedForReporting() {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT};
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
   }
   std::vector<std::string> segment_ids = base::SplitString(
       base::GetFieldTrialParamValueByFeature(
