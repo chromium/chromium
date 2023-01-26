@@ -294,6 +294,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Collections.IdOnLoad" enum="NTPCollectionId"
+    expires_after="2023-07-30">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The collection id of user's background image on the NTP. Only recorded once
+    per NTP and if the image has a collection id.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ConcretePage" enum="NewTabPageConcretePage"
     expires_after="2023-06-18">
   <owner>danpeng@google.com</owner>
