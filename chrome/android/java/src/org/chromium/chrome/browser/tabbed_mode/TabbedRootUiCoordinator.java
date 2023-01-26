@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
+import org.chromium.chrome.browser.accessibility.PageZoomIPHController;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
@@ -114,6 +115,7 @@ import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
+import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
@@ -791,6 +793,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                                    NewTabPageLaunchOrigin.WEB_FEED),
                                         TabLaunchType.FROM_CHROME_UI);
                     }, mModalDialogManagerSupplier.get(), mSnackbarManagerSupplier.get());
+        }
+
+        if (!didTriggerPromo && PageZoomCoordinator.shouldShowMenuItem()) {
+            // Page Zoom IPH should only show if the menu item is visible, and not on NTP or CCT.
+            Tab tab = mActivityTabProvider.get();
+            if (tab != null && tab.getWebContents() != null && !tab.isNativePage()) {
+                PageZoomIPHController mPageZoomIPHController = new PageZoomIPHController(mActivity,
+                        mAppMenuCoordinator.getAppMenuHandler(),
+                        mToolbarManager.getMenuButtonView());
+                mPageZoomIPHController.showColdStartIPH();
+            }
         }
     }
 

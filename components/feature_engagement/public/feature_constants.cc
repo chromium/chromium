@@ -281,6 +281,9 @@ BASE_FEATURE(kIPHPageInfoFeature,
 BASE_FEATURE(kIPHPageInfoStoreInfoFeature,
              "IPH_PageInfoStoreInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPageZoomFeature,
+             "IPH_PageZoom",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPreviewsOmniboxUIFeature,
              "IPH_PreviewsOmniboxUI",
              base::FEATURE_ENABLED_BY_DEFAULT);

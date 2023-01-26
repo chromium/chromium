@@ -59,7 +59,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE,
         FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE,
         FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE, FeatureConstants.PAGE_INFO_FEATURE,
-        FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE,
+        FeatureConstants.PAGE_INFO_STORE_INFO_FEATURE, FeatureConstants.PAGE_ZOOM_FEATURE,
         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE,
         FeatureConstants.READ_LATER_APP_MENU_BOOKMARKS_FEATURE,
         FeatureConstants.READ_LATER_BOTTOM_SHEET_FEATURE,
@@ -113,6 +113,7 @@ public @interface FeatureConstants {
     String KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE = "IPH_AutofillVirtualCardSuggestion";
     String KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE = "IPH_KeyboardAccessoryBarSwiping";
     String INSTANCE_SWITCHER = "IPH_InstanceSwitcher";
+    String PAGE_ZOOM_FEATURE = "IPH_PageZoom";
     String PREVIEWS_OMNIBOX_UI_FEATURE = "IPH_PreviewsOmniboxUI";
     String TRANSLATE_MENU_BUTTON_FEATURE = "IPH_TranslateMenuButton";
     String READ_LATER_CONTEXT_MENU_FEATURE = "IPH_ReadLaterContextMenu";

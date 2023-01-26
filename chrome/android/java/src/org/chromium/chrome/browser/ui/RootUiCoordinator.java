@@ -955,7 +955,10 @@ public class RootUiCoordinator
                     mModalDialogManagerSupplier.get(), mActivityTabProvider.get().getWebContents());
             return true;
         } else if (id == R.id.page_zoom_id) {
-            mPageZoomCoordinator.show(mActivityTabProvider.get().getWebContents());
+            Tab tab = mActivityTabProvider.get();
+            TrackerFactory.getTrackerForProfile(Profile.fromWebContents(tab.getWebContents()))
+                    .notifyEvent(EventConstants.PAGE_ZOOM_OPENED);
+            mPageZoomCoordinator.show(tab.getWebContents());
         }
 
         return false;

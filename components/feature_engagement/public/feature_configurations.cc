@@ -1010,6 +1010,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                                              Comparator(EQUAL, 0), 360, 360));
     return config;
   }
+
+  if (kIPHPageZoomFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger =
+        EventConfig("page_zoom_iph_trigger", Comparator(EQUAL, 0), 1440, 1440);
+    config->used =
+        EventConfig("page_zoom_opened", Comparator(EQUAL, 0), 1440, 1440);
+    return config;
+  }
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

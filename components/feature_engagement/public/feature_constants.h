@@ -116,6 +116,7 @@ BASE_DECLARE_FEATURE(kIPHMicToolbarFeature);
 BASE_DECLARE_FEATURE(kIPHNewTabPageHomeButtonFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoStoreInfoFeature);
+BASE_DECLARE_FEATURE(kIPHPageZoomFeature);
 BASE_DECLARE_FEATURE(kIPHPreviewsOmniboxUIFeature);
 BASE_DECLARE_FEATURE(kIPHPriceDropNTPFeature);
 BASE_DECLARE_FEATURE(kIPHQuietNotificationPromptsFeature);
