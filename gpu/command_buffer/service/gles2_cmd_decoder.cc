@@ -1262,16 +1262,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                              gl::GLImage* image) override;
 #endif
 
-  // Attaches |image| to the texture referred to by |client_texture_id|, marking
-  // the image as needing on-demand binding by the decoder if
-  // |can_bind_to_sampler| is false and as not needing on-demand binding by the
-  // decoder otherwise. |can_bind_to_sampler| is always false on Mac/Win and
-  // always true on all other platforms.
-  void BindImageInternal(uint32_t client_texture_id,
-                         uint32_t texture_target,
-                         gl::GLImage* image,
-                         bool can_bind_to_sampler);
-
   void DoTraceEndCHROMIUM(void);
 
   void DoDrawBuffersEXT(GLsizei count, const volatile GLenum* bufs);
@@ -18536,29 +18526,6 @@ void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
     uint32_t client_texture_id,
     uint32_t texture_target,
     gl::GLImage* image) {
-  BindImageInternal(client_texture_id, texture_target, image,
-                    /*can_bind_to_sampler=*/false);
-}
-#elif !BUILDFLAG(IS_ANDROID)
-void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
-    uint32_t client_texture_id,
-    uint32_t texture_target,
-    gl::GLImage* image) {
-  BindImageInternal(client_texture_id, texture_target, image,
-                    /*can_bind_to_sampler=*/true);
-}
-#endif
-
-void GLES2DecoderImpl::BindImageInternal(uint32_t client_texture_id,
-                                         uint32_t texture_target,
-                                         gl::GLImage* image,
-                                         bool can_bind_to_sampler) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  CHECK(!can_bind_to_sampler);
-#else
-  CHECK(can_bind_to_sampler);
-#endif
-
   TextureRef* ref = texture_manager()->GetTexture(client_texture_id);
   if (!ref) {
     return;
@@ -18570,10 +18537,27 @@ void GLES2DecoderImpl::BindImageInternal(uint32_t client_texture_id,
   }
 
   texture_manager()->SetLevelImage(ref, texture_target, 0, image,
-                                   can_bind_to_sampler
-                                       ? gpu::gles2::Texture::BOUND
-                                       : gpu::gles2::Texture::UNBOUND);
+                                   gpu::gles2::Texture::UNBOUND);
 }
+#elif !BUILDFLAG(IS_ANDROID)
+void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
+    uint32_t client_texture_id,
+    uint32_t texture_target,
+    gl::GLImage* image) {
+  TextureRef* ref = texture_manager()->GetTexture(client_texture_id);
+  if (!ref) {
+    return;
+  }
+
+  GLenum bind_target = GLES2Util::GLFaceTargetToTextureTarget(texture_target);
+  if (ref->texture()->target() != bind_target) {
+    return;
+  }
+
+  texture_manager()->SetLevelImage(ref, texture_target, 0, image,
+                                   gpu::gles2::Texture::BOUND);
+}
+#endif
 
 error::Error GLES2DecoderImpl::HandleTraceBeginCHROMIUM(
     uint32_t immediate_data_size,
