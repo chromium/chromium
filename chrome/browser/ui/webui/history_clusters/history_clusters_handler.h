@@ -110,9 +110,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   void OnHideVisitsComplete();
 
-  // Launches the Journeys survey, if user is eligible.
-  void LaunchJourneysSurvey();
-
   base::WeakPtr<ui::MojoBubbleWebUIController::Embedder>
       history_clusters_side_panel_embedder_;
 
@@ -149,11 +146,6 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // `BrowsingHistoryService` can handle only 1 delete request at a time.
   std::vector<mojom::URLVisitPtr> pending_remove_visits_;
   RemoveVisitsCallback pending_remove_visits_callback_;
-
-  // Flag used to launch survey once (at most) for each WebUI instance. The
-  // survey service itself has a limiter, but we also want to skip all the work
-  // to enqueue the request, so we have a separate flag here too.
-  bool survey_launch_attempted_ = false;
 
   // Last query issued by the WebUI. The WebUI always makes a query upon load,
   // so this string is always set. If the WebUI loads without a query in the q=

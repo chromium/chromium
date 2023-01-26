@@ -91,24 +91,6 @@ BASE_FEATURE(kHideVisits,
 
 }  // namespace internal
 
-BASE_FEATURE(kJourneysSurveyForHistoryEntrypoint,
-             "JourneysSurveyForHistoryEntrypoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kJourneysSurveyForHistoryEntrypointDelay{
-        &kJourneysSurveyForHistoryEntrypoint, "survey-delay-duration",
-        base::Seconds(6)};
-
-BASE_FEATURE(kJourneysSurveyForOmniboxEntrypoint,
-             "JourneysSurveyForOmniboxEntrypoint",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kJourneysSurveyForOmniboxEntrypointDelay{
-        &kJourneysSurveyForOmniboxEntrypoint, "survey-delay-duration",
-        base::Seconds(6)};
-
 BASE_FEATURE(kSidePanelJourneys,
              "SidePanelJourneys",
              base::FEATURE_DISABLED_BY_DEFAULT);

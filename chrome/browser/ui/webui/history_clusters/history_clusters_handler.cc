@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -238,24 +236,6 @@ absl::optional<mojom::SearchQueryPtr> SearchQueryToMojom(
   search_query_mojom->query = search_query;
   search_query_mojom->url = GURL(url);
   return search_query_mojom;
-}
-
-void ShowSurveyAndLogMetrics(HatsService* service,
-                             content::WebContents* contents,
-                             const std::string& trigger,
-                             base::TimeDelta delay) {
-  DCHECK(service);
-  DCHECK(contents);
-
-  base::UmaHistogramBoolean("History.Clusters.Survey.CanShowAnySurvey",
-                            service->CanShowAnySurvey(/*user_prompted=*/false));
-  base::UmaHistogramBoolean("History.Clusters.Survey.CanShowSurvey",
-                            service->CanShowSurvey(trigger));
-
-  bool success = service->LaunchDelayedSurveyForWebContents(
-      kHatsSurveyTriggerJourneysHistoryEntrypoint, contents,
-      delay.InMilliseconds());
-  base::UmaHistogramBoolean("History.Clusters.Survey.Success", success);
 }
 
 }  // namespace
@@ -570,10 +550,6 @@ void HistoryClustersHandler::SendClustersToPage(
       QueryClustersResultToMojom(profile_, query, std::move(clusters_batch),
                                  can_load_more, is_continuation);
   page_->OnClustersQueryResult(std::move(query_result));
-
-  // The user loading their first set of clusters should start the timer for
-  // launching the Journeys survey.
-  LaunchJourneysSurvey();
 }
 
 void HistoryClustersHandler::OnHideVisitsComplete() {
@@ -581,57 +557,6 @@ void HistoryClustersHandler::OnHideVisitsComplete() {
   std::move(pending_hide_visits_callback_).Run(/*success=*/true);
   // Notify the page of the successfully hidden visits to update the UI.
   page_->OnVisitsHidden(std::move(pending_hide_visits_));
-}
-
-void HistoryClustersHandler::LaunchJourneysSurvey() {
-  // All the below is to attempt launch a survey, after loading the first set of
-  // clusters.
-  if (survey_launch_attempted_) {
-    return;
-  }
-  survey_launch_attempted_ = true;
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(profile_, true);
-  if (!hats_service) {
-    return;
-  }
-
-  auto* logger =
-      history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
-          web_contents_->GetPrimaryPage());
-  auto initial_state = logger->initial_state();
-  if (!initial_state) {
-    return;
-  }
-
-  constexpr char kHistoryClustersSurveyRequestedUmaName[] =
-      "History.Clusters.Survey.Requested";
-  // These values must match enums.xml, and should not be modified.
-  enum HistoryClustersSurvey {
-    kHistoryEntrypoint = 0,
-    kOmniboxEntrypoint = 1,
-    kMaxValue = kOmniboxEntrypoint,
-  };
-  if (*initial_state ==
-          history_clusters::HistoryClustersInitialState::kSameDocument &&
-      base::FeatureList::IsEnabled(kJourneysSurveyForHistoryEntrypoint)) {
-    // Same document navigation basically means clicking over from History.
-    ShowSurveyAndLogMetrics(hats_service, web_contents_,
-                            kHatsSurveyTriggerJourneysHistoryEntrypoint,
-                            kJourneysSurveyForHistoryEntrypointDelay.Get());
-    base::UmaHistogramEnumeration(kHistoryClustersSurveyRequestedUmaName,
-                                  kHistoryEntrypoint);
-  } else if (*initial_state == history_clusters::HistoryClustersInitialState::
-                                   kIndirectNavigation &&
-             base::FeatureList::IsEnabled(
-                 kJourneysSurveyForOmniboxEntrypoint)) {
-    // Indirect navigation basically means from the omnibox.
-    ShowSurveyAndLogMetrics(hats_service, web_contents_,
-                            kHatsSurveyTriggerJourneysOmniboxEntrypoint,
-                            kJourneysSurveyForOmniboxEntrypointDelay.Get());
-    base::UmaHistogramEnumeration(kHistoryClustersSurveyRequestedUmaName,
-                                  kOmniboxEntrypoint);
-  }
 }
 
 void HistoryClustersHandler::RecordVisitAction(mojom::VisitAction visit_action,

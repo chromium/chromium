@@ -7,8 +7,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/time/time.h"
-#include "url/gurl.h"
 
 namespace history_clusters {
 
@@ -83,16 +81,6 @@ BASE_DECLARE_FEATURE(kHideVisits);
 // These are different because the base::Feature instance needs to be directly
 // referred to outside of Journeys code. Moreover, they are not used inside an
 // inner loop, so they don't need to be high performance.
-
-// Enables the user survey when the user clicks over to Journeys from History.
-BASE_DECLARE_FEATURE(kJourneysSurveyForHistoryEntrypoint);
-extern const base::FeatureParam<base::TimeDelta>
-    kJourneysSurveyForHistoryEntrypointDelay;
-
-// Enables the user survey when the user uses the omnibox to access Journeys.
-BASE_DECLARE_FEATURE(kJourneysSurveyForOmniboxEntrypoint);
-extern const base::FeatureParam<base::TimeDelta>
-    kJourneysSurveyForOmniboxEntrypointDelay;
 
 // Enables Side Panel Journeys.
 BASE_DECLARE_FEATURE(kSidePanelJourneys);
