@@ -2067,7 +2067,7 @@
   },
   {
     'name': 'chromium.coverage',
-    'mixins': [],
+    'mixins': ['chromium-tester-service-account'],
     'machines': {
       'android-code-coverage': {
         'mixins': [
