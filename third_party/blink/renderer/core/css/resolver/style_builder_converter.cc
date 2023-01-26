@@ -332,10 +332,11 @@ FontDescription::FamilyDescription StyleBuilderConverterBase::ConvertFontFamily(
 
 FontDescription::FamilyDescription StyleBuilderConverter::ConvertFontFamily(
     StyleResolverState& state,
-    const ScopedCSSValue& scoped_value) {
-  state.GetFontBuilder().SetFamilyTreeScope(scoped_value.GetTreeScope());
+    const CSSValue& value) {
+  // TODO(crbug.com/336876): Use the correct tree scope.
+  state.GetFontBuilder().SetFamilyTreeScope(&state.GetDocument());
   return StyleBuilderConverterBase::ConvertFontFamily(
-      scoped_value.GetCSSValue(),
+      value,
       state.GetDocument().GetSettings() ? &state.GetFontBuilder() : nullptr,
       &state.GetDocument());
 }

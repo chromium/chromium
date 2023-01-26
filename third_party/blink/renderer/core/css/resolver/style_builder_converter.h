@@ -129,7 +129,7 @@ class StyleBuilderConverter {
   static T ConvertFlags(StyleResolverState&, const CSSValue&);
   static FontDescription::FamilyDescription ConvertFontFamily(
       StyleResolverState&,
-      const ScopedCSSValue&);
+      const CSSValue&);
   static scoped_refptr<FontFeatureSettings> ConvertFontFeatureSettings(
       StyleResolverState&,
       const CSSValue&);

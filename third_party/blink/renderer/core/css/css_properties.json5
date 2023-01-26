@@ -1082,7 +1082,6 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
-      tree_scoped_value: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
     },
