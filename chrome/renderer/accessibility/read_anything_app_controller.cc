@@ -656,6 +656,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
+      .SetMethod("onSelectionChange",
+                 &ReadAnythingAppController::OnSelectionChange)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
       .SetMethod("setThemeForTesting",
@@ -808,6 +810,22 @@ void ReadAnythingAppController::OnLinkClicked(ui::AXNodeID ax_node_id) const {
     return;
   }
   page_handler_->OnLinkClicked(active_tree_id_, ax_node_id);
+}
+
+void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
+                                                  int anchor_offset,
+                                                  ui::AXNodeID focus_node_id,
+                                                  int focus_offset) const {
+  DCHECK_NE(active_tree_id_, ui::AXTreeIDUnknown());
+  // Prevent link clicks while distillation is in progress, as it means that the
+  // tree may have changed in an unexpected way.
+  // TODO(crbug.com/1266555): Consider how to show this in a more user-friendly
+  // way.
+  if (distillation_in_progress_) {
+    return;
+  }
+  page_handler_->OnSelectionChange(active_tree_id_, anchor_node_id,
+                                   anchor_offset, focus_node_id, focus_offset);
 }
 
 void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,

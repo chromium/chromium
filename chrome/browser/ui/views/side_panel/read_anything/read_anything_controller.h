@@ -75,6 +75,11 @@ class ReadAnythingController : public ReadAnythingToolbarView::Delegate,
   void OnUIDestroyed() override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      const ui::AXNodeID& target_node_id) override;
+  void OnSelectionChange(const ui::AXTreeID& target_tree_id,
+                         const ui::AXNodeID& anchor_node_id,
+                         int anchor_offset,
+                         const ui::AXNodeID& focus_node_id,
+                         int focus_offset) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

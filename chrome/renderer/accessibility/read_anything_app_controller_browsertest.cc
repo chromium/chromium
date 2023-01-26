@@ -31,6 +31,14 @@ class MockReadAnythingPageHandler : public read_anything::mojom::PageHandler {
               OnLinkClicked,
               (const ui::AXTreeID& target_tree_id, ui::AXNodeID target_node_id),
               (override));
+  MOCK_METHOD(void,
+              OnSelectionChange,
+              (const ui::AXTreeID& target_tree_id,
+               ui::AXNodeID anchor_node_id,
+               int anchor_offset,
+               ui::AXNodeID focus_node_id,
+               int focus_offset),
+              (override));
 
   mojo::PendingRemote<read_anything::mojom::PageHandler>
   BindNewPipeAndPassRemote() {
@@ -179,6 +187,14 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void OnLinkClicked(ui::AXNodeID ax_node_id) {
     controller_->OnLinkClicked(ax_node_id);
+  }
+
+  void OnSelectionChange(ui::AXNodeID anchor_node_id,
+                         int anchor_offset,
+                         ui::AXNodeID focus_node_id,
+                         int focus_offset) {
+    controller_->OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id,
+                                   focus_offset);
   }
 
   size_t GetNumTrees() { return controller_->trees_.size(); }
@@ -955,7 +971,40 @@ TEST_F(ReadAnythingAppControllerTest, OnLinkClicked_DistillationInProgress) {
   AccessibilityEventReceived({update});
   EXPECT_CALL(*distiller_, Distill).Times(1);
   OnActiveAXTreeIDChanged(new_tree_id);
+
+  // If distillation is in progress, OnLinkClicked should not be called.
   EXPECT_CALL(page_handler_, OnLinkClicked).Times(0);
   OnLinkClicked(2);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSelectionChange) {
+  ui::AXNodeID anchor_node_id = 2;
+  int anchor_offset = 0;
+  ui::AXNodeID focus_node_id = 3;
+  int focus_offset = 1;
+  EXPECT_CALL(page_handler_,
+              OnSelectionChange(tree_id_, anchor_node_id, anchor_offset,
+                                focus_node_id, focus_offset))
+      .Times(1);
+  OnSelectionChange(anchor_node_id, anchor_offset, focus_node_id, focus_offset);
+  page_handler_.FlushForTesting();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSelectionChange_DistillationInProgress) {
+  ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update, new_tree_id);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  AccessibilityEventReceived({update});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnActiveAXTreeIDChanged(new_tree_id);
+
+  // If distillation is in progress, OnSelectionChange should not be called.
+  EXPECT_CALL(page_handler_, OnSelectionChange).Times(0);
+  OnSelectionChange(2, 0, 3, 1);
   page_handler_.FlushForTesting();
 }

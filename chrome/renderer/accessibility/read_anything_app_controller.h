@@ -113,6 +113,10 @@ class ReadAnythingAppController
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   void OnConnected();
   void OnLinkClicked(ui::AXNodeID ax_node_id) const;
+  void OnSelectionChange(ui::AXNodeID anchor_node_id,
+                         int anchor_offset,
+                         ui::AXNodeID focus_node_id,
+                         int focus_offset) const;
 
   void Distill();
   void Draw();

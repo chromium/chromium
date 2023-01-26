@@ -36,6 +36,11 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
     virtual void OnUIDestroyed() = 0;
     virtual void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                                const ui::AXNodeID& target_node_id) = 0;
+    virtual void OnSelectionChange(const ui::AXTreeID& target_tree_id,
+                                   const ui::AXNodeID& anchor_node_id,
+                                   int anchor_offset,
+                                   const ui::AXNodeID& focus_node_id,
+                                   int focus_offset) = 0;
   };
 
   ReadAnythingPageHandler(
@@ -49,6 +54,11 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   // read_anything::mojom::PageHandler:
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
+  void OnSelectionChange(const ui::AXTreeID& target_tree_id,
+                         ui::AXNodeID anchor_node_id,
+                         int anchor_offset,
+                         ui::AXNodeID focus_node_id,
+                         int focus_offset) override;
 
   // ReadAnythingModel::Observer:
   void AccessibilityEventReceived(

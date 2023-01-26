@@ -66,8 +66,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   // the names set in read_anything_font_model.cc.
   // TODO(1266555): The displayed names of the fonts should be messages that
   //                will be translated to other languages.
-  private defaultFontName: string = 'sans-serif';
-  private validFontNames: Array<{name: string, css: string}> = [
+  private defaultFontName_: string = 'sans-serif';
+  private validFontNames_: Array<{name: string, css: string}> = [
     {name: 'Standard font', css: 'Standard font'},
     {name: 'Sans-serif', css: 'sans-serif'},
     {name: 'Serif', css: 'serif'},
@@ -76,11 +76,30 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     {name: 'Times New Roman', css: '"Times New Roman"'},
   ];
 
+  // Maps a DOM node to the AXNodeID that was used to create it.
+  private nodeToAXNodeIDMap_: WeakMap<Node, number> = new WeakMap();
+
   override connectedCallback() {
     super.connectedCallback();
     if (chrome.readAnything) {
       chrome.readAnything.onConnected();
     }
+
+    document.onselectionchange = () => {
+      const shadowRoot = this.shadowRoot;
+      assert(shadowRoot);
+      const selection = shadowRoot.getSelection();
+      assert(selection);
+      const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+      if (!anchorNode || !focusNode) {
+        return;
+      }
+      const anchorNodeId = this.nodeToAXNodeIDMap_.get(anchorNode);
+      const focusNodeId = this.nodeToAXNodeIDMap_.get(focusNode);
+      assert(anchorNodeId && focusNodeId);
+      chrome.readAnything.onSelectionChange(
+          anchorNodeId, anchorOffset, focusNodeId, focusOffset);
+    };
   }
 
   private buildSubtree_(nodeId: number): Node {
@@ -98,6 +117,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const element = document.createElement(htmlTag);
+    this.nodeToAXNodeIDMap_.set(element, nodeId);
     const direction = chrome.readAnything.getTextDirection(nodeId);
     if (direction) {
       element.setAttribute('dir', direction);
@@ -128,6 +148,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private createTextNode_(nodeId: number): Node {
     const textContent = chrome.readAnything.getTextContent(nodeId);
     const textNode = document.createTextNode(textContent);
+    this.nodeToAXNodeIDMap_.set(textNode, nodeId);
     const shouldBold = chrome.readAnything.shouldBold(nodeId);
     const isOverline = chrome.readAnything.isOverline(nodeId);
 
@@ -146,13 +167,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   updateContent() {
     const shadowRoot = this.shadowRoot;
-    if (!shadowRoot) {
-      return;
-    }
+    assert(shadowRoot);
     const container = shadowRoot.getElementById('container');
-    if (!container) {
-      return;
-    }
+    assert(container);
 
     // Remove all children from container. Use `replaceChildren` rather than
     // setting `innerHTML = ''` in order to remove all listeners, too.
@@ -175,9 +192,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   validatedFontName(): string {
     // Validate that the given font name is a valid choice, or use the default.
-    const validFontName = this.validFontNames.find(
+    const validFontName = this.validFontNames_.find(
         (f: {name: string}) => f.name === chrome.readAnything.fontName);
-    return validFontName ? validFontName.css : this.defaultFontName;
+    return validFontName ? validFontName.css : this.defaultFontName_;
   }
 
   private getLinkColor(backgroundSkColor: SkColor): LinkColor {

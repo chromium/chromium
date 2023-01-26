@@ -104,3 +104,15 @@ void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,
     delegate_->OnLinkClicked(target_tree_id, target_node_id);
   }
 }
+
+void ReadAnythingPageHandler::OnSelectionChange(
+    const ui::AXTreeID& target_tree_id,
+    ui::AXNodeID anchor_node_id,
+    int anchor_offset,
+    ui::AXNodeID focus_node_id,
+    int focus_offset) {
+  if (delegate_) {
+    delegate_->OnSelectionChange(target_tree_id, anchor_node_id, anchor_offset,
+                                 focus_node_id, focus_offset);
+  }
+}
