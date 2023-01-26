@@ -3111,9 +3111,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Android.PrepareMenu.OpenWebApkVisibilityCheck" units="ms"
     expires_after="2023-06-01">
   <owner>hartmanng@chromium.org</owner>
-  <owner>
-    src/chrome/android/java/src/org/chromium/chrome/browser/webapps/OWNERS
-  </owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
     Measures the amount of time spent querying for whether a WebAPK is already
     installed.
