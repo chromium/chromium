@@ -329,11 +329,6 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
     GTEST_SKIP();
   }
 
-  // https://crbug.com/1410447
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
-    GTEST_SKIP();
-  }
-
   EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   auto mailbox = Mailbox::GenerateForSharedImage();
   gfx::Size size(256, 256);
