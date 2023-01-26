@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -974,12 +975,51 @@ public class TabListMediatorUnitTest {
         doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        mTabModelObserverCaptor.getValue().didAddTab(newTab, TabLaunchType.FROM_TAB_SWITCHER_UI,
+                TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(3));
         assertThat(mModel.get(2).model.get(TabProperties.TAB_ID), equalTo(TAB3_ID));
         assertThat(mModel.get(2).model.get(TabProperties.TITLE), equalTo(TAB3_TITLE));
+    }
+
+    @Test
+    public void tabAddition_GTS_delayAdd() {
+        initAndAssertAllProperties();
+        doReturn(true).when(mTabModelSelector).isTabStateInitialized();
+
+        TabImpl newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(mTab1).when(mTabModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabModelFilter).getTabAt(2);
+        doReturn(Arrays.asList(mTab1, mTab2, newTab))
+                .when(mTabModelFilter)
+                .getRelatedTabList(TAB1_ID);
+        doReturn(3).when(mTabModelFilter).getCount();
+        doReturn(Arrays.asList(newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
+        assertThat(mModel.size(), equalTo(2));
+
+        TabModelObserver tabModelObserver = mTabModelObserverCaptor.getValue();
+        // Add tab marked as delayed
+        tabModelObserver.didAddTab(newTab, TabLaunchType.FROM_TAB_SWITCHER_UI,
+                TabCreationState.LIVE_IN_FOREGROUND, true);
+
+        // Verify tab did not get added and delayed tab is captured.
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mMediator.getTabToAddDelayedForTesting(), equalTo(newTab));
+
+        // Select delayed tab
+        tabModelObserver.didSelectTab(newTab, TabSelectionType.FROM_USER, mTab1.getId());
+        // Assert old tab is still marked as selected
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+
+        // Hide GTS to complete tab addition and selection
+        mMediator.postHiding();
+        // Assert tab added and selected. Assert old tab is de-selected.
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertNull(mMediator.getTabToAddDelayedForTesting());
     }
 
     @Test
@@ -996,8 +1036,8 @@ public class TabListMediatorUnitTest {
         doReturn(Arrays.asList(mTab2, newTab)).when(mTabModelFilter).getRelatedTabList(eq(TAB3_ID));
         assertThat(mModel.size(), equalTo(2));
 
-        mTabModelObserverCaptor.getValue().didAddTab(
-                newTab, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND, false);
+        mTabModelObserverCaptor.getValue().didAddTab(newTab, TabLaunchType.FROM_TAB_SWITCHER_UI,
+                TabCreationState.LIVE_IN_FOREGROUND, false);
 
         assertThat(mModel.size(), equalTo(2));
     }

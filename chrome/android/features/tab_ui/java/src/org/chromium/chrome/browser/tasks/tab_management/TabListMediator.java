@@ -2043,4 +2043,9 @@ class TabListMediator {
         }
         return TabModel.INVALID_TAB_INDEX;
     }
+
+    @VisibleForTesting
+    Tab getTabToAddDelayedForTesting() {
+        return mTabToAddDelayed;
+    }
 }
