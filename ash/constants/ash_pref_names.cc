@@ -1162,6 +1162,12 @@ const char kUsbDetectorNotificationEnabled[] =
 const char kPersonalizationKeyboardBacklightColor[] =
     "ash.personalization.keyboard_backlight_color";
 
+// A dictionary pref storing the color of each zone of the RGB keyboard. The key
+// specifies the zone .e.g. `zone-1`, `zone-2`, whereas the value is a
+// `personalization_app::mojom::BacklightColor`.
+const char kPersonalizationKeyboardBacklightZoneColors[] =
+    "ash.personalization.keyboard_backlight_zone_colors";
+
 // Integer pref corresponding to the autozoom state, the value should be one of
 // cros::mojom::CameraAutoFramingState.
 const char kAutozoomState[] = "ash.camera.autozoom_state";

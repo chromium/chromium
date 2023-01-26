@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
@@ -86,6 +87,10 @@ void KeyboardBacklightColorController::RegisterPrefs(
   registry->RegisterIntegerPref(
       prefs::kPersonalizationKeyboardBacklightColor,
       static_cast<int>(personalization_app::mojom::BacklightColor::kWallpaper));
+  if (features::IsMultiZoneRgbKeyboardEnabled()) {
+    registry->RegisterDictionaryPref(
+        prefs::kPersonalizationKeyboardBacklightZoneColors);
+  }
 }
 
 void KeyboardBacklightColorController::SetBacklightColor(
@@ -224,6 +229,9 @@ void KeyboardBacklightColorController::DisplayBacklightColor(
     }
     case personalization_app::mojom::BacklightColor::kRainbow:
       rgb_keyboard_manager->SetRainbowMode();
+      break;
+    case personalization_app::mojom::BacklightColor::kMultiZone:
+      // TODO(b/266588717): Handle displaying multi-zone colors.
       break;
   }
 }
