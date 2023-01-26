@@ -341,6 +341,31 @@ TEST_F(InterestGroupPaReportUtilTest,
       /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
 }
 
+TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNegativeValue) {
+  // Negative value should be clamped to 0. Worklet code should prevent an int
+  // value from being negative, but worklet process can be compromised. And this
+  // tests that case.
+  EXPECT_EQ(CreateHistogramRequest(/*bucket=*/123, /*value=*/0),
+            FillInPrivateAggregationRequest(
+                CreateForEventRequest(/*bucket=*/123, /*value=*/-10,
+                                      /*event_type=*/"reserved.always"),
+                /*winning_bid=*/1, /*highest_scoring_other_bid=*/2,
+                /*reject_reason=*/absl::nullopt, /*is_winner=*/false));
+
+  // Calculated negative value should be clamped to 0.
+  EXPECT_EQ(
+      CreateHistogramRequest(/*bucket=*/123, /*value=*/0),
+      FillInPrivateAggregationRequest(
+          CreateForEventRequestWithValueObject(
+              /*bucket=*/123, /*value=*/
+              CreateSignalValue(
+                  /*scale=*/-10.0, /*offset=*/0, /*base_value=*/
+                  auction_worklet::mojom::BaseValue::kHighestScoringOtherBid),
+              /*event_type=*/"reserved.win"),
+          /*winning_bid=*/1, /*highest_scoring_other_bid=*/6.8,
+          /*reject_reason=*/absl::nullopt, /*is_winner=*/true));
+}
+
 TEST_F(InterestGroupPaReportUtilTest, ForEventContributionNoScaleOrOffset) {
   // No scale is provided to bucket.
   auction_worklet::mojom::SignalBucket bucket;
@@ -501,10 +526,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
       {2, INT32_MAX, INT32_MAX, INT32_MAX},
       // 1 * 1 + INT32_MAX => INT32_MAX
       {1, 1, INT32_MAX, INT32_MAX},
-      // INT32_MIN * 1 - 1 => INT32_MIN
-      {INT32_MIN, 1, -1, INT32_MIN},
-      // INT32_MAX * -1 - 1 => INT32_MIN
-      {INT32_MAX, -1, -1, INT32_MIN},
+      // INT32_MIN * 1 - 1 => 0
+      {INT32_MIN, 1, -1, 0},
+      // INT32_MAX * -1 - 1 => 0
+      {INT32_MAX, -1, -1, 0},
       // INT32_MIN * -1 + 0 => INT32_MAX
       {INT32_MIN, -1, 0, INT32_MAX},
 
@@ -512,10 +537,10 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
       {std::numeric_limits<double>::infinity(), 1, 0, INT32_MAX},
       // 1 * inf => INT32_MAX
       {1, std::numeric_limits<double>::infinity(), 0, INT32_MAX},
-      // -inf * 1 => INT32_MIN
-      {-std::numeric_limits<double>::infinity(), 1, 0, INT32_MIN},
-      // -1 * inf => INT32_MIN
-      {-1, std::numeric_limits<double>::infinity(), 0, INT32_MIN},
+      // -inf * 1 => 0
+      {-std::numeric_limits<double>::infinity(), 1, 0, 0},
+      // -1 * inf => 0
+      {-1, std::numeric_limits<double>::infinity(), 0, 0},
       // NaN * 1 => absl::nullopt
       {std::numeric_limits<double>::quiet_NaN(), 1, 0, absl::nullopt},
       // 1 * NaN => absl::nullopt
@@ -531,8 +556,8 @@ TEST_F(InterestGroupPaReportUtilTest, ForEventContributionCalculateValue) {
       {INT32_MIN, -1, -2, INT32_MAX - 1},
       // 1.9 * 2.0 - 1 => 2
       {1.9, 2.0, -1, 2},
-      // 1.9 * -2.0 + 2 => -1
-      {1.9, -2.0, 2, -1},
+      // 1.9 * -2.0 + 2 => 0
+      {1.9, -2.0, 2, 0},
       // 1.9 * -2.0 + 4 => 0
       {1.9, -2.0, 4, 0},
   };
