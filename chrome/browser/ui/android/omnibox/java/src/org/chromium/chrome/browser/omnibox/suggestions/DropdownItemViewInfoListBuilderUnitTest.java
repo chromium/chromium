@@ -16,9 +16,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_EXPANDED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
 
 import androidx.test.filters.SmallTest;
 
@@ -103,7 +103,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public void headers_buildsHeaderForFirstSuggestion() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails =
-                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build();
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build();
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch suggestion =
@@ -119,7 +119,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestion), any(), eq(0));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -142,8 +142,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails = GroupsInfo.newBuilder()
-                                          .putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER)
-                                          .putGroupConfigs(2, SECTION_3_EXPANDED_WITH_HEADER)
+                                          .putGroupConfigs(1, SECTION_2_WITH_HEADER)
+                                          .putGroupConfigs(2, SECTION_3_WITH_HEADER)
                                           .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
@@ -172,13 +172,13 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(1));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(SECTION_3_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_3_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -208,8 +208,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     public void headers_respectGroupHeadersWithNoTitle() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails = GroupsInfo.newBuilder()
-                                          .putGroupConfigs(1, SECTION_1_EXPANDED_NO_HEADER)
-                                          .putGroupConfigs(2, SECTION_2_EXPANDED_WITH_HEADER)
+                                          .putGroupConfigs(1, SECTION_1_NO_HEADER)
+                                          .putGroupConfigs(2, SECTION_2_WITH_HEADER)
                                           .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
@@ -242,7 +242,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup1), any(), eq(2));
         verifier.verify(mMockHeaderProcessor, times(1))
-                .populateModel(any(), eq(SECTION_2_EXPANDED_WITH_HEADER.getHeaderText()));
+                .populateModel(any(), eq(SECTION_2_WITH_HEADER.getHeaderText()));
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionForGroup2), any(), eq(3));
         verifier.verify(mMockSuggestionProcessor, times(1))
@@ -475,7 +475,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         final List<AutocompleteMatch> actualList = new ArrayList<>();
         final var groupsDetails =
-                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build();
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build();
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch suggestion =

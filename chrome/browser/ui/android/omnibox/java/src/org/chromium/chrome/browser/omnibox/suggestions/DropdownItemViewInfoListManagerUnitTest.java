@@ -4,18 +4,10 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_COLLAPSED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_EXPANDED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_COLLAPSED_WITH_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 
 import android.content.Context;
 import android.view.View;
@@ -132,207 +124,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
     @Test
     @SmallTest
-    public void modelUpdates_visibilityChangesOnlyUpdateTheModel() {
-        // This change confirms that we do not re-create entire model, but instead insert/remove
-        // items that have been added/removed from the list.
-        final List<DropdownItemViewInfo> list = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
-        verifyModelEquals(list);
-
-        // Monitor updates moving forward.
-        reset(mListObserver);
-
-        // Collapse group 1.
-        mManager.setGroupCollapsedState(1, true);
-        verify(mListObserver, times(1)).onItemRangeRemoved(any(), eq(1), eq(2));
-        // Collapse group 2.
-        mManager.setGroupCollapsedState(2, true);
-        verify(mListObserver, times(1)).onItemRangeRemoved(any(), eq(2), eq(2));
-
-        // Expand group 1.
-        mManager.setGroupCollapsedState(1, false);
-        verify(mListObserver, times(1)).onItemRangeInserted(any(), eq(1), eq(2));
-
-        // Expand group 2.
-        mManager.setGroupCollapsedState(2, false);
-        verify(mListObserver, times(1)).onItemRangeInserted(any(), eq(4), eq(2));
-
-        verifyNoMoreInteractions(mListObserver);
-    }
-
-    @Test
-    @SmallTest
-    public void groupHandling_toggleGroupExpandedState() {
-        final List<DropdownItemViewInfo> listWithBothGroupsExpanded = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, GroupsInfo.newBuilder().build());
-        verifyModelEquals(listWithBothGroupsExpanded);
-
-        // Toggle group 1.
-        final List<DropdownItemViewInfo> listWithGroup1Collapsed = new ArrayList<>();
-        listWithGroup1Collapsed.add(listWithBothGroupsExpanded.get(0));
-        listWithGroup1Collapsed.addAll(listWithBothGroupsExpanded.subList(3, 6));
-        mManager.setGroupCollapsedState(1, true);
-        verifyModelEquals(listWithGroup1Collapsed);
-        mManager.setGroupCollapsedState(1, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-
-        // Toggle group 2.
-        final List<DropdownItemViewInfo> listWithGroup2Collapsed =
-                listWithBothGroupsExpanded.subList(0, 4);
-        mManager.setGroupCollapsedState(2, true);
-        verifyModelEquals(listWithGroup2Collapsed);
-        mManager.setGroupCollapsedState(2, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-
-        // Toggle both groups.
-        final List<DropdownItemViewInfo> listWithBothGroupsCollapsed =
-                listWithGroup1Collapsed.subList(0, 2);
-        mManager.setGroupCollapsedState(2, true);
-        verifyModelEquals(listWithGroup2Collapsed);
-        mManager.setGroupCollapsedState(1, true);
-        verifyModelEquals(listWithBothGroupsCollapsed);
-        mManager.setGroupCollapsedState(2, false);
-        verifyModelEquals(listWithGroup1Collapsed);
-        mManager.setGroupCollapsedState(1, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-    }
-
-    @Test
-    @SmallTest
-    public void groupHandling_defaultGroupExpandedState() {
-        final List<DropdownItemViewInfo> listWithBothGroupsExpanded = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        // Receive suggestions list with group 1 default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
-                GroupsInfo.newBuilder()
-                        .putGroupConfigs(1, SECTION_1_COLLAPSED_NO_HEADER)
-                        .putGroupConfigs(2, SECTION_2_EXPANDED_WITH_HEADER)
-                        .build());
-
-        final List<DropdownItemViewInfo> listWithGroup1Collapsed = new ArrayList<>();
-        listWithGroup1Collapsed.add(listWithBothGroupsExpanded.get(0));
-        listWithGroup1Collapsed.addAll(listWithBothGroupsExpanded.subList(3, 6));
-        verifyModelEquals(listWithGroup1Collapsed);
-
-        // Expand suggestions for group 1.
-        mManager.setGroupCollapsedState(1, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-
-        // Receive suggestions list with group 2 default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
-                GroupsInfo.newBuilder()
-                        .putGroupConfigs(1, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(2, SECTION_2_COLLAPSED_WITH_HEADER)
-                        .build());
-        final List<DropdownItemViewInfo> listWithGroup2Collapsed =
-                listWithBothGroupsExpanded.subList(0, 4);
-        verifyModelEquals(listWithGroup2Collapsed);
-        // Expand suggestions for group 2.
-        mManager.setGroupCollapsedState(2, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-
-        // Receive suggestions list with both groups default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
-                GroupsInfo.newBuilder()
-                        .putGroupConfigs(1, SECTION_1_COLLAPSED_NO_HEADER)
-                        .putGroupConfigs(2, SECTION_2_COLLAPSED_WITH_HEADER)
-                        .build());
-        final List<DropdownItemViewInfo> listWithBothGroupsCollapsed =
-                listWithGroup1Collapsed.subList(0, 2);
-        verifyModelEquals(listWithBothGroupsCollapsed);
-        mManager.setGroupCollapsedState(2, false);
-        verifyModelEquals(listWithGroup1Collapsed);
-        mManager.setGroupCollapsedState(1, false);
-        verifyModelEquals(listWithBothGroupsExpanded);
-    }
-
-    @Test
-    @SmallTest
-    public void groupHandling_expandingAlreadyExpandedGroupAddsNoNewElementns() {
-        final List<DropdownItemViewInfo> list = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
-        verifyModelEquals(list);
-
-        // Expand group 1.
-        mManager.setGroupCollapsedState(1, false);
-        verifyModelEquals(list);
-
-        // Expand group 2.
-        mManager.setGroupCollapsedState(2, false);
-        verifyModelEquals(list);
-    }
-
-    @Test
-    @SmallTest
-    public void groupHandling_collapseAlreadyCollapsedListIsNoOp() {
-        final List<DropdownItemViewInfo> list = Arrays.asList(
-                // Group 1: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
-                // Group 2: header + 2 suggestions
-                new DropdownItemViewInfo(mHeaderProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
-                new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
-
-        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
-        verifyModelEquals(list);
-
-        // Collapse group 1.
-        final List<DropdownItemViewInfo> listWithGroup1Collapsed = new ArrayList<>();
-        listWithGroup1Collapsed.add(list.get(0));
-        listWithGroup1Collapsed.addAll(list.subList(3, 6));
-        mManager.setGroupCollapsedState(1, true);
-        verifyModelEquals(listWithGroup1Collapsed);
-        mManager.setGroupCollapsedState(1, true);
-        verifyModelEquals(listWithGroup1Collapsed);
-
-        // Collapse group 2.
-        final List<DropdownItemViewInfo> listWithBothGroupsCollapsed =
-                listWithGroup1Collapsed.subList(0, 2);
-        mManager.setGroupCollapsedState(2, true);
-        verifyModelEquals(listWithBothGroupsCollapsed);
-        mManager.setGroupCollapsedState(2, true);
-        verifyModelEquals(listWithBothGroupsCollapsed);
-    }
-
-    @Test
-    @SmallTest
     public void updateSuggestionsList_suggestionsAreRebuiltOnSubsequentInteractions() {
         // This test validates scenario:
         // 1. user focuses omnibox
@@ -416,8 +207,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 
@@ -483,8 +274,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // Receive suggestions list with group 1 default-collapsed.
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 
@@ -552,8 +343,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // Receive suggestions list with group 1 default-collapsed.
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 
@@ -619,8 +410,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // Receive suggestions list with group 1 default-collapsed.
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 
@@ -688,8 +479,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // Receive suggestions list with group 1 default-collapsed.
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 
@@ -757,8 +548,8 @@ public class DropdownItemViewInfoListManagerUnitTest {
         // Receive suggestions list with group 1 default-collapsed.
         mManager.setSourceViewInfoList(list,
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_WITH_HEADER)
                         .build());
         verifyModelEquals(list);
 

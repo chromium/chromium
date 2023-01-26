@@ -15,7 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 
 import android.view.KeyEvent;
 import android.view.View;
@@ -168,8 +168,8 @@ public class MostVisitedTilesTest {
         mTile3 = new SuggestTile(
                 "Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")), false);
 
-        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null,
-                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build());
+        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(
+                null, GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build());
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
         // First suggestion is the current content of the Omnibox.

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
-import android.util.SparseBooleanArray;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -14,7 +13,6 @@ import androidx.annotation.Px;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -30,7 +28,6 @@ import java.util.List;
 class DropdownItemViewInfoListManager {
     private final Context mContext;
     private final ModelList mManagedModel;
-    private final SparseBooleanArray mGroupsCollapsedState;
     private int mLayoutDirection;
     private @BrandedColorScheme int mBrandedColorScheme;
     private List<DropdownItemViewInfo> mSourceViewInfoList;
@@ -47,7 +44,6 @@ class DropdownItemViewInfoListManager {
         mLayoutDirection = View.LAYOUT_DIRECTION_INHERIT;
         mBrandedColorScheme = BrandedColorScheme.LIGHT_BRANDED_THEME;
         mSourceViewInfoList = Collections.emptyList();
-        mGroupsCollapsedState = new SparseBooleanArray();
         mManagedModel = managedModel;
 
         mListActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
@@ -88,30 +84,6 @@ class DropdownItemViewInfoListManager {
         }
     }
 
-    /**
-     * Toggle the collapsed state of suggestions belonging to specific group.
-     *
-     * @param groupId ID of the group whose collapsed state is expected to change.
-     * @param groupIsCollapsed Collapsed state of the group.
-     */
-    void setGroupCollapsedState(int groupId, boolean groupIsCollapsed) {
-        if (getGroupCollapsedState(groupId) == groupIsCollapsed) return;
-        mGroupsCollapsedState.put(groupId, groupIsCollapsed);
-        if (groupIsCollapsed) {
-            removeSuggestionsForGroup(groupId);
-        } else {
-            insertSuggestionsForGroup(groupId);
-        }
-    }
-
-    /**
-     * @param groupId ID of the suggestions group.
-     * @return True, if group should be collapsed, otherwise false.
-     */
-    private boolean getGroupCollapsedState(int groupId) {
-        return mGroupsCollapsedState.get(groupId, /* defaultCollapsedState= */ false);
-    }
-
     /** @return Whether the supplied view info is a header for the specific group of suggestions. */
     private boolean isGroupHeaderWithId(DropdownItemViewInfo info, int groupId) {
         return (info.type == OmniboxSuggestionUiType.HEADER && info.groupId == groupId);
@@ -121,7 +93,6 @@ class DropdownItemViewInfoListManager {
     void clear() {
         mSourceViewInfoList.clear();
         mManagedModel.clear();
-        mGroupsCollapsedState.clear();
     }
 
     void onNativeInitialized() {
@@ -137,14 +108,8 @@ class DropdownItemViewInfoListManager {
     void setSourceViewInfoList(
             @NonNull List<DropdownItemViewInfo> sourceList, @NonNull GroupsInfo groupsInfo) {
         mSourceViewInfoList = sourceList;
-        mGroupsCollapsedState.clear();
 
         final var groupsDetails = groupsInfo.getGroupConfigsMap();
-        // Clone information about the recommended group collapsed state.
-        for (var entry : groupsDetails.entrySet()) {
-            mGroupsCollapsedState.put(entry.getKey(),
-                    entry.getValue().getVisibility() == GroupConfig.Visibility.HIDDEN);
-        }
 
         // Build a new list of suggestions. Honor the default collapsed state.
         final List<ListItem> suggestionsList = new ArrayList<>();
@@ -198,10 +163,7 @@ class DropdownItemViewInfoListManager {
                 previousSection = currentSection;
             }
 
-            final boolean groupIsDefaultCollapsed = getGroupCollapsedState(item.groupId);
-            if (!groupIsDefaultCollapsed || isGroupHeaderWithId(item, item.groupId)) {
-                suggestionsList.add(item);
-            }
+            suggestionsList.add(item);
         }
 
         // round the bottom corners of the last suggestion.
@@ -226,82 +188,6 @@ class DropdownItemViewInfoListManager {
                         || type == OmniboxSuggestionUiType.TAIL_SUGGESTION
                         || type == OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION
                         || type == OmniboxSuggestionUiType.PEDAL_SUGGESTION);
-    }
-
-    /**
-     * Remove all suggestions that belong to specific group.
-     *
-     * @param groupId Group ID of suggestions that should be removed.
-     */
-    private void removeSuggestionsForGroup(int groupId) {
-        int index;
-        int count = 0;
-
-        for (index = mManagedModel.size() - 1; index >= 0; index--) {
-            DropdownItemViewInfo viewInfo = (DropdownItemViewInfo) mManagedModel.get(index);
-            if (isGroupHeaderWithId(viewInfo, groupId)) {
-                break;
-            } else if (viewInfo.groupId == groupId) {
-                count++;
-            } else if (count > 0 && viewInfo.groupId != groupId) {
-                break;
-            }
-        }
-        if (count > 0) {
-            // Skip group header when dropping items.
-            mManagedModel.removeRange(index + 1, count);
-        }
-    }
-
-    /**
-     * Insert all suggestions that belong to specific group.
-     *
-     * @param groupId Group ID of suggestions that should be removed.
-     */
-    private void insertSuggestionsForGroup(int groupId) {
-        int insertPosition = 0;
-
-        // Search for the insert position.
-        // Iterate through all *available* view infos until we find the first element that we
-        // should insert. To determine the insertion point we skip past all *displayed* view
-        // infos that were also preceding elements that we want to insert.
-        for (; insertPosition < mManagedModel.size(); insertPosition++) {
-            final DropdownItemViewInfo viewInfo =
-                    (DropdownItemViewInfo) mManagedModel.get(insertPosition);
-            // Insert suggestions directly below their header.
-            if (isGroupHeaderWithId(viewInfo, groupId)) break;
-        }
-
-        // Check if reached the end of the list.
-        if (insertPosition == mManagedModel.size()) return;
-
-        // insertPosition points to header - advance the index and see if we already have
-        // elements belonging to that group on the list.
-        insertPosition++;
-        if (insertPosition < mManagedModel.size()
-                && ((DropdownItemViewInfo) mManagedModel.get(insertPosition)).groupId == groupId) {
-            return;
-        }
-
-        // Find elements to insert.
-        int firstElementIndex = -1;
-        int count = 0;
-        for (int index = 0; index < mSourceViewInfoList.size(); index++) {
-            final DropdownItemViewInfo viewInfo = mSourceViewInfoList.get(index);
-            if (isGroupHeaderWithId(viewInfo, groupId)) {
-                firstElementIndex = index + 1;
-            } else if (viewInfo.groupId == groupId) {
-                count++;
-            } else if (count > 0 && viewInfo.groupId != groupId) {
-                break;
-            }
-        }
-
-        if (count != 0 && firstElementIndex != -1) {
-            mManagedModel.addAll(
-                    mSourceViewInfoList.subList(firstElementIndex, firstElementIndex + count),
-                    insertPosition);
-        }
     }
 
     /**

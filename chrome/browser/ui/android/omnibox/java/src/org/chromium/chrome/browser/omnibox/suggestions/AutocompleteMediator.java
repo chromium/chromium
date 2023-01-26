@@ -760,11 +760,6 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, isFinal);
     }
 
-    @Override
-    public void setGroupCollapsedState(int groupId, boolean state) {
-        mDropdownViewInfoListManager.setGroupCollapsedState(groupId, state);
-    }
-
     /**
      * Load the url corresponding to the typed omnibox text.
      * @param eventTime The timestamp the load was triggered by the user.

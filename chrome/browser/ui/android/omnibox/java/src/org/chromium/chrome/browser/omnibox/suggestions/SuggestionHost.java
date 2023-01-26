@@ -62,14 +62,6 @@ public interface SuggestionHost {
     void onSwitchToTab(@NonNull AutocompleteMatch suggestion, int position);
 
     /**
-     * Toggle expanded state of suggestion items belonging to specific group.
-     *
-     * @param groupId ID of Suggestion Group whose visibility changed.
-     * @param isCollapsed True if group should appear collapsed, otherwise false.
-     */
-    void setGroupCollapsedState(int groupId, boolean isCollapsed);
-
-    /**
      * Update the content of the Omnibox without triggering the Navigation.
      *
      * @param text The text to be displayed in the Omnibox.

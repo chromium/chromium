@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_EXPANDED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_COLLAPSED_WITH_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_INVALID;
 
 import android.util.ArraySet;
@@ -150,9 +149,9 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @SmallTest
     public void groupsDetails_cacheAllSaneGroupConfig() {
         var groupsDetails = GroupsInfo.newBuilder()
-                                    .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                    .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                    .putGroupConfigs(30, SECTION_3_EXPANDED_WITH_HEADER)
+                                    .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                    .putGroupConfigs(20, SECTION_2_WITH_HEADER)
+                                    .putGroupConfigs(30, SECTION_3_WITH_HEADER)
                                     .build();
 
         AutocompleteResult dataToCache = AutocompleteResult.fromCache(null, groupsDetails);
@@ -166,8 +165,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
     public void groupsDetails_restoreInvalidGroupsDetailsFromCache() {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         var groupsDetails = GroupsInfo.newBuilder()
-                                    .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                    .putGroupConfigs(30, SECTION_1_EXPANDED_NO_HEADER)
+                                    .putGroupConfigs(20, SECTION_2_WITH_HEADER)
+                                    .putGroupConfigs(30, SECTION_1_NO_HEADER)
                                     .build();
 
         // Write to disk.
@@ -210,7 +209,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
         list.add(createSuggestionBuilder(33).setGroupId(1).build());
 
         var groupsDetails =
-                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_COLLAPSED_WITH_HEADER).build();
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_WITH_HEADER).build();
 
         AutocompleteResult dataToCache = AutocompleteResult.fromCache(list, groupsDetails);
         CachedZeroSuggestionsManager.saveToCache(dataToCache);
@@ -273,12 +272,12 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Write 3 wrong group groupsDetails to the cache
         var groupsDetailsExpected =
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(12, SECTION_2_COLLAPSED_WITH_HEADER)
+                        .putGroupConfigs(12, SECTION_2_WITH_HEADER)
                         .putGroupConfigs(AutocompleteMatch.INVALID_GROUP, SECTION_INVALID)
                         .build();
         var groupsDetailsWithInvalidItems =
                 GroupsInfo.newBuilder()
-                        .putGroupConfigs(12, SECTION_2_COLLAPSED_WITH_HEADER)
+                        .putGroupConfigs(12, SECTION_2_WITH_HEADER)
                         .putGroupConfigs(AutocompleteMatch.INVALID_GROUP, SECTION_INVALID)
                         .build();
 

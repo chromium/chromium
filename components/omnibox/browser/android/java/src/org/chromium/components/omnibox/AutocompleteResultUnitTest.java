@@ -4,10 +4,9 @@
 
 package org.chromium.components.omnibox;
 
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_COLLAPSED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_EXPANDED_NO_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
-import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -56,25 +55,20 @@ public class AutocompleteResultUnitTest {
         list2.get(2).getSubtypes().add(4);
 
         var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                     .putGroupConfigs(30, SECTION_3_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
+                                     .putGroupConfigs(30, SECTION_3_WITH_HEADER)
                                      .build();
 
-        var groupsDetails2 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10,
-                                             GroupConfig.newBuilder()
-                                                     .mergeFrom(SECTION_1_EXPANDED_NO_HEADER)
-                                                     .build())
-                                     .putGroupConfigs(20,
-                                             GroupConfig.newBuilder()
-                                                     .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
-                                                     .build())
-                                     .putGroupConfigs(30,
-                                             GroupConfig.newBuilder()
-                                                     .mergeFrom(SECTION_3_EXPANDED_WITH_HEADER)
-                                                     .build())
-                                     .build();
+        var groupsDetails2 =
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(
+                                10, GroupConfig.newBuilder().mergeFrom(SECTION_1_NO_HEADER).build())
+                        .putGroupConfigs(20,
+                                GroupConfig.newBuilder().mergeFrom(SECTION_2_WITH_HEADER).build())
+                        .putGroupConfigs(30,
+                                GroupConfig.newBuilder().mergeFrom(SECTION_3_WITH_HEADER).build())
+                        .build();
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -91,12 +85,12 @@ public class AutocompleteResultUnitTest {
                 buildSuggestionForIndex(2), buildSuggestionForIndex(1), buildSuggestionForIndex(3));
 
         var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                      .build();
         var groupsDetails2 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                      .build();
 
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
@@ -114,34 +108,11 @@ public class AutocompleteResultUnitTest {
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                      .build();
         var groupsDetails2 =
-                GroupsInfo.newBuilder().putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER).build();
-
-        var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
-        var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
-
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
-    }
-
-    @Test
-    public void autocompleteResult_groupsWithDifferentDefaultExpandedStateAreNotEqual() {
-        var list1 = Arrays.asList(
-                buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        var list2 = Arrays.asList(
-                buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-
-        var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                     .build();
-        var groupsDetails2 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_COLLAPSED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                     .build();
+                GroupsInfo.newBuilder().putGroupConfigs(10, SECTION_1_NO_HEADER).build();
 
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -158,13 +129,13 @@ public class AutocompleteResultUnitTest {
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                      .build();
         var groupsDetails2 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
-                                     .putGroupConfigs(30, SECTION_3_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
+                                     .putGroupConfigs(30, SECTION_3_WITH_HEADER)
                                      .build();
 
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
@@ -194,18 +165,18 @@ public class AutocompleteResultUnitTest {
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
         var groupsDetails1 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_WITH_HEADER)
                                      .build();
         var groupsDetails2 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
-                                     .putGroupConfigs(15, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
+                                     .putGroupConfigs(15, SECTION_2_WITH_HEADER)
                                      .build();
         var groupsDetails3 = GroupsInfo.newBuilder()
-                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(10, SECTION_1_NO_HEADER)
                                      .putGroupConfigs(20,
                                              GroupConfig.newBuilder()
-                                                     .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
+                                                     .mergeFrom(SECTION_2_WITH_HEADER)
                                                      .setHeaderText("Woooo")
                                                      .build())
                                      .build();
