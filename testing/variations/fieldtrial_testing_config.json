@@ -13703,9 +13703,6 @@
             ],
             "experiments": [
                 {
-                    "name": "Default"
-                },
-                {
                     "name": "Enabled",
                     "enable_features": [
                         "Win10UnattendedDefault"
