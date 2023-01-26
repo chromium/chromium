@@ -1274,6 +1274,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kTabInactivityThreshold,
                                     kTabInactivityThresholdVariations,
                                     "TabInactivityThreshold")},
+    {"enable-feed-image-caching",
+     flag_descriptions::kEnableFeedImageCachingName,
+     flag_descriptions::kEnableFeedImageCachingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableFeedImageCaching)},
+    {"enable-feed-synthetic-capabilities",
+     flag_descriptions::kEnableFeedSyntheticCapabilitiesName,
+     flag_descriptions::kEnableFeedSyntheticCapabilitiesDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedSyntheticCapabilities)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

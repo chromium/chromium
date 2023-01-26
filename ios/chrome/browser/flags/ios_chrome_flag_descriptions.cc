@@ -312,6 +312,17 @@ const char kEnableFeedCardMenuSignInPromoDescription[] =
     "Display a sign-in promotion UI when signed out users click on "
     "personalization options within the feed card menu.";
 
+const char kEnableFeedImageCachingName[] = "Enable Feed image caching";
+const char kEnableFeedImageCachingDescription[] =
+    "If enabled images in the Feed will be cached for the next time the feed "
+    "is loaded.";
+
+const char kEnableFeedSyntheticCapabilitiesName[] =
+    "Enable Feed synthetic capabilities.";
+const char kEnableFeedSyntheticCapabilitiesDescription[] =
+    "If enabled synthethic capablities will be used to inform the server of "
+    "the client capabilities.";
+
 const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
 const char kEnableFullscreenAPIDescription[] =
     "Enable the Fullscreen API for web content (iOS 16.0+).";

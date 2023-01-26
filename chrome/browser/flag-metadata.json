@@ -2385,8 +2385,18 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-feed-image-caching",
+    "owners": [ "sczs", "edchin" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-feed-position-on-ntp",
     "owners": ["clank-start","hanxi"],
+    "expiry_milestone": 120
+  },
+  {
+    "name": "enable-feed-synthetic-capabilities",
+    "owners": [ "sczs", "adamta" ],
     "expiry_milestone": 120
   },
   {
