@@ -9,7 +9,7 @@
 
 namespace autofill {
 
-class BrowserAutofillManager;
+class AutofillManager;
 
 namespace data_logs {
 
@@ -52,7 +52,7 @@ namespace data_logs {
 //     ...
 //   ]
 // }
-base::Value::Dict FetchAutofillFeedbackData(BrowserAutofillManager* manager);
+base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager);
 
 }  // namespace data_logs
 }  // namespace autofill

@@ -36,7 +36,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
 }
 }  // namespace
 
-base::Value::Dict FetchAutofillFeedbackData(BrowserAutofillManager* manager) {
+base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager) {
   base::Value::Dict dict;
   base::Value::List form_structures;
   form_structures.reserve(manager->form_structures().size());
