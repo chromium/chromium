@@ -13,15 +13,25 @@ desc: |-
   implementation is used.
   When the policy is set to Disabled, browser will use the old implementation
   until the policy is expired.
+
+  If you must use the policy, please file a bug on crbug.com explaining your
+  use case. The policy is scheduled to be offered through <ph
+  name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 114, after which
+  the old implementation will be removed.
+
+  NOTE: Only newly-started renderer processes will reflect changes to this
+  policy while the browser is running.
+
 supported_on:
-- chrome.*:110-114
-- chrome_os:110-114
+# TODO(crbug.com/1410109): Remove this policy on ~May 6 after 114 has branched.
+- chrome.*:110-
+- chrome_os:110-
 device_only: false
 supported_chrome_os_management:
 - google_cloud
 - active_directory
 features:
-  dynamic_refresh: false
+  dynamic_refresh: true
   per_profile: false
 type: main
 schema:
