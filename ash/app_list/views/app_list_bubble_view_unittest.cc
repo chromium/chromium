@@ -519,6 +519,28 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleFocusesSearchBox) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
+TEST_F(AppListBubbleViewTest, SearchBoxCloseButtonVisibleLongQuery) {
+  ShowAppList();
+
+  SearchBoxView* search_box_view = GetSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+  EXPECT_TRUE(search_box_view->is_search_box_active());
+
+  // Enter a query, and verify that search results page is shown.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  for (int i = 0; i < 100; ++i) {
+    PressAndReleaseKey(ui::VKEY_A);
+  }
+  // Close button should be visible for long queries and within search box
+  // view bounds.
+  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(search_box_view->GetBoundsInScreen().Contains(
+      search_box_view->close_button()->GetBoundsInScreen()));
+}
+
 TEST_F(AppListBubbleViewTest, OpeningBubbleTwiceFocusesSearchBox) {
   AddAppItems(1);
   ShowAppList();

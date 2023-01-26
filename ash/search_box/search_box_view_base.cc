@@ -377,7 +377,8 @@ SearchBoxViewBase::SearchBoxViewBase()
       views::BoxLayout::CrossAxisAlignment::kCenter);
   text_container_->SetMinimumCrossAxisSize(kSearchBoxPreferredHeight);
   text_container_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  content_container_->SetFlexForView(text_container_, 1, true);
+  content_container_->SetFlexForView(text_container_, 1,
+                                     /*use_min_size=*/false);
 
   text_container_->AddChildView(search_box_);
   ghost_text_container_ =
@@ -427,6 +428,8 @@ SearchBoxViewBase::SearchBoxViewBase()
       content_container_->AddChildView(std::make_unique<views::View>());
   search_box_button_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
+  content_container_->SetFlexForView(search_box_button_container_, 0,
+                                     /*use_min_size=*/true);
 }
 
 SearchBoxViewBase::~SearchBoxViewBase() = default;
