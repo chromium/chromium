@@ -48,6 +48,11 @@ class BluetoothChooserContext : public ObjectPermissionContextBase {
   BluetoothChooserContext(const BluetoothChooserContext&) = delete;
   BluetoothChooserContext& operator=(const BluetoothChooserContext&) = delete;
 
+  static base::Value::Dict DeviceInfoToValue(
+      const device::BluetoothDevice* device,
+      const blink::mojom::WebBluetoothRequestDeviceOptions* options,
+      const blink::WebBluetoothDeviceId& device_id);
+
   // Helper methods for converting between a WebBluetoothDeviceId and a
   // Bluetooth device address string for a given origin pair.
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(

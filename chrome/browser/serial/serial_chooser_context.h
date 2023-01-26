@@ -48,6 +48,8 @@ class SerialChooserContext
 
   ~SerialChooserContext() override;
 
+  static base::Value PortInfoToValue(const device::mojom::SerialPortInfo& port);
+
   // ObjectPermissionContextBase:
   std::string GetKeyForObject(const base::Value& object) override;
   bool IsValidObject(const base::Value& object) override;
