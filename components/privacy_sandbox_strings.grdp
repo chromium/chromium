@@ -237,41 +237,41 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3" desc="Paragraph 3 of 3 on the Learn more about ad topics page. * 'auto-deletes': this could also read 'Chrome deletes...' We included the 'auto' to reinforce that this is part of a system and the deletion is done regularly." formatter_data="android_java">
     Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics you don’t want Chrome to share with sites.
   </message>
-  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL" translateable="false" desc="Footer for the Topics preference page.">
-      Topics footer. Quisque eu auctor purus, id tempus nulla. Pellentesque porta orci purus. Donec dictum, fledge settings, cookie settings, sit amet molestie quam arcu id urna. Donec vulputate dui ut lorem egestas, ac sollicitudin metus fermentum.
+  <message name="IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL" desc="This footer helps the user understand that this setting is just one signal among others that affect whether this user sees personalized ads on a site. We define 'personalize' as 'when Google provides recommendations and other content for users based on their data'. At a high level, there are 4 things that affect whether an ad is personalized in this context: * 'this setting' refers to the 'Ad topics' setting. The user is on this page. * 'Site-suggested ads': this is a link to the other new ad setting Chrome is launching and that sites can use to personalize ads a user sees. * 'cookie settings': this is a link to the cookies control section in Chrome settings. The Privacy Sandbox project deprecates third-party cookies, but it's a process, and we're launching new functionality that will replace important functionality of cookies. Until third-party cookies are deprecated, the two systems remain active in Chrome. * 'site you're viewing personalizes ads': When a user engages with a site, Chrome has no control over whether that site shows the user personalized ads. Imagine you visit www.interesting-site.com and they know a lot about you already based on previous visits. They can personalize content and ads to you if they like. They can use an ad-serving product, like Facebook or Google Ads to deliver personalized ads. They can also use the new Privacy Sandbox APIs (if they so choose) in order to get more information about the user that could be helpful to them in order to personalize ads. Those 2 APIs (settings, from the user's perspective), are 'Ad topics' and 'Site-suggested ads'.">
+       As you browse, whether an ad you see is personalized depends on this setting, Site-suggested ads, your cookie settings, and if the site you’re viewing personalizes ads
   </message>
 
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
   <!-- TODO(crbug.com/1378703) - Update and mark translateable. -->
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" translateable="false">
-    Consent Status:
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" desc="Label for the text which displays the state of the user's Topics consent">
+    Consent status:
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TIME_LABEL" translateable="false">
-    Consent Last Update Time:
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TIME_LABEL" desc="Label for the text which displays the time the user's Topics consent was last updated">
+    Consent last updated:
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_SOURCE_LABEL" translateable="false">
-    Consent Last Update Source:
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_SOURCE_LABEL" desc="Label for the text which displays the source of the last update to the users topics consent">
+    Source of last consent update:
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TEXT_LABEL" translateable="false">
-    Consent Last Update Text:
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_LAST_UPDATE_TEXT_LABEL" desc="Label for the text which captures what was presented to the user during their last consent decision">
+    Text presented to user:
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_SETTINGS" translateable="false">
-    Chrome Settings
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_SETTINGS" desc="Text presented when the user's last Topics consent location was Chrome settings">
+    Chrome settings
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_DEFAULT" translateable="false">
-    Default Value
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_DEFAULT" desc="Text presented when the user hasn't made a consent descision">
+    No consent decision
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_CONFIRMATION" translateable="false">
-    Blocking Confirmation Moment
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_UPDATE_SOURCE_CONFIRMATION" desc="Text presented when the user's last Topics consent location was a confirmation dialog">
+    Confirmation dialog
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_ACTIVE" translateable="false">
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_ACTIVE" desc="Text presented when a user has a currently active Topics consent">
     Active
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_INACTIVE" translateable="false">
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_INACTIVE" desc="Text presented when a user has a currently inactive Topics consent">
     Inactive
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_NOT_REQUIRED" translateable="false">
-    Not Required
+  <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_NOT_REQUIRED" desc="Text presented when a user does not require a consent for Topics">
+    Not required
   </message>
 
 
