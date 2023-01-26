@@ -25,16 +25,15 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-constexpr char kRevokedKey[] = "revoked";
 constexpr base::TimeDelta kRevocationThreshold = base::Days(60);
 constexpr base::TimeDelta kRevocationThresholdNoDelayForTesting = base::Days(0);
 constexpr base::TimeDelta kRevocationThresholdWithDelayForTesting =
     base::Minutes(5);
-constexpr base::TimeDelta kRevocationCleanUpThreshold = base::Days(30);
 constexpr base::TimeDelta kRevocationCleanUpThresholdWithDelayForTesting =
     base::Minutes(30);
 
@@ -99,7 +98,7 @@ base::TimeDelta GetCleanUpThreshold() {
           .Get()) {
     return kRevocationCleanUpThresholdWithDelayForTesting;
   }
-  return kRevocationCleanUpThreshold;
+  return permissions::kRevocationCleanUpThreshold;
 }
 
 }  // namespace
@@ -359,8 +358,9 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
                                                : base::Value::Dict();
   base::Value::List permission_type_list =
-      dict.FindList(kRevokedKey) ? std::move(*dict.FindList(kRevokedKey))
-                                 : base::Value::List();
+      dict.FindList(permissions::kRevokedKey)
+          ? std::move(*dict.FindList(permissions::kRevokedKey))
+          : base::Value::List();
 
   for (const auto& permission : recently_revoked_permissions) {
     permission_type_list.Append(static_cast<int32_t>(permission.type));

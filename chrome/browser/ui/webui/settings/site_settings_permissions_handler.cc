@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_permissions_handler.h"
 
+#include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/unused_site_permissions_service_factory.h"
@@ -14,14 +19,24 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/unused_site_permissions_service.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-constexpr char kRevokedPermissionsKey[] = "revoked";
+namespace {
+// Reflects the maximum number of days between a permissions being revoked and
+// the time when the user regrants the permission through the unused site
+// permission module of Safete Check. The maximum number of days is determined
+// by `kRevocationCleanUpThreshold`.
+size_t kAllowAgainMetricsExclusiveMaxCount = 31;
+// Using a single bucket per day, following the value of
+// |kAllowAgainMetricsExclusiveMaxCount|.
+size_t kAllowAgainMetricsBuckets = 31;
+}  // namespace
 
 SiteSettingsPermissionsHandler::SiteSettingsPermissionsHandler(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), clock_(base::DefaultClock::GetInstance()) {}
 SiteSettingsPermissionsHandler::~SiteSettingsPermissionsHandler() = default;
 
 void SiteSettingsPermissionsHandler::HandleGetRevokedUnusedSitePermissionsList(
@@ -45,8 +60,21 @@ void SiteSettingsPermissionsHandler::HandleAllowPermissionsAgainForUnusedSite(
       UnusedSitePermissionsServiceFactory::GetForProfile(profile_);
 
   url::Origin origin = url::Origin::Create(GURL(origin_str));
-  service->RegrantPermissionsForOrigin(origin);
 
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, &info));
+  base::Time revoked_time =
+      info.metadata.expiration - permissions::kRevocationCleanUpThreshold;
+  base::UmaHistogramCustomCounts(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays",
+      (clock_->Now() - revoked_time).InDays(), 0,
+      kAllowAgainMetricsExclusiveMaxCount, kAllowAgainMetricsBuckets);
+
+  service->RegrantPermissionsForOrigin(origin);
   SendUnusedSitePermissionsReviewList();
 }
 
@@ -83,10 +111,10 @@ SiteSettingsPermissionsHandler::PopulateUnusedSitePermissionsData() {
     DCHECK(stored_value.is_dict());
 
     // The revoked permissions list should be reachable by given key.
-    DCHECK(stored_value.GetDict().FindList(kRevokedPermissionsKey));
+    DCHECK(stored_value.GetDict().FindList(permissions::kRevokedKey));
 
     auto type_list =
-        stored_value.GetDict().FindList(kRevokedPermissionsKey)->Clone();
+        stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
     for (base::Value& type : type_list) {
       permissions_value_list.Append(
@@ -130,6 +158,10 @@ void SiteSettingsPermissionsHandler::SendUnusedSitePermissionsReviewList() {
   // concerns, an unchanged list may be sent.
   FireWebUIListener("unused-permission-review-list-maybe-changed",
                     PopulateUnusedSitePermissionsData());
+}
+
+void SiteSettingsPermissionsHandler::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
 }
 
 void SiteSettingsPermissionsHandler::OnJavascriptAllowed() {}

@@ -12,6 +12,7 @@
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/constants.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
@@ -22,7 +23,6 @@
 
 namespace {
 constexpr char kExcludedKey[] = "exempted";
-constexpr char kRevokedKey[] = "revoked";
 constexpr char kPermissionName[] = "notifications";
 
 struct OriginStatus {
@@ -51,9 +51,9 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
     status.is_exempt_from_future_revocations =
         dict->FindBoolPath(kExcludedKey).value();
   }
-  if (dict->FindBoolPath(kRevokedKey).has_value()) {
+  if (dict->FindBoolPath(permissions::kRevokedKey).has_value()) {
     status.has_been_previously_revoked =
-        dict->FindBoolPath(kRevokedKey).value();
+        dict->FindBoolPath(permissions::kRevokedKey).value();
   }
 
   return status;
@@ -65,7 +65,8 @@ void SetOriginStatus(Profile* profile,
   base::Value::Dict dict;
   base::Value::Dict permission_dict;
   permission_dict.Set(kExcludedKey, status.is_exempt_from_future_revocations);
-  permission_dict.Set(kRevokedKey, status.has_been_previously_revoked);
+  permission_dict.Set(permissions::kRevokedKey,
+                      status.has_been_previously_revoked);
   dict.Set(kPermissionName, std::move(permission_dict));
 
   permissions::PermissionsClient::Get()

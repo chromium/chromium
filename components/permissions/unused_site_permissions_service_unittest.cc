@@ -18,11 +18,10 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-constexpr char kRevokedKey[] = "revoked";
 
 namespace permissions {
 class UnusedSitePermissionsServiceTest
@@ -77,12 +76,12 @@ class UnusedSitePermissionsServiceTest
 
     base::Value::List permissions_list;
     if (!setting_value.is_dict() ||
-        !setting_value.GetDict().FindList(kRevokedKey)) {
+        !setting_value.GetDict().FindList(permissions::kRevokedKey)) {
       return permissions_list;
     }
 
     permissions_list =
-        std::move(*setting_value.GetDict().FindList(kRevokedKey));
+        std::move(*setting_value.GetDict().FindList(permissions::kRevokedKey));
 
     return permissions_list;
   }

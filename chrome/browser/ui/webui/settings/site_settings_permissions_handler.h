@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/clock.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -57,6 +58,10 @@ class SiteSettingsPermissionsHandler : public settings::SettingsPageUIHandler {
   void SendUnusedSitePermissionsReviewList();
 
   const raw_ptr<Profile> profile_;
+
+  base::Clock* clock_;
+
+  void SetClockForTesting(base::Clock* clock);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SITE_SETTINGS_PERMISSIONS_HANDLER_H_

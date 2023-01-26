@@ -6,8 +6,10 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
@@ -18,13 +20,14 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/permissions/constants.h"
+#include "components/permissions/unused_site_permissions_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-constexpr char kRevokedKey[] = "revoked";
 constexpr char kUnusedTestSite[] = "https://example1.com";
 constexpr char kUsedTestSite[] = "https://example2.com";
 
@@ -60,12 +63,16 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     base::Value::List permission_type_list = base::Value::List();
     permission_type_list.Append(
         static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
-    dict.Set(kRevokedKey, base::Value::List(std::move(permission_type_list)));
+    dict.Set(permissions::kRevokedKey,
+             base::Value::List(std::move(permission_type_list)));
+    const content_settings::ContentSettingConstraints constraint{
+        .expiration =
+            clock()->Now() + permissions::kRevocationCleanUpThreshold};
 
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kUnusedTestSite), GURL(kUnusedTestSite),
         ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
-        base::Value(dict.Clone()));
+        base::Value(dict.Clone()), constraint);
 
     // There should be only an unused URL in the revoked permissions list.
     const auto& revoked_permissions =
@@ -74,6 +81,7 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     EXPECT_EQ(
         GURL(kUnusedTestSite),
         GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
+    handler()->SetClockForTesting(&clock_);
   }
 
   void TearDown() override {
@@ -104,6 +112,7 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
 TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
   // Add GEOLOCATION setting for url but do not add to revoked list.
   const content_settings::ContentSettingConstraints constraint{
+      .expiration = clock()->Now() + permissions::kRevocationCleanUpThreshold,
       .track_last_visit_for_autoexpiration = true};
   hcsm()->SetContentSettingDefaultScope(
       GURL(kUsedTestSite), GURL(kUsedTestSite),
@@ -121,10 +130,22 @@ TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
 
 TEST_F(SiteSettingsPermissionsHandlerTest,
        HandleAllowPermissionsAgainForUnusedSite) {
+  // Advance 14 days; this will be the expected histogram sample.
+  clock()->Advance(base::Days(14));
+  base::HistogramTester histogram_tester;
+
   // Allow the revoked permission for the unused site again.
   base::Value::List args;
   args.Append(base::Value(kUnusedTestSite));
   handler()->HandleAllowPermissionsAgainForUnusedSite(args);
+
+  // Only a single entry should be recorded in the histogram.
+  const std::vector<base::Bucket> buckets = histogram_tester.GetAllSamples(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays");
+  EXPECT_EQ(1U, buckets.size());
+  // The recorded metric should be the elapsed days since the revocation.
+  histogram_tester.ExpectUniqueSample(
+      "Settings.SafetyCheck.UnusedSitePermissionsAllowAgainDays", 14, 1);
 
   // Check there is no origin in revoked permissions list.
   ContentSettingsForOneType revoked_permissions_list;
