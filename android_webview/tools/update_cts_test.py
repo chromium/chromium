@@ -222,6 +222,9 @@ class UpdateCTSTest(unittest.TestCase):
       with self.assertRaises(update_cts.DirExistsError):
         cts_updater.download_cipd()
 
+  @unittest.skipIf(os.name == 'nt', 'This fails on Windows because '
+                   'stage_cipd_update calls cp which doesn\'t exist on '
+                   'Windows.')
   def testStageCIPDUpdate(self):
     with tempfile_ext.NamedTemporaryDirectory() as workDir,\
          tempfile_ext.NamedTemporaryDirectory() as repoRoot,\
