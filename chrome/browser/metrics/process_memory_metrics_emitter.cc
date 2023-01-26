@@ -1422,9 +1422,16 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
     if (process_node->GetProcessId() == base::kNullProcessId)
       continue;
 
-    ProcessInfo process_info;
+    // First add all processes and their basic information.
+    ProcessInfo& process_info = process_infos.emplace_back();
     process_info.pid = process_node->GetProcessId();
     process_info.launch_time = process_node->GetLaunchTime();
+
+    // Then add information about their associated page nodes. Only renderers
+    // are associated with page nodes.
+    if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER) {
+      continue;
+    }
 
     base::flat_set<const performance_manager::PageNode*> page_nodes =
         performance_manager::GraphOperations::GetAssociatedPageNodes(
@@ -1436,7 +1443,7 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       if (page_id_map.find(page_node) == page_id_map.end())
         page_id_map.insert(std::make_pair(page_node, page_id_map.size() + 1));
 
-      PageInfo page_info;
+      PageInfo& page_info = process_info.page_infos.emplace_back();
       page_info.ukm_source_id = page_node->GetUkmSourceID();
 
       DCHECK(page_id_map.find(page_node) != page_id_map.end());
@@ -1447,9 +1454,7 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
           page_node->GetTimeSinceLastVisibilityChange();
       page_info.time_since_last_navigation =
           page_node->GetTimeSinceLastNavigation();
-      process_info.page_infos.push_back(std::move(page_info));
     }
-    process_infos.push_back(std::move(process_info));
   }
   std::move(callback).Run(std::move(process_infos));
 }

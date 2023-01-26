@@ -138,28 +138,6 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
 
   base::Value::Dict ret;
 
-  if (impl->private_footprint_kb()) {
-    ret.Set("private_footprint_kb",
-            base::saturated_cast<int>(impl->private_footprint_kb()));
-  }
-
-  if (impl->resident_set_kb()) {
-    ret.Set("resident_set_kb",
-            base::saturated_cast<int>(impl->resident_set_kb()));
-  }
-
-  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
-    ret.Set("render_process_id", impl->GetRenderProcessId().value());
-  }
-
-  // The content function returns "Tab" for renderers - whereas "Renderer" is
-  // the common vernacular here.
-  std::string process_type =
-      content::GetProcessTypeNameInEnglish(impl->process_type());
-  if (impl->process_type() == content::PROCESS_TYPE_RENDERER)
-    process_type = "Renderer";
-  ret.Set("process_type", process_type);
-
   ret.Set("pid", base::NumberToString(impl->process_id()));
 
   ret.Set("process", GetProcessValueDict(impl->process()));
@@ -175,12 +153,37 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
     ret.Set("metrics_name", impl->metrics_name());
   }
 
-  ret.Set("main_thread_task_load_is_low", impl->main_thread_task_load_is_low());
-
   ret.Set("priority", base::TaskPriorityToString(impl->priority()));
 
-  ret.Set("hosted_content_types",
-          HostedProcessTypesToString(impl->hosted_content_types()));
+  if (impl->private_footprint_kb()) {
+    ret.Set("private_footprint_kb",
+            base::saturated_cast<int>(impl->private_footprint_kb()));
+  }
+
+  if (impl->resident_set_kb()) {
+    ret.Set("resident_set_kb",
+            base::saturated_cast<int>(impl->resident_set_kb()));
+  }
+
+  // The content function returns "Tab" for renderers - whereas "Renderer" is
+  // the common vernacular here.
+  std::string process_type =
+      content::GetProcessTypeNameInEnglish(impl->process_type());
+  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
+    process_type = "Renderer";
+  }
+  ret.Set("process_type", process_type);
+
+  // Renderer-only properties.
+  if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
+    ret.Set("render_process_id", impl->GetRenderProcessId().value());
+
+    ret.Set("main_thread_task_load_is_low",
+            impl->main_thread_task_load_is_low());
+
+    ret.Set("hosted_content_types",
+            HostedProcessTypesToString(impl->hosted_content_types()));
+  }
 
   return base::Value(std::move(ret));
 }

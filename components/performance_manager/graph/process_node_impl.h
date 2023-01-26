@@ -112,7 +112,6 @@ class ProcessNodeImpl
   }
   void set_resident_set_kb(uint64_t resident_set_kb) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
     resident_set_kb_ = resident_set_kb;
   }
 
@@ -157,14 +156,18 @@ class ProcessNodeImpl
 
   bool main_thread_task_load_is_low() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
     return main_thread_task_load_is_low_.value();
   }
 
   const RenderProcessHostProxy& render_process_host_proxy() const {
+    DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
     return absl::get<RenderProcessHostProxy>(child_process_host_proxy_);
   }
 
   const BrowserChildProcessHostProxy& browser_child_process_host_proxy() const {
+    DCHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
+    DCHECK_NE(process_type_, content::PROCESS_TYPE_RENDERER);
     return absl::get<BrowserChildProcessHostProxy>(child_process_host_proxy_);
   }
 
@@ -175,6 +178,7 @@ class ProcessNodeImpl
 
   ContentTypes hosted_content_types() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
     return hosted_content_types_;
   }
 
@@ -259,8 +263,8 @@ class ProcessNodeImpl
   absl::optional<int32_t> exit_status_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::string metrics_name_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const content::ProcessType process_type_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // The type of the process that this node represents.
+  const content::ProcessType process_type_;
 
   // The proxy that allows access to either the RenderProcessHost or the
   // BrowserChildProcessHost associated with this process, if `this` is a

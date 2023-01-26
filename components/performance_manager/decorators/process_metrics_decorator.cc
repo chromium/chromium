@@ -161,6 +161,12 @@ void ProcessMetricsDecorator::DidGetMemoryUsage(
     uint64_t process_rss = process_dump_iter.os_dump().resident_set_kb;
     process_node->set_resident_set_kb(process_rss);
 
+    // Now attribute the RSS and PMF of the process to its frames and workers.
+    // Only renderers can host frames and workers.
+    if (process_node->process_type() != content::PROCESS_TYPE_RENDERER) {
+      continue;
+    }
+
     size_t frame_and_worker_node_count = process_node->frame_nodes().size() +
                                          process_node->worker_nodes().size();
 
