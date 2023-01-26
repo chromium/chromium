@@ -217,8 +217,7 @@ TakeContentToVisibleTimeRequest(RenderWidgetHostImpl* host) {
 
 bool IsFullscreenSurfaceSyncSupported() {
   return base::FeatureList::IsEnabled(
-             features::kSurfaceSyncFullscreenKillswitch) &&
-         features::IsSurfaceSyncThrottling();
+      features::kSurfaceSyncFullscreenKillswitch);
 }
 
 }  // namespace
@@ -596,7 +595,6 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
       min_page_scale_(1.f),
       max_page_scale_(1.f),
       mouse_wheel_phase_handler_(this),
-      is_surface_sync_throttling_(features::IsSurfaceSyncThrottling()),
       screen_state_change_handler_(this) {
   // Set the layer which will hold the content layer for this view. The content
   // layer is managed by the DelegatedFrameHost.
@@ -1614,8 +1612,9 @@ bool RenderWidgetHostViewAndroid::CanSynchronizeVisualProperties() {
   //
   // We should instead wait for the full set of new visual properties to be
   // available, and deliver them to the Renderer in one single update.
-  if (in_rotation_ && is_surface_sync_throttling_)
+  if (in_rotation_) {
     return false;
+  }
 
   if (!IsFullscreenSurfaceSyncSupported())
     return true;
@@ -3010,7 +3009,7 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
       navigation_while_hidden_ = false;
       delegated_frame_host_->DidNavigate();
     }
-  } else if (rotation_override && is_surface_sync_throttling_) {
+  } else if (rotation_override) {
     // If a rotation occurred while this was not visible, we need to allocate a
     // new viz::LocalSurfaceId and send the current visual properties to the
     // Renderer. Otherwise there will be no content at all to display.

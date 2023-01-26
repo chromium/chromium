@@ -234,8 +234,6 @@ public final class ProductionSupportedFlagList {
                     "Free Canvas2D resources when the webview is in the background."),
             Flag.baseFeature(GpuFeatures.USE_GPU_SCHEDULER_DFS,
                     "Uses the new SchedulerDFS GPU job scheduler."),
-            Flag.baseFeature(VizFeatures.SURFACE_SYNC_THROTTLING,
-                    "Enables throttling of Surface Sync to improve rotations"),
             Flag.baseFeature(BlinkFeatures.AUTOFILL_SHADOW_DOM,
                     "Enables Autofill associate form elements with form "
                             + "control elements across shadow boundaries."),

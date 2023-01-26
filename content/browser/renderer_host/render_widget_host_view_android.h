@@ -674,8 +674,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
 
-  bool is_surface_sync_throttling_ = false;
-
   ScreenStateChangeHandler screen_state_change_handler_;
 
   base::WeakPtrFactory<RenderWidgetHostViewAndroid> weak_ptr_factory_{this};

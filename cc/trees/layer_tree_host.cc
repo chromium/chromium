@@ -1396,7 +1396,7 @@ void LayerTreeHost::SetViewportRectAndScale(
   // If a new viz::LocalSurfaceId has been provided, and the viewport has
   // changed, we need not begin new frames until it has activated.
   if (previous_local_surface_id != local_surface_id_from_parent &&
-      device_viewport_rect_changed && features::IsSurfaceSyncThrottling()) {
+      device_viewport_rect_changed) {
     SetTargetLocalSurfaceId(local_surface_id_from_parent);
   }
 

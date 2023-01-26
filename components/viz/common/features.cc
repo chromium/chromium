@@ -135,13 +135,6 @@ BASE_FEATURE(kUseRealVideoColorSpaceForDisplay,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Used by CC to throttle frame production of older surfaces. Used by the
-// Browser to batch SurfaceSync calls sent to the Renderer for properties can
-// change in close proximity to each other.
-BASE_FEATURE(kSurfaceSyncThrottling,
-             "SurfaceSyncThrottling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDrawPredictedInkPoint,
              "DrawPredictedInkPoint",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -344,10 +337,6 @@ bool UseRealVideoColorSpaceForDisplay() {
       features::kUseRealVideoColorSpaceForDisplay);
 }
 #endif
-
-bool IsSurfaceSyncThrottling() {
-  return base::FeatureList::IsEnabled(kSurfaceSyncThrottling);
-}
 
 // Used by Viz to determine if viz::DisplayScheduler should dynamically adjust
 // its frame deadline. Returns the percentile of historic draw times to base the
