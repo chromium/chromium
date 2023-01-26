@@ -889,6 +889,7 @@ if (is_win || is_mac || is_linux) {
     if (is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
+      data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
       data_deps = [ "//chrome/updater/linux:updater_test" ]
       public_configs = [ "linux:libsystemd" ]
     }
