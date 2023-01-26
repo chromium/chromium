@@ -1540,6 +1540,7 @@ chromium-metrics-reviews@google.com.
   <token key="VisitAction">
     <variant name="Clicked" summary="clicks"/>
     <variant name="Deleted" summary="deletes"/>
+    <variant name="Hidden" summary="hides"/>
   </token>
   <token key="VisitType">
     <variant name="" summary="visit"/>
