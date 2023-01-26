@@ -272,10 +272,7 @@ class ObserverList {
   // Precondition: !HasObserver(obs)
   void AddObserver(ObserverType* obs) {
     DCHECK(obs);
-    if (HasObserver(obs)) {
-      NOTREACHED() << "Observers can only be added once!";
-      return;
-    }
+    CHECK(!HasObserver(obs)) << "Observers can only be added once!";
     observers_count_++;
     observers_.emplace_back(ObserverStorageType(obs));
   }
