@@ -102,6 +102,9 @@ class CONTENT_EXPORT InterestGroupAuction
           interest_group_api_operation,
       const url::Origin& origin)>;
 
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
+
   // Result of an auction or a component auction. Used for histograms. Only
   // recorded for valid auctions. These are used in histograms, so values of
   // existing entries must not change when adding/removing values, and obsolete
@@ -264,6 +267,14 @@ class CONTENT_EXPORT InterestGroupAuction
     absl::optional<GURL> top_level_seller_debug_win_report_url;
     absl::optional<GURL> top_level_seller_debug_loss_report_url;
 
+    // Requests made to Private aggregation API in generateBid() and scoreAd().
+    // Keyed by reporting origin of the associated requests, i.e., buyer origin
+    // for generateBid() and seller origin for scoreAd().
+    // TODO(qingxinwu): Consider only saving the requests without saving Origin,
+    // since copying Origin is expensive.
+    std::map<url::Origin, PrivateAggregationRequests>
+        private_aggregation_requests;
+
     // The reason this bid was rejected by the auction (i.e., reason why score
     // was non-positive).
     auction_worklet::mojom::RejectReason reject_reason =
@@ -367,9 +378,6 @@ class CONTENT_EXPORT InterestGroupAuction
   // Always invoked asynchronously.
   using AuctionPhaseCompletionCallback = base::OnceCallback<void(bool success)>;
 
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
   // All passed in raw pointers must remain valid until the InterestGroupAuction
   // is destroyed. `config` is typically owned by the AuctionRunner's
   // `owned_auction_config_` field. `parent` should be the parent
@@ -454,10 +462,19 @@ class CONTENT_EXPORT InterestGroupAuction
   // auction failed for any reason other than the seller rejecting all bids.
   void GetInterestGroupsThatBid(blink::InterestGroupSet& interest_groups) const;
 
-  // Retrieves any debug reporting URLs. May only be called once, since it
-  // takes ownership of stored reporting URLs.
-  void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
-                           std::vector<GURL>& debug_loss_report_urls);
+  // Retrieves any debug reporting URLs. May only be called once, since it takes
+  // ownership of stored reporting URLs.
+  // Note: Temporarily, this function also fills post auction signals to private
+  // aggregation requests from generateBid() and scoreAd(), so this function
+  // must be called before TakePrivateAggregationRequests() to make sure that
+  // function gets private aggregation requests with post auction signals filled
+  // in.
+  // TODO(qingxinwu): Refactor this to fill post auction signals to private
+  // aggregation report in TakePrivateAggregationRequests(), ideally reuse the
+  // post auction signals calculated from this method.
+  void TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
+      std::vector<GURL>& debug_win_report_urls,
+      std::vector<GURL>& debug_loss_report_urls);
 
   // Retrieves all requests to the Private Aggregation API returned by
   // GenerateBid() and ScoreAd(). The return value is keyed by reporting origin

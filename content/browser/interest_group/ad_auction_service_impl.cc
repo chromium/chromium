@@ -110,9 +110,13 @@ void SendPrivateAggregationRequests(
     for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
          requests) {
       DCHECK(request);
+      // All for-event contributions have already been converted to histogram
+      // contributions by filling in post auction signals before reaching here.
+      DCHECK(request->contribution->is_histogram_contribution());
       std::vector<mojom::AggregatableReportHistogramContributionPtr>
           contributions;
-      contributions.push_back(std::move(request->contribution));
+      contributions.push_back(
+          std::move(request->contribution->get_histogram_contribution()));
       remote->SendHistogramReport(std::move(contributions),
                                   request->aggregation_mode,
                                   std::move(request->debug_mode_details));
@@ -789,6 +793,8 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeature(
         private_aggregation_requests) {
   // TODO(crbug.com/1356654): Improve coverage of these use counters, i.e.
   // for API usage that does not result in a successful request.
+  // TODO(crbug.com/1410322): Use separate use counters for SendHistogram() and
+  // reportContributionForEvent().
   if (!private_aggregation_requests.empty()) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &render_frame_host(),

@@ -1050,7 +1050,7 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           /*set_priority=*/absl::nullopt,
           /*update_priority_signals_overrides=*/
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
-          /*update_priority_signals_overrides=*/
+          /*pa_requests=*/
           PrivateAggregationRequests(), std::move(error_msgs)));
 }
 

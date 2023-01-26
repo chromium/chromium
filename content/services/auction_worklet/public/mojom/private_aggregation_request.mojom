@@ -8,14 +8,6 @@ import "content/common/aggregatable_report.mojom";
 import "content/common/private_aggregation_host.mojom";
 import "mojo/public/mojom/base/int128.mojom";
 
-// Represents a request made to the Private Aggregation API (e.g. via
-// `privateAggregation.sendHistogramReport()`).
-struct PrivateAggregationRequest {
-  content.mojom.AggregatableReportHistogramContribution contribution;
-  content.mojom.AggregationServiceMode aggregation_mode;
-  content.mojom.DebugModeDetails debug_mode_details;
-};
-
 // Indicates which value the browser should use to calculate the resulting
 // bucket or value.
 enum BaseValue {
@@ -26,57 +18,77 @@ enum BaseValue {
   kBidRejectReason = 4,
 };
 
-// Offset to add/subtract to the auction result value.
-// Offset's `value` should be Uint128 for contribution's bucket, and int for its
-// value. To make things simpler, using Uint128 for both, and will parse it to
-// int in code for contribution's value offset.
-// We need to support negative offset value, so adding a is_negative bool to
-// indicate whether offset is negative.
-struct Offset {
+// Bucket's offset to add/subtract to the auction result value. Offset's `value`
+// should be Uint128. We need to support negative offset value, so adding a
+// is_negative bool to indicate whether offset is negative.
+struct BucketOffset {
   mojo_base.mojom.Uint128 value;
   bool is_negative;
 };
 
-// Both the bucket and value can be a SignalBucketOrValue.
-// TODO(b/262009451): Find a way that supports calculating a Uint128 bucket from
-// double base value (e.g., winning bid) using scale and offset.
-struct SignalBucketOrValue {
+// Bucket object of a contribution.
+struct SignalBucket {
   // The name of the auction result value we want to report.
   BaseValue base_value;
 
-  // Optional scale factor by which we want to multiply the output.
-  // TODO(https://crbug.com/657632): Update when optional doubles are supported.
-  double scale;
-  bool has_scale;
+  // Scale factor by which we want to multiply the output. Default to 1.0.
+  double scale = 1.0;
 
   // Optional offset to add/subtract to the auction result value.
-  Offset? offset;
+  // TODO(qingxinwu): Inline BucketOffset's fields here with default values, and
+  // get rid of BucketOffset struct.
+  BucketOffset? offset;
+};
+
+// Value object of a contribution.
+struct SignalValue {
+  // The name of the auction result value we want to report.
+  BaseValue base_value;
+
+  // Scale factor by which we want to multiply the output. Default to 1.0.
+  double scale = 1.0;
+
+  // Offset to add/subtract to the auction result value. Default to 0.
+  int32 offset = 0;
 };
 
 // A bucket which is a 128bit ID or a SignalBucketOrValue which tells the
 // browser how to calculate the bucket.
 union ForEventSignalBucket {
+  // TODO(qingxinwu): Consider changing it to a more clear name.
   mojo_base.mojom.Uint128 id_bucket;
-  SignalBucketOrValue signal_bucket;
+  SignalBucket signal_bucket;
 };
 
 // A value is an integer, or a SignalBucketOrValue which tells the browser how
 // to calculate the value.
 union ForEventSignalValue {
   int32 int_value;
-  SignalBucketOrValue signal_value;
+  SignalValue signal_value;
 };
 
-// A contribution contains a bucket and a value.
+// A for-event contribution contains a bucket, a value, and an event_type.
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification
 struct AggregatableReportForEventContribution {
   ForEventSignalBucket bucket;
   ForEventSignalValue value;
+
+  // Identifies the event type that triggers sending this report.
+  string event_type;
 };
 
-// Represents a request made to the extended Private Aggregation API (e.g. via
-// `privateAggregation.reportContributionForEvent()`).
-struct PrivateAggregationForEventRequest {
-  AggregatableReportForEventContribution contribution;
+// `histogram_contribution` for sendHistogramReport(), and
+// `for_event_contribution` for reportPrivateAggregationEvent().
+union AggregatableReportContribution {
+  content.mojom.AggregatableReportHistogramContribution histogram_contribution;
+  AggregatableReportForEventContribution for_event_contribution;
+};
+
+// Represents a request made to Private Aggregation API. It can be either
+// sendHistogramReport() or reportPrivateAggregationEvent(), depending on the
+// type of contribution.
+struct PrivateAggregationRequest {
+  AggregatableReportContribution contribution;
   content.mojom.AggregationServiceMode aggregation_mode;
   content.mojom.DebugModeDetails debug_mode_details;
 };

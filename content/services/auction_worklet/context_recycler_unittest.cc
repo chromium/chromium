@@ -797,10 +797,10 @@ class ContextRecyclerPrivateAggregationEnabledTest
     return gin::ConvertToV8(helper_->isolate(), dict);
   }
 
-  // Checks given `pa_requests` has one item, which equals to the request
-  // created from given `bucket` and `value`. DebugMode is enabled if
-  // `debug_key` is not nullopt.
-  void ExpectPrivateAggregationRequestsEqual(
+  // Expects that pa_requests has one request, and the request has the given
+  // bucket, value and debug_key (or none, if absl::nullopt). Also expects that
+  // debug mode is enabled if debug_key is not absl::nullopt.
+  void ExpectOneHistogramRequestEqualTo(
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests,
       absl::uint128 bucket,
@@ -808,6 +808,7 @@ class ContextRecyclerPrivateAggregationEnabledTest
       absl::optional<content::mojom::DebugKeyPtr> debug_key = absl::nullopt) {
     content::mojom::AggregatableReportHistogramContribution
         expected_contribution(bucket, value);
+
     content::mojom::DebugModeDetailsPtr debug_mode_details;
     if (debug_key.has_value()) {
       debug_mode_details = content::mojom::DebugModeDetails::New(
@@ -816,8 +817,10 @@ class ContextRecyclerPrivateAggregationEnabledTest
     } else {
       debug_mode_details = content::mojom::DebugModeDetails::New();
     }
+
     auction_worklet::mojom::PrivateAggregationRequest expected_request(
-        expected_contribution.Clone(),
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewHistogramContribution(expected_contribution.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         std::move(debug_mode_details));
 
@@ -868,7 +871,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45);
@@ -887,7 +890,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/absl::MakeUint128(/*high=*/1, /*low=*/0), /*value=*/45);
@@ -906,7 +909,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/absl::Uint128Max(), /*value=*/45);
@@ -925,7 +928,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/0, /*value=*/45);
@@ -944,7 +947,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/0);
@@ -977,14 +980,16 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     content::mojom::AggregatableReportHistogramContribution
         expected_contribution_1(/*bucket=*/123, /*value=*/45);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
-        expected_contribution_1.Clone(),
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewHistogramContribution(expected_contribution_1.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         content::mojom::DebugModeDetails::New());
 
     content::mojom::AggregatableReportHistogramContribution
         expected_contribution_2(/*bucket=*/678, /*value=*/90);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
-        expected_contribution_2.Clone(),
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewHistogramContribution(expected_contribution_2.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         content::mojom::DebugModeDetails::New());
 
@@ -1214,7 +1219,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/nullptr);
@@ -1237,7 +1242,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
@@ -1261,7 +1266,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45, /*debug_key=*/
@@ -1359,7 +1364,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
@@ -1384,7 +1389,7 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
         WrapDebugKey(std::string("1234")));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    ExpectPrivateAggregationRequestsEqual(
+    ExpectOneHistogramRequestEqualTo(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*bucket=*/123, /*value=*/45,
@@ -1422,7 +1427,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     content::mojom::AggregatableReportHistogramContribution
         expected_contribution_1(/*bucket=*/123, /*value=*/45);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_1(
-        expected_contribution_1.Clone(),
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewHistogramContribution(expected_contribution_1.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         content::mojom::DebugModeDetails::New(
             /*is_enabled=*/true,
@@ -1431,7 +1437,8 @@ TEST_F(ContextRecyclerPrivateAggregationEnabledTest,
     content::mojom::AggregatableReportHistogramContribution
         expected_contribution_2(/*bucket=*/678, /*value=*/90);
     auction_worklet::mojom::PrivateAggregationRequest expected_request_2(
-        expected_contribution_2.Clone(),
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewHistogramContribution(expected_contribution_2.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         content::mojom::DebugModeDetails::New(
             /*is_enabled=*/true,
@@ -1455,15 +1462,34 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
         {{"fledge_extensions_enabled", "true"}});
   }
 
-  // Checks given `pa_requests` has one item, which equals to the request
-  // created from given `expected_contribution`.
-  void ExpectPrivateAggregationForEventRequestsEqual(
-      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>
+  // Creates a PrivateAggregationRequest with ForEvent contribution.
+  auction_worklet::mojom::PrivateAggregationRequestPtr CreateForEventRequest(
+      absl::uint128 bucket,
+      int value,
+      const std::string& event_type) {
+    auction_worklet::mojom::AggregatableReportForEventContribution contribution(
+        auction_worklet::mojom::ForEventSignalBucket::NewIdBucket(bucket),
+        auction_worklet::mojom::ForEventSignalValue::NewIntValue(value),
+        std::move(event_type));
+
+    return auction_worklet::mojom::PrivateAggregationRequest::New(
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewForEventContribution(contribution.Clone()),
+        content::mojom::AggregationServiceMode::kDefault,
+        content::mojom::DebugModeDetails::New());
+  }
+
+  // Expects given `pa_requests` to have one item, which equals to the
+  // PrivateAggregationRequests created from given ForEvent contribution
+  // `expected_contribution`.
+  void ExpectOneForEventRequestEqualTo(
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>
           pa_requests,
       auction_worklet::mojom::AggregatableReportForEventContributionPtr
           expected_contribution) {
-    auction_worklet::mojom::PrivateAggregationForEventRequest expected_request(
-        expected_contribution.Clone(),
+    auction_worklet::mojom::PrivateAggregationRequest expected_request(
+        auction_worklet::mojom::AggregatableReportContribution::
+            NewForEventContribution(expected_contribution.Clone()),
         content::mojom::AggregationServiceMode::kDefault,
         content::mojom::DebugModeDetails::New());
 
@@ -1479,8 +1505,8 @@ class ContextRecyclerPrivateAggregationExtensionsEnabledTest
 // make sure they reset properly.
 TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
        PrivateAggregationForEventBindings) {
-  using PrivateAggregationForEventRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationForEventRequestPtr>;
+  using PrivateAggregationRequests =
+      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
   const char kScript[] = R"(
     function test(args) {
@@ -1494,21 +1520,24 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         args.bucket.offset = BigInt(args.bucket.offset);
       }
       privateAggregation.reportContributionForEvent('reserved.win', args);
-      privateAggregation.reportContributionForEvent('reserved.loss', args);
     }
 
-    function testWinAndLoss(args) {
+    function testDifferentEventTypes(args) {
       // Passing BigInts in directly is complicated so we construct them from
       // strings.
       if (typeof args.bucket === "string") {
         args.bucket = BigInt(args.bucket);
       }
       privateAggregation.reportContributionForEvent('reserved.win', args);
-      // Add 1 to both bucket and value, to let reserved.loss request gets
-      // different contribution from reserved.win request.
-      args.bucket += BigInt(1);
+      // Add 1 to value, to let reserved.loss request gets different
+      // contribution from reserved.win request.
       args.value += 1;
       privateAggregation.reportContributionForEvent('reserved.loss', args);
+      args.value += 1;
+      privateAggregation.reportContributionForEvent('reserved.always', args);
+      args.value += 1;
+      // Arbitrary unreserved event type.
+      privateAggregation.reportContributionForEvent('click', args);
     }
 
     function testMissingEventType(args) {
@@ -1528,14 +1557,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
       }
       privateAggregation.reportContributionForEvent(args, 'reserved.win');
     }
-    function testNotReservedEventType(args) {
-      // Passing BigInts in directly is complicated so we construct them from
-      // strings.
-      if (typeof args.bucket === "string") {
-        args.bucket = BigInt(args.bucket);
-      }
-      privateAggregation.reportContributionForEvent('not.reserved', args);
-    }
+
     function doNothing() {}
   )";
 
@@ -1555,32 +1577,26 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     dict.Set("bucket", std::string("123"));
     dict.Set("value", 45);
 
-    Run(scope, script, "testWinAndLoss", error_msgs,
+    Run(scope, script, "testDifferentEventTypes", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_win_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
-            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
-                NewIdBucket(123),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                45));
-    auto expected_loss_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
-            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
-                NewIdBucket(124),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                46));
+    auto pa_requests = context_recycler.private_aggregation_bindings()
+                           ->TakePrivateAggregationRequests();
 
-    ExpectPrivateAggregationForEventRequestsEqual(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
-        expected_win_contribution.Clone());
-
-    ExpectPrivateAggregationForEventRequestsEqual(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.loss"),
-        std::move(expected_loss_contribution));
+    ASSERT_EQ(pa_requests.size(), 4u);
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                                    /*event_type=*/"reserved.win"));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/46,
+                                    /*event_type=*/"reserved.loss"));
+    EXPECT_EQ(pa_requests[2],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/47,
+                                    /*event_type=*/"reserved.always"));
+    EXPECT_EQ(pa_requests[3],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/48,
+                                    /*event_type=*/"click"));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
                     ->TakePrivateAggregationRequests()
@@ -1602,12 +1618,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:34 Uncaught TypeError: "
+            "https://example.org/script.js:37 Uncaught TypeError: "
             "reportContributionForEvent requires 2 parameters, with first "
             "parameter being a string and second parameter being an object."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -1624,12 +1640,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:38 Uncaught TypeError: "
+            "https://example.org/script.js:41 Uncaught TypeError: "
             "reportContributionForEvent requires 2 parameters, with first "
             "parameter being a string and second parameter being an object."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -1647,30 +1663,12 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(
         error_msgs,
         ElementsAre(
-            "https://example.org/script.js:45 Uncaught TypeError: "
+            "https://example.org/script.js:48 Uncaught TypeError: "
             "reportContributionForEvent requires 2 parameters, with first "
             "parameter being a string and second parameter being an object."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-  }
-
-  // Not reserved event type, which is just being ignored currently, but will
-  // be supported in the future.
-  {
-    ContextRecyclerScope scope(context_recycler);
-    std::vector<std::string> error_msgs;
-
-    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
-    dict.Set("bucket", std::string("123"));
-    dict.Set("value", 45);
-
-    Run(scope, script, "testNotReservedEventType", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), dict));
-    EXPECT_THAT(error_msgs, ElementsAre());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -1687,17 +1685,18 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewIdBucket(absl::MakeUint128(/*high=*/1, /*low=*/0)),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                45));
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
+            /*event_type=*/"reserved.win");
 
-    ExpectPrivateAggregationForEventRequestsEqual(
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
-        std::move(expected_contribution));
+            ->TakePrivateAggregationRequests(),
+        expected_contribution.Clone());
   }
 
   // Maximum bucket
@@ -1713,17 +1712,18 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewIdBucket(absl::Uint128Max()),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                45));
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
+            /*event_type=*/"reserved.win");
 
-    ExpectPrivateAggregationForEventRequestsEqual(
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
-        std::move(expected_contribution));
+            ->TakePrivateAggregationRequests(),
+        expected_contribution.Clone());
   }
 
   // Zero bucket
@@ -1739,16 +1739,18 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewIdBucket(0),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                45));
-    ExpectPrivateAggregationForEventRequestsEqual(
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(45),
+            /*event_type=*/"reserved.win");
+
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
-        std::move(expected_contribution));
+            ->TakePrivateAggregationRequests(),
+        expected_contribution.Clone());
   }
 
   // Zero value
@@ -1764,16 +1766,18 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewIdBucket(123),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                0));
-    ExpectPrivateAggregationForEventRequestsEqual(
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(0),
+            /*event_type=*/"reserved.win");
+
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
-        std::move(expected_contribution));
+            ->TakePrivateAggregationRequests(),
+        expected_contribution.Clone());
   }
 
   // Multiple requests
@@ -1800,34 +1804,16 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
       EXPECT_THAT(error_msgs, ElementsAre());
     }
 
-    auto expected_contribution_1 =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
-            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
-                NewIdBucket(123),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                45));
-    auction_worklet::mojom::PrivateAggregationForEventRequest
-        expected_request_1(expected_contribution_1.Clone(),
-                           content::mojom::AggregationServiceMode::kDefault,
-                           content::mojom::DebugModeDetails::New());
-
-    auto expected_contribution_2 =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
-            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
-                NewIdBucket(678),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                90));
-    auction_worklet::mojom::PrivateAggregationForEventRequest
-        expected_request_2(expected_contribution_2.Clone(),
-                           content::mojom::AggregationServiceMode::kDefault,
-                           content::mojom::DebugModeDetails::New());
-
-    PrivateAggregationForEventRequests pa_requests =
+    PrivateAggregationRequests pa_requests =
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win");
+            ->TakePrivateAggregationRequests();
     ASSERT_EQ(pa_requests.size(), 2u);
-    EXPECT_EQ(pa_requests[0], expected_request_1.Clone());
-    EXPECT_EQ(pa_requests[1], expected_request_2.Clone());
+    EXPECT_EQ(pa_requests[0],
+              CreateForEventRequest(/*bucket=*/123, /*value=*/45,
+                                    /*event_type=*/"reserved.win"));
+    EXPECT_EQ(pa_requests[1],
+              CreateForEventRequest(/*bucket=*/678, /*value=*/90,
+                                    /*event_type=*/"reserved.win"));
   }
 
   // Too large bucket
@@ -1847,10 +1833,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "BigInt is too large."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -1862,39 +1845,72 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
     bucket_dict.Set("base_value", std::string("bidRejectReason"));
+    bucket_dict.Set("scale", 2);
     bucket_dict.Set("offset", std::string("-255"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     dict.Set("bucket", bucket_dict);
     dict.Set("value", 1);
 
-    auto signal_bucket = auction_worklet::mojom::SignalBucketOrValue::New(
+    auto signal_bucket = auction_worklet::mojom::SignalBucket::New(
         /*base_value=*/auction_worklet::mojom::BaseValue::kBidRejectReason,
-        /*scale=*/0, /*has_scale*/ false,
+        /*scale=*/2,
         /*offset=*/
-        auction_worklet::mojom::Offset::New(/*value=*/255,
-                                            /*is_negative=*/true));
+        auction_worklet::mojom::BucketOffset::New(/*value=*/255,
+                                                  /*is_negative=*/true));
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewSignalBucket(std::move(signal_bucket)),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::NewIntValue(
-                1));
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
+            /*event_type=*/"reserved.win");
 
-    ExpectPrivateAggregationForEventRequestsEqual(
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
+            ->TakePrivateAggregationRequests(),
         expected_contribution.Clone());
+  }
 
-    ExpectPrivateAggregationForEventRequestsEqual(
+  // Dictionary bucket. Scale and offset are optional.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+
+    gin::Dictionary bucket_dict =
+        gin::Dictionary::CreateEmpty(helper_->isolate());
+    bucket_dict.Set("base_value", std::string("bidRejectReason"));
+
+    gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
+    dict.Set("bucket", bucket_dict);
+    dict.Set("value", 1);
+
+    auction_worklet::mojom::SignalBucket signal_bucket;
+    signal_bucket.base_value =
+        auction_worklet::mojom::BaseValue::kBidRejectReason;
+    signal_bucket.offset = nullptr;
+
+    Run(scope, script, "test", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), dict));
+    EXPECT_THAT(error_msgs, ElementsAre());
+
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
+            /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
+                NewSignalBucket(signal_bucket.Clone()),
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewIntValue(1),
+            /*event_type=*/"reserved.win");
+
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.loss"),
-        std::move(expected_contribution));
+            ->TakePrivateAggregationRequests(),
+        expected_contribution.Clone());
   }
 
   // Invalid bucket dictionary, which has no base_value key
@@ -1917,7 +1933,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Invalid bucket dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -1941,11 +1957,11 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Invalid bucket dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
-  // Invalid bucket dictionary, whose scale is not Number.
+  // Invalid bucket dictionary, whose scale is not a Number.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -1966,11 +1982,11 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Invalid bucket dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
-  // Invalid bucket dictionary, whose offset is not BigInt.
+  // Invalid bucket dictionary, whose offset is not a BigInt.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -1991,7 +2007,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Invalid bucket dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2010,33 +2026,28 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     dict.Set("bucket", std::string("1596"));
     dict.Set("value", value_dict);
 
-    auto signal_value = auction_worklet::mojom::SignalBucketOrValue::New(
+    auto signal_value = auction_worklet::mojom::SignalValue::New(
         /*base_value=*/auction_worklet::mojom::BaseValue::kWinningBid,
-        /*scale=*/2, /*has_scale*/ true,
-        /*offset=*/
-        auction_worklet::mojom::Offset::New(/*value=*/5,
-                                            /*is_negative=*/true));
+        /*scale=*/2,
+        /*offset=*/-5);
 
     Run(scope, script, "test", error_msgs,
         gin::ConvertToV8(helper_->isolate(), dict));
     EXPECT_THAT(error_msgs, ElementsAre());
 
-    auto expected_contribution =
-        auction_worklet::mojom::AggregatableReportForEventContribution::New(
+    auction_worklet::mojom::AggregatableReportForEventContribution
+        expected_contribution(
             /*bucket=*/auction_worklet::mojom::ForEventSignalBucket::
                 NewIdBucket(1596),
-            /*value=*/auction_worklet::mojom::ForEventSignalValue::
-                NewSignalValue(std::move(signal_value)));
+            /*value=*/
+            auction_worklet::mojom::ForEventSignalValue::NewSignalValue(
+                std::move(signal_value)),
+            /*event_type=*/"reserved.win");
 
-    ExpectPrivateAggregationForEventRequestsEqual(
+    ExpectOneForEventRequestEqualTo(
         context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.win"),
+            ->TakePrivateAggregationRequests(),
         expected_contribution.Clone());
-
-    ExpectPrivateAggregationForEventRequestsEqual(
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationForEventRequests("reserved.loss"),
-        std::move(expected_contribution));
   }
 
   // Invalid value dictionary, which has no base_value key
@@ -2059,7 +2070,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                             "TypeError: Invalid value dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2080,7 +2091,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Bucket must be a BigInt or a dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2101,7 +2112,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Value must be an integer or a dictionary."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2122,10 +2133,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "BigInt must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2146,10 +2154,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "Value must be non-negative."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2170,10 +2175,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "argument."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2194,10 +2196,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     "argument."));
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 
@@ -2213,10 +2212,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
     EXPECT_THAT(error_msgs, ElementsAre());
 
     EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.win")
-                    .empty());
-    EXPECT_TRUE(context_recycler.private_aggregation_bindings()
-                    ->TakePrivateAggregationForEventRequests("reserved.loss")
+                    ->TakePrivateAggregationRequests()
                     .empty());
   }
 }
@@ -2235,9 +2231,6 @@ class ContextRecyclerPrivateAggregationDisabledTest
 // Exercise PrivateAggregationBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
        PrivateAggregationBindings) {
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
   const char kScript[] = R"(
     function test(args) {
       // Passing BigInts in directly is complicated so we construct them from
@@ -2271,10 +2264,9 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledTest,
         ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
                     "privateAggregation is not defined."));
 
-    PrivateAggregationRequests pa_requests =
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_TRUE(pa_requests.empty());
+    ASSERT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
   }
 }
 
@@ -2293,9 +2285,6 @@ class ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest
 // Exercise PrivateAggregationBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
        PrivateAggregationBindings) {
-  using PrivateAggregationRequests =
-      std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
-
   const char kScript[] = R"(
     function test(args) {
       // Passing BigInts in directly is complicated so we construct them from
@@ -2329,10 +2318,9 @@ TEST_F(ContextRecyclerPrivateAggregationDisabledForFledgeOnlyTest,
         ElementsAre("https://example.org/script.js:8 Uncaught ReferenceError: "
                     "privateAggregation is not defined."));
 
-    PrivateAggregationRequests pa_requests =
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests();
-    ASSERT_TRUE(pa_requests.empty());
+    ASSERT_TRUE(context_recycler.private_aggregation_bindings()
+                    ->TakePrivateAggregationRequests()
+                    .empty());
   }
 }
 

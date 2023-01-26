@@ -199,7 +199,8 @@ void AuctionRunner::FailAuction(
   // all bids.
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
-  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
+  auction_.TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
+      debug_win_report_urls, debug_loss_report_urls);
   // Shouldn't have any win report URLs if nothing won the auction.
   DCHECK(debug_win_report_urls.empty());
 
@@ -296,7 +297,8 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
-  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
+  auction_.TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
+      debug_win_report_urls, debug_loss_report_urls);
 
   UpdateInterestGroupsPostAuction();
 

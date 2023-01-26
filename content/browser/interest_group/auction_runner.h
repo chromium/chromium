@@ -73,6 +73,9 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // `debug_win_report_urls` URLs to use for reporting win result to bidders and
   //  the seller. Empty if no report should be sent.
   //
+  // `private_aggregation_requests` Requests made to the Private Aggregation
+  //  API. Keyed by reporting origin of the associated requests.
+  //
   // `interest_groups_that_bid` is a list of the interest groups that made bids
   // in the auction. Empty if the auction didn't run to completion.
   //

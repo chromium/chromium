@@ -1130,6 +1130,8 @@ source_set("browser") {
     "interest_group/interest_group_k_anonymity_manager.h",
     "interest_group/interest_group_manager_impl.cc",
     "interest_group/interest_group_manager_impl.h",
+    "interest_group/interest_group_pa_report_util.cc",
+    "interest_group/interest_group_pa_report_util.h",
     "interest_group/interest_group_permissions_cache.cc",
     "interest_group/interest_group_permissions_cache.h",
     "interest_group/interest_group_permissions_checker.cc",
