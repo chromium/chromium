@@ -21,7 +21,7 @@ import org.chromium.url.GURL;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class WebsiteApprovalSheetContentUnitTest {
+public class WebsiteApprovalSheetContentTest {
     private static final String PREFIX = "https://www.";
 
     private static final String BASE_URL = "somehost.com";

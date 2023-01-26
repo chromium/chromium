@@ -132,9 +132,9 @@ if (is_android) {
   android_library("javatests") {
     testonly = true
     sources = [
-      "android/java/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalTest.java",
-      "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsUnitTest.java",
-      "android/javatests/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContentUnitTest.java",
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalMetricsTest.java",
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/WebsiteParentApprovalTest.java",
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/website_approval/WebsiteApprovalSheetContentTest.java",
     ]
     deps = [
       ":test_support_java",

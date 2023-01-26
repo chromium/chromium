@@ -22,7 +22,7 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class WebsiteParentApprovalMetricsUnitTest {
+public class WebsiteParentApprovalMetricsTest {
     @Rule
     public final HistogramTestRule mHistogramTestRule = new HistogramTestRule();
 
