@@ -109,6 +109,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"leakedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_LEAKED},
       {"localPasswordManager",
        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
+      {"menu", IDS_MENU},
       {"moreActions", IDS_PASSWORD_MANAGER_UI_MORE_ACTIONS},
       {"mutedCompromisedCredentials",
        IDS_PASSWORD_MANAGER_UI_MUTED_COMPROMISED_PASSWORDS},

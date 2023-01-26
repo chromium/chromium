@@ -63,7 +63,8 @@
   <template id="insecureCredentials" is="dom-repeat"
       items="[[shownInsecureCredentials_]]" initial-count="50">
     <checkup-list-item item="[[item]]" first="[[!index]]"
-        show-details="[[isCompromisedSection(insecurityType_)]]">
+        show-details="[[isCompromisedSection(insecurityType_)]]"
+        on-more-actions-click="onMoreActionsClick_">
     </checkup-list-item>
   </template>
   <template is="dom-if" if="[[mutedCompromisedCredentials_.length]]">
@@ -76,10 +77,27 @@
         opened="[[mutedLeakedCredentialsExpanded_]]">
       <template is="dom-repeat" items="[[mutedCompromisedCredentials_]]">
         <checkup-list-item item="[[item]]" first="[[!index]]"
-            show-details="[[isCompromisedSection(insecurityType_)]]">
+            show-details="[[isCompromisedSection(insecurityType_)]]"
+            on-more-actions-click="onMoreActionsClick_">
         </checkup-list-item>
       </template>
     </iron-collapse>
   </template>
 </template>
 <!-- TODO(crbug.com/1401001): Display reused credentials -->
+<cr-action-menu id="moreActionsMenu" role-description="$i18n{menu}"
+    accessibility-label="$i18n{moreActions}">
+  <button id="menuShowPassword" class="dropdown-item"
+      on-click="onMenuShowPasswordClick_">
+    [[getShowHideTitle_(activeListItem_)]]
+  </button>
+  <button id="menuEditPassword" class="dropdown-item"
+      on-click="onEditPasswordClick_">
+    $i18n{editPassword}
+  </button>
+  <button id="menuRemovePassword" class="dropdown-item"
+      on-click="onMenuRemovePasswordClick_">
+    $i18n{deletePassword}
+  </button>
+  <!-- TODO(crbug.com/1401001): Add mute/unmute -->
+</cr-action-menu>

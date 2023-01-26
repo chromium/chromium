@@ -245,4 +245,60 @@ suite('CheckupDetailsSectionTest', function() {
 
     assertTrue(isVisible(listItemElements[0]));
   });
+
+  test('Show/Hide action button works', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
+    passwordManager.data.insecureCredentials = [
+      makeInsecureCredential({
+        id: 0,
+        url: 'test.com',
+        username: 'viking',
+        types: [
+          CompromiseType.LEAKED,
+        ],
+      }),
+    ];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await flushTasks();
+
+    const listItem = section.shadowRoot!.querySelector('checkup-list-item');
+    assertTrue(!!listItem);
+    assertTrue(isVisible(listItem));
+    assertEquals('password', listItem.$.insecurePassword.type);
+
+    assertFalse(isVisible(section.$.moreActionsMenu));
+
+    // Click more actions button
+    listItem.$.more.click();
+
+    assertTrue(isVisible(section.$.menuShowPassword));
+    assertEquals(
+        loadTimeData.getString('showPassword'),
+        section.$.menuShowPassword.textContent?.trim());
+
+    const credentialWithPassword = passwordManager.data.insecureCredentials[0]!;
+    credentialWithPassword.password = 'pAssWoRd';
+    passwordManager.setRequestCredentialsDetailsResponse(
+        [credentialWithPassword]);
+
+    section.$.menuShowPassword.click();
+    await passwordManager.whenCalled('requestCredentialsDetails');
+
+    assertEquals('text', listItem.$.insecurePassword.type);
+    assertEquals(
+        credentialWithPassword.password, listItem.$.insecurePassword.value);
+
+    listItem.$.more.click();
+    assertTrue(isVisible(section.$.menuShowPassword));
+    assertEquals(
+        loadTimeData.getString('hidePassword'),
+        section.$.menuShowPassword.textContent?.trim());
+    section.$.menuShowPassword.click();
+
+    assertEquals('password', listItem.$.insecurePassword.type);
+  });
 });

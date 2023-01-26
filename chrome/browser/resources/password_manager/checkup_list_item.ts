@@ -8,18 +8,21 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './site_favicon.js';
 import './shared_style.css.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './checkup_list_item.html.js';
-import {ShowPasswordMixin} from './show_password_mixin.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {ShowPasswordMixin, ShowPasswordMixinInterface} from './show_password_mixin.js';
 
-export interface CheckupListItemElement {
+export interface CheckupListItemElement extends ShowPasswordMixinInterface {
   $: {
     shownUrl: HTMLElement,
     username: HTMLElement,
     insecurePassword: HTMLInputElement,
+    more: CrIconButtonElement,
   };
 }
 
@@ -75,6 +78,37 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
 
     assertNotReached(
         'Can\'t find a string for type: ' + this.item.compromisedInfo);
+  }
+
+  private onMoreClick_(event: Event) {
+    this.dispatchEvent(new CustomEvent('more-actions-click', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        listItem: this,
+        target: event.target,
+      },
+    }));
+  }
+
+  public showHidePassword() {
+    if (this.isPasswordVisible === true) {
+      this.onShowHidePasswordButtonClick();
+      this.item.password = undefined;
+      this.item.note = undefined;
+      return;
+    }
+
+    PasswordManagerImpl.getInstance()
+        .requestCredentialsDetails([this.item.id])
+        .then(entries => {
+          const entry = entries[0];
+          assert(!!entry);
+          this.item.password = entry.password;
+          this.item.note = entry.note;
+          this.onShowHidePasswordButtonClick();
+        })
+        .catch(() => {});
   }
 }
 
