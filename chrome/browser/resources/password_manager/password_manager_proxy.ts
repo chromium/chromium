@@ -159,6 +159,18 @@ export interface PasswordManagerProxy {
   removeBlockedSite(id: number): void;
 
   /**
+   * Dismisses / mutes the |insecureCredential| in the passwords store.
+   */
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.PasswordUiEntry): void;
+
+  /**
+   * Restores / unmutes the |insecureCredential| in the passwords store.
+   */
+  unmuteInsecureCredential(insecureCredential:
+                               chrome.passwordsPrivate.PasswordUiEntry): void;
+
+  /**
    * Queries the status of any ongoing export.
    */
   requestExportProgressStatus():
@@ -276,6 +288,16 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   removeBlockedSite(id: number) {
     chrome.passwordsPrivate.removePasswordException(id);
+  }
+
+  muteInsecureCredential(insecureCredential:
+                             chrome.passwordsPrivate.PasswordUiEntry) {
+    chrome.passwordsPrivate.muteInsecureCredential(insecureCredential);
+  }
+
+  unmuteInsecureCredential(insecureCredential:
+                               chrome.passwordsPrivate.PasswordUiEntry) {
+    chrome.passwordsPrivate.unmuteInsecureCredential(insecureCredential);
   }
 
   requestExportProgressStatus() {

@@ -43,6 +43,10 @@
   #insecureCredentials {
     margin-top: 24px;
   }
+
+  iron-icon.policy-disabled {
+    margin-inline-start: var(--cr-controlled-by-spacing);
+  }
 </style>
 <div id="header">
   <cr-icon-button class="icon-arrow-back" id="backButton"
@@ -99,5 +103,15 @@
       on-click="onMenuRemovePasswordClick_">
     $i18n{deletePassword}
   </button>
-  <!-- TODO(crbug.com/1401001): Add mute/unmute -->
+  <template is="dom-if" if="[[isCompromisedSection(insecurityType_)]]">
+    <button id="menuMuteUnmuteButton" class="dropdown-item"
+        on-click="onMenuMuteUnmuteClick_"
+        disabled="[[isMutingDisabledByPrefs_(pref)]]">
+      [[getMuteUnmuteLabel_(activeListItem_)]]
+      <template is="dom-if" if="[[isMutingDisabledByPrefs_(pref)]]" restamp>
+        <iron-icon icon="cr20:domain" class="policy-disabled">
+        </iron-icon>
+      </template>
+    </button>
+  </template>
 </cr-action-menu>
