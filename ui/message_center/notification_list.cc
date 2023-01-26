@@ -28,8 +28,9 @@ bool ShouldShowNotificationAsPopup(const Notification& notification,
                                    const NotificationBlocker* except) {
   for (auto* blocker : blockers) {
     if (blocker != except &&
-        !blocker->ShouldShowNotificationAsPopup(notification))
+        !blocker->ShouldShowNotificationAsPopup(notification)) {
       return false;
+    }
   }
   return true;
 }
@@ -38,23 +39,29 @@ bool ShouldShowNotificationAsPopup(const Notification& notification,
 
 bool ComparePriorityTimestampSerial::operator()(Notification* n1,
                                                 Notification* n2) const {
-  if (n1->priority() > n2->priority())  // Higher pri go first.
+  if (n1->priority() > n2->priority()) {  // Higher pri go first.
     return true;
-  if (n1->priority() < n2->priority())
+  }
+  if (n1->priority() < n2->priority()) {
     return false;
+  }
   return CompareTimestampSerial()(n1, n2);
 }
 
 bool CompareTimestampSerial::operator()(Notification* n1,
                                         Notification* n2) const {
-  if (n1->timestamp() > n2->timestamp())  // Newer come first.
+  if (n1->timestamp() > n2->timestamp()) {  // Newer come first.
     return true;
-  if (n1->timestamp() < n2->timestamp())
+  }
+  if (n1->timestamp() < n2->timestamp()) {
     return false;
-  if (n1->serial_number() > n2->serial_number())  // Newer come first.
+  }
+  if (n1->serial_number() > n2->serial_number()) {  // Newer come first.
     return true;
-  if (n1->serial_number() < n2->serial_number())
+  }
+  if (n1->serial_number() < n2->serial_number()) {
     return false;
+  }
   return false;
 }
 
@@ -78,8 +85,9 @@ void NotificationList::SetNotificationsShown(
     const NotificationState original_state = *state;
     state->shown_as_popup = true;
     state->is_read = true;
-    if (updated_ids && (original_state != *state))
+    if (updated_ids && (original_state != *state)) {
       updated_ids->insert(notification->id());
+    }
   }
 }
 
@@ -92,8 +100,9 @@ void NotificationList::UpdateNotificationMessage(
     const std::string& old_id,
     std::unique_ptr<Notification> new_notification) {
   auto iter = GetNotification(old_id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return;
+  }
 
   NotificationState state = iter->second;
 
@@ -118,8 +127,9 @@ void NotificationList::RemoveNotification(const std::string& id) {
 
 NotificationList::Notifications NotificationList::GetNotifications() const {
   Notifications notifications;
-  for (const auto& tuple : notifications_)
+  for (const auto& tuple : notifications_) {
     notifications.insert(tuple.first.get());
+  }
   return notifications;
 }
 
@@ -128,8 +138,9 @@ NotificationList::Notifications NotificationList::GetNotificationsByNotifierId(
   Notifications notifications;
   for (const auto& tuple : notifications_) {
     Notification* notification = tuple.first.get();
-    if (notification->notifier_id() == notifier_id)
+    if (notification->notifier_id() == notifier_id) {
       notifications.insert(notification);
+    }
   }
   return notifications;
 }
@@ -139,8 +150,9 @@ NotificationList::Notifications NotificationList::GetNotificationsByAppId(
   Notifications notifications;
   for (const auto& tuple : notifications_) {
     Notification* notification = tuple.first.get();
-    if (notification->notifier_id().id == app_id)
+    if (notification->notifier_id().id == app_id) {
       notifications.insert(notification);
+    }
   }
   return notifications;
 }
@@ -150,8 +162,9 @@ NotificationList::Notifications NotificationList::GetNotificationsByOriginUrl(
   Notifications notifications;
   for (const auto& tuple : notifications_) {
     Notification* notification = tuple.first.get();
-    if (notification->origin_url() == source_url)
+    if (notification->origin_url() == source_url) {
       notifications.insert(notification);
+    }
   }
   return notifications;
 }
@@ -159,8 +172,9 @@ NotificationList::Notifications NotificationList::GetNotificationsByOriginUrl(
 bool NotificationList::SetNotificationIcon(const std::string& notification_id,
                                            const ui::ImageModel& image) {
   auto iter = GetNotification(notification_id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return false;
+  }
   iter->first->set_icon(image);
   return true;
 }
@@ -168,8 +182,9 @@ bool NotificationList::SetNotificationIcon(const std::string& notification_id,
 bool NotificationList::SetNotificationImage(const std::string& notification_id,
                                             const gfx::Image& image) {
   auto iter = GetNotification(notification_id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return false;
+  }
   iter->first->set_image(image);
   return true;
 }
@@ -178,8 +193,9 @@ bool NotificationList::HasNotificationOfType(
     const std::string& id,
     const NotificationType type) const {
   auto iter = GetNotification(id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return false;
+  }
 
   return iter->first->type() == type;
 }
@@ -187,8 +203,9 @@ bool NotificationList::HasNotificationOfType(
 bool NotificationList::HasPopupNotifications(
     const NotificationBlockers& blockers) const {
   for (const auto& tuple : notifications_) {
-    if (tuple.first->priority() < DEFAULT_PRIORITY)
+    if (tuple.first->priority() < DEFAULT_PRIORITY) {
       break;
+    }
     if (!tuple.second.shown_as_popup &&
         ShouldShowNotificationAsPopup(*tuple.first, blockers,
                                       /*except=*/nullptr)) {
@@ -206,23 +223,28 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
 
   // Collect notifications that should be shown as popups. Start from oldest.
   for (auto& [notification, state] : base::Reversed(notifications_)) {
-    if (state.shown_as_popup)
+    if (state.shown_as_popup) {
       continue;
+    }
 
     // No popups for LOW/MIN priority.
-    if (notification->priority() < DEFAULT_PRIORITY)
+    if (notification->priority() < DEFAULT_PRIORITY) {
       continue;
+    }
 
     // Group child notifications are shown in their parent's popup.
-    if (notification->group_child())
+    if (notification->group_child()) {
       continue;
+    }
 
     if (!ShouldShowNotificationAsPopup(*notification, blockers,
                                        /*except=*/nullptr)) {
-      if (state.is_read)
+      if (state.is_read) {
         state.shown_as_popup = true;
-      if (blocked)
+      }
+      if (blocked) {
         blocked->push_back(notification->id());
+      }
       continue;
     }
 
@@ -253,19 +275,23 @@ NotificationList::GetPopupNotificationsWithoutBlocker(
   for (const auto& iter : notifications_) {
     const NotificationState* state = &iter.second;
     Notification* notification = iter.first.get();
-    if (state->shown_as_popup)
+    if (state->shown_as_popup) {
       continue;
+    }
 
     // No popups for LOW/MIN priority.
-    if (notification->priority() < DEFAULT_PRIORITY)
+    if (notification->priority() < DEFAULT_PRIORITY) {
       continue;
+    }
 
     // Group child notifications are shown in their parent's popup.
-    if (notification->group_child())
+    if (notification->group_child()) {
       continue;
+    }
 
-    if (!ShouldShowNotificationAsPopup(*notification, blockers, &blocker))
+    if (!ShouldShowNotificationAsPopup(*notification, blockers, &blocker)) {
       continue;
+    }
 
     result.insert(notification);
   }
@@ -281,28 +307,33 @@ void NotificationList::MarkSinglePopupAsShown(const std::string& id,
   NotificationState* state = &iter->second;
   const Notification& notification = *iter->first;
 
-  if (iter->second.shown_as_popup)
+  if (iter->second.shown_as_popup) {
     return;
+  }
 
   // System notification is marked as shown only when marked as read.
-  if (notification.priority() != SYSTEM_PRIORITY || mark_notification_as_read)
+  if (notification.priority() != SYSTEM_PRIORITY || mark_notification_as_read) {
     state->shown_as_popup = true;
+  }
 
   // The popup notification is already marked as read when it's displayed.
   // Set the is_read back to false if necessary.
-  if (!mark_notification_as_read)
+  if (!mark_notification_as_read) {
     state->is_read = false;
+  }
 }
 
 void NotificationList::MarkSinglePopupAsDisplayed(const std::string& id) {
   auto iter = GetNotification(id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return;
+  }
 
   NotificationState* state = &iter->second;
 
-  if (state->shown_as_popup)
+  if (state->shown_as_popup) {
     return;
+  }
 
   state->is_read = true;
 }
@@ -342,8 +373,9 @@ void NotificationList::SetNotificationExpandState(
 NotificationDelegate* NotificationList::GetNotificationDelegate(
     const std::string& id) {
   auto iter = GetNotification(id);
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return nullptr;
+  }
   return iter->first->delegate();
 }
 
@@ -352,31 +384,40 @@ void NotificationList::SetQuietMode(bool quiet_mode) {
   if (quiet_mode_) {
     // To prevent popups showing in quiet mode, mark all notifications'
     // `shown_as_popup` to true.
-    for (auto& tuple : notifications_)
+    for (auto& tuple : notifications_) {
       tuple.second.shown_as_popup = true;
+    }
   }
 }
 
 Notification* NotificationList::GetNotificationById(const std::string& id) {
   auto iter = GetNotification(id);
-  if (iter != notifications_.end())
+  if (iter != notifications_.end()) {
     return iter->first.get();
+  }
   return nullptr;
 }
 
 NotificationList::Notifications NotificationList::GetVisibleNotifications(
     const NotificationBlockers& blockers) const {
+  return GetVisibleNotificationsWithoutBlocker(blockers, nullptr);
+}
+
+NotificationList::Notifications
+NotificationList::GetVisibleNotificationsWithoutBlocker(
+    const NotificationBlockers& blockers,
+    const NotificationBlocker* ignored_blocker) const {
   Notifications result;
   for (const auto& tuple : notifications_) {
-    bool should_show = true;
-    for (size_t i = 0; i < blockers.size(); ++i) {
-      if (!blockers[i]->ShouldShowNotification(*tuple.first)) {
-        should_show = false;
-        break;
-      }
-    }
-    if (should_show)
+    auto it = (base::ranges::find_if(
+        blockers, [&ignored_blocker, &tuple](auto* blocker) {
+          return blocker != ignored_blocker &&
+                 !blocker->ShouldShowNotification(*tuple.first);
+        }));
+
+    if (it == blockers.end()) {
       result.insert(tuple.first.get());
+    }
   }
 
   return result;
@@ -391,8 +432,9 @@ NotificationList::OwnedNotifications::iterator
 NotificationList::GetNotification(const std::string& id) {
   for (auto iter = notifications_.begin(); iter != notifications_.end();
        ++iter) {
-    if (iter->first->id() == id)
+    if (iter->first->id() == id) {
       return iter;
+    }
   }
   return notifications_.end();
 }
@@ -401,8 +443,9 @@ NotificationList::OwnedNotifications::const_iterator
 NotificationList::GetNotification(const std::string& id) const {
   for (auto iter = notifications_.begin(); iter != notifications_.end();
        ++iter) {
-    if (iter->first->id() == id)
+    if (iter->first->id() == id) {
       return iter;
+    }
   }
   return notifications_.end();
 }
@@ -434,8 +477,9 @@ void NotificationList::PushNotification(
     state.shown_as_popup =
         message_center_->IsMessageCenterVisible() || effective_quiet_mode;
   }
-  if (notification->priority() == MIN_PRIORITY)
+  if (notification->priority() == MIN_PRIORITY) {
     state.is_read = true;
+  }
   notifications_.emplace(std::move(notification), state);
 }
 

@@ -26,6 +26,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/message_center/views/message_popup_view.h"
 
@@ -70,11 +71,15 @@ std::string NotificationCenterTestApi::AddCustomNotification(
     const ui::ImageModel& icon,
     const std::u16string& display_source,
     const GURL& url,
-    const message_center::NotifierId& notifier_id) {
+    const message_center::NotifierId& notifier_id,
+    const message_center::NotificationPriority priority) {
   const std::string id = GenerateNotificationId();
 
-  message_center::MessageCenter::Get()->AddNotification(CreateNotification(
-      id, title, message, icon, display_source, url, notifier_id));
+  auto notification = CreateNotification(id, title, message, icon,
+                                         display_source, url, notifier_id);
+  notification->set_priority(priority);
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(notification));
   return id;
 }
 
@@ -93,6 +98,17 @@ std::string NotificationCenterTestApi::AddNotificationWithSourceUrl(
       base::EmptyString16(), gurl, message_center::NotifierId(gurl)));
 
   return id;
+}
+
+std::string NotificationCenterTestApi::AddSystemNotification() {
+  message_center::NotifierId notifier_id;
+  notifier_id.type = message_center::NotifierType::SYSTEM_COMPONENT;
+
+  return AddCustomNotification(
+      /*title=*/u"test_title",
+      /*message=*/u"test_message", ui::ImageModel(), base::EmptyString16(),
+      GURL(), notifier_id,
+      message_center::NotificationPriority::SYSTEM_PRIORITY);
 }
 
 void NotificationCenterTestApi::RemoveNotification(const std::string& id) {

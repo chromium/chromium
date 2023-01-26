@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 class GURL;
@@ -61,7 +62,9 @@ class NotificationCenterTestApi {
       const std::u16string& display_source = base::EmptyString16(),
       const GURL& url = GURL(),
       const message_center::NotifierId& notifier_id =
-          message_center::NotifierId());
+          message_center::NotifierId(),
+      const message_center::NotificationPriority =
+          message_center::NotificationPriority::DEFAULT_PRIORITY);
 
   // Adds a notification and returns the associated id.
   std::string AddNotification();
@@ -69,6 +72,10 @@ class NotificationCenterTestApi {
   // Adds a notification with the source url and notifier id corresponding to
   // the provided url as a string. Useful for testing notification grouping.
   std::string AddNotificationWithSourceUrl(const std::string& url);
+
+  // Adds a notification with the system component notifier and system priority
+  // level.
+  std::string AddSystemNotification();
 
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);

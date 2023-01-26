@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/session_state_notification_blocker.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -12,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 using session_manager::SessionState;
@@ -37,6 +39,11 @@ bool CalculateShouldShowNotification() {
   // Do not show notifications in kiosk mode or before session starts.
   if (session_controller->IsRunningInAppMode() ||
       base::Contains(kNotificationBlockedStates, state)) {
+    return false;
+  }
+
+  // Do not show notifications on the lockscreen with QsRevamp.
+  if (features::IsQsRevampEnabled() && state == SessionState::LOCKED) {
     return false;
   }
 
@@ -117,16 +124,27 @@ bool SessionStateNotificationBlocker::ShouldShowNotification(
   }
 
   // Never show notifications in kiosk mode.
-  if (Shell::Get()->session_controller()->IsRunningInAppMode())
+  if (Shell::Get()->session_controller()->IsRunningInAppMode()) {
     return false;
+  }
 
+  const SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
   // Do not show the "Do not disturb" notification if there is no active
   // session.
   if (notification.id() ==
           DoNotDisturbNotificationController::kDoNotDisturbNotificationId &&
-      Shell::Get()->session_controller()->GetSessionState() !=
-          SessionState::ACTIVE) {
+      session_state != SessionState::ACTIVE) {
     return false;
+  }
+
+  // Only allow System priority notifications to be shown on the lock screen. We
+  // need to provide an exception here since by default we're blocking all
+  // notifications when the screen is locked.
+  if (notification.priority() ==
+          message_center::NotificationPriority::SYSTEM_PRIORITY &&
+      session_state == SessionState::LOCKED) {
+    return true;
   }
 
   if (IsAllowedDuringOOBE(notification.id())) {
@@ -162,8 +180,9 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
 }
 
 void SessionStateNotificationBlocker::OnFirstSessionStarted() {
-  if (!g_use_login_delay_for_test)
+  if (!g_use_login_delay_for_test) {
     return;
+  }
   login_delay_timer_.Start(FROM_HERE, kLoginNotificationDelay, this,
                            &SessionStateNotificationBlocker::OnLoginTimerEnded);
 }

@@ -185,6 +185,12 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // Suitable for rendering notifications in a MessageCenter.
   Notifications GetVisibleNotifications(
       const NotificationBlockers& blockers) const;
+
+  // Returns all visible notifications if not for the provided blocker.
+  Notifications GetVisibleNotificationsWithoutBlocker(
+      const NotificationBlockers& blockers,
+      const NotificationBlocker* ignored_blocker) const;
+
   size_t NotificationCount(const NotificationBlockers& blockers) const;
 
  private:

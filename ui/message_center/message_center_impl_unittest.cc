@@ -31,6 +31,8 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
+#include "base/logging.h"
+
 using base::UTF8ToUTF16;
 
 namespace message_center {
@@ -339,8 +341,8 @@ class PopupNotificationBlocker : public ToggledNotificationBlocker {
             notification);
   }
 
- private:
-  NotifierId allowed_notifier_;
+ protected:
+  const NotifierId allowed_notifier_;
 };
 
 class TotalNotificationBlocker : public PopupNotificationBlocker {
@@ -356,7 +358,8 @@ class TotalNotificationBlocker : public PopupNotificationBlocker {
 
   // NotificationBlocker overrides:
   bool ShouldShowNotification(const Notification& notification) const override {
-    return ShouldShowNotificationAsPopup(notification);
+    return (notification.notifier_id() == allowed_notifier_) ||
+           ToggledNotificationBlocker::ShouldShowNotification(notification);
   }
 };
 
@@ -608,6 +611,37 @@ TEST_F(MessageCenterImplTest, NotificationBlocker) {
   EXPECT_EQ(2u, message_center()->GetVisibleNotifications().size());
 }
 
+TEST_F(MessageCenterImplTest, VisibleNotificationsWithoutBlocker) {
+  NotifierId notifier_id1(NotifierType::APPLICATION, /*id=*/"app1");
+  NotifierId notifier_id2(NotifierType::APPLICATION, /*id=*/"app2");
+  TotalNotificationBlocker blocker_1(message_center(), notifier_id1);
+  TotalNotificationBlocker blocker_2(message_center(), notifier_id2);
+
+  message_center()->AddNotification(std::make_unique<Notification>(
+      NOTIFICATION_TYPE_SIMPLE, "id1", u"title", u"message",
+      ui::ImageModel() /* icon */, std::u16string() /* display_source */,
+      GURL(), notifier_id1, RichNotificationData(), nullptr));
+  message_center()->AddNotification(std::make_unique<Notification>(
+      NOTIFICATION_TYPE_SIMPLE, "id2", u"title", u"message",
+      ui::ImageModel() /* icon */, std::u16string() /* display_source */,
+      GURL(), notifier_id2, RichNotificationData(), nullptr));
+
+  blocker_1.SetNotificationsEnabled(false);
+  blocker_2.SetNotificationsEnabled(false);
+
+  // Without blocker 1, notification 2 is visible.
+  NotificationList::Notifications notifications_1 =
+      message_center()->GetVisibleNotificationsWithoutBlocker(&blocker_1);
+  EXPECT_EQ(1u, notifications_1.size());
+  EXPECT_TRUE(NotificationsContain(notifications_1, "id2"));
+
+  // Without blocker 2, notification 1 is visible.
+  NotificationList::Notifications notifications_2 =
+      message_center()->GetVisibleNotificationsWithoutBlocker(&blocker_2);
+  EXPECT_EQ(1u, notifications_2.size());
+  EXPECT_TRUE(NotificationsContain(notifications_2, "id1"));
+}
+
 TEST_F(MessageCenterImplTest, PopupsWithoutBlocker) {
   NotifierId notifier_id1(NotifierType::APPLICATION, "app1");
   NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
@@ -797,7 +831,7 @@ TEST_F(MessageCenterImplTest, TotalNotificationBlocker) {
       GURL(), notifier_id2, RichNotificationData(), nullptr));
 
   // "id1" becomes invisible while "id2" is still visible.
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
   EXPECT_EQ(1u, message_center()->NotificationCount());
   NotificationList::Notifications notifications =
       message_center()->GetVisibleNotifications();
@@ -819,7 +853,7 @@ TEST_F(MessageCenterImplTest, TotalNotificationBlocker) {
   EXPECT_FALSE(NotificationsContain(notifications, "id3"));
   EXPECT_TRUE(NotificationsContain(notifications, "id4"));
 
-  blocker.SetPopupNotificationsEnabled(true);
+  blocker.SetNotificationsEnabled(true);
   EXPECT_EQ(4u, message_center()->NotificationCount());
   notifications = message_center()->GetVisibleNotifications();
   EXPECT_TRUE(NotificationsContain(notifications, "id1"));
@@ -828,11 +862,11 @@ TEST_F(MessageCenterImplTest, TotalNotificationBlocker) {
   EXPECT_TRUE(NotificationsContain(notifications, "id4"));
 
   // Remove just visible notifications.
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
   message_center()->RemoveAllNotifications(
       false /* by_user */, MessageCenter::RemoveType::NON_PINNED);
   EXPECT_EQ(0u, message_center()->NotificationCount());
-  blocker.SetPopupNotificationsEnabled(true);
+  blocker.SetNotificationsEnabled(true);
   EXPECT_EQ(2u, message_center()->NotificationCount());
   notifications = message_center()->GetVisibleNotifications();
   EXPECT_TRUE(NotificationsContain(notifications, "id1"));
@@ -841,7 +875,7 @@ TEST_F(MessageCenterImplTest, TotalNotificationBlocker) {
   EXPECT_FALSE(NotificationsContain(notifications, "id4"));
 
   // And remove all including invisible notifications.
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
   message_center()->RemoveAllNotifications(false /* by_user */,
                                            MessageCenter::RemoveType::ALL);
   EXPECT_EQ(0u, message_center()->NotificationCount());
@@ -852,7 +886,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotifications) {
   NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
 
   TotalNotificationBlocker blocker(message_center(), notifier_id1);
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
 
   // Notification 1: Visible, non-pinned
   message_center()->AddNotification(std::make_unique<Notification>(
@@ -871,7 +905,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotifications) {
       false /* by_user */, MessageCenter::RemoveType::NON_PINNED);
 
   EXPECT_EQ(0u, message_center()->NotificationCount());
-  blocker.SetPopupNotificationsEnabled(true);  // Show invisible notifications.
+  blocker.SetNotificationsEnabled(true);  // Show invisible notifications.
   EXPECT_EQ(1u, message_center()->NotificationCount());
 
   NotificationList::Notifications notifications =
@@ -888,7 +922,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotificationsWithPinned) {
   NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
 
   TotalNotificationBlocker blocker(message_center(), notifier_id1);
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
 
   // Notification 1: Visible, non-pinned
   message_center()->AddNotification(std::make_unique<Notification>(
@@ -923,7 +957,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotificationsWithPinned) {
       false /* by_user */, MessageCenter::RemoveType::NON_PINNED);
 
   EXPECT_EQ(1u, message_center()->NotificationCount());
-  blocker.SetPopupNotificationsEnabled(true);  // Show invisible notifications.
+  blocker.SetNotificationsEnabled(true);  // Show invisible notifications.
   EXPECT_EQ(3u, message_center()->NotificationCount());
 
   NotificationList::Notifications notifications =
@@ -1036,12 +1070,12 @@ TEST_F(MessageCenterImplTest, RemoveNonVisibleNotification) {
   // Add a blocker to block all notifications.
   NotifierId allowed_notifier_id(NotifierType::APPLICATION, "notifier");
   TotalNotificationBlocker blocker(message_center(), allowed_notifier_id);
-  blocker.SetPopupNotificationsEnabled(false);
+  blocker.SetNotificationsEnabled(false);
   EXPECT_EQ(0u, message_center()->GetVisibleNotifications().size());
 
   // Removing a non-visible notification should work.
   message_center()->RemoveNotification("id1", false);
-  blocker.SetPopupNotificationsEnabled(true);
+  blocker.SetNotificationsEnabled(true);
   EXPECT_EQ(1u, message_center()->GetVisibleNotifications().size());
 
   // Also try removing a visible notification.

@@ -45,8 +45,8 @@ class SessionStateNotificationBlockerTest
   // tests::AshTestBase overrides:
   void SetUp() override {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
+    scoped_feature_list_->InitWithFeatureState(features::kQsRevamp,
+                                               IsQsRevampEnabled());
 
     NoSessionAshTestBase::SetUp();
     blocker_ = std::make_unique<SessionStateNotificationBlocker>(
@@ -54,7 +54,7 @@ class SessionStateNotificationBlockerTest
     blocker_->AddObserver(this);
   }
 
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
+  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);
@@ -180,7 +180,18 @@ TEST_P(SessionStateNotificationBlockerTest, BaseTest) {
   SetLockedState(true);
   EXPECT_EQ(1, GetStateChangedCountAndReset());
   EXPECT_FALSE(ShouldShowNotificationAsPopup(notifier_id));
-  EXPECT_TRUE(ShouldShowNotification(notifier_id));
+  if (IsQsRevampEnabled()) {
+    // Only system notifications are allowed to be shown in the notification
+    // center in the lock screen when QsRevamp is enabled.
+    EXPECT_FALSE(ShouldShowNotification(notifier_id));
+
+    message_center::NotifierId system_notifier_id(
+        message_center::NotifierType::SYSTEM_COMPONENT, kNotifierSystemPriority,
+        NotificationCatalogName::kTestCatalogName);
+    EXPECT_TRUE(ShouldShowNotification(system_notifier_id));
+  } else {
+    EXPECT_TRUE(ShouldShowNotification(notifier_id));
+  }
 
   // Unlock.
   SetLockedState(false);

@@ -7,8 +7,11 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
+#include "ash/system/message_center/session_state_notification_blocker.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/metrics/histogram_functions.h"
@@ -27,8 +30,9 @@ namespace {
 void ReportAnimationSmoothness(const std::string& animation_histogram_name,
                                int smoothness) {
   // Record animation smoothness if `animation_histogram_name` is given.
-  if (!animation_histogram_name.empty())
+  if (!animation_histogram_name.empty()) {
     base::UmaHistogramPercentage(animation_histogram_name, smoothness);
+  }
 }
 
 }  // namespace
@@ -39,10 +43,12 @@ namespace message_center_utils {
 
 bool CompareNotifications(message_center::Notification* n1,
                           message_center::Notification* n2) {
-  if (n1->pinned() && !n2->pinned())
+  if (n1->pinned() && !n2->pinned()) {
     return true;
-  if (!n1->pinned() && n2->pinned())
+  }
+  if (!n1->pinned() && n2->pinned()) {
     return false;
+  }
   return message_center::CompareTimestampSerial()(n1, n2);
 }
 
@@ -61,18 +67,33 @@ std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView() {
 
 size_t GetNotificationCount() {
   size_t count = 0;
+
+  // We need to ignore the `session_state_notification_blocker` when getting the
+  // notification count on the lock screen. This is because we want the counter
+  // to show the total number of available notifications including notifications
+  // that are hidden by the blocker.
+  const message_center::NotificationBlocker* blocker_to_ignore =
+      Shell::Get()->session_controller()->IsScreenLocked()
+          ? Shell::Get()
+                ->message_center_controller()
+                ->session_state_notification_blocker()
+          : nullptr;
+
   for (message_center::Notification* notification :
-       message_center::MessageCenter::Get()->GetVisibleNotifications()) {
+       message_center::MessageCenter::Get()
+           ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore)) {
     const std::string& notifier = notification->notifier_id().id;
     // Don't count these notifications since we have `CameraMicTrayItemView` to
     // show indicators on the systray.
-    if (notifier == kVmCameraMicNotifierId)
+    if (notifier == kVmCameraMicNotifierId) {
       continue;
+    }
 
     // Don't count group child notifications since they're contained in a single
     // parent view.
-    if (notification->group_child())
+    if (notification->group_child()) {
       continue;
+    }
 
     ++count;
   }
@@ -83,8 +104,10 @@ message_center::NotificationViewController*
 GetActiveNotificationViewControllerForDisplay(int64_t display_id) {
   RootWindowController* root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(display_id);
-  if (!root_window_controller || !root_window_controller->GetStatusAreaWidget())
+  if (!root_window_controller ||
+      !root_window_controller->GetStatusAreaWidget()) {
     return nullptr;
+  }
 
   return root_window_controller->GetStatusAreaWidget()
       ->unified_system_tray()

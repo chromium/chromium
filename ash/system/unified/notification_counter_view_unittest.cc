@@ -189,4 +189,21 @@ TEST_P(NotificationCounterViewTest, DoNotDisturbIconVisibility) {
   EXPECT_TRUE(GetDoNotDisturbIconView()->GetVisible());
 }
 
+TEST_P(NotificationCounterViewTest, LockScreenCounter) {
+  // This behavior is only applicable when QsRevamp is enabled.
+  if (!IsQsRevampEnabled()) {
+    return;
+  }
+
+  for (size_t i = 0; i < kTrayNotificationMaxCount; i++) {
+    AddNotification(base::NumberToString(i));
+  }
+
+  // Make sure we show the full count of notifications on the lock screen.
+  BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
+  EXPECT_TRUE(GetNotificationCounterView()->GetVisible());
+  EXPECT_EQ(static_cast<int>(kTrayNotificationMaxCount),
+            GetNotificationCounterView()->count_for_display_for_testing());
+}
+
 }  // namespace ash

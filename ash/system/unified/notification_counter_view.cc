@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/notification_counter_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -49,8 +50,9 @@ const gfx::FontList& GetNumberIconFontList() {
 }
 
 ui::ColorId SeparatorIconColorId(session_manager::SessionState state) {
-  if (state == session_manager::SessionState::OOBE)
+  if (state == session_manager::SessionState::OOBE) {
     return ui::kColorAshIconInOobe;
+  }
   return ui::kColorAshSystemUIMenuSeparator;
 }
 
@@ -62,7 +64,8 @@ bool ShouldShowCounterView() {
   return !message_center::MessageCenter::Get()->IsQuietMode() &&
          session_controller->ShouldShowNotificationTray() &&
          (!session_controller->IsScreenLocked() ||
-          AshMessageCenterLockScreenController::IsEnabled());
+          AshMessageCenterLockScreenController::IsEnabled() ||
+          features::IsQsRevampEnabled());
 }
 
 class NumberIconImageSource : public gfx::CanvasImageSource {

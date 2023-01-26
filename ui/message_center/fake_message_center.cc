@@ -66,8 +66,9 @@ Notification* FakeMessageCenter::FindVisibleNotificationById(
     const std::string& id) {
   const auto& notifications = GetVisibleNotifications();
   for (auto* notification : notifications) {
-    if (notification->id() == id)
+    if (notification->id() == id) {
       return notification;
+    }
   }
 
   return nullptr;
@@ -87,6 +88,12 @@ FakeMessageCenter::GetVisibleNotifications() {
   return visible_notifications_;
 }
 
+NotificationList::Notifications
+FakeMessageCenter::GetVisibleNotificationsWithoutBlocker(
+    const NotificationBlocker* blocker) const {
+  return visible_notifications_;
+}
+
 NotificationList::PopupNotifications
 FakeMessageCenter::GetPopupNotifications() {
   return NotificationList::PopupNotifications();
@@ -103,8 +110,9 @@ void FakeMessageCenter::AddNotification(
   std::string id = notification->id();
   notifications_.AddNotification(std::move(notification));
   visible_notifications_ = notifications_.GetVisibleNotifications(blockers_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationAdded(id);
+  }
 }
 
 void FakeMessageCenter::UpdateNotification(
@@ -127,8 +135,9 @@ void FakeMessageCenter::RemoveNotification(const std::string& id,
                                            bool by_user) {
   notifications_.RemoveNotification(id);
   visible_notifications_ = notifications_.GetVisibleNotifications(blockers_);
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnNotificationRemoved(id, by_user);
+  }
 }
 
 void FakeMessageCenter::RemoveNotificationsForNotifierId(

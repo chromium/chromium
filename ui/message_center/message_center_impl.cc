@@ -246,6 +246,13 @@ MessageCenterImpl::GetVisibleNotifications() {
   return visible_notifications_;
 }
 
+NotificationList::Notifications
+MessageCenterImpl::GetVisibleNotificationsWithoutBlocker(
+    const NotificationBlocker* blocker) const {
+  return notification_list_->GetVisibleNotificationsWithoutBlocker(blockers_,
+                                                                   blocker);
+}
+
 NotificationList::PopupNotifications
 MessageCenterImpl::GetPopupNotifications() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

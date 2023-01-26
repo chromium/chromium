@@ -62,6 +62,10 @@ class ASH_EXPORT MessageCenterController
     return inactive_user_notification_blocker_.get();
   }
 
+  SessionStateNotificationBlocker* session_state_notification_blocker() {
+    return session_state_notification_blocker_.get();
+  }
+
   PhoneHubNotificationController* phone_hub_notification_controller() {
     return phone_hub_notification_controller_.get();
   }

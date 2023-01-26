@@ -44,6 +44,8 @@ class FakeMessageCenter : public MessageCenter {
       const std::string& app_id) override;
   NotificationList::Notifications GetNotifications() override;
   const NotificationList::Notifications& GetVisibleNotifications() override;
+  NotificationList::Notifications GetVisibleNotificationsWithoutBlocker(
+      const NotificationBlocker* blocker) const override;
   NotificationList::PopupNotifications GetPopupNotifications() override;
   NotificationList::PopupNotifications GetPopupNotificationsWithoutBlocker(
       const NotificationBlocker& blocker) const override;

@@ -210,4 +210,18 @@ TEST_F(NotificationCenterBubbleTest,
                   ->IsExpanded());
 }
 
+TEST_F(NotificationCenterBubbleTest, LockScreenNotificationVisibility) {
+  std::string system_id, id;
+  system_id = test_api()->AddSystemNotification();
+  id = test_api()->AddNotification();
+
+  GetSessionControllerClient()->LockScreen();
+
+  test_api()->ToggleBubble();
+
+  EXPECT_FALSE(test_api()->GetNotificationViewForId(id));
+  EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id));
+  EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id)->GetVisible());
+}
+
 }  // namespace ash
