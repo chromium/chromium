@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,20 @@ import '../../controls/settings_toggle_button.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {castExists} from '../assert_extras.js';
+
 import {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl} from './metrics_consent_browser_proxy.js';
 import {getTemplate} from './metrics_consent_toggle_button.html.js';
 
-/** @polymer */
-class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
+const SettingsMetricsConsentToggleButtonElementBase =
+    PrefsMixin(PolymerElement);
+
+class SettingsMetricsConsentToggleButtonElement extends
+    SettingsMetricsConsentToggleButtonElementBase {
   static get is() {
-    return 'settings-metrics-consent-toggle-button';
+    return 'settings-metrics-consent-toggle-button' as const;
   }
 
   static get template() {
@@ -28,20 +35,9 @@ class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * The preference controlling the current user's metrics consent. This
        * will be loaded from |this.prefs| based on the response from
        * |this.metricsConsentBrowserProxy_.getMetricsConsentState()|.
-       *
-       * @private
-       * @type {!chrome.settingsPrivate.PrefObject}
        */
       metricsConsentPref_: {
         type: Object,
@@ -51,13 +47,16 @@ class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
         },
       },
 
-      /** @private */
       isMetricsConsentConfigurable_: {
         type: Boolean,
         value: false,
       },
     };
   }
+
+  private isMetricsConsentConfigurable_: boolean;
+  private metricsConsentBrowserProxy_: MetricsConsentBrowserProxy;
+  private metricsConsentPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   constructor() {
     super();
@@ -74,13 +73,11 @@ class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
     });
   }
 
-  /** @override */
-  focus() {
+  override focus() {
     this.getMetricsToggle_().focus();
   }
 
-  /** @private */
-  onMetricsConsentChange_() {
+  private onMetricsConsentChange_(): void {
     this.metricsConsentBrowserProxy_
         .updateMetricsConsent(this.getMetricsToggle_().checked)
         .then(consent => {
@@ -92,13 +89,17 @@ class SettingsMetricsConsentToggleButtonElement extends PolymerElement {
         });
   }
 
-  /**
-   * @private
-   * @return {SettingsToggleButtonElement}
-   */
-  getMetricsToggle_() {
-    return /** @type {SettingsToggleButtonElement} */ (
-        this.shadowRoot.querySelector('#settingsToggle'));
+  private getMetricsToggle_(): SettingsToggleButtonElement {
+    return castExists(
+        this.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#settingsToggle'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsMetricsConsentToggleButtonElement.is]:
+        SettingsMetricsConsentToggleButtonElement;
   }
 }
 

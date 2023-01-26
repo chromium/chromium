@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+let mediaDevicesInstance: MediaDevices|null = null;
+
 export class MediaDevicesProxy {
-  /** @return {!MediaDevices} */
-  static getMediaDevices() {
+  static getMediaDevices(): MediaDevices {
     return mediaDevicesInstance || navigator.mediaDevices;
   }
 
-  /** @param {!MediaDevices} obj */
-  static setMediaDevicesForTesting(obj) {
+  static setMediaDevicesForTesting(obj: MediaDevices): void {
     mediaDevicesInstance = obj;
   }
 }
-
-/** @type {?MediaDevices} */
-let mediaDevicesInstance = null;

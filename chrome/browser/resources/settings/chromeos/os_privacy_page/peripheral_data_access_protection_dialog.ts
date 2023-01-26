@@ -12,25 +12,21 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '../../settings_shared.css.js';
 
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './peripheral_data_access_protection_dialog.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {PrefsBehaviorInterface}
- */
 const SettingsPeripheralDataAccessProtectionDialogElementBase =
-    mixinBehaviors([PrefsBehavior], PolymerElement);
+    PrefsMixin(PolymerElement);
 
-/** @polymer */
 class SettingsPeripheralDataAccessProtectionDialogElement extends
     SettingsPeripheralDataAccessProtectionDialogElementBase {
   static get is() {
-    return 'settings-peripheral-data-access-protection-dialog';
+    return 'settings-peripheral-data-access-protection-dialog' as const;
   }
 
   static get template() {
@@ -39,31 +35,38 @@ class SettingsPeripheralDataAccessProtectionDialogElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       prefName: {
         type: String,
       },
     };
   }
 
+  prefName: string;
+
   /**
    * Closes the warning dialog and transitions to the disabling dialog.
-   * @private
    */
-  onDisableClicked_() {
+  private onDisableClicked_(): void {
     // Send the new state immediately, this will also toggle the underlying
     // setting-toggle-button associated with this pref.
     this.setPrefValue(this.prefName, true);
-    this.shadowRoot.querySelector('#warningDialog').close();
+    this.getWarningDialog_().close();
   }
 
-  /** @private */
-  onCancelButtonClicked_() {
-    this.shadowRoot.querySelector('#warningDialog').close();
+  private onCancelButtonClicked_(): void {
+    this.getWarningDialog_().close();
+  }
+
+  private getWarningDialog_(): CrDialogElement {
+    return castExists(
+        this.shadowRoot!.querySelector<CrDialogElement>('#warningDialog'));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsPeripheralDataAccessProtectionDialogElement.is]:
+        SettingsPeripheralDataAccessProtectionDialogElement;
   }
 }
 

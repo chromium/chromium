@@ -269,7 +269,6 @@ group("closure_compile_module") {
   deps = [
     ":closure_compile_local_module",
     "os_people_page:closure_compile_module",
-    "os_privacy_page:closure_compile_module",
   ]
 }
 

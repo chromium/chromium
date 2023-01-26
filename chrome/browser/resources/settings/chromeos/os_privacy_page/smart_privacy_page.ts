@@ -11,26 +11,27 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../../controls/extension_controlled_indicator.js';
-import '../os_settings_page/os_settings_animated_pages.js';
-import '../os_settings_page/os_settings_subpage.js';
+import '../../controls/settings_slider.js';
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
+import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_subpage.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
 import {getTemplate} from './smart_privacy_page.html.js';
 
 /**
  * The values that the quick lock slider can have, in ms.
- * @const {!Array<number>}
  */
 const QUICK_LOCK_DELAY_MS = [
   30000,
@@ -42,27 +43,17 @@ const QUICK_LOCK_DELAY_MS = [
 /**
  * Formatter for displaying duration text for the slider of quick dim
  * delay.
- * @const {Object}
  */
 const secondsFormatter = new Intl.NumberFormat(
     window.navigator.language,
     {style: 'unit', unit: 'second', unitDisplay: 'narrow'});
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const SettingsSmartPrivacyPageBase = mixinBehaviors(
-    [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+const SettingsSmartPrivacyPageBase =
+    DeepLinkingMixin(PrefsMixin(RouteObserverMixin(PolymerElement)));
 
-/** @polymer */
 class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
   static get is() {
-    return 'settings-smart-privacy-page';
+    return 'settings-smart-privacy-page' as const;
   }
 
   static get template() {
@@ -72,16 +63,7 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * Whether the smart privacy page is being rendered in dark mode.
-       * @private {boolean}
        */
       isDarkModeActive_: {
         type: Boolean,
@@ -90,7 +72,6 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
 
       /**
        * Whether or not quick dim is enabled.
-       * @private {boolean}
        */
       isQuickDimEnabled_: {
         type: Boolean,
@@ -101,7 +82,6 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
 
       /**
        * Text that shows when moving the quick dim delay slider.
-       * @private {!Array<!SliderTick>}
        */
       smartPrivacyQuickLockRangeMs_: {
         readOnly: true,
@@ -114,7 +94,6 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
 
       /**
        * Whether or not snooping protection is enabled.
-       * @private {boolean}
        */
       isSnoopingProtectionEnabled_: {
         type: Boolean,
@@ -124,12 +103,11 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kQuickDim,
           Setting.kSnoopingProtection,
         ]),
@@ -137,11 +115,12 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
     };
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   */
-  currentRouteChanged(route) {
+  private isDarkModeActive_: boolean;
+  private isQuickDimEnabled_: boolean;
+  private isSnoopingProtectionEnabled_: boolean;
+  private smartPrivacyQuickLockRangeMs_: SliderTick[];
+
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.SMART_PRIVACY) {
       return;
@@ -156,10 +135,16 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
    * @returns {string}
    * @private
    */
-  getImageSource_() {
+  private getImageSource_(): string {
     return this.isDarkModeActive_ ?
         'chrome://os-settings/images/smart_privacy_dark.svg' :
         'chrome://os-settings/images/smart_privacy.svg';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsSmartPrivacyPage.is]: SettingsSmartPrivacyPage;
   }
 }
 

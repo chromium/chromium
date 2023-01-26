@@ -22,42 +22,38 @@ import '../os_people_page/lock_screen.js';
 import '../os_people_page/lock_screen_password_prompt_dialog.js';
 import './metrics_consent_toggle_button.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
+import {Constructor} from '../common/types.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {LockStateBehavior, LockStateBehaviorInterface} from '../os_people_page/lock_state_behavior.js';
 import {routes} from '../os_route.js';
-import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_privacy_page.html.js';
 import {PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './peripheral_data_access_browser_proxy.js';
 import {PrivacyHubNavigationOrigin} from './privacy_hub_page.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- * @implements {LockStateBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- */
-const OsSettingsPrivacyPageElementBase = mixinBehaviors(
-    [
-      DeepLinkingBehavior,
-      RouteObserverBehavior,
-      LockStateBehavior,
-      PrefsBehavior,
-    ],
-    PolymerElement);
+const OsSettingsPrivacyPageElementBase =
+    mixinBehaviors(
+        [
+          LockStateBehavior,
+        ],
+        PrefsMixin(
+            RouteObserverMixin(DeepLinkingMixin(I18nMixin(PolymerElement))))) as
+    Constructor<PolymerElement&I18nMixinInterface&DeepLinkingMixinInterface&
+                RouteObserverMixinInterface&PrefsMixinInterface&
+                LockStateBehaviorInterface>;
 
-/** @polymer */
 class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   static get is() {
-    return 'os-settings-privacy-page';
+    return 'os-settings-privacy-page' as const;
   }
 
   static get template() {
@@ -66,15 +62,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /** @private {!Map<string, string>} */
       focusConfig_: {
         type: Object,
         value() {
@@ -91,14 +78,12 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * Authentication token.
-       * @private {!chrome.quickUnlockPrivate.TokenInfo|undefined}
        */
       authToken_: {
         type: Object,
         observer: 'onAuthTokenChanged_',
       },
 
-      /** @private {boolean} */
       showPasswordPromptDialog_: {
         type: Boolean,
         value: false,
@@ -107,8 +92,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
       /**
        * setModes_ is a partially applied function that stores the current auth
        * token. It's defined only when the user has entered a valid password.
-       * @type {Object|undefined}
-       * @private
        */
       setModes_: {
         type: Object,
@@ -116,11 +99,10 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kVerifiedAccess,
           Setting.kUsageStatsAndCrashReports,
         ]),
@@ -128,7 +110,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * True if fingerprint settings should be displayed on this machine.
-       * @private
        */
       fingerprintUnlockEnabled_: {
         type: Boolean,
@@ -140,7 +121,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * True if snooping protection or screen lock is enabled.
-       * @private
        */
       isSmartPrivacyEnabled_: {
         type: Boolean,
@@ -153,7 +133,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * True if OS is running on reven board.
-       * @private
        */
       isRevenBranding_: {
         type: Boolean,
@@ -165,7 +144,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * Whether the user is in guest mode.
-       * @private {boolean}
        */
       isGuestMode_: {
         type: Boolean,
@@ -175,32 +153,27 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
         readOnly: true,
       },
 
-      /** @private */
       showDisableProtectionDialog_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isThunderboltSupported_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       dataAccessProtectionPrefName_: {
         type: String,
         value: '',
       },
 
-      /** @private */
       isUserConfigurable_: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      /** @private */
       dataAccessShiftTabPressed_: {
         type: Boolean,
         value: false,
@@ -208,7 +181,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * Whether the secure DNS setting should be displayed.
-       * @private
        */
       showSecureDnsSetting_: {
         type: Boolean,
@@ -220,7 +192,6 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
       /**
        * Whether privacy hub should be displayed.
-       * @private
        */
       showPrivacyHubPage_: {
         type: Boolean,
@@ -237,19 +208,33 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     return ['onDataAccessFlagsSet_(isThunderboltSupported_.*)'];
   }
 
-  /** @override */
+  private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
+  private browserProxy_: PeripheralDataAccessBrowserProxy;
+
+  /**
+   * The timeout ID to pass to clearTimeout() to cancel auth token
+   * invalidation.
+   */
+  private clearAccountPasswordTimeoutId_: number|undefined = undefined;
+  private dataAccessProtectionPrefName_: string;
+  private dataAccessShiftTabPressed_: boolean;
+  private fingerprintUnlockEnabled_: boolean;
+  private focusConfig_: Map<string, string>;
+  private isGuestMode_: boolean;
+  private isRevenBranding_: boolean;
+  private isSmartPrivacyEnabled_: boolean;
+  private isThunderboltSupported_: boolean;
+  private isUserConfigurable_: boolean;
+  private setModes_: Object|undefined;
+  private showDisableProtectionDialog_: boolean;
+  private showPasswordPromptDialog_: boolean;
+  private showPrivacyHubPage_: boolean;
+  private showSecureDnsSetting_: boolean;
+
   constructor() {
     super();
 
-    /** @private {!PeripheralDataAccessBrowserProxy} */
     this.browserProxy_ = PeripheralDataAccessBrowserProxyImpl.getInstance();
-
-    /**
-     * The timeout ID to pass to clearTimeout() to cancel auth token
-     * invalidation.
-     * @private {number|undefined}
-     */
-    this.clearAccountPasswordTimeoutId_ = undefined;
 
     this.browserProxy_.isThunderboltSupported().then(enabled => {
       this.isThunderboltSupported_ = enabled;
@@ -259,17 +244,13 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     });
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
     this.addEventListener('auth-token-invalid', this.onAuthTokenInvalid_);
   }
 
-  /**
-   * @param {!Route} route
-   */
-  currentRouteChanged(route) {
+  override currentRouteChanged(route: Route): void {
     // Does not apply to this page.
     if (route !== routes.OS_PRIVACY) {
       return;
@@ -280,18 +261,16 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
 
   /**
    * Looks up the translation id, which depends on PIN login support.
-   * @param {boolean} hasPinLogin
-   * @private
    */
-  selectLockScreenTitleString_(hasPinLogin) {
+  private selectLockScreenTitleString_(hasPinLogin: boolean): string {
     if (hasPinLogin) {
       return this.i18n('lockScreenTitleLoginLock');
     }
     return this.i18n('lockScreenTitleLock');
   }
 
-  /** @private */
-  getPasswordState_(hasPin, enableScreenLock) {
+  private getPasswordState_(hasPin: boolean, enableScreenLock: boolean):
+      string {
     if (!enableScreenLock) {
       return this.i18n('lockScreenNone');
     }
@@ -301,49 +280,38 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     return this.i18n('lockScreenPasswordOnly');
   }
 
-  /** @private */
-  onPasswordRequested_() {
+  private onPasswordRequested_(): void {
     this.showPasswordPromptDialog_ = true;
   }
 
   /**
    * Invalidate the token to trigger a password re-prompt. Used for PIN auto
    * submit when too many attempts were made when using PrefStore based PIN.
-   * @private
    */
-  onInvalidateTokenRequested_() {
+  private onInvalidateTokenRequested_(): void {
     this.authToken_ = undefined;
   }
 
-  /** @private */
-  onPasswordPromptDialogClose_() {
+  private onPasswordPromptDialogClose_(): void {
     this.showPasswordPromptDialog_ = false;
     if (!this.setModes_) {
       Router.getInstance().navigateToPreviousRoute();
     }
   }
 
-  /**
-   * @param {!CustomEvent<!chrome.quickUnlockPrivate.TokenInfo>} e
-   * @private
-   * */
-  onAuthTokenObtained_(e) {
+  private onAuthTokenObtained_(
+      e: CustomEvent<chrome.quickUnlockPrivate.TokenInfo>): void {
     this.authToken_ = e.detail;
   }
 
   /**
    * Should request the password again to get latest token.
-   * @private
    */
-  onAuthTokenInvalid_() {
+  private onAuthTokenInvalid_(): void {
     this.setModes_ = undefined;
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onConfigureLockTap_(e) {
+  private onConfigureLockTap_(e: Event): void {
     // Navigating to the lock screen will always open the password prompt
     // dialog, so prevent the end of the tap event to focus what is underneath
     // it, which takes focus from the dialog.
@@ -351,18 +319,15 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(routes.LOCK_SCREEN);
   }
 
-  /** @private */
-  onManageOtherPeople_() {
+  private onManageOtherPeople_(): void {
     Router.getInstance().navigateTo(routes.ACCOUNTS);
   }
 
-  /** @private */
-  onSmartPrivacy_() {
+  private onSmartPrivacy_(): void {
     Router.getInstance().navigateTo(routes.SMART_PRIVACY);
   }
 
-  /** @private */
-  onPrivacyHubClick_() {
+  private onPrivacyHubClick_(): void {
     chrome.metricsPrivate.recordEnumerationValue(
         'ChromeOS.PrivacyHub.Opened',
         PrivacyHubNavigationOrigin.SYSTEM_SETTINGS,
@@ -370,14 +335,15 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     Router.getInstance().navigateTo(routes.PRIVACY_HUB);
   }
 
-  /** @private */
-  onAuthTokenChanged_() {
+  private onAuthTokenChanged_(): void {
     if (this.authToken_ === undefined) {
       this.setModes_ = undefined;
     } else {
-      this.setModes_ = (modes, credentials, onComplete) => {
-        this.quickUnlockPrivate.setModes(
-            this.authToken_.token, modes, credentials, () => {
+      const token = this.authToken_.token;
+      this.setModes_ =
+          (modes: chrome.quickUnlockPrivate.QuickUnlockMode[],
+           credentials: string[], onComplete: (result: boolean) => void) => {
+            this.quickUnlockPrivate.setModes(token, modes, credentials, () => {
               let result = true;
               if (chrome.runtime.lastError) {
                 console.error(
@@ -386,7 +352,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
               }
               onComplete(result);
             });
-      };
+          };
     }
 
     if (this.clearAccountPasswordTimeoutId_) {
@@ -408,13 +374,11 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     }, lifetimeMs);
   }
 
-  /** @private */
-  onDisableProtectionDialogClosed_() {
+  private onDisableProtectionDialogClosed_(): void {
     this.showDisableProtectionDialog_ = false;
   }
 
-  /** @private */
-  onPeripheralProtectionClick_() {
+  private onPeripheralProtectionClick_(): void {
     if (!this.isUserConfigurable_) {
       return;
     }
@@ -432,8 +396,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     this.setPrefValue(this.dataAccessProtectionPrefName_, false);
   }
 
-  /** @private */
-  onDataAccessToggleFocus_() {
+  private onDataAccessToggleFocus_(): void {
     if (!this.isUserConfigurable_) {
       return;
     }
@@ -442,21 +405,23 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     // previous element.
     if (this.dataAccessShiftTabPressed_) {
       this.dataAccessShiftTabPressed_ = false;
-      this.shadowRoot.querySelector('#enableVerifiedAccess').focus();
+      this.shadowRoot!
+          .querySelector<SettingsToggleButtonElement>(
+              '#enableVerifiedAccess')!.focus();
       return;
     }
 
-    this.shadowRoot.querySelector('.peripheral-data-access-protection').focus();
+    this.shadowRoot!
+        .querySelector<SettingsToggleButtonElement>(
+            '.peripheral-data-access-protection')!.focus();
   }
 
   /**
    * Handles keyboard events in regards to #peripheralDataAccessProtection.
    * The underlying cr-toggle is disabled so we need to handle the keyboard
    * events manually.
-   * @param {!Event} event
-   * @private
    */
-  onDataAccessToggleKeyPress_(event) {
+  private onDataAccessToggleKeyPress_(event: KeyboardEvent): void {
     // Handle Shift + Tab, we don't want to redirect back to the same toggle.
     if (event.shiftKey && event.key === 'Tab') {
       this.dataAccessShiftTabPressed_ = true;
@@ -482,9 +447,8 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
    * navigation inputs. We have to wait until either
    * #crosSettingDataAccessToggle or #localStateDataAccessToggle is rendered
    * before adding the observer.
-   * @private
    */
-  onDataAccessFlagsSet_() {
+  private onDataAccessFlagsSet_(): void {
     if (this.isThunderboltSupported_) {
       this.browserProxy_.getPolicyState()
           .then(policy => {
@@ -493,10 +457,10 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
           })
           .then(() => {
             afterNextRender(this, () => {
-              this.shadowRoot
-                  .querySelector('.peripheral-data-access-protection')
-                  .shadowRoot.querySelector('#control')
-                  .addEventListener(
+              this.shadowRoot!
+                  .querySelector<SettingsToggleButtonElement>(
+                      '.peripheral-data-access-protection')!.shadowRoot!
+                  .querySelector<HTMLElement>('#control')!.addEventListener(
                       'keydown', this.onDataAccessToggleKeyPress_.bind(this));
             });
           });
@@ -504,23 +468,25 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
   }
 
   /**
-   * @return {boolean} returns true if the current data access pref is from the
-   * local_state.
-   * @private
+   * @return true if the current data access pref is from the local_state.
    */
-  isLocalStateDataAccessPref_() {
+  private isLocalStateDataAccessPref_(): boolean {
     return this.dataAccessProtectionPrefName_ ===
         'settings.local_state_device_pci_data_access_enabled';
   }
 
   /**
-   * @return {boolean} returns true if the current data access pref is from the
-   * CrosSetting.
-   * @private
+   * @return true if the current data access pref is from the CrosSetting.
    */
-  isCrosSettingDataAccessPref_() {
+  private isCrosSettingDataAccessPref_(): boolean {
     return this.dataAccessProtectionPrefName_ ===
         'cros.device.peripheral_data_access_enabled';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OsSettingsPrivacyPageElement.is]: OsSettingsPrivacyPageElement;
   }
 }
 
