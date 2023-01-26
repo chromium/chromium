@@ -1666,14 +1666,17 @@ float StyleBuilderConverter::ConvertAlpha(StyleResolverState& state,
   return ClampTo<float>(ConvertNumberOrPercentage(state, value), 0, 1);
 }
 
-AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdent(
+ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
     StyleResolverState& state,
     const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return g_null_atom;
+    return nullptr;
   }
-  return To<CSSCustomIdentValue>(value).Value();
+  const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
+  return MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
+                                             custom_ident.GetTreeScope());
 }
 
 ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
@@ -1691,9 +1694,9 @@ ScopedCSSName* StyleBuilderConverter::ConvertNoneOrCustomIdent(
 
 AnchorScrollValue* StyleBuilderConverter::ConvertAnchorScroll(
     StyleResolverState& state,
-    const ScopedCSSValue& value) {
-  if (const auto* identifier_value =
-          DynamicTo<CSSIdentifierValue>(value.GetCSSValue())) {
+    const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     switch (identifier_value->GetValueID()) {
       case CSSValueID::kNone:
         return nullptr;
@@ -1704,10 +1707,10 @@ AnchorScrollValue* StyleBuilderConverter::ConvertAnchorScroll(
         return nullptr;
     }
   }
+  const CSSCustomIdentValue& custom_ident = To<CSSCustomIdentValue>(value);
   return MakeGarbageCollected<AnchorScrollValue>(
-      *MakeGarbageCollected<ScopedCSSName>(
-          To<CSSCustomIdentValue>(value.GetCSSValue()).Value(),
-          value.GetTreeScope()));
+      *MakeGarbageCollected<ScopedCSSName>(custom_ident.Value(),
+                                           custom_ident.GetTreeScope()));
 }
 
 StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(

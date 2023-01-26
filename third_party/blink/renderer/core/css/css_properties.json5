@@ -1606,7 +1606,6 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
-      tree_scoped_value: true,
     },
     {
       name: "anchor-scroll",
@@ -1621,7 +1620,6 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
-      tree_scoped_value: true,
     },
     {
       name: "aspect-ratio",
@@ -3989,7 +3987,6 @@
       keywords: ["none"],
       typedom_types: ["Keyword"],
       runtime_flag: "CSSAnchorPositioning",
-      tree_scoped_value: true,
     },
     {
       name: "quotes",
