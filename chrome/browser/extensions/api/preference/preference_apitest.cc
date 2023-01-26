@@ -39,6 +39,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
@@ -627,3 +628,151 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
           content_settings::CookieControlsMode::kIncognitoOnly)),
       /* expected_controlled */ false);
 }
+
+namespace extensions {
+
+class ExtensionPrefDevToolsConsoleTest : public ExtensionPreferenceApiTest {
+ protected:
+  static constexpr char kExpectedWarning[] =
+      "We’re deprecating the API "
+      "chrome.privacy.websites.privacySandboxEnabled, though it will remain "
+      "active for backward compatibility until release M113. Instead, please "
+      "use chrome.privacy.websites.topicsEnabled, "
+      "chrome.privacy.websites.fledgeEnabled and "
+      "chrome.privacy.websites.adMeasurementEnabled.";
+
+  // Builds a test extension dir with a simple html file that runs a js that
+  // can call chrome.privacy.websites.privacySandboxEnabled and another API
+  // under chrome.privacy (i.e.
+  // chrome.privacy.websites.hyperlinkAuditingEnabled).
+  void BuildTestExtensionDir(TestExtensionDir& test_dir) {
+    constexpr char kManifestTemplate[] =
+        R"({
+              "name": "Bad Icon Path",
+              "manifest_version": 2,
+              "version": "0.1",
+              "permissions": ["privacy"]
+            })";
+
+    constexpr char kPageJsTemplate[] =
+        R"(function runGetScript() {
+              chrome.privacy.websites.privacySandboxEnabled.get({}, () => {
+                chrome.test.sendMessage('finish get');
+              });
+            }
+            function runSetScript() {
+              chrome.privacy.websites.privacySandboxEnabled
+                .set({value: false}, () => {
+                      chrome.test.sendMessage('finish set');
+              });
+            }
+            function runClearScript() {
+              chrome.privacy.websites.privacySandboxEnabled.clear({}, () => {
+                chrome.test.sendMessage('finish clear');
+              });
+            }
+            function runHyperlinkAuditingScript() {
+              chrome.privacy.websites.hyperlinkAuditingEnabled.get({}, () => {
+                chrome.test.sendMessage('finish hyperlinkAuditing');
+              });
+            })";
+
+    constexpr char kPageHtmlTemplate[] =
+        R"(<html><script src="page.js"></script></html>)";
+
+    // Building the test extension.
+    test_dir.WriteManifest(kManifestTemplate);
+    test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtmlTemplate);
+    test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kPageJsTemplate);
+  }
+
+  // Runs |script| in the background page of the extension with the given
+  // |extension_id|, and waits for it to send the |finish_message|.
+  void WaitForScriptToFinish(content::WebContents* web_contents,
+                             const std::string& script,
+                             const std::string finish_message) {
+    SCOPED_TRACE(script);
+    ExtensionTestMessageListener listener(finish_message);
+    content::ExecuteScriptAsync(web_contents, script);
+    EXPECT_TRUE(listener.WaitUntilSatisfied()) << message_;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         ExtensionPrefDevToolsConsoleTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+// Tests the correct logging of console warning messages when
+// PrivacySandboxEnabled API is called by an extension during the migration
+// period.
+IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
+                       PrivacySandboxMigrationExpectConsoleMessage) {
+  // STEP 1. Build extension.
+  TestExtensionDir test_dir;
+  BuildTestExtensionDir(test_dir);
+
+  // STEP 2. Load extension.
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // STEP 3. Navigate to the extension's html page and get access to its Web
+  // Contents.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // STEP 4. Check if the deprecation console warning messages
+  // |kExpectedWarning| are logged. Calling
+  // chrome.privacy.websites.privacySandboxEnabled in a non-service worker
+  // context should log a console warning in that context.
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetPattern(kExpectedWarning);
+
+  WaitForScriptToFinish(web_contents, "runGetScript();", "finish get");
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  WaitForScriptToFinish(web_contents, "runClearScript();", "finish clear");
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ(2u, console_observer.messages().size());
+
+  WaitForScriptToFinish(web_contents, "runSetScript();", "finish set");
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ(3u, console_observer.messages().size());
+}
+
+// Tests that no console warning messages are logged when other APIs under
+// chrome.privacy are called by an extension.
+IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
+                       PrivacySandboxMigrationDoesNotExpectConsoleMessage) {
+  // STEP 1. Build extension.
+  TestExtensionDir test_dir;
+  BuildTestExtensionDir(test_dir);
+
+  // STEP 2. Load extension.
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // STEP 3. Navigate to the extension's html and get access to its Web
+  // Contents.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), extension->GetResourceURL("page.html")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // STEP 4. Check if no console warning message is logged when another API is
+  // called.
+  // If another extension API (e.g. under chrome.privacy) is called
+  // other than chrome.privacy.websites.privacySandboxEnabled, then no
+  // console message should be logged.
+  content::WebContentsConsoleObserver console_observer(web_contents);
+  console_observer.SetPattern(kExpectedWarning);
+
+  WaitForScriptToFinish(web_contents, "runHyperlinkAuditingScript();",
+                        "finish hyperlinkAuditing");
+  EXPECT_EQ(0u, console_observer.messages().size())
+      << "Found console.warn or console.error with message: "
+      << console_observer.GetMessageAt(0);
+}
+}  // namespace extensions
