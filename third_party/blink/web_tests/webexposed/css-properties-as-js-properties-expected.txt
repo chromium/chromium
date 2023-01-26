@@ -448,6 +448,7 @@ toggleRoot
 toggleTrigger
 toggleVisibility
 top
+topLayer
 touchAction
 transform
 transformBox

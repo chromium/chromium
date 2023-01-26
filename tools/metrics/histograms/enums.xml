@@ -66621,6 +66621,7 @@ Called by update_use_counter_css.py.-->
   <int value="741" label="animation-range-start"/>
   <int value="742" label="animation-range-end"/>
   <int value="743" label="animation-composition"/>
+  <int value="744" label="top-layer"/>
 </enum>
 
 <enum name="MappedEditingCommands">

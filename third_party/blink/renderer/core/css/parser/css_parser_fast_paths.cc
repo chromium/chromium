@@ -1155,6 +1155,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kUpright;
     case CSSPropertyID::kTextOverflow:
       return value_id == CSSValueID::kClip || value_id == CSSValueID::kEllipsis;
+    case CSSPropertyID::kTopLayer:
+      return value_id == CSSValueID::kNone || value_id == CSSValueID::kBrowser;
     case CSSPropertyID::kTextRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kOptimizespeed ||
@@ -1501,6 +1503,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kScrollbarWidth,
     CSSPropertyID::kScrollSnapStop,
     CSSPropertyID::kOriginTrialTestProperty,
+    CSSPropertyID::kTopLayer,
 }};
 
 bool CSSParserFastPaths::IsValidSystemFont(CSSValueID value_id) {

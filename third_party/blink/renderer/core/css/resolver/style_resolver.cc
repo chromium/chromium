@@ -435,6 +435,22 @@ static CSSPropertyValueSet* ForcedColorsUserAgentDeclarations() {
   return decl;
 }
 
+// UA rule: * { top-layer: none !important }
+static CSSPropertyValueSet* UniversalTopLayerUserAgentDeclaration() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<MutableCSSPropertyValueSet>, decl,
+      (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+
+  DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
+
+  if (decl->IsEmpty()) {
+    decl->SetProperty(CSSPropertyID::kTopLayer,
+                      *CSSIdentifierValue::Create(CSSValueID::kNone),
+                      true /* important */);
+  }
+  return decl;
+}
+
 static void CollectScopedResolversForHostedShadowTrees(
     const Element& element,
     HeapVector<Member<ScopedStyleResolver>, 8>& resolvers) {
@@ -1324,22 +1340,33 @@ void StyleResolver::ApplyBaseStyleNoCache(
   // rules that are relevant for the element exist in the stylesheet.
   GetDocument().GetStyleEngine().EnsureUAStyleForElement(*element);
 
-  if (!style_request.IsPseudoStyleRequest() && IsForcedColorsModeEnabled()) {
-    cascade.MutableMatchResult().AddMatchedProperties(
-        ForcedColorsUserAgentDeclarations());
-  }
+  if (!style_request.IsPseudoStyleRequest()) {
+    if (IsForcedColorsModeEnabled()) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          ForcedColorsUserAgentDeclarations());
+    }
 
-  // This adds a CSSInitialColorValue to the cascade for the document
-  // element. The CSSInitialColorValue will resolve to a color-scheme
-  // sensitive color in Color::ApplyValue. It is added at the start of the
-  // MatchResult such that subsequent declarations (even from the UA sheet)
-  // get a higher priority.
-  //
-  // TODO(crbug.com/1046753): Remove this when canvastext is supported.
-  if (!style_request.IsPseudoStyleRequest() &&
-      element == state.GetDocument().documentElement()) {
-    cascade.MutableMatchResult().AddMatchedProperties(
-        DocumentElementUserAgentDeclarations());
+    // UA rule: * { top-layer: none !important }
+    // Implemented here because DCHECKs ensures we don't add universal rules to
+    // the UA sheets. Note that this is a universal rule in any namespace.
+    // Adding this to the html.css would only do the override in the HTML
+    // namespace since the sheet has a default namespace.
+    if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          UniversalTopLayerUserAgentDeclaration());
+    }
+
+    // This adds a CSSInitialColorValue to the cascade for the document
+    // element. The CSSInitialColorValue will resolve to a color-scheme
+    // sensitive color in Color::ApplyValue. It is added at the start of the
+    // MatchResult such that subsequent declarations (even from the UA sheet)
+    // get a higher priority.
+    //
+    // TODO(crbug.com/1046753): Remove this when canvastext is supported.
+    if (element == state.GetDocument().documentElement()) {
+      cascade.MutableMatchResult().AddMatchedProperties(
+          DocumentElementUserAgentDeclarations());
+    }
   }
 
   ElementRuleCollector collector(state.ElementContext(), style_recalc_context,

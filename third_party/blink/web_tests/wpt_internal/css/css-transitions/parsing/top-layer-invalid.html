@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>CSS Transitions: parsing top-layer with valid values</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script>
+  // top-layer: none | browser
+  test_invalid_value("top-layer", "auto");
+  test_invalid_value("top-layer", "normal");
+  test_invalid_value("top-layer", "none browser");
+  test_invalid_value("top-layer", "none, browser");
+  test_invalid_value("top-layer", "\'browser\'");
+  test_invalid_value("top-layer", "\'none\'");
+</script>

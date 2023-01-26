@@ -387,6 +387,7 @@ All changes to this list should go through Blink's feature review process: http:
     toggle-trigger
     toggle-visibility
     top
+    top-layer
     touch-action
     transform
     transform-box

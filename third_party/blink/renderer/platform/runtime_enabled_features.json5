@@ -919,6 +919,12 @@
       status: "experimental",
     },
     {
+      // Support for CSS top-layer property for being able to transition
+      // See: https://github.com/w3c/csswg-drafts/issues/8189
+      name: "CSSTopLayerForTransitions",
+      status: "experimental",
+    },
+    {
       // Support for tree-scoped [1] timeline names (e.g. produced by
       // scroll-timeline).
       //

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<title>CSS Transitions: getComputedStyle().topLayer</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_computed_value("top-layer", "none", "none");
+  // 'browser' also computes to 'none' due to this UA style while the element is
+  // not in the top-layer:
+  //
+  // * { top-layer: none !important }
+  test_computed_value("top-layer", "browser", "none");
+  test_computed_value("top-layer", "initial", "none");
+  test_computed_value("top-layer", "revert", "none");
+  test_computed_value("top-layer", "unset", "none");
+</script>

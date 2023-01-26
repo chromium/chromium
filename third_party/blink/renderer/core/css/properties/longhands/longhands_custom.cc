@@ -9588,6 +9588,13 @@ const CSSValue* ToggleVisibility::CSSValueFromComputedStyleInternal(
   return result_list;
 }
 
+const CSSValue* TopLayer::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return CSSIdentifierValue::Create(style.TopLayer());
+}
+
 const CSSValue* WebkitTransformOriginY::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

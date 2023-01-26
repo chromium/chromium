@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>CSS Transitions: 'top-layer' is a valid transition-property value</title>
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+<div id="target"></div>
+<script>
+  test_valid_value("transition-property", "top-layer");
+  test_valid_value("transition", "top-layer 2s", "top-layer 2s ease 0s");
+
+  test_computed_value("transition-property", "top-layer");
+  test_computed_value("transition", "top-layer 1s", "top-layer 1s ease 0s");
+</script>

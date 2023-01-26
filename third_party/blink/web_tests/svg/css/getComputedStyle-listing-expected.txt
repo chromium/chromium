@@ -351,6 +351,7 @@ toggle-root: none
 toggle-trigger: none
 toggle-visibility: normal
 top: auto
+top-layer: none
 touch-action: auto
 transform: none
 transform-origin: 0px 0px
