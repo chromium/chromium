@@ -174,8 +174,8 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
   }
   ret.Set("process_type", process_type);
 
-  // Renderer-only properties.
   if (impl->process_type() == content::PROCESS_TYPE_RENDERER) {
+    // Renderer-only properties.
     ret.Set("render_process_id", impl->GetRenderProcessId().value());
 
     ret.Set("main_thread_task_load_is_low",
@@ -183,6 +183,12 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
 
     ret.Set("hosted_content_types",
             HostedProcessTypesToString(impl->hosted_content_types()));
+  } else if (impl->process_type() != content::PROCESS_TYPE_BROWSER) {
+    // Non-renderer child process properties.
+    ret.Set("browser_child_process_host_id",
+            impl->browser_child_process_host_proxy()
+                .browser_child_process_host_id()
+                .value());
   }
 
   return base::Value(std::move(ret));
