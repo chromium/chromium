@@ -108,8 +108,8 @@ void DrawDocumentMarker(GraphicsContext& context,
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
-      marker, SkRect::MakeWH(kMarkerWidth, kMarkerHeight), SkTileMode::kRepeat,
-      SkTileMode::kClamp, &local_matrix));
+      std::move(marker), SkRect::MakeWH(kMarkerWidth, kMarkerHeight),
+      SkTileMode::kRepeat, SkTileMode::kClamp, &local_matrix));
 
   // Apply the origin translation as a global transform.  This ensures that the
   // shader local matrix depends solely on zoom => Skia can reuse the same

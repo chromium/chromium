@@ -315,7 +315,7 @@ void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
 
 void RecordPaintCanvas::drawPicture(PaintRecord record) {
   // TODO(enne): If this is small, maybe flatten it?
-  push<DrawRecordOp>(record);
+  push<DrawRecordOp>(std::move(record));
 }
 
 void RecordPaintCanvas::Annotate(AnnotationType type,

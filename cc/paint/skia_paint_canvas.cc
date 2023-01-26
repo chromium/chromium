@@ -360,7 +360,7 @@ void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,
 }
 
 void SkiaPaintCanvas::drawPicture(PaintRecord record) {
-  drawPicture(record, PlaybackParams::CustomDataRasterCallback());
+  drawPicture(std::move(record), PlaybackParams::CustomDataRasterCallback());
 }
 
 SkM44 SkiaPaintCanvas::getLocalToDevice() const {

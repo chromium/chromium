@@ -5,6 +5,8 @@
 #ifndef CC_PAINT_IMAGE_PROVIDER_H_
 #define CC_PAINT_IMAGE_PROVIDER_H_
 
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/decoded_draw_image.h"
@@ -38,9 +40,11 @@ class CC_PAINT_EXPORT ImageProvider {
     explicit operator bool() const { return image_ || record_; }
     const DecodedDrawImage& decoded_image() const { return image_; }
     bool needs_unlock() const { return !destruction_callback_.is_null(); }
-    const PaintRecord* paint_record() {
-      DCHECK(record_);
-      return base::OptionalToPtr(record_);
+
+    bool has_paint_record() const { return record_.has_value(); }
+    PaintRecord ReleaseAsRecord() {
+      DCHECK(has_paint_record());
+      return std::move(record_.value());
     }
 
    private:

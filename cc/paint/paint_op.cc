@@ -1173,8 +1173,9 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     // because a navigation is happening). In that case the PaintWorklet jobs
     // will fail and there will be no result to raster here. This state is
     // transient as the next main frame commit will remove the PaintWorklets.
-    if (result && result.paint_record())
-      result.paint_record()->Playback(canvas, params);
+    if (result && result.has_paint_record()) {
+      result.ReleaseAsRecord().Playback(canvas, params);
+    }
     return;
   }
 

@@ -212,8 +212,9 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     const DrawImageRectOp& draw_op = static_cast<const DrawImageRectOp&>(op);
     ImageProvider::ScopedResult result =
         options_.image_provider->GetRasterContent(DrawImage(draw_op.image));
-    if (!result || !result.paint_record())
+    if (!result || !result.has_paint_record()) {
       return true;
+    }
 
     int save_count = canvas->getSaveCount();
     Save(canvas, params);
@@ -239,7 +240,7 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
     if (!success)
       return false;
 
-    SerializeBuffer(canvas, result.paint_record()->buffer(), nullptr);
+    SerializeBuffer(canvas, result.ReleaseAsRecord().buffer(), nullptr);
     RestoreToCount(canvas, save_count, params);
     return true;
   } else {

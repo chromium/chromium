@@ -327,10 +327,11 @@ sk_sp<PaintShader> PaintShader::CreatePaintWorkletRecord(
 
   ImageProvider::ScopedResult result =
       image_provider->GetRasterContent(DrawImage(image_));
-  if (!result || !result.paint_record())
+  if (!result || !result.has_paint_record()) {
     return nullptr;
+  }
   SkMatrix local_matrix = GetLocalMatrix();
-  return PaintShader::MakePaintRecord(*result.paint_record(), tile_, tx_, ty_,
+  return PaintShader::MakePaintRecord(result.ReleaseAsRecord(), tile_, tx_, ty_,
                                       &local_matrix);
 }
 
