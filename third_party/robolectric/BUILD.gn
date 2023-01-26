@@ -7,24 +7,24 @@ import("//build/config/android/rules.gni")
 group("robolectric_runtime_jars") {
   testonly = true
   data = [
-    "//third_party/robolectric/lib/android-all-instrumented-4.4_r1-robolectric-r2-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-6.0.1_r3-robolectric-r1-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-7.0.0_r1-robolectric-r1-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-7.1.0_r7-robolectric-r1-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-8.0.0_r4-robolectric-r1-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-8.1.0-robolectric-4611349-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-9-robolectric-4913185-2-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-10-robolectric-5803371-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-11-robolectric-6757853-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-12-robolectric-7732740-i4.jar",
-    "//third_party/robolectric/lib/android-all-instrumented-12.1-robolectric-8229987-i4.jar",
+    "lib/android-all-instrumented-4.4_r1-robolectric-r2-i4.jar",
+    "lib/android-all-instrumented-5.0.2_r3-robolectric-r0-i4.jar",
+    "lib/android-all-instrumented-6.0.1_r3-robolectric-r1-i4.jar",
+    "lib/android-all-instrumented-7.0.0_r1-robolectric-r1-i4.jar",
+    "lib/android-all-instrumented-7.1.0_r7-robolectric-r1-i4.jar",
+    "lib/android-all-instrumented-8.0.0_r4-robolectric-r1-i4.jar",
+    "lib/android-all-instrumented-8.1.0-robolectric-4611349-i4.jar",
+    "lib/android-all-instrumented-9-robolectric-4913185-2-i4.jar",
+    "lib/android-all-instrumented-10-robolectric-5803371-i4.jar",
+    "lib/android-all-instrumented-11-robolectric-6757853-i4.jar",
+    "lib/android-all-instrumented-12-robolectric-7732740-i4.jar",
+    "lib/android-all-instrumented-12.1-robolectric-8229987-i4.jar",
+    "lib/android-all-instrumented-13-robolectric-9030017-i4.jar",
   ]
 }
 
 # Robolectric tests compile against the robolectric sdk. This should be kept in
 # sync with the latest version in //third_party/android_sdk.
 android_system_java_prebuilt("robolectric_test_sdk_java") {
-  jar_path =
-      "//third_party/robolectric/lib/android-all-12.1-robolectric-8229987.jar"
+  jar_path = "lib/android-all-13-robolectric-9030017.jar"
 }
