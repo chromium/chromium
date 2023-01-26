@@ -18,7 +18,6 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/grit/chromium_strings.h"

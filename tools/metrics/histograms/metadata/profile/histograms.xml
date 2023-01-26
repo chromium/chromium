@@ -770,6 +770,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstRun.OrganizationAvailableTiming" units="ms"
+    expires_after="2023-07-25">
+  <owner>dgn@chromium.org</owner>
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the time between the first run of Chrome on Desktop is loaded and
+    the organization name is available to be shown in the enterprise disclaimer.
+    This is only logged if the device is managed and the policy store is loaded
+    in the specified time delay.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.FirstRun.PolicyStoreState"
+    enum="FirstRunCloudPolicyStoreState" expires_after="2023-07-25">
+  <owner>dgn@chromium.org</owner>
+  <owner>jyammine@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the loading state of the clould policy store when it is loaded or
+    after a specified time delay. This is recorded for the first run experience
+    on desktop for managed devices. This is needed to track if the managed
+    organization name has been properly displayed in the first run experience
+    managed disclaimer.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.NewProfileCreateShortcut" enum="BooleanCreated"
     expires_after="M90">
   <owner>msalama@chromium.org</owner>

@@ -44244,6 +44244,24 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Disabled"/>
 </enum>
 
+<enum name="FirstRunCloudPolicyStoreState">
+  <int value="0" label="Loaded before initialization">
+    The cloud policy store was already loaded when the FRE intro was first
+    initialiazed.
+  </int>
+  <int value="1" label="Loaded successfully">
+    The cloud policy store has loaded within the time delay specified in the
+    observer.
+  </int>
+  <int value="2" label="Not loaded in time">
+    The cloud policy store did not load within the time delay specified in the
+    observer.
+  </int>
+  <int value="3" label="Error raised">
+    The cloud policy store raised an error while loading.
+  </int>
+</enum>
+
 <enum name="FirstRunLaunchSource">
   <summary>
     External applications/promotions that triggered Chrome launch and First Run.
