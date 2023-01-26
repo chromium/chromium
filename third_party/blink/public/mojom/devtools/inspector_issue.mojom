@@ -23,6 +23,7 @@ enum InspectorIssueCode {
   kLowTextContrastIssue,
   kFederatedAuthRequestIssue,
   kGenericIssue,
+  kDeprecationIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -235,6 +236,15 @@ struct GenericIssueDetails {
   int32 violating_node_id = 0;
 };
 
+enum DeprecationIssueType {
+  kPrivacySandboxExtensionsAPI,
+};
+
+struct DeprecationIssueDetails {
+  DeprecationIssueType type;
+  AffectedLocation affected_location;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
@@ -248,6 +258,7 @@ struct InspectorIssueDetails {
   LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
   GenericIssueDetails? generic_issue_details;
+  DeprecationIssueDetails? deprecation_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 

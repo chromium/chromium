@@ -802,6 +802,7 @@ experimental domain Audits
       PrefixedVideoExitFullscreen
       PrefixedVideoExitFullScreen
       PrefixedVideoSupportsFullscreen
+      PrivacySandboxExtensionsAPI
       RangeExpand
       RequestedSubresourceWithEmbeddedCredentials
       RTCConstraintEnableDtlsSrtpFalse

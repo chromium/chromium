@@ -67,6 +67,9 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kGenericIssue:
       NOTREACHED();
       return "";
+    case mojom::blink::InspectorIssueCode::kDeprecationIssue:
+      NOTREACHED();
+      return "";
   }
 }
 
