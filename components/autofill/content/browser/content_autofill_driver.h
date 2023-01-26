@@ -118,11 +118,9 @@ class ContentAutofillDriver : public AutofillDriver,
   static ContentAutofillDriver* GetForRenderFrameHost(
       content::RenderFrameHost* render_frame_host);
 
-  // Partially constructs the ContentAutofillDriver. The ContentAutofillDriver
-  // needs an AutofillManager that should be set via set_autofill_manager() (for
-  // Android Autofill) or set_browser_autofill_manager (for Chromium).
-  // Outside of unittests, ContentAutofillDriverFactory is instantiated and set
-  // up by the ContentAutofillDriverFactory.
+  // Partially constructs the ContentAutofillDriver: afterwards, the caller
+  // *must* set a non-null AutofillManager with set_autofill_manager().
+  // Outside of unittests, this is done by ContentAutofillDriverFactory.
   ContentAutofillDriver(content::RenderFrameHost* render_frame_host,
                         ContentAutofillRouter* autofill_router);
   ContentAutofillDriver(const ContentAutofillDriver&) = delete;
