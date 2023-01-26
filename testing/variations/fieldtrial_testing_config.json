@@ -10399,6 +10399,26 @@
             ]
         }
     ],
+    "SequentialPrerendering": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Prerender2SequentialPrerendering"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServerBasedTranscriptionForScreencast": [
         {
             "platforms": [
