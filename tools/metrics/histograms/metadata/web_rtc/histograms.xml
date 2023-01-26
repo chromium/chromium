@@ -1351,6 +1351,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.PeerConnection.RtcpMuxPolicy"
+    enum="PeerConnectionRtcpMux" expires_after="2023-06-11">
+  <owner>hta@chromium.org</owner>
+  <owner>webrtc-dev@chromium.org</owner>
+  <owner>phancke@microsoft.com</owner>
+  <summary>
+    Which RTCPMuxPolicy was requested for the PeerConnection. Recorded during
+    the first DTLS connection establishment.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.PeerConnection.SdpComplexUsage.CreateAnswer"
     enum="PeerConnectionSdpUsageCategory" expires_after="2022-05-07">
   <obsolete>
