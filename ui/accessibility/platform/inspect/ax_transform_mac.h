@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TRANSFORM_MAC_H_
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TRANSFORM_MAC_H_
 
+#import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 
 #include "base/component_export.h"
@@ -17,6 +18,10 @@ namespace ui {
 // Returns the base::Value representation of the given NSObject.
 COMPONENT_EXPORT(AX_PLATFORM)
 base::Value AXNSObjectToBaseValue(id, const AXTreeIndexerMac*);
+
+// Returns the base::Value::Dict representation of the given AXCustomContent.
+base::Value::Dict AXCustomContentToBaseValue(AXCustomContent*)
+    API_AVAILABLE(macosx(11.0));
 
 // Returns the base::Value representation of the given NSAccessibilityElement.
 COMPONENT_EXPORT(AX_PLATFORM)
