@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -770,6 +770,13 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDeviceTouchpad), function() {
     let perDeviceTouchpadPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeKeyboards(fakeTouchpads);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();
@@ -791,6 +798,12 @@ suite('SettingsDevicePage', function() {
           routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
           '#perDeviceTouchpadSubpageTitle')));
+    });
+
+    test('per-device touchpad page populated', function() {
+      const connectedTouchpads = perDeviceTouchpadPage.touchpads;
+      assertTrue(!!connectedTouchpads);
+      assertDeepEquals(connectedTouchpads, fakeTouchpads);
     });
   });
 

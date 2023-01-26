@@ -18,6 +18,8 @@ import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Touchpad} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_touchpad.html.js';
 
 const SettingsPerDeviceTouchpadElementBase =
@@ -39,7 +41,20 @@ class SettingsPerDeviceTouchpadElement extends
         type: Boolean,
         value: false,
       },
+
+      touchpads: {
+        type: Array,
+      },
     };
+  }
+
+  protected touchpads: Touchpad[];
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+
+  constructor() {
+    super();
+    this.fetchConnectedTouchpads();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -47,6 +62,11 @@ class SettingsPerDeviceTouchpadElement extends
     if (route !== routes.PER_DEVICE_TOUCHPAD) {
       return;
     }
+  }
+
+  private async fetchConnectedTouchpads(): Promise<void> {
+    this.touchpads =
+        await this.inputDeviceSettingsProvider.getConnectedTouchpadSettings();
   }
 }
 

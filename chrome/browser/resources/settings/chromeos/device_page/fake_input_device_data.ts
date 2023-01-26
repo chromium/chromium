@@ -23,12 +23,20 @@ export const fakeKeyboards: Keyboard[] = [
   },
 ];
 
-export const fakeTouchpads: Touchpad[] = [{
-  id: 1,
-  name: 'fake-touchpad',
-  isExternal: false,
-  isHaptic: false,
-}];
+export const fakeTouchpads: Touchpad[] = [
+  {
+    id: 2,
+    name: 'Default Touchpad',
+    isExternal: false,
+    isHaptic: false,
+  },
+  {
+    id: 3,
+    name: 'Logitech T650',
+    isExternal: true,
+    isHaptic: false,
+  },
+];
 
 export const fakeMice: Mouse[] = [{
   id: 2,
