@@ -18,6 +18,8 @@ import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Keyboard} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard.html.js';
 
 const SettingsPerDeviceKeyboardElementBase =
@@ -39,7 +41,20 @@ class SettingsPerDeviceKeyboardElement extends
         type: Boolean,
         value: false,
       },
+
+      keyboards: {
+        type: Array,
+      },
     };
+  }
+
+  protected keyboards: Keyboard[];
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+
+  constructor() {
+    super();
+    this.fetchConnectedKeyboards();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -47,6 +62,11 @@ class SettingsPerDeviceKeyboardElement extends
     if (route !== routes.PER_DEVICE_KEYBOARD) {
       return;
     }
+  }
+
+  private async fetchConnectedKeyboards(): Promise<void> {
+    this.keyboards =
+        await this.inputDeviceSettingsProvider.getConnectedKeyboardSettings();
   }
 }
 

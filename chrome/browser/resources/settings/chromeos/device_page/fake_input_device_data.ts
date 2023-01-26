@@ -2,16 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Keyboard, MetaKey, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {Keyboard, MetaKey, ModifierKey, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
 
-export const fakeKeyboards: Keyboard[] = [{
-  id: 0,
-  name: 'fake-keyboard',
-  isExternal: false,
-  metaKey: MetaKey.COMMAND,
-  modifierKeys: [],
-  settings: {},
-}];
+export const fakeKeyboards: Keyboard[] = [
+  {
+    id: 0,
+    name: 'ERGO K860',
+    isExternal: true,
+    metaKey: MetaKey.COMMAND,
+    modifierKeys: [],
+    settings: {},
+  },
+  {
+    id: 1,
+    name: 'AT Translated Set 2 ',
+    isExternal: false,
+    metaKey: MetaKey.SEARCH,
+    modifierKeys: [ModifierKey.BACKSPACE],
+    settings: {},
+  },
+];
 
 export const fakeTouchpads: Touchpad[] = [{
   id: 1,

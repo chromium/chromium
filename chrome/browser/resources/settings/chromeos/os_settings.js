@@ -153,7 +153,7 @@ export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';
 export {fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads} from './device_page/fake_input_device_data.js';
 export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_settings_provider.js';
-export {getInputDeviceSettingsProvider, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
+export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {MetaKey} from './device_page/input_device_settings_types.js';
 export {FindShortcutBehavior, FindShortcutManager} from './find_shortcut_behavior.js';
 export {GoogleAssistantBrowserProxyImpl} from './google_assistant_page/google_assistant_browser_proxy.js';

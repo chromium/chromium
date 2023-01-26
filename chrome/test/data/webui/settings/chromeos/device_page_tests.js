@@ -4,13 +4,13 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
+import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -649,6 +649,14 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDeviceKeyboard), function() {
     let perDeviceKeyboardPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeKeyboards(fakeKeyboards);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
+
     setup(async function() {
       await init();
       const row = assert(
@@ -669,6 +677,12 @@ suite('SettingsDevicePage', function() {
           routes.PER_DEVICE_KEYBOARD, Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot.querySelector(
           '#perDeviceKeyboardSubpageTitle')));
+    });
+
+    test('per-device keyboard page populated', function() {
+      const connectedKeyboards = perDeviceKeyboardPage.keyboards;
+      assertTrue(!!connectedKeyboards);
+      assertDeepEquals(connectedKeyboards, fakeKeyboards);
     });
   });
 
