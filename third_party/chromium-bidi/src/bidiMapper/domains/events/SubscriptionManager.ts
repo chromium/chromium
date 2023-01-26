@@ -74,7 +74,7 @@ export class SubscriptionManager {
     }
 
     // Get all the subscription priorities.
-    let priorities: number[] = this.#getRelevantContexts(contextId)
+    const priorities: number[] = this.#getRelevantContexts(contextId)
       .map((c) => contextToEventMap.get(c)?.get(eventMethod))
       .filter((p) => p !== undefined) as number[];
 

@@ -45,7 +45,7 @@ export class BrowsingContextImpl {
   readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
 
-  #url: string = 'about:blank';
+  #url = 'about:blank';
   #loaderId: string | null = null;
   #cdpSessionId: string;
   #cdpClient: CdpClient;
@@ -244,8 +244,8 @@ export class BrowsingContextImpl {
   }
 
   public serializeToBidiValue(
-    maxDepth: number = 0,
-    addParentFiled: boolean = true
+    maxDepth = 0,
+    addParentFiled = true
   ): BrowsingContext.Info {
     return {
       context: this.#contextId,

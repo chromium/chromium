@@ -35,7 +35,7 @@ export class CdpConnection {
   readonly #commandCallbacks: Map<number, CdpCallbacks> = new Map();
   readonly #log: (...message: unknown[]) => void;
 
-  #nextId: number = 0;
+  #nextId = 0;
 
   constructor(
     transport: ITransport,
@@ -52,7 +52,7 @@ export class CdpConnection {
    */
   close() {
     this.#transport.close();
-    for (const [_id, {reject}] of this.#commandCallbacks) {
+    for (const [, {reject}] of this.#commandCallbacks) {
       reject(new Error('Disconnected'));
     }
     this.#commandCallbacks.clear();

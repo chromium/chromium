@@ -106,7 +106,7 @@ export class BrowsingContextProcessor {
   ) {
     const {sessionId, targetInfo} = params;
 
-    let targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+    const targetSessionCdpClient = this.#cdpConnection.getCdpClient(sessionId);
 
     if (!this.#isValidTarget(targetInfo)) {
       // DevTools or some other not supported by BiDi target.

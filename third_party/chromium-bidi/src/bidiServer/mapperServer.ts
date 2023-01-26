@@ -26,7 +26,7 @@ import Protocol from 'devtools-protocol';
 import {CdpClient, CdpConnection, WebSocketTransport} from '../cdp/index.js';
 
 export class MapperServer {
-  private _handlers: ((message: string) => void)[] = new Array();
+  private _handlers: ((message: string) => void)[] = [];
 
   static async create(
     cdpUrl: string,

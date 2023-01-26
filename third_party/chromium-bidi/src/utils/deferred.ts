@@ -19,7 +19,7 @@ export class Deferred<T> implements Promise<T> {
   #resolve: (value: T) => void = () => {};
   #reject: (value: T) => void = () => {};
   #promise: Promise<T>;
-  #isFinished: boolean = false;
+  #isFinished = false;
 
   get isFinished(): boolean {
     return this.#isFinished;
@@ -59,5 +59,5 @@ export class Deferred<T> implements Promise<T> {
     return this.#promise.finally(onFinally);
   }
 
-  [Symbol.toStringTag]: string = 'Promise';
+  [Symbol.toStringTag] = 'Promise';
 }

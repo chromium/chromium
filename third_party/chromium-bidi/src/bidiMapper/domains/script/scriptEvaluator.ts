@@ -144,7 +144,7 @@ async function deserializeToCdpArg(
         argumentValue.value,
         realm
       );
-      let argEvalResult = await realm.cdpClient.sendCommand(
+      const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
           functionDeclaration: String(function (
@@ -174,7 +174,7 @@ async function deserializeToCdpArg(
         realm
       );
 
-      let argEvalResult = await realm.cdpClient.sendCommand(
+      const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
           functionDeclaration: String(function (
@@ -207,7 +207,7 @@ async function deserializeToCdpArg(
       //  serialize to `unserializableValue` without CDP roundtrip.
       const args = await flattenValueList(argumentValue.value, realm);
 
-      let argEvalResult = await realm.cdpClient.sendCommand(
+      const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
           functionDeclaration: String(function (...args: unknown[]) {
@@ -228,7 +228,7 @@ async function deserializeToCdpArg(
       //  serialize to `unserializableValue` without CDP roundtrip.
       const args = await flattenValueList(argumentValue.value, realm);
 
-      let argEvalResult = await realm.cdpClient.sendCommand(
+      const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
           functionDeclaration: String(function (...args: unknown[]) {
@@ -259,12 +259,11 @@ async function flattenKeyValuePairs(
   realm: Realm
 ): Promise<Protocol.Runtime.CallArgument[]> {
   const keyValueArray: Protocol.Runtime.CallArgument[] = [];
-  for (let pair of value) {
+  for (const pair of value) {
     const key = pair[0];
     const value = pair[1];
 
-    let keyArg, valueArg;
-
+    let keyArg;
     if (typeof key === 'string') {
       // Key is a string.
       keyArg = {value: key};
@@ -273,7 +272,7 @@ async function flattenKeyValuePairs(
       keyArg = await deserializeToCdpArg(key, realm);
     }
 
-    valueArg = await deserializeToCdpArg(value, realm);
+    const valueArg = await deserializeToCdpArg(value, realm);
 
     keyValueArray.push(keyArg);
     keyValueArray.push(valueArg);
@@ -287,7 +286,7 @@ async function flattenValueList(
 ): Promise<Protocol.Runtime.CallArgument[]> {
   const result: Protocol.Runtime.CallArgument[] = [];
 
-  for (let value of list) {
+  for (const value of list) {
     result.push(await deserializeToCdpArg(value, realm));
   }
 
@@ -349,7 +348,7 @@ export async function stringifyObject(
   cdpObject: Protocol.Runtime.RemoteObject,
   realm: Realm
 ): Promise<string> {
-  let stringifyResult = await realm.cdpClient.sendCommand(
+  const stringifyResult = await realm.cdpClient.sendCommand(
     'Runtime.callFunctionOn',
     {
       functionDeclaration: String(function (
@@ -573,7 +572,7 @@ export class ScriptEvaluator {
     awaitPromise: boolean,
     resultOwnership: Script.OwnershipModel
   ): Promise<Script.ScriptResult> {
-    let cdpEvaluateResult = await realm.cdpClient.sendCommand(
+    const cdpEvaluateResult = await realm.cdpClient.sendCommand(
       'Runtime.evaluate',
       {
         contextId: realm.executionContextId,

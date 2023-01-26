@@ -158,8 +158,8 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (let eventName of events) {
-      for (let contextId of contextIds) {
+    for (const eventName of events) {
+      for (const contextId of contextIds) {
         if (
           contextId !== null &&
           !BrowsingContextStorage.hasKnownContext(contextId)
@@ -168,7 +168,7 @@ export class EventManager implements IEventManager {
           continue;
         }
         this.#subscriptionManager.subscribe(eventName, contextId, channel);
-        for (let eventWrapper of this.#getBufferedEvents(
+        for (const eventWrapper of this.#getBufferedEvents(
           eventName,
           contextId,
           channel
@@ -188,8 +188,8 @@ export class EventManager implements IEventManager {
     contextIds: (CommonDataTypes.BrowsingContext | null)[],
     channel: string | null
   ): Promise<void> {
-    for (let event of events) {
-      for (let contextId of contextIds) {
+    for (const event of events) {
+      for (const contextId of contextIds) {
         this.#subscriptionManager.unsubscribe(event, contextId, channel);
       }
     }
