@@ -5344,6 +5344,8 @@ TEST_F(DiskCacheBackendTest, MemCacheBackwardsClock) {
   EXPECT_EQ(net::OK, DoomEntriesBetween(base::Time(), base::Time::Max()));
   EXPECT_EQ(0, CalculateSizeOfEntriesBetween(base::Time(), base::Time::Max()));
   EXPECT_EQ(0, CalculateSizeOfAllEntries());
+
+  mem_cache_->SetClockForTesting(nullptr);
 }
 
 TEST_F(DiskCacheBackendTest, SimpleOpenOrCreateIndexError) {
