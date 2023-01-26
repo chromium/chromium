@@ -29,8 +29,7 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
-RUST_REVISION_TAG = '2'
-RUST_REVISION = '20221209'
+RUST_REVISION = 'c8e6a9e8b6251bbc8276cb78cabe1998deecbed7'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
@@ -98,8 +97,7 @@ def GetStampVersion():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         with open(VERSION_STAMP_PATH) as version_file:
             existing_stamp = version_file.readline().rstrip()
-        version_re = re.compile(
-            r'rustc [0-9.]+-nightly \([0-9a-f -]+\) \((.+?) chromium\)')
+        version_re = re.compile(r'rustc [0-9.]+ [0-9a-f]+ \((.+?) chromium\)')
         match = version_re.fullmatch(existing_stamp)
         if match is None:
             return None

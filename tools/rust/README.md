@@ -301,3 +301,18 @@ Crubit is built on the bots, the tests are commented out in
 `//build/rust/tests/BUILD.gn`, but they should still be built and run before
 rolling Crubit.  TODO(https://crbug.com/1329611): Rephrase this paragraph
 after Crubit is built and tested on the bots.
+
+## Possible Failures
+
+### Missing dependencies
+
+`build_rust.py` will vendor all dependencies before starting the build. To do
+this it first initializes git submodules. Then it runs `cargo vendor`. However
+some parts of the compiler build are excluded from the top level Cargo.toml
+workspace. Thus it passes `--sync dir` for a number of subdirectories, based
+on [dist.rs, the nightly tarball packager](
+https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995).
+
+If another Cargo.toml is required in the future, and not part of the workspace
+it would produce missing dependencies, and the set of directories in
+`build_rust.py` would need to be updated.

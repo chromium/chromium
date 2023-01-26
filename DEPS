@@ -286,11 +286,6 @@ vars = {
   # Rust toolchain.
   'checkout_rust_toolchain_deps': False,
 
-  # The Rust toolchain sources. It is a version tag from an instance of the
-  # CIPD `chromium/third_party/rust_src` package. This field is written by
-  # //tools/clang/scripts/upload_revision.py and shouldn't be updated by hand.
-  'rust_toolchain_version': 'version:2@2022-12-09',
-
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
   'boringssl_git': 'https://boringssl.googlesource.com',
@@ -577,19 +572,6 @@ deps = {
     'dep_type': 'cipd',
     # TODO(https://crbug.com/1292038): gate this on use_rust as well as host_os.
     'condition': 'host_os == "linux"',
-  },
-
-  # Rust sources are used to build the Rust standard library, and on toolchain
-  # build bots, to build the Rust toolchain.
-  'src/third_party/rust_src/src': {
-    'packages': [
-      {
-        'package': 'chromium/third_party/rust_src',
-        'version': Var('rust_toolchain_version'),
-      },
-    ],
-    'dep_type': 'cipd',
-    'condition': 'checkout_rust_toolchain_deps or use_rust',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal

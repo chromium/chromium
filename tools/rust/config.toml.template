@@ -18,16 +18,14 @@ channel = "nightly"
 description = "$PACKAGE_VERSION chromium"
 
 [build]
-# Vendor crates.io dependencies to rust-src/vendor and check they match root
-# Cargo.lock. In the future we will probably want to vendor these ourself like
-# we do with third_party/rust dependencies. For now, the Rust build script auto
-# fetches the dependencies.
-#
-# This is added now to work around a permissions bug in Rust's bootstrap:
-# it fails to run under sudo even if the sudo user is not root, unless sources
-# are vendored in tree.
-locked-deps = true
+# We pull all dependencies into the src/vendor/ directory.
 vendor = true
+
+# Check that vendored dependencies match the root Cargo.lock.
+locked-deps = true
+
+# Don't build documentation for the stdlib.
+docs = false
 
 # We enable profiler so that PGO and coverage build options are available
 # with the rust compiler we build.

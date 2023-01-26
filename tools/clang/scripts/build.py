@@ -36,6 +36,8 @@ from update import (CDS_URL, CHROMIUM_DIR, CLANG_REVISION, LLVM_BUILD_DIR,
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 LLVM_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm')
 COMPILER_RT_DIR = os.path.join(LLVM_DIR, 'compiler-rt')
+LLVM_GIT_URL = ('https://chromium.googlesource.com/external/' +
+                'github.com/llvm/llvm-project')
 LLVM_BOOTSTRAP_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-bootstrap')
 LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
                                           'llvm-bootstrap-install')
@@ -130,11 +132,11 @@ def CopyDirectoryContents(src, dst):
     CopyFile(os.path.join(src, f), dst)
 
 
-def CheckoutLLVM(commit, dir):
-  """Checkout the LLVM monorepo at a certain git commit in dir. Any local
+def CheckoutGitRepo(name, git_url, commit, dir):
+  """Checkout the git repo at a certain git commit in dir. Any local
   modifications in dir will be lost."""
 
-  print('Checking out LLVM monorepo %s into %s' % (commit, dir))
+  print(f'Checking out {name} {commit} into {dir}')
 
   # Try updating the current repo if it exists and has no local diff.
   if os.path.isdir(dir):
@@ -152,17 +154,14 @@ def CheckoutLLVM(commit, dir):
     print('Removing %s.' % dir)
     RmTree(dir)
 
-  clone_cmd = [
-      'git', 'clone', 'https://chromium.googlesource.com/external/' +
-      'github.com/llvm/llvm-project', dir
-  ]
+  clone_cmd = ['git', 'clone', git_url, dir]
 
   if RunCommand(clone_cmd, fail_hard=False):
     os.chdir(dir)
     if RunCommand(['git', 'checkout', commit], fail_hard=False):
       return
 
-  print('CheckoutLLVM failed.')
+  print('CheckoutGitRepo failed.')
   sys.exit(1)
 
 
@@ -668,7 +667,7 @@ def main():
     checkout_revision = CLANG_REVISION
 
   if not args.skip_checkout:
-    CheckoutLLVM(checkout_revision, LLVM_DIR)
+    CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
 
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)

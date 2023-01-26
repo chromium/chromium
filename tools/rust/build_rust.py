@@ -33,8 +33,10 @@ TODO(https://crbug.com/1245714): Do a proper 3-stage build
 '''
 
 import argparse
+import base64
 import collections
 import hashlib
+import json
 import platform
 import os
 import pipes
@@ -42,6 +44,7 @@ import shutil
 import string
 import subprocess
 import sys
+import urllib
 
 from pathlib import Path
 
@@ -51,9 +54,10 @@ sys.path.append(
                  'scripts'))
 
 from build import (AddCMakeToPath, AddOpenSSLToEnv, AddZlibToPath,
-                   GetLibXml2Dirs, RunCommand)
-from update import (CLANG_REVISION, CLANG_SUB_REVISION, LLVM_BUILD_DIR,
-                    GetDefaultHostOs, RmTree, UpdatePackage)
+                   CheckoutGitRepo, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
+                   RunCommand)
+from update import (CLANG_REVISION, CLANG_SUB_REVISION, DownloadAndUnpack,
+                    LLVM_BUILD_DIR, GetDefaultHostOs, RmTree, UpdatePackage)
 import build
 
 from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
@@ -61,13 +65,14 @@ from update_rust import (CHROMIUM_DIR, RUST_REVISION, RUST_SUB_REVISION,
                          THIRD_PARTY_DIR, VERSION_STAMP_PATH,
                          GetPackageVersionForBuild)
 
-RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
+RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
+                'github.com/rust-lang/rust')
 
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust_src', 'src')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
-RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'version')
+RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
 RUST_SRC_GIT_COMMIT_INFO_FILE_PATH = os.path.join(RUST_SRC_DIR,
                                                   'git-commit-info')
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
@@ -77,6 +82,8 @@ RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR = os.path.join(RUST_TOOLCHAIN_SRC_DIST_DIR,
                                                   'vendor')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
+RUST_CARGO_CONFIG_TEMPLATE_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'cargo-config.toml.template')
 RUST_SRC_VENDOR_DIR = os.path.join(RUST_SRC_DIR, 'vendor')
 
 if sys.platform == 'win32':
@@ -93,8 +100,8 @@ DISTRIBUTION_ARTIFACTS = [
 # Which test suites to run. Any failure will fail the build.
 TEST_SUITES = [
     'library/std',
-    'src/test/codegen',
-    'src/test/ui',
+    'tests/codegen',
+    'tests/ui',
 ]
 
 EXCLUDED_TESTS = [
@@ -142,6 +149,82 @@ def Configure(llvm_bins_path, llvm_libs_root):
         output.write(template.substitute(subs))
 
 
+def FetchCargo(rust_git_hash):
+    '''Downloads the beta Cargo package specified for the compiler build
+
+    Unpacks the package and returns the path to the binary itself.
+    '''
+    if sys.platform == 'win32':
+        target = 'cargo-beta-x86_64-pc-windows-msvc'
+    elif sys.platform == 'darwin':
+        if platform.machine() == 'arm64':
+            target = 'rust-std-beta-aarch64-apple-darwin'
+        else:
+            target = 'cargo-beta-x86_64-apple-darwin'
+    else:
+        target = 'cargo-beta-x86_64-unknown-linux-gnu'
+
+    # Pull the stage0 JSON to find the Cargo binary intended to be used to
+    # build this version of the Rust compiler.
+    STAGE0_JSON_URL = (
+        'https://chromium.googlesource.com/external/github.com/'
+        'rust-lang/rust/+/{GIT_HASH}/src/stage0.json?format=TEXT')
+    base64_text = urllib.request.urlopen(
+        STAGE0_JSON_URL.format(GIT_HASH=rust_git_hash)).read().decode("utf-8")
+    stage0 = json.loads(base64.b64decode(base64_text))
+
+    # The stage0 JSON contains the path to all tarballs it uses binaries from,
+    # including cargo.
+    for k in stage0['checksums_sha256'].keys():
+        if k.endswith(target + '.tar.gz'):
+            cargo_tgz = k
+
+    server = stage0['config']['dist_server']
+    DownloadAndUnpack(f'{server}/{cargo_tgz}', LLVM_BUILD_TOOLS_DIR)
+
+    bin_path = os.path.join(LLVM_BUILD_TOOLS_DIR, target, 'cargo', 'bin')
+    if sys.platform == 'win32':
+        return os.path.join(bin_path, 'cargo.exe')
+    else:
+        return os.path.join(bin_path, 'cargo')
+
+
+def CargoVendor(cargo_bin):
+    '''Runs `cargo vendor` to pull down dependencies.'''
+    os.chdir(RUST_SRC_DIR)
+
+    # Some Submodules are part of the workspace and need to exist (so we can
+    # read their Cargo.toml files) before we can vendor their deps.
+    RunCommand([
+        'git', 'submodule', 'update', '--init', '--recursive', '--depth', '1'
+    ])
+
+    # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995
+    # The additional `--sync` Cargo.toml files are not part of the top level
+    # workspace.
+    RunCommand([
+        cargo_bin,
+        'vendor',
+        '--locked',
+        '--versioned-dirs',
+        '--sync',
+        'src/tools/rust-analyzer/Cargo.toml',
+        '--sync',
+        'compiler/rustc_codegen_cranelift/Cargo.toml',
+        '--sync',
+        'src/bootstrap/Cargo.toml',
+    ])
+
+    # Make a `.cargo/config.toml` the points to the `vendor` directory for all
+    # dependency crates.
+    try:
+        os.mkdir(os.path.join(RUST_SRC_DIR, '.cargo'))
+    except FileExistsError:
+        pass
+    shutil.copyfile(RUST_CARGO_CONFIG_TEMPLATE_PATH,
+                    os.path.join(RUST_SRC_DIR, '.cargo', 'config.toml'))
+
+
 def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
            gcc_toolchain_path, verbose):
     ''' Run x.py, Rust's build script'''
@@ -152,6 +235,7 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         'LDFLAGS',
         'RUSTFLAGS_BOOTSTRAP',
         'RUSTFLAGS_NOT_BOOTSTRAP',
+        'RUSTDOCFLAGS',
     ]
 
     RUSTENV = collections.defaultdict(str, os.environ)
@@ -220,6 +304,10 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
             f' -L native={gcc_toolchain_path}/lib64')
 
+    # Rustdoc should use our clang linker as well, as we pass flags that
+    # the system linker may not understand.
+    RUSTENV['RUSTDOCFLAGS'] += f' -Clinker={RUSTENV["CC"]}'
+
     # Cargo normally stores files in $HOME. Override this.
     RUSTENV['CARGO_HOME'] = CARGO_HOME_DIR
 
@@ -243,16 +331,27 @@ def GetTestArgs():
     return args
 
 
-def GetVersionStamp():
-    # We must generate a version stamp that contains the expected `rustc
-    # --version` output. This contains the Rust release version, git commit data
-    # that the nightly tarball was generated from, and chromium-specific package
-    # information.
+def MakeVersionStamp(git_hash):
+    # We must generate a version stamp that contains the full version of the
+    # built Rust compiler:
+    # * The version number returned from `rustc --version`.
+    # * The git hash.
+    # * The chromium revision name of the compiler build, which includes the
+    #   associated clang/llvm version.
     with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
         rust_version = version_file.readline().rstrip()
+    return (f'rustc {rust_version} {git_hash}'
+            f' ({GetPackageVersionForBuild()} chromium)\n')
 
-    return ('rustc %s (%s chromium)\n' %
-            (rust_version, GetPackageVersionForBuild()))
+
+def GetLatestRustCommit():
+    """Get the latest commit hash in the LLVM monorepo."""
+    main = json.loads(
+        urllib.request.urlopen('https://chromium.googlesource.com/external/' +
+                               'github.com/rust-lang/rust/' +
+                               '+/refs/heads/main?format=JSON').read().decode(
+                                   "utf-8").replace(")]}'", ""))
+    return main['commit']
 
 
 def main():
@@ -271,6 +370,9 @@ def main():
         help=
         'checkout Rust, verify the stage0 hash, then quit without building. '
         'Will print the actual hash if different than expected.')
+    parser.add_argument('--skip-checkout',
+                        action='store_true',
+                        help='do not create or update any checkouts')
     parser.add_argument('--skip-clean',
                         action='store_true',
                         help='skip x.py clean step')
@@ -280,6 +382,9 @@ def main():
     parser.add_argument('--skip-install',
                         action='store_true',
                         help='do not install to RUST_TOOLCHAIN_OUT_DIR')
+    parser.add_argument('--rust-force-head-revision',
+                        action='store_true',
+                        help='build the latest revision')
     parser.add_argument(
         '--fetch-llvm-libs',
         action='store_true',
@@ -324,6 +429,14 @@ def main():
     else:
         llvm_bins_path = os.path.join(build.LLVM_BOOTSTRAP_DIR, 'bin')
 
+    if args.rust_force_head_revision:
+        checkout_revision = GetLatestRustCommit()
+    else:
+        checkout_revision = RUST_REVISION
+
+    if not args.skip_checkout:
+        CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
+
     VerifyStage0JsonHash()
     if args.verify_stage0_hash:
         # The above function exits and prints the actual hash if verification
@@ -343,6 +456,9 @@ def main():
 
     # Set up config.toml in Rust source tree to configure build.
     Configure(llvm_bins_path, llvm_libs_root)
+
+    cargo_bin = FetchCargo(checkout_revision)
+    CargoVendor(cargo_bin)
 
     AddCMakeToPath()
 
@@ -404,18 +520,17 @@ def main():
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
     RunXPy('install', DISTRIBUTION_ARTIFACTS, llvm_bins_path, zlib_path,
-           libxml2_dirs, args.gcc_toolchain, args.verbose)
+           libxml2_dirs, args.build_mac_arm, args.gcc_toolchain, args.verbose)
+
+    # Copy additional sources required for building stdlib out of
+    # RUST_TOOLCHAIN_SRC_DIST_DIR.
+    print(f'Copying vendored dependencies to {RUST_TOOLCHAIN_OUT_DIR} ...')
+    shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
 
     with open(VERSION_STAMP_PATH, 'w') as stamp:
-        stamp.write(GetVersionStamp())
+        stamp.write(MakeVersionStamp(checkout_revision))
 
     return 0
-
-    # TODO(crbug.com/1342708): fix vendoring and re-enable.
-    # x.py installed library sources to our toolchain directory. We also need to
-    # copy the vendor directory so Chromium checkouts have all the deps needed
-    # to build std.
-    # shutil.copytree(RUST_SRC_VENDOR_DIR, RUST_TOOLCHAIN_SRC_DIST_VENDOR_DIR)
 
 
 if __name__ == '__main__':
