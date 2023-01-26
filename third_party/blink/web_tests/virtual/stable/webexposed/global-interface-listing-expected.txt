@@ -10708,11 +10708,38 @@ namespace CSS
     method vmax
     method vmin
     method vw
+namespace console
+    attribute @@toStringTag
+    getter memory
+    method assert
+    method clear
+    method context
+    method count
+    method countReset
+    method createTask
+    method debug
+    method dir
+    method dirxml
+    method error
+    method group
+    method groupCollapsed
+    method groupEnd
+    method info
+    method log
+    method profile
+    method profileEnd
+    method table
+    method time
+    method timeEnd
+    method timeLog
+    method timeStamp
+    method trace
+    method warn
+    setter memory
 [GLOBAL OBJECT]
     attribute GCController
     attribute accessibilityController
     attribute chrome
-    attribute console
     attribute eventSender
     attribute gamepadController
     attribute globalThis

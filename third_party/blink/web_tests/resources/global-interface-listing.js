@@ -88,6 +88,17 @@ function globalInterfaceListing(
   }
 
   function isWebIDLNamespace(propertyKey) {
+    // As a WebIDL namespace, console's class string should be "console",
+    // however since console is implemented directly inside v8 and does not
+    // follow the WebIDL binding norms, its class string is currently "Object".
+    // This means we accidentally skip it here, and fail to enumerate all of its
+    // attributes and properties. To ensure we don't skip it, we make a special
+    // exception for console, manually considering it as a namespace. This will
+    // no longer be necessary once https://crrev.com/c/4193308 lands, which
+    // fixes console's implementation.
+    if (propertyKey === 'console')
+      return true;
+
     if (jsBuiltins.has(propertyKey))
       return false;
     let object =

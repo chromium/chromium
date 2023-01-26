@@ -2987,8 +2987,33 @@ interface WritableStreamDefaultWriter
     method releaseLock
     method write
 [NAMESPACES]
+namespace console
+    attribute @@toStringTag
+    method assert
+    method clear
+    method context
+    method count
+    method countReset
+    method createTask
+    method debug
+    method dir
+    method dirxml
+    method error
+    method group
+    method groupCollapsed
+    method groupEnd
+    method info
+    method log
+    method profile
+    method profileEnd
+    method table
+    method time
+    method timeEnd
+    method timeLog
+    method timeStamp
+    method trace
+    method warn
 [GLOBAL OBJECT]
-    attribute console
     attribute globalThis
     attribute internals
     getter clients
