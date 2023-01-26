@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_util.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_highlighting.h"
 #import "ios/chrome/browser/ui/toolbar/public/side_swipe_toolbar_interacting.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -399,6 +400,11 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 }
 
 - (void)handleiPadTabSwipe:(SideSwipeGestureRecognizer*)gesture {
+  // Don't handle swipe when tabs are sorted by recency.
+  if (IsTabGridSortedByRecency()) {
+    return;
+  }
+
   // Don't handle swipe when there are no tabs.
   int count = self.webStateList->count();
   if (count == 0)
@@ -577,6 +583,11 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 
 // Show horizontal swipe stack view for iPhone.
 - (void)handleiPhoneTabSwipe:(SideSwipeGestureRecognizer*)gesture {
+  // Don't handle swipe when tabs are sorted by recency.
+  if (IsTabGridSortedByRecency()) {
+    return;
+  }
+
   if (gesture.state == UIGestureRecognizerStateBegan) {
 
     _inSwipe = YES;
