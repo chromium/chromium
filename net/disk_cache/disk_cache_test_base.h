@@ -83,6 +83,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
 
   void CreateBackend(uint32_t flags);
 
+  void ResetCaches();
   void InitCache();
   void SimulateCrash();
   void SetTestMode();

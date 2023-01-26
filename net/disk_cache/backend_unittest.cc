@@ -927,7 +927,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingFileIO(bool fast) {
   int rv = GeneratePendingIO(&cb);
 
   // The cache destructor will see one pending operation here.
-  cache_.reset();
+  ResetCaches();
 
   if (rv == net::ERR_IO_PENDING) {
     if (fast || simple_cache_mode_)
@@ -1023,7 +1023,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingIO(bool fast) {
     result.ReleaseEntry()->Close();
 
     // The cache destructor will see one pending operation here.
-    cache_.reset();
+    ResetCaches();
   }
 
   base::RunLoop().RunUntilIdle();
@@ -1059,7 +1059,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingCreate(bool fast) {
         cache_->CreateEntry("some key", net::HIGHEST, cb.callback());
     ASSERT_THAT(result.net_error(), IsError(net::ERR_IO_PENDING));
 
-    cache_.reset();
+    ResetCaches();
     EXPECT_FALSE(cb.have_result());
   }
 
@@ -1099,7 +1099,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingDoom() {
     int rv = cache_->DoomEntry("some key", net::HIGHEST, cb.callback());
     ASSERT_THAT(rv, IsError(net::ERR_IO_PENDING));
 
-    cache_.reset();
+    ResetCaches();
     EXPECT_FALSE(cb.have_result());
   }
 
@@ -2400,8 +2400,7 @@ void DiskCacheBackendTest::BackendTransaction(const std::string& name,
     ASSERT_EQ(num_entries - 1, actual);
   }
 
-  cache_.reset();
-  cache_impl_ = nullptr;
+  ResetCaches();
 
   ASSERT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, MaxSize(), mask));
   success_ = true;
@@ -3621,7 +3620,7 @@ TEST_F(DiskCacheBackendTest, Backend_UsageStats) {
   disk_cache::StatsItems::value_type hits("Create hit", "0x1");
   EXPECT_EQ(1, base::ranges::count(stats, hits));
 
-  cache_.reset();
+  ResetCaches();
 
   // Now open the cache and verify that the stats are still there.
   DisableFirstCleanup();
@@ -4145,7 +4144,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheOverBlockfileCache) {
   ASSERT_THAT(CreateEntry("key", &entry), IsOk());
   ASSERT_EQ(0, WriteData(entry, 0, 0, buffer.get(), 0, false));
   entry->Close();
-  cache_.reset();
+  ResetCaches();
 
   // Check that the |SimpleBackendImpl| does not favor this structure.
   auto simple_cache = std::make_unique<disk_cache::SimpleBackendImpl>(
@@ -4172,7 +4171,7 @@ TEST_F(DiskCacheBackendTest, BlockfileCacheOverSimpleCache) {
   ASSERT_THAT(CreateEntry("key", &entry), IsOk());
   ASSERT_EQ(0, WriteData(entry, 0, 0, buffer.get(), 0, false));
   entry->Close();
-  cache_.reset();
+  ResetCaches();
 
   // Check that the |BackendImpl| does not favor this structure.
   auto cache = std::make_unique<disk_cache::BackendImpl>(
@@ -4306,7 +4305,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheEnumerationDestruction) {
   EXPECT_TRUE(entry);
   disk_cache::ScopedEntryPtr entry_closer(entry);
 
-  cache_.reset();
+  ResetCaches();
   // This test passes if we don't leak memory.
 }
 
@@ -4426,7 +4425,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheDeleteQuickly) {
   SetSimpleCacheMode();
   for (int i = 0; i < 100; ++i) {
     InitCache();
-    cache_.reset();
+    ResetCaches();
     EXPECT_TRUE(CleanupCacheDir());
   }
 }
@@ -4448,7 +4447,7 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_TRUE(cache_dir.Flush());
 #endif  // BUILDFLAG(IS_POSIX)
-  cache_.reset();
+  ResetCaches();
   disk_cache::FlushCacheThreadForTesting();
 
   // The index is now written. Dooming the last entry can't delete a file,
@@ -4847,7 +4846,7 @@ void DiskCacheBackendTest::BackendDeadOpenNextEntry() {
   InitCache();
   std::unique_ptr<disk_cache::Backend::Iterator> iter =
       cache_->CreateIterator();
-  cache_.reset();
+  ResetCaches();
   EntryResult result = iter->OpenNextEntry(base::DoNothing());
   ASSERT_EQ(net::ERR_FAILED, result.net_error());
 }
@@ -5012,7 +5011,7 @@ TEST_F(DiskCacheBackendTest, SimpleOwnershipTransferBackendDestroyRace) {
           },
           std::move(cleanup_context)));
   EXPECT_EQ(net::ERR_IO_PENDING, result.net_error());
-  cache_.reset();
+  ResetCaches();
 
   // Give CleanupContext a chance to do its thing.
   RunUntilIdle();
@@ -5158,7 +5157,7 @@ TEST_F(DiskCacheBackendTest, SimpleCancelOpPendingDoom) {
           std::move(cleanup_context)));
 
   EXPECT_EQ(net::ERR_IO_PENDING, entry_result.net_error());
-  cache_.reset();
+  ResetCaches();
 
   RunUntilIdle();
   EXPECT_TRUE(cleanup_context_ran);
@@ -5195,7 +5194,7 @@ TEST_F(DiskCacheBackendTest, SimpleDontLeakPostDoomCreate) {
   ASSERT_EQ(net::OK, result.net_error());
   entry = result.ReleaseEntry();
 
-  cache_.reset();
+  ResetCaches();
 
   // Entry is still supposed to be operable. This part is needed to see the bug
   // without a leak checker.
@@ -5448,8 +5447,7 @@ TEST_F(DiskCacheBackendTest, SimpleDoomAfterBackendDestruction) {
   entry->Close();
 
   ASSERT_THAT(OpenEntry(kKey, &entry), IsOk());
-  cache_.reset();
-  simple_cache_impl_ = nullptr;  // Hygiene.
+  ResetCaches();
 
   entry->Doom();
   entry->Close();

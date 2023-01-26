@@ -102,7 +102,7 @@ void DiskCacheTestWithCache::SimulateCrash() {
   ASSERT_THAT(cb.GetResult(rv), IsOk());
   cache_impl_->ClearRefCountForTest();
 
-  cache_.reset();
+  ResetCaches();
   EXPECT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, size_, mask_));
 
   CreateBackend(disk_cache::kNoRandom);
@@ -338,16 +338,22 @@ void DiskCacheTestWithCache::OnExternalCacheHit(const std::string& key) {
 
 void DiskCacheTestWithCache::TearDown() {
   RunUntilIdle();
-  cache_.reset();
-
+  ResetCaches();
   if (!memory_only_ && !simple_cache_mode_ && integrity_) {
     EXPECT_TRUE(CheckCacheIntegrity(cache_path_, new_eviction_, size_, mask_));
   }
   RunUntilIdle();
-  if (simple_cache_mode_ && simple_file_tracker_)
+  if (simple_cache_mode_ && simple_file_tracker_) {
     EXPECT_TRUE(simple_file_tracker_->IsEmptyForTesting());
-
+  }
   DiskCacheTest::TearDown();
+}
+
+void DiskCacheTestWithCache::ResetCaches() {
+  mem_cache_ = nullptr;
+  simple_cache_impl_ = nullptr;
+  cache_impl_ = nullptr;
+  cache_.reset();
 }
 
 void DiskCacheTestWithCache::InitMemoryCache() {
