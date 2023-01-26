@@ -275,7 +275,6 @@
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHit",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           }
         ]
@@ -333,27 +332,22 @@
         "excludes": [
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingPhishingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingUnwantedSoftwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingBillingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           }
         ]
@@ -426,27 +420,22 @@
         "excludes": [
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingPhishingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingUnwantedSoftwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingBillingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           }
         ]
@@ -567,27 +556,22 @@
         "excludes": [
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingPhishingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingUnwantedSoftwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingBillingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           }
         ]
@@ -730,27 +714,22 @@
         "excludes": [
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingMalwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingPhishingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingUnwantedSoftwareCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingBillingCode",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           },
           {
             "match": "android.webkit.cts.WebViewClientTest#testOnSafeBrowsingHitBackToSafety",
-            "arch": "x86",
             "_bug_id": "crbug.com/1245351"
           }
         ]
