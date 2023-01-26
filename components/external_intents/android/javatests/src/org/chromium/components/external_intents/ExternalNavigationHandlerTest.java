@@ -36,6 +36,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -1310,6 +1311,35 @@ public class ExternalNavigationHandlerTest {
         } finally {
             activity.finish();
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testIncognitoAlertDialogDismissedOnNavigation() {
+        // IMDB app is installed.
+        mDelegate.add(new IntentActivity("imdb:", INTENT_APP_PACKAGE_NAME));
+
+        mUrlHandler.mCanShowIncognitoDialog = true;
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
+        checkUrl(INTENT_URL_WITH_FALLBACK_URL)
+                .withHasUserGesture(true)
+                .withIsIncognito(true)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION,
+                        OverrideUrlLoadingAsyncActionType.UI_GATING_INTENT_LAUNCH, START_INCOGNITO);
+        Assert.assertTrue(mUrlHandler.mStartIncognitoIntentCalled);
+
+        // Callback won't have been run with the mocked AlertDialog.
+        mUrlHandler.mAsyncActionCallback.onResult(AsyncActionTakenParams.forNoAction());
+
+        Mockito.doReturn(true).when(mAlertDialog).isShowing();
+        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, false, 0, 0, false, true);
+        checkUrl(YOUTUBE_URL)
+                .withIsIncognito(true)
+                .withRedirectHandler(redirectHandler)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        Mockito.verify(mAlertDialog).cancel();
     }
 
     @Test
@@ -2718,6 +2748,7 @@ public class ExternalNavigationHandlerTest {
 
         public void reset() {
             mStartActivityIntent = null;
+            mStartIncognitoIntentCalled = false;
         }
 
         @Override

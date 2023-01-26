@@ -8,8 +8,6 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.Intent.ShortcutIconResource;
 import android.content.IntentFilter;
@@ -272,8 +270,6 @@ public class ExternalNavigationHandler {
         }
     }
 
-    private final ExternalNavigationDelegate mDelegate;
-
     /**
      * Result types for checking if we should override URL loading.
      * NOTE: this enum is used in UMA, do not reorder values. Changes should be append only.
@@ -432,6 +428,9 @@ public class ExternalNavigationHandler {
                     OverrideUrlLoadingAsyncActionType.NO_ASYNC_ACTION, true);
         }
     }
+
+    private final ExternalNavigationDelegate mDelegate;
+    private AlertDialog mIncognitoAlertDialog;
 
     /**
      * Constructs a new instance of {@link ExternalNavigationHandler}, using the injected
@@ -1277,8 +1276,8 @@ public class ExternalNavigationHandler {
         }
 
         try {
-            AlertDialog dialog = showLeavingIncognitoAlert(context, params, intent, fallbackUrl);
-            return dialog != null;
+            mIncognitoAlertDialog = showLeavingIncognitoAlert(context, params, intent, fallbackUrl);
+            return mIncognitoAlertDialog != null;
         } catch (BadTokenException e) {
             return false;
         }
@@ -1301,28 +1300,20 @@ public class ExternalNavigationHandler {
                 .setTitle(R.string.external_app_leave_incognito_warning_title)
                 .setMessage(R.string.external_app_leave_incognito_warning)
                 .setPositiveButton(R.string.external_app_leave_incognito_leave,
-                        new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                onUserDecidedWhetherToLaunchIncognitoIntent(
-                                        /*shouldLaunch=*/true, params, intent, fallbackUrl);
-                            }
+                        (DialogInterface dialog, int which) -> {
+                            onUserDecidedWhetherToLaunchIncognitoIntent(
+                                    /*shouldLaunch=*/true, params, intent, fallbackUrl);
                         })
                 .setNegativeButton(R.string.external_app_leave_incognito_stay,
-                        new OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                onUserDecidedWhetherToLaunchIncognitoIntent(
-                                        /*shouldLaunch=*/false, params, intent, fallbackUrl);
-                            }
+                        (DialogInterface dialog, int which) -> {
+                            onUserDecidedWhetherToLaunchIncognitoIntent(
+                                    /*shouldLaunch=*/false, params, intent, fallbackUrl);
                         })
-                .setOnCancelListener(new OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        onUserDecidedWhetherToLaunchIncognitoIntent(
-                                /*shouldLaunch=*/false, params, intent, fallbackUrl);
-                    }
+                .setOnCancelListener((DialogInterface dialog) -> {
+                    onUserDecidedWhetherToLaunchIncognitoIntent(
+                            /*shouldLaunch=*/false, params, intent, fallbackUrl);
                 })
+                .setOnDismissListener((DialogInterface dialog) -> { mIncognitoAlertDialog = null; })
                 .show();
     }
 
@@ -1439,6 +1430,11 @@ public class ExternalNavigationHandler {
             MutableBoolean canLaunchExternalFallbackResult) {
         recordIntentSelectorMetrics(params.getUrl(), targetIntent);
         sanitizeQueryIntentActivitiesIntent(targetIntent);
+
+        // Any subsequent navigations should cancel the existing AlertDialog.
+        if (mIncognitoAlertDialog != null && mIncognitoAlertDialog.isShowing()) {
+            mIncognitoAlertDialog.cancel();
+        }
 
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
