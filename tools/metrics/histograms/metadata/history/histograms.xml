@@ -1537,7 +1537,8 @@ chromium-metrics-reviews@google.com.
     <variant name="RelatedSearchClicked"
         summary="clicks a related search suggestion"/>
     <variant name="RelatedVisitsVisibilityToggled"
-        summary="toggles visibility of the default-hidden related visits"/>
+        summary="toggles visibility of the default-hidden related visits.
+                 Deprecated 1/25/23."/>
     <variant name="VisitClicked" summary="clicks a visit"/>
   </token>
 </histogram>

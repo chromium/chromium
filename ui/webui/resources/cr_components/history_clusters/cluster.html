@@ -96,42 +96,6 @@
   search-query:not(:last-of-type) {
     margin-inline-end: var(--search-query-margin);
   }
-
-  #visibility-toggle {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    margin-top: var(--cluster-padding-vertical);
-    position: relative;
-  }
-
-  #toggle-button {
-    --pill-padding-icon: 60px;
-    --pill-padding-text: 64px;
-    align-items: center;
-    background-color: var(--grey-fill-color);
-    cursor: pointer;
-    display: flex;
-    outline: none;
-    position: absolute;
-    top: calc(var(--cluster-padding-vertical) - var(--pill-height) / 2);
-  }
-
-  :host-context(.focus-outline-visible) #toggle-button:focus {
-    box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
-  }
-
-  #toggle-button .icon {
-    --cr-icon-button-margin-start: 0;
-    --cr-icon-color: var(--icon-color);
-    --cr-icon-ripple-margin: 0;
-    --cr-icon-ripple-size: 20px;
-    transition: transform 300ms;
-  }
-
-  :host([expanded_]) #toggle-button .icon {
-    transform: rotate(180deg);
-  }
 </style>
 <div id="container" on-visit-clicked="onVisitClicked_"
     on-open-all-visits="onOpenAllVisits_"
@@ -147,18 +111,10 @@
       <cluster-menu></cluster-menu>
     </div>
   </div>
-  <template is="dom-repeat" items="[[visibleVisits_]]">
+  <template is="dom-repeat" items="[[cluster.visits]]">
     <url-visit visit="[[item]]" query="[[query]]" from-persistence="[[cluster.fromPersistence]]">
     </url-visit>
   </template>
-  <!-- Disable animation on iron-collapse, as the parent iron-list can't
-       easily handle it. -->
-  <iron-collapse opened="[[expanded_]]" no-animation>
-    <template is="dom-repeat" items="[[hiddenVisits_]]">
-      <url-visit visit="[[item]]" query="[[query]]" from-persistence="[[cluster.fromPersistence]]">
-      </url-visit>
-    </template>
-  </iron-collapse>
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
       role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
       on-related-search-clicked="onRelatedSearchClicked_" on-mousedown="clearSelection_">
@@ -166,12 +122,5 @@
       <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>
     </template>
-  </div>
-  <div id="visibility-toggle" hidden="[[!hiddenVisits_.length]]">
-    <div id="toggle-button" class="pill pill-icon-end" tabindex="0"
-        on-click="onToggleButtonClick_" on-keydown="onToggleButtonKeyDown_">
-      <span>[[getToggleButtonLabel_(expanded_)]]</span>
-      <span id="toggle-icon" class="icon cr-icon icon-expand-more"></span>
-    </div>
   </div>
 </div>

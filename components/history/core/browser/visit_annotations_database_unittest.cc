@@ -322,10 +322,8 @@ TEST_F(
   visit_1.url_for_deduping = GURL{"url_for_deduping"};
   visit_1.normalized_url = GURL{"normalized_url"};
   visit_1.url_for_display = u"url_for_display";
-  // `matches_search_query` and `hidden` shouldn't matter, they are not
-  // persisted.
+  // `matches_search_query` shouldn't matter, it isn't persisted.
   visit_1.matches_search_query = true;
-  visit_1.hidden = true;
   // Duplicate visits should be persisted.
   visit_1.duplicate_visits.push_back({3});
   visit_1.duplicate_visits.push_back({4});
@@ -379,10 +377,8 @@ TEST_F(
   EXPECT_EQ(visit_1_retrieved.url_for_deduping, GURL{"url_for_deduping"});
   EXPECT_EQ(visit_1_retrieved.normalized_url, GURL{"normalized_url"});
   EXPECT_EQ(visit_1_retrieved.url_for_display, u"url_for_display");
-  // Should not populate the non-persisted `matches_search_query` and `hidden`
-  // fields.
+  // Should not populate the non-persisted `matches_search_query` field.`
   EXPECT_EQ(visit_1_retrieved.matches_search_query, false);
-  EXPECT_EQ(visit_1_retrieved.hidden, false);
   // Should not populate `duplicate_visits`.
   EXPECT_TRUE(visit_1_retrieved.duplicate_visits.empty());
 

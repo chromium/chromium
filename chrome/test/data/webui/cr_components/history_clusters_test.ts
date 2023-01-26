@@ -45,7 +45,6 @@ suite('history-clusters', () => {
       duplicates: [],
       relativeDate: '',
       annotations: [],
-      hidden: false,
       debugInfo: {},
       rawVisitData: rawVisitData,
       isKnownToSync: false,

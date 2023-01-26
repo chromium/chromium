@@ -55,14 +55,11 @@ class HistoryClustersHandlerTest : public testing::Test {
 TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Integration) {
   std::vector<history::Cluster> clusters;
 
-  // Low scoring visits should be above the fold only if they're one of top 4.
   history::Cluster cluster;
   cluster.cluster_id = 4;
   cluster.related_searches = {"one", "two", "three", "four", "five"};
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
-  cluster.visits[0].hidden = false;
   cluster.visits.push_back(CreateVisit("https://low-score-1", .4));
-  cluster.visits[1].hidden = true;
 
   clusters.push_back(cluster);
 
@@ -76,20 +73,16 @@ TEST_F(HistoryClustersHandlerTest, QueryClustersResultToMojom_Integration) {
   ASSERT_EQ(mojom_result->clusters.size(), 1u);
   const auto& cluster_mojom = mojom_result->clusters[0];
 
-  {
-    EXPECT_EQ(cluster_mojom->id, 4);
-    const auto& visits = cluster_mojom->visits;
-    ASSERT_EQ(visits.size(), 2u);
-    // Test that the hidden attribute is passed through to mojom.
-    EXPECT_EQ(visits[0]->hidden, false);
-    EXPECT_EQ(visits[1]->hidden, true);
-    ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
-    EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
-    EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
-    EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
-    EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
-    EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
-  }
+  EXPECT_EQ(cluster_mojom->id, 4);
+  const auto& visits = cluster_mojom->visits;
+  ASSERT_EQ(visits.size(), 2u);
+  // Test that the hidden attribute is passed through to mojom.
+  ASSERT_EQ(cluster_mojom->related_searches.size(), 5u);
+  EXPECT_EQ(cluster_mojom->related_searches[0]->query, "one");
+  EXPECT_EQ(cluster_mojom->related_searches[1]->query, "two");
+  EXPECT_EQ(cluster_mojom->related_searches[2]->query, "three");
+  EXPECT_EQ(cluster_mojom->related_searches[3]->query, "four");
+  EXPECT_EQ(cluster_mojom->related_searches[4]->query, "five");
 }
 
 // TODO(manukh) Add a test case for `VisitToMojom`.

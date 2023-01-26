@@ -194,8 +194,6 @@ mojom::URLVisitPtr VisitToMojom(Profile* profile,
     visit_mojom->annotations.push_back(mojom::Annotation::kSearchResultsPage);
   }
 
-  visit_mojom->hidden = visit.hidden;
-
   if (GetConfig().user_visible_debug) {
     visit_mojom->debug_info["visit_id"] =
         base::NumberToString(annotated_visit.visit_row.visit_id);

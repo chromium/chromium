@@ -48,7 +48,6 @@ enum ClusterAction {
   kDeleted,
   kOpenedInTabGroup,
   kRelatedSearchClicked,
-  kRelatedVisitsVisibilityToggled,
   kVisitClicked,
 };
 
@@ -113,9 +112,6 @@ struct URLVisit {
 
   // Annotations for this visit.
   array<Annotation> annotations;
-
-  // Whether a related visit is initially hidden.
-  bool hidden;
 
   // The image URL associated with this visit.
   url.mojom.Url? image_url;

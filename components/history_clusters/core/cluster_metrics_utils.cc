@@ -16,8 +16,6 @@ std::string ClusterActionToString(ClusterAction action) {
       return "OpenedInTabGroup";
     case ClusterAction::kRelatedSearchClicked:
       return "RelatedSearchClicked";
-    case ClusterAction::kRelatedVisitsVisibilityToggled:
-      return "RelatedVisitsVisibilityToggled";
     case ClusterAction::kVisitClicked:
       return "VisitClicked";
   }
