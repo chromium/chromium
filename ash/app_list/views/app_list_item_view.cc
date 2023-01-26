@@ -467,6 +467,9 @@ void AppListItemView::SetUIState(UIState ui_state) {
   switch (ui_state) {
     case UI_STATE_NORMAL:
       title_->SetVisible(true);
+      if (item_weak_) {
+        ItemIsNewInstallChanged();
+      }
       if (ui_state_ == UI_STATE_DRAGGING) {
         GetWidget()->SetCursor(ui::mojom::CursorType::kNull);
         ScaleAppIcon(false);
@@ -474,6 +477,9 @@ void AppListItemView::SetUIState(UIState ui_state) {
       break;
     case UI_STATE_DRAGGING:
       title_->SetVisible(false);
+      if (new_install_dot_) {
+        new_install_dot_->SetVisible(false);
+      }
       if (ui_state_ == UI_STATE_NORMAL && !in_cardified_grid_) {
         GetWidget()->SetCursor(ui::mojom::CursorType::kGrabbing);
         ScaleAppIcon(true);

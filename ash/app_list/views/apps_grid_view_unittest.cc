@@ -699,6 +699,10 @@ class AppsGridViewTest : public AshTestBase, views::WidgetObserver {
         ->GetNumberOfRowChangeLayersForTest();
   }
 
+  views::View* GetNewInstallDot(AppListItemView* view) {
+    return view->new_install_dot_;
+  }
+
   // May be a PagedAppsGridView in tablet mode or a ScrollableAppsGridView in
   // clamshell mode.
   AppsGridView* apps_grid_view_ = nullptr;
@@ -4746,6 +4750,38 @@ TEST_P(AppsGridViewDragTest, MouseDragItemToOtherItemAndBack) {
   // The cursor should still be grabbing.
   EXPECT_EQ(ui::mojom::CursorType::kGrabbing,
             cursor_manager->GetCursor().type());
+}
+
+TEST_P(AppsGridViewDragTest, NewInstallDotVisibilityDuringDrag) {
+  model_->PopulateApps(1);
+  UpdateLayout();
+
+  // By default, the new install dot is not visible.
+  AppListItemView* const item_view = GetItemViewInTopLevelGrid(0);
+  ASSERT_FALSE(item_view->item()->is_new_install());
+  views::View* new_install_dot = GetNewInstallDot(item_view);
+  ASSERT_TRUE(new_install_dot);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  // Set the item as a new install to show the new install dot.
+  item_view->item()->SetIsNewInstall(true);
+  ASSERT_TRUE(new_install_dot->GetVisible());
+
+  // Starts a mouse drag and verify new install dot hides during drag.
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, 0, 0,
+                                     apps_grid_view_);
+  if (!use_drag_drop_refactor()) {
+    EXPECT_EQ(1, GetHapticTickEventsCount());
+  }
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  const gfx::Point to = GetItemRectOnCurrentPageAt(0, 2).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_);
+  EXPECT_FALSE(new_install_dot->GetVisible());
+
+  // When ending drag, the new install dot should be visible again.
+  EndDrag();
+  EXPECT_TRUE(new_install_dot->GetVisible());
 }
 
 TEST_P(AppsGridViewTabletTest, Basic) {
