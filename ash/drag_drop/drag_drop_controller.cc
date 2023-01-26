@@ -181,6 +181,7 @@ DragOperation DragDropController::StartDragAndDrop(
   if (drag_source_window_)
     drag_source_window_->AddObserver(this);
 
+  drag_drop_in_progress_ = true;
   drag_data_ = std::move(data);
   allowed_operations_ = allowed_operations;
   current_drag_info_ = aura::client::DragUpdateInfo();
@@ -336,7 +337,7 @@ void DragDropController::DragCancel() {
 }
 
 bool DragDropController::IsDragDropInProgress() {
-  return !!drag_data_;
+  return drag_drop_in_progress_;
 }
 
 void DragDropController::AddObserver(
@@ -794,7 +795,7 @@ void DragDropController::Cleanup() {
   if (drag_window_ && drag_window_ != drag_source_window_)
     drag_window_->RemoveObserver(this);
   drag_window_ = nullptr;
-
+  drag_drop_in_progress_ = false;
   drag_data_.reset();
   allowed_operations_ = 0;
   tab_drag_drop_delegate_.reset();

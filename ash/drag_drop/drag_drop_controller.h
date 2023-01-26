@@ -165,6 +165,7 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   void CancelIfInProgress();
 
   bool enabled_ = false;
+  bool drag_drop_in_progress_ = false;
   views::UniqueWidgetPtr drag_image_widget_;
   gfx::Vector2d drag_image_offset_;
   std::unique_ptr<ui::OSExchangeData> drag_data_;

@@ -1014,15 +1014,29 @@ TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents) {
   // As soon as the runloop gets triggered, emit a mouse release event.
   drag_drop_controller->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
-        EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _));
+        // Mouse move should not produce mouse enter.
+        generator.MoveMouseBy(1, 1);
         generator.ReleaseLeftButton();
       }),
       base::DoNothing());
 
-  EXPECT_CALL(pointer_delegate, OnPointerLeave(_));
+  // Pointer leave should be called only once upon start.
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(1);
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
   base::RunLoop().RunUntilIdle();
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(origin))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+
+  // Pointer leave should be called again after drag and drop.
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _));
 
   EXPECT_CALL(pointer_delegate, OnPointerDestroying(pointer.get()));
+
+  generator.MoveMouseBy(1, 1);
+
   pointer.reset();
 }
 
@@ -1232,17 +1246,24 @@ TEST_F(PointerTest,
   // As soon as the runloop gets triggered, emit a mouse release event.
   drag_drop_controller->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
-        EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _));
+        EXPECT_TRUE(drag_drop_controller->IsDragDropInProgress());
         generator.ReleaseLeftButton();
       }),
       base::DoNothing());
 
-  // OnPointerLeave() gets called twice:
-  // 1/ when the drag starts;
-  // 2/ when the dragging window gets destroyed.
-  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(2);
+  // OnPointerLeave() gets called when the drag starts;
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(1);
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
+
   base::RunLoop().RunUntilIdle();
 
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+
+  EXPECT_FALSE(drag_drop_controller->IsDragDropInProgress());
+  // There should be no mouse enter after dnd session either.
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
+
+  generator.MoveMouseBy(1, 1);
   wm_helper->RemoveDragDropObserver(&drag_drop_observer);
 
   EXPECT_CALL(pointer_delegate, OnPointerDestroying(pointer.get()));
@@ -1291,7 +1312,7 @@ TEST_F(PointerTest,
   // As soon as the runloop gets triggered, emit a mouse release event.
   drag_drop_controller->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
-        EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(1);
+        EXPECT_TRUE(drag_drop_controller->IsDragDropInProgress());
         generator.ReleaseLeftButton();
       }),
       base::DoNothing());
@@ -1299,8 +1320,13 @@ TEST_F(PointerTest,
   // OnPointerLeave() gets called twice:
   // 1/ when the drag starts;
   // 2/ when the dragging window gets destroyed.
-  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(2);
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(1);
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
   base::RunLoop().RunUntilIdle();
+
+  ::testing::Mock::VerifyAndClearExpectations(&pointer_delegate);
+
+  EXPECT_FALSE(drag_drop_controller->IsDragDropInProgress());
 
   wm_helper->RemoveDragDropObserver(&drag_drop_observer);
 
