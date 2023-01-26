@@ -622,6 +622,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
       L"iaccessibletextselectioncontainer-selections.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       IAccessibleTextSelectionContainerSetSelections) {
+  RunTypedTest<kIAccessibleTextSelectionContainer>(
+      L"iaccessibletextselectioncontainer-set-selections.html");
+}
+
 #endif
 
 }  // namespace content

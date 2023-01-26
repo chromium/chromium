@@ -8,12 +8,11 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/inspect/ax_optional.h"
+#include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_target_win.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_win.h"
 
 namespace ui {
-
-class AXPropertyNode;
 
 // Optional tri-state object.
 using AXOptionalObject = ui::AXOptional<AXTargetWin>;
@@ -77,8 +76,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
   // IAccessible2 functionality.
   AXOptionalObject GetIA2Role(IA2ComPtr target) const;
   AXOptionalObject GetIA2Attribute(const IA2ComPtr target,
-                                   std::string attribute) const;
-  AXOptionalObject HasIA2State(const IA2ComPtr target, std::string state) const;
+                                   const AXPropertyNode& property_node) const;
+  AXOptionalObject HasIA2State(const IA2ComPtr target,
+                               const AXPropertyNode& property_node) const;
 
   // AccessibleTable functionality
   AXOptionalObject GetSelectedColumns(const IA2TableComPtr target) const;
@@ -86,8 +86,33 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvokerWin final {
   // IAccessibleSelectionContainer functionality.
   AXOptionalObject GetSelections(
       const IA2TextSelectionContainerComPtr target) const;
+  AXOptionalObject SetSelections(const IA2TextSelectionContainerComPtr target,
+                                 const AXPropertyNode& property_node) const;
 
   bool IsIAccessibleAndNotNull(const Target& target) const;
+
+  // PropertyNode conversion methods.
+  template <typename Interface>
+  Microsoft::WRL::ComPtr<Interface> PropertyNodeToIAccessible(
+      const AXPropertyNode& node) const {
+    Microsoft::WRL::ComPtr<IAccessible> accessible =
+        indexer_->NodeBy(node.name_or_value);
+    if (!accessible) {
+      return nullptr;
+    }
+    Microsoft::WRL::ComPtr<Interface> queried_accessible;
+    HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&queried_accessible));
+    if (FAILED(hr)) {
+      return nullptr;
+    }
+    return queried_accessible;
+  }
+
+  absl::optional<IA2TextSelection> PropertyNodeToIA2TextSelection(
+      const AXPropertyNode& node) const;
+
+  std::vector<IA2TextSelection> PropertyNodeToIA2TextSelectionArray(
+      const AXPropertyNode& node) const;
 
   // Map between IAccessible objects and their DOMIds/accessible tree
   // line numbers. Owned by the caller and outlives this object.

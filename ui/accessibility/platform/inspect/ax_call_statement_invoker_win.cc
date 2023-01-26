@@ -22,6 +22,18 @@
                                    interface_name);                           \
   }
 
+#define CHECK_ARGS_N(arg_count, property_node)                         \
+  if (property_node.arguments.size() < arg_count) {                    \
+    return AXOptionalObject::Error("too few arguments to function " +  \
+                                   property_node.name_or_value);       \
+  }                                                                    \
+  if (property_node.arguments.size() > arg_count) {                    \
+    return AXOptionalObject::Error("too many arguments to function " + \
+                                   property_node.name_or_value);       \
+  }
+
+#define CHECK_ARGS_1(property_node) CHECK_ARGS_N(1, property_node)
+
 namespace ui {
 
 // static
@@ -201,23 +213,11 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2(
     return GetIA2Role(target);
 
   if (property_node.name_or_value == "getAttribute") {
-    if (!property_node.arguments.size()) {
-      LOG(ERROR) << "Error: " << property_node.name_or_value
-                 << "called without argument";
-      return AXOptionalObject::Error();
-    }
-    std::string attribute = property_node.arguments[0].name_or_value;
-    return GetIA2Attribute(target, attribute);
+    return GetIA2Attribute(target, property_node);
   }
 
   if (property_node.name_or_value == "hasState") {
-    if (!property_node.arguments.size()) {
-      LOG(ERROR) << "Error: " << property_node.name_or_value
-                 << "called without argument";
-      return AXOptionalObject::Error();
-    }
-    std::string state = property_node.arguments[0].name_or_value;
-    return HasIA2State(target, state);
+    return HasIA2State(target, property_node);
   }
 
   // Todo: add support for
@@ -260,6 +260,10 @@ AXOptionalObject AXCallStatementInvokerWin::InvokeForIA2TextSelectionContainer(
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "selections") {
     return GetSelections(target);
+  }
+
+  if (property_node.name_or_value == "setSelections") {
+    return SetSelections(target, property_node);
   }
 
   return AXOptionalObject::Error();
@@ -366,7 +370,10 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Role(IA2ComPtr target) const {
 
 AXOptionalObject AXCallStatementInvokerWin::GetIA2Attribute(
     IA2ComPtr target,
-    std::string attribute) const {
+    const AXPropertyNode& property_node) const {
+  CHECK_ARGS_1(property_node)
+
+  std::string attribute = property_node.arguments[0].name_or_value;
   absl::optional<std::string> value =
       GetIAccessible2Attribute(target, attribute);
   if (value)
@@ -376,7 +383,10 @@ AXOptionalObject AXCallStatementInvokerWin::GetIA2Attribute(
 
 AXOptionalObject AXCallStatementInvokerWin::HasIA2State(
     IA2ComPtr target,
-    std::string state) const {
+    const AXPropertyNode& property_node) const {
+  CHECK_ARGS_1(property_node)
+  std::string state = property_node.arguments[0].name_or_value;
+
   AccessibleStates states;
   if (target->get_states(&states) == S_OK) {
     std::vector<std::wstring> state_strings;
@@ -412,10 +422,95 @@ AXOptionalObject AXCallStatementInvokerWin::GetSelections(
   return AXOptionalObject::Error();
 }
 
+AXOptionalObject AXCallStatementInvokerWin::SetSelections(
+    const IA2TextSelectionContainerComPtr target,
+    const AXPropertyNode& property_node) const {
+  CHECK_ARGS_1(property_node)
+
+  std::vector<IA2TextSelection> selections =
+      PropertyNodeToIA2TextSelectionArray(property_node.arguments[0]);
+  if (selections.size() == 0) {
+    return AXOptionalObject::Error("Empty IA2TextSelection array is given");
+  }
+
+  if (target->setSelections(selections.size(), selections.data()) == S_OK) {
+    return AXOptionalObject({target});
+  }
+
+  return AXOptionalObject::Error();
+}
+
 bool AXCallStatementInvokerWin::IsIAccessibleAndNotNull(
     const Target& target) const {
   return target.Is<IAccessibleComPtr>() &&
          target.As<IAccessibleComPtr>().Get() != nullptr;
+}
+
+absl::optional<IA2TextSelection>
+AXCallStatementInvokerWin::PropertyNodeToIA2TextSelection(
+    const AXPropertyNode& node) const {
+  if (!node.IsDict()) {
+    return absl::nullopt;
+  }
+
+  const AXPropertyNode* start_obj_node = node.FindKey("startObj");
+  if (!start_obj_node) {
+    return absl::nullopt;
+  }
+
+  IA2TextComPtr start_obj =
+      PropertyNodeToIAccessible<IAccessibleText>(*start_obj_node);
+  if (!start_obj) {
+    return absl::nullopt;
+  }
+
+  absl::optional<int> start_offset = node.FindIntKey("startOffset");
+  if (!start_offset) {
+    return absl::nullopt;
+  }
+
+  const AXPropertyNode* end_obj_node = node.FindKey("endObj");
+  if (!end_obj_node) {
+    return absl::nullopt;
+  }
+
+  IA2TextComPtr end_obj =
+      PropertyNodeToIAccessible<IAccessibleText>(*end_obj_node);
+  if (!end_obj) {
+    return absl::nullopt;
+  }
+
+  absl::optional<int> end_offset = node.FindIntKey("endOffset");
+  if (!end_offset) {
+    return absl::nullopt;
+  }
+
+  IA2TextSelection text_selection{
+      start_obj.Detach(),
+      *start_offset,
+      end_obj.Detach(),
+      *end_offset,
+  };
+  return {std::move(text_selection)};
+}
+
+std::vector<IA2TextSelection>
+AXCallStatementInvokerWin::PropertyNodeToIA2TextSelectionArray(
+    const AXPropertyNode& node) const {
+  if (!node.IsArray()) {
+    return {};
+  }
+
+  std::vector<IA2TextSelection> array;
+  for (const auto& item_node : node.arguments) {
+    absl::optional<IA2TextSelection> item =
+        PropertyNodeToIA2TextSelection(item_node);
+    if (!item) {
+      return {};
+    }
+    array.push_back(std::move(*item));
+  }
+  return array;
 }
 
 }  // namespace ui
