@@ -36,6 +36,7 @@ class CORE_EXPORT DocumentRulePredicate
   static DocumentRulePredicate* MakeDefaultPredicate();
 
   virtual bool Matches(const HTMLAnchorElement& link) const = 0;
+  virtual HeapVector<Member<StyleRule>> GetStyleRules() const = 0;
 
   // Methods for testing.
   enum class Type { kAnd, kOr, kNot, kURLPatterns, kCSSSelectors };

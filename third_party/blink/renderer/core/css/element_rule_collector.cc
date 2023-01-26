@@ -188,14 +188,15 @@ class CascadeLayerSeeker {
     if (vtt_originating_element) {
       return nullptr;
     }
-    if (scope) {
-      return scope->ContainingTreeScope()
-          .GetScopedStyleResolver()
-          ->GetCascadeLayerMap();
-    }
     // Assume there are no UA cascade layers, so we only check user layers.
     if (!style_sheet) {
       return nullptr;
+    }
+    if (scope) {
+      DCHECK(scope->ContainingTreeScope().GetScopedStyleResolver());
+      return scope->ContainingTreeScope()
+          .GetScopedStyleResolver()
+          ->GetCascadeLayerMap();
     }
     Document* document = style_sheet->OwnerDocument();
     if (!document) {

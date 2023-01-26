@@ -55,6 +55,9 @@ class CORE_EXPORT DocumentSpeculationRules
   void RelAttributeChanged(HTMLAnchorElement* link);
   void DocumentReferrerPolicyChanged();
   void DocumentBaseURLChanged();
+  void LinkMatchedSelectorsUpdated(HTMLAnchorElement* link);
+
+  const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
   void Trace(Visitor*) const override;
 
@@ -85,6 +88,9 @@ class CORE_EXPORT DocumentSpeculationRules
   void InvalidateLink(HTMLAnchorElement* link);
   void InvalidateAllLinks();
 
+  // Populates |selectors_| and notifies the StyleEngine.
+  void UpdateSelectors();
+
   HeapVector<Member<SpeculationRuleSet>> rule_sets_;
   HeapMojoRemote<mojom::blink::SpeculationHost> host_;
   HeapHashSet<Member<SpeculationRuleLoader>> speculation_rule_loaders_;
@@ -103,6 +109,10 @@ class CORE_EXPORT DocumentSpeculationRules
       matched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> unmatched_links_;
   HeapHashSet<Member<HTMLAnchorElement>> pending_links_;
+
+  // Collects every CSS selector from every CSS selector document rule predicate
+  // in this document's speculation rules.
+  HeapVector<Member<StyleRule>> selectors_;
 
   bool has_pending_update_ = false;
   bool initialized_ = false;

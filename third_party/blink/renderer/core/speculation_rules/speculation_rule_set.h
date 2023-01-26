@@ -16,6 +16,7 @@ class Document;
 class ExecutionContext;
 class KURL;
 class SpeculationRule;
+class StyleRule;
 
 // A set of rules generated from a single <script type=speculationrules>, which
 // provides rules to identify URLs and corresponding conditions for speculation,
@@ -68,6 +69,8 @@ class CORE_EXPORT SpeculationRuleSet final
 
   Source* source() const { return source_; }
 
+  const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
+
   void Trace(Visitor*) const;
 
  private:
@@ -77,6 +80,7 @@ class CORE_EXPORT SpeculationRuleSet final
   // The original source is reused to reparse speculation rule sets when the
   // document base URL changes.
   Member<Source> source_;
+  HeapVector<Member<StyleRule>> selectors_;
   bool has_document_rule_ = false;
 };
 

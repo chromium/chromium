@@ -142,6 +142,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -183,6 +185,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/toggle_root_list.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
@@ -199,6 +202,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -3768,6 +3772,8 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
     child_change = ApplyComputedStyleDiff(child_change, diff);
     UpdateCallbackSelectors(old_style.get(), new_style.get());
+    NotifyIfMatchedDocumentRulesSelectorsChanged(old_style.get(),
+                                                 new_style.get());
   }
 
   if (auto* context = GetDisplayLockContext()) {
@@ -4031,6 +4037,38 @@ void Element::UpdateCallbackSelectors(const ComputedStyle* old_style,
   if (old_callback_selectors != new_callback_selectors) {
     CSSSelectorWatch::From(GetDocument())
         .UpdateSelectorMatches(old_callback_selectors, new_callback_selectors);
+  }
+}
+
+void Element::NotifyIfMatchedDocumentRulesSelectorsChanged(
+    const ComputedStyle* old_style,
+    const ComputedStyle* new_style) {
+  if (!IsLink() ||
+      !(HasTagName(html_names::kATag) || HasTagName(html_names::kAreaTag))) {
+    return;
+  }
+  auto get_selectors_from_computed_style = [](const ComputedStyle* style) {
+    HeapHashSet<WeakMember<StyleRule>> empty_set;
+    if (!style || !style->DocumentRulesSelectors()) {
+      return empty_set;
+    }
+    return *style->DocumentRulesSelectors();
+  };
+
+  const HeapHashSet<WeakMember<StyleRule>>& old_document_rules_selectors =
+      get_selectors_from_computed_style(old_style);
+  const HeapHashSet<WeakMember<StyleRule>>& new_document_rules_selectors =
+      get_selectors_from_computed_style(new_style);
+  if (old_document_rules_selectors.empty() &&
+      new_document_rules_selectors.empty()) {
+    return;
+  }
+  if (old_document_rules_selectors != new_document_rules_selectors) {
+    HTMLAnchorElement* link = nullptr;
+    link = HasTagName(html_names::kATag) ? To<HTMLAnchorElement>(this)
+                                         : To<HTMLAreaElement>(this);
+    DocumentSpeculationRules::From(GetDocument())
+        .LinkMatchedSelectorsUpdated(link);
   }
 }
 

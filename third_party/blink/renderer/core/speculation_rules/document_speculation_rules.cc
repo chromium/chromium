@@ -8,6 +8,8 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -175,6 +177,9 @@ void DocumentSpeculationRules::AddRuleSet(SpeculationRuleSet* rule_set) {
                       WebFeature::kSpeculationRulesDocumentRules);
     InitializeIfNecessary();
     InvalidateAllLinks();
+    if (!rule_set->selectors().empty()) {
+      UpdateSelectors();
+    }
   }
   QueueUpdateSpeculationCandidates();
 }
@@ -183,8 +188,12 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
   auto* it = base::ranges::remove(rule_sets_, rule_set);
   DCHECK(it != rule_sets_.end()) << "rule set was removed without existing";
   rule_sets_.erase(it, rule_sets_.end());
-  if (rule_set->has_document_rule())
+  if (rule_set->has_document_rule()) {
     InvalidateAllLinks();
+    if (!rule_set->selectors().empty()) {
+      UpdateSelectors();
+    }
+  }
   QueueUpdateSpeculationCandidates();
 }
 
@@ -284,6 +293,13 @@ void DocumentSpeculationRules::DocumentBaseURLChanged() {
   QueueUpdateSpeculationCandidates();
 }
 
+void DocumentSpeculationRules::LinkMatchedSelectorsUpdated(
+    HTMLAnchorElement* link) {
+  DCHECK(initialized_);
+  InvalidateLink(link);
+  QueueUpdateSpeculationCandidates();
+}
+
 void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   Supplement::Trace(visitor);
   visitor->Trace(rule_sets_);
@@ -292,6 +308,7 @@ void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   visitor->Trace(matched_links_);
   visitor->Trace(unmatched_links_);
   visitor->Trace(pending_links_);
+  visitor->Trace(selectors_);
 }
 
 mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
@@ -396,6 +413,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
     sent_is_part_of_no_vary_search_trial_ = true;
     host->EnableNoVarySearchSupport();
   }
+
   host->UpdateSpeculationCandidates(std::move(candidates));
 }
 
@@ -552,6 +570,24 @@ void DocumentSpeculationRules::InvalidateAllLinks() {
   for (HTMLAnchorElement* link : unmatched_links_)
     pending_links_.insert(link);
   unmatched_links_.clear();
+}
+
+void DocumentSpeculationRules::UpdateSelectors() {
+  ExecutionContext* execution_context =
+      GetSupplementable()->GetExecutionContext();
+  if (!RuntimeEnabledFeatures::
+          SpeculationRulesDocumentRulesSelectorMatchesEnabled(
+              execution_context)) {
+    return;
+  }
+
+  HeapVector<Member<StyleRule>> selectors;
+  for (SpeculationRuleSet* rule_set : rule_sets_) {
+    selectors.AppendVector(rule_set->selectors());
+  }
+
+  selectors_ = std::move(selectors);
+  GetSupplementable()->GetStyleEngine().DocumentRulesSelectorsChanged();
 }
 
 }  // namespace blink

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 
 namespace blink {
 
@@ -33,6 +34,23 @@ void CSSGlobalRuleSet::InitWatchedSelectorsRuleSet(Document& document) {
   }
 }
 
+void CSSGlobalRuleSet::UpdateDocumentRulesSelectorsRuleSet(Document& document) {
+  MarkDirty();
+  document_rules_selectors_rule_set_ = nullptr;
+  const HeapVector<Member<StyleRule>>& document_rules_selectors =
+      DocumentSpeculationRules::From(document).selectors();
+  if (document_rules_selectors.empty()) {
+    return;
+  }
+  document_rules_selectors_rule_set_ = MakeGarbageCollected<RuleSet>();
+  MediaQueryEvaluator* medium =
+      MakeGarbageCollected<MediaQueryEvaluator>(document.GetFrame());
+  for (StyleRule* selector : document_rules_selectors) {
+    document_rules_selectors_rule_set_->AddStyleRule(selector, *medium,
+                                                     kRuleHasNoSpecialState);
+  }
+}
+
 void CSSGlobalRuleSet::Update(Document& document) {
   if (!is_dirty_) {
     return;
@@ -52,18 +70,24 @@ void CSSGlobalRuleSet::Update(Document& document) {
     features_.Merge(watched_selectors_rule_set_->Features());
   }
 
+  if (document_rules_selectors_rule_set_) {
+    features_.Merge(document_rules_selectors_rule_set_->Features());
+  }
+
   document.GetStyleEngine().CollectFeaturesTo(features_);
 }
 
 void CSSGlobalRuleSet::Dispose() {
   features_.Clear();
   watched_selectors_rule_set_ = nullptr;
+  document_rules_selectors_rule_set_ = nullptr;
   has_fullscreen_ua_style_ = false;
   is_dirty_ = true;
 }
 
 void CSSGlobalRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(watched_selectors_rule_set_);
+  visitor->Trace(document_rules_selectors_rule_set_);
 }
 
 }  // namespace blink

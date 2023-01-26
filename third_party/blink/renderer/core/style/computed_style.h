@@ -3291,6 +3291,15 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     }
   }
 
+  // DocumentRulesSelectors
+  void AddDocumentRulesSelector(StyleRule* selector) {
+    if (!DocumentRulesSelectors()) {
+      MutableDocumentRulesSelectorsInternal() =
+          MakeGarbageCollected<HeapHashSet<WeakMember<StyleRule>>>();
+    }
+    DocumentRulesSelectors()->insert(selector);
+  }
+
   // ::selection, etc
   StyleHighlightData& MutableHighlightData();
 

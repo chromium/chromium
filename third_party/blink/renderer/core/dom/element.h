@@ -1501,6 +1501,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   inline void UpdateCallbackSelectors(const ComputedStyle* old_style,
                                       const ComputedStyle* new_style);
+  inline void NotifyIfMatchedDocumentRulesSelectorsChanged(
+      const ComputedStyle* old_style,
+      const ComputedStyle* new_style);
 
   // Clone is private so that non-virtual CloneElementWithChildren and
   // CloneElementWithoutChildren are used instead.

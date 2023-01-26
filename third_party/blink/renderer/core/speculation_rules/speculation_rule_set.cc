@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_rule_predicate.h"
@@ -427,8 +428,10 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
             continue;
           }
 
-          if (rule->predicate())
+          if (rule->predicate()) {
             result->has_document_rule_ = true;
+            result->selectors_.AppendVector(rule->predicate()->GetStyleRules());
+          }
 
           // Append rule to result's prefetch/prerender rules.
           destination.push_back(rule);
@@ -454,6 +457,7 @@ void SpeculationRuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(prefetch_with_subresources_rules_);
   visitor->Trace(prerender_rules_);
   visitor->Trace(source_);
+  visitor->Trace(selectors_);
 }
 
 }  // namespace blink

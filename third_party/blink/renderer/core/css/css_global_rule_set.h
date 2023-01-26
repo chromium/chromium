@@ -29,6 +29,7 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
 
   void Dispose();
   void InitWatchedSelectorsRuleSet(Document&);
+  void UpdateDocumentRulesSelectorsRuleSet(Document&);
   void MarkDirty() { is_dirty_ = true; }
   bool IsDirty() const { return is_dirty_; }
   void Update(Document&);
@@ -36,6 +37,9 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
   const RuleFeatureSet& GetRuleFeatureSet() const { return features_; }
   RuleSet* WatchedSelectorsRuleSet() const {
     return watched_selectors_rule_set_;
+  }
+  RuleSet* DocumentRulesSelectorsRuleSet() const {
+    return document_rules_selectors_rule_set_;
   }
   bool HasFullscreenUAStyle() const { return has_fullscreen_ua_style_; }
 
@@ -48,6 +52,10 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
 
   // Rules injected from extensions.
   Member<RuleSet> watched_selectors_rule_set_;
+
+  // Rules extracted from CSS selector document rule predicates in speculation
+  // rules.
+  Member<RuleSet> document_rules_selectors_rule_set_;
 
   bool has_fullscreen_ua_style_ = false;
   bool is_dirty_ = true;

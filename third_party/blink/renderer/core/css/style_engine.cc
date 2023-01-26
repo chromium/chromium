@@ -426,6 +426,28 @@ void StyleEngine::WatchedSelectorsChanged() {
       style_change_reason::kDeclarativeContent));
 }
 
+void StyleEngine::DocumentRulesSelectorsChanged() {
+  DCHECK(global_rule_set_);
+  Member<RuleSet> old_rule_set =
+      global_rule_set_->DocumentRulesSelectorsRuleSet();
+  global_rule_set_->UpdateDocumentRulesSelectorsRuleSet(GetDocument());
+  Member<RuleSet> new_rule_set =
+      global_rule_set_->DocumentRulesSelectorsRuleSet();
+  DCHECK_NE(old_rule_set, new_rule_set);
+
+  const unsigned changed_rule_flags = 0;
+  HeapHashSet<Member<RuleSet>> changed_rule_sets;
+  if (old_rule_set) {
+    changed_rule_sets.insert(old_rule_set);
+  }
+  if (new_rule_set) {
+    changed_rule_sets.insert(new_rule_set);
+  }
+
+  InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
+                              changed_rule_flags, kInvalidateAllScopes);
+}
+
 bool StyleEngine::ShouldUpdateDocumentStyleSheetCollection() const {
   return document_scope_dirty_;
 }

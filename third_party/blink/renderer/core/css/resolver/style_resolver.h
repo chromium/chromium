@@ -311,6 +311,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
 
   void ApplyCallbackSelectors(StyleResolverState&);
+  void ApplyDocumentRulesSelectors(StyleResolverState&, ContainerNode* scope);
+  StyleRuleList* CollectMatchingRulesFromRuleSet(StyleResolverState&,
+                                                 RuleSet*,
+                                                 ContainerNode* scope);
 
   Document& GetDocument() const { return *document_; }
 

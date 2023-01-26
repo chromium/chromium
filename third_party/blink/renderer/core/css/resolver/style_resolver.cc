@@ -1459,6 +1459,12 @@ void StyleResolver::ApplyBaseStyleNoCache(
       match_result.PseudoElementStyles());
 
   ApplyCallbackSelectors(state);
+  if (element->IsLink() && (element->HasTagName(html_names::kATag) ||
+                            element->HasTagName(html_names::kAreaTag))) {
+    // TODO(crbug.com/1371522): Revisit scoping root used after
+    // https://github.com/WICG/nav-speculation/issues/240 is resolved.
+    ApplyDocumentRulesSelectors(state, &GetDocument());
+  }
 
   // Cache our original display.
   state.StyleBuilder().SetOriginalDisplay(state.StyleBuilder().Display());
@@ -2344,10 +2350,36 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
 }
 
 void StyleResolver::ApplyCallbackSelectors(StyleResolverState& state) {
-  RuleSet* watched_selectors_rule_set =
-      GetDocument().GetStyleEngine().WatchedSelectorsRuleSet();
-  if (!watched_selectors_rule_set) {
+  StyleRuleList* rules = CollectMatchingRulesFromRuleSet(
+      state, GetDocument().GetStyleEngine().WatchedSelectorsRuleSet(),
+      /*scope=*/nullptr);
+  if (!rules) {
     return;
+  }
+  for (auto rule : *rules) {
+    state.StyleBuilder().AddCallbackSelector(rule->SelectorsText());
+  }
+}
+
+void StyleResolver::ApplyDocumentRulesSelectors(StyleResolverState& state,
+                                                ContainerNode* scope) {
+  StyleRuleList* rules = CollectMatchingRulesFromRuleSet(
+      state, GetDocument().GetStyleEngine().DocumentRulesSelectorsRuleSet(),
+      scope);
+  if (!rules) {
+    return;
+  }
+  for (auto rule : *rules) {
+    state.StyleBuilder().AddDocumentRulesSelector(rule);
+  }
+}
+
+StyleRuleList* StyleResolver::CollectMatchingRulesFromRuleSet(
+    StyleResolverState& state,
+    RuleSet* rule_set,
+    ContainerNode* scope) {
+  if (!rule_set) {
+    return nullptr;
   }
 
   MatchResult match_result;
@@ -2355,22 +2387,14 @@ void StyleResolver::ApplyCallbackSelectors(StyleResolverState& state) {
                                  selector_filter_, match_result,
                                  state.StyleBuilder().InsideLink());
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
-
-  MatchRequest match_request(watched_selectors_rule_set);
+  MatchRequest match_request(rule_set, scope);
   collector.CollectMatchingRules(match_request);
   collector.SortAndTransferMatchedRules();
 
   if (tracker_) {
     AddMatchedRulesToTracker(collector);
   }
-
-  StyleRuleList* rules = collector.MatchedStyleRuleList();
-  if (!rules) {
-    return;
-  }
-  for (auto rule : *rules) {
-    state.StyleBuilder().AddCallbackSelector(rule->SelectorsText());
-  }
+  return collector.MatchedStyleRuleList();
 }
 
 // Font properties are also handled by FontStyleResolver outside the main
