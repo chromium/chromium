@@ -38,7 +38,10 @@ class CaptureButtonView : public views::View {
 
   // Updates the icon and text of `capture_button_`, as well as the visibility
   // of the `separator_` and `drop_down_button_` depending on the current type
-  // of capture. This should only be called when this view is visible.
+  // of capture. It also updates the shape of the focus ring of the
+  // `capture_button_` as it can switch from being fully rounded to half rounded
+  // when the visibility of the separator changes. This should only be called
+  // when this view is visible.
   void UpdateViewVisuals();
 
   // Returns the list of avaibale buttons that can be highlighted while
@@ -50,6 +53,14 @@ class CaptureButtonView : public views::View {
   void OnThemeChanged() override;
 
  private:
+  // Sets up the given `button`'s ink drop style and focus behavior.
+  void SetupButton(views::Button* button);
+
+  // Bound to callbacks that will create a path generator for both the capture
+  // and the drop down buttons.
+  std::unique_ptr<views::HighlightPathGenerator> CreateFocusRingPath(
+      views::View* view);
+
   // The button which when pressed, screen capture will be performed.
   views::LabelButton* const capture_button_;
 

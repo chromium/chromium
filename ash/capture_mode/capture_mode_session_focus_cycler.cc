@@ -258,6 +258,11 @@ CaptureModeSessionFocusCycler::HighlightableView::CreatePathGenerator() {
   return nullptr;
 }
 
+void CaptureModeSessionFocusCycler::HighlightableView::
+    InvalidateFocusRingPath() {
+  needs_highlight_path_ = true;
+}
+
 void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
   has_focus_ = true;
 
@@ -277,10 +282,13 @@ void CaptureModeSessionFocusCycler::HighlightableView::PseudoFocus() {
     // has focus which won't be happening since our widgets are not activatable.
     focus_ring_->SetHasFocusPredicate(
         [&](views::View* view) { return view->GetVisible() && has_focus_; });
+  }
 
-    auto path_generator = CreatePathGenerator();
-    if (path_generator)
+  if (needs_highlight_path_) {
+    if (auto path_generator = CreatePathGenerator()) {
       focus_ring_->SetPathGenerator(std::move(path_generator));
+    }
+    needs_highlight_path_ = false;
   }
 
   focus_ring_->Layout();

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "third_party/skia/include/core/SkRect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view.h"
@@ -134,11 +135,17 @@ void InstallFixedSizeCircleHighlightPathGenerator(View* view, int radius) {
 RoundRectHighlightPathGenerator::RoundRectHighlightPathGenerator(
     const gfx::Insets& insets,
     int corner_radius)
-    : HighlightPathGenerator(insets), corner_radius_(corner_radius) {}
+    : RoundRectHighlightPathGenerator(insets,
+                                      gfx::RoundedCornersF(corner_radius)) {}
+
+RoundRectHighlightPathGenerator::RoundRectHighlightPathGenerator(
+    const gfx::Insets& insets,
+    const gfx::RoundedCornersF& rounded_corners)
+    : HighlightPathGenerator(insets), rounded_corners_(rounded_corners) {}
 
 absl::optional<gfx::RRectF> RoundRectHighlightPathGenerator::GetRoundRect(
     const gfx::RectF& rect) {
-  return gfx::RRectF(rect, corner_radius_);
+  return gfx::RRectF(rect, rounded_corners_);
 }
 
 void InstallRoundRectHighlightPathGenerator(View* view,

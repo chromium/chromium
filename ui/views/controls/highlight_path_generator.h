@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/views_export.h"
 
 namespace gfx {
@@ -162,6 +163,8 @@ class VIEWS_EXPORT RoundRectHighlightPathGenerator
     : public HighlightPathGenerator {
  public:
   RoundRectHighlightPathGenerator(const gfx::Insets& insets, int corner_radius);
+  RoundRectHighlightPathGenerator(const gfx::Insets& insets,
+                                  const gfx::RoundedCornersF& rounded_corners);
 
   RoundRectHighlightPathGenerator(const RoundRectHighlightPathGenerator&) =
       delete;
@@ -172,7 +175,7 @@ class VIEWS_EXPORT RoundRectHighlightPathGenerator
   absl::optional<gfx::RRectF> GetRoundRect(const gfx::RectF& rect) override;
 
  private:
-  const int corner_radius_;
+  const gfx::RoundedCornersF rounded_corners_;
 };
 
 void VIEWS_EXPORT
