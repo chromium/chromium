@@ -193,6 +193,28 @@ chromium-metrics-reviews@google.com.
   <summary>Time taken to render to PDF for print preview.</summary>
 </histogram>
 
+<histogram name="PrintPreview.StateError" enum="PrintPreviewStateError"
+    expires_after="2024-01-23">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records the error that puts Print Preview into an error state. The NONE
+    error state is not recorded. In an error state, the Print button is
+    disabled.
+  </summary>
+</histogram>
+
+<histogram name="PrintPreview.TransitionedToReadyState" enum="BooleanHit"
+    expires_after="2024-01-23">
+  <owner>gavinwill@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records TRUE when Print Preview transitions from NOT_READY to READY state.
+    Records FALSE when Print Preview transitions from NOT_READY to ERROR state.
+    This metric only records for non-PDF destinations.
+  </summary>
+</histogram>
+
 <histogram name="PrintPreview.UserAction" enum="PrintPreviewUserActionType"
     expires_after="2023-07-02">
   <owner>thestig@chromium.org</owner>

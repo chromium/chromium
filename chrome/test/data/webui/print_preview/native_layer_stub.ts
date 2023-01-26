@@ -181,6 +181,8 @@ export class NativeLayerStub extends TestBrowserProxy implements NativeLayer {
 
   recordInHistogram() {}
 
+  recordBooleanHistogram() {}
+
   saveAppState(appState: string) {
     this.methodCalled('saveAppState', appState);
   }

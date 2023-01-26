@@ -81,7 +81,10 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
 
       documentSettings_: Object,
 
-      error_: Number,
+      error_: {
+        type: Number,
+        observer: 'onErrorChange_',
+      },
 
       margins_: Object,
 
@@ -332,6 +335,13 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
         this.$.model.applyDestinationSpecificPolicies();
 
         this.startPreviewWhenReady_ = true;
+
+        if (this.state === State.NOT_READY &&
+            this.destination_.type !== PrinterType.PDF_PRINTER) {
+          this.nativeLayer_!.recordBooleanHistogram(
+              'PrintPreview.TransitionedToReadyState', true);
+        }
+
         this.$.state.transitTo(State.READY);
         break;
       case DestinationState.ERROR:
@@ -341,6 +351,13 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           newState = State.FATAL_ERROR;
         }
         // </if>
+
+        if (this.state === State.NOT_READY &&
+            this.destination_.type !== PrinterType.PDF_PRINTER) {
+          this.nativeLayer_!.recordBooleanHistogram(
+              'PrintPreview.TransitionedToReadyState', false);
+        }
+
         this.$.state.transitTo(newState);
         break;
       default:
@@ -392,6 +409,13 @@ export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
           this.onFileSelectionCancel_.bind(this) :
           this.onPrintFailed_.bind(this);
       whenPrintDone.then(this.close_.bind(this), onError);
+    }
+  }
+
+  private onErrorChange_() {
+    if (this.error_ !== Error.NONE) {
+      this.nativeLayer_!.recordInHistogram(
+          'PrintPreview.StateError', this.error_, Error.MAX_BUCKET);
     }
   }
 

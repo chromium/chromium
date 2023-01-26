@@ -197,6 +197,13 @@ export interface NativeLayer {
    * @param maxBucket The maximum bucket value in the histogram.
    */
   recordInHistogram(histogram: string, bucket: number, maxBucket: number): void;
+
+  /**
+   * Notifies the metrics handler to record a boolean histogram value.
+   * @param histogram The name of the histogram to record.
+   * @param value The boolean value to record.
+   */
+  recordBooleanHistogram(histogram: string, value: boolean): void;
 }
 
 export class NativeLayerImpl implements NativeLayer {
@@ -252,6 +259,10 @@ export class NativeLayerImpl implements NativeLayer {
   recordInHistogram(histogram: string, bucket: number, maxBucket: number) {
     chrome.send(
         'metricsHandler:recordInHistogram', [histogram, bucket, maxBucket]);
+  }
+
+  recordBooleanHistogram(histogram: string, value: boolean) {
+    chrome.send('metricsHandler:recordBooleanHistogram', [histogram, value]);
   }
 
   static getInstance(): NativeLayer {

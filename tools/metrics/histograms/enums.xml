@@ -84317,6 +84317,15 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="PRINT_WITH_SETTINGS_COLLAPSED"/>
 </enum>
 
+<enum name="PrintPreviewStateError">
+  <int value="0" label="None"/>
+  <int value="1" label="Invalid Ticket"/>
+  <int value="2" label="Invalid Printer"/>
+  <int value="3" label="No Destinations"/>
+  <int value="4" label="Preview Failed"/>
+  <int value="5" label="Print Failed"/>
+</enum>
+
 <enum name="PrintPreviewUserActionType">
   <int value="0" label="PRINT_TO_PRINTER"/>
   <int value="1" label="PRINT_TO_PDF"/>
