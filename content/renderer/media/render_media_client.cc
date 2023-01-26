@@ -52,7 +52,9 @@ void RenderMediaClient::Initialize() {
 }
 
 RenderMediaClient::RenderMediaClient()
-    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+    : main_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      io_task_runner_(RenderThreadImpl::current()->GetIOTaskRunner()) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 #if NEEDS_PROFILE_UPDATER
   // We'll first try to query the supported video decoder configurations
   // asynchronously. If IsSupportedVideoType() is called before we get a
@@ -98,6 +100,9 @@ bool RenderMediaClient::IsSupportedAudioType(const media::AudioType& type) {
 
 bool RenderMediaClient::IsSupportedVideoType(const media::VideoType& type) {
 #if NEEDS_PROFILE_UPDATER
+  // This method should not run on the IO thread: we don't want to make the sync
+  // mojo call below on that thread.
+  DCHECK(!io_task_runner_->RunsTasksInCurrentSequence());
   {
     base::AutoLock lock(supported_video_decoder_profiles_lock_);
     if (!supported_video_decoder_profiles_are_known_) {
@@ -111,7 +116,15 @@ bool RenderMediaClient::IsSupportedVideoType(const media::VideoType& type) {
       }
       UpdateVideoProfilesInternal(configs);
       supported_video_decoder_profiles_are_known_ = true;
-      ResetConnectionForSupportedProfilesQuery();
+
+      // The base::Unretained() here is safe because the MediaClient is never
+      // destructed.
+      main_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &RenderMediaClient::
+                  ResetConnectionForSupportedProfilesQueryOnMainThread,
+              base::Unretained(this)));
     }
   }
 #endif
@@ -139,25 +152,22 @@ void RenderMediaClient::OnGetSupportedVideoDecoderConfigs(
   if (!supported_video_decoder_profiles_are_known_) {
     UpdateVideoProfilesInternal(configs);
     supported_video_decoder_profiles_are_known_ = true;
-  }
-  ResetConnectionForSupportedProfilesQuery();
-#endif
-}
 
-void RenderMediaClient::ResetConnectionForSupportedProfilesQuery() {
-#if NEEDS_PROFILE_UPDATER
-  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
     // The base::Unretained() here is safe because the MediaClient is never
     // destructed.
     main_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &RenderMediaClient::ResetConnectionForSupportedProfilesQuery,
-            base::Unretained(this)));
-    return;
+        base::BindOnce(&RenderMediaClient::
+                           ResetConnectionForSupportedProfilesQueryOnMainThread,
+                       base::Unretained(this)));
   }
-  interface_factory_for_supported_profiles_.reset();
+#endif
+}
+
+void RenderMediaClient::ResetConnectionForSupportedProfilesQueryOnMainThread() {
+#if NEEDS_PROFILE_UPDATER
   video_decoder_for_supported_profiles_.reset();
+  interface_factory_for_supported_profiles_.reset();
 #endif
 }
 
