@@ -13,17 +13,12 @@
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace ash::video_conference {
-
-namespace {
-
-const int kBorderInsetDimension = 10;
-
-}  // namespace
 
 BubbleView::BubbleView(const InitParams& init_params,
                        VideoConferenceTrayController* controller)
@@ -61,25 +56,26 @@ void BubbleView::AddedToWidget() {
   // `FlexLayout` makes the most sense for the contents of the
   // `views::ScrollView`, since the effects sections are stacked vertically and
   // need to expand to fill the bubble.
-  views::FlexLayoutView* layout =
-      scroll_view->SetContents(std::make_unique<views::FlexLayoutView>());
-  layout->SetOrientation(views::LayoutOrientation::kVertical);
-  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-  layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  views::BoxLayoutView* layout_view =
+      scroll_view->SetContents(std::make_unique<views::BoxLayoutView>());
+  layout_view->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  layout_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+  layout_view->SetInsideBorderInsets(gfx::Insets::TLBR(16, 16, 16, 16));
+  layout_view->SetBetweenChildSpacing(16);
 
   // Make the effects sections children of the `views::FlexLayoutView`, so that
   // they scroll (if more effects are present than can fit in the available
   // height).
   if (controller_->effects_manager().HasToggleEffects()) {
-    layout->AddChildView(std::make_unique<ToggleEffectsView>(
+    layout_view->AddChildView(std::make_unique<ToggleEffectsView>(
         controller_, GetPreferredSize().width()));
   }
   if (controller_->effects_manager().HasSetValueEffects()) {
-    layout->AddChildView(std::make_unique<SetValueEffectsView>(controller_));
+    layout_view->AddChildView(
+        std::make_unique<SetValueEffectsView>(controller_));
   }
-
-  SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(kBorderInsetDimension, kBorderInsetDimension)));
 }
 
 }  // namespace ash::video_conference

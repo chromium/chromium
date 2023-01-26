@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -19,22 +19,26 @@ class TabSliderButton;
 // rounded rectangle shows behind the selected button. When another button is
 // selected, the selector will move from the position of previously selected
 // button to the position of currently selected button.
-class ASH_EXPORT TabSlider : public views::BoxLayoutView {
+class ASH_EXPORT TabSlider : public views::View {
  public:
   METADATA_HEADER(TabSlider);
 
-  // The layout parameters used to configure the box layout of the button
+  // The layout parameters used to configure the layout of the button
   // container.
   struct LayoutParams {
-    int internal_border_padding;
-    int between_buttons_spacing;
+    int internal_border_padding = 0;
+    int between_buttons_spacing = 0;
   };
 
-  // `has_background` indicates if there is a fully rounded rect background for
-  // tab slider. `has_selector_animation` indicates whether an animation should
-  // be shown when the selector moves between buttons.
+  // `has_background` indicates whether there is a fully rounded rect
+  // background for the tab slider.
+  // `has_selector_animation` indicates whether an animation should be shown
+  // when the selector moves between buttons.
+  // `distribute_space_evenly` indicates whether the extra space should be
+  // distributed evenly between buttons.
   explicit TabSlider(bool has_background = true,
-                     bool has_selector_animation = true);
+                     bool has_selector_animation = true,
+                     bool distribute_space_evenly = false);
   TabSlider(const TabSlider&) = delete;
   TabSlider& operator=(const TabSlider&) = delete;
   ~TabSlider() override;
@@ -77,6 +81,10 @@ class ASH_EXPORT TabSlider : public views::BoxLayoutView {
   // Called when a button is added to the slider.
   void OnButtonAdded(TabSliderButton* button);
 
+  // Updates the LayoutManager based on how many views exist,
+  // `distribute_space_evenly_`, and `custom_layout_params_`.
+  void UpdateLayout();
+
   // Called when the enabled state is changed.
   void OnEnabledStateChanged();
 
@@ -84,9 +92,15 @@ class ASH_EXPORT TabSlider : public views::BoxLayoutView {
   SelectorView* selector_view_;
   std::vector<TabSliderButton*> buttons_;
 
-  // Parameters for a custom layout. When it is not empty, it takes precedence
-  // over the button's recommended slider layout.
-  absl::optional<LayoutParams> custom_layout_params_;
+  // Parameters for a custom layout. Set by either individual buttons, or
+  // through `SetCustomLayout()`.
+  LayoutParams custom_layout_params_;
+
+  // Whether child buttons should be forced to evenly share space.
+  const bool distribute_space_evenly_;
+
+  // By default, respect buttons recommended layout.
+  bool use_button_recommended_layout_ = true;
 
   base::CallbackListSubscription enabled_changed_subscription_;
 };

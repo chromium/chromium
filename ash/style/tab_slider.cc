@@ -6,12 +6,14 @@
 
 #include "ash/style/style_util.h"
 #include "ash/style/tab_slider_button.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -88,9 +90,12 @@ class TabSlider::SelectorView : public views::View {
 //------------------------------------------------------------------------------
 // TabSlider:
 
-TabSlider::TabSlider(bool has_background, bool has_selector_animation)
-    : selector_view_(AddChildView(
-          std::make_unique<SelectorView>(has_selector_animation))) {
+TabSlider::TabSlider(bool has_background,
+                     bool has_selector_animation,
+                     bool distribute_space_evenly)
+    : selector_view_(
+          AddChildView(std::make_unique<SelectorView>(has_selector_animation))),
+      distribute_space_evenly_(distribute_space_evenly) {
   // Add a fully rounded rect background if needed.
   if (has_background) {
     SetPaintToLayer();
@@ -99,13 +104,6 @@ TabSlider::TabSlider(bool has_background, bool has_selector_animation)
         kSliderBackgroundColorId));
   }
 
-  // Make the selector view ignored by layout, since the selector bounds should
-  // be in sync with the selected button's bounds.
-  selector_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-
-  // Center the slider buttons within the container's box layout.
-  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-
   enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
       &TabSlider::OnEnabledStateChanged, base::Unretained(this)));
 }
@@ -113,11 +111,11 @@ TabSlider::TabSlider(bool has_background, bool has_selector_animation)
 TabSlider::~TabSlider() = default;
 
 void TabSlider::SetCustomLayout(const LayoutParams& layout_params) {
+  use_button_recommended_layout_ = false;
+
   // Configure the layout with the custom layout parameters.
   custom_layout_params_ = layout_params;
-  SetInsideBorderInsets(
-      gfx::Insets(custom_layout_params_->internal_border_padding));
-  SetBetweenChildSpacing(custom_layout_params_->between_buttons_spacing);
+  UpdateLayout();
 }
 
 void TabSlider::OnButtonSelected(TabSliderButton* button) {
@@ -135,15 +133,16 @@ void TabSlider::OnButtonSelected(TabSliderButton* button) {
 }
 
 void TabSlider::Layout() {
-  BoxLayoutView::Layout();
+  views::View::Layout();
 
   // Synchronize the selector bounds with selected button's bounds.
-  for (auto* b : buttons_) {
-    if (b->selected()) {
-      selector_view_->SetBoundsRect(b->bounds());
-      return;
-    }
+  auto it =
+      std::find_if(buttons_.begin(), buttons_.end(),
+                   [](TabSliderButton* button) { return button->selected(); });
+  if (it == buttons_.end()) {
+    return;
   }
+  selector_view_->SetBoundsRect((*it)->bounds());
 }
 
 void TabSlider::AddButtonInternal(TabSliderButton* button) {
@@ -159,9 +158,13 @@ void TabSlider::AddButtonInternal(TabSliderButton* button) {
 void TabSlider::OnButtonAdded(TabSliderButton* button) {
   DCHECK(button);
 
-  // When adding a button, the slider's layout should be updated according to
-  // the button's recommended slider layout if the custom layout is not set.
-  if (custom_layout_params_) {
+  // Always update the layout, at a minimum a new column will need to be added.
+  base::ScopedClosureRunner scoped_runner(
+      base::BindOnce(&TabSlider::UpdateLayout, base::Unretained(this)));
+
+  // `SetCustomLayout()` results in child button's requested layout being
+  // ignored.
+  if (!use_button_recommended_layout_) {
     return;
   }
 
@@ -170,19 +173,61 @@ void TabSlider::OnButtonAdded(TabSliderButton* button) {
     return;
   }
 
-  // Update the inside border, if the spacing between the button and the slider
-  // is less than the recommended inner border padding.
-  const int current_internal_border_padding =
-      (GetPreferredSize().height() - button->GetPreferredSize().height()) / 2;
-  if (current_internal_border_padding <
-      recommended_layout->internal_border_padding) {
-    SetInsideBorderInsets(
-        gfx::Insets(recommended_layout->internal_border_padding));
+  custom_layout_params_.internal_border_padding =
+      std::max(recommended_layout->internal_border_padding,
+               custom_layout_params_.internal_border_padding);
+  custom_layout_params_.between_buttons_spacing =
+      std::max(recommended_layout->between_buttons_spacing,
+               custom_layout_params_.between_buttons_spacing);
+}
+
+void TabSlider::UpdateLayout() {
+  // Update the layout based on how many buttons exist, `custom_layout_params_`,
+  // and `distribute_space_evenly_`.
+  auto* table_layout = SetLayoutManager(std::make_unique<views::TableLayout>());
+
+  // Explicitly mark this view as ignored because
+  // `views::kViewIgnoredByLayoutKey` is not supported by `views::TableLayout`.
+  table_layout->SetChildViewIgnoredByLayout(selector_view_, /*ignored=*/true);
+
+  size_t column_index = 0;
+  table_layout
+      ->AddPaddingRow(views::TableLayout::kFixedSize,
+                      custom_layout_params_.internal_border_padding)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        custom_layout_params_.internal_border_padding);
+  column_index++;
+
+  // Keep track of columns with buttons so their sizes can be linked if
+  // necessary.
+  std::vector<size_t> columns_containing_buttons;
+  for (size_t i = 0; i < buttons_.size(); ++i) {
+    columns_containing_buttons.push_back(column_index);
+    table_layout->AddColumn(
+        views::LayoutAlignment::kStretch, views::LayoutAlignment::kCenter, 1.0f,
+        views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
+    column_index++;
+    if (i < buttons_.size() - 1) {
+      table_layout->AddPaddingColumn(
+          views::TableLayout::kFixedSize,
+          custom_layout_params_.between_buttons_spacing);
+      column_index++;
+    }
   }
 
-  // Update the between buttons spacing, if it is less than the recommended one.
-  SetBetweenChildSpacing(std::max(recommended_layout->between_buttons_spacing,
-                                  GetBetweenChildSpacing()));
+  // Add the row buttons will live in.
+  table_layout->AddRows(1, views::TableLayout::kFixedSize);
+  if (distribute_space_evenly_) {
+    // Ensure extra space is spread evenly between the button containing
+    // columns.
+    table_layout->LinkColumnSizes(columns_containing_buttons);
+  }
+
+  table_layout
+      ->AddPaddingRow(views::TableLayout::kFixedSize,
+                      custom_layout_params_.internal_border_padding)
+      .AddPaddingColumn(views::TableLayout::kFixedSize,
+                        custom_layout_params_.internal_border_padding);
 }
 
 void TabSlider::OnEnabledStateChanged() {

@@ -171,8 +171,7 @@ class ASH_EXPORT SuperCutnessEffect : public VcEffectsDelegate {
     kUglyDog = 0,
     kTeddyBear = 1,
     kZara = 2,
-    kInscrutable = 3,
-    kMaxNumValues = 4,
+    kMaxNumValues = 3,
   };
 
   SuperCutnessEffect();

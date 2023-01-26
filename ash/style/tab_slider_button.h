@@ -12,6 +12,7 @@
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -43,6 +44,9 @@ class ASH_EXPORT TabSliderButton : public views::Button {
 
   // Changes the selected state.
   void SetSelected(bool selected);
+
+  // Returns the recommended color id for the current button state.
+  SkColor GetColorIdOnButtonState();
 
   // Returns the recommended layout parameters for tab slider. Note that the
   // recommended layout parameters are only used as a minimum spacing reference.
@@ -124,6 +128,35 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
 
   // Owned by the view hierarchy.
   views::Label* label_;
+};
+
+// A `TabSliderButton` which shows an icon above a label.
+class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
+ public:
+  METADATA_HEADER(IconLabelSliderButton);
+
+  IconLabelSliderButton(PressedCallback callback,
+                        const gfx::VectorIcon* icon,
+                        const std::u16string& text,
+                        const std::u16string& tooltip_text = u"");
+  IconLabelSliderButton(const IconLabelSliderButton&) = delete;
+  IconLabelSliderButton& operator=(const IconLabelSliderButton&) = delete;
+  ~IconLabelSliderButton() override;
+
+  // TabSliderButton:
+  absl::optional<TabSlider::LayoutParams> GetRecommendedSliderLayout()
+      const override;
+
+ private:
+  // Update label color according to the current button state.
+  void UpdateColors();
+
+  // TabSliderButton:
+  void OnSelectedChanged() override;
+
+  // Owned by the views hierarchy.
+  views::ImageView* const image_view_;
+  views::Label* const label_;
 };
 
 }  // namespace ash

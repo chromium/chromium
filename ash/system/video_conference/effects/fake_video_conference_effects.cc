@@ -134,7 +134,7 @@ void ShaggyFurEffect::AddStateToEffect(VcHostedEffect* effect,
                                        std::u16string label_text) {
   DCHECK(effect);
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/nullptr,
+      /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
       /*label_text=*/label_text,
       /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
       /*button_callback=*/
@@ -161,9 +161,6 @@ SuperCutnessEffect::SuperCutnessEffect() {
   AddStateToEffect(effect.get(),
                    /*state_value=*/static_cast<int>(HowCute::kZara),
                    /*label_text=*/u"Zara");
-  AddStateToEffect(effect.get(),
-                   /*state_value=*/static_cast<int>(HowCute::kInscrutable),
-                   /*label_text=*/u"Inscrutable");
   AddEffect(std::move(effect));
 
   // Initialize click counts.
@@ -200,7 +197,7 @@ void SuperCutnessEffect::AddStateToEffect(VcHostedEffect* effect,
                                           std::u16string label_text) {
   DCHECK(effect);
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/nullptr,
+      /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
       /*label_text=*/label_text,
       /*accessible_name_id=*/IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA,
       /*button_callback=*/

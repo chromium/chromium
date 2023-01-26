@@ -467,8 +467,9 @@ void CameraEffectsController::AddBackgroundBlurStateToEffect(
     int state_value,
     int string_id) {
   DCHECK(effect);
+  // TODO(b/265200087): Replace the icon with the proper icon per effect.
   effect->AddState(std::make_unique<VcEffectState>(
-      /*icon=*/nullptr,
+      /*icon=*/&ash::kPrivacyIndicatorsCameraIcon,
       /*label_text=*/l10n_util::GetStringUTF16(string_id),
       /*accessible_name_id=*/string_id,
       /*button_callback=*/

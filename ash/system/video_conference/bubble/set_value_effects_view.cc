@@ -10,7 +10,11 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/view.h"
 
 namespace ash::video_conference {
 
@@ -23,14 +27,29 @@ class ValueButtonContainer : public views::View {
  public:
   explicit ValueButtonContainer(const VcHostedEffect* effect) {
     SetID(BubbleViewID::kSingleSetValueEffectView);
-    views::FlexLayout* layout =
-        SetLayoutManager(std::make_unique<views::FlexLayout>());
-    layout->SetOrientation(views::LayoutOrientation::kVertical);
-    layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
-    layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical,
+        /*inside_border_insets=*/gfx::Insets::TLBR(8, 0, 0, 0),
+        /*between_child_spacing=*/8));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStretch);
 
     if (!effect->label_text().empty()) {
-      AddChildView(std::make_unique<views::Label>(effect->label_text()));
+      auto* label_container =
+          AddChildView(std::make_unique<views::BoxLayoutView>());
+      label_container->SetOrientation(
+          views::BoxLayout::Orientation::kHorizontal);
+      label_container->SetMainAxisAlignment(
+          views::BoxLayout::MainAxisAlignment::kStart);
+      label_container->SetInsideBorderInsets(gfx::Insets::TLBR(0, 8, 0, 0));
+
+      label_container->AddChildView(
+          std::make_unique<views::Label>(effect->label_text()));
+      auto* spacer_view =
+          label_container->AddChildView(std::make_unique<views::View>());
+      // Let the spacer fill the remaining space, pushing the label to the
+      // start.
+      label_container->SetFlexForView(spacer_view, 1);
     }
 
     // `effect` is expected to provide the current state of the effect, and
@@ -38,12 +57,17 @@ class ValueButtonContainer : public views::View {
     absl::optional<int> current_state = effect->get_state_callback().Run();
     DCHECK(current_state.has_value());
 
-    auto tab_slider = std::make_unique<TabSlider>();
-    for (int i = 0; i < effect->GetNumStates(); ++i) {
+    auto tab_slider = std::make_unique<TabSlider>(
+        /*has_background=*/true, /*has_selector_animation=*/true,
+        /*distribute_space_evenly=*/true);
+    const int num_states = effect->GetNumStates();
+    DCHECK_LE(num_states, 3) << "UX Requests no more than 3 states, otherwise "
+                                "the bubble will need to be wider.";
+    for (int i = 0; i < num_states; ++i) {
       const VcEffectState* state = effect->GetState(/*index=*/i);
       auto* slider_button =
-          tab_slider->AddButton(std::make_unique<LabelSliderButton>(
-              state->button_callback(), state->label_text()));
+          tab_slider->AddButton(std::make_unique<IconLabelSliderButton>(
+              state->button_callback(), state->icon(), state->label_text()));
       slider_button->SetSelected(state->state().value() == current_state);
 
       // See comments above `kSetValueButton*` in `BubbleViewID` for details
