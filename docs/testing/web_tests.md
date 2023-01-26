@@ -336,8 +336,10 @@ are omitted):
   "exclusive_tests": ["a/a1"],
 }
 ```
+
 Suppose there are directories `a/a1`, `a/a2` and `a/a3`, we will run the
 following tests:
+
 |      Suite |   a/a1  |   a/a2  | a/a3 |
 | ---------: | :-----: | :-----: | :--: |
 |       base | skipped | skipped | run  |
@@ -357,16 +359,15 @@ production because the latter would cause loss of test coverage of the productio
 code path.
 
 Consider the following when choosing between virtual test suites and
-flag-specific expectations:
+flag-specific suites:
 
 * The
   [waterfall builders](https://dev.chromium.org/developers/testing/chromium-build-infrastructure/tour-of-the-chromium-buildbot)
   and [try bots](https://dev.chromium.org/developers/testing/try-server-usage)
   will run all virtual test suites in addition to the non-virtual tests.
-  Conversely, a flag-specific expectations file won't automatically cause the
-  bots to test your flag - if you want bot coverage without virtual test suites,
-  you will need to set up a dedicated bot ([example](https://chromium-review.googlesource.com/c/chromium/src/+/1850255))
-  for your flag.
+  Conversely, a flag-specific configuration won't automatically cause the bots
+  to test your flag - if you want bot coverage without virtual test suites, you
+  will need to follow [these instructions](#running-a-new-flag_specific-suite-in-cq_ci).
 
 * Due to the above, virtual test suites incur a performance penalty for the
   commit queue and the continuous build infrastructure. This is exacerbated by
@@ -389,6 +390,32 @@ additional flags will be applied. The fallback order of baselines and
 expectations will be: 1) flag-specific virtual, 2) non-flag-specific virtual,
 3) flag-specific base, 4) non-flag-specific base
 ***
+
+### Running a New Flag-Specific Suite in CQ/CI
+
+Assuming you have already created a `FlagSpecificConfig` entry:
+
+1. File a resource request ([internal
+   docs](https://g3doc.corp.google.com/company/teams/chrome/ops/business/resources/resource-request-program.md?cl=head&polyglot=chrome-browser#i-need-new-resources))
+   for increased capacity in the `chromium.tests` swarming pool and wait for
+   approval.
+1. Define a new dedicated
+   [Buildbot test suite](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/test_suites.pyl;l=1516-1583;drc=0694b605fb77c975a065a3734bdcf3bd81fd8ca4;bpv=0;bpt=0)
+   with `--flag-specific` and possibly other special configurations (e.g., fewer shards).
+1. Add the Buildbot suite to the relevant `*-blink-rel` builder's
+   composition suite first
+   ([example](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/test_suites.pyl;l=5779-5780;drc=0694b605fb77c975a065a3734bdcf3bd81fd8ca4;bpv=0;bpt=0)).
+1. Add the flag-specific step name to the relevant builder in
+   [`builders.json`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/blinkpy/common/config/builders.json;l=127-129;drc=ff938aaff9566b2cc442476a51835e0b90b1c6f6;bpv=0;bpt=0).
+   `rebaseline-cl` and the WPT importer will now create baselines for that suite.
+1. Rebaseline the new suite and add any necessary suppressions under
+   `FlagExpectations/`.
+1. Enable the flag-specific suite for CQ/CI by adding the Buildbot suite to the
+   desired builder.
+   This could be an existing CQ builder like
+   [`linux-rel`](https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/test_suites.pyl;l=5828-5829;drc=0694b605fb77c975a065a3734bdcf3bd81fd8ca4;bpv=0;bpt=0)
+   or a dedicated builder like
+   [`linux-blink-web-tests-force-accessibility-rel`](https://source.chromium.org/chromium/chromium/src/+/main:infra/config/subprojects/chromium/try/tryserver.chromium.accessibility.star;drc=adad4c6d55e69783ba1f16d30f4bc7367e2e626a;bpv=0;bpt=0), which has customized location filters.
 
 ## Tracking Test Failures
 
