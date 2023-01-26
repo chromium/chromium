@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -501,6 +502,25 @@ const FeatureEntry::FeatureParam kNativeFindInPageWithChromeFindBar[] = {
 const FeatureEntry::FeatureVariation kNativeFindInPageVariations[] = {
     {"With Chrome Find Bar", kNativeFindInPageWithChromeFindBar,
      std::size(kNativeFindInPageWithChromeFindBar), nullptr}};
+
+const FeatureEntry::FeatureParam kTabInactivityThresholdOneWeek[] = {
+    {kTabInactivityThresholdParameterName,
+     kTabInactivityThresholdOneWeekParam}};
+const FeatureEntry::FeatureParam kTabInactivityThresholdTwoWeeks[] = {
+    {kTabInactivityThresholdParameterName,
+     kTabInactivityThresholdTwoWeeksParam}};
+const FeatureEntry::FeatureParam kTabInactivityThresholdThreeWeeks[] = {
+    {kTabInactivityThresholdParameterName,
+     kTabInactivityThresholdThreeWeeksParam}};
+
+const FeatureEntry::FeatureVariation kTabInactivityThresholdVariations[] = {
+    {"One week", kTabInactivityThresholdOneWeek,
+     std::size(kTabInactivityThresholdOneWeek), nullptr},
+    {"Two weeks", kTabInactivityThresholdTwoWeeks,
+     std::size(kTabInactivityThresholdTwoWeeks), nullptr},
+    {"Three weeks", kTabInactivityThresholdThreeWeeks,
+     std::size(kTabInactivityThresholdThreeWeeks), nullptr},
+};
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
@@ -1248,7 +1268,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
     {"ios-tabstrip-context-menu", flag_descriptions::kTabStripContextMenuName,
      flag_descriptions::kTabStripContextMenuDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kTabStripContextMenu)}};
+     FEATURE_VALUE_TYPE(kTabStripContextMenu)},
+    {"tab-inactivity-threshold", flag_descriptions::kTabInactivityThresholdName,
+     flag_descriptions::kTabInactivityThresholdDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabInactivityThreshold,
+                                    kTabInactivityThresholdVariations,
+                                    "TabInactivityThreshold")},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

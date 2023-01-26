@@ -882,6 +882,11 @@ const char kTabStripContextMenuName[] = "Tab Strip Context Menu";
 const char kTabStripContextMenuDescription[] =
     "Add context menu to tab strip items.";
 
+const char kTabInactivityThresholdName[] = "Change Tab inactivity threshold";
+const char kTabInactivityThresholdDescription[] =
+    "When enabled, the tabs older than the threshold are considered inactive "
+    "and set aside in the Inactive Tabs section of the TabGrid.";
+
 const char kUseLoadSimulatedRequestForOfflinePageName[] =
     "Use loadSimulatedRequest:responseHTMLString: when displaying offline "
     "pages";

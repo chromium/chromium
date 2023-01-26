@@ -6676,6 +6676,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "tab-inactivity-threshold",
+    "owners": [ "alionadangla", "lpromero", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "tab-outlines-in-low-contrast-themes",
     "owners": [ "dfried" ],
     "expiry_milestone": 82

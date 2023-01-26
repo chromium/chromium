@@ -774,6 +774,11 @@ extern const char kTabGridRecencySortDescription[];
 extern const char kTabStripContextMenuName[];
 extern const char kTabStripContextMenuDescription[];
 
+// Title and description for the flag to determine tab inactivity in the
+// TabGrid.
+extern const char kTabInactivityThresholdName[];
+extern const char kTabInactivityThresholdDescription[];
+
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
 // CRWWKNavigationHandler.
