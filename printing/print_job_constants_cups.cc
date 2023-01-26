@@ -13,12 +13,13 @@ const char kCUPSColorMode[] = "ColorMode";
 const char kCUPSColorModel[] = "ColorModel";
 const char kCUPSPrintoutMode[] = "PrintoutMode";
 const char kCUPSProcessColorModel[] = "ProcessColorModel";
-const char kCUPSSelectColor[] = "SelectColor";
 const char kCUPSBrotherMonoColor[] = "BRMonoColor";
 const char kCUPSBrotherPrintQuality[] = "BRPrintQuality";
+const char kCUPSCanonCNColorMode[] = "CNColorMode";
 const char kCUPSCanonCNIJGrayScale[] = "CNIJGrayScale";
 const char kCUPSEpsonInk[] = "Ink";
 const char kCUPSHpColorMode[] = "HPColorMode";
+const char kCUPSKonicaMinoltaSelectColor[] = "SelectColor";
 const char kCUPSLexmarkBLW[] = "BLW";
 const char kCUPSOkiControl[] = "OKControl";
 const char kCUPSSharpARCMode[] = "ARCMode";
@@ -68,15 +69,16 @@ base::span<const PpdColorSetting> GetKnownPpdColorSettings() {
   static const PpdColorSetting kKnownPpdColorSettings[] = {
       {kCUPSBrotherMonoColor, kMono, kFullColor},            // Brother
       {kCUPSBrotherPrintQuality, kBlack, kColor},            // Brother
+      {kCUPSCanonCNColorMode, kMono, kColor},                // Canon
       {kCUPSCanonCNIJGrayScale, kOne, kZero},                // Canon
       {kCUPSColorMode, kMonochrome, kColor},                 // Samsung
       {kCUPSColorModel, kGray, kColor},                      // Generic
       {kCUPSEpsonInk, kEpsonMono, kEpsonColor},              // Epson
       {kCUPSHpColorMode, kHpGrayscalePrint, kHpColorPrint},  // HP
+      {kCUPSKonicaMinoltaSelectColor, kGrayscale, kColor},   // Konica Minolta
       {kCUPSLexmarkBLW, kLexmarkBLWTrue, kLexmarkBLWFalse},  // Lexmark
       {kCUPSOkiControl, kGray, kAuto},                       // Oki
       {kCUPSPrintoutMode, kNormalGray, kNormal},             // Foomatic
-      {kCUPSSelectColor, kGrayscale, kColor},                // Konica Minolta
       {kCUPSSharpARCMode, kSharpCMBW, kSharpCMColor},        // Sharp
       {kCUPSXeroxXROutputColor, kPrintAsGrayscale, kPrintAsColor},  // Xerox
       {kCUPSXeroxXRXColor, kXeroxBW, kXeroxAutomatic},              // Xerox

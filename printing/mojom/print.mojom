@@ -38,7 +38,19 @@ enum ColorModel {
   kSharpARCModeCMBW,            // Used in Sharp printer PPDs.
   kXeroxXRXColorAutomatic,      // Used in Xerox printer PPDs.
   kXeroxXRXColorBW,             // Used in Xerox printer PPDs.
-  kColorModelLast = kXeroxXRXColorBW
+  kColorModelLast = kXeroxXRXColorBW,  // Obsolete, do not use
+  [MinVersion=1] kCanonCNColorModeColor,       // Used in Canon printer PPDs.
+  [MinVersion=1] kCanonCNColorModeMono,        // Used in Canon printer PPDs.
+  [MinVersion=1] kCanonCNIJGrayScaleOne,       // Used in Canon printer PPDs.
+  [MinVersion=1] kCanonCNIJGrayScaleZero,      // Used in Canon printer PPDs.
+  // Used in Konica Minolta printer PPDs.
+  [MinVersion=1] kKonicaMinoltaSelectColorColor,
+  [MinVersion=1] kKonicaMinoltaSelectColorGrayscale,
+  [MinVersion=1] kOkiOKControlColor,           // Used in Oki printer PPDs.
+  [MinVersion=1] kOkiOKControlGray,            // Used in Oki printer PPDs.
+  // Used in Xerox printer PPDs.
+  [MinVersion=1] kXeroxXROutputColorPrintAsColor,
+  [MinVersion=1] kXeroxXROutputColorPrintAsGrayscale,
 };
 
 // Print job duplex mode values.
