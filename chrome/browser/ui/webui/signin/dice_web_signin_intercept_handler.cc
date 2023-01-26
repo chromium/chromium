@@ -307,9 +307,7 @@ std::string DiceWebSigninInterceptHandler::GetConfirmButtonLabel() {
   }
 
   return l10n_util::GetStringUTF8(
-      base::FeatureList::IsEnabled(kSigninInterceptBubbleV2)
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL_V2
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
 }
 
 std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {

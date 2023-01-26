@@ -91,7 +91,7 @@ const ExpectedStringGenerator common_v2_strings_generator =
               IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2),
           /*confirm_button_label=*/
           l10n_util::GetStringUTF8(
-              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL_V2),
+              IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
           /*cancel_button_label=*/
           l10n_util::GetStringUTF8(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
