@@ -187,9 +187,6 @@ class ChromeMetricsServiceClient
   void OnMemoryDetailCollectionDone();
   void OnHistogramSynchronizationDone();
 
-  // Records metrics about the switches present on the command line.
-  void RecordCommandLineMetrics();
-
   // Registers |this| as an observer for notifications which indicate that a
   // user is performing work. This is useful to allow some features to sleep,
   // until the machine becomes active, such as precluding UMA uploads unless
