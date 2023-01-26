@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
+
 static_library("test_support") {
   testonly = true
 
@@ -34,8 +36,6 @@ static_library("test_support") {
     "request_handler_for_device_state_retrieval.h",
     "request_handler_for_policy.cc",
     "request_handler_for_policy.h",
-    "request_handler_for_psm_auto_enrollment.cc",
-    "request_handler_for_psm_auto_enrollment.h",
     "request_handler_for_register_browser.cc",
     "request_handler_for_register_browser.h",
     "request_handler_for_register_cert_based.cc",
@@ -60,6 +60,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "request_handler_for_psm_auto_enrollment.cc",
+      "request_handler_for_psm_auto_enrollment.h",
+    ]
+  }
+
   public_deps = [ "//net:test_support" ]
   deps = [
     "//base",
@@ -73,6 +80,16 @@ static_library("test_support") {
     "//third_party/private_membership:private_membership_proto",
     "//third_party/re2:re2",
   ]
+
+  if (is_chromeos_ash) {
+    public_deps += [ "//third_party/private_membership" ]
+
+    data = [
+      # TODO(crbug/1393862): Script should create binarypb from textpb.
+      # Required for policy/enrollment/psm/rlwe_test_support.cc
+      "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
+    ]
+  }
 }
 
 if (is_chromeos) {
@@ -113,7 +130,6 @@ source_set("unittests") {
     "request_handler_for_device_initial_enrollment_state_unittest.cc",
     "request_handler_for_device_state_retrieval_unittest.cc",
     "request_handler_for_policy_unittest.cc",
-    "request_handler_for_psm_auto_enrollment_unittest.cc",
     "request_handler_for_register_browser_unittest.cc",
     "request_handler_for_register_cert_based_unittest.cc",
     "request_handler_for_register_device_and_user_unittest.cc",
@@ -125,6 +141,10 @@ source_set("unittests") {
 
   if (is_chromeos) {
     sources += [ "fake_dmserver_unittest.cc" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [ "request_handler_for_psm_auto_enrollment_unittest.cc" ]
   }
 
   deps = [
