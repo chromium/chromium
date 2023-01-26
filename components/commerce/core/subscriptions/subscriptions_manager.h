@@ -93,22 +93,31 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
-  // If a |subscription| should exist but we cannot find it in local
-  // subscriptions, or vice versa, we should sync local subscriptions with the
-  // server. This is mainly used to keep local subscriptions up to date when
-  // users operate on multiple devices.
-  void VerifyIfSubscriptionExists(CommerceSubscription subscription,
-                                  bool should_exist);
-
   // Check if a |subscription| exists in the local database.
   void IsSubscribed(CommerceSubscription subscription,
                     base::OnceCallback<void(bool)> callback);
+
+  // Get all subscriptions that match the provided |type|.
+  void GetAllSubscriptions(
+      SubscriptionType type,
+      base::OnceCallback<void(std::vector<CommerceSubscription>)> callback);
+
+  // On bookmark meta info change, we check its |last_subscription_change_time|
+  // against last time we sync server subscriptions with local cache. If the
+  // latter one is older, the local cache is outdated and we need to fetch the
+  // newest subscriptions from server. This is mainly used to keep local
+  // subscriptions up to date when users operate on multiple devices.
+  void CheckTimestampOnBookmarkChange(
+      int64_t bookmark_subscription_change_time);
 
   void AddObserver(SubscriptionsObserver* observer);
   void RemoveObserver(SubscriptionsObserver* observer);
 
   // For tests only, return last_sync_succeeded_.
   bool GetLastSyncSucceededForTesting();
+
+  // For tests only, return last_sync_time_;
+  int64_t GetLastSyncTimeForTesting();
 
   // For tests only, set has_request_running_.
   void SetHasRequestRunningForTesting(bool has_request_running);
@@ -123,6 +132,9 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
     kSync = 0,
     kSubscribe = 1,
     kUnsubscribe = 2,
+    kLookupOne = 3,
+    kGetAll = 4,
+    kCheckOnBookmarkChange = 5,
   };
 
   struct Request {
@@ -144,9 +156,19 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // the queue.
   void CheckAndProcessRequest();
 
+  // Before adding certain operations (Subscribe, Unsubscribe, LookupOne, and
+  // GetAll) to the pending requests, if the last sync with server failed, we
+  // should re-try the sync first.
+  void SyncIfNeeded();
+
   // On request completion, mark that no request is running and then check next
-  // request. This is chained to the main callback when Request object is built.
+  // request. This must be chained to the end of callback in every Request.
   void OnRequestCompletion();
+
+  // In certain operations (Sync, Subscribe, Unsubscribe, and
+  // CheckOnBookmarkChange), we may sync local cache with server and need to
+  // update |last_sync_succeeded_| and |last_sync_time_|.
+  void UpdateSyncStates(bool sync_succeeded);
 
   void HandleSync();
 
@@ -194,8 +216,22 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
                                          SubscriptionsRequestCallback callback,
                                          SubscriptionsRequestStatus status);
 
-  void HandleCheckLocalSubscriptionResponse(bool should_exisit,
-                                            bool is_subscribed);
+  void HandleLookup(CommerceSubscription subscription,
+                    base::OnceCallback<void(bool)> callback);
+
+  void OnLookupResult(base::OnceCallback<void(bool)> callback,
+                      bool is_subscribed);
+
+  void HandleGetAll(
+      SubscriptionType type,
+      base::OnceCallback<void(std::vector<CommerceSubscription>)> callback);
+
+  void OnGetAllResult(
+      base::OnceCallback<void(std::vector<CommerceSubscription>)> callback,
+      std::unique_ptr<std::vector<CommerceSubscription>> subscriptions);
+
+  void HandleCheckTimestampOnBookmarkChange(
+      int64_t bookmark_subscription_change_time);
 
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
@@ -209,6 +245,8 @@ class SubscriptionsManager : public signin::IdentityManager::Observer {
   // Whether the last sync with server is successful. If not, all (un)subscribe
   // operations will fail immediately.
   bool last_sync_succeeded_ = false;
+  // Last time we successfully synced with server.
+  int64_t last_sync_time_{0L};
 
   // Whether there is any request running.
   bool has_request_running_ = false;

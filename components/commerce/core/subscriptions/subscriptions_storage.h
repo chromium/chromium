@@ -74,6 +74,11 @@ class SubscriptionsStorage {
   virtual void IsSubscribed(CommerceSubscription subscription,
                             base::OnceCallback<void(bool)> callback);
 
+  // Get all subscriptions that match the provided |type|.
+  virtual void LoadAllSubscriptionsForType(
+      SubscriptionType type,
+      GetLocalSubscriptionsCallback callback);
+
  private:
   std::string GetSubscriptionKey(const CommerceSubscription& subscription);
 
@@ -82,9 +87,6 @@ class SubscriptionsStorage {
 
   void DeleteSubscription(CommerceSubscription subscription,
                           base::OnceCallback<void(bool)> callback);
-
-  void LoadAllSubscriptionsForType(SubscriptionType type,
-                                   GetLocalSubscriptionsCallback callback);
 
   CommerceSubscription GetSubscriptionFromProto(
       const SessionProtoStorage<CommerceSubscriptionProto>::KeyAndValue& kv);

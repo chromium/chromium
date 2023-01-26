@@ -149,6 +149,10 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
               (CommerceSubscription subscription,
                base::OnceCallback<void(bool)> callback),
               (override));
+  MOCK_METHOD(void,
+              LoadAllSubscriptionsForType,
+              (SubscriptionType type, GetLocalSubscriptionsCallback callback),
+              (override));
 
   // Mock the local fetch responses for Get* requests. |subscription_id| is used
   // to generate a CommerceSubscription to be returned.
@@ -207,6 +211,15 @@ class MockSubscriptionsStorage : public SubscriptionsStorage {
             [is_subscribed](CommerceSubscription subscription,
                             base::OnceCallback<void(bool)> callback) {
               std::move(callback).Run(is_subscribed);
+            });
+  }
+
+  void MockLoadAllSubscriptionsResponses(std::string subscription_id) {
+    ON_CALL(*this, LoadAllSubscriptionsForType)
+        .WillByDefault(
+            [subscription_id](SubscriptionType type,
+                              GetLocalSubscriptionsCallback callback) {
+              std::move(callback).Run(BuildSubscriptions(subscription_id));
             });
   }
 };
@@ -284,6 +297,7 @@ TEST_F(SubscriptionsManagerTest, TestSyncSucceeded) {
       .Times(1);
 
   CreateManagerAndVerify(true);
+  ASSERT_LT(0L, subscriptions_manager_->GetLastSyncTimeForTesting());
 }
 
 TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToStorage) {
@@ -296,6 +310,7 @@ TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToStorage) {
       .Times(1);
 
   CreateManagerAndVerify(false);
+  ASSERT_EQ(0L, subscriptions_manager_->GetLastSyncTimeForTesting());
 }
 
 TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToServer) {
@@ -306,6 +321,7 @@ TEST_F(SubscriptionsManagerTest, TestSyncFailedDueToServer) {
   EXPECT_CALL(*mock_storage_, UpdateStorage).Times(0);
 
   CreateManagerAndVerify(false);
+  ASSERT_EQ(0L, subscriptions_manager_->GetLastSyncTimeForTesting());
 }
 
 TEST_F(SubscriptionsManagerTest, TestNotSignedIn) {
@@ -340,6 +356,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
   }
 
   CreateManagerAndVerify(true);
+  int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
   base::RunLoop run_loop;
   subscriptions_manager_->Subscribe(
       BuildSubscriptions("333"),
@@ -351,6 +368,8 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe) {
           &run_loop));
   // The callback should eventually quit the run loop.
   run_loop.Run();
+  EXPECT_LT(last_sync_time,
+            subscriptions_manager_->GetLastSyncTimeForTesting());
 
   histogram_tester.ExpectTotalCount(kTrackResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kTrackResultHistogramName, 0, 1);
@@ -377,6 +396,7 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
   }
 
   CreateManagerAndVerify(true);
+  int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
   base::RunLoop run_loop;
   subscriptions_manager_->Subscribe(
       BuildSubscriptions("333"),
@@ -388,6 +408,8 @@ TEST_F(SubscriptionsManagerTest, TestSubscribe_ServerManageFailed) {
           &run_loop));
   // The callback should eventually quit the run loop.
   run_loop.Run();
+  EXPECT_EQ(last_sync_time,
+            subscriptions_manager_->GetLastSyncTimeForTesting());
 
   histogram_tester.ExpectTotalCount(kTrackResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kTrackResultHistogramName, 1, 1);
@@ -626,6 +648,7 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
   }
 
   CreateManagerAndVerify(true);
+  int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
   base::RunLoop run_loop;
   subscriptions_manager_->Unsubscribe(
       BuildSubscriptions("333"),
@@ -636,6 +659,8 @@ TEST_F(SubscriptionsManagerTest, TestUnsubscribe) {
           },
           &run_loop));
   run_loop.Run();
+  EXPECT_LT(last_sync_time,
+            subscriptions_manager_->GetLastSyncTimeForTesting());
 
   histogram_tester.ExpectTotalCount(kUntrackResultHistogramName, 1);
   histogram_tester.ExpectBucketCount(kUntrackResultHistogramName, 0, 1);
@@ -767,71 +792,15 @@ TEST_F(SubscriptionsManagerTest, TestIdentityChange) {
                                                  signin::ConsentLevel::kSync);
 }
 
-TEST_F(SubscriptionsManagerTest, TestVerifyIfSubscriptionExists_Consistent) {
-  SetAccountStatus(true, true);
-  mock_server_proxy_->MockGetResponses("111");
-  mock_storage_->MockUpdateResponses(true);
-  mock_storage_->MockIsSubscribedResponses(true);
-
-  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
-  EXPECT_CALL(*mock_storage_,
-              UpdateStorage(_, _, AreExpectedSubscriptions("111")))
-      .Times(1);
-
-  CreateManagerAndVerify(true);
-  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
-                                                     true);
-}
-
-TEST_F(SubscriptionsManagerTest, TestVerifyIfSubscriptionExists_Inconsistent) {
-  SetAccountStatus(true, true);
-  mock_server_proxy_->MockGetResponses("111");
-  mock_storage_->MockUpdateResponses(true);
-  mock_storage_->MockIsSubscribedResponses(false);
-
-  {
-    InSequence s;
-    // First sync on manager instantiation.
-    EXPECT_CALL(*mock_server_proxy_, Get);
-    EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-    // Second sync since local subscriptions are out of sync.
-    EXPECT_CALL(*mock_server_proxy_, Get);
-    EXPECT_CALL(*mock_storage_,
-                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
-  }
-
-  CreateManagerAndVerify(true);
-  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
-                                                     true);
-}
-
-TEST_F(SubscriptionsManagerTest,
-       TestVerifyIfSubscriptionExists_InconsistentWithRunningRequest) {
-  SetAccountStatus(true, true);
-  mock_server_proxy_->MockGetResponses("111");
-  mock_storage_->MockUpdateResponses(true);
-  mock_storage_->MockIsSubscribedResponses(false);
-
-  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
-  EXPECT_CALL(*mock_storage_,
-              UpdateStorage(_, _, AreExpectedSubscriptions("111")))
-      .Times(1);
-
-  CreateManagerAndVerify(true);
-  MockHasRequestRunning(true);
-  subscriptions_manager_->VerifyIfSubscriptionExists(BuildSubscription("222"),
-                                                     true);
-}
-
 TEST_F(SubscriptionsManagerTest, TestIsSubscribed) {
   SetAccountStatus(true, true);
   mock_server_proxy_->MockGetResponses("111");
   mock_storage_->MockUpdateResponses(true);
   mock_storage_->MockIsSubscribedResponses(true);
 
-  CreateManagerAndVerify(true);
+  EXPECT_CALL(*mock_storage_, IsSubscribed);
 
+  CreateManagerAndVerify(true);
   base::RunLoop run_loop;
   subscriptions_manager_->IsSubscribed(
       BuildSubscription("111"),
@@ -842,6 +811,138 @@ TEST_F(SubscriptionsManagerTest, TestIsSubscribed) {
           },
           &run_loop));
   run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestIsSubscribed_LastSyncFailed) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(false);
+  mock_storage_->MockIsSubscribedResponses(true);
+
+  {
+    InSequence s;
+    // First sync.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Re-try the sync when a look up request comes.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    EXPECT_CALL(*mock_storage_, IsSubscribed);
+  }
+
+  CreateManagerAndVerify(false);
+  base::RunLoop run_loop;
+  subscriptions_manager_->IsSubscribed(
+      BuildSubscription("111"),
+      base::BindOnce(
+          [](base::RunLoop* looper, bool is_subscribed) {
+            EXPECT_TRUE(is_subscribed);
+            looper->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestGetAllSubscriptions) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+  mock_storage_->MockLoadAllSubscriptionsResponses("222");
+
+  EXPECT_CALL(*mock_storage_, LoadAllSubscriptionsForType);
+
+  CreateManagerAndVerify(true);
+  base::RunLoop run_loop;
+  subscriptions_manager_->GetAllSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* looper,
+             std::vector<CommerceSubscription> subscriptions) {
+            AreExpectedSubscriptions("222");
+            looper->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest, TestGetAllSubscriptions_LastSyncFailed) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(false);
+  mock_storage_->MockLoadAllSubscriptionsResponses("222");
+
+  {
+    InSequence s;
+    // First sync.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Re-try the sync when a look up request comes.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    EXPECT_CALL(*mock_storage_, LoadAllSubscriptionsForType);
+  }
+
+  CreateManagerAndVerify(false);
+  base::RunLoop run_loop;
+  subscriptions_manager_->GetAllSubscriptions(
+      SubscriptionType::kPriceTrack,
+      base::BindOnce(
+          [](base::RunLoop* looper,
+             std::vector<CommerceSubscription> subscriptions) {
+            AreExpectedSubscriptions("222");
+            looper->Quit();
+          },
+          &run_loop));
+  run_loop.Run();
+}
+
+TEST_F(SubscriptionsManagerTest,
+       TestCheckTimestampOnBookmarkChange_NeedToSync) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+
+  {
+    InSequence s;
+    // First sync.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+    // Re-try the sync when local cache is outdated.
+    EXPECT_CALL(*mock_server_proxy_, Get);
+    EXPECT_CALL(*mock_storage_,
+                UpdateStorage(_, _, AreExpectedSubscriptions("111")));
+  }
+
+  CreateManagerAndVerify(true);
+  int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
+  subscriptions_manager_->CheckTimestampOnBookmarkChange(
+      subscriptions_manager_->GetLastSyncTimeForTesting() + 100);
+  EXPECT_LT(last_sync_time,
+            subscriptions_manager_->GetLastSyncTimeForTesting());
+}
+
+TEST_F(SubscriptionsManagerTest,
+       TestCheckTimestampOnBookmarkChange_NoNeedToSync) {
+  SetAccountStatus(true, true);
+  mock_server_proxy_->MockGetResponses("111");
+  mock_storage_->MockUpdateResponses(true);
+
+  EXPECT_CALL(*mock_server_proxy_, Get).Times(1);
+  EXPECT_CALL(*mock_storage_,
+              UpdateStorage(_, _, AreExpectedSubscriptions("111")))
+      .Times(1);
+
+  CreateManagerAndVerify(true);
+  int64_t last_sync_time = subscriptions_manager_->GetLastSyncTimeForTesting();
+  subscriptions_manager_->CheckTimestampOnBookmarkChange(
+      subscriptions_manager_->GetLastSyncTimeForTesting() - 100);
+  EXPECT_EQ(last_sync_time,
+            subscriptions_manager_->GetLastSyncTimeForTesting());
 }
 
 TEST_F(SubscriptionsManagerTest, TestSubscriptionsObserver) {

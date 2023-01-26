@@ -17,6 +17,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace commerce {
 
@@ -106,24 +107,11 @@ void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(
 void ShoppingBookmarkModelObserver::BookmarkMetaInfoChanged(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* node) {
-  std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-      power_bookmarks::GetNodePowerBookmarkMeta(model, node);
-
-  // If the changed bookmark is a shopping item, we check its tracking status
-  // with local subscriptions and if inconsistent, we need to sync local
-  // subscriptions with the server. This is mainly used to keep local
-  // subscriptions up to date when users operate on multiple devices.
-  if (meta && meta->has_shopping_specifics() && subscriptions_manager_) {
-    power_bookmarks::ShoppingSpecifics* specifics =
-        meta->mutable_shopping_specifics();
-    uint64_t cluster_id = specifics->product_cluster_id();
-
-    CommerceSubscription sub(
-        SubscriptionType::kPriceTrack, IdentifierType::kProductClusterId,
-        base::NumberToString(cluster_id), ManagementType::kUserManaged);
-
-    subscriptions_manager_->VerifyIfSubscriptionExists(
-        std::move(sub), specifics->is_price_tracked());
+  absl::optional<int64_t> last_subscription_change_time =
+      GetBookmarkLastSubscriptionChangeTime(model, node);
+  if (last_subscription_change_time.has_value() && subscriptions_manager_) {
+    subscriptions_manager_->CheckTimestampOnBookmarkChange(
+        last_subscription_change_time.value());
   }
 }
 
