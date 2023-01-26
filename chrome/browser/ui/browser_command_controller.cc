@@ -82,6 +82,10 @@
 #include "ui/accessibility/accessibility_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/wm/features.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #endif
@@ -385,8 +389,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
   // CommandUpdaterDelegate and CommandUpdater declare this function so we
   // choose to not implement CommandUpdaterDelegate inside this class and
   // therefore command_updater_ doesn't have the delegate set).
-  if (!SupportsCommand(id) || !IsCommandEnabled(id))
+  if (!SupportsCommand(id) || !IsCommandEnabled(id)) {
     return false;
+  }
 
   // No commands are enabled if there is not yet any selected tab.
   // TODO(pkasting): It seems like we should not need this, because either
@@ -523,6 +528,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_NAME_WINDOW:
       PromptToNameWindow(browser_);
       break;
+
+#if BUILDFLAG(IS_CHROMEOS)
+    case IDC_TOGGLE_MULTITASK_MENU:
+      ToggleMultitaskMenu(browser_);
+      break;
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case IDC_VISIT_DESKTOP_OF_LRU_USER_2:
@@ -1067,6 +1078,11 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_DEBUG_FRAME_TOGGLE, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
+#if BUILDFLAG(IS_CHROMEOS)
+  command_updater_.UpdateCommandEnabled(
+      IDC_TOGGLE_MULTITASK_MENU,
+      chromeos::wm::features::IsFloatWindowEnabled());
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_updater_.UpdateCommandEnabled(IDC_MINIMIZE_WINDOW, true);
   // The VisitDesktop command is only supported for up to 5 logged in users

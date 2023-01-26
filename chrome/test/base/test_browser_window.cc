@@ -293,6 +293,9 @@ TestBrowserWindow::ShowSendTabToSelfPromoBubble(content::WebContents* contents,
 views::Button* TestBrowserWindow::GetSharingHubIconButton() {
   return nullptr;
 }
+void TestBrowserWindow::ToggleMultitaskMenu() const {
+  return;
+}
 #else
 sharing_hub::SharingHubBubbleView* TestBrowserWindow::ShowSharingHubBubble(
     share::ShareAttempt attempt) {

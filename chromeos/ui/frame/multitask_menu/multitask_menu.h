@@ -42,6 +42,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
   // Returns true if the bubble widget is created and shown.
   bool IsBubbleShown() const;
 
+  // Toggles the menu based on its state, i.e. shows the menu if it wasn't
+  // already shown, hides the menu if it was shown.
+  void ToggleBubble();
+
   // Displays the MultitaskMenu.
   void ShowBubble();
 
@@ -62,6 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenu
 
  private:
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
+
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       bubble_widget_observer_{this};
 

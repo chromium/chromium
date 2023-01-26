@@ -25,6 +25,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
@@ -554,12 +555,10 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
   auto* frame_view = GetFrameViewChromeOS(browser_view);
   if (ui::TouchUiController::Get()->touch_ui()) {
     EXPECT_TRUE(browser_view->webui_tab_strip());
-    EXPECT_FALSE(
-        frame_view->caption_button_container_for_testing()->GetVisible());
+    EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
   } else {
     EXPECT_FALSE(browser_view->webui_tab_strip());
-    EXPECT_TRUE(
-        frame_view->caption_button_container_for_testing()->GetVisible());
+    EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
   }
 }
 
@@ -1356,6 +1355,31 @@ IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
   EXPECT_TRUE(frame_view2->caption_button_container_->GetVisible());
   EXPECT_FALSE(immersive_controller->IsEnabled());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests that, with the float flag enabled, the accelerator toggles the
+// multitask menu on a browser window.
+IN_PROC_BROWSER_TEST_P(FloatBrowserNonClientFrameViewChromeOSTest,
+                       ToggleMultitaskMenu) {
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_TOGGLE_MULTITASK_MENU));
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  BrowserNonClientFrameViewChromeOS* frame_view =
+      GetFrameViewChromeOS(browser_view);
+  auto* size_button = static_cast<chromeos::FrameSizeButton*>(
+      frame_view->caption_button_container()->size_button());
+
+  // Pressing accelerator once should show the multitask menu.
+  ui::test::EventGenerator event_generator(
+      browser_view->GetWidget()->GetNativeWindow()->GetRootWindow());
+  event_generator.PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(size_button->IsMultitaskMenuShown());
+
+  // Pressing accelerator a second time should close the menu.
+  event_generator.PressAndReleaseKey(ui::VKEY_Z, ui::EF_COMMAND_DOWN);
+  ASSERT_FALSE(size_button->IsMultitaskMenuShown());
+}
+#endif
 
 namespace {
 

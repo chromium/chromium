@@ -963,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   int frame_view_height = frame_view_cros->GetMinimumSize().height();
   int caption_container_height =
-      frame_view_cros->caption_button_container_for_testing()->size().height();
+      frame_view_cros->caption_button_container()->size().height();
   int client_view_height =
       frame_view_cros->frame()->client_view()->GetMinimumSize().height();
 

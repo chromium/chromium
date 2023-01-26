@@ -183,6 +183,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/intent_helper/supported_links_infobar_delegate.h"
+#include "chromeos/ui/wm/features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
@@ -1845,6 +1846,13 @@ void ToggleCaretBrowsing(Browser* browser) {
 void PromptToNameWindow(Browser* browser) {
   chrome::ShowWindowNamePrompt(browser);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void ToggleMultitaskMenu(Browser* browser) {
+  DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
+  browser->window()->ToggleMultitaskMenu();
+}
+#endif
 
 void ToggleCommander(Browser* browser) {
   commander::Commander::Get()->ToggleForBrowser(browser);

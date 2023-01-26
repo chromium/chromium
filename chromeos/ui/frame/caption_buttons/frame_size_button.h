@@ -44,11 +44,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameSizeButton
   ~FrameSizeButton() override;
 
   // Returns true if the multitask menu is created and shown.
+  // TODO(sophiewen): Remove this since it's currently only used for testing.
   bool IsMultitaskMenuShown() const;
 
-  // Note that `ShowMultitaskMenu()` recreates the menu if it is already shown,
-  // while `ToggleMultitaskMenu()` will hide it.
+  // Shows the MultitaskMenu, run when `this` is hovered or pressed. Recreates
+  // the menu if it is already shown.
   void ShowMultitaskMenu(MultitaskMenuEntryType entry_type);
+
+  // Toggles the MultitaskMenu, called only by accelerators. Hides the menu
+  // if it is already shown.
   void ToggleMultitaskMenu();
 
   // Clears menu references if it is closed. See `MultitaskMenu`.

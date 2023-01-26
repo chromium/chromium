@@ -103,6 +103,18 @@ bool MultitaskMenu::IsBubbleShown() const {
   return bubble_widget_ && !bubble_widget_->IsClosed();
 }
 
+void MultitaskMenu::ToggleBubble() {
+  if (!bubble_widget_) {
+    ShowBubble();
+  } else {
+    // If the menu is toggle closed by the accelerator on a browser window, the
+    // menu will get closed by deactivation and `HideBubble()` will do nothing
+    // since `IsClosed()` would be true. For non-browser Ash windows and
+    // non-accelerator close actions, `HideBubble()` will call `CloseNow()`.
+    HideBubble();
+  }
+}
+
 void MultitaskMenu::ShowBubble() {
   DCHECK(parent_window());
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(this);

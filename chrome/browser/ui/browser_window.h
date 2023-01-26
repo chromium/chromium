@@ -439,6 +439,9 @@ class BrowserWindow : public ui::BaseWindow {
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns the PageActionIconView for the Sharing Hub.
   virtual views::Button* GetSharingHubIconButton() = 0;
+
+  // Toggles the multitask menu on the browser frame size button.
+  virtual void ToggleMultitaskMenu() const = 0;
 #else
   // Shows the Sharing Hub bubble. This must only be called as a direct result
   // of user action.

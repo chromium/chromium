@@ -119,8 +119,7 @@ class BrowserNonClientFrameViewChromeOS
   void OnImmersiveRevealEnded() override;
   void OnImmersiveFullscreenExited() override;
 
-  chromeos::FrameCaptionButtonContainerView*
-  caption_button_container_for_testing() {
+  chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
 

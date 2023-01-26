@@ -251,16 +251,14 @@ void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
 void FrameSizeButton::ToggleMultitaskMenu() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   DCHECK(!chromeos::TabletState::Get()->InTabletMode());
-  if (!IsMultitaskMenuShown()) {
+  if (!multitask_menu_) {
     RecordMultitaskMenuEntryType(MultitaskMenuEntryType::kAccel);
     multitask_menu_ = new MultitaskMenu(
         /*anchor=*/this, GetWidget(),
         base::BindOnce(&FrameSizeButton::OnMultitaskMenuClosed,
                        weak_factory_.GetWeakPtr()));
-    multitask_menu_->ShowBubble();
-  } else {
-    multitask_menu_->HideBubble();
   }
+  multitask_menu_->ToggleBubble();
 }
 
 void FrameSizeButton::OnMultitaskMenuClosed() {
