@@ -122,12 +122,11 @@ NSString* gSearchTerm;
 }
 
 - (void)detachFromWebState {
+  _findInPageManager->SetDelegate(nullptr);
+  _findInPageManager = nullptr;
+  _findInPageDelegateBridge.reset();
   // Remove Find in Page manager from web state.
   web::FindInPageManager::RemoveFromWebState(_webState);
-
-  _findInPageManager->SetDelegate(nullptr);
-  _findInPageDelegateBridge.reset();
-  _findInPageManager = nullptr;
   _webState = nullptr;
 }
 
