@@ -132,6 +132,19 @@ message CustomInput {
     // Additional arg:
     //   `name`: The name of the field to be looked up in input context.
     FILL_FROM_INPUT_CONTEXT = 4;
+
+    // Output is a tensor of length 10 consisting of float values denoting
+    // various devices count by type with different form factor and os type.
+    // See `SyncDeviceInfoObserver` for description of each value.
+    // Output type: float
+    // Output length: 10
+    // Additional arg:
+    //   `active_days_limit`: Number of days after which the device is
+    //   considered not active after last sync.
+    //   `wait_for_device_info_in_seconds`: Number of seconds to wait for sync
+    //   device info before timeout. If 0, then does not wait for sync and times
+    //   out immediately if device info is not available.
+    FILL_SYNC_DEVICE_INFO = 5;
   }
 
   // The fill type of the custom input.

@@ -48,6 +48,21 @@ UkmDataManager* GetUkmDataManager() {
   return instance.get();
 }
 
+std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
+    std::vector<std::unique_ptr<Config>>& configs) {
+  auto input_delegate_holder =
+      std::make_unique<processing::InputDelegateHolder>();
+  for (auto& config : configs) {
+    for (auto& id : config->input_delegates) {
+      input_delegate_holder->SetDelegate(id.first, std::move(id.second));
+    }
+  }
+
+  // Add shareable input delegates here.
+
+  return input_delegate_holder;
+}
+
 // Observes existance of Incognito tabs in the application.
 class IncognitoObserver : public OTRWebStateObserver::ObserverClient,
                           public base::SupportsUserData::Data {
@@ -116,6 +131,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state)
           ->GetDeviceInfoTracker();
+  params->input_delegate_holder = SetUpInputDelegates(params->configs);
   auto service =
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
