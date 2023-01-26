@@ -35,8 +35,12 @@ void WallpaperColorsHandlerImpl::SetWallpaperColorsObserver(
 
 void WallpaperColorsHandlerImpl::OnWallpaperColorsChanged() {
   DCHECK(observer_remote_.is_bound());
-  observer_remote_->OnWallpaperColorsChanged(
-      Shell::Get()->wallpaper_controller()->calculated_colors());
+  const auto& calculated_colors =
+      Shell::Get()->wallpaper_controller()->calculated_colors();
+  if (!calculated_colors.has_value()) {
+    return;
+  }
+  observer_remote_->OnWallpaperColorsChanged(*calculated_colors);
 }
 
 }  // namespace ash

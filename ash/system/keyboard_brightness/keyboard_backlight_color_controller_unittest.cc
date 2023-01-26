@@ -132,8 +132,10 @@ TEST_F(KeyboardBacklightColorControllerTest, SetBacklightColorAfterSignin) {
             controller_->GetBacklightColor(account_id_1));
   // Expect the Wallpaper color to be set to the default as wallpaper color is
   // not valid in this state.
+  // Backlight should be set twice. Once on login screen and then again once
+  // signed in.
   histogram_tester().ExpectBucketCount(
-      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 1);
+      "Ash.Personalization.KeyboardBacklight.WallpaperColor.Valid", false, 2);
   EXPECT_EQ(kDefaultColor, displayed_color());
 
   controller_->SetBacklightColor(

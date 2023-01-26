@@ -1099,7 +1099,7 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   // There should only be one color change event if we interrupted the first
   // attempt.
   EXPECT_EQ(observer.colors_changed_count(), 1);
-  EXPECT_EQ(controller_->calculated_colors().k_mean_color, SK_ColorBLUE);
+  EXPECT_EQ(controller_->calculated_colors()->k_mean_color, SK_ColorBLUE);
   EXPECT_FALSE(pref_manager_->GetCachedKMeanColor("old"));
   EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
 }
@@ -1199,6 +1199,26 @@ TEST_F(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
       controller_->GetProminentColor({color_utils::LumaRange::DARK,
                                       color_utils::SaturationRange::VIBRANT}));
   EXPECT_EQ(2, observer.colors_changed_count());
+}
+
+TEST_F(WallpaperControllerTest,
+       OnWallpaperColorsChangedAlwaysCalledOnFirstUpdate) {
+  TestWallpaperControllerObserver observer(controller_);
+  controller_->ShowUserWallpaper(kAccountId1,
+                                 user_manager::UserType::USER_TYPE_REGULAR);
+  task_environment()->RunUntilIdle();
+
+  // Even though the wallpaper color is invalid, observers should still be
+  // notified for the first update.
+  EXPECT_EQ(observer.colors_changed_count(), 1);
+
+  controller_->ShowUserWallpaper(kAccountId2,
+                                 user_manager::UserType::USER_TYPE_REGULAR);
+  task_environment()->RunUntilIdle();
+
+  // Observers should not be notified after the first update if the colors do
+  // not change.
+  EXPECT_EQ(observer.colors_changed_count(), 1);
 }
 
 TEST_F(WallpaperControllerTest,

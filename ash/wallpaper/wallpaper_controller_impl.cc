@@ -581,9 +581,6 @@ WallpaperControllerImpl::WallpaperControllerImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
   DCHECK(!color_profiles_.empty());
-  calculated_colors_ = WallpaperCalculatedColors(
-      std::vector<SkColor>(color_profiles_.size(), kInvalidWallpaperColor),
-      kInvalidWallpaperColor);
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
   Shell::Get()->AddShellObserver(this);
   theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
@@ -629,14 +626,19 @@ base::FilePath WallpaperControllerImpl::GetCustomWallpaperDir(
 
 SkColor WallpaperControllerImpl::GetProminentColor(
     ColorProfile color_profile) const {
+  if (!calculated_colors_) {
+    return kInvalidWallpaperColor;
+  }
+
   ColorProfileType type = GetColorProfileType(color_profile);
   size_t index = static_cast<size_t>(type);
-  DCHECK_LT(index, calculated_colors_.prominent_colors.size());
-  return calculated_colors_.prominent_colors[index];
+  DCHECK_LT(index, calculated_colors_->prominent_colors.size());
+  return calculated_colors_->prominent_colors[index];
 }
 
 SkColor WallpaperControllerImpl::GetKMeanColor() const {
-  return calculated_colors_.k_mean_color;
+  return calculated_colors_ ? calculated_colors_->k_mean_color
+                            : kInvalidWallpaperColor;
 }
 
 gfx::ImageSkia WallpaperControllerImpl::GetWallpaper() const {
@@ -2584,6 +2586,8 @@ void WallpaperControllerImpl::ReloadWallpaper(bool clear_cache) {
 
 void WallpaperControllerImpl::SetCalculatedColors(
     const WallpaperCalculatedColors& calculated_colors) {
+  // Observers should be notified if this is the first call to
+  // `SetCalculatedColors` no matter what.
   if (calculated_colors == calculated_colors_) {
     return;
   }
