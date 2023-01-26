@@ -208,7 +208,7 @@ Ranges<base::TimeDelta> ChunkDemuxerStream::GetBufferedRanges(
   // This can be done by intersecting the stream's range with the valid time
   // range.
   Ranges<base::TimeDelta> valid_time_range;
-  valid_time_range.Add(range.start(0), duration);
+  valid_time_range.Add(range.start(0), range.start(0) + duration);
   return range.IntersectionWith(valid_time_range);
 }
 
