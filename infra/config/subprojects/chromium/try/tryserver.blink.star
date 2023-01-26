@@ -29,7 +29,6 @@ def blink_mac_builder(*, name, **kwargs):
     kwargs.setdefault("branch_selector", branches.STANDARD_MILESTONE)
     kwargs.setdefault("builderless", True)
     kwargs.setdefault("cores", None)
-    kwargs.setdefault("goma_backend", goma.backend.RBE_PROD)
     kwargs.setdefault("os", os.MAC_ANY)
     kwargs.setdefault("ssd", True)
     return try_.builder(
@@ -91,7 +90,6 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_ANY,
-    goma_backend = None,
 )
 
 try_.builder(
@@ -175,7 +173,6 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
-    goma_backend = None,
 )
 
 blink_mac_builder(
@@ -218,7 +215,6 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = True,
     ),
-    goma_backend = None,
 )
 
 blink_mac_builder(
@@ -239,7 +235,6 @@ blink_mac_builder(
     try_settings = builder_config.try_settings(
         retry_failed_shards = False,
     ),
-    goma_backend = None,
 )
 
 blink_mac_builder(

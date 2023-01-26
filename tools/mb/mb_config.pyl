@@ -902,13 +902,13 @@
       # cause them to produce different baselines than the release
       # waterfall bots, and run_web_tests.py can't handle that (by design).
       'linux-blink-rel': 'release_bot_blink_minimal_symbols_reclient',
-      'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
-      'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
+      'mac10.13-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
+      'mac10.14-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac10.15-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl',
+      'mac11.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
       'mac11.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
       'mac12.0-blink-rel': 'release_bot_blink_minimal_symbols_no_nacl_reclient',
-      'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols',
+      'mac12.0.arm64-blink-rel': 'release_bot_blink_arm64_minimal_symbols_reclient',
       'win10.20h2-blink-rel': 'release_bot_blink_x86_minimal_symbols_reclient',
       'win11-blink-rel': 'release_bot_blink_x64_minimal_symbols_reclient',
     },
@@ -978,7 +978,7 @@
       'android-official': 'android_official_optimize_reclient_trybot',
       'fuchsia-official': 'fuchsia_official_optimize_reclient_trybot',
       'linux-official': 'official_optimize_reclient_trybot',
-      'mac-official': 'official_optimize_goma_trybot',
+      'mac-official': 'official_optimize_reclient_trybot',
       'win-official': 'official_optimize_reclient_trybot',
       'win32-official': 'x86_official_optimize_reclient_trybot',
     },
@@ -1277,12 +1277,12 @@
       'ios15-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios16-beta-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
       'ios16-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_reclient',
-      'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot',
-      'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'mac-arm64-on-arm64-rel': 'mac_arm64_release_trybot_reclient',
+      'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl_reclient',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-fieldtrial-tester': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
-      'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
+      'mac-osxbeta-rel': 'gpu_tests_debug_trybot_reclient',
       'mac-perfetto-rel': 'perfetto_release_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac-rel-inverse-fyi': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage_reclient',
@@ -1294,14 +1294,14 @@
       'mac12-tests': 'release_trybot',
       'mac12-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'mac_chromium_10.13_rel_ng': 'release_trybot',
-      'mac_chromium_10.14_rel_ng': 'release_trybot',
-      'mac_chromium_10.15_rel_ng': 'release_trybot_no_nacl',
+      'mac_chromium_10.14_rel_ng': 'release_trybot_reclient',
+      'mac_chromium_10.15_rel_ng': 'release_trybot_no_nacl_reclient',
       'mac_chromium_11.0_rel_ng': 'release_trybot_reclient',
-      'mac_chromium_archive_rel_ng': 'release_bot_mac_strip_minimal_symbols',
+      'mac_chromium_archive_rel_ng': 'release_bot_mac_strip_minimal_symbols_reclient',
       'mac_chromium_asan_rel_ng': 'asan_dcheck_disable_nacl_release_bot_reclient',
       'mac_chromium_compile_dbg_ng': 'gpu_tests_debug_bot',
-      'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot',
-      'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
+      'mac_chromium_compile_rel_ng': 'gpu_tests_release_trybot_reclient',
+      'mac_chromium_dbg_ng': 'gpu_tests_debug_bot_reclient',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'mac_upload_clang': 'release_bot',
       'mac_upload_clang_arm': 'release_bot',
@@ -2707,8 +2707,8 @@
       'gpu_tests', 'debug_bot_reclient', 'x86', 'no_symbols'
     ],
 
-    'gpu_tests_debug_trybot': [
-      'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'goma'
+    'gpu_tests_debug_trybot_reclient': [
+      'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'reclient'
     ],
 
     'gpu_tests_ozone_linux_non_x11_release_trybot_reclient': [
@@ -3187,8 +3187,8 @@
       'release_bot_reclient', 'arm64',
     ],
 
-    'mac_arm64_release_trybot': [
-      'release_trybot', 'arm64',
+    'mac_arm64_release_trybot_reclient': [
+      'release_trybot_reclient', 'arm64',
     ],
 
     'mac_clang_tot_official': [
@@ -3338,10 +3338,6 @@
       'official', 'goma', 'x86', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
-    'official_optimize_goma_trybot': [
-      'official_optimize_goma_trybot',
-    ],
-
     'official_optimize_minimal_symbols_reclient': [
       'official_optimize_reclient', 'minimal_symbols',
     ],
@@ -3473,18 +3469,8 @@
       'release_bot_blink_reclient', 'dcheck_always_on',
     ],
 
-    'release_bot_blink_arm64_minimal_symbols': [
-      'release_bot_blink', 'arm64', 'minimal_symbols',
-    ],
-
     'release_bot_blink_arm64_minimal_symbols_reclient': [
       'release_bot_blink_reclient', 'arm64', 'minimal_symbols',
-    ],
-
-    'release_bot_blink_minimal_symbols_no_nacl': [
-      'release_bot_blink',
-      'minimal_symbols',
-      'disable_nacl',
     ],
 
     'release_bot_blink_minimal_symbols_no_nacl_reclient': [
@@ -3689,8 +3675,8 @@
       'release_trybot_minimal_symbols', 'tsan'
     ],
 
-    'release_trybot_no_nacl': [
-      'release_trybot', 'disable_nacl',
+    'release_trybot_no_nacl_reclient': [
+      'release_trybot_reclient', 'disable_nacl',
     ],
 
     'release_trybot_reclient': [
@@ -4528,14 +4514,6 @@
 
     'official_optimize': {
       'gn_args': 'is_official_build=true',
-    },
-
-    'official_optimize_goma': {
-      'mixins': ['official_optimize', 'goma'],
-    },
-
-    'official_optimize_goma_trybot': {
-      'mixins': ['official_optimize_goma', 'minimal_symbols', 'dcheck_always_on'],
     },
 
     'official_optimize_reclient': {
