@@ -599,13 +599,15 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   EXPECT_EQ(db->SetBucketLastAccessTime(bucket_id1, base::Time::Now()),
             QuotaError::kNone);
 
-  BucketLocator bucketLocator =
+  BucketLocator bucket_locator =
       BucketLocator(bucket_id3, storage_key3,
                     static_cast<blink::mojom::StorageType>(bucket3->type),
                     bucket3->name == kDefaultBucketName);
 
   // Delete storage_key/type last access time information.
-  EXPECT_EQ(db->DeleteBucketData(bucketLocator), QuotaError::kNone);
+  auto deleted = db->DeleteBucketData(bucket_locator);
+  ASSERT_TRUE(deleted.ok());
+  EXPECT_EQ(bucket_id3, BucketId::FromUnsafeValue(deleted.value()->bucket_id));
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
@@ -686,7 +688,8 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(storage_key, kTemp, now),
             QuotaError::kNone);
 
-  QuotaErrorOr<mojom::BucketTableEntryPtr> info = db->GetBucketInfo(bucket->id);
+  QuotaErrorOr<mojom::BucketTableEntryPtr> info =
+      db->GetBucketInfoForTest(bucket->id);
   EXPECT_TRUE(info.ok());
   EXPECT_EQ(now, info.value()->last_accessed);
   EXPECT_EQ(1, info.value()->use_count);
@@ -861,7 +864,7 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
   ASSERT_TRUE(bucket_result.ok());
 
   QuotaErrorOr<mojom::BucketTableEntryPtr> info =
-      db->GetBucketInfo(bucket_result->id);
+      db->GetBucketInfoForTest(bucket_result->id);
   EXPECT_TRUE(info.ok());
   EXPECT_EQ(0, info.value()->use_count);
 
@@ -869,14 +872,14 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
                 StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
                 base::Time::FromDoubleT(1.0)),
             QuotaError::kNone);
-  info = db->GetBucketInfo(bucket_result->id);
+  info = db->GetBucketInfoForTest(bucket_result->id);
   EXPECT_TRUE(info.ok());
   EXPECT_EQ(1, info.value()->use_count);
 
   EXPECT_EQ(db->RegisterInitialStorageKeyInfo(storage_keys_by_type),
             QuotaError::kNone);
 
-  info = db->GetBucketInfo(bucket_result->id);
+  info = db->GetBucketInfoForTest(bucket_result->id);
   EXPECT_TRUE(info.ok());
   EXPECT_EQ(1, info.value()->use_count);
 }
@@ -915,39 +918,6 @@ TEST_P(QuotaDatabaseTest, DumpBucketTable) {
   EXPECT_TRUE(verifier.table.empty());
 }
 
-TEST_P(QuotaDatabaseTest, GetBucketInfo) {
-  using Entry = mojom::BucketTableEntryPtr;
-  StorageKey storage_key = StorageKey::CreateFromStringForTesting("http://go/");
-  BucketId bucket_id = BucketId(123);
-  storage::mojom::StorageType type = kStorageTemp;
-
-  Entry kTableEntries[] = {mojom::BucketTableEntry::New(
-      bucket_id.value(), storage_key.Serialize(), type, "test_bucket", -1, 100,
-      base::Time(), base::Time())};
-
-  auto db = CreateDatabase(use_in_memory_db());
-  EXPECT_TRUE(EnsureOpened(db.get()));
-  AssignBucketTable(db.get(), kTableEntries);
-
-  {
-    QuotaErrorOr<Entry> entry = db->GetBucketInfo(bucket_id);
-    EXPECT_TRUE(entry.ok());
-    EXPECT_EQ(bucket_id.value(), entry.value()->bucket_id);
-    EXPECT_EQ(type, entry.value()->type);
-    EXPECT_EQ(storage_key.Serialize(), entry.value()->storage_key);
-    EXPECT_EQ(kTableEntries[0]->name, entry.value()->name);
-    EXPECT_EQ(kTableEntries[0]->use_count, entry.value()->use_count);
-    EXPECT_EQ(kTableEntries[0]->last_accessed, entry.value()->last_accessed);
-    EXPECT_EQ(kTableEntries[0]->last_modified, entry.value()->last_modified);
-  }
-
-  {
-    // BucketId 456 is not in the database.
-    QuotaErrorOr<Entry> entry = db->GetBucketInfo(BucketId(456));
-    EXPECT_FALSE(entry.ok());
-  }
-}
-
 TEST_F(QuotaDatabaseTest, DeleteBucketData) {
   StorageKey storage_key =
       StorageKey::CreateFromStringForTesting("http://google/");
@@ -981,7 +951,7 @@ TEST_F(QuotaDatabaseTest, DeleteBucketData) {
     const base::FilePath bucket_path = CreateBucketPath(ProfilePath(), bucket);
     ASSERT_TRUE(base::PathExists(bucket_path));
 
-    ASSERT_EQ(db->DeleteBucketData(bucket), QuotaError::kNone);
+    ASSERT_TRUE(db->DeleteBucketData(bucket).ok());
     ASSERT_FALSE(base::PathExists(bucket_path));
   }
 }

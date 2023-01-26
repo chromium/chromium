@@ -84,8 +84,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
                                  GetBucketCallback callback) = 0;
 
   // Called to evict a bucket.
-  virtual void EvictBucketData(const BucketLocator& bucket,
-                               StatusCallback callback) = 0;
+  virtual void EvictBucketData(
+      const BucketLocator& bucket,
+      base::OnceCallback<void(QuotaError)> callback) = 0;
 
  protected:
   virtual ~QuotaEvictionHandler() = default;
@@ -333,6 +334,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // `callback` is always called. If this QuotaManager gets destroyed during
   // deletion, `callback` may be called with a kErrorAbort status.
+  // TODO(estade): Consider removing the status code from `callback` as it's
+  // unused outside of tests.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       StatusCallback callback);
@@ -378,7 +381,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void GetEvictionBucket(blink::mojom::StorageType type,
                          GetBucketCallback callback) override;
   void EvictBucketData(const BucketLocator& bucket,
-                       StatusCallback callback) override;
+                       base::OnceCallback<void(QuotaError)> callback) override;
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
   // Called by UI and internal modules.
@@ -524,7 +527,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     EvictionContext();
     ~EvictionContext();
     BucketLocator evicted_bucket;
-    StatusCallback evict_bucket_data_callback;
+    base::OnceCallback<void(QuotaError)> evict_bucket_data_callback;
   };
 
   // Lazily called on the IO thread when the first quota manager API is called.
@@ -577,9 +580,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Runs BucketDataDeleter which calls QuotaClients to clear data for the
   // bucket. Once the task is complete, calls the QuotaDatabase to delete the
   // bucket from the bucket table.
-  void DeleteBucketDataInternal(const BucketLocator& bucket,
-                                QuotaClientTypes quota_client_types,
-                                StatusCallback callback);
+  void DeleteBucketDataInternal(
+      const BucketLocator& bucket,
+      QuotaClientTypes quota_client_types,
+      base::OnceCallback<void(QuotaErrorOr<mojom::BucketTableEntryPtr>)>
+          callback);
 
   // Removes the BucketSetDataDeleter that completed its work.
   //
@@ -594,10 +599,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   //
   // This method is static because it must call `delete_bucket_data_callback`
   // even if the QuotaManagerImpl was destroyed.
-  static void DidDeleteBucketData(base::WeakPtr<QuotaManagerImpl> quota_manager,
-                                  StatusCallback delete_bucket_data_callback,
-                                  BucketDataDeleter* deleter,
-                                  blink::mojom::QuotaStatusCode status_code);
+  static void DidDeleteBucketData(
+      base::WeakPtr<QuotaManagerImpl> quota_manager,
+      base::OnceCallback<void(QuotaErrorOr<mojom::BucketTableEntryPtr>)>
+          callback,
+      BucketDataDeleter* deleter,
+      QuotaErrorOr<mojom::BucketTableEntryPtr> result);
 
   // Called after bucket data has been deleted from clients as well as the
   // database due to bucket expiration. This will recreate the bucket in the
@@ -606,16 +613,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       const BucketInitParams& params,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback,
       BucketInfo bucket_info,
-      blink::mojom::QuotaStatusCode status_code);
+      QuotaErrorOr<mojom::BucketTableEntryPtr> result);
 
   // Methods for eviction logic.
   void StartEviction();
-  void DeleteBucketFromDatabase(const BucketLocator& bucket,
-                                bool commit_immediately,
-                                base::OnceCallback<void(QuotaError)> callback);
+  void DeleteBucketFromDatabase(
+      const BucketLocator& bucket,
+      bool commit_immediately,
+      base::OnceCallback<void(QuotaErrorOr<mojom::BucketTableEntryPtr>)>
+          callback);
 
-  void DidBucketDataEvicted(mojom::BucketTableEntryPtr entry,
-                            blink::mojom::QuotaStatusCode status);
+  void DidEvictBucketData(QuotaErrorOr<mojom::BucketTableEntryPtr> entry);
 
   void ReportHistogram();
   void DidGetTemporaryGlobalUsageForHistogram(int64_t usage,
@@ -630,10 +638,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::set<BucketId> GetEvictionBucketExceptions();
   void DidGetEvictionBucket(GetBucketCallback callback,
                             const absl::optional<BucketLocator>& bucket);
-
-  void DidGetBucketInfoForEviction(
-      const BucketLocator& bucket,
-      QuotaErrorOr<mojom::BucketTableEntryPtr> result);
 
   void DidGetEvictionRoundInfo();
 

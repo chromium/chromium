@@ -372,8 +372,8 @@ class QuotaManagerImplTest : public testing::Test {
                        weak_factory_.GetWeakPtr()));
   }
 
-  QuotaStatusCode EvictBucketData(const BucketLocator& bucket) {
-    base::test::TestFuture<QuotaStatusCode> future;
+  QuotaError EvictBucketData(const BucketLocator& bucket) {
+    base::test::TestFuture<QuotaError> future;
     quota_manager_impl_->EvictBucketData(bucket, future.GetCallback());
     return future.Get();
   }
@@ -2052,7 +2052,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.ok());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
+  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
 
   bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
@@ -2075,7 +2075,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   bucket = GetBucket(ToStorageKey("http://foo.com"), "logs", kTemp);
   ASSERT_TRUE(bucket.ok());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
+  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
 
   bucket = GetBucket(ToStorageKey("http://foo.com"), "logs", kTemp);
   EXPECT_EQ(bucket.error(), QuotaError::kNotFound);
@@ -2109,7 +2109,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
       GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.ok());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
+  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
 
   // Ensure use count and time since access are recorded.
   histograms.ExpectTotalCount(
@@ -2129,7 +2129,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
   bucket = GetBucket(ToStorageKey("http://bar.com"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.ok());
 
-  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaStatusCode::kOk);
+  ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
 
   // The new use count should be logged.
   histograms.ExpectTotalCount(
@@ -2176,8 +2176,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
-    ASSERT_EQ(EvictBucketData(bucket->ToBucketLocator()),
-              QuotaStatusCode::kErrorInvalidModification);
+    ASSERT_NE(EvictBucketData(bucket->ToBucketLocator()), QuotaError::kNone);
   }
 
   // The default bucket for "http://foo.com/" should still be in the database.
@@ -2794,9 +2793,9 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
   ASSERT_EQ(QuotaError::kNone, corruption_error);
 
   // Deleting the bucket will result in an error.
-  EXPECT_EQ(FindAndDeleteBucketData(ToStorageKey("http://foo.com"),
+  EXPECT_NE(FindAndDeleteBucketData(ToStorageKey("http://foo.com"),
                                     kDefaultBucketName),
-            QuotaStatusCode::kErrorInvalidModification);
+            QuotaStatusCode::kOk);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage, 0);
@@ -3390,7 +3389,7 @@ TEST_F(QuotaManagerImplTest, DeleteBucketData_QuotaManagerDeletedImmediately) {
       bucket->ToBucketLocator(), {QuotaClientType::kIndexedDatabase},
       delete_bucket_data_future.GetCallback());
   quota_manager_impl_.reset();
-  EXPECT_EQ(QuotaStatusCode::kErrorAbort, delete_bucket_data_future.Get());
+  EXPECT_NE(QuotaStatusCode::kOk, delete_bucket_data_future.Get());
 }
 
 TEST_F(QuotaManagerImplTest, DeleteBucketData_CallbackDeletesQuotaManager) {

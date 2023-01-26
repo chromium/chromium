@@ -164,11 +164,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   // Returns the BucketTableEntry for `bucket` if one exists. Returns a
   // QuotaError if not found or the operation has failed.
-  QuotaErrorOr<mojom::BucketTableEntryPtr> GetBucketInfo(BucketId bucket_id);
+  QuotaErrorOr<mojom::BucketTableEntryPtr> GetBucketInfoForTest(
+      BucketId bucket_id);
 
   // Deletes the bucket from the database as well as the bucket directory in the
-  // storage directory.
-  QuotaError DeleteBucketData(const BucketLocator& bucket);
+  // storage directory. Returns the bucket data that was deleted.
+  QuotaErrorOr<mojom::BucketTableEntryPtr> DeleteBucketData(
+      const BucketLocator& bucket);
 
   // Returns the BucketLocator for the least recently used bucket. Will exclude
   // buckets with ids in `bucket_exceptions`, buckets marked persistent, and

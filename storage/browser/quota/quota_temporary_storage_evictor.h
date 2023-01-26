@@ -24,6 +24,7 @@
 namespace storage {
 
 class QuotaEvictionHandler;
+enum class QuotaError;
 struct QuotaSettings;
 
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
@@ -82,7 +83,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
                               int64_t current_usage,
                               bool current_usage_is_complete);
   void OnGotEvictionBucket(const absl::optional<BucketLocator>& bucket);
-  void OnEvictionComplete(blink::mojom::QuotaStatusCode status);
+  void OnEvictionComplete(QuotaError status);
 
   void OnEvictionRoundStarted();
   void OnEvictionRoundFinished();

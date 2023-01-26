@@ -258,8 +258,7 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionBucket(
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaTemporaryStorageEvictor::OnEvictionComplete(
-    blink::mojom::QuotaStatusCode status) {
+void QuotaTemporaryStorageEvictor::OnEvictionComplete(QuotaError status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Just calling ConsiderEviction() or StartEvictionTimerWithDelay() here is
@@ -268,7 +267,7 @@ void QuotaTemporaryStorageEvictor::OnEvictionComplete(
   // permanently. The evictor skips buckets which had deletion errors a few
   // times.
 
-  if (status == blink::mojom::QuotaStatusCode::kOk) {
+  if (status == QuotaError::kNone) {
     ++statistics_.num_evicted_buckets;
     ++round_statistics_.num_evicted_buckets_in_round;
     // We many need to get rid of more space so reconsider immediately.
