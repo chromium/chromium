@@ -866,7 +866,6 @@ def _GetCommandForWebTests(arguments):
   cpu_count = max(1, cpu_count // 2)
 
   command_list = [
-      'python', 'testing/xvfb.py', 'python',
       'third_party/blink/tools/run_web_tests.py',
       '--additional-driver-flag=--no-sandbox',
       '--additional-env-var=LLVM_PROFILE_FILE=%s' %
