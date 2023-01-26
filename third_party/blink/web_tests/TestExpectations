@@ -6944,9 +6944,3 @@ crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-f
 # Sheriff 2023-01-24
 crbug.com/1409804 [ Mac ] fast/backgrounds/repeat/negative-offset-repeat-transformed.html [ Failure ]
 crbug.com/1409804 [ Mac ] fast/borders/border-image-rotate-transform.html [ Failure ]
-
-# These tests must be disabled for the next webrtc rollout (2023-01-25), and
-# will be adjusted and reenabled afterwards.
-crbug.com/webrtc/14653 external/wpt/webrtc-stats/outbound-rtp.https.html [ Failure Pass ]
-crbug.com/webrtc/14653 external/wpt/webrtc-stats/rtp-stats-creation.html [ Failure Pass ]
-crbug.com/webrtc/14653 external/wpt/webrtc-stats/supported-stats.https.html [ Failure Pass ]
