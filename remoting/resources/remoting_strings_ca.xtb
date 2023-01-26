@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">S'ha detectat una versió del protocol incompatible. Assegureu-vos que tingueu instal·lada la versió més recent del programari als dos ordinadors i torneu-ho a provar.</translation>
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="1201402288615127009">Següent</translation>
+<translation id="1296511125400541222">Copyright 2023. Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="1297009705180977556">S'ha produït un error en connectar amb <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">L'objecte sol·licitat no existeix.</translation>
 <translation id="1480046233931937785">Crèdits</translation>
@@ -88,6 +89,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="4808503597364150972">Introduïu el vostre PIN per a <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Amfitrió</translation>
 <translation id="4867841927763172006">Envia Impr Pant</translation>
+<translation id="4960795469833295568">Copyright 2023. Google LLC. Tots els drets reservats.</translation>
 <translation id="4974476491460646149">La connexió amb <ph name="HOSTNAME" /> s'ha tancat</translation>
 <translation id="4985296110227979402">Primer heu de configurar l'accés remot al vostre ordinador.</translation>
 <translation id="4987330545941822761">Escriptori remot de Chrome no ha pogut determinar quin navegador s'ha d'utilitzar per obrir els URL localment. Tria'n un de la llista següent.</translation>

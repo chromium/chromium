@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">裝置設定</translation>
 <translation id="2084809735218147718">表達感謝</translation>
 <translation id="2088690981887365033">VPN 網路</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個項目將遭刪除且無法還原。</translation>
 <translation id="2122305276694332719">自動連線至隱藏網路會讓其他人可以查看你的裝置和部分網路設定，建議你不要啟用這項設定。</translation>
 <translation id="2125607626296734455">高棉文</translation>
 <translation id="2139545522194199494">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，由系統管理員管理，連線</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">找不到符合「<ph name="SEARCH_STRING" />」&lt;b&gt;&lt;/b&gt;的項目</translation>
 <translation id="2894654529758326923">資訊</translation>
 <translation id="2902734494705624966">美式改良</translation>
+<translation id="2904378509913846215">已經有資料夾使用「<ph name="FILENAME" />」這個名稱，要將它取代成你要移動的資料夾嗎？</translation>
 <translation id="290843123675549676">馬拉地文</translation>
 <translation id="2923240520113693977">愛沙尼亞</translation>
 <translation id="2938685643439809023">蒙古語</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">你可以還原這些項目，或是將這些項目拖曳到垃圾桶以外的新資料夾</translation>
 <translation id="4401287888955153199">解壓縮全部</translation>
 <translation id="4410695710508688828">擷取作業失敗：<ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">「<ph name="FILE_NAME" />」將遭刪除且無法還原。</translation>
 <translation id="4418686080762064601">為檔案建立捷徑</translation>
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4439427728133035643">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，連線</translation>
@@ -639,6 +642,7 @@
 <translation id="6241349547798190358">荷蘭文 (比利時)</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
 <translation id="6269630227984243955">馬來文</translation>
+<translation id="6271903698064569429">「<ph name="SHARED_DRIVE_NAME" />」的儲存空間不足，因此無法上傳檔案。</translation>
 <translation id="6287852322318138013">選取要用來開啟這個檔案的應用程式</translation>
 <translation id="6295542640242147836">鎖定 SIM 卡</translation>
 <translation id="6296410173147755564">PUK 無效</translation>
@@ -684,6 +688,7 @@
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6658865850469097484">移入垃圾桶超過 30 天的檔案將會自動刪除。</translation>
 <translation id="6673674183150363784">法文 (法國) 搭配 Bépo 鍵盤</translation>
+<translation id="670380500182402678">全部取代</translation>
 <translation id="6710022688720561421">機器人</translation>
 <translation id="6710213216561001401">返回</translation>
 <translation id="6732801395666424405">未載入憑證</translation>
@@ -902,6 +907,7 @@
 <translation id="8386903983509584791">掃描完成</translation>
 <translation id="8387733224523483503">已擷取「<ph name="FILE_NAME" />」。</translation>
 <translation id="8395901698320285466">尺寸</translation>
+<translation id="8404498045299006085">全部保留</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />網路，連線中</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8431909052837336408">變更 SIM 卡的 PIN 碼</translation>
@@ -928,6 +934,7 @@
 <translation id="8560515948038859357">粵文</translation>
 <translation id="8561206103590473338">大象</translation>
 <translation id="8566466896628108558">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，遭到管理員封鎖，詳細資料</translation>
+<translation id="8568374623837201676">要永久刪除這個檔案嗎？</translation>
 <translation id="8569764466147087991">選取要開啟的檔案</translation>
 <translation id="8577897833047451336">克羅埃西亞文</translation>
 <translation id="8578308463707544055">印尼文</translation>

@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Gyenge jelerősség. Próbáljon közelebb helyezkedni a Wi-Fi-jelforráshoz.</translation>
 <translation id="3595596368722241419">Akkumulátor feltöltve</translation>
 <translation id="3600339377155080675">Képernyőtükrözés</translation>
+<translation id="3602290021589620013">Előnézet</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Háttérkép megváltoztatása</translation>
 <translation id="360565022852130722">A Wi-Fi-hálózat gyenge protokollal (WEP 802.1x) van biztosítva</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3862598938296403232">A leírás megadása kötelező</translation>
+<translation id="3865289341173661845">A súgótartalom nem áll rendelkezésre.</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3866249974567520381">Leírás</translation>
 <translation id="387301095347517405">Annak a száma, hogy hány teljes töltési ciklusa volt az akkumulátornak.</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Nem lehet csatlakozni átjáróhoz</translation>
 <translation id="4046123991198612571">Következő szám</translation>
 <translation id="404928562651467259">FIGYELMEZTETÉS</translation>
+<translation id="4054683689023980771">Kép letöltése</translation>
 <translation id="4060260348856573701">Új APN</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Akkumulátor egészsége</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5190187232518914472">Élje át újra kedvenc emlékeit. Albumok létrehozásához és szerkesztéséhez lépjen a <ph name="LINK_BEGIN" />Google Fotók<ph name="LINK_END" /> alkalmazásba.</translation>
-<translation id="5212543919916444558">Nem találok semmi olyat a képernyőn, amellyel kapcsolatban segíthetnék.
-Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="5212593641110061691">„Tabloid” méret</translation>
 <translation id="5222676887888702881">Kijelentkezés</translation>
 <translation id="522307662484862935">Ne tartalmazzon e-mail-címet</translation>
@@ -703,6 +704,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="7497215489070763236">Szerver CA tanúsítványa</translation>
 <translation id="7502658306369382406">IPv6-cím</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">A súgótartalom nem áll rendelkezésre</translation>
 <translation id="7535791657097741517">Világos téma bekapcsolása</translation>
 <translation id="7550715992156305117">Diagnosztikai rutinok</translation>
 <translation id="7551123448725492271">Az eszköz egy audioeszköz.</translation>

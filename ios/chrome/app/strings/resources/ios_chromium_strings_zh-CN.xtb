@@ -27,7 +27,6 @@
 <translation id="2178608107313874732">Chromium 目前无法使用您的相机</translation>
 <translation id="2195025571279539885">下次访问这个网站时，您希望 Chromium 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2218146227246548550">根据贵单位的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="2228617012253907725">Chromium 功能多，任您探索</translation>
 <translation id="2236584955986023187">这意味着 Chromium 每次都会对桌面版网站发出请求。</translation>
 <translation id="2313870531055795960">将网址与存储在 Chromium 中的不安全网站列表进行比对。如果某个网站企图窃取您的密码，或者您下载了有害的文件，Chromium 可能还会将相应网址连同少量网页内容发送给“安全浏览”功能。</translation>
 <translation id="2426113998523353159">根据贵单位的要求，您必须登录才能使用 Chromium。</translation>
@@ -71,7 +70,6 @@
 <translation id="5573014823074921752">Chromium 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
 <translation id="5700709190537129682">Chromium 无法检查您的密码</translation>
 <translation id="5777187867430702742">Chromium 网页</translation>
-<translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5945387852661427312">您正要登录由 <ph name="DOMAIN" /> 管理的帐号，并要授权其管理员控制您的 Chromium 数据。您的数据将与此帐号永久关联。退出 Chromium 后，您的数据将从这台设备上删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="5983312940147103417">帮助改善 Chromium</translation>
 <translation id="6062449165341879460">贵组织 (<ph name="DOMAIN" />) 将能够访问您在此帐号中存储的 Chromium 数据、书签、历史记录、密码和其他设置。当您退出帐号时，系统将从这部设备上清除您的数据。不过，您的数据仍会存储在您名下受管理的 Google 帐号中，且可供贵组织访问。贵组织也可专门针对上述帐号设置用户规范，这可能会改变 Chromium 的行为。</translation>

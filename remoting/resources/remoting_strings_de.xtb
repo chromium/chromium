@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Eine inkompatible Protokollversion wurde erkannt. Überprüfe, ob die neueste Version der Software auf beiden Computern installiert ist, und versuche es erneut.</translation>
 <translation id="1008557486741366299">Jetzt nicht</translation>
 <translation id="1201402288615127009">Weiter</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Alle Rechte vorbehalten.</translation>
 <translation id="1297009705180977556">Fehler beim Herstellen der Verbindung mit <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Das angeforderte Objekt ist nicht vorhanden.</translation>
 <translation id="1480046233931937785">Mitwirkende</translation>
@@ -88,6 +89,7 @@ Falls neben "<ph name="SERVICE_SCRIPT_NAME" />" schon ein Haken gesetzt ist, ent
 <translation id="4808503597364150972">Bitte gib deine PIN für <ph name="HOSTNAME" /> ein.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Druck senden</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="4974476491460646149">Verbindung zwischen Client und <ph name="HOSTNAME" /> getrennt</translation>
 <translation id="4985296110227979402">Richte zuerst deinen Computer für den Remotezugriff ein</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kann nicht ermitteln, welcher Browser zum lokalen Öffnen der Links verwendet werden soll. Wähle einen aus der folgenden Liste aus.</translation>

@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">检测到不兼容的协议版本。请确保两台计算机上都已安装该软件的最新版本，然后重试。</translation>
 <translation id="1008557486741366299">以后再说</translation>
 <translation id="1201402288615127009">下一步</translation>
+<translation id="1296511125400541222">版权所有 2023 The Chromium Authors。保留所有权利。</translation>
 <translation id="1297009705180977556">连接到“<ph name="HOSTNAME" />”时出错</translation>
 <translation id="1450760146488584666">请求的对象不存在。</translation>
 <translation id="1480046233931937785">鸣谢</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">请输入您用于“<ph name="HOSTNAME" />”的 PIN。</translation>
 <translation id="4812684235631257312">主机</translation>
 <translation id="4867841927763172006">发送PrtScn</translation>
+<translation id="4960795469833295568">版权所有 2023 Google LLC。保留所有权利。</translation>
 <translation id="4974476491460646149">与“<ph name="HOSTNAME" />”的连接已关闭</translation>
 <translation id="4985296110227979402">您需要先设置计算机，然后才能进行远程访问</translation>
 <translation id="4987330545941822761">Chrome 远程桌面无法确定应使用哪款浏览器在本地打开网址。请从下面的列表中选择。</translation>

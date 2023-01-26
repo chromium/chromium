@@ -165,7 +165,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1797271123677381264">Parolni unutdim</translation>
 <translation id="1807246157184219062">Yorqin</translation>
 <translation id="181103072419391116">Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>
-<translation id="1812997170047690955">Ekranda nimalar bor?</translation>
 <translation id="1816896987747843206">Bunda kameraga ruxsat beriladi. Barcha ilovalar va saytlar kameradan foydalana oladi</translation>
 <translation id="1823280932251546115">Holat qatori, vaqt <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -291,6 +290,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2501920221385095727">Yopishqoq tugmalar</translation>
 <translation id="2509468283778169019">CAPS LOCK yoniq</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">Oynalarni yechish</translation>
 <translation id="2542089167727451762">Profil rasmingizni bosing</translation>
 <translation id="255671100581129685">Google Assistent demo seansda ishlamaydi.</translation>
 <translation id="256712445991462162">mahkamlangan lupa</translation>
@@ -320,6 +320,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2704781753052663061">Boshqa Wi-Fi tarmoqlarga ulanish</translation>
 <translation id="2705001408393684014">Mikrofon: <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Yuqoriga</translation>
+<translation id="2710984741481549981">Oynalarni mahkamlash</translation>
 <translation id="2718395828230677721">Tungi rejim</translation>
 <translation id="2726420622004325180">Telefon mobil internetsiz hotspot tarqata olmaydi</translation>
 <translation id="2727175239389218057">Javob berish</translation>
@@ -581,6 +582,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Qurilmani bir kun ichida oʻchirib yoqish kerak}other{Qurilmani # kun ichida yangilang}}</translation>
 <translation id="4181841719683918333">Tillar</translation>
 <translation id="4192112279662688596">Yoki</translation>
+<translation id="4193857202545160520">Kliklar va tugmalar chiqsin</translation>
 <translation id="4195814663415092787">Avval ochilgan ichki oynalar</translation>
 <translation id="4195877955194704651">Avtomatik bosish menyusi</translation>
 <translation id="4197790712631116042">Yoqilmagan</translation>
@@ -730,6 +732,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> hozir kameradan foydalanmoqda</translation>
 <translation id="492453977506755176">Tasvirga olish rejimi kaliti</translation>
 <translation id="4925542575807923399">Bu hisobning administratori ko‘plab tizimga kirish seanslarida birinchi bo‘lib shu hisobga kirishni talab qiladi.</translation>
+<translation id="4929163402621253029">Gapirdingizmi? Ovozsiz rejimdasiz. Batafsil</translation>
 <translation id="4938176435186993759">Barcha takliflarni berkitish</translation>
 <translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
 <translation id="4946376291507881335">Tasvirga olish</translation>
@@ -763,6 +766,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5107522548814527560">Veb</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Keyingi oyni ko‘rsatish</translation>
+<translation id="5127986747308934633">Bu qurilma administrator boshqaruvida</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
 <translation id="5147567197700016471">Ochiq</translation>
 <translation id="5150070631291639005">Maxfiylik sozlamalari</translation>
@@ -872,6 +876,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="5710450975648804523">Bezovta qilinmasin rejimi yoniq</translation>
 <translation id="571295407079589142">Mobil internet yoqilmagan</translation>
 <translation id="573413375004481890">Bu qurilma barcha displeylaringiz bilan mos emasligi sababli bittasidan uzildi</translation>
+<translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">O‘rtacha</translation>
 <translation id="5744083938413354016">Teginib tortish</translation>
 <translation id="5745612484876805746">Tungi rejim quyosh botishi bilan avtomatik yoqiladi</translation>
@@ -991,6 +996,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="639644700271529076">CAPS LOCK o‘chiq</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="641867537956679916">Administrator muammoni hal qilish uchun hisobga kirdi. Administrator boshqaruvni qaytarishi bilan qurilmadan foydalanishda davom etishingiz mumkin.</translation>
 <translation id="6424520630891723617">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Barcha eslatmalarni tozalang</translation>
 <translation id="643147933154517414">Bajarildi</translation>
@@ -1279,6 +1285,7 @@ yangi oʻrnatilgan</translation>
 <translation id="79341161159229895">Hisobni <ph name="FIRST_PARENT_EMAIL" /> va <ph name="SECOND_PARENT_EMAIL" /> boshqaradi</translation>
 <translation id="793716872548410480">Klipbordni ochish uchun <ph name="SHORTCUT_KEY_NAME" /> + V tugmalarini bosing. Nusxalangan oxirgi 5 ta element klipbordga saqlandi.</translation>
 <translation id="7942349550061667556">Qizil</translation>
+<translation id="7944023924886109030">Bugungi barcha tadbirlarni ochish</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> qurilmasidan</translation>
 <translation id="7968693143708939792">Jildni tanlang...</translation>
 <translation id="7977927628060636163">Mobil tarmoqlar qidirilmoqda...</translation>

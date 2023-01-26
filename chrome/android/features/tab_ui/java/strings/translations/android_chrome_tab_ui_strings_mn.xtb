@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Мэдэгдэл авах</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
 <translation id="4212246570487010370">Тасралтгүй үзэх</translation>
-<translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> шүүмж)}other{(<ph name="REVIEWS_COUNT_MANY" /> шүүмж)}}</translation>
 <translation id="4850886885716139402">Харах</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Бүлэг үүсгэх байдлаар хуудаснуудыг хурдан харьцуулаарай. Эхлүүлэхийн тулд холбоосыг удаан дарна уу.</translation>
 <translation id="5490235265819901748">Бүлэг табыг дэлгэсэн</translation>
 <translation id="5494920125229734069">Бүгдийг сонго</translation>
-<translation id="5533021382642990449">Дараа харуулах</translation>
 <translation id="5556417849629758491">Дэлгэцийн дээд хэсгийн ойролцоо боломжтой дэлгүүрийн мэдээллийг үзэх сонголт</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг хаах.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> табыг бүлэглэсэн</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Энэ дэлгүүрийн талаарх мэдээлэл</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэхээ болих}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэхээ болих}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
-<translation id="6510648526783655549">Tab мессежийг хаах</translation>
 <translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Энэ дэлгүүрийн талаарх мэдээллийг бүтэн өндөртэйгээр нээсэн</translation>
 <translation id="814503310257431685">Бүгдийг харах</translation>
 <translation id="8205266828577616993">Табыг дээш зөөх</translation>
-<translation id="8304833501377495048">Tab мессежийг дахин харуулахгүй байх уу?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> таб бүхий бүлэг табыг дэлгэх.</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
-<translation id="8749939518995770034">Tab мессежийг хаасан</translation>
 <translation id="8820741577754260431">Табууд дээрх үнэ бууралтыг хараарай</translation>
 <translation id="9090098097337832354">Энэ дэлгүүрийн талаарх мэдээллийг хаасан</translation>
 <translation id="9150694013019234766">Дэлгэцийн доод хэсгийн ойролцоо байгаа табын бүлгээсээ таб хооронд сэлгэнэ үү</translation>

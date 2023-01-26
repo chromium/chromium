@@ -12,8 +12,11 @@
 <translation id="1272079795634619415">Стоп</translation>
 <translation id="1289742167380433257">Изображенията на тази страница бяха оптимизирани от Google с цел пестене на данни.</translation>
 <translation id="129382876167171263">Тук се показват файловете, запазени от уебсайтове</translation>
+<translation id="131112695174432497">Данните, които засягат персонализирането на рекламите, се изтриват</translation>
 <translation id="1317194122196776028">Забравяне на този сайт</translation>
+<translation id="1343356790768851700">Този сайт определя какво харесвате и след това предлага реклами на други сайтове</translation>
 <translation id="1369915414381695676">Сайтът <ph name="SITE_NAME" /> е добавен</translation>
+<translation id="1371239764779356792">Разрешаване на даден сайт да запазва данни на устройството ви</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384959399684842514">Изтеглянето е на пауза</translation>
 <translation id="1409426117486808224">Опростен изглед на отворените раздели</translation>
@@ -21,6 +24,8 @@
 <translation id="1426410128494586442">Да</translation>
 <translation id="1446450296470737166">Разр. на пълния контрол над MIDI</translation>
 <translation id="1448064542941920355">Намаляване на нивото на мащаба</translation>
+<translation id="1510341833810331442">Сайтовете нямат разрешение да запазват данни на устройството ви</translation>
+<translation id="1547123415014299762">„Бисквитките“ на трети страни са разрешени</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1633720957382884102">Сродни сайтове</translation>
 <translation id="1644574205037202324">История</translation>
@@ -69,7 +74,9 @@
 <translation id="2390272837142897736">Увеличаване на нивото на мащаба</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> МБ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}other{Достъпът до <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и още <ph name="NUM_MORE" /> е разрешен}}</translation>
+<translation id="2410940059315936967">В посетен от вас сайт може да има вградено съдържание от други сайтове, като например изображения, реклами и текст. „Бисквитките“, зададени от другите сайтове, се наричат „бисквитки“ на трети страна.</translation>
 <translation id="2434158240863470628">Изтеглянето завърши <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="244264527810019436">Функциите в някои сайтове може да не работят в режим „инкогнито“</translation>
 <translation id="2442870161001914531">Винаги да се заявява настолният сайт</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
@@ -93,6 +100,7 @@
 <translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
+<translation id="2891975107962658722">Блокиране на даден сайт, така че да не запазва данни на устройството ви</translation>
 <translation id="2903493209154104877">Адреси</translation>
 <translation id="2910701580606108292">Запитване преди разрешаване на сайтовете да възпроизвеждат защитено съдържание</translation>
 <translation id="2913331724188855103">Разрешаване на сайтовете да запазват „бисквитки“ и да четат данни от такива (препоръчително)</translation>
@@ -108,6 +116,7 @@
 <translation id="3123473560110926937">Блокиране на някои сайтове</translation>
 <translation id="3143754809889689516">Възпроизвеждане от началото</translation>
 <translation id="3162899666601560689">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница</translation>
+<translation id="3165022941318558018">Разрешаване на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="3198916472715691905">Съхранявани данни: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">От мрежата</translation>
 <translation id="321187648315454507">За да разрешите на <ph name="APP_NAME" /> да ви изпраща известия, те трябва да бъдат включени и от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -135,6 +144,7 @@
 <translation id="3628308229821498208">Предложени търсения</translation>
 <translation id="3744111561329211289">Синхронизиране на заден план</translation>
 <translation id="3763247130972274048">Докоснете два пъти левия или десния край на прозореца с видеоклипа, за да пропуснете 10 сек</translation>
+<translation id="3794286421982011626">Сайтовете, които посещавате, могат да запазват информация за нещата, които правите, така че да работят по очаквания начин – например за да не излизате от профила си в даден сайт или за запазване на артикулите в пазарската ви кошница. Сайтовете често запазват тази информация временно на устройството ви.</translation>
 <translation id="3797520601150691162">Без прилагане на тъмната тема към конкретен сайт</translation>
 <translation id="3803367742635802571">Сайтовете, които посещавате, може да спрат да работят нормално</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -144,6 +154,8 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Придвижване напред</translation>
 <translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
+<translation id="3908288065506437185">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
+<translation id="3918378745482005425">Някои функции може да не работят. Сродните сайтове пак могат да използват „бисквитки“ на трети страни.</translation>
 <translation id="3955193568934677022">Разрешаване на сайтовете да възпроизвеждат защитено съдържание (препоръчително)</translation>
 <translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3987993985790029246">Връзка: Коп.</translation>
@@ -192,6 +204,7 @@
 <translation id="4976702386844183910">Последно посещение: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Няма намерени контакти</translation>
 <translation id="4996978546172906250">Споделяне чрез</translation>
+<translation id="5001526427543320409">„Бисквитки“ на трети страни</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
 <translation id="5050380848339752099">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>
@@ -205,6 +218,7 @@
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
 <translation id="5225463052809312700">Включване на камерата</translation>
+<translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5264323282659631142">Премахване на „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Плъзнете пръст от горната част на екрана и докоснете бутона за връщане назад, за да излезете от режима на цял екран.</translation>
 <translation id="5300589172476337783">Показване</translation>
@@ -212,6 +226,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5335288049665977812">Разрешаване на сайтовете да изпълняват JavaScript (препоръчително)</translation>
 <translation id="534295439873310000">Устройства с NFC</translation>
+<translation id="5344522958567249764">Управление на поверителността при рекламите</translation>
 <translation id="5354152178998424783">Съхраняваните от сайтовете данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(и още 1)}other{(и още #)}}</translation>
 <translation id="5403592356182871684">Имена</translation>
@@ -235,10 +250,12 @@
 <translation id="5706552988683188916">„Бисквитките“ и другите данни за сайта <ph name="WEBSITE" /> ще бъдат изтрити</translation>
 <translation id="5719847187258001597">Всички съхранявани от <ph name="ORIGIN" /> или от съответното приложение на началния екран данни и „бисквитки“ ще бъдат изчистени.</translation>
 <translation id="5723967018671998714">„Бисквитките“ на трети страни са блокирани в режим „инкогнито“</translation>
+<translation id="5740126560802162366">Сайтовете могат да запазват данни на устройството ви</translation>
 <translation id="5771720122942595109">Достъпът до <ph name="PERMISSION_1" /> е блокиран</translation>
 <translation id="5804241973901381774">Разрешения</translation>
 <translation id="5860033963881614850">Изключено</translation>
 <translation id="5876056640971328065">Поставяне на видеоклипа на пауза</translation>
+<translation id="5884085660368669834">Предпочитание за сайта</translation>
 <translation id="5887687176710214216">Последно посещение: вчера</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5922853908706496913">Екранът ви се споделя</translation>
@@ -258,6 +275,7 @@
 <translation id="6181444274883918285">Добавяне на изключение за сайт</translation>
 <translation id="6192792657125177640">Изключения</translation>
 <translation id="6196640612572343990">Блокиране на „бисквитките“ на трети страни</translation>
+<translation id="6205314730813004066">Поверителност при рекламите</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира ли <ph name="APP_NAME" />?</translation>
 <translation id="6262191102408817757">Въз основа на последния ви раздел</translation>
@@ -289,6 +307,7 @@
 <translation id="6746124502594467657">Придвижване надолу</translation>
 <translation id="6749077623962119521">Да се нулират ли разрешенията?</translation>
 <translation id="6766622839693428701">Прекарайте пръст надолу, за да затворите.</translation>
+<translation id="6787751205395685251">Изберете опция за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6818926723028410516">Избор на елементи</translation>
 <translation id="6864395892908308021">Това устройство не може да чете NFC</translation>
@@ -328,18 +347,16 @@
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7667547420449112975">Вълшебникът от Оз</translation>
+<translation id="7684642910516280563">Забраняване на даден сайт да използва „бисквитки“ на трети страни</translation>
 <translation id="7690549345586282764">Показване на функцията за промяна на мащаба</translation>
-<translation id="7695658402549134106">Предпочитание за сайта <ph name="SITE_NAME" /></translation>
 <translation id="7719367874908701697">Промяна на мащаба на страницата</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7804248752222191302">Сайт използва камерата ви</translation>
-<translation id="7817023149356982970">Ще излезете от профила си в този сайт.</translation>
 <translation id="7835852323729233924">Възпроизвеждане на мултимедия</translation>
 <translation id="783819812427904514">С образ</translation>
 <translation id="7846076177841592234">Анулиране на избора</translation>
-<translation id="7846621471902887024">Ще излезете от профила си във всички сайтове.</translation>
 <translation id="7882806643839505685">Разрешаване на звука за конкретен сайт.</translation>
 <translation id="789180354981963912">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“:</translation>
 <translation id="7940722705963108451">Напомняне</translation>
@@ -351,6 +368,7 @@
 <translation id="8042586301629853791">Сортиране по:</translation>
 <translation id="8067883171444229417">Възпроизвеждане на видеоклипа</translation>
 <translation id="8068648041423924542">Сертификатът не може да бъде избран.</translation>
+<translation id="8077120325605624147">Всички посещавани от вас сайтове могат да ви показват всякакви реклами</translation>
 <translation id="8087000398470557479">Това съдържание се показва от Google, а източникът му е <ph name="DOMAIN_NAME" />.</translation>
 <translation id="8116925261070264013">Заглушени</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
@@ -384,12 +402,13 @@
 <translation id="8514955299594277296">Забраняване на сайтовете да запазват данни на устройството ви (не се препоръчва)</translation>
 <translation id="851751545965956758">Блокиране на сайтовете, така че да не се свързват с устройства</translation>
 <translation id="8525306231823319788">На цял екран</translation>
+<translation id="8541410041357371550">Този сайт получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайт на <ph name="FPS_OWNER" />}other{„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайта на <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Разрешено (препоръчително)</translation>
 <translation id="8609465669617005112">Придвижване нагоре</translation>
 <translation id="8676374126336081632">Изчистване на въведеното</translation>
+<translation id="8681886425883659911">Рекламите са блокирани на сайтовете, за които е известно, че показват натрапчиви или подвеждащи реклами</translation>
 <translation id="868929229000858085">Търсене в контактите ви</translation>
-<translation id="8702612070107455751">Всички офлайн данни ще бъдат изчистени.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="8719283222052720129">Включете разрешението за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
@@ -400,6 +419,7 @@
 <translation id="8816026460808729765">Блокиране на достъпа на сайтовете до сензорите</translation>
 <translation id="8823559166155093873">Блокиране на „бисквитките“</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">Натрапчиви реклами</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Функцията за NFC е изключена на това устройство. Включете я от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
@@ -416,6 +436,7 @@
 <translation id="913657688200966289">Включете разрешенията за <ph name="APP_NAME" /> от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Текущото ниво на мащаба е <ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="9162462602695099906">Тази страница е опасна</translation>
+<translation id="9201023452444595544">Всички офлайн данни ще бъдат изчистени</translation>
 <translation id="930525582205581608">Да се забрави ли този сайт?</translation>
 <translation id="967624055006145463">Съхранени данни</translation>
 </translationbundle>

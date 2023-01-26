@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Thola isaziso</translation>
 <translation id="4133493477912226187">Amathebhu ayi-<ph name="NUMBER_OF_TABS" /> abonakala ahambisana. Wenze iqembu?</translation>
 <translation id="4212246570487010370">Qhubeka nokuphequlula</translation>
-<translation id="4450893287417543264">Ungabonisi futhi</translation>
 <translation id="4648718555153979859">Amathebhu akho afakwa kuqembu ndawonye lapha</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Qhathanisa ngokushesha amakhasi ngokwenza iqembu. Ukuze uqale, thinta uphinde ubambe isixhumanisi.</translation>
 <translation id="5490235265819901748">Iqembu lethebhu linwetshiwe</translation>
 <translation id="5494920125229734069">Khetha konke</translation>
-<translation id="5533021382642990449">Bonisa kamuva</translation>
 <translation id="5556417849629758491">Buka ulwazi lwesitoreji, inketho itholakala eduze naphezulu kwesikrini</translation>
 <translation id="5558362125926932819">Vala iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> amathebhu aqoqiwe</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Ulwazi olumayelana nalesi sitolo</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
-<translation id="6510648526783655549">Vala umugqa wamathebhu</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Ulwazi olumayelana nalesi sitolo ivulwe ngokuphelele</translation>
 <translation id="814503310257431685">Buka konke</translation>
 <translation id="8205266828577616993">Yisa ithebhu phezulu</translation>
-<translation id="8304833501377495048">Ungabonisi umugqa wamathebhu futhi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Vala ithebhu ekhethiwe engu-<ph name="TABS_COUNT_ONE" />}one{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}other{Vala amathebhu akhethiwe angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8398929769197326728">Ifolda Entsha - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Nweba iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Intengo ephansi</translation>
-<translation id="8749939518995770034">Umugqa wamathebhu ovaliwe</translation>
 <translation id="8820741577754260431">Bona ukwehla kwentengo kumathebhu wakho</translation>
 <translation id="9090098097337832354">Ulwazi olumayelana nalesi sitolo esivaliwe</translation>
 <translation id="9150694013019234766">Shintsha phakathi komaka kuqembu lethebhu lakho eduze kwangaphansi kwesikrini</translation>

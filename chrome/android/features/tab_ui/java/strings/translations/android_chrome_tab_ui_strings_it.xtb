@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Ricevi notifiche</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> schede sembrano correlate. Vuoi raggrupparle?</translation>
 <translation id="4212246570487010370">Continua la navigazione</translation>
-<translation id="4450893287417543264">Non mostrare più</translation>
 <translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Confronta rapidamente le pagine creando un gruppo. Innanzitutto, tocca e tieni premuto un link.</translation>
 <translation id="5490235265819901748">Gruppo di schede espanso</translation>
 <translation id="5494920125229734069">Seleziona tutto</translation>
-<translation id="5533021382642990449">Mostra più tardi</translation>
 <translation id="5556417849629758491">Visualizza informazioni sul negozio, opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5558362125926932819">Chiudi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> schede raggruppate</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Informazioni su questo negozio</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
-<translation id="6510648526783655549">Chiudi la tabstrip</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
 <translation id="6615455863669487791">Mostrami</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Informazioni su questo negozio aperte a schermo intero</translation>
 <translation id="814503310257431685">Visualizza tutti</translation>
 <translation id="8205266828577616993">Sposta scheda in alto</translation>
-<translation id="8304833501377495048">Non vuoi più mostrare la tabstrip?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Chiudi <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Chiudi <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="8398929769197326728">Nuova cartella - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Espandi il gruppo di schede con <ph name="NUMBER_OF_TABS" /> schede</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
-<translation id="8749939518995770034">Tabstrip chiusa</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
 <translation id="9150694013019234766">Passa da una scheda all'altra del gruppo di schede nella parte inferiore dello schermo</translation>

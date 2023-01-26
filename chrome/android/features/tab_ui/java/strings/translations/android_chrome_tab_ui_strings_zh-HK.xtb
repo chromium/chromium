@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">接收通知</translation>
 <translation id="4133493477912226187">似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要唔要將佢哋分組？</translation>
 <translation id="4212246570487010370">繼續瀏覽</translation>
-<translation id="4450893287417543264">不要再顯示</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。輕觸並按住連結即可開始建立。</translation>
 <translation id="5490235265819901748">展開咗分頁群組</translation>
 <translation id="5494920125229734069">全部選取</translation>
-<translation id="5533021382642990449">稍後再顯示</translation>
 <translation id="5556417849629758491">商店資料同可用選項喺螢幕最頂嘅附近</translation>
 <translation id="5558362125926932819">閂有 <ph name="NUMBER_OF_TABS" /> 個分頁嘅分頁群組</translation>
 <translation id="5580090775658607195">已將 <ph name="TAB_COUNT" /> 個分頁加入群組</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">此商店的資料</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁移出群組}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
-<translation id="6510648526783655549">關閉分頁列</translation>
 <translation id="6549021453810473782">查看商店資料</translation>
 <translation id="6562820390860419811">將分頁左移</translation>
 <translation id="6615455863669487791">顯示</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">關於呢間商店嘅資料宜家顯示喺成個畫面</translation>
 <translation id="814503310257431685">查看全部</translation>
 <translation id="8205266828577616993">將分頁上移</translation>
-<translation id="8304833501377495048">不要再顯示分頁列嗎？</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{閂 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁}other{閂 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁}}</translation>
 <translation id="8398929769197326728">新增資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">展開有 <ph name="NUMBER_OF_TABS" /> 個分頁嘅分頁群組。</translation>
 <translation id="8714939927607906138">較低價格</translation>
-<translation id="8749939518995770034">已關閉分頁列</translation>
 <translation id="8820741577754260431">在分頁上查看降價資料</translation>
 <translation id="9090098097337832354">閂咗關於呢間商店嘅資料</translation>
 <translation id="9150694013019234766">喺接近畫面底部附近嘅分頁群組入面切換分頁</translation>

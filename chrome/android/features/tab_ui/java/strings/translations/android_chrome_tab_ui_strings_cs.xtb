@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Zasílat oznámení</translation>
 <translation id="4133493477912226187">Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
 <translation id="4212246570487010370">Pokračovat v prohlížení</translation>
-<translation id="4450893287417543264">Tuto zprávu již nezobrazovat</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenze)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}many{(<ph name="REVIEWS_COUNT_MANY" /> recenze)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzí)}}</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
-<translation id="5533021382642990449">Zobrazit později</translation>
 <translation id="5556417849629758491">Zobrazit informace o obchodu, možnost dostupná v horní části obrazovky</translation>
 <translation id="5558362125926932819">Zavřít skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami</translation>
 <translation id="5580090775658607195">Seskupené karty: <ph name="TAB_COUNT" /></translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Informace o této prodejně</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušit seskupení <ph name="TABS_COUNT_ONE" /> vybrané karty}few{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}many{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zrušit seskupení <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> karty}other{<ph name="TABS_COUNT_MANY" /> karet}}</translation>
-<translation id="6510648526783655549">Zavřít lištu karet</translation>
 <translation id="6549021453810473782">Zobrazit informace o prodejně</translation>
 <translation id="6562820390860419811">Přesunout kartu doleva</translation>
 <translation id="6615455863669487791">Ukázat</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Informace o této prodejně jsou otevřeny na celou výšku</translation>
 <translation id="814503310257431685">Zobrazit vše</translation>
 <translation id="8205266828577616993">Posunout kartu nahoru</translation>
-<translation id="8304833501377495048">Tuto lištu karet už nezobrazovat?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zavřít <ph name="TABS_COUNT_ONE" /> vybranou kartu}few{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}many{Zavřít <ph name="TABS_COUNT_MANY" /> vybrané karty}other{Zavřít <ph name="TABS_COUNT_MANY" /> vybraných karet}}</translation>
 <translation id="8398929769197326728">Nová složka – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Rozbalit skupinu karet s <ph name="NUMBER_OF_TABS" /> kartami.</translation>
 <translation id="8714939927607906138">Nižší cena</translation>
-<translation id="8749939518995770034">Lišta karet byla zavřena</translation>
 <translation id="8820741577754260431">Zobrazit pokles ceny na kartách</translation>
 <translation id="9090098097337832354">Informace o této prodejně jsou zavřeny</translation>
 <translation id="9150694013019234766">Ve skupině karet v dolní části obrazovky můžete přepínat mezi kartami</translation>

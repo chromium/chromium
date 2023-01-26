@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Signal faible. Rapprochez-vous de la source du signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Batterie pleine</translation>
 <translation id="3600339377155080675">Duplication d'écran</translation>
+<translation id="3602290021589620013">Aperçu</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Impossible de contacter la passerelle</translation>
 <translation id="4046123991198612571">Piste suivante</translation>
 <translation id="404928562651467259">AVERTISSEMENT</translation>
+<translation id="4054683689023980771">Téléchargement de l'image…</translation>
 <translation id="4060260348856573701">Nouvel APN</translation>
 <translation id="4093865285251893588">Image de profil</translation>
 <translation id="409427325554347132">Enregistrer les résultats du test</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Sélectionner l'album "<ph name="TITLE" />" (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4117637339509843559">Mode sombre</translation>
@@ -448,8 +451,6 @@
 <translation id="5168185087976003268">État de la batterie</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5190187232518914472">Revivez vos souvenirs préférés. Pour ajouter ou modifier un album, accédez à <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Je ne parviens pas à détecter d'éléments sur votre écran pour lesquels je peux vous aider.
-Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5212593641110061691">Tabloïd</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="522307662484862935">Ne pas inclure d'adresse e-mail</translation>
@@ -719,6 +720,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7701040980221191251">Rien</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Nombre de cycles</translation>
 <translation id="7747039790905080783">Clé pré-partagée</translation>
 <translation id="7762130827864645708">Votre mot de passe a bien été modifié. Veuillez désormais utiliser le nouveau mot de passe.</translation>
@@ -802,6 +804,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8503836310948963452">Plus que quelques minutes…</translation>
 <translation id="8508640263392900755">Informations sur l'APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Votre opérateur peut exiger ce réglage pour la connexion à son réseau. Contactez-le pour en savoir plus.</translation>
 <translation id="8576249514688522074">Non initialisé</translation>
 <translation id="8620617069779373398">État d'itinérance</translation>

@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">ความแรงสัญญาณไม่ดี ลองขยับไปใกล้ๆ แหล่งสัญญาณ Wi-Fi มากขึ้น</translation>
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="3600339377155080675">มิเรอร์หน้าจอ</translation>
+<translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3603829704940252505">รูปโปรไฟล์</translation>
 <translation id="3604713164406837697">เปลี่ยนวอลเปเปอร์</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
 <translation id="3862598938296403232">ต้องป้อนคำอธิบาย</translation>
+<translation id="3865289341173661845">เนื้อหาช่วยเหลือไม่พร้อมใช้งาน</translation>
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="387301095347517405">จำนวนครั้งที่ชาร์จแบตเตอรี่จนเต็ม</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">ไม่สามารถติดต่อกับเกตเวย์</translation>
 <translation id="4046123991198612571">แทร็กถัดไป</translation>
 <translation id="404928562651467259">คำเตือน</translation>
+<translation id="4054683689023980771">กำลังดาวน์โหลดรูปภาพ</translation>
 <translation id="4060260348856573701">APN ใหม่</translation>
 <translation id="4093865285251893588">รูปโปรไฟล์</translation>
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
-<translation id="5212543919916444558">ฉันไม่พบสิ่งที่จะช่วยได้ในหน้าจอ
-ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="522307662484862935">อย่าใส่อีเมล</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">ใบรับรอง CA ของเซิร์ฟเวอร์</translation>
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">เนื้อหาช่วยเหลือไม่พร้อมใช้งาน</translation>
 <translation id="7535791657097741517">เปิดธีมสว่าง</translation>
 <translation id="7550715992156305117">กิจวัตรในการวินิจฉัย</translation>
 <translation id="7551123448725492271">อุปกรณ์เป็นอุปกรณ์เสียง</translation>
@@ -814,7 +816,7 @@
 <translation id="8675354002693747642">คีย์ที่แชร์ล่วงหน้า</translation>
 <translation id="8677859815076891398">ไม่มีอัลบั้ม สร้างอัลบั้มใน <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
-<translation id="8712637175834984815">สำเร็จ</translation>
+<translation id="8712637175834984815">รับทราบ</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>

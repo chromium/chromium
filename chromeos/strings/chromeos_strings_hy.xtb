@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
 <translation id="3600339377155080675">Էկրանի հայելապատճենում</translation>
+<translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3603829704940252505">Ավատար</translation>
 <translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
 <translation id="4046123991198612571">Հաջորդը</translation>
 <translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
+<translation id="4054683689023980771">Պատկերը ներբեռնվում է</translation>
 <translation id="4060260348856573701">Նոր APN</translation>
 <translation id="4093865285251893588">Պրոֆիլի պատկեր</translation>
 <translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB հպահարթակ</translation>
 <translation id="4117637339509843559">Մուգ ռեժիմ</translation>
@@ -448,8 +451,6 @@
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
-<translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
-Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="522307662484862935">Չներառել էլ․ հասցե</translation>
@@ -719,6 +720,7 @@
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
 <translation id="7747039790905080783">Ընդհանուր բանալի</translation>
 <translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
@@ -802,6 +804,7 @@
 <translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
 <translation id="8508640263392900755">APN-ի մանրամասներ</translation>
 <translation id="8528615187455571738">CrosVm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Ձեր օպերատորի ցանցին միանալու համար կարող է պահանջվել, որ միացնեք այս կարգավորումը։ Մանրամասների համար դիմեք ձեր օպերատորին։</translation>
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
 <translation id="8620617069779373398">Ռոումինգի կարգավիճակը</translation>

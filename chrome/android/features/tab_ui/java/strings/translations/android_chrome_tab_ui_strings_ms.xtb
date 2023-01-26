@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Dapatkan pemberitahuan</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> tab kelihatan berkaitan. Himpunkan semua tab itu?</translation>
 <translation id="4212246570487010370">Teruskan penyemakan imbas</translation>
-<translation id="4450893287417543264">Jangan tunjukkan lagi</translation>
 <translation id="4648718555153979859">Tab anda dikumpulkan bersama di sini</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ulasan)}other{(<ph name="REVIEWS_COUNT_MANY" /> ulasan)}}</translation>
 <translation id="4850886885716139402">Lihat</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Bandingkan halaman dengan pantas dengan membuat kumpulan. Untuk bermula, sentuh &amp; tahan pautan.</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
-<translation id="5533021382642990449">Tunjukkan kemudian</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5558362125926932819">Tutup kumpulan tab dengan <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dihimpunkan</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Maklumat tentang kedai ini</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Nyahkumpulkan <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Nyahkumpulkan <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
-<translation id="6510648526783655549">Tutup jalur tab</translation>
 <translation id="6549021453810473782">Lihat maklumat kedai</translation>
 <translation id="6562820390860419811">Alihkan tab ke kiri</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Maklumat tentang kedai ini dibuka pada ketinggian penuh</translation>
 <translation id="814503310257431685">Lihat semua</translation>
 <translation id="8205266828577616993">Alihkan tab ke atas</translation>
-<translation id="8304833501377495048">Jangan tunjukkan jalur tab lagi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Kembangkan kumpulan tab dengan <ph name="NUMBER_OF_TABS" /> tab.</translation>
 <translation id="8714939927607906138">Lebih murah</translation>
-<translation id="8749939518995770034">Jalur tab ditutup</translation>
 <translation id="8820741577754260431">Lihat penurunan harga pada tab anda</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9150694013019234766">Beralih antara tab dalam kumpulan tab anda berhampiran bahagian bawah skrin</translation>

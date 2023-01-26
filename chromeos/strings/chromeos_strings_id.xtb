@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Kekuatan sinyal lemah. Coba mendekat ke sumber sinyal Wi-Fi.</translation>
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="3600339377155080675">Pencerminan layar</translation>
+<translation id="3602290021589620013">Pratinjau</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3862598938296403232">Deskripsi wajib diisi</translation>
+<translation id="3865289341173661845">Konten bantuan tidak tersedia.</translation>
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="3866249974567520381">Deskripsi</translation>
 <translation id="387301095347517405">Frekuensi baterai melalui siklus pengisian daya penuh</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Tidak dapat terhubung ke gateway</translation>
 <translation id="4046123991198612571">Lagu berikutnya</translation>
 <translation id="404928562651467259">PERINGATAN</translation>
+<translation id="4054683689023980771">Mendownload gambar</translation>
 <translation id="4060260348856573701">APN baru</translation>
 <translation id="4093865285251893588">Gambar profil</translation>
 <translation id="409427325554347132">Simpan detail pengujian</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Kesehatan baterai</translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5190187232518914472">Hidupkan kembali memori favorit Anda. Untuk menambahkan atau mengedit album, buka <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
-Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="522307662484862935">Jangan sertakan alamat email</translation>
@@ -703,6 +704,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7497215489070763236">Sertifikat CA server</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Konten bantuan tidak tersedia</translation>
 <translation id="7535791657097741517">Aktifkan tema terang</translation>
 <translation id="7550715992156305117">Rutinitas Diagnostik</translation>
 <translation id="7551123448725492271">Perangkat adalah perangkat audio.</translation>

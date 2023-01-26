@@ -12,6 +12,7 @@
 <translation id="1272079795634619415">ឈប់</translation>
 <translation id="1289742167380433257">ដើម្បី​សន្សំសំចៃ​ទិន្នន័យ​ឱ្យអ្នក រូបភាព​របស់ទំព័រនេះ​ត្រូវបានបង្កើន​គុណភាព​ដោយ Google។</translation>
 <translation id="129382876167171263">ឯកសារ​ដែលបានរក្សាទុក​ដោយគេហទំព័រ​បង្ហាញ​នៅទីនេះ</translation>
+<translation id="131112695174432497">ទិន្នន័យ​ដែលប៉ះពាល់​ការ​កំណត់​ការ​ផ្សាយ​ពាណិជ្ជកម្ម​ឱ្យ​មាន​លក្ខណៈ​ផ្ទាល់ខ្លួន ត្រូវ​បានលុប</translation>
 <translation id="1317194122196776028">បំភ្លេចគេហទំព័រនេះ</translation>
 <translation id="1343356790768851700">គេហទំព័រ​នេះ​កំណត់​អ្វី​ៗ​ដែល​អ្នក​ចូលចិត្ត រួច​ណែនាំ​ការផ្សាយពាណិជ្ជកម្ម​ដល់​គេហទំព័រ​ផ្សេងទៀត</translation>
 <translation id="1369915414381695676">គេហទំព័រ <ph name="SITE_NAME" /> ត្រូវបានបន្ថែម</translation>
@@ -89,7 +90,6 @@
 <translation id="2586657967955657006">អង្គ​ចងចាំ</translation>
 <translation id="2597457036804169544">កុំប្រើរចនាប័ទ្មងងឹតលើគេហទំព័រ</translation>
 <translation id="2621115761605608342">អនុញ្ញាត JavaScript សម្រាប់គេហទំព័រជាក់លាក់។</translation>
-<translation id="2639227409413857192">គេហទំព័រ​នេះ​កំណត់​អ្វី​ៗ​ដែល​អ្នក​ចូលចិត្ត រួច​ណែនាំ​ការផ្សាយពាណិជ្ជកម្ម​ដល់​គេហទំព័រ​ផ្សេងទៀត។ គេហទំព័រ​នេះ​ក៏​ប្រមូល​ប្រធានបទនៃការផ្សាយពាណិជ្ជកម្ម​របស់​អ្នក​ពី Chrome ផងដែរ ដើម្បី​បង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​កាន់តែ​ពាក់ព័ន្ធ​ដល់​អ្នក។</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
 <translation id="2677748264148917807">ចាកចេញ</translation>
 <translation id="2687403674020088961">ទប់ស្កាត់ខូគីទាំងអស់ (មិនណែនាំ)</translation>
@@ -116,6 +116,7 @@
 <translation id="3123473560110926937">បាន​ទប់ស្កាត់នៅលើគេហទំព័រ​មួយចំនួន</translation>
 <translation id="3143754809889689516">ចាក់​ពីដំបូង</translation>
 <translation id="3162899666601560689">គេហទំព័រ​អាចប្រើខូគី ដើម្បី​កែលម្អ​បទពិសោធន៍​រុករក​របស់អ្នក ឧទាហរណ៍ ដើម្បីឱ្យអ្នក​បន្តចូលគណនី ឬចងចាំទំនិញ​នៅក្នុង​រទេះទិញទំនិញ​របស់អ្នក</translation>
+<translation id="3165022941318558018">អនុញ្ញាត​ឱ្យ​គេហទំព័រ​ប្រើ​ខូគី​ភាគីទីបី</translation>
 <translation id="3198916472715691905">ទិន្នន័យដែលបានផ្ទុក <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">​ពី​បណ្តាញ</translation>
 <translation id="321187648315454507">ដើម្បីអនុញ្ញាតឱ្យ <ph name="APP_NAME" /> ផ្ញើការជូនដំណឹង​ទៅអ្នក អ្នកក៏ត្រូវបើក​ការជូនដំណឹង​នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" /> ផងដែរ។</translation>
@@ -154,6 +155,7 @@
 <translation id="3859306556332390985">ស្វែងរក​ទៅ​មុខ</translation>
 <translation id="3895926599014793903">បង្ខំបើកដំណើរការពង្រីក</translation>
 <translation id="3908288065506437185">ទប់ស្កាត់​ខូគីភាគីទីបី​ក្នុងមុខងារ​ឯកជន</translation>
+<translation id="3918378745482005425">មុខងារ​មួយចំនួន​ប្រហែល​​​​មិន​​ដំណើរការ​ទេ។ គេហទំព័រ​ដែល​ពាក់ព័ន្ធ​នៅ​តែ​អាច​ប្រើ​ខូគី​ភាគីទីបីបាន។</translation>
 <translation id="3955193568934677022">អនុញ្ញាត​ឲ្យ​ទំព័រ​ចាក់​មាតិកា​ដែលមាន​ការ​ការពារ (ត្រូវបាន​ណែនាំ)</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
 <translation id="3987993985790029246">ចម្លងតំណ</translation>
@@ -216,6 +218,7 @@
 <translation id="5197729504361054390">ទំនាក់ទំនងដែលអ្នកជ្រើសរើស​នឹងចែករំលែកជាមួយ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ។</translation>
 <translation id="5216942107514965959">បានចូលមើល​លើកចុងក្រោយ​នៅថ្ងៃនេះ</translation>
 <translation id="5225463052809312700">បើកកាមេរ៉ា</translation>
+<translation id="5234764350956374838">ច្រានចោល</translation>
 <translation id="5264323282659631142">លុប '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">អូសពីលើ ហើយប៉ះប៊ូតុងថយក្រោយដើម្បីចេញពីរបៀបពេញអេក្រង់។</translation>
 <translation id="5300589172476337783">បង្ហាញ</translation>
@@ -252,6 +255,7 @@
 <translation id="5804241973901381774">ការអនុញ្ញាត</translation>
 <translation id="5860033963881614850">បិទ</translation>
 <translation id="5876056640971328065">ផ្អាក​វីដេអូ</translation>
+<translation id="5884085660368669834">ចំណូលចិត្ត​គេហទំព័រ</translation>
 <translation id="5887687176710214216">បានចូលមើល​លើកចុងក្រោយ​កាលពីម្សិលមិញ</translation>
 <translation id="5916664084637901428">បើក</translation>
 <translation id="5922853908706496913">កំពុងចែក​រំលែក​អេក្រង់​របស់​អ្នក</translation>
@@ -303,6 +307,7 @@
 <translation id="6746124502594467657">រំកិលចុះ</translation>
 <translation id="6749077623962119521">កំណត់ការអនុញ្ញាតឡើងវិញឬ?</translation>
 <translation id="6766622839693428701">អូស​ចុះ​ក្រោម​ដើម្បី​បិទ។</translation>
+<translation id="6787751205395685251">ជ្រើសរើស​ជម្រើស​សម្រាប់ <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">លេង</translation>
 <translation id="6818926723028410516">ជ្រើសរើសធាតុ</translation>
 <translation id="6864395892908308021">ឧបករណ៍នេះ​មិនអាចអាន NFC បានទេ</translation>
@@ -342,18 +347,16 @@
 <translation id="7649070708921625228">ជំនួយ</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
+<translation id="7684642910516280563">កុំ​អនុញ្ញាត​ឱ្យ​គេហទំព័រ​ប្រើ​ខូគី​ភាគីទីបី</translation>
 <translation id="7690549345586282764">បង្ហាញការពង្រីកបង្រួម</translation>
-<translation id="7695658402549134106">ចំណូល​ចិត្ត​គេហទំព័រ​សម្រាប់ <ph name="SITE_NAME" /></translation>
 <translation id="7719367874908701697">ពង្រីកទំព័រ</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
 <translation id="7804248752222191302">គេហទំព័រមួយកំពុងប្រើប្រាស់កាមេរ៉ារបស់អ្នក</translation>
-<translation id="7817023149356982970">អ្នក​នឹង​ត្រូវនាំចេញ​ពី​គេហទំព័រ​នេះ។</translation>
 <translation id="7835852323729233924">ការចាក់មេឌៀ</translation>
 <translation id="783819812427904514">បើក​សំឡេង​វីដេអូ</translation>
 <translation id="7846076177841592234">បោះបង់ការជ្រើសរើស</translation>
-<translation id="7846621471902887024">អ្នក​នឹងត្រូវនាំចេញ​ពី​គេហទំព័រ​ទាំងអស់។</translation>
 <translation id="7882806643839505685">អនុញ្ញាតសំឡេងសម្រាប់ទំព័រជាក់លាក់។</translation>
 <translation id="789180354981963912">ទប់ស្កាត់​ខូគីភាគីទីបី​ក្នុងមុខងារ​ឯកជន៖</translation>
 <translation id="7940722705963108451">រំលឹក​ខ្ញុំ</translation>
@@ -406,7 +409,6 @@
 <translation id="8676374126336081632">ជម្រះការបញ្ចូល</translation>
 <translation id="8681886425883659911">ការផ្សាយពាណិជ្ជកម្ម​ត្រូវ​បាន​ទប់ស្កាត់​នៅ​លើ​គេហទំព័រ​ដែល​គេស្គាល់​ថា​ បង្ហាញ​ការ​ផ្សាយពាណិជ្ជកម្ម​ដែល​នាំ​ឱ្យ​យល់ខុស ឬ​រំខាន</translation>
 <translation id="868929229000858085">ស្វែងរក​ទំនាក់ទំនង​របស់អ្នក</translation>
-<translation id="8702612070107455751">រាល់​​ទិន្នន័យគេហទំព័រ​ដែលបានរក្សាទុកលើឧបករណ៍នឹង​ត្រូវបាន​សម្អាត។</translation>
 <translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8719283222052720129">បើកការអនុញ្ញាត​សម្រាប់ <ph name="APP_NAME" /> នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
@@ -434,6 +436,7 @@
 <translation id="913657688200966289">បើក​ការអនុញ្ញាត​សម្រាប់ <ph name="APP_NAME" /> នៅក្នុង​<ph name="BEGIN_LINK" />ការកំណត់ Android<ph name="END_LINK" />។</translation>
 <translation id="9138217887606523162">ការពង្រីកបង្រួមបច្ចុប្បន្នគឺ <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">ទំព័រនេះ​មានគ្រោះថ្នាក់</translation>
+<translation id="9201023452444595544">រាល់​​ទិន្នន័យ​ដែលបានផ្ទុកក្នុងឧបករណ៍​នឹង​ត្រូវបាន​សម្អាត</translation>
 <translation id="930525582205581608">បំភ្លេច​គេហទំព័រនេះឬ?</translation>
 <translation id="967624055006145463">​ទិន្នន័យដែល​បាន​រក្សា​ទុក</translation>
 </translationbundle>

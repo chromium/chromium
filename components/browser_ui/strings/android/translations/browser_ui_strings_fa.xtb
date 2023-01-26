@@ -12,8 +12,11 @@
 <translation id="1272079795634619415">توقف</translation>
 <translation id="1289742167380433257">‏برای صرفه‌جویی درمصرف داده، Google تصاویر این صفحه را بهینه‌سازی کرده است.</translation>
 <translation id="129382876167171263">فایل‌هایی را که وب‌سایت‌ها ذخیره کرده‌اند، در اینجا نمایش داده می‌شود</translation>
+<translation id="131112695174432497">داده‌ای که بر شخصی‌سازی آگهی اثر بگذارد حذف می‌شود</translation>
 <translation id="1317194122196776028">فراموش کردن این سایت</translation>
+<translation id="1343356790768851700">این سایت چیزهایی را که می‌پسندید تعیین می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد</translation>
 <translation id="1369915414381695676">سایت <ph name="SITE_NAME" /> اضافه شد</translation>
+<translation id="1371239764779356792">اجازه دادن به سایتی برای ذخیره کردن داده در دستگاه</translation>
 <translation id="1383876407941801731">جستجو</translation>
 <translation id="1384959399684842514">بارگیری موقتاً متوقف شد</translation>
 <translation id="1409426117486808224">نمای ساده‌شده برای برگه‌های باز</translation>
@@ -21,6 +24,8 @@
 <translation id="1426410128494586442">بله</translation>
 <translation id="1446450296470737166">‏اجازه کنترل کامل دستگاه‌های MIDI</translation>
 <translation id="1448064542941920355">کاهش بزرگ‌نمایی</translation>
+<translation id="1510341833810331442">سایت‌ها نمی‌توانند در دستگاه داده ذخیره کنند</translation>
+<translation id="1547123415014299762">کوکی‌های شخص ثالث مجاز است</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1633720957382884102">سایت‌های مرتبط</translation>
 <translation id="1644574205037202324">سابقه</translation>
@@ -69,7 +74,9 @@
 <translation id="2390272837142897736">افزایش بزرگ‌نمایی</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> مگابایت</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مجاز هستند}}</translation>
+<translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های شخص ثالث نامیده می‌شوند.</translation>
 <translation id="2434158240863470628">بارگیری کامل شد <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="244264527810019436">ممکن است ویژگی‌های برخی‌از سایت‌ها در «حالت ناشناس» کار نکند</translation>
 <translation id="2442870161001914531">همیشه سایت ویژه رایانه درخواست شود</translation>
 <translation id="2482878487686419369">اعلان‌ها</translation>
 <translation id="2485422356828889247">حذف نصب</translation>
@@ -90,9 +97,11 @@
 <translation id="2713106313042589954">خاموش کردن دوربین</translation>
 <translation id="2717722538473713889">آدرس‌های ایمیل</translation>
 <translation id="2750481671343847896">سایت‌ها می‌توانند پیام‌واره‌های ورود به سیستم سرویس‌های تعیین هویت را نشان دهند.</translation>
+<translation id="2779966372261694284">از سیستم این سایت خارج خواهید شد</translation>
 <translation id="2822354292072154809">مطمئن‌اید می‌خواهید همه مجوزهای سایت مربوط به <ph name="CHOSEN_OBJECT_NAME" /> را بازنشانی کنید؟</translation>
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2874939134665556319">آهنگ قبلی</translation>
+<translation id="2891975107962658722">اجازه ندادن به سایتی برای ذخیره کردن داده در دستگاه</translation>
 <translation id="2903493209154104877">آدرس‌ها</translation>
 <translation id="2910701580606108292">قبل از اجازه دادن به سایت‌ها برای پخش محتوای محافظت‌شده سؤال شود</translation>
 <translation id="2913331724188855103">سایت‌ها مجاز به ذخیره و خواندن داده‌های کوکی باشند (توصیه می‌شود)</translation>
@@ -108,6 +117,7 @@
 <translation id="3123473560110926937">در برخی سایت‌ها مسدود می‌شود</translation>
 <translation id="3143754809889689516">پخش از ابتدا</translation>
 <translation id="3162899666601560689">سایت‌ها می‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند</translation>
+<translation id="3165022941318558018">اجازه دادن به سایتی به‌خصوص برای استفاده از کوکی‌های شخص ثالث</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> داده‌های ذخیره شده</translation>
 <translation id="3203366800380907218">برگرفته از وب</translation>
 <translation id="321187648315454507">‏برای اینکه به <ph name="APP_NAME" /> اجازه دهید برایتان اعلان ارسال کند، اعلان‌ها را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> نیز روشن کنید.</translation>
@@ -135,6 +145,7 @@
 <translation id="3628308229821498208">جستجوهای پیشنهادی</translation>
 <translation id="3744111561329211289">همگام‌سازی پس‌زمینه</translation>
 <translation id="3763247130972274048">در سمت راست یا چپ ویدیو دو ضربه سریع بزنید تا ۱۰ ثانیه رد شود</translation>
+<translation id="3794286421982011626">سایتی که بازدید می‌کنید می‌تواند اطلاعاتی درباره کاری که انجام می‌دهید ذخیره کند تا عملکردی مطابق انتظار شما داشته باشد — برای مثال، برای اینکه در سیستم سایت باقی بمانید یا برای ذخیره کردن مواردی که در سبد خریدتان است. سایت‌ها در اغلب موارد این اطلاعات را به‌صورت موقتی در دستگاه ذخیره می‌کنند.</translation>
 <translation id="3797520601150691162">زمینه تیره برای سایت خاصی استفاده نشود</translation>
 <translation id="3803367742635802571">ممکن است سایت‌هایی که بازدید می‌کنند دیگر مطابق طراحی عمل نکنند</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -144,6 +155,8 @@
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="3859306556332390985">جستجو به جلو</translation>
 <translation id="3895926599014793903">فعال کردن اجباری بزرگ‌نمایی</translation>
+<translation id="3908288065506437185">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شود</translation>
+<translation id="3918378745482005425">ممکن است برخی‌از ویژگی‌ها کار نکنند. سایت‌های مرتبط همچنان می‌توانند از کوکی‌های شخص ثالث استفاده کنند.</translation>
 <translation id="3955193568934677022">به سایت‌ها اجازه داده شود محتوای محافظت‌شده پخش کنند (توصیه می‌شود)</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3987993985790029246">کپی پیوند</translation>
@@ -192,6 +205,7 @@
 <translation id="4976702386844183910">آخرین بازدید: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">مخاطبی پیدا نشد</translation>
 <translation id="4996978546172906250">اشتراک‌گذاری از طریق</translation>
+<translation id="5001526427543320409">کوکی‌های شخص ثالث</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5048398596102334565">مجاز بودن دسترسی سایت‌ها به حسگرهای حرکتی (توصیه می‌شود)</translation>
 <translation id="5050380848339752099">این سایت می‌خواهد خارج از «حالت ناشناس»، اطلاعاتی را با برنامه‌ای هم‌رسانی کند.</translation>
@@ -205,6 +219,7 @@
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
+<translation id="5234764350956374838">رد کردن</translation>
 <translation id="5264323282659631142">برداشتن «<ph name="CHIP_LABEL" />»</translation>
 <translation id="528192093759286357">برای خروج از حالت تمام صفحه، از بالا صفحه را بکشید و دکمه برگشت را لمس کنید.</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -212,6 +227,7 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5335288049665977812">مجاز کردن همه سایت‌ها برای اجرای جاوااسکریپت (توصیه‌ می‌شود)</translation>
 <translation id="534295439873310000">‏دستگاه‌های NFC</translation>
+<translation id="5344522958567249764">مدیریت حریم خصوصی آگهی‌ها</translation>
 <translation id="5354152178998424783">با این کار <ph name="DATASIZE" /> از داده‌ها و کوکی‌هایی که سایت ذخیره کرده است پاک خواهد شد.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ ۱ مورد دیگر)}one{(+ # مورد دیگر)}other{(+ # مورد دیگر)}}</translation>
 <translation id="5403592356182871684">نام‌ها</translation>
@@ -235,10 +251,12 @@
 <translation id="5706552988683188916">با این کار کوکی‌ها و دیگر داده‌های سایت برای <ph name="WEBSITE" /> حذف می‌شود</translation>
 <translation id="5719847187258001597">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند پاک می‌شود.</translation>
 <translation id="5723967018671998714">کوکی‌های شخص ثالث در «حالت ناشناس» مسدود شده‌اند</translation>
+<translation id="5740126560802162366">سایت‌ها می‌توانند در دستگاه داده ذخیره کنند</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> مسدود شد</translation>
 <translation id="5804241973901381774">مجوزها</translation>
 <translation id="5860033963881614850">خاموش</translation>
 <translation id="5876056640971328065">مکث ویدیو</translation>
+<translation id="5884085660368669834">اولویت سایت</translation>
 <translation id="5887687176710214216">آخرین بازدید: دیروز</translation>
 <translation id="5916664084637901428">روشن</translation>
 <translation id="5922853908706496913">درحال هم‌رسانی صفحه‌نمایش</translation>
@@ -258,6 +276,7 @@
 <translation id="6181444274883918285">افزودن سایتی به استثناها</translation>
 <translation id="6192792657125177640">موارد استثنا</translation>
 <translation id="6196640612572343990">مسدود کردن کوکی‌های شخص ثالث</translation>
+<translation id="6205314730813004066">حریم خصوصی آگهی</translation>
 <translation id="6216432067784365534">گزینه‌های <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">«<ph name="APP_NAME" />» حذف نصب شود؟</translation>
 <translation id="6262191102408817757">براساس آخرین برگه شما</translation>
@@ -289,6 +308,7 @@
 <translation id="6746124502594467657">انتقال به پایین</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
 <translation id="6766622839693428701">برای بستن، تند به‌پایین بکشید.</translation>
+<translation id="6787751205395685251">گزینه‌ای برای <ph name="SITE_NAME" /> انتخاب کنید</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6818926723028410516">انتخاب موارد</translation>
 <translation id="6864395892908308021">‏این دستگاه نمی‌تواند NFC را بخواند</translation>
@@ -299,6 +319,7 @@
 <translation id="6992289844737586249">قبل از اجازه به سایت‌ها برای استفاده از میکروفون ابتدا سؤال شود (توصیه می‌شود)</translation>
 <translation id="7000754031042624318">‏در تنظیمات Android غیرفعال شده است</translation>
 <translation id="7016516562562142042">برای موتور جستجوی فعلی مجاز است</translation>
+<translation id="702275896380648118">‏این سایت چیزهایی را که می‌پسندید شناسایی می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد. این سایت همچنین موضوع‌های آگهی شما را از Chrome دریافت می‌کند تا آگهی‌های مرتبط‌تری به شما نشان دهد.</translation>
 <translation id="702463548815491781">‏توصیه در زمانی‌که TalkBack یا «دسترسی کلیدی» روشن است</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{۱ مورد انتخاب شد}one{# مورد انتخاب شد}other{# مورد انتخاب شد}}</translation>
@@ -328,18 +349,16 @@
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7667547420449112975">جادوگر شهر اُز</translation>
+<translation id="7684642910516280563">اجازه ندادن به سایتی به‌خصوص برای استفاده از کوکی‌های شخص ثالث</translation>
 <translation id="7690549345586282764">نمایش بزرگ‌نمایی</translation>
-<translation id="7695658402549134106">اولویت سایت برای <ph name="SITE_NAME" /></translation>
 <translation id="7719367874908701697">بزرگ‌نمایی صفحه</translation>
 <translation id="7781829728241885113">دیروز</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804248752222191302">سایتی درحال استفاده از دوربینتان است</translation>
-<translation id="7817023149356982970">از سیستم این سایت خارج خواهید شد.</translation>
 <translation id="7835852323729233924">درحال پخش رسانه</translation>
 <translation id="783819812427904514">با صدا کردن ویدیو</translation>
 <translation id="7846076177841592234">لغو انتخاب</translation>
-<translation id="7846621471902887024">از سیستم همه سایت‌ها خارج خواهید شد.</translation>
 <translation id="7882806643839505685">پخش صدا برای سایت خاصی مجاز شود.</translation>
 <translation id="789180354981963912">مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»:</translation>
 <translation id="7940722705963108451">به من یادآوری شود</translation>
@@ -351,6 +370,7 @@
 <translation id="8042586301629853791">مرتب‌سازی براساس:</translation>
 <translation id="8067883171444229417">پخش ویدیو</translation>
 <translation id="8068648041423924542">انتخاب گواهی ممکن نیست.</translation>
+<translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
 <translation id="8087000398470557479">‏این محتوا از <ph name="DOMAIN_NAME" /> است و توسط Google ارائه می‌شود.</translation>
 <translation id="8116925261070264013">صامت‌شده</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
@@ -384,12 +404,13 @@
 <translation id="8514955299594277296">سایت‌ها اجازه ندارند در دستگاه داده ذخیره کنند (توصیه نمی‌شود)</translation>
 <translation id="851751545965956758">مسدود کردن سایت‌ها برای اتصال به دستگاه‌ها</translation>
 <translation id="8525306231823319788">تمام صفحه</translation>
+<translation id="8541410041357371550">‏این سایت موضوعات آگهی را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="8564613706851221529">{COUNT,plural, =1{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}one{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}other{کوکی‌ها برای <ph name="FPS_MEMBERS_COUNT" /> سایت <ph name="FPS_OWNER" /> مجاز هستند}}</translation>
 <translation id="857943718398505171">مجاز (توصیه می‌شود)</translation>
 <translation id="8609465669617005112">انتقال به بالا</translation>
 <translation id="8676374126336081632">پاک کردن ورودی</translation>
+<translation id="8681886425883659911">آگهی‌های نمایش‌داده‌شده در سایت‌هایی که طبق تشخیص ما آگهی‌های مزاحم یا گمراه‌کننده نمایش می‌دهند مسدود می‌شود.</translation>
 <translation id="868929229000858085">جستجوی مخاطبین</translation>
-<translation id="8702612070107455751">همه داده‌های آفلاین پاک خواهند شد.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8719283222052720129">‏اجازه <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
@@ -400,6 +421,7 @@
 <translation id="8816026460808729765">سایت‌ها نمی‌توانند به حسگرها دسترسی داشته باشند</translation>
 <translation id="8823559166155093873">مسدود کردن کوکی‌ها</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8899807382908246773">آگهی‌های مزاحم</translation>
 <translation id="8903921497873541725">بزرگ‌نمایی</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">‏NFC برای این دستگاه خاموش است. در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> آن را روشن کنید.</translation>
@@ -407,6 +429,7 @@
 <translation id="8958424370300090006">کوکی‌ها را برای سایت خاصی مسدود کنید.</translation>
 <translation id="8959122750345127698">پیمایش غیرقابل دسترسی است: <ph name="URL" /></translation>
 <translation id="8986362086234534611">فراموش شود</translation>
+<translation id="8990043154272859344">از سیستم همه سایت‌ها خارج خواهید شد</translation>
 <translation id="900095568014372589">کوچک‌تر یا بزرگ‌تر کردن نوشتار پیش‌فرض و تصاویر سایت‌ها</translation>
 <translation id="9019902583201351841">مدیریت شده توسط والدین شما</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
@@ -416,6 +439,7 @@
 <translation id="913657688200966289">‏اجازه‌های <ph name="APP_NAME" /> را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="9138217887606523162">بزرگ‌نمایی کنونی <ph name="ZOOM_LEVEL" /> %% است</translation>
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>
+<translation id="9201023452444595544">هرنوع داده آفلاینی حذف خواهد شد</translation>
 <translation id="930525582205581608">این سایت فراموش شود؟</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 </translationbundle>

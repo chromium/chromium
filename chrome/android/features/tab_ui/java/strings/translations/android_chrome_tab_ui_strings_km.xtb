@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">ទទួល​ការជូន​ដំណឹង</translation>
 <translation id="4133493477912226187">ផ្ទាំង <ph name="NUMBER_OF_TABS" /> ហាក់ដូចជាពាក់ព័ន្ធគ្នា។ បញ្ចូលផ្ទាំងទាំងនេះទៅក្នុងក្រុមឬ?</translation>
 <translation id="4212246570487010370">ការអានបន្ត</translation>
-<translation id="4450893287417543264">កុំបង្ហាញម្ដងទៀត</translation>
 <translation id="4648718555153979859">ផ្ទាំងរបស់អ្នកត្រូវ​បានដាក់ជាក្រុម​រួមគ្នានៅទីនេះ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_ONE" />)}other{(មតិវាយតម្លៃ <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">មើល</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">ប្រៀបធៀបទំព័រ​យ៉ាងរហ័សដោយ​ការបង្កើតក្រុម។ ដើម្បីចាប់ផ្ដើម សូមចុច​តំណឱ្យជាប់។</translation>
 <translation id="5490235265819901748">បានពង្រីក​ក្រុមផ្ទាំង</translation>
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
-<translation id="5533021382642990449">បង្ហាញពេលក្រោយ</translation>
 <translation id="5556417849629758491">មើលព័ត៌មានអំពីហាង ជម្រើសមាននៅជិតផ្នែកខាងលើអេក្រង់</translation>
 <translation id="5558362125926932819">បិទក្រុមផ្ទាំង​ដែលមាន <ph name="NUMBER_OF_TABS" />ផ្ទាំង</translation>
 <translation id="5580090775658607195">បានដាក់ផ្ទាំង <ph name="TAB_COUNT" /> ជាក្រុម</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">ព័ត៌មានអំពី​ហាងនេះ</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{បំបែក​ក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បំបែកក្រុម​ផ្ទាំង​ដែល​បាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{ផ្ទាំង <ph name="TABS_COUNT_ONE" />}other{ផ្ទាំង <ph name="TABS_COUNT_MANY" />}}</translation>
-<translation id="6510648526783655549">បិទរបារផ្ទាំង</translation>
 <translation id="6549021453810473782">មើលព័ត៌មានអំពីហាង</translation>
 <translation id="6562820390860419811">ផ្លាស់ទី​ផ្ទាំង​ទៅ​ខាងឆ្វេង</translation>
 <translation id="6615455863669487791">បង្ហាញខ្ញុំ</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">បានបើក​ព័ត៌មានអំពី​ហាងនេះ​ពេញអេក្រង់</translation>
 <translation id="814503310257431685">មើលទាំងអស់</translation>
 <translation id="8205266828577616993">រំកិល​ផ្ទាំង​ឡើងលើ</translation>
-<translation id="8304833501377495048">កុំបង្ហាញរបារផ្ទាំងម្ដងទៀតឬ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_ONE" />}other{បិទ​ផ្ទាំង​ដែលបាន​ជ្រើសរើស <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="8398929769197326728">ថតថ្មី - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ពង្រីកក្រុមផ្ទាំង​ដែលមាន <ph name="NUMBER_OF_TABS" />ផ្ទាំង។</translation>
 <translation id="8714939927607906138">តម្លៃ​ទាប​ជាង​មុន</translation>
-<translation id="8749939518995770034">បានបិទរបារផ្ទាំង</translation>
 <translation id="8820741577754260431">មើលការធ្លាក់ថ្លៃនៅក្នុងផ្ទាំងរបស់អ្នក</translation>
 <translation id="9090098097337832354">បានបិទ​ព័ត៌មាន​អំពីហាងនេះ</translation>
 <translation id="9150694013019234766">ប្ដូររវាងផ្ទាំង​នៅក្នុងក្រុម​ផ្ទាំងរបស់​អ្នកនៅជិតផ្នែកខាង​ក្រោមបំផុតរបស់​អេក្រង់</translation>

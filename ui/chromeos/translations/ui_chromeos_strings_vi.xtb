@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Cài đặt thiết bị</translation>
 <translation id="2084809735218147718">Ra hiệu cảm ơn</translation>
 <translation id="2088690981887365033">Mạng riêng ảo (VPN)</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> mục sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="2122305276694332719">Việc tự động kết nối vào một mạng ẩn sẽ cho phép những người khác nhìn thấy thiết bị và một số tùy chọn cài đặt mạng của bạn. Bạn không nên bật tùy chọn này.</translation>
 <translation id="2125607626296734455">Tiếng Khmer</translation>
 <translation id="2139545522194199494">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Do quản trị viên của bạn quản lý, Kết nối</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Không có mục nào khớp với <ph name="SEARCH_STRING" /></translation>
 <translation id="2894654529758326923">Thông tin</translation>
 <translation id="2902734494705624966">Mở rộng của Hoa Kỳ</translation>
+<translation id="2904378509913846215">Đã có một thư mục có tên "<ph name="FILENAME" />". Bạn có muốn thay thế tệp này bằng tệp mà bạn đang di chuyển không?</translation>
 <translation id="290843123675549676">Tiếng Maratha</translation>
 <translation id="2923240520113693977">Tiếng Estonia</translation>
 <translation id="2938685643439809023">Tiếng Mông Cổ</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Khôi phục hoặc kéo các mục này vào một thư mục mới bên ngoài thùng rác</translation>
 <translation id="4401287888955153199">Trích xuất tất cả</translation>
 <translation id="4410695710508688828">Thao tác trích xuất không thành công. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" sẽ bị xoá và không thể khôi phục.</translation>
 <translation id="4418686080762064601">Tạo một lối tắt cho tệp của bạn</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
 <translation id="4439427728133035643">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Kết nối</translation>
@@ -639,6 +642,7 @@
 <translation id="6241349547798190358">Tiếng Hà Lan (Bỉ)</translation>
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>
+<translation id="6271903698064569429">Bạn không thể tải tệp lên vì "<ph name="SHARED_DRIVE_NAME" />" không có đủ bộ nhớ.</translation>
 <translation id="6287852322318138013">Chọn một ứng dụng để mở tệp này</translation>
 <translation id="6295542640242147836">Khoá SIM</translation>
 <translation id="6296410173147755564">Mã PUK không hợp lệ</translation>
@@ -684,6 +688,7 @@
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6658865850469097484">Các tệp đã nằm trong thùng rác hơn 30 ngày sẽ tự động bị xoá.</translation>
 <translation id="6673674183150363784">Tiếng Pháp (Pháp) bằng bàn phím Bépo</translation>
+<translation id="670380500182402678">Thay thế tất cả</translation>
 <translation id="6710022688720561421">Rô bốt</translation>
 <translation id="6710213216561001401">Trước</translation>
 <translation id="6732801395666424405">Không tải được chứng chỉ</translation>
@@ -902,6 +907,7 @@
 <translation id="8386903983509584791">Đã quét xong</translation>
 <translation id="8387733224523483503">Đã giải nén <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Kích thước</translation>
+<translation id="8404498045299006085">Giữ lại tất cả</translation>
 <translation id="8408068190360279472">Đang kết nối mạng <ph name="NETWORK_TYPE" /></translation>
 <translation id="8425213833346101688">Thay đổi</translation>
 <translation id="8431909052837336408">Thay đổi mã PIN của SIM</translation>
@@ -928,6 +934,7 @@
 <translation id="8560515948038859357">Tiếng Quảng Đông</translation>
 <translation id="8561206103590473338">Voi</translation>
 <translation id="8566466896628108558">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Quản trị viên đã chặn, Thông tin chi tiết</translation>
+<translation id="8568374623837201676">Xoá vĩnh viễn tệp này?</translation>
 <translation id="8569764466147087991">Chọn tệp để mở</translation>
 <translation id="8577897833047451336">Tiếng Croatia</translation>
 <translation id="8578308463707544055">Tiếng Indonesia</translation>

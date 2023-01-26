@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Otkrivena je nekompatibilna verzija protokola. Provjerite je li na oba računala instalirana najnovija verzija softvera pa pokušajte ponovo.</translation>
 <translation id="1008557486741366299">Ne sada</translation>
 <translation id="1201402288615127009">Dalje</translation>
+<translation id="1296511125400541222">Autorska prava 2023. Autori Chromiuma. Sva prava pridržana.</translation>
 <translation id="1297009705180977556">Pogreška pri povezivanju s računalom <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Traženi objekt ne postoji.</translation>
 <translation id="1480046233931937785">Sudjelovali</translation>
@@ -88,6 +89,7 @@ Ako je okvir "<ph name="SERVICE_SCRIPT_NAME" />" već potvrđen, uklonite kvači
 <translation id="4808503597364150972">Unesite svoj PIN za host <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host:</translation>
 <translation id="4867841927763172006">Pošalji PrtScn</translation>
+<translation id="4960795469833295568">Autorska prava 2023. Google LLC. Sva prava pridržana.</translation>
 <translation id="4974476491460646149">Zatvorena je veza s računalom <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Prvo morate postaviti računalo za daljinski pristup</translation>
 <translation id="4987330545941822761">Udaljena radna površina Chrome ne može odrediti preglednik za lokalno otvaranje URL-ova. Odaberite ga na popisu u nastavku.</translation>

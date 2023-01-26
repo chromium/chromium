@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">ደካማ የሲግናል ጥንካሬ። ወደ Wi-Fi ሲግናል ምንጭ ለመቅረብ ይሞክሩ።</translation>
 <translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="3600339377155080675">የማያ ገጽ ግልባጭ</translation>
+<translation id="3602290021589620013">ቅድመ-ዕይታ</translation>
 <translation id="3603829704940252505">አምሳያ</translation>
 <translation id="3604713164406837697">ልጣፍ ይለውጡ</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3858860766373142691">ስም</translation>
 <translation id="3862598938296403232">መግለጫ ያስፈልጋል</translation>
+<translation id="3865289341173661845">የእገዛ ይዘት አይገኝም።</translation>
 <translation id="3865414814144988605">የምስል ጥራት</translation>
 <translation id="3866249974567520381">ማብራሪያ</translation>
 <translation id="387301095347517405">ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ጊዜ ብዛት</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">አግባቢ ፍኖትን ማነጋገር አልተቻለም</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
 <translation id="404928562651467259">ማስጠንቀቂያ</translation>
+<translation id="4054683689023980771">ምስልን በማውረድ ላይ</translation>
 <translation id="4060260348856573701">አዲስ ኤፒኤን</translation>
 <translation id="4093865285251893588">የመገለጫ ምስል</translation>
 <translation id="409427325554347132">የሙከራ ዝርዝሮችን አስቀምጥ</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" />ን አልበም ይምረጡ</translation>
 <translation id="4111761024568264522">የዩኤስቢ መዳሰሻ ሰሌዳ</translation>
 <translation id="4117637339509843559">የጨለማ ሁነታ</translation>
@@ -448,8 +452,6 @@
 <translation id="5168185087976003268">የባትሪ ጤንነት</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5190187232518914472">የሚወዷቸውን ትውስታዎች ዳግም ይኑሯቸው። አልበሞችን ለማከል ወይም ለማርትዕ ወደ <ph name="LINK_BEGIN" />Google ፎቶዎች<ph name="LINK_END" /> ይሂዱ።</translation>
-<translation id="5212543919916444558">እኔ ላግዝ የምችልበት ምንም ነገር በእርስዎ ማያ ገጽ ላይ አላገኘሁም።
-ማንኛውም ነገር እኔን ለመጠየቅ ማይክሮፎኑን መታ አድርገው ይሞክሩ።</translation>
 <translation id="5212593641110061691">ታብሎይድ</translation>
 <translation id="5222676887888702881">ዘግተህ ውጣ</translation>
 <translation id="522307662484862935">የኢሜይል አድራሻን አያካትቱ</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">የአገልጋይ CA እውቅና ማረጋገጫ</translation>
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">የእገዛ ይዘት አይገኝም</translation>
 <translation id="7535791657097741517">ነጣ ያለ ገጽታን አብራ</translation>
 <translation id="7550715992156305117">የምርመራ የዕለት ተዕለት ሥራዎች</translation>
 <translation id="7551123448725492271">መሣሪያ የኦዲዮ መሣሪያ ነው።</translation>
@@ -719,6 +722,7 @@
 <translation id="7690294790491645610">አዲስ የይለፍ ቃል ያረጋግጡ</translation>
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">የዑደት ብዛት</translation>
 <translation id="7747039790905080783">ቅድሚያ የተጋራ ቁልፍ</translation>
 <translation id="7762130827864645708">የይለፍ ቃልዎ ለውጥ ተሳክቷል። እባክዎ ከአሁን በኋላ አዲሱን የይለፍ ቃል ይጠቀሙ።</translation>
@@ -802,6 +806,7 @@
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
 <translation id="8508640263392900755">የኤፒኤን ዝርዝሮች</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>
 <translation id="8576249514688522074">ያልተጀመረ</translation>
 <translation id="8620617069779373398">የውሂብ ዝውውር ሁኔታ</translation>

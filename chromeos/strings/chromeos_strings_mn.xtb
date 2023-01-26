@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Дохионы хүч сул байна. Wi-Fi дохионы эх үүсвэр лүү ойртож үзнэ үү.</translation>
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="3600339377155080675">Screen mirror</translation>
+<translation id="3602290021589620013">Мэдээллийг урьдчилж харах</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Дэлгэцийн зураг солих</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Буцах</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3862598938296403232">Тайлбар шаардлагатай</translation>
+<translation id="3865289341173661845">Тусламжийн контент боломжгүй байна.</translation>
 <translation id="3865414814144988605">Нягтрал</translation>
 <translation id="3866249974567520381">Тодорхойлолт</translation>
 <translation id="387301095347517405">Таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Гэйтвэйтэй холбогдох боломжгүй</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
 <translation id="404928562651467259">АНХААРУУЛГА</translation>
+<translation id="4054683689023980771">Зураг татаж байна</translation>
 <translation id="4060260348856573701">Шинэ APN</translation>
 <translation id="4093865285251893588">Профайлын зураг</translation>
 <translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Батарей барилт</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5190187232518914472">Дуртай дурсамжуудаа сэргээгээрэй. Цомог нэмэх эсвэл засахын тулд <ph name="LINK_BEGIN" />Google Зураг<ph name="LINK_END" /> руу очно уу.</translation>
-<translation id="5212543919916444558">Би таны дэлгэцээс туслах боломжтой зүйл олсонгүй.
-Асуух зүйл байвал микрофоныг товшиж үзнэ үү.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="522307662484862935">Имэйл хаягийг бүү оруулаарай</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">Серверийн CA сертификат</translation>
 <translation id="7502658306369382406">IPv6 хаяг</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Тусламжийн контент боломжгүй байна</translation>
 <translation id="7535791657097741517">Цайвар загварыг асаах</translation>
 <translation id="7550715992156305117">Оношилгооны хэвшил</translation>
 <translation id="7551123448725492271">Төхөөрөмж нь аудио төхөөрөмж байна.</translation>

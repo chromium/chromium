@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Word in kennis gestel</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> oortjies lyk of hulle verwant is. Groepeer hulle?</translation>
 <translation id="4212246570487010370">Hou aan blaai</translation>
-<translation id="4450893287417543264">Moenie weer wys nie</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> resensie)}other{(<ph name="REVIEWS_COUNT_MANY" /> resensies)}}</translation>
 <translation id="4850886885716139402">Bekyk</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Vergelyk bladsye vinnig deur 'n groep te maak. Raak en hou 'n skakel om te begin.</translation>
 <translation id="5490235265819901748">Oortjiegroep is uitgevou</translation>
 <translation id="5494920125229734069">Kies almal</translation>
-<translation id="5533021382642990449">Wys later</translation>
 <translation id="5556417849629758491">Bekyk winkelinligting; opsie beskikbaar naby bokant van die skerm</translation>
 <translation id="5558362125926932819">Maak oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies toe</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> oortjies gegroepeer</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Inligting oor hierdie winkel</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ongroepeer <ph name="TABS_COUNT_ONE" /> geselekteerde oortjie}other{Ongroepeer <ph name="TABS_COUNT_MANY" /> geselekteerde oortjies}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> oortjie}other{<ph name="TABS_COUNT_MANY" /> oortjies}}</translation>
-<translation id="6510648526783655549">Maak oortjiestrook toe</translation>
 <translation id="6549021453810473782">Bekyk winkelinligting</translation>
 <translation id="6562820390860419811">Skuif oortjie na links</translation>
 <translation id="6615455863669487791">Wys my</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Inligting oor hierdie winkel is teen volle hoogte oopgemaak</translation>
 <translation id="814503310257431685">Bekyk alles</translation>
 <translation id="8205266828577616993">Skuif oortjie op</translation>
-<translation id="8304833501377495048">Moenie weer hierdie oortjiestrook wys nie?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Maak <ph name="TABS_COUNT_ONE" /> gekose oortjie toe}other{Maak <ph name="TABS_COUNT_MANY" /> gekose oortjies toe}}</translation>
 <translation id="8398929769197326728">Nuwe vouer – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Vou oortjiegroep met <ph name="NUMBER_OF_TABS" /> oortjies uit.</translation>
 <translation id="8714939927607906138">Laer prys</translation>
-<translation id="8749939518995770034">Oortjiestrook is toegemaak</translation>
 <translation id="8820741577754260431">Sien prysdalings in jou oortjies</translation>
 <translation id="9090098097337832354">Inligting oor hierdie winkel is toegemaak</translation>
 <translation id="9150694013019234766">Wissel tussen oortjies in jou oortjiegroep naby die onderkant van die skerm</translation>

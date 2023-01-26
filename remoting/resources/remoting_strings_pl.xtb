@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Wykryto niezgodną wersję protokołu. Upewnij się, że na obu komputerach masz zainstalowaną najnowszą wersję oprogramowania, i spróbuj ponownie.</translation>
 <translation id="1008557486741366299">Nie teraz</translation>
 <translation id="1201402288615127009">Dalej</translation>
+<translation id="1296511125400541222">Copyright 2023 Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
 <translation id="1297009705180977556">Błąd podczas łączenia z: <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Żądany obiekt nie istnieje.</translation>
 <translation id="1480046233931937785">Autorzy</translation>
@@ -88,6 +89,7 @@ Jeśli opcja „<ph name="SERVICE_SCRIPT_NAME" />” jest już zaznaczona, odzna
 <translation id="4808503597364150972">Wpisz PIN dla: <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Wyślij PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="4974476491460646149">Połączenie z hostem <ph name="HOSTNAME" /> zostało zakończone</translation>
 <translation id="4985296110227979402">Najpierw musisz skonfigurować funkcję dostępu zdalnego na komputerze.</translation>
 <translation id="4987330545941822761">Pulpit zdalny Chrome nie może określić przeglądarki do lokalnego otwierania adresów URL. Wybierz ją z listy poniżej.</translation>

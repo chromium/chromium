@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">দুর্বল সিগন্যাল। ওয়াই-ফাই সিগন্যাল সোর্সের কাছাকাছি যাওয়ার চেষ্টা করুন।</translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
 <translation id="3600339377155080675">স্ক্রিন শেয়ার করার বোতাম</translation>
+<translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3603829704940252505">অবতার</translation>
 <translation id="3604713164406837697">ওয়ালপেপার পরিবর্তন করুন</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">ফিরুন</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3862598938296403232">বিবরণ লিখতে হবে</translation>
+<translation id="3865289341173661845">সহায়তা কন্টেন্ট উপলভ্য নেই।</translation>
 <translation id="3865414814144988605">রেজোলিউশন</translation>
 <translation id="3866249974567520381">বর্ণনা</translation>
 <translation id="387301095347517405">আপনার ব্যাটারি যতবার পুরো চার্জ দেওয়া হয়েছে</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">গেটওয়েতে যোগাযোগ করা যাচ্ছে না</translation>
 <translation id="4046123991198612571">পরবর্তী ট্র্যাক</translation>
 <translation id="404928562651467259">সতর্কতা</translation>
+<translation id="4054683689023980771">ছবি ডাউনলোড করা হচ্ছে</translation>
 <translation id="4060260348856573701">নতুন APN</translation>
 <translation id="4093865285251893588">প্রোফাইল ছবি</translation>
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
@@ -449,7 +452,6 @@
 <translation id="5168185087976003268">ব্যাটারির স্বাস্থ্য</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5190187232518914472">আপনার প্রিয় স্মৃতিগুলি রোমন্থন করুন। অ্যালবাম যোগ ও এডিট করতে, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-এ যান।</translation>
-<translation id="5212543919916444558">আপনাকে সাহায্য করতে পারি এমন কিছুই আপনার স্ক্রিনে আমি খুঁজে পাইনি। আমাকে কিছু জিজ্ঞাসা করতে মাইকে ট্যাপ করুন।</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="522307662484862935">ইমেল আইডি যোগ করবেন না</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">সার্ভার CA সার্টিফিকেট</translation>
 <translation id="7502658306369382406">IPv6 ঠিকানা</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">সহায়তা কন্টেন্ট উপলভ্য নেই</translation>
 <translation id="7535791657097741517">হালকা থিম চালু করুন</translation>
 <translation id="7550715992156305117">ডায়াগনস্টিক রুটিন</translation>
 <translation id="7551123448725492271">ডিভাইস একটি অডিও ডিভাইস।</translation>

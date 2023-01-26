@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">È stata rilevata una versione incompatibile del protocollo. Verifica che la versione più recente del software sia installata su entrambi i computer e riprova.</translation>
 <translation id="1008557486741366299">Non adesso</translation>
 <translation id="1201402288615127009">Avanti</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="1297009705180977556">Errore durante la connessione a <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">L'oggetto richiesto non esiste.</translation>
 <translation id="1480046233931937785">Riconoscimenti</translation>
@@ -88,6 +89,7 @@ Se la casella "<ph name="SERVICE_SCRIPT_NAME" />" è già selezionata, deselezio
 <translation id="4808503597364150972">Inserisci il PIN di <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Invia Stamp</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Tutti i diritti riservati.</translation>
 <translation id="4974476491460646149">Connessione a <ph name="HOSTNAME" /> chiusa</translation>
 <translation id="4985296110227979402">Devi eseguire prima la configurazione del computer per poter effettuare l'accesso remoto</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop non può determinare il browser per aprire gli URL localmente. Scegline uno dall'elenco di seguito.</translation>

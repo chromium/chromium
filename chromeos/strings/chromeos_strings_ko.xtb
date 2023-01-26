@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">신호 강도가 약합니다. Wi-Fi 신호 소스 가까이 이동해 보세요.</translation>
 <translation id="3595596368722241419">배터리 충전 완료</translation>
 <translation id="3600339377155080675">화면 미러링</translation>
+<translation id="3602290021589620013">미리보기</translation>
 <translation id="3603829704940252505">아바타</translation>
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3858860766373142691">이름</translation>
 <translation id="3862598938296403232">설명은 필수 항목입니다.</translation>
+<translation id="3865289341173661845">도움말 콘텐츠를 사용할 수 없습니다.</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="3866249974567520381">설명</translation>
 <translation id="387301095347517405">배터리가 완전 방전 및 충전 사이클을 거친 횟수입니다.</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">게이트웨이에 접근할 수 없습니다.</translation>
 <translation id="4046123991198612571">다음 트랙</translation>
 <translation id="404928562651467259">경고</translation>
+<translation id="4054683689023980771">이미지 다운로드 중</translation>
 <translation id="4060260348856573701">새 APN</translation>
 <translation id="4093865285251893588">프로필 이미지</translation>
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">배터리 상태</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5190187232518914472">소중한 추억을 되새겨 보세요. 앨범을 추가하거나 수정하려면 <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />로 이동하세요.</translation>
-<translation id="5212543919916444558">화면에 도움을 드릴 수 있는 항목이 보이지 않습니다.
-마이크를 탭하여 무엇이든지 물어보세요.</translation>
 <translation id="5212593641110061691">타블로이드</translation>
 <translation id="5222676887888702881">로그아웃</translation>
 <translation id="522307662484862935">이메일 주소 포함 안함</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">서버 CA 인증서</translation>
 <translation id="7502658306369382406">IPv6 주소</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">도움말 콘텐츠를 사용할 수 없습니다.</translation>
 <translation id="7535791657097741517">밝은 테마 사용 설정</translation>
 <translation id="7550715992156305117">진단 루틴</translation>
 <translation id="7551123448725492271">오디오 기기입니다.</translation>

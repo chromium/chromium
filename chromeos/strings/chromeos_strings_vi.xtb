@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Cường độ tín hiệu yếu. Hãy thử di chuyển đến gần nguồn tín hiệu Wi-Fi hơn.</translation>
 <translation id="3595596368722241419">Pin đầy</translation>
 <translation id="3600339377155080675">Phản chiếu lên màn hình</translation>
+<translation id="3602290021589620013">Xem trước</translation>
 <translation id="3603829704940252505">Hình đại diện</translation>
 <translation id="3604713164406837697">Thay đổi hình nền</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Quay lại</translation>
 <translation id="3858860766373142691">Tên</translation>
 <translation id="3862598938296403232">Bạn phải nhập nội dung mô tả</translation>
+<translation id="3865289341173661845">Không có nội dung trợ giúp.</translation>
 <translation id="3865414814144988605">Độ phân giải</translation>
 <translation id="3866249974567520381">Mô tả</translation>
 <translation id="387301095347517405">Số lần pin của bạn được sạc đầy</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Không thể kết nối với cổng vào</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
 <translation id="404928562651467259">CẢNH BÁO</translation>
+<translation id="4054683689023980771">Đang tải hình ảnh xuống</translation>
 <translation id="4060260348856573701">APN mới</translation>
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Tình trạng pin</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5190187232518914472">Hồi tưởng lại những kỷ niệm đáng nhớ của bạn. Để thêm hoặc chỉnh sửa album, hãy chuyển đến <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
-Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
 <translation id="5212593641110061691">Tin vắn tắt</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
 <translation id="522307662484862935">Không bao gồm địa chỉ email</translation>
@@ -703,6 +704,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7497215489070763236">Chứng chỉ CA máy chủ</translation>
 <translation id="7502658306369382406">Địa chỉ IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Không có nội dung trợ giúp</translation>
 <translation id="7535791657097741517">Bật giao diện sáng</translation>
 <translation id="7550715992156305117">Quy trình chẩn đoán</translation>
 <translation id="7551123448725492271">Thiết bị là thiết bị âm thanh.</translation>

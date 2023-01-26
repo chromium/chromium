@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Detectouse unha versión de protocolo incompatible. Asegúrate de que tes instalada a versión máis recente do software en ambos ordenadores e téntao de novo.</translation>
 <translation id="1008557486741366299">Agora non</translation>
 <translation id="1201402288615127009">Seguinte</translation>
+<translation id="1296511125400541222">Copyright 2023, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="1297009705180977556">Produciuse un erro ao conectarse a <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">O obxecto solicitado non existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
@@ -88,6 +89,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="4808503597364150972">Insire o PIN de <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Enviar Imp Pant</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Reservados todos os dereitos.</translation>
 <translation id="4974476491460646149">Pechouse a conexión con <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Primeiro debes configurar o teu ordenador para o acceso remoto</translation>
 <translation id="4987330545941822761">Escritorio remoto de Chrome non puido determinar o navegador para abrir os URL localmente. Escólleo na lista que aparece debaixo.</translation>

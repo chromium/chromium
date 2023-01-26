@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Setelan perangkat</translation>
 <translation id="2084809735218147718">Menandatangani terima kasih</translation>
 <translation id="2088690981887365033">Jaringan VPN</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> item akan dihapus dan Anda tidak akan dapat memulihkannya.</translation>
 <translation id="2122305276694332719">Menghubungkan ke jaringan tersembunyi secara otomatis akan memungkinkan orang lain melihat perangkat Anda dan beberapa setelan jaringan, sehingga tindakan ini tidak direkomendasikan.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Dikelola oleh Administrator Anda, Sambungkan</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Tidak ada item yang cocok &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Informasi</translation>
 <translation id="2902734494705624966">Extended AS</translation>
+<translation id="2904378509913846215">Folder bernama "<ph name="FILENAME" />" sudah ada. Ingin menggantinya dengan folder yang sedang Anda pindahkan?</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estonia</translation>
 <translation id="2938685643439809023">Mongolia</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Pulihkan item atau tarik ke folder baru di luar sampah</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
 <translation id="4410695710508688828">Operasi pengekstrakan gagal. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" akan dihapus dan Anda tidak akan dapat memulihkannya.</translation>
 <translation id="4418686080762064601">Buat pintasan untuk file Anda</translation>
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4439427728133035643">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
@@ -639,6 +642,7 @@
 <translation id="6241349547798190358">Belanda (Belgia)</translation>
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>
+<translation id="6271903698064569429">File tidak dapat diupload karena "<ph name="SHARED_DRIVE_NAME" />" tidak memiliki penyimpanan yang cukup.</translation>
 <translation id="6287852322318138013">Pilih aplikasi untuk membuka file ini</translation>
 <translation id="6295542640242147836">Kunci SIM</translation>
 <translation id="6296410173147755564">PUK tidak valid</translation>
@@ -684,6 +688,7 @@
 <translation id="6657585470893396449">Sandi</translation>
 <translation id="6658865850469097484">File yang ada di sampah selama lebih dari 30 hari akan otomatis dihapus.</translation>
 <translation id="6673674183150363784">Prancis (Prancis) dengan keyboard Bépo</translation>
+<translation id="670380500182402678">Ganti semua</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6732801395666424405">Sertifikat tidak dimuat</translation>
@@ -764,7 +769,7 @@
 <translation id="7268659760406822741">Layanan yang tersedia</translation>
 <translation id="7292816689782057017">Kebijakan administrator membatasi penyimpanan ke beberapa lokasi.</translation>
 <translation id="7294063083760278948">Transliterasi Telugu</translation>
-<translation id="7295662345261934369">Bagikan dengan yang lain</translation>
+<translation id="7295662345261934369">Bagikan kepada yang lain</translation>
 <translation id="7297443947353982503">Nama pengguna/sandi salah atau autentikasi EAP gagal</translation>
 <translation id="7309413087278791451">Jerman (Belgia)</translation>
 <translation id="7339898014177206373">Jendela baru</translation>
@@ -902,6 +907,7 @@
 <translation id="8386903983509584791">Pemindaian selesai</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> diekstrak.</translation>
 <translation id="8395901698320285466">Dimensi</translation>
+<translation id="8404498045299006085">Simpan semua</translation>
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8431909052837336408">Ubah PIN SIM</translation>
@@ -928,6 +934,7 @@
 <translation id="8560515948038859357">Kanton</translation>
 <translation id="8561206103590473338">Gajah</translation>
 <translation id="8566466896628108558">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Diblokir oleh Administrator Anda, Detail</translation>
+<translation id="8568374623837201676">Hapus file ini secara permanen?</translation>
 <translation id="8569764466147087991">Pilih file yang akan dibuka</translation>
 <translation id="8577897833047451336">Kroasia</translation>
 <translation id="8578308463707544055">Indonesia</translation>

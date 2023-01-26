@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Виявлено несумісну версію протоколу. Переконайтеся, що на обох комп’ютерах установлено найновішу версію програмного забезпечення, і повторіть спробу.</translation>
 <translation id="1008557486741366299">Не зараз</translation>
 <translation id="1201402288615127009">Далі</translation>
+<translation id="1296511125400541222">© The Chromium Authors 2023. Усі права захищено.</translation>
 <translation id="1297009705180977556">Не вдалося з’єднатися з хостом <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Такого об’єкта немає.</translation>
 <translation id="1480046233931937785">Учасники</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">Введіть PIN-код для хосту <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Хост</translation>
 <translation id="4867841927763172006">Надіслати команду PrtScn</translation>
+<translation id="4960795469833295568">© Google LLC 2023. Усі права захищено.</translation>
 <translation id="4974476491460646149">З’єднання з хостом <ph name="HOSTNAME" /> розірвано</translation>
 <translation id="4985296110227979402">Спершу налаштуйте комп’ютер для віддаленого доступу</translation>
 <translation id="4987330545941822761">Віддалене керування Chrome не може визначити веб-переглядач, у якому потрібно локально відкривати URL-адреси. Виберіть його зі списку нижче.</translation>

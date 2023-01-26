@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">‏قوة الإشارة ضعيفة. يُرجى الاقتراب من مصدر إشارة شبكة Wi-Fi.</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="3600339377155080675">النسخ المطابق لمحتوى الشاشة</translation>
+<translation id="3602290021589620013">معاينة</translation>
 <translation id="3603829704940252505">الصورة الرمزية</translation>
 <translation id="3604713164406837697">تغيير الخلفية</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">رجوع</translation>
 <translation id="3858860766373142691">الاسم</translation>
 <translation id="3862598938296403232">يجب إدخال وصف.</translation>
+<translation id="3865289341173661845">المحتوى المساعِد غير متوفّر.</translation>
 <translation id="3865414814144988605">درجة الدقة</translation>
 <translation id="3866249974567520381">الوصف</translation>
 <translation id="387301095347517405">عدد المرات التي تم فيها شحن بطاريتك بالكامل</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">تعذَّر الاتصال بالبوابة.</translation>
 <translation id="4046123991198612571">المقطع الصوتي التالي</translation>
 <translation id="404928562651467259">تحذير</translation>
+<translation id="4054683689023980771">جارٍ تنزيل الصورة</translation>
 <translation id="4060260348856573701">اسم نقطة وصول جديد</translation>
 <translation id="4093865285251893588">صورة الملف الشخصي</translation>
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">حالة البطارية</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5190187232518914472">‏استرجِع ذكرياتك المفضّلة. ولإضافة أي ألبومات أو تعديلها، انتقِل إلى <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">يتعذَّر عليَّ العثور على شيء مفيد في هذه الشاشة.
-يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="522307662484862935">عدم تضمين عنوان بريد إلكتروني</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">‏شهادة CA للخادم</translation>
 <translation id="7502658306369382406">‏عنوان IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">المحتوى المساعِد غير متوفّر.</translation>
 <translation id="7535791657097741517">تشغيل المظهر الفاتح</translation>
 <translation id="7550715992156305117">سلسلة إجراءات بيانات التشخيص</translation>
 <translation id="7551123448725492271">الجهاز هو جهاز سماعي.</translation>
@@ -814,7 +816,7 @@
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
-<translation id="8712637175834984815">تم</translation>
+<translation id="8712637175834984815">حسنًا</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
 <translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>

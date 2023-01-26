@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Xabardor qolish</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ta aloqador varaq bor. Ular guruhlansinmi?</translation>
 <translation id="4212246570487010370">Saytlarni kezishda davom etish</translation>
-<translation id="4450893287417543264">Boshqa ko‘rsatilmasin</translation>
 <translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ta sharh)}other{(<ph name="REVIEWS_COUNT_MANY" /> ta sharh)}}</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
-<translation id="5533021382642990449">Keyinroq koʻrsatish</translation>
 <translation id="5556417849629758491">Doʻkon axboroti ekranning yuqori qismida chiqadi</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yopish</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ta varaq guruhlandi</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Bu doʻkon haqidagi axborot</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
-<translation id="6510648526783655549">Varaqlar panelini yopish</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>
 <translation id="6615455863669487791">Ko‘rsatish</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
 <translation id="814503310257431685">Hammasi</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>
-<translation id="8304833501377495048">Darchalar paneli boshqa chiqmasinmi?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaqni yopish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaqni yopish}}</translation>
 <translation id="8398929769197326728">Yangi jild - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> varaqli guruhni yoyish.</translation>
 <translation id="8714939927607906138">Past narxda</translation>
-<translation id="8749939518995770034">Darchalar paneli yopildi</translation>
 <translation id="8820741577754260431">Narxlar tushishini varaqlarda kuzating</translation>
 <translation id="9090098097337832354">Bu doʻkon haqidagi axborot yopildi</translation>
 <translation id="9150694013019234766">Ekranning quyi qismidagi varaqlar guruhidagi varaqlarni almashtirish</translation>

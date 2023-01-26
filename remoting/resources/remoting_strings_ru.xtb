@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Обнаружена несовместимая версия протокола. Установите на оба компьютера последнюю версию ПО и повторите попытку.</translation>
 <translation id="1008557486741366299">Не сейчас</translation>
 <translation id="1201402288615127009">Далее</translation>
+<translation id="1296511125400541222">© The Chromium Authors, 2023. Все права защищены.</translation>
 <translation id="1297009705180977556">Не удалось подключиться к устройству "<ph name="HOSTNAME" />"</translation>
 <translation id="1450760146488584666">Запрошенный объект не существует.</translation>
 <translation id="1480046233931937785">Авторы</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">Введите PIN-код для хоста <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Хост</translation>
 <translation id="4867841927763172006">Послать PrtScn</translation>
+<translation id="4960795469833295568">© Google LLC, 2023. Все права защищены.</translation>
 <translation id="4974476491460646149">Подключение к устройству "<ph name="HOSTNAME" />" прервано</translation>
 <translation id="4985296110227979402">Сначала настройте удаленный доступ на компьютере.</translation>
 <translation id="4987330545941822761">Удаленному рабочему столу Chrome не удается найти браузер для открытия URL в локальном режиме. Выберите приложение в списке ниже.</translation>

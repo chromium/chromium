@@ -165,7 +165,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1797271123677381264">Harrova fjalëkalimin</translation>
 <translation id="1807246157184219062">I lehtë</translation>
 <translation id="181103072419391116">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
-<translation id="1812997170047690955">Çfarë ka në ekranin tim?</translation>
 <translation id="1816896987747843206">Kjo lejon qasjen te kamera për të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës</translation>
 <translation id="1823280932251546115">Tabakaja e statusit, ora <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -581,6 +580,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Përditëso pajisjen brenda një dite}other{Përditëso pajisjen brenda # ditësh}}</translation>
 <translation id="4181841719683918333">Gjuhët</translation>
 <translation id="4192112279662688596">Ose</translation>
+<translation id="4193857202545160520">Shfaq klikimet dhe tastet</translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
 <translation id="4195877955194704651">Butoni i klikimeve automatike</translation>
 <translation id="4197790712631116042">Joaktiv</translation>
@@ -730,6 +730,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> po përdor aktualisht kamerën tënde</translation>
 <translation id="492453977506755176">Çelësi i modalitetit të regjistrimit</translation>
 <translation id="4925542575807923399">Administratori për këtë llogari kërkon që ajo të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
+<translation id="4929163402621253029">A po flet? Je vendosur në heshtje. Mëso më shumë</translation>
 <translation id="4938176435186993759">Fshihi të gjitha sugjerimet</translation>
 <translation id="4945196315133970626">Çaktivizo njoftimet</translation>
 <translation id="4946376291507881335">Regjistrimi</translation>
@@ -763,6 +764,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5107522548814527560">Ueb</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Trego muajin e ardhshëm</translation>
+<translation id="5127986747308934633">Pajisja jote po kontrollohet nga administratori yt</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
 <translation id="5147567197700016471">Shkyçur</translation>
 <translation id="5150070631291639005">Cilësimet e privatësisë</translation>
@@ -872,6 +874,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5710450975648804523">"Mos shqetëso" është aktiv</translation>
 <translation id="571295407079589142">Të dhënat celulare janë çaktivizuar</translation>
 <translation id="573413375004481890">Kjo pajisje nuk mund t'i mbështeste të gjitha ekranet, kështu që një prej tyre është shkëputur</translation>
+<translation id="5740328398383587084">Ndarja në afërsi</translation>
 <translation id="574392208103952083">Mesatar</translation>
 <translation id="5744083938413354016">Zvarritje me trokitje</translation>
 <translation id="5745612484876805746">"Drita e natës" aktivizohet automatikisht kur perëndon dielli</translation>
@@ -991,6 +994,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="639644700271529076">KYÇJA E KAPITALEVE është joaktive</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Asistenti i Google</translation>
+<translation id="641867537956679916">Administratori yt është identifikuar për të shikuar një çështje. Mund të vazhdosh ta përdorësh pajisjen pasi administratori të të japë përsëri kontrollin.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Pastro të gjitha njoftimet</translation>
 <translation id="643147933154517414">Të gjitha në rregull</translation>
@@ -1279,6 +1283,7 @@ Instalim i ri</translation>
 <translation id="79341161159229895">Llogaria menaxhohet nga <ph name="FIRST_PARENT_EMAIL" /> dhe <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Shtyp <ph name="SHORTCUT_KEY_NAME" /> + V për të parë kujtesën tënde të fragmenteve. 5 artikujt e fundit që ke kopjuar janë ruajtur në kujtesën tënde të fragmenteve.</translation>
 <translation id="7942349550061667556">E kuqe</translation>
+<translation id="7944023924886109030">Shiko të gjitha ngjarjet për sot</translation>
 <translation id="7963992254934562106">Nga <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
 <translation id="7977927628060636163">Po kërkon për rrjete celulare...</translation>

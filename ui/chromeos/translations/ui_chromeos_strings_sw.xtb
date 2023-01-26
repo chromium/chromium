@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Mipangilio ya kifaa</translation>
 <translation id="2084809735218147718">Mtu anayesema asante kwa lugha ya ishara</translation>
 <translation id="2088690981887365033">Mtandao wa VPN</translation>
+<translation id="2114191879048183086">Vipengee <ph name="NUMBER_OF_ITEMS" /> vitafutwa na hutaweza kuvirejesha.</translation>
 <translation id="2122305276694332719">Hatua ya kuunganisha kiotomatiki kwenye mtandao uliofichwa huruhusu watu wengine kuona kifaa chako na baadhi ya mipangilio ya mtandao, na hali hii haipendekezwi.</translation>
 <translation id="2125607626296734455">Kikhema</translation>
 <translation id="2139545522194199494">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unadhibitiwa na Msimamizi wako, Unganisha</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Hakuna vipengee vinavyolingana &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Maelezo</translation>
 <translation id="2902734494705624966">Kimarekani kilichopanuliwa</translation>
+<translation id="2904378509913846215">Folda yenye jina la "<ph name="FILENAME" />" tayari ipo. Je, ungependa kuibadilisha na unayohamisha?</translation>
 <translation id="290843123675549676">Kimarathi</translation>
 <translation id="2923240520113693977">Kiestonia</translation>
 <translation id="2938685643439809023">Kimongolia</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Rejesha vipengee au buruta uvipeleke kwenye folda mpya iliyo nje ya tupio</translation>
 <translation id="4401287888955153199">Toa maudhui yote</translation>
 <translation id="4410695710508688828">Shughuli ya kuondoa faili haikufanikiwa. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" itafutwa na hutaweza kuirejesha.</translation>
 <translation id="4418686080762064601">Unda njia ya mkato ya faili zako</translation>
 <translation id="4425149324548788773">Hifadhi Yangu</translation>
 <translation id="4439427728133035643">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Unganisha</translation>
@@ -639,6 +642,7 @@
 <translation id="6241349547798190358">Kiholanzi (Ubelgiji)</translation>
 <translation id="6267547857941397424">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
 <translation id="6269630227984243955">Kimalei</translation>
+<translation id="6271903698064569429">Huwezi kupakia faili kwa sababu "<ph name="SHARED_DRIVE_NAME" />" haina nafasi ya hifadhi ya kutosha.</translation>
 <translation id="6287852322318138013">Chagua programu ili ufungue faili hii</translation>
 <translation id="6295542640242147836">Kufunga SIM</translation>
 <translation id="6296410173147755564">PUK si sahihi</translation>
@@ -684,6 +688,7 @@
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6658865850469097484">Faili zilizopo kwenye tupio kwa zaidi ya siku 30 zitafutika kiotomatiki.</translation>
 <translation id="6673674183150363784">Kifaransa (Ufaransa) kwenye kibodi ya Bépo</translation>
+<translation id="670380500182402678">Badilisha yote</translation>
 <translation id="6710022688720561421">Roboti</translation>
 <translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6732801395666424405">Vyeti havijapakiwa</translation>
@@ -902,6 +907,7 @@
 <translation id="8386903983509584791">Imemaliza kutafuta</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> imetolewa.</translation>
 <translation id="8395901698320285466">Vipimo</translation>
+<translation id="8404498045299006085">Usifute yote</translation>
 <translation id="8408068190360279472">Mtandao wa <ph name="NETWORK_TYPE" />, inaunganisha</translation>
 <translation id="8425213833346101688">Badilisha</translation>
 <translation id="8431909052837336408">Badilisha PIN ya SIM</translation>
@@ -928,6 +934,7 @@
 <translation id="8560515948038859357">Kikantoni</translation>
 <translation id="8561206103590473338">Tembo</translation>
 <translation id="8566466896628108558">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao, <ph name="SIGNAL_STRENGTH" />%, Umezuiwa na Msimamizi wako, Maelezo</translation>
+<translation id="8568374623837201676">Je, ungependa kufuta kabisa faili hii?</translation>
 <translation id="8569764466147087991">Chagua faili ya kufungua</translation>
 <translation id="8577897833047451336">Kikorasia</translation>
 <translation id="8578308463707544055">Kiindonesia</translation>

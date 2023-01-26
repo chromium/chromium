@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Nastavenia zariadenia</translation>
 <translation id="2084809735218147718">Osoba ďakujúca posunkovou rečou</translation>
 <translation id="2088690981887365033">Sieť VPN</translation>
+<translation id="2114191879048183086">Položky (<ph name="NUMBER_OF_ITEMS" />) budú odstránené a nebudete ich môcť obnoviť.</translation>
 <translation id="2122305276694332719">Automatické pripájanie k skrytej sieti umožňuje ostatným zobraziť si vaše zariadenie a niektoré nastavenia sietí, a preto sa neodporúča.</translation>
 <translation id="2125607626296734455">Khmérska klávesnica</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, ovládaná správcom, pripojenie</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Dopytu  &lt;b&gt;„<ph name="SEARCH_STRING" />“&lt;/b&gt; nezodpovedajú žiadne položky</translation>
 <translation id="2894654529758326923">Informácie</translation>
 <translation id="2902734494705624966">Americká klávesnica s rozšíreným rozložením klávesov</translation>
+<translation id="2904378509913846215">Priečinok s názvom <ph name="FILENAME" /> už existuje. Chcete ho nahradiť tým, ktorý presúvate?</translation>
 <translation id="290843123675549676">Maráthska klávesnica</translation>
 <translation id="2923240520113693977">Estónčina</translation>
 <translation id="2938685643439809023">Mongolčina</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Obnovte položky alebo ich presuňte do nového priečinka mimo koša</translation>
 <translation id="4401287888955153199">Extrahovať všetko</translation>
 <translation id="4410695710508688828">Nepodarilo sa extrahovať. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">Súbor <ph name="FILE_NAME" /> bude odstránený a nebudete ho môcť obnoviť.</translation>
 <translation id="4418686080762064601">Vytvorenie skratky k súborom</translation>
 <translation id="4425149324548788773">Môj disk</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
@@ -639,6 +642,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6241349547798190358">Holandská (Belgicko) klávesnica</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
 <translation id="6269630227984243955">Malajská klávesnica</translation>
+<translation id="6271903698064569429">Súbory sa nedajú nahrať, pretože na disku <ph name="SHARED_DRIVE_NAME" /> nie je dostatok priestoru.</translation>
 <translation id="6287852322318138013">Vyberte aplikáciu na otvorenie tohto súboru</translation>
 <translation id="6295542640242147836">Uzamknúť SIM</translation>
 <translation id="6296410173147755564">Neplatný kód PUK</translation>
@@ -684,6 +688,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6658865850469097484">Súbory, ktoré sú v koši dlhšie ako 30 dní, budú automaticky odstránené.</translation>
 <translation id="6673674183150363784">Francúzska (Francúzsko) klávesnica Bépo</translation>
+<translation id="670380500182402678">Nahradiť všetko</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Späť</translation>
 <translation id="6732801395666424405">Certifikáty neboli načítané</translation>
@@ -902,6 +907,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8386903983509584791">Vyhľadávanie bolo dokončené</translation>
 <translation id="8387733224523483503">Bol extrahovaný súbor <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Rozmery</translation>
+<translation id="8404498045299006085">Ponechať všetko</translation>
 <translation id="8408068190360279472">Sieť <ph name="NETWORK_TYPE" /> sa pripája</translation>
 <translation id="8425213833346101688">Zmeniť</translation>
 <translation id="8431909052837336408">Zmena kódu PIN pre SIM kartu</translation>
@@ -928,6 +934,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8560515948038859357">Kantonská klávesnica</translation>
 <translation id="8561206103590473338">Slon</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sila signálu: <ph name="SIGNAL_STRENGTH" /> %, zablokoval váš správca, podrobnosti</translation>
+<translation id="8568374623837201676">Chcete tento súbor natrvalo odstrániť?</translation>
 <translation id="8569764466147087991">Vyberte súbor, ktorý chcete otvoriť</translation>
 <translation id="8577897833047451336">Chorvátska klávesnica</translation>
 <translation id="8578308463707544055">Indonézska klávesnica</translation>

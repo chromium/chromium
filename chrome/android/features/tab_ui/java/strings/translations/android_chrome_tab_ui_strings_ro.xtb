@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Primește notificări</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
 <translation id="4212246570487010370">Continuă navigarea</translation>
-<translation id="4450893287417543264">Nu mai afișa</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
-<translation id="5533021382642990449">Afișează mai târziu</translation>
 <translation id="5556417849629758491">Vezi informații despre magazin, opțiune disponibilă în partea de sus a ecranului</translation>
 <translation id="5558362125926932819">Închide grupul de file cu <ph name="NUMBER_OF_TABS" /> file</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> file grupate</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Informații despre magazin</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
-<translation id="6510648526783655549">Închide bara de file</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6562820390860419811">Mută fila spre stânga</translation>
 <translation id="6615455863669487791">Afișează</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Informațiile despre magazin deschise la înălțimea completă</translation>
 <translation id="814503310257431685">Vedeți toate</translation>
 <translation id="8205266828577616993">Mută fila mai sus</translation>
-<translation id="8304833501377495048">Nu mai vrei să afișezi bara de file?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Închide <ph name="TABS_COUNT_ONE" /> filă selectată}few{Închide <ph name="TABS_COUNT_MANY" /> file selectate}other{Închide <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="8398929769197326728">Dosar nou – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Extinde grupul de file cu <ph name="NUMBER_OF_TABS" /> file.</translation>
 <translation id="8714939927607906138">Preț mai mic</translation>
-<translation id="8749939518995770034">Bara de file s-a închis</translation>
 <translation id="8820741577754260431">Vezi scăderile de prețuri din file</translation>
 <translation id="9090098097337832354">Informațiile despre magazin închise</translation>
 <translation id="9150694013019234766">Comută între filele din grupul de file în partea de jos a ecranului</translation>

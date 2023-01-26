@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">දැනුම්දීම් ලබන්න</translation>
 <translation id="4133493477912226187">පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
 <translation id="4212246570487010370">දිගටම බ්‍රවුස් කරන්න</translation>
-<translation id="4450893287417543264">නැවත නොපෙන්වන්න</translation>
 <translation id="4648718555153979859">ඔබේ පටිති මෙහි එකට කණ්ඩායම් කෙරේ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(සමාලෝචන <ph name="REVIEWS_COUNT_ONE" />)}one{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}other{(සමාලෝචන <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">දසුන</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">කණ්ඩායමක් කිරීමෙන් ඉක්මනින් පිටු සංසන්දන කරන්න. පටන් ගැනීමට, සබැඳියක් ස්පර්ශ කර අල්ලා සිටින්න.</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
-<translation id="5533021382642990449">පසුව පෙන්වන්න</translation>
 <translation id="5556417849629758491">අලෙවිසැල් තොරතුරු බලන්න, තිරයේ ඉහළින්ම ඇති විකල්පය</translation>
 <translation id="5558362125926932819">ටැබ සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග වසන්න</translation>
 <translation id="5580090775658607195">පටිති <ph name="TAB_COUNT" /> සමූහගත කළා</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">මෙම වෙළඳසැල පිළිබඳ තොරතුරු</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> තෝරන ලද පටිත්තක් සමූහගත නොකරන්න}one{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}other{තෝරන ලද පටිති <ph name="TABS_COUNT_MANY" /> සමූහගත නොකරන්න}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක්}one{පටිති <ph name="TABS_COUNT_MANY" />ක්}other{පටිති <ph name="TABS_COUNT_MANY" />ක්}}</translation>
-<translation id="6510648526783655549">ටැබ් තීරුව වසන්න</translation>
 <translation id="6549021453810473782">වෙළඳසැල් තොරතුරු බලන්න</translation>
 <translation id="6562820390860419811">පටිත්ත වමට ගෙන යන්න</translation>
 <translation id="6615455863669487791">මට පෙන්වන්න</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">මෙම වෙළඳසැල පිළිබඳ තොරතුරු පූර්ණ උසෙහිදී විවෘත විය</translation>
 <translation id="814503310257431685">සියල්ල බලන්න</translation>
 <translation id="8205266828577616993">පටිත්ත ඉහළට ගෙන යන්න</translation>
-<translation id="8304833501377495048">පටිත්ත තීරුව නැවත නොපෙන්වන්නද?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{තේරූ <ph name="TABS_COUNT_ONE" /> පටිත්ත වසන්න}one{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}other{තේරූ පටිති <ph name="TABS_COUNT_MANY" /> වසරන්න}}</translation>
 <translation id="8398929769197326728">නව ෆෝල්ඩරය - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ටැබ සමූහය ටැබ <ph name="NUMBER_OF_TABS" />ක් සමග දිග හරින්න.</translation>
 <translation id="8714939927607906138">අඩු මිල</translation>
-<translation id="8749939518995770034">වැසූ පටිත්ත තීරුව</translation>
 <translation id="8820741577754260431">ඔබගේ ටැබවල මිල පහත වැටීම් බලන්න</translation>
 <translation id="9090098097337832354">මෙම වෙළඳසැල පිළිබඳ තොරතුරු වසා ඇත</translation>
 <translation id="9150694013019234766">තිරයේ පහළ අසල ඔබේ පටිති සමූහයේ පටිති අතර මාරු වන්න</translation>

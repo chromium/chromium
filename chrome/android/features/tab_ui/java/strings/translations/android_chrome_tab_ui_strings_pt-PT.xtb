@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Receber notificações</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> separadores parecem estar relacionados. Pretende agrupá-los?</translation>
 <translation id="4212246570487010370">Continue a navegar</translation>
-<translation id="4450893287417543264">Não mostrar de novo</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> crítica)}other{(<ph name="REVIEWS_COUNT_MANY" /> críticas)}}</translation>
 <translation id="4850886885716139402">Ver</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Compare páginas rapidamente através da criação de um grupo. Para começar, toque sem soltar num link.</translation>
 <translation id="5490235265819901748">Grupo de separadores expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
-<translation id="5533021382642990449">Mostrar mais tarde</translation>
 <translation id="5556417849629758491">Veja informações da loja, opção disponível junto à parte superior do ecrã</translation>
 <translation id="5558362125926932819">Feche o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> separadores agrupados</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Informações acerca desta loja</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Desagrupar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> separador}other{<ph name="TABS_COUNT_MANY" /> separadores}}</translation>
-<translation id="6510648526783655549">Fechar Faixa de separadores</translation>
 <translation id="6549021453810473782">Veja as informações da loja</translation>
 <translation id="6562820390860419811">Mover o separador para a esquerda</translation>
 <translation id="6615455863669487791">Mostrar</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Informações acerca desta loja abertas à altura total</translation>
 <translation id="814503310257431685">Ver todos</translation>
 <translation id="8205266828577616993">Mover separador para cima</translation>
-<translation id="8304833501377495048">Não mostrar a Faixa de separadores novamente?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fechar <ph name="TABS_COUNT_ONE" /> separador selecionado}other{Fechar <ph name="TABS_COUNT_MANY" /> separadores selecionados}}</translation>
 <translation id="8398929769197326728">Nova pasta – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Expandir o grupo de separadores com <ph name="NUMBER_OF_TABS" /> separadores</translation>
 <translation id="8714939927607906138">Preço mais baixo</translation>
-<translation id="8749939518995770034">Faixa de separadores fechada</translation>
 <translation id="8820741577754260431">Veja as descidas de preços nos seus separadores.</translation>
 <translation id="9090098097337832354">Informações acerca desta loja fechadas</translation>
 <translation id="9150694013019234766">Alterne entre separadores no grupo de separadores junto à parte inferior do ecrã.</translation>

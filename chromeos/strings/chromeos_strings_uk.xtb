@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Низький рівень сигналу. Підійдіть ближче до джерела сигналу Wi-Fi.</translation>
 <translation id="3595596368722241419">Акумулятор заряджено</translation>
 <translation id="3600339377155080675">Дзеркалювання екрана</translation>
+<translation id="3602290021589620013">Попередній перегляд</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Змінити фоновий малюнок</translation>
 <translation id="360565022852130722">Мережа Wi-Fi захищена ненадійним протоколом WEP 802.1x</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Не вдається зв’язатися зі шлюзом</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
 <translation id="404928562651467259">ЗАСТЕРЕЖЕННЯ</translation>
+<translation id="4054683689023980771">Завантаження зображення</translation>
 <translation id="4060260348856573701">Нове ім’я точки доступу (APN)</translation>
 <translation id="4093865285251893588">Зображення профілю</translation>
 <translation id="409427325554347132">Зберегти дані перевірки</translation>
+<translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Вибрати альбом "<ph name="TITLE" />" з описом "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорна панель USB</translation>
 <translation id="4117637339509843559">Темний режим</translation>
@@ -448,8 +451,6 @@
 <translation id="5168185087976003268">Стан акумулятора</translation>
 <translation id="5170568018924773124">Показати в папці</translation>
 <translation id="5190187232518914472">Пориньте в улюблені спогади. Щоб додати або змінити альбом, перейдіть у <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">На екрані не знайдено елементів, проблеми з якими я можу вирішити.
-Торкніться значка мікрофона, щоб поставити запитання.</translation>
 <translation id="5212593641110061691">Таблоїд</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="522307662484862935">Не вказувати електронну адресу</translation>
@@ -719,6 +720,7 @@
 <translation id="7690294790491645610">Підтвердьте новий пароль</translation>
 <translation id="7701040980221191251">Немає</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Кількість циклів</translation>
 <translation id="7747039790905080783">Спільний ключ</translation>
 <translation id="7762130827864645708">Ваш пароль змінено. Відтепер використовуйте новий.</translation>
@@ -802,6 +804,7 @@
 <translation id="8503836310948963452">Залишилося кілька хвилин…</translation>
 <translation id="8508640263392900755">Відомості про APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Можливо, вам доведеться ввімкнути це налаштування, щоб підключитися до мережі. Щоб дізнатися більше, зверніться до свого оператора.</translation>
 <translation id="8576249514688522074">Не ініціалізовано</translation>
 <translation id="8620617069779373398">Статус роумінгу</translation>

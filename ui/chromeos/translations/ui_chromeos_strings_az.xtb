@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Cihaz ayarları</translation>
 <translation id="2084809735218147718">Təşəkkür edən adam</translation>
 <translation id="2088690981887365033">VPN şəbəkəsi</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> element silinəcək və onları bərpa edə bilməyəcəksiniz.</translation>
 <translation id="2122305276694332719">Gizlədilmiş şəbəkəyə avtomatik qoşulduqda başqaları cihaz və şəbəkə ayarlarınızı görəcək. Bu, tövsiyə edilmir.</translation>
 <translation id="2125607626296734455">Xmer</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Qoşulun</translation>
@@ -397,6 +398,7 @@
 <translation id="4398096759193130964">Elementləri bərpa edin və ya zibil qutusunun xaricində yeni bir qovluğa sürüşdürün</translation>
 <translation id="4401287888955153199">Hamısını çıxarın</translation>
 <translation id="4410695710508688828">Çıxarılma əməliyyatı alınmadı. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" silinəcək və onu bərpa edə bilməyəcəksiniz.</translation>
 <translation id="4418686080762064601">Fayllarınız üçün qısayol yaradın</translation>
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
@@ -685,6 +687,7 @@
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6658865850469097484">Zibil qutusunda 30 gündən çox olan fayllar avtomatik silinəcək.</translation>
 <translation id="6673674183150363784">Bépo klaviaturası ilə Fransız (Fransa)</translation>
+<translation id="670380500182402678">Hamısını əvəz edin</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6732801395666424405">Sertifikatlar yüklənilmədi</translation>
@@ -901,6 +904,7 @@
 <translation id="8386903983509584791">Skan tamamlandı</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> çıxarılıb.</translation>
 <translation id="8395901698320285466">Ölçülər</translation>
+<translation id="8404498045299006085">Hamısını saxlayın</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> şəbəkəsi, qoşulur</translation>
 <translation id="8425213833346101688">Dəyişin</translation>
 <translation id="8431909052837336408">SIM PIN kodu dəyişin</translation>
@@ -927,6 +931,7 @@
 <translation id="8560515948038859357">Kanton</translation>
 <translation id="8561206103590473338">Fil</translation>
 <translation id="8566466896628108558">Şəbəkə <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administrator tərəfindən bloklanıb, Detallar</translation>
+<translation id="8568374623837201676">Bu fayl həmişəlik silinsin?</translation>
 <translation id="8569764466147087991">Açmaq üçün fayl seçin</translation>
 <translation id="8577897833047451336">Xorvat</translation>
 <translation id="8578308463707544055">İndoneziya</translation>

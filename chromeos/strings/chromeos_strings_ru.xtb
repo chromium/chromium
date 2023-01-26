@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Слабый сигнал Wi-Fi. Попробуйте разместить устройство ближе к источнику сигнала.</translation>
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="3600339377155080675">Дублирование экрана</translation>
+<translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Изменить обои</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
@@ -315,6 +316,7 @@
 <translation id="4044093238444069296">Не удается связаться со шлюзом.</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
 <translation id="404928562651467259">Внимание!</translation>
+<translation id="4054683689023980771">Скачивание изображения…</translation>
 <translation id="4060260348856573701">Новая точка доступа</translation>
 <translation id="4093865285251893588">Изображение профиля</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
@@ -449,8 +451,6 @@
 <translation id="5168185087976003268">Уровень заряда</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5190187232518914472">Вспоминайте яркие моменты своей жизни. Чтобы добавить или изменить альбом, перейдите в <ph name="LINK_BEGIN" />Google Фото<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Я не нашла на экране ничего подходящего.
-Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="522307662484862935">Не указывать адрес электронной почты</translation>

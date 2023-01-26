@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Tika konstatēta nesaderīga protokola versija. Lūdzu, pārbaudiet, vai abos datoros ir instalēta programmatūras jaunākā versija, un mēģiniet vēlreiz.</translation>
 <translation id="1008557486741366299">Vēlāk</translation>
 <translation id="1201402288615127009">Tālāk</translation>
+<translation id="1296511125400541222">Autortiesības: Chromium autori (2023). Visas tiesības paturētas.</translation>
 <translation id="1297009705180977556">Kļūda, veidojot savienojumu ar “<ph name="HOSTNAME" />”</translation>
 <translation id="1450760146488584666">Pieprasītais objekts nepastāv.</translation>
 <translation id="1480046233931937785">Titri</translation>
@@ -88,6 +89,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="4808503597364150972">Lūdzu, ievadiet saimniekdatora <ph name="HOSTNAME" /> PIN.</translation>
 <translation id="4812684235631257312">Saimniekdators</translation>
 <translation id="4867841927763172006">Sūtīt PrtScn</translation>
+<translation id="4960795469833295568">Autortiesības: Google LLC (2023). Visas tiesības paturētas.</translation>
 <translation id="4974476491460646149">Savienojums ar “<ph name="HOSTNAME" />” ir pārtraukts</translation>
 <translation id="4985296110227979402">Vispirms datorā ir jāiestata attālā piekļuve.</translation>
 <translation id="4987330545941822761">Chrome attālā darbvirsma nevarēja noteikt pārlūkprogrammas veidu lokālai URL atvēršanai. Izvēlieties pārlūkprogrammu no tālāk norādītā saraksta.</translation>

@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">A rendszer nem kompatibilis protokollverziót észlelt. Győződjön meg róla, hogy a szoftver legfrissebb verziója van telepítve mindkét számítógépen, majd próbálja újra.</translation>
 <translation id="1008557486741366299">Ne most</translation>
 <translation id="1201402288615127009">Tovább</translation>
+<translation id="1296511125400541222">Copyright 2023 – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="1297009705180977556">Hiba a következőhöz való csatlakozáskor: <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">A kért objektum nem létezik.</translation>
 <translation id="1480046233931937785">Készítők</translation>
@@ -88,6 +89,7 @@ Ha már be van jelölve az „<ph name="SERVICE_SCRIPT_NAME" />” melletti nég
 <translation id="4808503597364150972">Kérjük, adja meg a(z) <ph name="HOSTNAME" /> PIN kódját.</translation>
 <translation id="4812684235631257312">Gazdagép</translation>
 <translation id="4867841927763172006">PrtScn küldése</translation>
+<translation id="4960795469833295568">Copyright 2023 – Google LLC. Minden jog fenntartva.</translation>
 <translation id="4974476491460646149">Megszakítva a kapcsolat a következővel: <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Előbb be kell állítania számítógépén a távoli hozzáférést.</translation>
 <translation id="4987330545941822761">A Chrome távoliasztal-szolgáltatás nem tudja meghatározni az URL-ek helyi megnyitásához szükséges böngészőt. Válassza ki a böngészőt az alábbi listáról.</translation>

@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Muunganisho wa mtandao ni dhaifu. Jaribu kusogea karibu na chanzo cha mawimbi ya Wi-Fi.</translation>
 <translation id="3595596368722241419">Betri imejaa</translation>
 <translation id="3600339377155080675">Kitufe cha uakisi wa skrini</translation>
+<translation id="3602290021589620013">Hakiki</translation>
 <translation id="3603829704940252505">Ishara</translation>
 <translation id="3604713164406837697">Badilisha mandhari</translation>
 <translation id="360565022852130722">Mtandao wa WiFi umelindwa kwa kutumia itifaki hafifu ya WEP 802.1x</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3862598938296403232">Ni sharti ujaze maelezo</translation>
+<translation id="3865289341173661845">Maudhui ya usaidizi hayapatikani.</translation>
 <translation id="3865414814144988605">Ubora</translation>
 <translation id="3866249974567520381">Maelezo</translation>
 <translation id="387301095347517405">Mara ambazo betri yako imekamilisha mzunguko kamili wa chaji</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Imeshindwa kuwasiliana na lango</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
 <translation id="404928562651467259">ONYO</translation>
+<translation id="4054683689023980771">Inapakua picha</translation>
 <translation id="4060260348856573701">APN Mpya</translation>
 <translation id="4093865285251893588">Picha ya wasifu</translation>
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Chagua albamu ya <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Padi ya kugusa yenye USB</translation>
 <translation id="4117637339509843559">Hali nyeusi</translation>
@@ -448,7 +452,6 @@
 <translation id="5168185087976003268">Muda wa kudumu wa betri</translation>
 <translation id="5170568018924773124">Onyesha katika folda</translation>
 <translation id="5190187232518914472">Jikumbushe matukio uyapendayo. Ili uongeze au ubadilishe albamu, nenda katika<ph name="LINK_BEGIN" />Picha kwenye Google<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Sijapata swali lolote kwenye skrini yako. Jaribu kugonga maikrofoni ili uniulize chochote.</translation>
 <translation id="5212593641110061691">Kijigazeti</translation>
 <translation id="5222676887888702881">Ondoka</translation>
 <translation id="522307662484862935">Usiweke anwani ya barua pepe</translation>
@@ -701,6 +704,7 @@
 <translation id="7497215489070763236">Cheti cha CA cha Seva</translation>
 <translation id="7502658306369382406">Anwani ya IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Maudhui ya usaidizi hayapatikani</translation>
 <translation id="7535791657097741517">Washa mandhari meupe</translation>
 <translation id="7550715992156305117">Ratiba za Uchunguzi</translation>
 <translation id="7551123448725492271">Kifaa hiki ni cha sauti.</translation>
@@ -718,6 +722,7 @@
 <translation id="7690294790491645610">Thibitisha nenosiri jipya</translation>
 <translation id="7701040980221191251">Hamna</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Mara ambazo betri imechajiwa na kutumia chaji</translation>
 <translation id="7747039790905080783">Kitufe kilichoshirikiwa awali</translation>
 <translation id="7762130827864645708">Nenosiri lako limebadilishwa. Tafadhali tumia nenosiri jipya kuanzia sasa.</translation>
@@ -801,6 +806,7 @@
 <translation id="8503836310948963452">Dakika chache tu...</translation>
 <translation id="8508640263392900755">Maelezo ya APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Huenda mtoa huduma wako akahitaji chaguo hili ili uweze kuunganisha kwenye mtandao wake. Wasiliana na mtoa huduma wako ili upate maelezo.</translation>
 <translation id="8576249514688522074">Haijaanzishwa</translation>
 <translation id="8620617069779373398">Hali ya kutumia mtandao usio wako wa kawaida</translation>

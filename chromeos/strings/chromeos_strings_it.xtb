@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Intensità segnale debole. Prova ad avvicinarti alla fonte del segnale Wi-Fi.</translation>
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="3600339377155080675">Mirroring dello schermo</translation>
+<translation id="3602290021589620013">Anteprima</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Cambiare sfondo</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Indietro</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3862598938296403232">La descrizione è obbligatoria</translation>
+<translation id="3865289341173661845">Contenuti della guida non disponibili.</translation>
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="3866249974567520381">Descrizione</translation>
 <translation id="387301095347517405">Il numero di cicli di ricarica completi della batteria</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Impossibile contattare il gateway</translation>
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="404928562651467259">AVVISO</translation>
+<translation id="4054683689023980771">Download dell'immagine in corso…</translation>
 <translation id="4060260348856573701">Nuovo APN</translation>
 <translation id="4093865285251893588">Immagine profilo</translation>
 <translation id="409427325554347132">Salva dettagli del test</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Seleziona l'album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4117637339509843559">Modalità Buio</translation>
@@ -448,8 +452,6 @@
 <translation id="5168185087976003268">Condizioni batteria</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5190187232518914472">Rivivi i tuoi ricordi più cari. Per aggiungere o modificare gli album, vai a<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Non riesco a trovare nulla sullo schermo per cui poterti essere utile.
-Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="522307662484862935">Non includere l'indirizzo email</translation>
@@ -702,6 +704,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7497215489070763236">Certificato CA del server</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Contenuti della guida non disponibili</translation>
 <translation id="7535791657097741517">Attiva il tema chiaro</translation>
 <translation id="7550715992156305117">Routine diagnostiche</translation>
 <translation id="7551123448725492271">Il dispositivo è un dispositivo audio.</translation>
@@ -719,6 +722,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
 <translation id="7701040980221191251">Nulla</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
 <translation id="7747039790905080783">Chiave precondivisa</translation>
 <translation id="7762130827864645708">La password è stata modificata. Usa la nuova password d'ora in poi.</translation>
@@ -802,6 +806,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8503836310948963452">Solo qualche altro minuto…</translation>
 <translation id="8508640263392900755">Dettagli APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8620617069779373398">Stato roaming</translation>

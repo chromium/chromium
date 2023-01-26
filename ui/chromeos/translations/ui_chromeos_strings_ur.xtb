@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">آلے کی ترتیبات</translation>
 <translation id="2084809735218147718">اشارے سے شکریہ ادا کرتا ہوا شخص</translation>
 <translation id="2088690981887365033">‏VPN نیٹ ورک</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> آئٹمز حذف ہو جائیں گے اور آپ انہیں بحال نہیں کر سکیں گے۔</translation>
 <translation id="2122305276694332719">پوشیدہ نیٹ ورک سے خود کار طور پر منسلک ہونے سے دوسروں کو آپ کا آلہ اور نیٹ ورک کی کچھ ترتیبات دیکھنے میں سہولت ملتی ہے اور اس کی تجویز نہیں کی جاتی ہے۔</translation>
 <translation id="2125607626296734455">خمیر</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، آپ کے منتظم کے زیر انتظام ہے، منسلک کریں</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">‏کوئی آئٹم &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; سے مماثل نہیں ہے</translation>
 <translation id="2894654529758326923">معلومات</translation>
 <translation id="2902734494705624966">‏US توسیع شدہ</translation>
+<translation id="2904378509913846215">"<ph name="FILENAME" />" نام کا فولڈر پہلے سے موجود ہے۔ کیا آپ اسے اس سے بدلنا چاہتے ہیں جسے آپ منتقل کر رہے ہیں؟</translation>
 <translation id="290843123675549676">مراٹهی</translation>
 <translation id="2923240520113693977">اسٹونين</translation>
 <translation id="2938685643439809023">منگؤلی</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">آئٹمز کو بحال کریں یا انہیں کوڑے دان سے باہر ایک نئے فولڈر میں گھسیٹیں</translation>
 <translation id="4401287888955153199">سبھی کھولیں</translation>
 <translation id="4410695710508688828">اضافی آپریشن ناکام ہو گیا۔ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" حذف ہو جائے گا اور آپ اسے بحال نہیں کر سکیں گے۔</translation>
 <translation id="4418686080762064601">اپنی فائلوں کے ليے ایک شارٹ کٹ تخلیق کریں</translation>
 <translation id="4425149324548788773">میری ڈرائیو</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" /> نیٹ ورک، <ph name="NETWORK_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، منسلک کریں</translation>
@@ -638,6 +641,7 @@
 <translation id="6241349547798190358">ڈچ (بیلجیم)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
 <translation id="6269630227984243955">مالے</translation>
+<translation id="6271903698064569429">فائلز اپ لوڈ نہیں کی جا سکتیں کیونکہ "<ph name="SHARED_DRIVE_NAME" />" میں کافی اسٹوریج نہیں ہے۔</translation>
 <translation id="6287852322318138013">یہ فائل کھولنے کیلئے ایک ایپ منتخب کریں</translation>
 <translation id="6295542640242147836">‏SIM مقفل کریں</translation>
 <translation id="6296410173147755564">‏غلط PUK</translation>
@@ -683,6 +687,7 @@
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6658865850469097484">کوڑے دان میں موجود 30 دنوں سے زیادہ کی فائلیں خودکار طور پر حذف ہو جائیں گی۔</translation>
 <translation id="6673674183150363784">‏Bépo کی بورڈ کے ساتھ فراسنیسی (فرانس)</translation>
+<translation id="670380500182402678">سبھی کو تبدیل کریں</translation>
 <translation id="6710022688720561421">روبوٹ</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6732801395666424405">سرٹیفکیٹس لوڈ نہیں ہوئے</translation>
@@ -901,6 +906,7 @@
 <translation id="8386903983509584791">اسکین مکمل ہو گیا</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> کو ایکسٹریکٹ کیا گیا۔</translation>
 <translation id="8395901698320285466">ڈائمینشنز</translation>
+<translation id="8404498045299006085">سبھی کو برقرار رکھیں</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> نیٹ ورک، منسلک ہو رہا ہے</translation>
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8431909052837336408">‏SIM کا PIN تبدیل کریں</translation>
@@ -927,6 +933,7 @@
 <translation id="8560515948038859357">کینٹونیز</translation>
 <translation id="8561206103590473338">ہاتھی</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> میں سے <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" /> نیٹ ورک، <ph name="SECURITY_STATUS" />، سگنل کی مضبوطی %<ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے ذریعے مسدود کردہ، تفاصیل</translation>
+<translation id="8568374623837201676">مستقل طور پر اس فائل کو حذف کریں؟</translation>
 <translation id="8569764466147087991">کھولنے کیلئے ایک فائل منتخب کریں</translation>
 <translation id="8577897833047451336">کروشیائی</translation>
 <translation id="8578308463707544055">انڈونیشیائی</translation>

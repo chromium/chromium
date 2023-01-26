@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">বিজ্ঞপ্তি পান</translation>
 <translation id="4133493477912226187">মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
 <translation id="4212246570487010370">ব্রাউজ করা চালিয়ে যান</translation>
-<translation id="4450893287417543264">আর দেখতে চাই না</translation>
 <translation id="4648718555153979859">আপনার ট্যাবগুলি এখানে একসাথে গ্রুপ করা আছে</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />টি রিভিউ)}one{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}other{(<ph name="REVIEWS_COUNT_MANY" />টি রিভিউ)}}</translation>
 <translation id="4850886885716139402">দেখুন</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">একটি গ্রুপ তৈরি করে দ্রুত পৃষ্ঠাগুলির তুলনা করুন। শুরু করতে, কোনও একটি লিঙ্ক স্পর্শ করে ধরে থাকুন।</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
-<translation id="5533021382642990449">পরে দেখুন</translation>
 <translation id="5556417849629758491">স্টোর সংক্রান্ত তথ্য দেখুন, স্ক্রিনের সবচেয়ে উপরের অংশে এই বিকল্প উপলভ্য আছে</translation>
 <translation id="5558362125926932819">সেই ট্যাব গ্রুপ বন্ধ করুন যেটিতে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />টি ট্যাব গ্রুপ করা হয়েছে</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{বেছে নেওয়া <ph name="TABS_COUNT_ONE" />টি ট্যাব আনগ্রুপ করুন}one{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}other{বেছে নেওয়া <ph name="TABS_COUNT_MANY" />টি ট্যাব আনগ্রুপ করুন}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব}}</translation>
-<translation id="6510648526783655549">'ট্যাব বার' বন্ধ করুন</translation>
 <translation id="6549021453810473782">স্টোর সংক্রান্ত তথ্য দেখুন</translation>
 <translation id="6562820390860419811">বাঁদিকে ট্যাব সরান</translation>
 <translation id="6615455863669487791">আমাকে দেখান</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">সম্পূর্ণ খোলা স্টোরের বিষয়ে তথ্য</translation>
 <translation id="814503310257431685">সব দেখুন</translation>
 <translation id="8205266828577616993">ট্যাব উপরে সরান</translation>
-<translation id="8304833501377495048">ট্যাব বার আর দেখতে চান না?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব বন্ধ আছে}one{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}other{বেছে নেওয়া ট্যাবের মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব বন্ধ আছে}}</translation>
 <translation id="8398929769197326728">নতুন ফোল্ডার - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">সেই গ্রুপকে বড় করে দেখুন যার মধ্যে <ph name="NUMBER_OF_TABS" />টি ট্যাব আছে</translation>
 <translation id="8714939927607906138">খুব কম দামে</translation>
-<translation id="8749939518995770034">ট্যাব বার বন্ধ করুন</translation>
 <translation id="8820741577754260431">ট্যাবে দাম কমার তথ্য দেখুন</translation>
 <translation id="9090098097337832354">বন্ধ হওয়া এই স্টোরের বিষয়ে তথ্য</translation>
 <translation id="9150694013019234766">স্ক্রিনের নিচে থাকা ট্যাব গ্রুপের মধ্যে একটি ট্যাব থেকে অন্য ট্যাবে যান</translation>

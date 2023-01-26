@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Gailuaren ezarpenak</translation>
 <translation id="2084809735218147718">"Eskerrik asko" hitzekin sinatzen</translation>
 <translation id="2088690981887365033">VPN sarea</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementu ezabatuko dira, eta ezingo dituzu leheneratu.</translation>
 <translation id="2122305276694332719">Automatikoki konektatzen bazara ezkutuko sare batera, zure gailua eta sarearen zenbait ezarpen ikusi ahalko dituzte besteek, eta hori ez da komeni.</translation>
 <translation id="2125607626296734455">Khmertarra</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Konektatu.</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Ez dago &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; bilaketarekin bat datorren elementurik</translation>
 <translation id="2894654529758326923">Informazioa</translation>
 <translation id="2902734494705624966">AEBko teklatu hedatua</translation>
+<translation id="2904378509913846215">Badago <ph name="FILENAME" /> izeneko karpeta bat. Mugitzen ari zarenarekin ordeztu nahi duzu?</translation>
 <translation id="290843123675549676">Maratharra</translation>
 <translation id="2923240520113693977">Estoniarra</translation>
 <translation id="2938685643439809023">Mongoliarra</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Leheneratu elementuak edo arrasta itzazu zaborrontzitik kanpoko beste karpeta batera</translation>
 <translation id="4401287888955153199">Atera guztia</translation>
 <translation id="4410695710508688828">Ezin izan da atera. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570"><ph name="FILE_NAME" /> ezabatuko da, eta ezingo duzu leheneratu.</translation>
 <translation id="4418686080762064601">Sortu lasterbide bat fitxategietarako</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Konektatu.</translation>
@@ -638,6 +641,7 @@
 <translation id="6241349547798190358">Nederlandarra (Belgika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>
+<translation id="6271903698064569429">Ezin dira kargatu fitxategiak, <ph name="SHARED_DRIVE_NAME" /> unitate partekatuko biltegian ez dagoelako behar adina toki.</translation>
 <translation id="6287852322318138013">Hautatu fitxategia irekitzeko aplikazioa</translation>
 <translation id="6295542640242147836">Blokeatu SIMa</translation>
 <translation id="6296410173147755564">PUKak ez du balio</translation>
@@ -683,6 +687,7 @@
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6658865850469097484">Zaborrontzian 30 egun baino gehiago egon diren fitxategiak automatikoki ezabatuko dira.</translation>
 <translation id="6673674183150363784">Frantsesa (Frantzia), Bépo teklatuarekin</translation>
+<translation id="670380500182402678">Ordeztu guztiak</translation>
 <translation id="6710022688720561421">Robota</translation>
 <translation id="6710213216561001401">Aurrekoa</translation>
 <translation id="6732801395666424405">Ez dira ziurtagiriak kargatu</translation>
@@ -901,6 +906,7 @@
 <translation id="8386903983509584791">Amaitu da bilaketa</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> atera da.</translation>
 <translation id="8395901698320285466">Dimentsioak</translation>
+<translation id="8404498045299006085">Mantendu guztiak</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> sarea. Konektatzen.</translation>
 <translation id="8425213833346101688">Aldatu</translation>
 <translation id="8431909052837336408">Aldatu SIMaren PINa</translation>
@@ -927,6 +933,7 @@
 <translation id="8560515948038859357">Kantondarra</translation>
 <translation id="8561206103590473338">Elefantea</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> saretatik <ph name="NETWORK_INDEX" />garrena, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Seinalearen indarra: ehuneko <ph name="SIGNAL_STRENGTH" />, Administratzaileak blokeatu du, Xehetasunak</translation>
+<translation id="8568374623837201676">Betiko ezabatu nahi duzu fitxategia?</translation>
 <translation id="8569764466147087991">Hautatu irekitzeko fitxategi bat</translation>
 <translation id="8577897833047451336">Kroaziarra</translation>
 <translation id="8578308463707544055">Indonesiarra</translation>

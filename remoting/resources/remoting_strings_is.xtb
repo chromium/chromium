@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Ósamhæf útgáfa samskiptareglu fannst. Gakktu úr skugga um að nýjustu útgáfur af hugbúnaðinum séu uppsettar í báðum tölvum og reyndu aftur.</translation>
 <translation id="1008557486741366299">Ekki núna</translation>
 <translation id="1201402288615127009">Áfram</translation>
+<translation id="1296511125400541222">Höfundarréttur 2023 höfundar Chromium. Öll réttindi áskilin.</translation>
 <translation id="1297009705180977556">Villa við að tengjast við <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Umbeðinn hlutur er ekki til.</translation>
 <translation id="1480046233931937785">Samstarfsaðilar</translation>
@@ -88,6 +89,7 @@ Ef þegar er hakað við „<ph name="SERVICE_SCRIPT_NAME" />“ skaltu fjarlæg
 <translation id="4808503597364150972">Sláðu inn PIN-númer fyrir <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Hýsill</translation>
 <translation id="4867841927763172006">Senda Print Screen</translation>
+<translation id="4960795469833295568">Höfundarréttur 2023 Google LLC. Öll réttindi áskilin.</translation>
 <translation id="4974476491460646149">Tenging lokuð fyrir <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Fyrst verðurðu að setja upp tölvu með fjaraðgangi</translation>
 <translation id="4987330545941822761">Fjarstjórnun tölvu í Chrome getur ekki auðkennt vafrann til að opna vefslóðir í tækinu. Veldu hann af listanum hér að neðan.</translation>

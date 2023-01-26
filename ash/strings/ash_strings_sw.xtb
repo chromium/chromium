@@ -165,7 +165,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1797271123677381264">Umesahau nenosiri</translation>
 <translation id="1807246157184219062">Mwangaza</translation>
 <translation id="181103072419391116">Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
-<translation id="1812997170047690955">Kuna nini kwenye skrini yangu?</translation>
 <translation id="1816896987747843206">Hatua hii huruhusu ufikiaji wa kamera katika programu na tovuti zote zilizo na ruhusa ya kufikia kamera</translation>
 <translation id="1823280932251546115">Trei ya hali, saa <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -291,6 +290,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2501920221385095727">Vitufe vya kusalia kwa muda</translation>
 <translation id="2509468283778169019">Caps Lock imewashwa.</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">Fungua madirisha</translation>
 <translation id="2542089167727451762">Gusa picha yako ya wasifu</translation>
 <translation id="255671100581129685">Programu ya Mratibu wa Google haipatikani katika kipindi cha umma.</translation>
 <translation id="256712445991462162">kikuzaji kilichoambatishwa</translation>
@@ -320,6 +320,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2704781753052663061">Jiunge kwenye mitandao mingine ya Wi-Fi</translation>
 <translation id="2705001408393684014">Washa Maikrofoni. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Juu</translation>
+<translation id="2710984741481549981">Funga madirisha</translation>
 <translation id="2718395828230677721">Mwanga wa Usiku</translation>
 <translation id="2726420622004325180">Ni lazima simu yako iwe na data ya mtandao wa simu ili utumie kipengele cha mtandao pepe</translation>
 <translation id="2727175239389218057">Jibu</translation>
@@ -581,6 +582,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4177913004758410636">{0,plural, =1{Sasisha kifaa ndani ya siku moja}other{Sasisha kifaa ndani ya siku #}}</translation>
 <translation id="4181841719683918333">Lugha</translation>
 <translation id="4192112279662688596">Au</translation>
+<translation id="4193857202545160520">Onyesha njia za mkato za mibofyo na vitufe</translation>
 <translation id="4195814663415092787">Endelea kutoka mahali ulipoachia</translation>
 <translation id="4195877955194704651">Kitufe cha mibofyo ya kiotomatiki</translation>
 <translation id="4197790712631116042">Imezimwa</translation>
@@ -730,6 +732,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="4919841137949306064"><ph name="APP_NAME" /> inatumia kamera yako kwa sasa</translation>
 <translation id="492453977506755176">Kitufe cha hali ya kupiga picha</translation>
 <translation id="4925542575807923399">Msimamizi wa akaunti hii anahitaji uingie kwenye akaunti hii kwanza katika kipindi cha kuingia katika akaunti nyingi kwa wakati mmoja.</translation>
+<translation id="4929163402621253029">Je, unazungumza? Umezima sauti. Pata maelezo zaidi</translation>
 <translation id="4938176435186993759">Ficha mapendekezo yote</translation>
 <translation id="4945196315133970626">Zima arifa</translation>
 <translation id="4946376291507881335">Nasa</translation>
@@ -763,6 +766,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5107522548814527560">Wavuti</translation>
 <translation id="5111318697104479778"><ph name="DESC" />, <ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">Onyesha mwezi unaofuata</translation>
+<translation id="5127986747308934633">Msimamizi wako anadhibiti kifaa chako</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
 <translation id="5147567197700016471">Imefunguliwa</translation>
 <translation id="5150070631291639005">Mipangilio ya faragha</translation>
@@ -872,6 +876,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="5710450975648804523">Umewasha kipengele cha Usinisumbue</translation>
 <translation id="571295407079589142">Data ya mtandao wa simu imezimwa</translation>
 <translation id="573413375004481890">Kifaa hiki kimeshindwa kutumia skrini zako zote. Kwa hivyo, skrini moja imeondolewa</translation>
+<translation id="5740328398383587084">Uhamishaji wa Karibu</translation>
 <translation id="574392208103952083">Wastani</translation>
 <translation id="5744083938413354016">Uburutaji wa kugonga</translation>
 <translation id="5745612484876805746">Kipengele cha Mwanga wa Usiku kitawaka kiotomatiki wakati wa machweo</translation>
@@ -991,6 +996,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="639644700271529076">CAPS LOCK imezimwa</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Mratibu wa Google</translation>
+<translation id="641867537956679916">Msimamizi wako ameingia katika akaunti ili kukagua tatizo. Unaweza kuendelea kutumia kifaa baada ya msimamizi kukurejeshea tena udhibiti.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Futa arifa zote</translation>
 <translation id="643147933154517414">Hakuna arifa</translation>
@@ -1280,6 +1286,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="79341161159229895">Akaunti inasimamiwa na <ph name="FIRST_PARENT_EMAIL" /> na <ph name="SECOND_PARENT_EMAIL" /></translation>
 <translation id="793716872548410480">Bonyeza <ph name="SHORTCUT_KEY_NAME" /> + V ili uangalie ubao wako wa kunakili. Vipengee vitano vya mwisho ulivyovinakili vimehifadhiwa kwenye ubao wako wa kunakili.</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
+<translation id="7944023924886109030">Angalia matukio yote ya leo</translation>
 <translation id="7963992254934562106">Kutoka <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Chagua folda...</translation>
 <translation id="7977927628060636163">Inatafuta mitandao ya simu...</translation>

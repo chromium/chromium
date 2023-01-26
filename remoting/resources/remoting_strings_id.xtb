@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Versi protokol yang tidak kompatibel terdeteksi. Pastikan Anda memasang software versi terbaru di kedua komputer dan coba lagi.</translation>
 <translation id="1008557486741366299">Jangan Sekarang</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
+<translation id="1296511125400541222">Hak Cipta 2023 The Chromium Authors. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="1297009705180977556">Terjadi error saat menghubungkan ke <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Objek yang diminta tidak ada.</translation>
 <translation id="1480046233931937785">Kredit</translation>
@@ -88,6 +89,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' sudah dicentang, hapus centangnya, lalu
 <translation id="4808503597364150972">Masukkan PIN Anda untuk <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Kirim PrtScn</translation>
+<translation id="4960795469833295568">Hak Cipta 2023 Google LLC. Semua Hak Dilindungi Undang-Undang.</translation>
 <translation id="4974476491460646149">Sambungan terputus untuk <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Pertama, Anda perlu menyiapkan komputer untuk akses jarak jauh</translation>
 <translation id="4987330545941822761">Chrome Desktop Jarak Jauh tidak dapat menentukan browser untuk membuka URL secara lokal. Pilih dari daftar di bawah ini.</translation>

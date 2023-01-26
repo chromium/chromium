@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Открита е несъвместима версия на протокол. Моля, уверете се, че най-новата версия на софтуера е инсталирана и на двата компютъра, и опитайте отново.</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1201402288615127009">Напред</translation>
+<translation id="1296511125400541222">Авторски права 2023 г. Авторите на Chromium. Всички права запазени.</translation>
 <translation id="1297009705180977556">Грешка при свързването с хоста „<ph name="HOSTNAME" />“</translation>
 <translation id="1450760146488584666">Заявеният обект не съществува.</translation>
 <translation id="1480046233931937785">Признание</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">Моля, въведете ПИН кода си за <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Хост</translation>
 <translation id="4867841927763172006">Изпращане на PrtScn</translation>
+<translation id="4960795469833295568">Авторски права 2023 г. Google LLC. Всички права запазени.</translation>
 <translation id="4974476491460646149">Връзката с хоста „<ph name="HOSTNAME" />“ е прекратена</translation>
 <translation id="4985296110227979402">Трябва първо да настроите компютъра си за отдалечен достъп</translation>
 <translation id="4987330545941822761">Отдалеченият работен плот на Chrome не може да избере браузъра, с който да се отварят URL адреси локално. Моля, изберете браузър от списъка по-долу.</translation>

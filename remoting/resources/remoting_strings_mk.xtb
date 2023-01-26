@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Откривме некомпатибилна верзија на протоколот. Проверете дали ја имате инсталирано најновата верзија на софтверот на двата компјутера и обидете се повторно.</translation>
 <translation id="1008557486741366299">Не сега</translation>
 <translation id="1201402288615127009">Следно</translation>
+<translation id="1296511125400541222">Авторски права за 2023 г. на The Chromium Authors. Сите права се задржани.</translation>
 <translation id="1297009705180977556">Грешка при поврзување со <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Бараниот објект не постои.</translation>
 <translation id="1480046233931937785">Заслуги</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">Внесете го PIN-кодот за <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Домаќин</translation>
 <translation id="4867841927763172006">Испрати PrtScn</translation>
+<translation id="4960795469833295568">Авторски права за 2023 г. на Google LLC. Сите права се задржани.</translation>
 <translation id="4974476491460646149">Врската е затворена за <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Прво треба да го поставите компјутерот за далечински пристап</translation>
 <translation id="4987330545941822761">„Пристап оддалеку за Chrome“ не може да го одреди прелистувачот за отворање на URL-адресите локално. Изберете го од списокот подолу.</translation>

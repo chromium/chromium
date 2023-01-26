@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Պրոտոկոլի տարբերակը համատեղելի չէ: Համոզվեք, որ երկու համակարգիչների վրա ծրագրակազմը թարմացված է վերջին տարբերակով և նորից փորձեք:</translation>
 <translation id="1008557486741366299">Հիմա չէ</translation>
 <translation id="1201402288615127009">Հաջորդը</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="1297009705180977556">Չհաջողվեց միանալ <ph name="HOSTNAME" /> խնամորդին</translation>
 <translation id="1450760146488584666">Հարցված օբյեկտը գոյություն չունի:</translation>
 <translation id="1480046233931937785">Կրեդիտներ</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">Մուտքագրեք <ph name="HOSTNAME" />-ի ձեր PIN-ը:</translation>
 <translation id="4812684235631257312">Խնամորդ</translation>
 <translation id="4867841927763172006">Ուղարկել PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC։ Բոլոր իրավունքները պահպանված են։</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> խնամորդի հետ կապն ընդհատվեց</translation>
 <translation id="4985296110227979402">Հեռակա օգտագործման թույլտվության համար նախ անհրաժեշտ է կարգավորել համակարգիչը</translation>
 <translation id="4987330545941822761">Chrome հեռակա աշխատասեղանը չի կարողանում դիտարկիչ ընտրել՝ սարքում URL-ներ բացելու համար։ Ներքևի ցանկից ընտրեք համապատասխան դիտարկիչը։</translation>

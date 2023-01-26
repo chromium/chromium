@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">電波が弱い状態です。Wi-Fi　信号の発生元に近づいてみてください。</translation>
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="3600339377155080675">画面のミラーリング</translation>
+<translation id="3602290021589620013">プレビュー</translation>
 <translation id="3603829704940252505">アバター</translation>
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="3862598938296403232">説明は必須です</translation>
+<translation id="3865289341173661845">ヘルプ コンテンツをご利用いただけません</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="3866249974567520381">説明</translation>
 <translation id="387301095347517405">電池がフル充電されたサイクルの回数です</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">ゲートウェイにアクセスできません</translation>
 <translation id="4046123991198612571">次のトラック</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4054683689023980771">画像のダウンロード中</translation>
 <translation id="4060260348856573701">新しい APN</translation>
 <translation id="4093865285251893588">プロフィール画像</translation>
 <translation id="409427325554347132">テストの詳細を保存</translation>
+<translation id="4095829376260267438">WPA2 / WPA3</translation>
 <translation id="4110686435123617899">アルバム「<ph name="TITLE" />」の <ph name="DESC" />を選択</translation>
 <translation id="4111761024568264522">USB タッチパッド</translation>
 <translation id="4117637339509843559">ダークモード</translation>
@@ -448,8 +452,6 @@
 <translation id="5168185087976003268">電池の状態</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5190187232518914472">いつでも思い出の写真を。アルバムを追加または編集するには、<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />にアクセスしてください。</translation>
-<translation id="5212543919916444558">画面からはサポートできる内容が見つかりませんでした。
-マイクをタップして質問してみてください。</translation>
 <translation id="5212593641110061691">タブロイド</translation>
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="522307662484862935">メールアドレスは入力しないでください</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">サーバーの CA 証明書</translation>
 <translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">ヘルプ コンテンツをご利用いただけません</translation>
 <translation id="7535791657097741517">ライトモードをオンにする</translation>
 <translation id="7550715992156305117">ルーティン診断</translation>
 <translation id="7551123448725492271">デバイスの種類はオーディオ機器です。</translation>
@@ -719,6 +722,7 @@
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">サイクル回数</translation>
 <translation id="7747039790905080783">事前共有キー</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
@@ -802,6 +806,7 @@
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8620617069779373398">ローミング状態</translation>

@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Cигнал начар. Wi-Fi сигналынын булагына жакыныраак жылып көрүңүз.</translation>
 <translation id="3595596368722241419">Батарея толук</translation>
 <translation id="3600339377155080675">Экранды күзгүдөй чагылдыруу</translation>
+<translation id="3602290021589620013">Алдн-ала көз жүгртүү</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Тушкагазды өзгөртүп алыңыз</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3862598938296403232">Учкай маалымат талап кылынат</translation>
+<translation id="3865289341173661845">Жардам берүү бөлүмү жеткиликсиз.</translation>
 <translation id="3865414814144988605">Чечилиш</translation>
 <translation id="3866249974567520381">Сүрөттөлүшү</translation>
 <translation id="387301095347517405">Батарея толук кубатталган циклдердин саны</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Шлюзга туташпай жатат</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>
 <translation id="404928562651467259">ЭСКЕРТҮҮ</translation>
+<translation id="4054683689023980771">Сүрөт жүктөлүүдө</translation>
 <translation id="4060260348856573701">Жаңы APN</translation>
 <translation id="4093865285251893588">Профиль сүрөтү</translation>
 <translation id="409427325554347132">Сыноонун чоо-жайын сактоо</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Альбом тандаңыз <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB сенсордук тактасы</translation>
 <translation id="4117637339509843559">Караңгы режим</translation>
@@ -444,12 +448,10 @@
 <translation id="5142961317498132443">Аныктыгын текшерүү</translation>
 <translation id="5154917547274118687">Эстутум</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> түзмөгүңүзгө кириңиз</translation>
-<translation id="5166918508782100047">Ыкчам жооптор жөндөөлөрү</translation>
+<translation id="5166918508782100047">Ыкчам жооптор параметрлери</translation>
 <translation id="5168185087976003268">Батареянын иштөө мөөнөтү</translation>
 <translation id="5170568018924773124">Куржунда көрсөтүү</translation>
 <translation id="5190187232518914472">Эсте калган учурларды кайра көз алдыңыздан өткөрүңүз. Альбомдорду кошуу же түзөтүү үчүн <ph name="LINK_BEGIN" />Google Фотого<ph name="LINK_END" /> өтүңүз.</translation>
-<translation id="5212543919916444558">Экраныңызда эч нерсе көрүнгөн жок.
-Мага суроо берүү үчүн микрофонду таптап коюңуз.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="522307662484862935">Электрондук почта дареги жазылбасын</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">Сервердин CA тастыктамасы</translation>
 <translation id="7502658306369382406">IPv6 дареги</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Жардам берүү бөлүмү жеткиликсиз</translation>
 <translation id="7535791657097741517">Жарык теманы күйгүзүү</translation>
 <translation id="7550715992156305117">Мүчүлүштүктөрдү аныктоо программалары</translation>
 <translation id="7551123448725492271">Түзмөк — аудио түзмөк.</translation>
@@ -719,6 +722,7 @@
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Циклдердин саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлүшүлгөн ачкыч</translation>
 <translation id="7762130827864645708">Сырсөзүңүз өзгөрдү. Мындан кийин жаңы сырсөздү колдонуңуз.</translation>
@@ -802,6 +806,7 @@
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
 <translation id="8508640263392900755">APN тууралуу маалымат</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>
 <translation id="8576249514688522074">Аныкталбаган</translation>
 <translation id="8620617069779373398">Роуминг статусу</translation>

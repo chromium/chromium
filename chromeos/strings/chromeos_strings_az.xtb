@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Siqnal gücü zəifdir. Wi-Fi siqnal mənbəyinə yaxınlaşmağa çalışın.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="3600339377155080675">Ekran əks olunması</translation>
+<translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Divar kağızını dəyişin</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Geri</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3862598938296403232">Təsvir tələb olunur</translation>
+<translation id="3865289341173661845">Yardım məzmunu əlçatan deyil.</translation>
 <translation id="3865414814144988605">Dəqiqlik</translation>
 <translation id="3866249974567520381">Təsvir</translation>
 <translation id="387301095347517405">Batareyanızın tam şarj edilmə sayı</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Giriş ilə əlaqə saxlamaq olmur</translation>
 <translation id="4046123991198612571">Növbəti trek</translation>
 <translation id="404928562651467259">XƏBƏRDARLIQ</translation>
+<translation id="4054683689023980771">Şəkil endirilir</translation>
 <translation id="4060260348856573701">Yeni APN</translation>
 <translation id="4093865285251893588">Profil şəkli</translation>
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
@@ -449,7 +452,6 @@
 <translation id="5168185087976003268">Enerji statusu</translation>
 <translation id="5170568018924773124">Qovluqda göstərin</translation>
 <translation id="5190187232518914472">Sevimli xatirələrinizi canlandırın. Albomlarə əlavə və ya redaktə etmək üçün <ph name="LINK_BEGIN" />Google Fotoya<ph name="LINK_END" /> keçin.</translation>
-<translation id="5212543919916444558">Ekranınızda kömək edə biləcəyim heç nə tapmadım. Məndən hər hansı bir şey soruşmaq üçün mikrofona klikləyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Hesabdan çıxın</translation>
 <translation id="522307662484862935">E-poçt ünvanını daxil etməyin</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">Server CA sertifikatı</translation>
 <translation id="7502658306369382406">IPv6 ünvanı</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Yardım məzmunu əlçatan deyil</translation>
 <translation id="7535791657097741517">İşıqlı temanı aktiv edin</translation>
 <translation id="7550715992156305117">Diaqnostika Rejimləri</translation>
 <translation id="7551123448725492271">Cihaz audio cihazdır.</translation>

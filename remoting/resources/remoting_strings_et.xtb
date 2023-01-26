@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Leiti protokolli ühildumatu versioon. Veenduge, et mõlemas arvutis oleks installitud tarkvara uusim versioon, ja proovige uuesti.</translation>
 <translation id="1008557486741366299">Mitte praegu</translation>
 <translation id="1201402288615127009">Järgmine</translation>
+<translation id="1296511125400541222">Autoriõigus 2023 The Chromium Authors. Kõik õigused kaitstud.</translation>
 <translation id="1297009705180977556">Viga hostiga <ph name="HOSTNAME" /> ühendamisel</translation>
 <translation id="1450760146488584666">Nõutavat objekti ei ole.</translation>
 <translation id="1480046233931937785">Tiitrid</translation>
@@ -88,6 +89,7 @@ Kui ruut teenuse „<ph name="SERVICE_SCRIPT_NAME" />” juures on juba märgitu
 <translation id="4808503597364150972">Sisestage hosti <ph name="HOSTNAME" /> PIN-kood.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Saada klahvi PrtScn vajutamine</translation>
+<translation id="4960795469833295568">Autoriõigus 2023 Google LLC. Kõik õigused kaitstud.</translation>
 <translation id="4974476491460646149">Ühendus hostiga <ph name="HOSTNAME" /> on suletud</translation>
 <translation id="4985296110227979402">Esmalt tuleb arvutis seadistada kaugjuurdepääs</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop ei suuda tuvastada brauserit, mis on mõeldud URL-ide kohalikult avamiseks. Valige see allolevast loendist.</translation>

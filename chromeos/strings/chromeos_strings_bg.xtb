@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Сигналът е слаб. Приближете се до източника на Wi-Fi сигнал.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
 <translation id="3600339377155080675">Дублиране на екрана</translation>
+<translation id="3602290021589620013">Визуализация</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Промяна на тапета</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Няма връзка с шлюза</translation>
 <translation id="4046123991198612571">Следващ запис</translation>
 <translation id="404928562651467259">ПРЕДУПРЕЖДЕНИЕ</translation>
+<translation id="4054683689023980771">Изображението се изтегля</translation>
 <translation id="4060260348856573701">Ново име на точка за достъп (APN)</translation>
 <translation id="4093865285251893588">Изображение на потребителския профил</translation>
 <translation id="409427325554347132">Запазване на подробностите за теста</translation>
+<translation id="4095829376260267438">WPA2 + WPA3</translation>
 <translation id="4110686435123617899">Избиране на албум <ph name="TITLE" />, <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Сензорен панел с USB</translation>
 <translation id="4117637339509843559">Тъмен режим</translation>
@@ -448,8 +451,6 @@
 <translation id="5168185087976003268">Състояние на батерията</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5190187232518914472">Преживейте отново любимите си спомени. За да добавите или редактирате албуми, отворете <ph name="LINK_BEGIN" />Google Снимки<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
-Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Изход</translation>
 <translation id="522307662484862935">Без имейл адрес</translation>
@@ -719,6 +720,7 @@
 <translation id="7690294790491645610">Потвърдете новата парола</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Брой цикли</translation>
 <translation id="7747039790905080783">Предварително споделен ключ</translation>
 <translation id="7762130827864645708">Промяната на паролата ви беше успешна. Моля, използвайте новата парола от сега нататък.</translation>
@@ -802,6 +804,7 @@
 <translation id="8503836310948963452">Само още няколко минути…</translation>
 <translation id="8508640263392900755">Подробности за името на точката за достъп (APN)</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Тази опция може да е необходима за свързване с мрежата на оператора ви. За подробности се обърнете към него.</translation>
 <translation id="8576249514688522074">Неинициализирана</translation>
 <translation id="8620617069779373398">Състояние на роуминга</translation>

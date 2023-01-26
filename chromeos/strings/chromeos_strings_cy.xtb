@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Cryfder signal gwan. Rhowch gynnig ar symud yn agosach at ffynhonnell y signal Wi-Fi.</translation>
 <translation id="3595596368722241419">Mae'r batri yn llawn</translation>
 <translation id="3600339377155080675">Adlewyrchu sgrîn</translation>
+<translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3603829704940252505">Rhithffurf</translation>
 <translation id="3604713164406837697">Newid y papur wal</translation>
 <translation id="360565022852130722">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP 802.1x</translation>
@@ -315,6 +316,7 @@
 <translation id="4044093238444069296">Methu â chysylltu'r porth</translation>
 <translation id="4046123991198612571">Trac nesaf</translation>
 <translation id="404928562651467259">RHYBUDD</translation>
+<translation id="4054683689023980771">Wrthi'n lawrlwytho llun</translation>
 <translation id="4060260348856573701">APN newydd</translation>
 <translation id="4093865285251893588">Llun proffil</translation>
 <translation id="409427325554347132">Cadw manylion y prawf</translation>
@@ -449,8 +451,6 @@
 <translation id="5168185087976003268">Iechyd y batri</translation>
 <translation id="5170568018924773124">Dangos yn y ffolder</translation>
 <translation id="5190187232518914472">Ail-fyw eich hoff atgofion. I ychwanegu neu olygu albymau, ewch i <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Ni allaf ddod o hyd i unrhyw beth ar eich sgrîn y gallaf helpu ag ef.
-Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Allgofnodi</translation>
 <translation id="522307662484862935">Peidio â chynnwys cyfeiriad e-bost</translation>

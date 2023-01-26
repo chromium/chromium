@@ -12,6 +12,7 @@
 <translation id="1272079795634619415">Запри</translation>
 <translation id="1289742167380433257">Google ги оптимизираше сликите на страницава за да ви заштеди интернет.</translation>
 <translation id="129382876167171263">Датотеките зачувани од веб-сајтовите се појавуваат тука</translation>
+<translation id="131112695174432497">Податоците што влијат на персонализацијата на реклами се избришани</translation>
 <translation id="1317194122196776028">Заборави го сајтов</translation>
 <translation id="1343356790768851700">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови</translation>
 <translation id="1369915414381695676">Локацијата <ph name="SITE_NAME" /> е додадена</translation>
@@ -89,7 +90,6 @@
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2597457036804169544">Не применувај темна тема за сајтови</translation>
 <translation id="2621115761605608342">Дозволи JavaScript за одреден сајт.</translation>
-<translation id="2639227409413857192">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2717722538473713889">Адреси за е-пошта</translation>
 <translation id="2750481671343847896">Сајтовите може да прикажуваат prompt за најавување од услуги за идентификација.</translation>
+<translation id="2779966372261694284">Ќе ве одјавиме од сајтов</translation>
 <translation id="2822354292072154809">Сигурно ли сакате да ги ресетирате сите дозволи на сајтот за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Локација</translation>
 <translation id="2874939134665556319">Претходна песна</translation>
@@ -218,6 +219,7 @@
 <translation id="5197729504361054390">Контактите што ќе ги изберете ќе се споделат со <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посетено денес</translation>
 <translation id="5225463052809312700">Вклучи ја камерата</translation>
+<translation id="5234764350956374838">Отфрли</translation>
 <translation id="5264323282659631142">Отстранете го „<ph name="CHIP_LABEL" />“</translation>
 <translation id="528192093759286357">Повлечете од врвот и допрете го копчето Назад за да излезете од цел екран.</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -254,6 +256,7 @@
 <translation id="5804241973901381774">Дозволи</translation>
 <translation id="5860033963881614850">Исклучено</translation>
 <translation id="5876056640971328065">Паузирајте го видеото</translation>
+<translation id="5884085660368669834">Поставки за сајтот</translation>
 <translation id="5887687176710214216">Последно посетено вчера</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5922853908706496913">Се споделува екранот</translation>
@@ -305,6 +308,7 @@
 <translation id="6746124502594467657">Премести долу</translation>
 <translation id="6749077623962119521">Да се ресетираат дозволите?</translation>
 <translation id="6766622839693428701">Повлечете надолу за да затворите.</translation>
+<translation id="6787751205395685251">Изберете опција за <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6818926723028410516">Изберете ставки</translation>
 <translation id="6864395892908308021">Уредов не може да чита NFC</translation>
@@ -315,6 +319,7 @@
 <translation id="6992289844737586249">Прво прашај пред да дозволиш сајтовите да го користат микрофонот (се препорачува)</translation>
 <translation id="7000754031042624318">Исклучена во поставките за Android</translation>
 <translation id="7016516562562142042">Дозволено за тековниот пребарувач</translation>
+<translation id="702275896380648118">Овој сајт одредува работи што ви се допаѓаат, а потоа предлага реклами на други сајтови. Сајтов ги добива вашите теми за реклами и од Chrome за да ви прикажува порелевантни реклами.</translation>
 <translation id="702463548815491781">Препорачано при вклучен TalkBack или „Пристап со прекинувачи“</translation>
 <translation id="7053983685419859001">Блокирај</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Избрана е 1}one{Избрана е #}other{Избрани се #}}</translation>
@@ -346,17 +351,14 @@
 <translation id="7667547420449112975">Чудесниот волшебник од Оз</translation>
 <translation id="7684642910516280563">Не дозволувајте му на сајт да користи колачиња од трети страни</translation>
 <translation id="7690549345586282764">Прикажи зумирање</translation>
-<translation id="7695658402549134106">Поставка за сајт за <ph name="SITE_NAME" /></translation>
 <translation id="7719367874908701697">Зумирање страница</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804248752222191302">Сајтот ја користи камерата</translation>
-<translation id="7817023149356982970">Ќе ве одјавиме од сајтов.</translation>
 <translation id="7835852323729233924">Пуштање аудиовизуелни содржини</translation>
 <translation id="783819812427904514">Вклучете звук на видео</translation>
 <translation id="7846076177841592234">Откажи избор</translation>
-<translation id="7846621471902887024">Ќе ве одјавиме од сите сајтови.</translation>
 <translation id="7882806643839505685">Дозволете го звукот за одреден сајт.</translation>
 <translation id="789180354981963912">Блокирајте колачиња од трети страни во „Инкогнито“:</translation>
 <translation id="7940722705963108451">Потсети ме</translation>
@@ -409,7 +411,6 @@
 <translation id="8676374126336081632">Јасно внесување</translation>
 <translation id="8681886425883659911">Рекламите се блокирани на сајтови за кои е познато дека прикажуваат нападни или лажни реклами</translation>
 <translation id="868929229000858085">Пребарајте ги контактите</translation>
-<translation id="8702612070107455751">Сите офлајн податоци ќе се избришат.</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="8719283222052720129">Вклучете ја дозволата за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
@@ -428,6 +429,7 @@
 <translation id="8958424370300090006">Блокирајте колачиња за одреден сајт.</translation>
 <translation id="8959122750345127698">Навигацијата е недостапна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Заборави</translation>
+<translation id="8990043154272859344">Ќе ве одјавиме од сите сајтови</translation>
 <translation id="900095568014372589">Смалете или зголемете ги стандардните текстови и слики на сајтовите</translation>
 <translation id="9019902583201351841">Управувано од вашите родители</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
@@ -437,6 +439,7 @@
 <translation id="913657688200966289">Вклучете ги дозволите за <ph name="APP_NAME" /> во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="9138217887606523162">Тековното зумирање е <ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="9162462602695099906">Страницава е опасна</translation>
+<translation id="9201023452444595544">Сите офлајн податоци ќе се избришат</translation>
 <translation id="930525582205581608">Да се заборави сајтов?</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 </translationbundle>

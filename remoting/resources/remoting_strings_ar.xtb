@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">تم اكتشاف إصدار غير متوافق من البروتوكول. يُرجى التأكد من تثبيت أحدث إصدار من البرنامج المُثبت على كلا الجهازين، وإعادة المحاولة.</translation>
 <translation id="1008557486741366299">ليس الآن</translation>
 <translation id="1201402288615127009">التالي</translation>
+<translation id="1296511125400541222">‏حقوق الطبع والنشر لـ The Chromium Authors لعام 2023. جميع الحقوق محفوظة.</translation>
 <translation id="1297009705180977556">حدث خطأ أثناء الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">العنصر المطلوب غير موجود.</translation>
 <translation id="1480046233931937785">أسماء المشاركين</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972">يُرجى إدخال رقم التعريف الشخصي التابع لك لـ <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">المضيف</translation>
 <translation id="4867841927763172006">‏إرسال PrtScn</translation>
+<translation id="4960795469833295568">‏حقوق الطبع والنشر لعام 2023 لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="4974476491460646149">تم إغلاق الاتصال بـ <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">تحتاج أولاً إلى إعداد جهاز الكمبيوتر لإتاحة الدخول عن بُعد</translation>
 <translation id="4987330545941822761">‏لا يمكن لميزة "الوصول إلى الكمبيوتر المكتبي عن بُعد من Chrome" تحديد المتصفّح الذي يجب استخدامه لفتح عناوين URL على الجهاز. يُرجى اختيار المتصفّح من القائمة أدناه.</translation>

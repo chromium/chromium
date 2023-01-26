@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">En inkompatibel version av protokollet upptäcktes. Kontrollera att du har den senaste versionen av programvaran på båda datorerna och försök igen.</translation>
 <translation id="1008557486741366299">Inte nu</translation>
 <translation id="1201402288615127009">Nästa</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Med ensamrätt.</translation>
 <translation id="1297009705180977556">Det gick inte att ansluta till <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Det begärda objektet finns inte.</translation>
 <translation id="1480046233931937785">Medverkande</translation>
@@ -88,6 +89,7 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="4808503597364150972">Ange din pinkod för <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Värd</translation>
 <translation id="4867841927763172006">Skicka PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Med ensamrätt.</translation>
 <translation id="4974476491460646149">Anslutningen till <ph name="HOSTNAME" /> kopplades från</translation>
 <translation id="4985296110227979402">Du måste först konfigurera datorn för fjärråtkomst</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop kan inte avgöra vilken webbläsare som ska användas för att öppna webbadresser lokalt. Välj webbläsare i listan nedan.</translation>

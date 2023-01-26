@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Recevoir des notifications</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper?</translation>
 <translation id="4212246570487010370">Continuer la navigation</translation>
-<translation id="4450893287417543264">Ne plus afficher</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Affichage</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Comparez rapidement des pages en créant un groupe. Pour commencer, maintenez le doigt sur un lien.</translation>
 <translation id="5490235265819901748">Groupe d'onglets développé</translation>
 <translation id="5494920125229734069">Tout sélectionner</translation>
-<translation id="5533021382642990449">Afficher plus tard</translation>
 <translation id="5556417849629758491">Afficher les renseignements sur le magasin, option accessible dans le haut de l'écran</translation>
 <translation id="5558362125926932819">Fermer le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> onglets groupés</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Renseignements à propos de ce magasin</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
-<translation id="6510648526783655549">Fermer la bande d'onglets</translation>
 <translation id="6549021453810473782">Affichez les renseignements sur le magasin</translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>
 <translation id="6615455863669487791">Démonstration</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Les renseignements à propos de ce magasin sont ouverts à pleine hauteur</translation>
 <translation id="814503310257431685">Tout afficher</translation>
 <translation id="8205266828577616993">Déplacer l'onglet vers le haut</translation>
-<translation id="8304833501377495048">Ne plus afficher la bande d'onglets?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Développer le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
-<translation id="8749939518995770034">Bande d'onglets fermée</translation>
 <translation id="8820741577754260431">Faites le suivi des baisses de prix dans vos onglets</translation>
 <translation id="9090098097337832354">Les renseignements à propos de ce magasin sont fermés</translation>
 <translation id="9150694013019234766">Basculez entre les onglets dans votre groupe d'onglets, près du bas de l'écran</translation>

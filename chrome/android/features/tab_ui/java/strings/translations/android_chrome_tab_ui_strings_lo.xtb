@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">ຮັບການແຈ້ງເຕືອນ</translation>
 <translation id="4133493477912226187">ເບິ່ງຄືວ່າມີ <ph name="NUMBER_OF_TABS" /> ແຖບກ່ຽວຂ້ອງກັນ. ຈັດກຸ່ມພວກມັນບໍ?</translation>
 <translation id="4212246570487010370">ສືບຕໍ່ທ່ອງເວັບ</translation>
-<translation id="4450893287417543264">ຢ່າສະແດງອີກ</translation>
 <translation id="4648718555153979859">ແຖບຂອງທ່ານຖືກຈັດເປັນກຸ່ມຮວມກັນຢູ່ບ່ອນນີ້</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ)}}</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">ປຽບທຽບໜ້າຕ່າງໆໄດ້ຢ່າງວ່ອງໄວໂດຍການສ້າງກຸ່ມ. ເພື່ອເລີ່ມຕົ້ນ, ກະລຸນາແຕະລິ້ງຄ້າງໄວ້.</translation>
 <translation id="5490235265819901748">ຂະຫຍາຍກຸ່ມແຖບແລ້ວ</translation>
 <translation id="5494920125229734069">ເລືອກ​ທັງ​ຫມົດ</translation>
-<translation id="5533021382642990449">ສະແດງໃນພາຍຫຼັງ</translation>
 <translation id="5556417849629758491">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ, ມີຕົວເລືອກຢູ່ເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5558362125926932819">ປິດກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ</translation>
 <translation id="5580090775658607195">ຈັດກຸ່ມ <ph name="TAB_COUNT" /> ແຖບແລ້ວ</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">ຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໄວ້}other{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໄວ້}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
-<translation id="6510648526783655549">ປິດລາຍແຖບ</translation>
 <translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
 <translation id="6562820390860419811">ຍ້າຍແຖບໄປຊ້າຍ</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">ເປີດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແບບຄວາມສູງເຕັມແລ້ວ</translation>
 <translation id="814503310257431685">ເບິ່ງທັງໝົດ</translation>
 <translation id="8205266828577616993">ຍ້າຍແຖບຂຶ້ນເທິງ</translation>
-<translation id="8304833501377495048">ຫ້າມສະແດງລາຍແຖບອີກບໍ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{ປິດ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກ}other{ປິດ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກ}}</translation>
 <translation id="8398929769197326728">ໂຟນເດີໃໝ່ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">ຂະຫຍາຍກຸ່ມແຖບທີ່ມີ <ph name="NUMBER_OF_TABS" /> ແຖບ.</translation>
 <translation id="8714939927607906138">ລາຄາຕໍ່າກວ່າ</translation>
-<translation id="8749939518995770034">ປິດລາຍແຖບແລ້ວ</translation>
 <translation id="8820741577754260431">ເບິ່ງການຫຼຸດລາຄາສຳລັບແຖບຂອງທ່ານ</translation>
 <translation id="9090098097337832354">ປິດຂໍ້ມູນກ່ຽວກັບຮ້ານຄ້ານີ້ແລ້ວ</translation>
 <translation id="9150694013019234766">ປ່ຽນໄປມາລະຫວ່າງແຖບຕ່າງໆໃນກຸ່ມແຖບຂອງທ່ານຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ</translation>

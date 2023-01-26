@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Få aviseringar</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> flikar verkar höra ihop. Vill du gruppera dem?</translation>
 <translation id="4212246570487010370">Fortsätt surfa</translation>
-<translation id="4450893287417543264">Visa inte igen</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Jämför sidor snabbt genom att skapa en grupp. Börja med att trycka länge på en länk.</translation>
 <translation id="5490235265819901748">Flikgruppen har utökats</translation>
 <translation id="5494920125229734069">Markera alla</translation>
-<translation id="5533021382642990449">Visa senare</translation>
 <translation id="5556417849629758491">Visa butiksinformation. Alternativet visas högt upp på skärmen</translation>
 <translation id="5558362125926932819">Stäng flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> flikar har grupperats</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Information om den här butiken</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dela upp <ph name="TABS_COUNT_ONE" /> vald flik}other{Dela upp <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
-<translation id="6510648526783655549">Stäng flikhuvud</translation>
 <translation id="6549021453810473782">Visa butiksinformation</translation>
 <translation id="6562820390860419811">Flytta fliken åt vänster</translation>
 <translation id="6615455863669487791">Visa mig</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Information om den här butiken har öppnats över hela skärmen</translation>
 <translation id="814503310257431685">Visa alla</translation>
 <translation id="8205266828577616993">Flytta fliken uppåt</translation>
-<translation id="8304833501377495048">Vill du sluta visa flikhuvudet?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Stäng <ph name="TABS_COUNT_ONE" /> vald flik}other{Stäng <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="8398929769197326728">Ny mapp – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Utöka flikgruppen med <ph name="NUMBER_OF_TABS" /> flikar.</translation>
 <translation id="8714939927607906138">Lägre pris</translation>
-<translation id="8749939518995770034">Flikhuvudet har stängts</translation>
 <translation id="8820741577754260431">Se sänkta priser på flikar</translation>
 <translation id="9090098097337832354">Informationen om den här butiken stängdes</translation>
 <translation id="9150694013019234766">Byt mellan flikarna i flikgruppen nära sidans nederkant</translation>

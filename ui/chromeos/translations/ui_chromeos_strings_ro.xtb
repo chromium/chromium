@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Setările dispozitivului</translation>
 <translation id="2084809735218147718">Gesticulează „Mulțumesc” în limbajul semnelor</translation>
 <translation id="2088690981887365033">Rețea VPN</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> articole vor fi șterse și nu vei putea să le restabilești.</translation>
 <translation id="2122305276694332719">Conectarea automată la o rețea ascunsă permite altora să îți vadă dispozitivul și unele setări pentru rețea, așadar nu este recomandată.</translation>
 <translation id="2125607626296734455">Khmeră</translation>
 <translation id="2139545522194199494">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, gestionată de administratorul tău, conectează-te</translation>
@@ -397,6 +398,7 @@
 <translation id="4398096759193130964">Restabilește articolele sau trage-le într-un dosar nou în afara coșului de gunoi</translation>
 <translation id="4401287888955153199">Extrage tot</translation>
 <translation id="4410695710508688828">Operațiunea de extragere nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570"><ph name="FILE_NAME" /> va fi șters și nu vei putea să-l restabilești.</translation>
 <translation id="4418686080762064601">Creează o comandă rapidă pentru fișiere</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
 <translation id="4439427728133035643">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
@@ -686,6 +688,7 @@
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6658865850469097484">Fișierele aflate în coșul de gunoi mai mult de 30 de zile se vor șterge automat.</translation>
 <translation id="6673674183150363784">Franceză (Franța) cu tastatură Bépo</translation>
+<translation id="670380500182402678">Înlocuiește tot</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Înapoi</translation>
 <translation id="6732801395666424405">Certificatele nu s-au încărcat</translation>
@@ -904,6 +907,7 @@
 <translation id="8386903983509584791">Scanarea s-a finalizat</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> a fost extras.</translation>
 <translation id="8395901698320285466">Dimensiuni</translation>
+<translation id="8404498045299006085">Păstrează tot</translation>
 <translation id="8408068190360279472">Rețea <ph name="NETWORK_TYPE" />, se stabilește conexiunea</translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8431909052837336408">Schimbă codul PIN pentru SIM</translation>
@@ -930,6 +934,7 @@
 <translation id="8560515948038859357">Cantoneză</translation>
 <translation id="8561206103590473338">Elefant</translation>
 <translation id="8566466896628108558">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, Blocată de administrator, Detalii</translation>
+<translation id="8568374623837201676">Ștergi definitiv fișierul?</translation>
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>
 <translation id="8578308463707544055">Indoneziană</translation>

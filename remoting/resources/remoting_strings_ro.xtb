@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">A fost detectată o versiune de protocol incompatibilă. Asigură-te că ai cea mai recentă versiune de software pe ambele computere și încearcă din nou.</translation>
 <translation id="1008557486741366299">Nu acum</translation>
 <translation id="1201402288615127009">Înainte</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="1297009705180977556">Eroare la conectarea la <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Obiectul solicitat nu există.</translation>
 <translation id="1480046233931937785">Mulțumiri</translation>
@@ -88,6 +89,7 @@ Dacă opțiunea „<ph name="SERVICE_SCRIPT_NAME" />” este deja bifată, debif
 <translation id="4808503597364150972">Introduceți codul PIN pentru <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Gazdă</translation>
 <translation id="4867841927763172006">Trimite PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Toate drepturile rezervate.</translation>
 <translation id="4974476491460646149">Conexiunea a fost închisă pentru <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Mai întâi, trebuie să configurezi computerul pentru accesul la distanță</translation>
 <translation id="4987330545941822761">Desktopul la distanță Chrome nu poate alege browserul pentru deschiderea locală a adreselor URL. Alege-l din lista de mai jos.</translation>

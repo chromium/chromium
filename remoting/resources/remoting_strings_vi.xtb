@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Đã phát hiện một phiên bản giao thức không tương thích. Vui lòng đảm bảo rằng bạn đã cài đặt phiên bản mới nhất của phần mềm trên cả hai máy tính và thử lại.</translation>
 <translation id="1008557486741366299">Để sau</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
+<translation id="1296511125400541222">Bản quyền 2023 The Chromium Authors. Bảo lưu mọi quyền.</translation>
 <translation id="1297009705180977556">Lỗi khi kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Đối tượng yêu cầu không tồn tại.</translation>
 <translation id="1480046233931937785">Tín dụng</translation>
@@ -88,6 +89,7 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="4808503597364150972">Vui lòng nhập mã PIN của bạn cho <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Máy chủ</translation>
 <translation id="4867841927763172006">Gửi PrtScn</translation>
+<translation id="4960795469833295568">Bản quyền 2023 Google LLC. Bảo lưu mọi quyền.</translation>
 <translation id="4974476491460646149">Đã ngắt kết nối khỏi <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Trước tiên, bạn cần thiết lập máy tính để truy cập từ xa</translation>
 <translation id="4987330545941822761">Chrome Remote Desktop không thể xác định được trình duyệt để mở URL trên thiết bị. Vui lòng chọn trình duyệt trong danh sách dưới đây.</translation>

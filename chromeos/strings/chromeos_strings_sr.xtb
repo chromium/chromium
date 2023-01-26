@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Сигнал је слаб. Пробајте да приђете ближе извору WiFi сигнала.</translation>
 <translation id="3595596368722241419">Батерија је пуна</translation>
 <translation id="3600339377155080675">Пресликајте екран</translation>
+<translation id="3602290021589620013">Преглед</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3862598938296403232">Опис је обавезан</translation>
+<translation id="3865289341173661845">Садржај помоћи није доступан.</translation>
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3866249974567520381">Опис</translation>
 <translation id="387301095347517405">Број пута када се батерија напунила до краја</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Контакт са мрежним пролазом не успева</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
 <translation id="404928562651467259">УПОЗОРЕЊЕ</translation>
+<translation id="4054683689023980771">Преузима се слика</translation>
 <translation id="4060260348856573701">Нови назив приступне тачке</translation>
 <translation id="4093865285251893588">Слика профила</translation>
 <translation id="409427325554347132">Сачувај детаље теста</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Стање батерије</translation>
 <translation id="5170568018924773124">Прикажи у директоријуму</translation>
 <translation id="5190187232518914472">Поново проживите омиљене успомене. Да бисте додали или изменили албуме, идите у <ph name="LINK_BEGIN" />Google слике<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Не могу да пронађем на екрану ништа око чега могу да помогнем.
-Пробајте да додирнете микрофон да бисте ме питали нешто.</translation>
 <translation id="5212593641110061691">Таблоид</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="522307662484862935">Не наводите имејл адресу</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">CA сертификат сервера</translation>
 <translation id="7502658306369382406">IPv6 адреса</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Садржај помоћи није доступан</translation>
 <translation id="7535791657097741517">Укључите светлу тему</translation>
 <translation id="7550715992156305117">Дијагностичке рутине</translation>
 <translation id="7551123448725492271">Уређај је аудио уређај.</translation>

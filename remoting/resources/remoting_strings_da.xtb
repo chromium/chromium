@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Der er registreret en inkompatibel version af protokollen. Kontrollér, at du har den nyeste version af softwaren installeret på begge computere, og prøv igen.</translation>
 <translation id="1008557486741366299">Ikke nu</translation>
 <translation id="1201402288615127009">Næste</translation>
+<translation id="1296511125400541222">Copyright 2023 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="1297009705180977556">Der opstod en fejl under forsøget på at oprette forbindelse til <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">Det ønskede objekt findes ikke.</translation>
 <translation id="1480046233931937785">Medvirkende</translation>
@@ -88,6 +89,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="4808503597364150972">Angiv din pinkode til <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Send PrtScn</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="4974476491460646149">Forbindelsen til <ph name="HOSTNAME" /> er lukket</translation>
 <translation id="4985296110227979402">Du skal først konfigurere din computer til fjernadgang</translation>
 <translation id="4987330545941822761">Chrome Fjernskrivebord kan ikke identificere den browser, der skal åbne webadresser lokalt. Vælg den på listen nedenfor.</translation>

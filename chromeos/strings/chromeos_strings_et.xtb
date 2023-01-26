@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Signaal on nõrk. Liikuge WiFi-signaali allikale lähemale.</translation>
 <translation id="3595596368722241419">Aku on täis</translation>
 <translation id="3600339377155080675">Ekraanikuva peegeldamine</translation>
+<translation id="3602290021589620013">Eelvaade</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Taustapildi muutmine</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Tagasi</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3862598938296403232">Kirjeldus on nõutav</translation>
+<translation id="3865289341173661845">Abimaterjalid pole saadaval.</translation>
 <translation id="3865414814144988605">Eraldusvõime</translation>
 <translation id="3866249974567520381">Kirjeldus</translation>
 <translation id="387301095347517405">See arv näitab, mitu korda on teie seadme aku läbinud täieliku laadimistsükli</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">Ei saa lüüsiga ühendust</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
 <translation id="404928562651467259">HOIATUS</translation>
+<translation id="4054683689023980771">Pildi allalaadimine</translation>
 <translation id="4060260348856573701">Uus APN</translation>
 <translation id="4093865285251893588">Profiilipilt</translation>
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">Aku seisukord</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5190187232518914472">Taaselustage oma lemmikmälestused. Albumite lisamiseks või muutmiseks avage rakendus <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Ma ei leia teie ekraanilt midagi, mille puhul saaksin aidata.
-Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="522307662484862935">Ära lisa e-posti aadressi</translation>
@@ -703,6 +704,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7497215489070763236">Serveri CA-sertifikaat</translation>
 <translation id="7502658306369382406">IPv6 aadress</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Abimaterjalid pole saadaval</translation>
 <translation id="7535791657097741517">Heleda teema sisselülitamine</translation>
 <translation id="7550715992156305117">Diagnostikarutiinid</translation>
 <translation id="7551123448725492271">Seade on heliseade.</translation>

@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">စက်ပစ္စည်းဆက်တင်များ</translation>
 <translation id="2084809735218147718">ကျေးဇူးတင်ကြောင်း လက်မှတ်ထိုးနေသူ</translation>
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
+<translation id="2114191879048183086">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းတို့ကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
 <translation id="2125607626296734455">ခမာ</translation>
 <translation id="2139545522194199494">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်၊ ချိတ်ဆက်ရန်</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;နှင့် တိုက်ဆိုင်သည့် အရာများ မရှိ</translation>
 <translation id="2894654529758326923">အချက်အလက်များ</translation>
 <translation id="2902734494705624966">တိုးချဲ့ US</translation>
+<translation id="2904378509913846215">“<ph name="FILENAME" />” အမည်ဖြင့် ဖိုင်တွဲရှိပြီးဖြစ်သည်။ သင်ရွှေ့လိုသောဖိုင်ဖြင့် အစားထိုးလိုပါသလား။</translation>
 <translation id="290843123675549676">မာရာသီ</translation>
 <translation id="2923240520113693977">အက်စ်တိုနီယမ်</translation>
 <translation id="2938685643439809023">မွန်ဂိုဘာသာ</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">ဖိုင်များပြန်ယူပါ (သို့) ၎င်းတို့ကို အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ</translation>
 <translation id="4401287888955153199">အားလုံးထုတ်ယူရန်</translation>
 <translation id="4410695710508688828">ထုတ်ယူ၍ မရပါ။ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">“<ph name="FILE_NAME" />” ကို ဖျက်လိုက်မည်ဖြစ်ပြီး ၎င်းကို ပြန်ယူ၍မရပါ။</translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>
@@ -638,6 +641,7 @@
 <translation id="6241349547798190358">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="6267547857941397424">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="6269630227984243955">မလေး</translation>
+<translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" တွင် သိုလှောင်ခန်းမလုံလောက်သဖြင့် ဖိုင်များကို အပ်လုဒ်လုပ်၍မရပါ။</translation>
 <translation id="6287852322318138013">ဒီဖိုင်ကို ဖွင့်ရန် အက်ပ် တစ်ခုကို ရွေးပါ</translation>
 <translation id="6295542640242147836">ဆင်းမ်လော့ခ်ချရန်</translation>
 <translation id="6296410173147755564">PUK မမှန်ပါ</translation>
@@ -683,6 +687,7 @@
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6658865850469097484">အမှိုက်ပုံးထဲရှိ ရက် ၃၀ ကျော်နေသောဖိုင်များကို အလိုအလျောက် ဖျက်ပါမည်။</translation>
 <translation id="6673674183150363784">Bépo ကီးဘုတ်ဖြင့် ပြင်သစ် (ပြင်သစ်)</translation>
+<translation id="670380500182402678">အားလုံးကို အစားထိုးရန်</translation>
 <translation id="6710022688720561421">စက်ရုပ်</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6732801395666424405">လက်မှတ်ကို တင်မပေးခဲ့</translation>
@@ -901,6 +906,7 @@
 <translation id="8386903983509584791">ရှာဖွေပြီးပါပြီ</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ထုတ်ယူပြီးပြီ။</translation>
 <translation id="8395901698320285466">အတိုင်းအတာများ</translation>
+<translation id="8404498045299006085">အားလုံးကို သိမ်းရန်</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ချိတ်ဆက်နေသည်</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8431909052837336408">ဆင်းမ်ကတ် ပင်နံပါတ်ပြောင်းရန်</translation>
@@ -927,6 +933,7 @@
 <translation id="8560515948038859357">ကွမ်တုံ</translation>
 <translation id="8561206103590473338">ဆင်</translation>
 <translation id="8566466896628108558">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
+<translation id="8568374623837201676">ဤဖိုင်ကို အပြီးဖျက်မလား။</translation>
 <translation id="8569764466147087991">ဖွင့်ရန် ဖိုင်ရွေးပါ</translation>
 <translation id="8577897833047451336">ခရိုအေးရှား</translation>
 <translation id="8578308463707544055">အင်ဒိုနီးရှား</translation>

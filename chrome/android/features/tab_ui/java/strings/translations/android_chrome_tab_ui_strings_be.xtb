@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Атрымліваць абвесткі</translation>
 <translation id="4133493477912226187">Здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
 <translation id="4212246570487010370">Бесперапынны прагляд</translation>
-<translation id="4450893287417543264">Больш не паказваць</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> водгук)}one{(<ph name="REVIEWS_COUNT_MANY" /> водгук)}few{(<ph name="REVIEWS_COUNT_MANY" /> водгукі)}many{(<ph name="REVIEWS_COUNT_MANY" /> водгукаў)}other{(<ph name="REVIEWS_COUNT_MANY" /> водгуку)}}</translation>
 <translation id="4850886885716139402">Праглядзець</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Каб хутка параўнаць старонкі, можна стварыць групу. Для гэтага дакраніцеся да спасылкі і ўтрымлівайце яе.</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
-<translation id="5533021382642990449">Паказаць пазней</translation>
 <translation id="5556417849629758491">Прагледзець звесткі пра краму; гэты варыянт выбару даступны ўверсе экрана</translation>
 <translation id="5558362125926932819">Закрыць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="5580090775658607195">Укладак згрупавана: <ph name="TAB_COUNT" /></translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Інфармацыя пра гэту краму</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Скасаваць групаванне для <ph name="TABS_COUNT_ONE" /> выбранай укладкі}one{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}few{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}many{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Скасаваць групаванне для <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> укладка}one{<ph name="TABS_COUNT_MANY" /> укладка}few{<ph name="TABS_COUNT_MANY" /> укладкі}many{<ph name="TABS_COUNT_MANY" /> укладак}other{<ph name="TABS_COUNT_MANY" /> укладкі}}</translation>
-<translation id="6510648526783655549">Закрыць панэль укладак</translation>
 <translation id="6549021453810473782">Паказаць звесткі пра краму</translation>
 <translation id="6562820390860419811">Перамясціць укладку ўлева</translation>
 <translation id="6615455863669487791">Паказаць</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Інфармацыя пра гэту краму разгорнута на ўвесь экран</translation>
 <translation id="814503310257431685">Праглядзець усе</translation>
 <translation id="8205266828577616993">Перамясціць укладку ўверх</translation>
-<translation id="8304833501377495048">Больш не паказваць панэль укладак?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Закрыць <ph name="TABS_COUNT_ONE" /> выбраную ўкладку}one{Закрыць <ph name="TABS_COUNT_MANY" /> выбраную ўкладку}few{Закрыць <ph name="TABS_COUNT_MANY" /> выбраныя ўкладкі}many{Закрыць <ph name="TABS_COUNT_MANY" /> выбраных укладак}other{Закрыць <ph name="TABS_COUNT_MANY" /> выбранай укладкі}}</translation>
 <translation id="8398929769197326728">Новая папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Разгарнуць групу з наступнай колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="8714939927607906138">Цана знізілася</translation>
-<translation id="8749939518995770034">Панэль укладак закрыта</translation>
 <translation id="8820741577754260431">Паказваць інфармацыю пра зніжэнне цэн на ўкладках</translation>
 <translation id="9090098097337832354">Інфармацыя пра гэту краму згорнута</translation>
 <translation id="9150694013019234766">Пераключайцеся паміж укладкамі групы ў ніжняй частцы экрана</translation>

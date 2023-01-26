@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">偵測到不相容的通訊協定版本。請確認您兩部電腦使用的都是最新版本的軟件，然後再試一次。</translation>
 <translation id="1008557486741366299">暫時不要</translation>
 <translation id="1201402288615127009">下一個</translation>
+<translation id="1296511125400541222">版權所有 2023 Chromium 作者。保留所有權利。</translation>
 <translation id="1297009705180977556">連接至「<ph name="HOSTNAME" />」時發生錯誤</translation>
 <translation id="1450760146488584666">要求的物件不存在。</translation>
 <translation id="1480046233931937785">製作人員名單</translation>
@@ -88,6 +89,7 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="4808503597364150972">請輸入 <ph name="HOSTNAME" /> 的 PIN。</translation>
 <translation id="4812684235631257312">主機</translation>
 <translation id="4867841927763172006">傳送 PrtScn</translation>
+<translation id="4960795469833295568">版權所有 2023 Google LLC。保留所有權利。</translation>
 <translation id="4974476491460646149">「<ph name="HOSTNAME" />」已解除連線</translation>
 <translation id="4985296110227979402">您必須先設定電腦，才能使用遠端存取</translation>
 <translation id="4987330545941822761">Chrome 遠端桌面無法判斷該在本機使用哪個瀏覽器開啟網址。請從下方清單選取瀏覽器。</translation>

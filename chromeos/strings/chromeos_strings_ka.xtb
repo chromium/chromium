@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">სიგნალის სიმძლავრე სუსტია. ცადეთ Wi-Fi სიგნალის წყაროსთან მიახლოება.</translation>
 <translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="3600339377155080675">ეკრანის არეკვლა</translation>
+<translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3603829704940252505">ავატარი</translation>
 <translation id="3604713164406837697">ფონის შეცვლა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">უკან</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3862598938296403232">აღწერილობა სავალდებულოა</translation>
+<translation id="3865289341173661845">დამხმარე კონტენტი მიუწვდომელია.</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
 <translation id="387301095347517405">ბატარეის დატენის სრული ციკლების რაოდენობა</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">გეითვეისთან დაკავშირება ვერ ხერხდება</translation>
 <translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
 <translation id="404928562651467259">გაფრთხილება</translation>
+<translation id="4054683689023980771">მიმდინარეობს სურათის ჩამოტვირთვა</translation>
 <translation id="4060260348856573701">ახალი APN</translation>
 <translation id="4093865285251893588">პროფილის სურათი</translation>
 <translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">ბატარეის მდგომარეობა</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="5190187232518914472">გააცოცხლეთ თქვენი ყველაზე თბილი მოგონებები. ალბომების დასამატებლად ან რედაქტირებისთვის გადადით <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ზე.</translation>
-<translation id="5212543919916444558">თქვენს ეკრანზე ვერაფერი მოიძებნა, რითაც თქვენს დახმარებას შევძლებდი.
-გთხოვთ, შეეხოთ მიკროფონს და მკითხოთ, რაც გსურთ.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">გამოსვლა</translation>
 <translation id="522307662484862935">არ დაერთოს ელფოსტის მისამართი</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">სერვერის CA სერტიფიკატი</translation>
 <translation id="7502658306369382406">IPv6 მისამართი</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">დამხმარე კონტენტი მიუწვდომელია</translation>
 <translation id="7535791657097741517">ღია თემის გააქტიურება</translation>
 <translation id="7550715992156305117">დიაგნოსტიკის რუტინები</translation>
 <translation id="7551123448725492271">მოწყობილობა არის აუდიო მოწყობილობა.</translation>

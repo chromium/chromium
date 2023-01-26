@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">सूचना मिळवा</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
-<translation id="4450893287417543264">पुन्हा दाखवू नका</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5494920125229734069">सर्व निवडा</translation>
-<translation id="5533021382642990449">नंतर दाखवा</translation>
 <translation id="5556417849629758491">स्टोअरची माहिती पहा, पर्याय स्क्रीनच्या सर्वात वर उपलब्ध आहे</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> टॅब असलेला टॅब गट बंद करा</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> टॅबची गटामध्ये विभागणी केली आहे</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">या स्टोअरविषयी माहिती</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
-<translation id="6510648526783655549">टॅब स्ट्रिप बंद करा</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">या स्टोअरविषयी माहिती पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="814503310257431685">सर्व पहा</translation>
 <translation id="8205266828577616993">टॅब वर हलवा</translation>
-<translation id="8304833501377495048">टॅब स्ट्रिप पुन्हा दाखवायची नाही का?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब बंद करा}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब बंद करा}}</translation>
 <translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> टॅबसह टॅब गटाचा विस्तार करा.</translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
-<translation id="8749939518995770034">बंद केलेली टॅब स्ट्रिप</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>
 <translation id="9150694013019234766">स्क्रीनच्या तळाजवळ तुमच्या टॅब गटातील टॅब दरम्यान स्विच करा</translation>

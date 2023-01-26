@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Svag signalstyrka. Testa att gå närmare källan till wifi-signalen.</translation>
 <translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="3600339377155080675">Tangenten för att spegla skärmen</translation>
+<translation id="3602290021589620013">Förhandsgranskning</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Ändra bakgrund</translation>
 <translation id="360565022852130722">wifi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
@@ -315,6 +316,7 @@
 <translation id="4044093238444069296">Det gick inte att kontakta gateway</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
 <translation id="404928562651467259">VARNING</translation>
+<translation id="4054683689023980771">Laddar ned bild …</translation>
 <translation id="4060260348856573701">Nytt APN</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
@@ -449,8 +451,6 @@
 <translation id="5168185087976003268">Batterinivå</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
-<translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
-Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="522307662484862935">Inkludera inte e-postadress</translation>

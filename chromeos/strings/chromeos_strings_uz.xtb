@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Signal darajasi zaif. Wi-Fi signal manbasiga yaqinlashtiring.</translation>
 <translation id="3595596368722241419">Batareya to‘ldi</translation>
 <translation id="3600339377155080675">Ekran aksi</translation>
+<translation id="3602290021589620013">Razm solish</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3862598938296403232">Tavsif kiritish shart</translation>
+<translation id="3865289341173661845">Yordam kontenti mavjud emas.</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
 <translation id="387301095347517405">Batareya toʻliq quvvat olgan davrlar soni</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Shlyuz bilan ulanish imkonsiz</translation>
 <translation id="4046123991198612571">Keyingi musiqa</translation>
 <translation id="404928562651467259">Diqqat!</translation>
+<translation id="4054683689023980771">Rasm yuklab olinmoqda</translation>
 <translation id="4060260348856573701">Yangi APN</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> nomli albomni tanlang</translation>
 <translation id="4111761024568264522">USB sensorli panel</translation>
 <translation id="4117637339509843559">Tungi rejim</translation>
@@ -448,8 +452,6 @@
 <translation id="5168185087976003268">Quvvat darajasi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5190187232518914472">Sevimli xotiralaringizga qayting. Albom kiritish yoki tahrirlash uchun <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> xizmatini oching.</translation>
-<translation id="5212543919916444558">Ekranda men yordam bera oladigan hech narsa topilmadi.
-Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Tizimdan chiqish</translation>
 <translation id="522307662484862935">Email manzil biriktirilmasin</translation>
@@ -702,6 +704,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7497215489070763236">Server CA sertifikati</translation>
 <translation id="7502658306369382406">IPv6 manzil</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Yordam kontenti mavjud emas</translation>
 <translation id="7535791657097741517">Kunduzgi mavzuni yoqish</translation>
 <translation id="7550715992156305117">Diagnostika dasturlari</translation>
 <translation id="7551123448725492271">Qurilma — audio qurilma.</translation>
@@ -719,6 +722,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7690294790491645610">Yangi parolni tasdiqlang.</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Davrlar soni</translation>
 <translation id="7747039790905080783">Umumiy kalit</translation>
 <translation id="7762130827864645708">Parolingiz oʻzgartirildi. Endi yangi paroldan foydalaning.</translation>
@@ -802,6 +806,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
 <translation id="8508640263392900755">APN tafsiloti</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8620617069779373398">Rouming holati</translation>

@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Se ha detectado una versión de protocolo incompatible. Asegúrate de tener instalada la última versión del software en ambos ordenadores y vuelve a intentarlo.</translation>
 <translation id="1008557486741366299">Ahora no</translation>
 <translation id="1201402288615127009">Siguiente</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="1297009705180977556">No se ha podido establecer conexión con <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">El objeto seleccionado no existe.</translation>
 <translation id="1480046233931937785">Créditos</translation>
@@ -88,6 +89,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="4808503597364150972">Introduce el PIN de <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Host</translation>
 <translation id="4867841927763172006">Enviar Impr Pant</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Todos los derechos reservados.</translation>
 <translation id="4974476491460646149">Conexión cerrada para <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">En primer lugar, debes configurar el acceso remoto a tu ordenador</translation>
 <translation id="4987330545941822761">Escritorio Remoto de Chrome no puede identificar el navegador que debe abrir las URLs localmente. Selecciónalo en la lista de abajo.</translation>

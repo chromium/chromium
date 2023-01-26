@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">A intensidade do sinal é débil. Proba a poñerte máis preto da fonte do sinal wifi.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="3600339377155080675">Proxectar pantalla</translation>
+<translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Non se puido establecer contacto coa pasarela</translation>
 <translation id="4046123991198612571">Pista seguinte</translation>
 <translation id="404928562651467259">ADVERTENCIA</translation>
+<translation id="4054683689023980771">Descargando imaxe</translation>
 <translation id="4060260348856573701">Novo APN</translation>
 <translation id="4093865285251893588">Imaxe do perfil</translation>
 <translation id="409427325554347132">Gardar detalles da proba</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">Panel táctil con conexión por USB</translation>
 <translation id="4117637339509843559">Modo escuro</translation>
@@ -448,8 +451,6 @@
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5190187232518914472">Revive os teus recordos favoritos. Para engadir ou editar álbums, vai a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Non atopo nada na pantalla co que che poida axudar.
-Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5212593641110061691">Tabloide</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="522307662484862935">Non incluír enderezo de correo electrónico</translation>
@@ -719,6 +720,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7701040980221191251">Ningunha</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Número de ciclos</translation>
 <translation id="7747039790905080783">Clave compartida previamente</translation>
 <translation id="7762130827864645708">Cambiaches o contrasinal correctamente. A partir de agora, utiliza o novo.</translation>
@@ -802,6 +804,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
 <translation id="8508640263392900755">Detalles do APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>

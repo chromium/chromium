@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Uyumsuz bir protokol sürümü algılandı. Lütfen her iki bilgisayara da yazılımın en son sürümünü yüklediğinizden emin olun ve tekrar deneyin.</translation>
 <translation id="1008557486741366299">Şimdi Değil</translation>
 <translation id="1201402288615127009">İleri</translation>
+<translation id="1296511125400541222">Telif hakkı 2023 The Chromium Authors. Tüm Hakları Saklıdır.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> adlı ana makineye bağlanırken hata oluştu</translation>
 <translation id="1450760146488584666">İstenen nesne mevcut değil.</translation>
 <translation id="1480046233931937785">Katkıda Bulunanlar</translation>
@@ -88,6 +89,7 @@ Bu izni vermek için aşağıdaki "<ph name="BUTTON_NAME" />" düğmesini tıkla
 <translation id="4808503597364150972">Lütfen <ph name="HOSTNAME" /> için PIN'inizi girin.</translation>
 <translation id="4812684235631257312">Ana makine</translation>
 <translation id="4867841927763172006">PrtScn Gönder</translation>
+<translation id="4960795469833295568">Telif hakkı 2023 Google LLC. Tüm Hakları Saklıdır.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> adlı ana makinenin bağlantısı kapandı</translation>
 <translation id="4985296110227979402">İlk olarak bilgisayarınızı uzaktan erişim için ayarlamanız gerekir</translation>
 <translation id="4987330545941822761">Chrome Uzaktan Masaüstü, URL'leri yerel olarak açacak tarayıcıyı belirleyemiyor. Lütfen aşağıdaki listeden seçin.</translation>

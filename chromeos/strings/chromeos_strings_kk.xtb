@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Сигнал күші аз. Wi-Fi сигнал көзіне жақындап көріңіз.</translation>
 <translation id="3595596368722241419">Батарея толы</translation>
 <translation id="3600339377155080675">Экран көшірмесін көрсету</translation>
+<translation id="3602290021589620013">Алдын ала көру</translation>
 <translation id="3603829704940252505">Аватар</translation>
 <translation id="3604713164406837697">Тұсқағазды өзгерту</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3858860766373142691">Аты</translation>
 <translation id="3862598938296403232">Сипаттама қосу керек.</translation>
+<translation id="3865289341173661845">Анықтамалық контент қолжетімсіз.</translation>
 <translation id="3865414814144988605">Ажыратымдылық</translation>
 <translation id="3866249974567520381">Сипаттама</translation>
 <translation id="387301095347517405">Батареяңыздың толық зарядтау циклінен өту саны</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Шлюзге қосылу мүмкін емес.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
 <translation id="404928562651467259">ЕСКЕРТУ</translation>
+<translation id="4054683689023980771">Сурет жүктеп алынуда</translation>
 <translation id="4060260348856573701">Жаңа APN</translation>
 <translation id="4093865285251893588">Профиль суреті</translation>
 <translation id="409427325554347132">Сынақ мәліметтерін сақтау</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">"<ph name="TITLE" />" альбомын таңдаңыз (<ph name="DESC" />).</translation>
 <translation id="4111761024568264522">USB сенсорлық тақтасы</translation>
 <translation id="4117637339509843559">Қараңғы режим</translation>
@@ -448,7 +452,6 @@
 <translation id="5168185087976003268">Батарея күйі</translation>
 <translation id="5170568018924773124">Қалтада көрсету</translation>
 <translation id="5190187232518914472">Өміріңіздегі ерекше сәттерді қайта өткеріңіз. Альбомдарды қосу немесе өзгерту үшін <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> қызметіне өтіңіз.</translation>
-<translation id="5212543919916444558">Экранда мен көмектесе алатын ештеңе жоқ. Микрофон белгішесін түртіп, маған сұрақ қойыңыз.</translation>
 <translation id="5212593641110061691">Шағын формат</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="522307662484862935">Электрондық мекенжайды енгізбеу</translation>
@@ -701,6 +704,7 @@
 <translation id="7497215489070763236">Сервер CA сертификаты</translation>
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Анықтамалық контент қолжетімсіз</translation>
 <translation id="7535791657097741517">Жарық режимді қосу</translation>
 <translation id="7550715992156305117">Диагностикалық режим</translation>
 <translation id="7551123448725492271">Бұл — аудио құрылғы.</translation>
@@ -718,6 +722,7 @@
 <translation id="7690294790491645610">Жаңа құпия сөзді қайталаңыз</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Цикл саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлісілген код</translation>
 <translation id="7762130827864645708">Құпия сөзіңіз өзгерді. Бұдан былай жаңа құпия сөзді пайдаланыңыз.</translation>
@@ -801,6 +806,7 @@
 <translation id="8503836310948963452">Бірнеше минут қана…</translation>
 <translation id="8508640263392900755">APN мәліметтері</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Желіге қосылу үшін оператор осы опцияны талап етуі мүмкін. Мәліметтер алу үшін операторыңызға хабарласыңыз.</translation>
 <translation id="8576249514688522074">Бастаудан бас тартылды</translation>
 <translation id="8620617069779373398">Роуминг күйі</translation>

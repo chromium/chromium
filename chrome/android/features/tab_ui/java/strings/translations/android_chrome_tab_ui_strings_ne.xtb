@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">सूचना प्राप्त गर्नुहोस्</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ट्याबहरू एकअर्कासँग सम्बन्धित देखिन्छन्। यिनलाई एउटै समूहमा राख्ने हो?</translation>
 <translation id="4212246570487010370">ब्राउजिङ जारी राख्नुहोस्</translation>
-<translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
 <translation id="4648718555153979859">तपाईंका ट्याबहरू यहाँ एकै ठाउँमा समूहबद्ध गरिएको छन्</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> समीक्षा)}other{(<ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा)}}</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">कुनै समूह बनाएर द्रुत रूपमा पृष्ठहरूको तुलना गर्नुहोस्। सुरु गर्न कुनै लिंकमा टच एण्ड होल्ड गर्नुहोस्।</translation>
 <translation id="5490235265819901748">ट्याब समूह विस्तृत गरियो</translation>
 <translation id="5494920125229734069">सबै चयन गर्नुहोस्</translation>
-<translation id="5533021382642990449">पछि देखाइयोस्</translation>
 <translation id="5556417849629758491">स्क्रिनको सिरानको नजिक रहेको 'स्टोरसम्बन्धी जानकारी हेर्नुहोस्' नामक विकल्प</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको ट्याब समूह बन्द गर्नुहोस्</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ट्याबहरू समूहबद्ध गरिए</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">यो स्टोरसम्बन्धी जानकारी</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब समूहबाट हटाउनुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब समूहबाट हटाउनुहोस्}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> वटा ट्याब}other{<ph name="TABS_COUNT_MANY" /> वटा ट्याब}}</translation>
-<translation id="6510648526783655549">ट्याब स्ट्रिप बन्द गर्नुहोस्</translation>
 <translation id="6549021453810473782">स्टोरसम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="6562820390860419811">ट्याब सारेर बायाँतिर लैजानुहोस्</translation>
 <translation id="6615455863669487791">मलाई देखाउनुहोस्</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">यो स्टोरसम्बन्धी जानकारी स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="814503310257431685">सबै हेर्नुहोस्</translation>
 <translation id="8205266828577616993">ट्याब माथि सार्नुहोस्</translation>
-<translation id="8304833501377495048">ट्याब स्ट्रिप फेरि नदेखाइयोस् भन्ने चाहनुहुन्छ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब बन्द गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8398929769197326728">नयाँ फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको ट्याब समूह विस्तृत गर्नुहोस्।</translation>
 <translation id="8714939927607906138">अझ कम मूल्य</translation>
-<translation id="8749939518995770034">ट्याब स्ट्रिप गरिएको छ</translation>
 <translation id="8820741577754260431">आफ्ना ट्याबहरूमा मूल्य घटेको कुरासम्बन्धी जानकारी हेर्नुहोस्</translation>
 <translation id="9090098097337832354">यो स्टोरसम्बन्धी जानकारी बन्द गरिएको छ</translation>
 <translation id="9150694013019234766">स्क्रिनको फेद नजिकैबाट आफ्नो ट्याब समूहका ट्याबहरूको अदलबदल गर्नुहोस्</translation>

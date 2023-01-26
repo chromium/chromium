@@ -165,7 +165,6 @@
 <translation id="1797271123677381264">パスワードをお忘れの場合</translation>
 <translation id="1807246157184219062">明</translation>
 <translation id="181103072419391116">信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
-<translation id="1812997170047690955">画面上のアイテムを検索します</translation>
 <translation id="1816896987747843206">カメラへのアクセス権を持つすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します</translation>
 <translation id="1823280932251546115">ステータス トレイ、時間 <ph name="TIME" />、
         <ph name="BATTERY" />
@@ -291,6 +290,7 @@
 <translation id="2501920221385095727">固定キー</translation>
 <translation id="2509468283778169019">Caps Lock がオンになっています</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">ウィンドウの固定を解除</translation>
 <translation id="2542089167727451762">プロフィール画像をタップしてください</translation>
 <translation id="255671100581129685">Google アシスタントは、公開セッションではご利用いただけません。</translation>
 <translation id="256712445991462162">ドッキング拡大鏡</translation>
@@ -320,6 +320,7 @@
 <translation id="2704781753052663061">他の Wi-Fi ネットワークに接続</translation>
 <translation id="2705001408393684014">マイクを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">上矢印キー</translation>
+<translation id="2710984741481549981">ウィンドウを固定</translation>
 <translation id="2718395828230677721">夜間モード</translation>
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
 <translation id="2727175239389218057">返信</translation>
@@ -581,6 +582,7 @@
 <translation id="4177913004758410636">{0,plural, =1{1 日以内にデバイスを更新してください}other{# 日以内にデバイスを更新してください}}</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4192112279662688596">または</translation>
+<translation id="4193857202545160520">クリックとキーを表示</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4195877955194704651">自動クリックボタン</translation>
 <translation id="4197790712631116042">オフ</translation>
@@ -763,6 +765,7 @@
 <translation id="5107522548814527560">ウェブ</translation>
 <translation id="5111318697104479778"><ph name="DESC" />、<ph name="STRENGTH" /></translation>
 <translation id="5117590920725113268">次の月を表示</translation>
+<translation id="5127986747308934633">管理者がデバイスを制御しています</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
 <translation id="5147567197700016471">ロック解除済み</translation>
 <translation id="5150070631291639005">プライバシー設定</translation>
@@ -872,6 +875,7 @@
 <translation id="5710450975648804523">サイレント モードがオンになっています</translation>
 <translation id="571295407079589142">モバイルデータ通信はオフです</translation>
 <translation id="573413375004481890">このデバイスでサポートできるディスプレイの上限数を超えたため、ディスプレイが 1 台切断されました</translation>
+<translation id="5740328398383587084">ニアバイシェア</translation>
 <translation id="574392208103952083">中</translation>
 <translation id="5744083938413354016">タップによるドラッグ</translation>
 <translation id="5745612484876805746">夜間モードは日の入り時刻に自動的にオンになります</translation>
@@ -991,6 +995,7 @@
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6417265370957905582">Google アシスタント</translation>
+<translation id="641867537956679916">管理者が問題を調査するためにログインしました。管理者から制御が戻されたら、引き続きデバイスを使用できます。</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">通知をすべて消去</translation>
 <translation id="643147933154517414">すべて確認済み</translation>
@@ -1280,6 +1285,7 @@
 <translation id="79341161159229895">このアカウントは <ph name="FIRST_PARENT_EMAIL" /> と <ph name="SECOND_PARENT_EMAIL" /> により管理されています</translation>
 <translation id="793716872548410480"><ph name="SHORTCUT_KEY_NAME" />+V キーを押すと、クリップボードを表示できます。クリップボードに、コピーした最新のアイテム 5 件が保存されています。</translation>
 <translation id="7942349550061667556">赤</translation>
+<translation id="7944023924886109030">今日の予定をすべて表示</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> から</translation>
 <translation id="7968693143708939792">フォルダを選択...</translation>
 <translation id="7977927628060636163">モバイル ネットワークを検索しています...</translation>

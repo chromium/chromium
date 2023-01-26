@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">Protokolo-bertsio ez bateragarri bat hauteman da. Ziurtatu softwarearen azken bertsioa instalatuta daukazula bi ordenagailuetan eta saiatu berriro.</translation>
 <translation id="1008557486741366299">Ez une honetan</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. Eskubide guztiak erreserbatuta.</translation>
 <translation id="1297009705180977556">Errore bat gertatu da <ph name="HOSTNAME" /> ostalarira konektatzean</translation>
 <translation id="1450760146488584666">Eskatutako objektua ez dago.</translation>
 <translation id="1480046233931937785">Kredituak</translation>
@@ -88,6 +89,7 @@ Baimen hori emateko, sakatu beheko "<ph name="BUTTON_NAME" />" botoia pantailare
 <translation id="4808503597364150972">Idatzi <ph name="HOSTNAME" /> ostalarira konektatzeko PINa.</translation>
 <translation id="4812684235631257312">Ostalaria</translation>
 <translation id="4867841927763172006">Bidali Inpr Pa</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. Eskubide guztiak erreserbatuta.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ostalaritik deskonektatu da</translation>
 <translation id="4985296110227979402">Lehenik, ordenagailua konfiguratu behar duzu urrunetik atzitu ahal izateko</translation>
 <translation id="4987330545941822761">Chrome-ren Urruneko pantaila aplikazioak ezin du zehaztu URLak ordenagailuan irekitzeko arakatzailea. Hautatu zerrenda honetako bat.</translation>

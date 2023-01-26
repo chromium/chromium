@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">डिभाइसका सेटिङहरू</translation>
 <translation id="2084809735218147718">साङ्केतिक भाषामा धन्यवाद भनिरहेका व्यक्ति</translation>
 <translation id="2088690981887365033">VPN नेटवर्क</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री मेटाइने छन् र तपाईं ती सामग्री रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="2122305276694332719">कुनै लुकाइएको नेटवर्कमा स्वतः जोड्नुले तपाईंको यन्त्र र नेटवर्कसम्बन्धी केही सेटिङ अरूले देख्न सक्ने हुनाले यसो गर्न सिफारिस गरिँदैन।</translation>
 <translation id="2125607626296734455">खमेर</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, जोड्नुहोस्</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">कुनैपनि वस्तुहरू मेल खाएनन् &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/ b&gt;</translation>
 <translation id="2894654529758326923">जानकारी</translation>
 <translation id="2902734494705624966">युएस विस्तारित</translation>
+<translation id="2904378509913846215">"<ph name="FILENAME" />" नामक फोल्डर पहिलेदेखि नै विद्यमान छ। तपाईं यो फोल्डरलाई आफूले सारिरहेको फोल्डरले प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>
 <translation id="290843123675549676">मराठी</translation>
 <translation id="2923240520113693977">इस्टोनिया</translation>
 <translation id="2938685643439809023">मङ्गोलियन</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">यी फाइलहरू रिस्टोर गर्नुहोस् वा यी फाइलहरू ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्</translation>
 <translation id="4401287888955153199">सबै सामग्री एक्स्ट्र्याक्ट गर्नुहोस्</translation>
 <translation id="4410695710508688828">एक्स्ट्र्याक्ट गर्न सकिएन। <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" मेटाइने छ र तपाईं यसलाई रिस्टोर गर्न सक्नु हुने छैन।</translation>
 <translation id="4418686080762064601">आफ्ना फाइलहरूको सर्टकट बनाउनुहोस्</translation>
 <translation id="4425149324548788773">मेरो ड्राइभ</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
@@ -638,6 +641,7 @@
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
 <translation id="6269630227984243955">मले</translation>
+<translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" मा पर्याप्त खाली ठाउँ नभएकाले फाइलहरू अपलोड गर्न मिल्दैन।</translation>
 <translation id="6287852322318138013">यो फाइल खोल्न एक एप चयन गर्नुहोस्</translation>
 <translation id="6295542640242147836">SIM लक गर्नुहोस्</translation>
 <translation id="6296410173147755564">तपाईंले हाल्नुभएको PUK अवैध छ</translation>
@@ -683,6 +687,7 @@
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6658865850469097484">३० दिनभन्दा बढी समयदेखि ट्र्यासमा रहेका फाइलहरू स्वतः मेटाइने छन्।</translation>
 <translation id="6673674183150363784">फ्रान्सेली (फ्रान्स) Bépo किबोर्ड</translation>
+<translation id="670380500182402678">सबै बदल्नुहोस्</translation>
 <translation id="6710022688720561421">रोबोट</translation>
 <translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6732801395666424405">प्रमाणपत्रहरू लोड भएन</translation>
@@ -901,6 +906,7 @@
 <translation id="8386903983509584791">स्क्यान कार्य पूरा भयो</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> एक्स्ट्रयाक्ट गरियो।</translation>
 <translation id="8395901698320285466">उचाइ तथा चौडाइ</translation>
+<translation id="8404498045299006085">सबै इन्ट्रीहरू राखिराख्नुहोस्</translation>
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> नेटवर्क, जोड्दै</translation>
 <translation id="8425213833346101688">परिवर्तन गर्नुहोस्</translation>
 <translation id="8431909052837336408">SIM को PIN परिवर्तन गर्नुहोस्</translation>
@@ -927,6 +933,7 @@
 <translation id="8560515948038859357">क्यान्टोनिज</translation>
 <translation id="8561206103590473338">हात्ती</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नलको क्षमता: <ph name="SIGNAL_STRENGTH" />%, तपाईंका एड्मिनले ब्लक गरेको, विवरणहरू</translation>
+<translation id="8568374623837201676">यो फाइल सदाका लागि मेटाउने हो?</translation>
 <translation id="8569764466147087991">खोल्नको लागि फाइल चयन गर्नुहोस्</translation>
 <translation id="8577897833047451336">क्रोएसियाली</translation>
 <translation id="8578308463707544055">इन्डोनेसियाली</translation>

@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">تلقّي إشعارات</translation>
 <translation id="4133493477912226187">يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
 <translation id="4212246570487010370">مواصلة التصفّح</translation>
-<translation id="4450893287417543264">عدم الإظهار مرة أخرى</translation>
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">يُرجى مقارنة الصفحات بسرعة من خلال إنشاء مجموعة. للبدء، المس رابطًا مع الاستمرار.</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5494920125229734069">اختيار الكل</translation>
-<translation id="5533021382642990449">العرض لاحقًا</translation>
 <translation id="5556417849629758491">عرض معلومات المتجر، وهو خيار متاح بالقرب من أعلى الشاشة</translation>
 <translation id="5558362125926932819">إغلاق مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="5580090775658607195">تم جمع <ph name="TAB_COUNT" /> علامة تبويب</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">المعلومات حول هذا المتجر</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{إلغاء تجميع علامة التبويب (<ph name="TABS_COUNT_ONE" />) المحدّدة}zero{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}two{إلغاء تجميع علامتَي التبويب (<ph name="TABS_COUNT_MANY" />) المحدّدتين}few{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}many{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}other{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
-<translation id="6510648526783655549">إغلاق شريط علامات التبويب</translation>
 <translation id="6549021453810473782">عرض معلومات المتجر</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>
 <translation id="6615455863669487791">عرض</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">يتم عرض المعلومات حول هذا المتجر بطول الشاشة.</translation>
 <translation id="814503310257431685">عرض الكل</translation>
 <translation id="8205266828577616993">نقل علامة التبويب إلى الأعلى</translation>
-<translation id="8304833501377495048">هل تريد عدم عرض شريط علامات التبويب مرة أخرى؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{إغلاق علامة تبويب واحدة محدّدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}two{إغلاق علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}}</translation>
 <translation id="8398929769197326728">‏مجلد جديد - ‎<ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">توسيع مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
 <translation id="8714939927607906138">السعر المنخفض</translation>
-<translation id="8749939518995770034">شريط علامات التبويب مُغلق.</translation>
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>
 <translation id="9090098097337832354">تم إخفاء المعلومات حول هذا المتجر.</translation>
 <translation id="9150694013019234766">يمكنك التبديل بين علامات التبويب ضمن المجموعة بالقرب من أسفل الشاشة.</translation>

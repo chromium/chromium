@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Axustes do dispositivo</translation>
 <translation id="2084809735218147718">Signo de agradecemento</translation>
 <translation id="2088690981887365033">Rede VPN</translation>
+<translation id="2114191879048183086">Eliminaranse <ph name="NUMBER_OF_ITEMS" /> elementos e non poderás restablecelos.</translation>
 <translation id="2122305276694332719">Ao conectarte automaticamente a unha rede oculta, outros usuarios poden ver o teu dispositivo e parte da configuración de rede. Por iso esta opción non é recomendable.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, conectar</translation>
@@ -219,6 +220,7 @@
 <translation id="2888807692577297075">Non coincide ningún elemento con &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Información</translation>
 <translation id="2902734494705624966">Estadounidense ampliado</translation>
+<translation id="2904378509913846215">Xa existe un cartafol denominado "<ph name="FILENAME" />". Queres substituílo polo que estás transferindo?</translation>
 <translation id="290843123675549676">Marathi</translation>
 <translation id="2923240520113693977">Estoniano</translation>
 <translation id="2938685643439809023">Mongol</translation>
@@ -396,6 +398,7 @@
 <translation id="4398096759193130964">Restaura os elementos ou arrástraos a un cartafol novo, fóra da papeleira</translation>
 <translation id="4401287888955153199">Extraer todo</translation>
 <translation id="4410695710508688828">Produciuse un erro durante a extracción. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">Eliminarase o ficheiro "<ph name="FILE_NAME" />" e non poderás restablecelo.</translation>
 <translation id="4418686080762064601">Crea un atallo para acceder aos teus ficheiros</translation>
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
@@ -638,6 +641,7 @@
 <translation id="6241349547798190358">Neerlandés (Bélxica)</translation>
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>
+<translation id="6271903698064569429">Non se puideron cargar os ficheiros porque "<ph name="SHARED_DRIVE_NAME" />" non ten suficiente espazo de almacenamento.</translation>
 <translation id="6287852322318138013">Selecciona unha aplicación para abrir este ficheiro</translation>
 <translation id="6295542640242147836">Bloquear SIM</translation>
 <translation id="6296410173147755564">O PUK non é válido</translation>
@@ -683,6 +687,7 @@
 <translation id="6657585470893396449">Contrasinal</translation>
 <translation id="6658865850469097484">Eliminaranse automaticamente os ficheiros que leven na papeleira máis de 30 días.</translation>
 <translation id="6673674183150363784">Francés (Francia) con teclado BÉPO</translation>
+<translation id="670380500182402678">Substituír todo</translation>
 <translation id="6710022688720561421">Robot</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6732801395666424405">Non se poden cargar os certificados</translation>
@@ -901,6 +906,7 @@
 <translation id="8386903983509584791">Finalizou a busca</translation>
 <translation id="8387733224523483503">Extraeuse <ph name="FILE_NAME" />.</translation>
 <translation id="8395901698320285466">Dimensións</translation>
+<translation id="8404498045299006085">Conservar todo</translation>
 <translation id="8408068190360279472">Rede de tipo <ph name="NETWORK_TYPE" />, conectando</translation>
 <translation id="8425213833346101688">Cambiar</translation>
 <translation id="8431909052837336408">Cambiar PIN da SIM</translation>
@@ -927,6 +933,7 @@
 <translation id="8560515948038859357">Cantonés</translation>
 <translation id="8561206103590473338">Elefante</translation>
 <translation id="8566466896628108558">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, bloqueada polo administrador, detalles</translation>
+<translation id="8568374623837201676">Queres eliminar este ficheiro de forma permanente?</translation>
 <translation id="8569764466147087991">Selecciona un ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>

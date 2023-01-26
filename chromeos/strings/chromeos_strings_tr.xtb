@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Düşük sinyal gücü. Kablosuz sinyal kaynağına yaklaşmayı deneyin.</translation>
 <translation id="3595596368722241419">Pil tam dolu</translation>
 <translation id="3600339377155080675">Ekranı yansıt</translation>
+<translation id="3602290021589620013">Önizleme</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Duvar kağıdını değiştir</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
@@ -315,6 +316,7 @@
 <translation id="4044093238444069296">Ağ geçidiyle iletişim kurulamıyor</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
 <translation id="404928562651467259">UYARI</translation>
+<translation id="4054683689023980771">Resim indiriliyor</translation>
 <translation id="4060260348856573701">Yeni APN</translation>
 <translation id="4093865285251893588">Profil resmi</translation>
 <translation id="409427325554347132">Test ayrıntılarını kaydet</translation>
@@ -449,8 +451,6 @@
 <translation id="5168185087976003268">Pil sağlığı</translation>
 <translation id="5170568018924773124">Klasörde göster</translation>
 <translation id="5190187232518914472">En sevdiğiniz anılarınızı yeniden yaşayın. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'a giderek istediğiniz albümleri ekleyin veya düzenleyin.</translation>
-<translation id="5212543919916444558">Ekranınızda size yardımcı olabileceğim bir şey bulamıyorum.
-Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="522307662484862935">E-posta adresini ekleme</translation>

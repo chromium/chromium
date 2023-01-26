@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">ସୂଚନା ପାଆନ୍ତୁ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ସମ୍ବନ୍ଧିତ ଥିଲା ପରି ଲାଗୁଛି। ସେଗୁଡ଼ିକୁ ଗ୍ରୁପ୍ କରିବେ?</translation>
 <translation id="4212246570487010370">ବ୍ରାଉଜ୍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="4450893287417543264">ଆଉ ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="4648718555153979859">ଆପଣଙ୍କର ଟାବ୍‌ଗୁଡ଼ିକ, ଏଠାରେ ଏକାଠି କରାଯାଇଛି</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" />ଟି ସମୀକ୍ଷା)}other{(<ph name="REVIEWS_COUNT_MANY" />ଟି ସମୀକ୍ଷା)}}</translation>
 <translation id="4850886885716139402">ଦେଖନ୍ତୁ</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">ଗୋଟିଏ ଗୋଷ୍ଠୀ ତିଆରି କରି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ତୁରନ୍ତ ତୁଳନା କରନ୍ତୁ। ଆରମ୍ଭ କରିବା ପାଇଁ, ଗୋଟିଏ ଲିଙ୍କ୍‍କୁ ଦାବି ଧରନ୍ତୁ।</translation>
 <translation id="5490235265819901748">ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରାଯାଇଛି</translation>
 <translation id="5494920125229734069">ସମସ୍ତ ଚୟନ କରନ୍ତୁ</translation>
-<translation id="5533021382642990449">ପରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="5556417849629758491">ଷ୍ଟୋରର ସୂଚନା ଦେଖନ୍ତୁ, ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5558362125926932819"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" />ଟି ଟାବ୍ ଏକତ୍ର କରାଯାଇଛି</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବକୁ ଗୋଷ୍ଠୀଭୁକ୍ତ କରନ୍ତୁ ନାହିଁ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଟାବ}other{<ph name="TABS_COUNT_MANY" />ଟି ଟାବ}}</translation>
-<translation id="6510648526783655549">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6549021453810473782">ଷ୍ଟୋର୍ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="6562820390860419811">ଟାବ୍‍କୁ ବାମକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
 <translation id="6615455863669487791">ମୋତେ ଦେଖାନ୍ତୁ</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">ସମ୍ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲାଯାଇଥିବା ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା</translation>
 <translation id="814503310257431685">ସମସ୍ତ ଦେଖନ୍ତୁ</translation>
 <translation id="8205266828577616993">ଟାବ୍‌କୁ ଉପରକୁ ମୁଭ୍ କରନ୍ତୁ</translation>
-<translation id="8304833501377495048">ଟାବ୍ ଷ୍ଟ୍ରିପ୍ ପୁଣି ଦେଖାଇବେ ନାହିଁ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}other{<ph name="TABS_COUNT_MANY" />ଟି ଚୟନିତ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ}}</translation>
 <translation id="8398929769197326728">ନୂଆ ଫୋଲ୍ଡର - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" />ଟି ଟାବ୍ ଥିବା ଟାବ୍ ଗ୍ରୁପର ବିସ୍ତାର କରନ୍ତୁ।</translation>
 <translation id="8714939927607906138">କମ୍ ଦାମ୍</translation>
-<translation id="8749939518995770034">ବନ୍ଦ କରାଯାଇଥିବା ଟାବ୍ ଷ୍ଟ୍ରିପ୍</translation>
 <translation id="8820741577754260431">ଆପଣଙ୍କ ଟାବଗୁଡ଼ିକରେ ମୂଲ୍ୟରେ ହ୍ରାସ ବିଷୟରେ ସୂଚନା ଦେଖନ୍ତୁ</translation>
 <translation id="9090098097337832354">ଏହି ଷ୍ଟୋର ବିଷୟରେ ସୂଚନା ବନ୍ଦ ହୋଇଯାଇଛି</translation>
 <translation id="9150694013019234766">ସ୍କ୍ରିନ୍‌ର ତଳପାର୍ଶ୍ୱରେ ଥିବା ଗୋଷ୍ଠୀ ଟାବ୍‌ରେ ଟାବ୍‌ଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍‌ କରନ୍ତୁ</translation>

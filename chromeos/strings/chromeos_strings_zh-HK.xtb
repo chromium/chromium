@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">訊號強度較弱，請嘗試移近 Wi-Fi 訊號來源。</translation>
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="3600339377155080675">螢幕鏡像</translation>
+<translation id="3602290021589620013">預覽</translation>
 <translation id="3603829704940252505">顯示圖片</translation>
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3862598938296403232">必須提供描述</translation>
+<translation id="3865289341173661845">無法查看說明內容。</translation>
 <translation id="3865414814144988605">解像度</translation>
 <translation id="3866249974567520381">描述</translation>
 <translation id="387301095347517405">電池經過完整充電循環的次數</translation>
@@ -315,6 +317,7 @@
 <translation id="4044093238444069296">無法連線至閘道</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4054683689023980771">正在下載圖片</translation>
 <translation id="4060260348856573701">新增 APN</translation>
 <translation id="4093865285251893588">個人檔案圖片</translation>
 <translation id="409427325554347132">儲存測試詳細資料</translation>
@@ -449,8 +452,6 @@
 <translation id="5168185087976003268">電池狀態</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5190187232518914472">重溫美好回憶。如要新增或編輯相簿，請前往「<ph name="LINK_BEGIN" />Google 相片<ph name="LINK_END" />」。</translation>
-<translation id="5212543919916444558">系統在您的畫面上找不到任何可提供協助的內容。
-請嘗試輕按麥克風並發問。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="522307662484862935">請勿輸入電郵地址</translation>
@@ -703,6 +704,7 @@
 <translation id="7497215489070763236">伺服器 CA 憑證</translation>
 <translation id="7502658306369382406">IPv6 位址</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">無法查看說明內容</translation>
 <translation id="7535791657097741517">開啟淺色主題背景</translation>
 <translation id="7550715992156305117">日常診斷安排</translation>
 <translation id="7551123448725492271">裝置類型係音響裝置。</translation>

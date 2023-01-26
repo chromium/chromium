@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">信号强度较弱。请尝试移到离 Wi-Fi 信号源更近的地方。</translation>
 <translation id="3595596368722241419">电池已充满</translation>
 <translation id="3600339377155080675">屏幕镜像</translation>
+<translation id="3602290021589620013">预览</translation>
 <translation id="3603829704940252505">头像</translation>
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
@@ -315,6 +316,7 @@
 <translation id="4044093238444069296">无法连接网关</translation>
 <translation id="4046123991198612571">下一曲</translation>
 <translation id="404928562651467259">警告</translation>
+<translation id="4054683689023980771">正在下载图片</translation>
 <translation id="4060260348856573701">新建 APN</translation>
 <translation id="4093865285251893588">个人资料图片</translation>
 <translation id="409427325554347132">保存测试详细信息</translation>
@@ -449,8 +451,6 @@
 <translation id="5168185087976003268">电池寿命</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5190187232518914472">重现您的美好回忆。如需添加或编辑影集，请转至 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />。</translation>
-<translation id="5212543919916444558">无法提供与您的屏幕上可以找到的任何内容相关的帮助。
-请尝试通过点按麦克风图标向我提问。</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">退出</translation>
 <translation id="522307662484862935">不附加电子邮件地址</translation>

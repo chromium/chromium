@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Fuqi e dobët e sinjalit. Provo t'i afrohesh më shumë burimit të sinjalit Wi-Fi.</translation>
 <translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="3600339377155080675">Pasqyrimi i ekranit</translation>
+<translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3603829704940252505">Simboli</translation>
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
@@ -315,9 +316,11 @@
 <translation id="4044093238444069296">Portëkalimi nuk mund të kontaktohet</translation>
 <translation id="4046123991198612571">Kënga tjetër</translation>
 <translation id="404928562651467259">PARALAJMËRIM</translation>
+<translation id="4054683689023980771">Imazhi po shkarkohet</translation>
 <translation id="4060260348856573701">APN e re</translation>
 <translation id="4093865285251893588">Imazhi i profilit</translation>
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Zgjidh albumin <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Blloku me prekje USB</translation>
 <translation id="4117637339509843559">Modaliteti i errët</translation>
@@ -448,7 +451,6 @@
 <translation id="5168185087976003268">Integriteti i baterisë</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5190187232518914472">Rijeto kujtimet e tua të preferuara. Për të shtuar ose modifikuar albume, shko te <ph name="LINK_BEGIN" />Fotografitë e Google<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Nuk mund të gjej diçka në ekranin tënd me të cilën mund të të ndihmoj. Provo të trokasësh te mikrofoni për të më kërkuar diçka.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="522307662484862935">Mos e përfshi adresën e email-it</translation>
@@ -718,6 +720,7 @@
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Numri i cikleve</translation>
 <translation id="7747039790905080783">Çelës i ndarë paraprakisht</translation>
 <translation id="7762130827864645708">Ndryshimi i fjalëkalimit tënd u krye me sukses. Përdor fjalëkalimin e ri këtej e tutje.</translation>
@@ -801,6 +804,7 @@
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8508640263392900755">Detajet e APN-së</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>
 <translation id="8576249514688522074">E pafilluar</translation>
 <translation id="8620617069779373398">Statusi në roaming</translation>

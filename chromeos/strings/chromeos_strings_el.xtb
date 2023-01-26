@@ -270,6 +270,7 @@
 <translation id="3583278742022654445">Ασθενές σήμα. Δοκιμάστε να πλησιάσετε περισσότερο την πηγή του σήματος Wi-Fi.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="3600339377155080675">Κατοπτρισμός οθόνης</translation>
+<translation id="3602290021589620013">Προεπισκόπηση</translation>
 <translation id="3603829704940252505">Avatar</translation>
 <translation id="3604713164406837697">Αλλαγή ταπετσαρίας</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
@@ -293,6 +294,7 @@
 <translation id="385051799172605136">Πίσω</translation>
 <translation id="3858860766373142691">Όνομα</translation>
 <translation id="3862598938296403232">Η περιγραφή απαιτείται</translation>
+<translation id="3865289341173661845">Το περιεχόμενο βοήθειας δεν είναι διαθέσιμο.</translation>
 <translation id="3865414814144988605">Ανάλυση</translation>
 <translation id="3866249974567520381">Περιγραφή</translation>
 <translation id="387301095347517405">Ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
@@ -315,9 +317,11 @@
 <translation id="4044093238444069296">Δεν είναι δυνατή η επικοινωνία με την πύλη.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
 <translation id="404928562651467259">ΠΡΟΕΙΔΟΠΟΙΗΣΗ</translation>
+<translation id="4054683689023980771">Λήψη εικόνας</translation>
 <translation id="4060260348856573701">Νέο APN</translation>
 <translation id="4093865285251893588">Εικόνα προφίλ</translation>
 <translation id="409427325554347132">Αποθήκευση λεπτομερειών δοκιμής</translation>
+<translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Επιλογή λευκώματος <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Οθόνη αφής USB</translation>
 <translation id="4117637339509843559">Λειτουργία χαμηλού φωτισμού</translation>
@@ -448,8 +452,6 @@
 <translation id="5168185087976003268">Κατάσταση μπαταρίας</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5190187232518914472">Ξαναζήστε τις αγαπημένες σας αναμνήσεις. Για προσθήκη ή επεξεργασία λευκωμάτων, μεταβείτε στις <ph name="LINK_BEGIN" />Φωτογραφίες Google<ph name="LINK_END" />.</translation>
-<translation id="5212543919916444558">Δεν βρέθηκε κάτι με το οποίο να μπορώ να σας βοηθήσω στην οθόνη σας.
-Πατήστε στο μικρόφωνο για να ρωτήσετε οτιδήποτε θέλετε.</translation>
 <translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Έξοδος</translation>
 <translation id="522307662484862935">Να μην συμπεριληφθεί η διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
@@ -702,6 +704,7 @@
 <translation id="7497215489070763236">Πιστοποιητικό διακομιστή CA</translation>
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7528507600602050979">Το περιεχόμενο βοήθειας δεν είναι διαθέσιμο</translation>
 <translation id="7535791657097741517">Ενεργοποίηση φωτεινού θέματος</translation>
 <translation id="7550715992156305117">Ρουτίνες διαγνωστικών στοιχείων</translation>
 <translation id="7551123448725492271">Η συσκευή είναι συσκευή ήχου.</translation>
@@ -719,6 +722,7 @@
 <translation id="7690294790491645610">Επιβεβαίωση νέου κωδικού πρόσβασης</translation>
 <translation id="7701040980221191251">Καμία</translation>
 <translation id="7705524343798198388">VPN</translation>
+<translation id="7716280709122323042">WPA3</translation>
 <translation id="773153675489693198">Πλήθος φορτίσεων-εξαντλήσεων μπαταρίας</translation>
 <translation id="7747039790905080783">Ήδη κοινόχρηστο κλειδί</translation>
 <translation id="7762130827864645708">Η αλλαγή του κωδικού πρόσβασής σας ήταν επιτυχής. Χρησιμοποιείτε στο εξής τον νέο κωδικό πρόσβασης.</translation>
@@ -802,6 +806,7 @@
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
 <translation id="8528615187455571738">Crosvm</translation>
+<translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>
 <translation id="8576249514688522074">Μη προετοιμασμένο</translation>
 <translation id="8620617069779373398">Κατάσταση περιαγωγής</translation>

@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Получаване на известия</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
 <translation id="4212246570487010370">Продължаване на сърфирането</translation>
-<translation id="4450893287417543264">Да не се показва отново</translation>
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзив)}other{(<ph name="REVIEWS_COUNT_MANY" /> отзива)}}</translation>
 <translation id="4850886885716139402">Изглед</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
-<translation id="5533021382642990449">Показване по-късно</translation>
 <translation id="5556417849629758491">Преглед на информацията за магазина – опцията е близо до горната част на екрана</translation>
 <translation id="5558362125926932819">Затваряне на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> раздела са групирани</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Информация за този магазин</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Разгрупиране на <ph name="TABS_COUNT_ONE" /> избран раздел}other{Разгрупиране на <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
-<translation id="6510648526783655549">Затваряне на лентата с раздели</translation>
 <translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6562820390860419811">Преместване на раздела наляво</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Информацията за този магазин е отворена на пълната височина</translation>
 <translation id="814503310257431685">Преглед на всички</translation>
 <translation id="8205266828577616993">Преместване на раздела нагоре</translation>
-<translation id="8304833501377495048">Лентата с раздели да се скрие ли за постоянно?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Разгъване на групата с раздели с(ъс) <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
-<translation id="8749939518995770034">Затворихте лентата с раздели</translation>
 <translation id="8820741577754260431">Преглед на пониженията на цените от разделите ви</translation>
 <translation id="9090098097337832354">Информацията за този магазин е затворена</translation>
 <translation id="9150694013019234766">Превключвайте между разделите в групата в долната част на екрана</translation>

@@ -4,6 +4,7 @@
 <translation id="1002108253973310084">호환되지 않는 프로토콜 버전이 감지되었습니다. 양쪽 컴퓨터 모두에서 소프트웨어가 최신 버전인지 확인한 뒤 다시 시도해 주세요.</translation>
 <translation id="1008557486741366299">나중에 하기</translation>
 <translation id="1201402288615127009">다음</translation>
+<translation id="1296511125400541222">Copyright 2023 The Chromium Authors. All Rights Reserved.</translation>
 <translation id="1297009705180977556"><ph name="HOSTNAME" /> 연결 중 오류가 발생했습니다</translation>
 <translation id="1450760146488584666">요청한 개체가 없습니다.</translation>
 <translation id="1480046233931937785">크레딧</translation>
@@ -88,6 +89,7 @@
 <translation id="4808503597364150972"><ph name="HOSTNAME" />의 PIN을 입력하세요.</translation>
 <translation id="4812684235631257312">호스트</translation>
 <translation id="4867841927763172006">PrtScn 전송</translation>
+<translation id="4960795469833295568">Copyright 2023 Google LLC. All Rights Reserved.</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> 연결이 종료되었습니다</translation>
 <translation id="4985296110227979402">먼저 컴퓨터를 원격으로 액세스할 수 있도록 설정해야 합니다.</translation>
 <translation id="4987330545941822761">Chrome 원격 데스크톱은 로컬에서 URL을 여는 데 사용할 브라우저를 결정할 수 없습니다. 아래 목록에서 브라우저를 선택하세요.</translation>

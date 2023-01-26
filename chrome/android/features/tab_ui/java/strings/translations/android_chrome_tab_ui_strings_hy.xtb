@@ -42,7 +42,6 @@
 <translation id="3996880007329611795">Ստանալ ծանուցումներ</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
-<translation id="4450893287417543264">Այլևս ցույց չտալ</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
@@ -55,7 +54,6 @@
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
-<translation id="5533021382642990449">Ցույց տալ ավելի ուշ</translation>
 <translation id="5556417849629758491">Դիտել խանութի մասին տեղեկությունները, գործողությունը հասանելի է էկրանի վերին մասում</translation>
 <translation id="5558362125926932819">Փակել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> ներդիր խմբավորվեց</translation>
@@ -71,7 +69,6 @@
 <translation id="6333260925957816943">Տեղեկություններ այս խանութի մասին</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ապախմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
-<translation id="6510648526783655549">Փակել ներդիրների հատվածը</translation>
 <translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>
 <translation id="6615455863669487791">Ցույց տալ</translation>
@@ -95,12 +92,10 @@
 <translation id="8029301326595421733">Այս խանութի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="814503310257431685">Դիտել բոլորը</translation>
 <translation id="8205266828577616993">Տեղափոխել ներդիրը վերև</translation>
-<translation id="8304833501377495048">Այլևս ցույց չտա՞լ ներդիրների հատվածը։</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Փակել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Փակել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="8398929769197326728">Նոր պանակ – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8557923272772633250">Ծավալել <ph name="NUMBER_OF_TABS" /> ներդիրից բաղկացած խումբը։</translation>
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
-<translation id="8749939518995770034">Ներդիրների հատվածը փակված է</translation>
 <translation id="8820741577754260431">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները</translation>
 <translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
 <translation id="9150694013019234766">Էկրանի ներքևի հատվածում գտնվող ներդիրների խմբում կարող եք անցնել մի ներդիրից մյուսը</translation>

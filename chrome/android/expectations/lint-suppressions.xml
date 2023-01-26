@@ -125,6 +125,7 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
   <issue id="TypographyDashes">
     <!-- The double dash in the following file is a command line flag. -->
     <ignore regexp="chrome/app/policy/android/values-v21/restriction_values.xml"/>
+    <ignore regexp="components/strings/components_strings_grd.resources.zip/values-th/components_strings.xml"/>
   </issue>
   <issue id="TypographyEllipsis">
     <ignore regexp="chrome/browser/ui/android/strings/ui_strings_grd.resources.zip/values-uz/android_chrome_strings.xml"/>
