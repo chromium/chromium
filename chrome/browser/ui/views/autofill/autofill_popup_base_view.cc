@@ -244,7 +244,8 @@ void AutofillPopupBaseView::NotifyAXSelection(View* selected_view) {
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<base::StringPiece>(
       {"AutofillPopupSuggestionView", "PasswordPopupSuggestionView",
        "AutofillPopupFooterView", "AutofillPopupSeparatorView",
-       "AutofillPopupWarningView", "AutofillPopupBaseView"});
+       "AutofillPopupWarningView", "AutofillPopupBaseView",
+       "PasswordGenerationPopupViewViews::GeneratedPasswordBox"});
   DCHECK(kDerivedClasses.contains(selected_view->GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "

@@ -55,6 +55,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
@@ -1173,6 +1174,9 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
       popup_controller_->GeneratedPasswordRejected();
     }
 
+    driver->SetSuggestionAvailability(
+        ui_data.generation_element_id,
+        autofill::mojom::AutofillState::kAutofillAvailable);
     return;
   }
 
@@ -1682,6 +1686,12 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
     popup_controller_->Show(
         PasswordGenerationPopupController::kOfferGeneration);
   }
+
+  driver->SetSuggestionAvailability(
+      ui_data.generation_element_id,
+      popup_controller_->IsVisible()
+          ? autofill::mojom::AutofillState::kAutofillAvailable
+          : autofill::mojom::AutofillState::kNoSuggestions);
 }
 
 gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(

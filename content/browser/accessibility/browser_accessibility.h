@@ -129,7 +129,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
     PlatformChildIterator& operator--() override;
     PlatformChildIterator operator--(int);
     gfx::NativeViewAccessible GetNativeViewAccessible() const override;
-    BrowserAccessibility* get() const;
+    BrowserAccessibility* get() const override;
     absl::optional<size_t> GetIndexInParent() const override;
     BrowserAccessibility& operator*() const override;
     BrowserAccessibility* operator->() const override;

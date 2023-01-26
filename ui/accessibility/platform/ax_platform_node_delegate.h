@@ -77,7 +77,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   using AXRange = ui::AXRange<AXPosition::element_type>;
 
   AXPlatformNodeDelegate();
-  
+
   AXPlatformNodeDelegate(const AXPlatformNodeDelegate&) = delete;
   AXPlatformNodeDelegate& operator=(const AXPlatformNodeDelegate&) = delete;
 

@@ -94,6 +94,12 @@ void IOSPasswordManagerDriver::ClearPreviewedForm() {
   NOTIMPLEMENTED();
 }
 
+void IOSPasswordManagerDriver::SetSuggestionAvailability(
+    autofill::FieldRendererId generation_element_id,
+    const autofill::mojom::AutofillState state) {
+  NOTIMPLEMENTED();
+}
+
 password_manager::PasswordGenerationFrameHelper*
 IOSPasswordManagerDriver::GetPasswordGenerationHelper() {
   return password_generation_helper_.get();

@@ -11,6 +11,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
@@ -207,6 +208,12 @@ void ContentPasswordManagerDriver::PreviewGenerationSuggestion(
 
 void ContentPasswordManagerDriver::ClearPreviewedForm() {
   GetAutofillAgent()->ClearPreviewedForm();
+}
+
+void ContentPasswordManagerDriver::SetSuggestionAvailability(
+    autofill::FieldRendererId generation_element_id,
+    const autofill::mojom::AutofillState state) {
+  GetAutofillAgent()->SetSuggestionAvailability(generation_element_id, state);
 }
 
 PasswordGenerationFrameHelper*

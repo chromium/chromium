@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
-
+#include "ui/base/metadata/metadata_header_macros.h"
 class PasswordGenerationPopupController;
 
 namespace views {
@@ -19,6 +19,8 @@ class StyledLabel;
 class PasswordGenerationPopupViewViews : public autofill::AutofillPopupBaseView,
                                          public PasswordGenerationPopupView {
  public:
+  METADATA_HEADER(PasswordGenerationPopupViewViews);
+
   PasswordGenerationPopupViewViews(
       base::WeakPtr<PasswordGenerationPopupController> controller,
       views::Widget* parent_widget);

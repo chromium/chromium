@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/password_manager/password_manager_uitest_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_controller_impl.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view_tester.h"
@@ -17,10 +18,43 @@
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/child_iterator_base.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
+
+namespace {
+
+ui::AXPlatformNodeDelegate* FindNode(ui::AXPlatformNodeDelegate* root,
+                                     const std::string& class_name) {
+  if (!root) {
+    return nullptr;
+  }
+
+  if (root->GetStringAttribute(ax::mojom::StringAttribute::kClassName) ==
+      class_name) {
+    return root;
+  }
+
+  for (auto it = root->ChildrenBegin(); *it != *root->ChildrenEnd(); ++(*it)) {
+    ui::AXPlatformNodeDelegate* child_found = FindNode(it->get(), class_name);
+    if (child_found) {
+      return child_found;
+    }
+  }
+
+  return nullptr;
+}
+
+}  // namespace
 
 class PasswordGenerationPopupViewTest : public InProcessBrowserTest {};
 
@@ -350,6 +384,77 @@ IN_PROC_BROWSER_TEST_F(
                    ->IsPopupMinimized());
 
   web_contents->Close();
+}
+
+using PasswordGenerationPopupViewAxTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewAxTest, PopupInAxTree) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  auto container_bounds = web_contents->GetContainerBounds();
+  password_generation::PasswordGenerationUIData ui_data(
+      gfx::RectF(container_bounds.x(), container_bounds.y(), 10, 10),
+      /*max_length=*/10,
+      /*generation_element=*/std::u16string(),
+      /*user_typed_password=*/std::u16string(), FieldRendererId(100),
+      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
+      FormData());
+
+  TestGenerationPopupObserver observer;
+  base::WeakPtr<PasswordGenerationPopupControllerImpl> controller =
+      PasswordGenerationPopupControllerImpl::GetOrCreate(
+          /*previous=*/nullptr, ui_data.bounds, ui_data,
+          password_manager::ContentPasswordManagerDriverFactory::
+              FromWebContents(web_contents)
+                  ->GetDriverForFrame(web_contents->GetPrimaryMainFrame())
+                  ->AsWeakPtr(),
+          &observer, web_contents, web_contents->GetPrimaryMainFrame());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "PasswordGenerationPopupViewViews");
+  controller->Show(GenerationUIState::kOfferGeneration);
+
+  gfx::NativeWindow window = gfx::kNullNativeWindow;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // On Mac and Linux the whole ax tree grows from the main root windows
+  // and the popup node can be found there. This gives more confidence
+  // that it is in the right place than on Windows (see below) where
+  // the popup subtree lives separately.
+  waiter.WaitIfNeededAndGet();
+  window = chrome::FindLastActive()->window()->GetNativeWindow();
+#elif BUILDFLAG(IS_WIN)
+  views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
+  window = dialog_widget->GetNativeWindow();
+#endif
+
+  ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
+  ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
+  ui::AXPlatformNodeDelegate* node_delegate =
+      FindNode(root_node_delegate,
+               "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
+
+  ASSERT_THAT(node_delegate, ::testing::NotNull());
+  EXPECT_FALSE(
+      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Set the screen reader focus by calling a method on the controller directly,
+  // it normally is triggered by UI events when the screen reader is on,
+  // screen reader presence is hard/expensive to emulate.
+  static_cast<PasswordGenerationPopupController*>(controller.get())
+      ->SetSelected();
+
+  EXPECT_TRUE(
+      node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  web_contents->Close();
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+#else
+  GTEST_SKIP() << "Accessibility reflection is not supported on this platform.";
+#endif
 }
 
 }  // namespace autofill

@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/accessibility/ax_tree_id.h"
 
@@ -109,6 +110,13 @@ class PasswordManagerDriver
 
   // Tells the driver to clear previewed password and username fields.
   virtual void ClearPreviewedForm() = 0;
+
+  // Updates the autofill availability state of the DOM node with
+  // |generation_element_id|. It is critical for a11y to keep it updated
+  // to make proper announcements.
+  virtual void SetSuggestionAvailability(
+      autofill::FieldRendererId generation_element_id,
+      const autofill::mojom::AutofillState state) = 0;
 
   // Returns the PasswordGenerationFrameHelper associated with this instance.
   virtual PasswordGenerationFrameHelper* GetPasswordGenerationHelper() = 0;

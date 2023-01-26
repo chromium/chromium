@@ -47,6 +47,9 @@ class IOSPasswordManagerDriver
                          const std::u16string& password) override;
   void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
+  void SetSuggestionAvailability(
+      autofill::FieldRendererId generation_element_id,
+      const autofill::mojom::AutofillState state) override;
   password_manager::PasswordGenerationFrameHelper* GetPasswordGenerationHelper()
       override;
   password_manager::PasswordManagerInterface* GetPasswordManager() override;

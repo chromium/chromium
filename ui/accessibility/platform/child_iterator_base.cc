@@ -55,6 +55,12 @@ absl::optional<size_t> ChildIteratorBase::GetIndexInParent() const {
   return index_;
 }
 
+AXPlatformNodeDelegate* ChildIteratorBase::get() const {
+  AXPlatformNode* platform_node =
+      AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
+  return platform_node ? platform_node->GetDelegate() : nullptr;
+}
+
 AXPlatformNodeDelegate& ChildIteratorBase::operator*() const {
   AXPlatformNode* platform_node =
       AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
@@ -63,9 +69,7 @@ AXPlatformNodeDelegate& ChildIteratorBase::operator*() const {
 }
 
 AXPlatformNodeDelegate* ChildIteratorBase::operator->() const {
-  AXPlatformNode* platform_node =
-      AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
-  return platform_node ? platform_node->GetDelegate() : nullptr;
+  return get();
 }
 
 }  // namespace ui
