@@ -41,6 +41,7 @@ consoles.console_view(
 
 def coverage_builder(**kwargs):
     return ci.builder(
+        schedule = "triggered",
         triggered_by = ["code-coverage-gitiles-trigger"],
         **kwargs
     )
@@ -76,7 +77,6 @@ coverage_builder(
     export_coverage_to_zoss = True,
     generate_blame_list = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    schedule = "triggered",
     use_java_coverage = True,
 )
 
@@ -116,6 +116,7 @@ coverage_builder(
     use_clang_coverage = True,
 )
 
+# fuschia runs outside of chromium, so we do not enable zoss for it.
 coverage_builder(
     name = "fuchsia-code-coverage",
     builder_spec = builder_config.builder_spec(
@@ -149,7 +150,6 @@ coverage_builder(
         ),
     ],
     coverage_test_types = ["overall", "unit"],
-    schedule = "triggered",
     use_clang_coverage = True,
 )
 
@@ -216,10 +216,10 @@ coverage_builder(
     coverage_test_types = ["overall", "unit"],
     export_coverage_to_zoss = True,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    schedule = "triggered",
     use_clang_coverage = True,
 )
 
+# this builder is still experimental, so we do not export_coverage_to_zoss.
 coverage_builder(
     name = "linux-js-code-coverage",
     builder_spec = builder_config.builder_spec(
@@ -245,7 +245,6 @@ coverage_builder(
         ),
     ],
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
-    schedule = "triggered",
     use_javascript_coverage = True,
 )
 
