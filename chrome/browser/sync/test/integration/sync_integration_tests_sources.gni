@@ -52,6 +52,7 @@ if (!is_android) {
     "../browser/sync/test/integration/two_client_autocomplete_sync_test.cc",
     "../browser/sync/test/integration/two_client_autofill_sync_test.cc",
     "../browser/sync/test/integration/two_client_bookmarks_sync_test.cc",
+    "../browser/sync/test/integration/two_client_contact_info_sync_test.cc",
     "../browser/sync/test/integration/two_client_custom_passphrase_sync_test.cc",
     "../browser/sync/test/integration/two_client_dictionary_sync_test.cc",
     "../browser/sync/test/integration/two_client_extension_apps_sync_test.cc",
