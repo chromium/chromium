@@ -60,6 +60,16 @@ bool IsOriginInList(const GURL& request_origin,
 AllowedScreenCaptureLevel GetAllowedCaptureLevel(
     const GURL& request_origin,
     content::WebContents* capturer_web_contents) {
+  // Since the UI for capture doesn't clip against picture in picture windows
+  // properly on all platforms, and since it's not clear that we actually want
+  // to support this anyway, turn it off for now.  Note that direct calls into
+  // `GetAllowedCaptureLevel(..., PrefService)` will miss this check.
+  // TODO(crbug.com/1410382): Consider turning this back on.
+  if (PictureInPictureWindowManager::IsChildWebContents(
+          capturer_web_contents)) {
+    return AllowedScreenCaptureLevel::kDisallowed;
+  }
+
   // If we can't get the PrefService, then we won't apply any restrictions.
   Profile* profile =
       Profile::FromBrowserContext(capturer_web_contents->GetBrowserContext());
