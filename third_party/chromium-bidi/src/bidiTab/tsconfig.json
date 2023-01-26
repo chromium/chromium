@@ -1,5 +1,5 @@
 {
-  "extends": "../../configs/tsconfig.base.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["DOM", "ESNext"],
     "outDir": "../../lib/cjs/bidiTab"
