@@ -191,6 +191,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
                 PrivacyGuideInteractions.WELCOME_NEXT_BUTTON);
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.NextClickWelcome');
+            this.metricsBrowserProxy_.recordPrivacyGuideFlowLengthHistogram(
+                this.computeStepIndicatorModel().total);
           },
         },
       ],

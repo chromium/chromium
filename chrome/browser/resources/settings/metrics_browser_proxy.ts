@@ -280,6 +280,12 @@ export interface MetricsBrowserProxy {
    */
   recordPrivacyGuideSettingsStatesHistogram(state: PrivacyGuideSettingsStates):
       void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.PrivacyGuide.FlowLength histogram
+   */
+  recordPrivacyGuideFlowLengthHistogram(steps: number): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -385,6 +391,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.PrivacyGuide.SettingsStates',
       state,
       PrivacyGuideSettingsStates.MAX_VALUE,
+    ]);
+  }
+
+  recordPrivacyGuideFlowLengthHistogram(steps: number) {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.PrivacyGuide.FlowLength', steps,
+      5, /*max number of the settings related steps in privacy guide is 4*/
     ]);
   }
 

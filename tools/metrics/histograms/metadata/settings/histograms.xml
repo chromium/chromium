@@ -305,6 +305,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
+    expires_after="2023-07-26">
+  <owner>rainhard@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The number of settings steps that can be shown in the Privacy Guide flow.
+    This number varies based on the users' setting states. Recorded when the
+    user clicks 'Next' in the Privacy Guide welcome card.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacyGuide.NextNavigation"
     enum="SettingsPrivacyGuideInteractions" expires_after="2023-06-04">
   <owner>harrisonsean@chromium.org</owner>

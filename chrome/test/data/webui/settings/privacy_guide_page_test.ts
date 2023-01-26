@@ -321,7 +321,12 @@ suite('PrivacyGuidePageTests', function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     syncBrowserProxy = new TestSyncBrowserProxy();
-    syncBrowserProxy.testSyncStatus = null;
+    setupSync({
+      syncBrowserProxy: syncBrowserProxy,
+      syncOn: true,
+      syncAllDataTypes: true,
+      typedUrlsSynced: true,
+    });
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
     page = createPrivacyGuidePageForTest(settingsPrefs);
@@ -509,6 +514,134 @@ suite('PrivacyGuidePageTests', function() {
     dispatchArrowLeftEvent();
     assertWelcomeCardVisible(page);
   });
+
+  test('settingsRelatedStepsShownInFlow_1_MSBB', async function() {
+    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+    await flushTasks();
+
+    setupSync({
+      syncBrowserProxy: syncBrowserProxy,
+      syncOn: false,
+      syncAllDataTypes: false,
+      typedUrlsSynced: false,
+    });
+    assertFalse(shouldShowHistorySyncCard(syncBrowserProxy));
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    assertFalse(shouldShowSafeBrowsingCard(page));
+
+    page.setPrefValue(
+        'generated.cookie_primary_setting', CookiePrimarySetting.ALLOW_ALL);
+    assertFalse(shouldShowCookiesCard(page));
+
+    // Clicking the welcome card 'Next' button fires a |start-button-click|
+    // event.
+    const welcomeFragment = page.shadowRoot!.querySelector<HTMLElement>(
+        '#' + PrivacyGuideStep.WELCOME);
+    assertTrue(!!welcomeFragment);
+    welcomeFragment.dispatchEvent(
+        new CustomEvent('start-button-click', {bubbles: true, composed: true}));
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideFlowLengthHistogram');
+    assertEquals(1, result);
+  });
+
+  test('settingsRelatedStepsShownInFlow_2_MSBB_HistorySync', async function() {
+    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+    await flushTasks();
+
+    assertTrue(shouldShowHistorySyncCard(syncBrowserProxy));
+
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.DISABLED);
+    assertFalse(shouldShowSafeBrowsingCard(page));
+
+    page.setPrefValue(
+        'generated.cookie_primary_setting', CookiePrimarySetting.ALLOW_ALL);
+    assertFalse(shouldShowCookiesCard(page));
+
+    // Clicking the welcome card 'Next' button fires a |start-button-click|
+    // event.
+    const welcomeFragment = page.shadowRoot!.querySelector<HTMLElement>(
+        '#' + PrivacyGuideStep.WELCOME);
+    assertTrue(!!welcomeFragment);
+    welcomeFragment.dispatchEvent(
+        new CustomEvent('start-button-click', {bubbles: true, composed: true}));
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideFlowLengthHistogram');
+    assertEquals(2, result);
+  });
+
+  test(
+      'settingsRelatedStepsShownInFlow_3_MSBB_SafeBrowsing_Cookies',
+      async function() {
+        Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+        await flushTasks();
+
+        setupSync({
+          syncBrowserProxy: syncBrowserProxy,
+          syncOn: false,
+          syncAllDataTypes: false,
+          typedUrlsSynced: false,
+        });
+        assertFalse(shouldShowHistorySyncCard(syncBrowserProxy));
+
+        page.setPrefValue(
+            'generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+        assertTrue(shouldShowSafeBrowsingCard(page));
+
+        page.setPrefValue(
+            'generated.cookie_primary_setting',
+            CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO);
+        assertTrue(shouldShowCookiesCard(page));
+
+        // Clicking the welcome card 'Next' button fires a |start-button-click|
+        // event.
+        const welcomeFragment = page.shadowRoot!.querySelector<HTMLElement>(
+            '#' + PrivacyGuideStep.WELCOME);
+        assertTrue(!!welcomeFragment);
+        welcomeFragment.dispatchEvent(new CustomEvent(
+            'start-button-click', {bubbles: true, composed: true}));
+        flush();
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideFlowLengthHistogram');
+        assertEquals(3, result);
+      });
+
+  test(
+      'settingsRelatedStepsShownInFlow_4_MSBB_HistorySync_SafeBrowsing_Cookies',
+      async function() {
+        Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
+        await flushTasks();
+
+        assertTrue(shouldShowHistorySyncCard(syncBrowserProxy));
+
+        page.setPrefValue(
+            'generated.safe_browsing', SafeBrowsingSetting.ENHANCED);
+        assertTrue(shouldShowSafeBrowsingCard(page));
+
+        page.setPrefValue(
+            'generated.cookie_primary_setting',
+            CookiePrimarySetting.BLOCK_THIRD_PARTY);
+        assertTrue(shouldShowCookiesCard(page));
+
+        // Clicking the welcome card 'Next' button fires a |start-button-click|
+        // event.
+        const welcomeFragment = page.shadowRoot!.querySelector<HTMLElement>(
+            '#' + PrivacyGuideStep.WELCOME);
+        assertTrue(!!welcomeFragment);
+        welcomeFragment.dispatchEvent(new CustomEvent(
+            'start-button-click', {bubbles: true, composed: true}));
+        flush();
+
+        const result = await testMetricsBrowserProxy.whenCalled(
+            'recordPrivacyGuideFlowLengthHistogram');
+        assertEquals(4, result);
+      });
 });
 
 suite('MsbbCardNavigations', function() {

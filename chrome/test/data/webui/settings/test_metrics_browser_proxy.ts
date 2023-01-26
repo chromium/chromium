@@ -18,6 +18,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
       'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown',
       'recordSettingsPageHistogram',
+      'recordPrivacyGuideFlowLengthHistogram',
       'recordSafeBrowsingInteractionHistogram',
       'recordPrivacyGuideNextNavigationHistogram',
       'recordPrivacyGuideEntryExitHistogram',
@@ -90,5 +91,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordPrivacyGuideSettingsStatesHistogram(state: PrivacyGuideSettingsStates) {
     this.methodCalled('recordPrivacyGuideSettingsStatesHistogram', state);
+  }
+
+  recordPrivacyGuideFlowLengthHistogram(steps: number) {
+    this.methodCalled('recordPrivacyGuideFlowLengthHistogram', steps);
   }
 }
