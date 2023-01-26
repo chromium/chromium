@@ -104,12 +104,6 @@ StorageAccessGrantPermissionContext::StorageAccessGrantPermissionContext(
 StorageAccessGrantPermissionContext::~StorageAccessGrantPermissionContext() =
     default;
 
-bool StorageAccessGrantPermissionContext::IsRestrictedToSecureOrigins() const {
-  // The Storage Access API and associated grants are allowed on insecure
-  // origins as well as secure ones.
-  return false;
-}
-
 void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,

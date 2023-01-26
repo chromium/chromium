@@ -145,12 +145,12 @@ class StorageAccessGrantPermissionContextAPIDisabledTest
 };
 
 TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
-       InsecureOriginsAreAllowed) {
+       InsecureOriginsDisallowed) {
   GURL insecure_url = GURL("http://www.example.com");
   StorageAccessGrantPermissionContext permission_context(profile());
-  EXPECT_TRUE(permission_context.IsPermissionAvailableToOrigins(insecure_url,
-                                                                insecure_url));
-  EXPECT_TRUE(permission_context.IsPermissionAvailableToOrigins(
+  EXPECT_FALSE(permission_context.IsPermissionAvailableToOrigins(insecure_url,
+                                                                 insecure_url));
+  EXPECT_FALSE(permission_context.IsPermissionAvailableToOrigins(
       insecure_url, GetRequesterURL()));
 }
 
