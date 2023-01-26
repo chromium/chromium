@@ -96,7 +96,15 @@ void PrinterQueryOop::OnDidAskUserForSettings(
 #endif  // BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
 
 void PrinterQueryOop::UseDefaultSettings(SettingsCallback callback) {
+#if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   SendUseDefaultSettings(std::move(callback));
+#else
+  // `PrintingContextLinux::UseDefaultSettings()` is to be called prior to
+  // `AskUserForSettings()` to establish a base device context.  If the system
+  // print dialog will be invoked from within the browser process, then that
+  // default setup needs to happen in browser as well.
+  PrinterQuery::UseDefaultSettings(std::move(callback));
+#endif
 }
 
 void PrinterQueryOop::GetSettingsWithUI(uint32_t document_page_count,
