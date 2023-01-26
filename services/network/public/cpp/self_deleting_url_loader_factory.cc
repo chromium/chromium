@@ -37,6 +37,14 @@ void SelfDeletingURLLoaderFactory::Clone(
   receivers_.Add(this, std::move(loader));
 }
 
+void SelfDeletingURLLoaderFactory::ReportBadMessage(
+    const std::string& message) {
+  receivers_.ReportBadMessage(message);
+  if (receivers_.empty()) {
+    delete this;
+  }
+}
+
 void SelfDeletingURLLoaderFactory::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

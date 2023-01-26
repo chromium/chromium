@@ -368,7 +368,7 @@ void ExternalFileURLLoaderFactory::CreateLoaderAndStart(
           render_process_host_id_, request.url)) {
     DVLOG(1) << "Denied unauthorized request for "
              << request.url.possibly_invalid_spec();
-    mojo::ReportBadMessage("Unauthorized externalfile request");
+    ReportBadMessage("Unauthorized externalfile request");
     return;
   }
   content::GetIOThreadTaskRunner({})->PostTask(
