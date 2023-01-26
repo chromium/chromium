@@ -23,6 +23,7 @@ struct ExtensionBuilder::ManifestData {
   Type type;
   std::string name;
   std::vector<std::string> permissions;
+  std::vector<std::string> optional_permissions;
   absl::optional<ActionInfo::Type> action;
   absl::optional<BackgroundContext> background_context;
   absl::optional<std::string> version;
@@ -60,6 +61,15 @@ struct ExtensionBuilder::ManifestData {
       for (const std::string& permission : permissions)
         permissions_builder.Append(permission);
       manifest.Set(manifest_keys::kPermissions, permissions_builder.Build());
+    }
+
+    if (!optional_permissions.empty()) {
+      ListBuilder permissions_builder;
+      for (const std::string& permission : optional_permissions) {
+        permissions_builder.Append(permission);
+      }
+      manifest.Set(manifest_keys::kOptionalPermissions,
+                   permissions_builder.Build());
     }
 
     if (action) {
@@ -180,6 +190,22 @@ ExtensionBuilder& ExtensionBuilder::AddPermissions(
   CHECK(manifest_data_);
   manifest_data_->permissions.insert(manifest_data_->permissions.end(),
                                      permissions.begin(), permissions.end());
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddOptionalPermission(
+    const std::string& permission) {
+  CHECK(manifest_data_);
+  manifest_data_->optional_permissions.push_back(permission);
+  return *this;
+}
+
+ExtensionBuilder& ExtensionBuilder::AddOptionalPermissions(
+    const std::vector<std::string>& permissions) {
+  CHECK(manifest_data_);
+  manifest_data_->optional_permissions.insert(
+      manifest_data_->optional_permissions.end(), permissions.begin(),
+      permissions.end());
   return *this;
 }
 
