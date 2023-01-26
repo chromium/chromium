@@ -704,6 +704,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 // the tab is non-interactive (e.g. when entering the TabSwitcher or Start surface).
                 // In those cases we actually still want to use the most recently selected tab, but
                 // will update the URL.
+                onBackPressStateChanged();
                 if (tab == null) {
                     mLocationBarModel.notifyUrlChanged();
                     return;
@@ -2115,7 +2116,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     private void onBackPressStateChanged() {
-        mBackPressStateSupplier.set(mToolbarTabController.canGoBack());
+        Tab tab = mActivityTabProvider.get();
+        mBackPressStateSupplier.set(tab != null && mToolbarTabController.canGoBack());
     }
 
     @Override
