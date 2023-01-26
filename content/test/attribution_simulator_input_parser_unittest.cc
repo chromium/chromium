@@ -12,13 +12,6 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
-#include "components/aggregation_service/aggregation_service.mojom.h"
-#include "components/attribution_reporting/aggregatable_trigger_data.h"
-#include "components/attribution_reporting/aggregatable_values.h"
-#include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/event_trigger_data.h"
-#include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -29,7 +22,8 @@
 #include "net/cookies/cookie_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -86,15 +80,10 @@ std::ostream& operator<<(std::ostream& out, const AttributionDataClear& c) {
 
 namespace {
 
-using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Optional;
-using ::testing::Pair;
-using ::testing::SizeIs;
-
-using AttributionFilters = ::attribution_reporting::Filters;
 
 using ::attribution_reporting::SuitableOrigin;
 
@@ -127,14 +116,7 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "reporting_origin": "https://a.r.test",
       "source_origin": "https://a.s.test",
       "Attribution-Reporting-Register-Source": {
-        "source_event_id": "123",
-        "destination": "https://a.d.test",
-        "expiry": "864000",
-        "event_report_window": "864000",
-        "aggregatable_report_window": "864000",
-        "priority": "-5",
-        "debug_key": "14",
-        "debug_reporting": true
+        "destination": "https://a.d.test"
       }
     },
     {
@@ -145,313 +127,82 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
       "Attribution-Reporting-Register-Source": {
         "destination": "https://b.d.test"
       }
-    },
-    {
-      "timestamp": "1643235575123",
-      "source_type": "event",
-      "reporting_origin": "https://c.r.test",
-      "source_origin": "https://c.s.test",
-      "Attribution-Reporting-Register-Source": {
-        "source_event_id": "789",
-        "destination": "https://c.d.test",
-        "expiry": "864001",
-        "event_report_window": "864001",
-        "aggregatable_report_window": "864001",
-        "filter_data": {
-          "a": [],
-          "b": ["c", "d"]
-        }
-      }
-    },
-    {
-      "timestamp": "1643235576123",
-      "source_type": "event",
-      "reporting_origin": "https://c.r.test",
-      "source_origin": "https://c.s.test",
-      "Attribution-Reporting-Register-Source": {
-        "source_event_id": "789",
-        "destination": "https://c.d.test",
-        "expiry": "864001",
-        "event_report_window": "691201",
-        "aggregatable_report_window": "432001",
-        "aggregation_keys": {
-          "a": "0x1"
-        }
-      }
     }
   ]})json";
 
   base::Value value = base::test::ParseJson(kJson);
   std::ostringstream error_stream;
-  EXPECT_THAT(
-      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
-                                      error_stream),
-      Optional(ElementsAre(
-          SourceBuilder(kOffsetTime + base::Milliseconds(1643235574123))
-              .SetSourceType(AttributionSourceType::kNavigation)
-              .SetReportingOrigin(
-                  *SuitableOrigin::Deserialize("https://a.r.test"))
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://a.s.test"))
-              .SetSourceEventId(123)
-              .SetDestinationOrigin(
-                  *SuitableOrigin::Deserialize("https://a.d.test"))
-              .SetExpiry(base::Days(10))
-              .SetEventReportWindow(base::Days(10))
-              .SetAggregatableReportWindow(base::Days(10))
-              .SetPriority(-5)
-              .SetDebugKey(14)
-              .SetDebugReporting(true)
-              .Build(),
-          SourceBuilder(kOffsetTime + base::Milliseconds(1643235573123))
-              .SetSourceType(AttributionSourceType::kEvent)
-              .SetReportingOrigin(
-                  *SuitableOrigin::Deserialize("https://b.r.test"))
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://b.s.test"))
-              .SetSourceEventId(0)  // default
-              .SetDestinationOrigin(
-                  *SuitableOrigin::Deserialize("https://b.d.test"))
-              .SetExpiry(base::Days(30))                    // default
-              .SetEventReportWindow(base::Days(30))         // default
-              .SetAggregatableReportWindow(base::Days(30))  // default
-              .SetPriority(0)                               // default
-              .SetDebugKey(absl::nullopt)                   // default
-              .Build(),
-          SourceBuilder(kOffsetTime + base::Milliseconds(1643235575123))
-              .SetSourceType(AttributionSourceType::kEvent)
-              .SetReportingOrigin(
-                  *SuitableOrigin::Deserialize("https://c.r.test"))
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://c.s.test"))
-              .SetSourceEventId(789)
-              .SetDestinationOrigin(
-                  *SuitableOrigin::Deserialize("https://c.d.test"))
-              .SetExpiry(base::Days(10))  // rounded to whole number of days
-              .SetEventReportWindow(
-                  base::Days(10))  // rounded to whole number of days
-              .SetAggregatableReportWindow(
-                  base::Days(10))          // rounded to whole number of days
-              .SetPriority(0)              // default
-              .SetDebugKey(absl::nullopt)  // default
-              .SetDebugReporting(false)    // default
-              .SetFilterData(*attribution_reporting::FilterData::Create({
-                  {"a", {}},
-                  {"b", {"c", "d"}},
-              }))
-              .Build(),
-          SourceBuilder(kOffsetTime + base::Milliseconds(1643235576123))
-              .SetSourceType(AttributionSourceType::kEvent)
-              .SetReportingOrigin(
-                  *SuitableOrigin::Deserialize("https://c.r.test"))
-              .SetSourceOrigin(*SuitableOrigin::Deserialize("https://c.s.test"))
-              .SetSourceEventId(789)
-              .SetDestinationOrigin(
-                  *SuitableOrigin::Deserialize("https://c.d.test"))
-              .SetExpiry(base::Days(10))  // rounded to whole number of days
-              .SetEventReportWindow(
-                  base::Days(8))  // rounded to whole number of days
-              .SetAggregatableReportWindow(
-                  base::Days(5))           // rounded to whole number of days
-              .SetPriority(0)              // default
-              .SetDebugKey(absl::nullopt)  // default
-              .SetDebugReporting(false)    // default
-              .SetAggregationKeys(
-                  *attribution_reporting::AggregationKeys::FromKeys({{"a", 1}}))
-              .Build())));
+
+  auto result = ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                                error_stream);
+
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result->size(), 2u);
+
+  const auto* source1 = absl::get_if<StorableSource>(&result->front());
+  ASSERT_TRUE(source1);
+
+  const auto* source2 = absl::get_if<StorableSource>(&result->back());
+  ASSERT_TRUE(source2);
+
+  EXPECT_EQ(source1->common_info().source_time(),
+            kOffsetTime + base::Milliseconds(1643235574123));
+  EXPECT_EQ(source1->common_info().source_type(),
+            AttributionSourceType::kNavigation);
+  EXPECT_EQ(source1->common_info().reporting_origin(),
+            *SuitableOrigin::Deserialize("https://a.r.test"));
+  EXPECT_EQ(source1->common_info().source_origin(),
+            *SuitableOrigin::Deserialize("https://a.s.test"));
+  EXPECT_EQ(source1->common_info().destination_origin(),
+            *SuitableOrigin::Deserialize("https://a.d.test"));
+  EXPECT_FALSE(source1->is_within_fenced_frame());
+
+  EXPECT_EQ(source2->common_info().source_time(),
+            kOffsetTime + base::Milliseconds(1643235573123));
+  EXPECT_EQ(source2->common_info().source_type(),
+            AttributionSourceType::kEvent);
+  EXPECT_EQ(source2->common_info().reporting_origin(),
+            *SuitableOrigin::Deserialize("https://b.r.test"));
+  EXPECT_EQ(source2->common_info().source_origin(),
+            *SuitableOrigin::Deserialize("https://b.s.test"));
+  EXPECT_EQ(source2->common_info().destination_origin(),
+            *SuitableOrigin::Deserialize("https://b.d.test"));
+  EXPECT_FALSE(source2->is_within_fenced_frame());
+
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
 TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
   constexpr char kJson[] = R"json({"triggers": [
     {
-      "timestamp": "1643235576123",
-      "reporting_origin": "https://a.r.test",
-      "destination_origin": " https://a.d1.test",
-      "Attribution-Reporting-Register-Trigger": {
-        "event_trigger_data": [
-          {
-            "trigger_data": "10",
-            "priority": "-5",
-            "deduplication_key": "123",
-            "filters": {
-              "x": ["y"]
-            },
-            "not_filters": {
-              "z": []
-            }
-          },
-          {}
-        ],
-        "debug_key": "14",
-        "filters": {
-          "a": ["b", "c"],
-          "d": []
-        },
-        "not_filters": {
-          "e": ["f"]
-        }
-      }
-    },
-    {
       "timestamp": "1643235575123",
-      "reporting_origin": "https://b.r.test",
-      "destination_origin": " https://a.d2.test",
+      "reporting_origin": "https://a.r.test",
+      "destination_origin": " https://b.d.test",
       "Attribution-Reporting-Register-Trigger": {}
-    },
-    {
-      "timestamp": "1643235574123",
-      "reporting_origin": "https://b.r.test",
-      "destination_origin": " https://a.d2.test",
-      "Attribution-Reporting-Register-Trigger": {
-        "aggregatable_trigger_data": [{
-          "source_keys": ["a"],
-          "key_piece": "0x1"
-        }],
-        "aggregatable_values": {"a": 1},
-        "aggregatable_deduplication_key": "789",
-        "debug_reporting": true
-      }
     }
   ]})json";
 
   base::Value value = base::test::ParseJson(kJson);
   std::ostringstream error_stream;
 
-  EXPECT_THAT(
-      ParseAttributionSimulationInput(std::move(value), kOffsetTime,
-                                      error_stream),
-      Optional(ElementsAre(
-          AttributionTriggerAndTime{
-              .trigger = AttributionTrigger(
-                  /*reporting_origin=*/
-                  *SuitableOrigin::Deserialize("https://a.r.test"),
-                  attribution_reporting::TriggerRegistration(
-                      /*filters=*/
-                      *AttributionFilters::Create({
-                          {"a", {"b", "c"}},
-                          {"d", {}},
-                      }),
-                      /*not_filters=*/
-                      *AttributionFilters::Create({
-                          {"e", {"f"}},
-                      }),
-                      /*debug_key=*/14,
-                      /*aggregatable_dedup_key=*/absl::nullopt,
-                      *attribution_reporting::EventTriggerDataList::Create({
-                          attribution_reporting::EventTriggerData(
-                              /*data=*/10,
-                              /*priority=*/-5,
-                              /*dedup_key=*/123,
-                              /*filters=*/
-                              *AttributionFilters::Create({
-                                  {"x", {"y"}},
-                              }),
-                              /*not_filters=*/
-                              *AttributionFilters::Create({
-                                  {"z", {}},
-                              })),
-                          attribution_reporting::EventTriggerData(
-                              /*data=*/0,
-                              /*priority=*/0,
-                              /*dedup_key=*/absl::nullopt,
-                              /*filters=*/AttributionFilters(),
-                              /*not_filters=*/AttributionFilters()),
-                      }),
-                      /*aggregatable_trigger_data=*/
-                      attribution_reporting::AggregatableTriggerDataList(),
-                      /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues(),
-                      /*debug_reporting=*/false,
-                      ::aggregation_service::mojom::AggregationCoordinator::
-                          kDefault),
-                  /*destination_origin=*/
-                  *SuitableOrigin::Deserialize("https://a.d1.test"),
-                  /*attestation=*/absl::nullopt,
-                  /*is_within_fenced_frame=*/false),
-              .time = kOffsetTime + base::Milliseconds(1643235576123),
-          },
-          AttributionTriggerAndTime{
-              .trigger = AttributionTrigger(
-                  /*reporting_origin=*/
-                  *SuitableOrigin::Deserialize("https://b.r.test"),
-                  attribution_reporting::TriggerRegistration(
-                      /*filters=*/AttributionFilters(),
-                      /*not_filters=*/AttributionFilters(),
-                      /*debug_key=*/absl::nullopt,
-                      /*aggregatable_dedup_key=*/absl::nullopt,
-                      /*event_triggers=*/
-                      attribution_reporting::EventTriggerDataList(),
-                      /*aggregatable_trigger_data=*/
-                      attribution_reporting::AggregatableTriggerDataList(),
-                      /*aggregatable_values=*/
-                      attribution_reporting::AggregatableValues(),
-                      /*debug_reporting=*/false,
-                      ::aggregation_service::mojom::AggregationCoordinator::
-                          kDefault),
-                  /*destination_origin=*/
-                  *SuitableOrigin::Deserialize("https://a.d2.test"),
-                  /*attestation=*/absl::nullopt,
-                  /*is_within_fenced_frame=*/false),
-              .time = kOffsetTime + base::Milliseconds(1643235575123),
-          },
-          AttributionTriggerAndTime{
-              .trigger = AttributionTrigger(
-                  /*reporting_origin=*/
-                  *SuitableOrigin::Deserialize("https://b.r.test"),
-                  attribution_reporting::TriggerRegistration(
-                      /*filters=*/AttributionFilters(),
-                      /*not_filters=*/AttributionFilters(),
-                      /*debug_key=*/absl::nullopt,
-                      /*aggregatable_dedup_key=*/789,
-                      /*event_triggers=*/
-                      attribution_reporting::EventTriggerDataList(),
-                      *attribution_reporting::AggregatableTriggerDataList::
-                          Create(
-                              {*attribution_reporting::AggregatableTriggerData::
-                                   Create(absl::MakeUint128(/*high=*/0,
-                                                            /*low=*/1),
-                                          /*source_keys=*/{"a"},
-                                          /*filters=*/AttributionFilters(),
-                                          /*not_filters=*/
-                                          AttributionFilters())}),
-                      /*aggregatable_values=*/
-                      *attribution_reporting::AggregatableValues::Create(
-                          {{"a", 1}}),
-                      /*debug_reporting=*/true,
-                      ::aggregation_service::mojom::AggregationCoordinator::
-                          kDefault),
-                  /*destination_origin=*/
-                  *SuitableOrigin::Deserialize("https://a.d2.test"),
-                  /*attestation=*/absl::nullopt,
-                  /*is_within_fenced_frame=*/false),
-              .time = kOffsetTime + base::Milliseconds(1643235574123),
-          })));
-  EXPECT_THAT(error_stream.str(), IsEmpty());
-}
+  auto result = ParseAttributionSimulationInput(std::move(value), kOffsetTime,
+                                                error_stream);
 
-TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
-  constexpr char kJson[] = R"json({
-    "sources": [{
-      "timestamp": "1643235573123",
-      "source_type": "event",
-      "reporting_origin": "https://b.r.test",
-      "source_origin": "https://b.s.test",
-      "Attribution-Reporting-Register-Source": {
-        "source_event_id": "456",
-        "destination": "https://b.d.test"
-      }
-    }],
-    "triggers": [{
-      "timestamp": "1643235575123",
-      "reporting_origin": "https://b.r.test",
-      "destination_origin": " https://a.d2.test",
-      "Attribution-Reporting-Register-Trigger": {}
-    }]
-  })json";
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(result->size(), 1u);
 
-  base::Value value = base::test::ParseJson(kJson);
-  std::ostringstream error_stream;
-  EXPECT_THAT(ParseAttributionSimulationInput(std::move(value), kOffsetTime,
-                                              error_stream),
-              Optional(SizeIs(2)));
+  const auto* trigger =
+      absl::get_if<AttributionTriggerAndTime>(&result->front());
+  ASSERT_TRUE(trigger);
+
+  EXPECT_EQ(trigger->time, kOffsetTime + base::Milliseconds(1643235575123));
+  EXPECT_EQ(trigger->trigger.reporting_origin(),
+            *SuitableOrigin::Deserialize("https://a.r.test"));
+  EXPECT_EQ(trigger->trigger.destination_origin(),
+            *SuitableOrigin::Deserialize("https://b.d.test"));
+  EXPECT_EQ(trigger->trigger.attestation(), absl::nullopt);
+  EXPECT_FALSE(trigger->trigger.is_within_fenced_frame());
+
   EXPECT_THAT(error_stream.str(), IsEmpty());
 }
 
@@ -539,96 +290,6 @@ TEST(AttributionSimulatorInputParserTest, ValidDataClearParses) {
               },
               /*delete_rate_limit_data=*/false))));
   EXPECT_THAT(error_stream.str(), IsEmpty());
-}
-
-TEST(AttributionSimulatorInputParserTest, InvalidAggregatableTriggerDataSize) {
-  const struct {
-    size_t size;
-    bool valid;
-  } kTestCases[]{
-      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger, true},
-      {attribution_reporting::kMaxAggregatableTriggerDataPerTrigger + 1, false},
-  };
-
-  static constexpr char kError[] =
-      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataListTooLong)";
-
-  for (const auto test_case : kTestCases) {
-    base::Value::List list;
-    for (size_t i = 0; i < test_case.size; ++i) {
-      list.Append("");
-    }
-    base::Value::Dict trigger;
-    trigger.Set("aggregatable_trigger_data", std::move(list));
-
-    base::Value::Dict dict;
-    dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
-    dict.Set("timestamp", "1643235576000");
-    dict.Set("destination_origin", "https://a.d1.test");
-    dict.Set("reporting_origin", "https://a.r.test");
-
-    base::Value::List triggers;
-    triggers.Append(std::move(dict));
-
-    base::Value::Dict input;
-    input.Set("triggers", std::move(triggers));
-
-    std::ostringstream error_stream;
-    EXPECT_EQ(ParseAttributionSimulationInput(base::Value(std::move(input)),
-                                              kOffsetTime, error_stream),
-              absl::nullopt);
-
-    if (test_case.valid) {
-      EXPECT_THAT(error_stream.str(), Not(HasSubstr(kError)));
-    } else {
-      EXPECT_THAT(error_stream.str(), HasSubstr(kError));
-    }
-  }
-}
-
-TEST(AttributionSimulatorInputParserTest, InvalidEventTriggerDataSize) {
-  const struct {
-    size_t size;
-    bool valid;
-  } kTestCases[]{
-      {attribution_reporting::kMaxEventTriggerData, true},
-      {attribution_reporting::kMaxEventTriggerData + 1, false},
-  };
-
-  static constexpr char kError[] =
-      R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataListTooLong)";
-
-  for (const auto test_case : kTestCases) {
-    base::Value::List list;
-    for (size_t i = 0; i < test_case.size; ++i) {
-      list.Append("");
-    }
-    base::Value::Dict trigger;
-    trigger.Set("event_trigger_data", std::move(list));
-
-    base::Value::Dict dict;
-    dict.Set("Attribution-Reporting-Register-Trigger", std::move(trigger));
-    dict.Set("timestamp", "1643235576000");
-    dict.Set("destination_origin", "https://a.d1.test");
-    dict.Set("reporting_origin", "https://a.r.test");
-
-    base::Value::List triggers;
-    triggers.Append(std::move(dict));
-
-    base::Value::Dict input;
-    input.Set("triggers", std::move(triggers));
-
-    std::ostringstream error_stream;
-    EXPECT_EQ(ParseAttributionSimulationInput(base::Value(std::move(input)),
-                                              kOffsetTime, error_stream),
-              absl::nullopt);
-
-    if (test_case.valid) {
-      EXPECT_THAT(error_stream.str(), Not(HasSubstr(kError)));
-    } else {
-      EXPECT_THAT(error_stream.str(), HasSubstr(kError));
-    }
-  }
 }
 
 struct ParseErrorTestCase {
@@ -738,98 +399,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataWrongType)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "filter_data": ""
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataListWrongType)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "filter_data": {
-              "a": "x"
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataValueWrongType)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "navigation",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "filter_data": {
-              "a": [5]
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysWrongType)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "event",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregation_keys": ""
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysValueWrongFormat)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "event",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregation_keys": {
-              "a": "0xG"
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysValueWrongFormat)",
-        R"json({"sources": [{
-          "timestamp": "1643235574000",
-          "source_type": "event",
-          "reporting_origin": "https://a.r.test",
-          "source_origin": "https://a.s.test",
-          "Attribution-Reporting-Register-Source": {
-            "source_event_id": "123",
-            "destination": "https://a.d.test",
-            "aggregation_keys": {
-              "a": "123"
-            }
-          }
-        }]})json",
-    },
-    {
         R"(["sources"]: must be a list)",
         R"json({"sources": ""})json",
     },
@@ -886,129 +455,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
           "reporting_origin": "https://a.r.test",
           "Attribution-Reporting-Register-Trigger": {
             "filters": ""
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kFiltersListWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "destination_origin": "https://a.d1.test",
-          "reporting_origin": "https://a.r.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "not_filters": {
-              "a": "x"
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataListWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "event_trigger_data": 1
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataListWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": 5
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": [ 5 ]
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": [{
-              "key_piece": "0x123",
-              "source_keys": "a"
-            }]
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataSourceKeysKeyWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": [{
-              "key_piece": "0x123",
-              "source_keys": [ 5 ]
-            }]
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableTriggerDataKeyPieceWrongFormat)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_trigger_data": [{
-              "source_keys": [ "a" ],
-              "key_piece": "0xG"
-            }]
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableValuesWrongType)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_values": 5
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kAggregatableValuesValueOutOfRange)",
-        R"json({"triggers": [{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "aggregatable_values": {
-              "a": -5
-            }
-          }
-        }]})json",
-    },
-    {
-        R"(["triggers"][0]["Attribution-Reporting-Register-Trigger"]: kEventTriggerDataWrongType)",
-        R"json({"triggers":[{
-          "timestamp": "1643235576000",
-          "reporting_origin": "https://a.r.test",
-          "destination_origin": " https://a.d1.test",
-          "Attribution-Reporting-Register-Trigger": {
-            "event_trigger_data":[true]
           }
         }]})json",
     },
