@@ -13,8 +13,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyCheckInteractionHistogram',
       'recordSafetyCheckNotificationsListCountHistogram',
       'recordSafetyCheckNotificationsModuleInteractionsHistogram',
+      'recordSafetyCheckNotificationsModuleEntryPointShown',
       'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
       'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
+      'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown',
       'recordSettingsPageHistogram',
       'recordSafeBrowsingInteractionHistogram',
       'recordPrivacyGuideNextNavigationHistogram',
@@ -43,6 +45,11 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
         interaction);
   }
 
+  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
+    this.methodCalled(
+        'recordSafetyCheckNotificationsModuleEntryPointShown', visible);
+  }
+
   recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
                                                                number) {
     this.methodCalled(
@@ -55,6 +62,12 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled(
         'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
         interaction);
+  }
+
+  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:
+                                                                  boolean) {
+    this.methodCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown', visible);
   }
 
   recordSettingsPageHistogram(interaction: PrivacyElementInteractions) {

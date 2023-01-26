@@ -516,6 +516,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.SafetyCheck.NotificationsModuleEntryPointShown"
+    enum="BooleanVisible" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <summary>
+    Captures whether the entry point for the notification module of Safety Check
+    is shown to the user, i.e. whether it is enabled and at least one
+    notification permission met the criteria for review. Recorded whenever the
+    user visits the Safety Check page in Chrome Settings.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyCheck.NotificationsModuleInteractions"
     enum="SafetyCheckNotificationsModuleInteractions"
     expires_after="2023-10-21">
@@ -551,6 +564,20 @@ chromium-metrics-reviews@google.com.
     The number of suggestions of unused site permissions to revoke, recorded
     when the list of sites with revoked permissions is initialized when the user
     opens the SafetyCheck unused site permissions module.
+  </summary>
+</histogram>
+
+<histogram
+    name="Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown"
+    enum="BooleanVisible" expires_after="2023-12-21">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <owner>hkamila@chromium.org</owner>
+  <summary>
+    Captures whether the entry point for the unused site permissions module of
+    Safety Check is shown to the user, i.e. whether it is enabled and at least
+    one site permission has been revoked. Recorded whenever the user visits the
+    Safety Check page in Chrome Settings.
   </summary>
 </histogram>
 

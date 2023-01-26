@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Route, Router, routes, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsRoutes, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {ContentSettingsTypes, NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -21,6 +21,7 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 
 suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   let page: SettingsSafetyCheckUnusedSitePermissionsElement;
+  let testRoutes: SettingsRoutes;
   let browserProxy: TestSiteSettingsPermissionsBrowserProxy;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
@@ -32,6 +33,11 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
+    testRoutes = {
+      PRIVACY: new Route('/privacy'),
+      BASIC: new Route('/'),
+    } as unknown as SettingsRoutes;
+    Router.resetInstanceForTesting(new Router(routes));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
@@ -41,6 +47,7 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
 
     page =
         document.createElement('settings-safety-check-unused-site-permissions');
+    Router.getInstance().navigateTo(testRoutes.PRIVACY);
     document.body.appendChild(page);
     flush();
   }
@@ -209,6 +216,8 @@ suite('SafetyCheckNotificationPermissionsUiTests', function() {
 
 suite('SafetyCheckPagePermissionModulesTest', function() {
   let page: SettingsSafetyCheckPageElement;
+  let testRoutes: SettingsRoutes;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
   let prefsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let permissionsBrowserProxy: TestSiteSettingsPermissionsBrowserProxy;
   const notificationElementName =
@@ -229,16 +238,24 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
   ];
 
   setup(function() {
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     prefsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(prefsBrowserProxy);
     permissionsBrowserProxy = new TestSiteSettingsPermissionsBrowserProxy();
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(
         permissionsBrowserProxy);
+    testRoutes = {
+      PRIVACY: new Route('/privacy'),
+      BASIC: new Route('/'),
+    } as unknown as SettingsRoutes;
+    Router.resetInstanceForTesting(new Router(routes));
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   function createPage() {
     page = document.createElement('settings-safety-check-page');
+    Router.getInstance().navigateTo(testRoutes.PRIVACY);
     document.body.appendChild(page);
     flush();
   }
@@ -270,6 +287,9 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
     assertTrue(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
 
+    assertTrue(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckNotificationsModuleEntryPointShown'));
+
     webUIListenerCallback(
         'notification-permission-review-list-maybe-changed', []);
     await flushTasks();
@@ -285,6 +305,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
 
     assertFalse(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+    assertFalse(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckNotificationsModuleEntryPointShown'));
     // Re-enable the notification permission feature.
     loadTimeData.overrideValues(
         {safetyCheckNotificationPermissionsEnabled: true});
@@ -295,6 +317,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
 
     assertFalse(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+    assertFalse(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckNotificationsModuleEntryPointShown'));
 
     webUIListenerCallback(
         'notification-permission-review-list-maybe-changed',
@@ -305,11 +329,13 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
   });
 
-  test('unusedSitePermissionsModuleVisible', async () => {
+  test('unusedSitePermissionsModuleEntryPointShown', async () => {
     await createPageForUnusedSitePermissions(unusedSiteMockData);
 
     assertTrue(
         isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+    assertTrue(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown'));
   });
 
   test('unusedSitePermissionsModuleFeatureDisabled', async () => {
@@ -319,6 +345,8 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
 
     assertFalse(
         isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+    assertFalse(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown'));
 
     // Re-enable the unused site permissions feature.
     loadTimeData.overrideValues(
@@ -330,5 +358,7 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
 
     assertFalse(
         isVisible(page.shadowRoot!.querySelector(unusedSiteElementName)));
+    assertFalse(await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown'));
   });
 });

@@ -221,6 +221,12 @@ export interface MetricsBrowserProxy {
       interaction: SafetyCheckNotificationsModuleInteractions): void;
 
   /**
+   * Helper function that calls recordBooleanHistogram for the
+   * Settings.SafetyCheck.NotificationsModuleEntryPointShown histogram
+   */
+  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean): void;
+
+  /**
    * Helper function that calls recordHistogram for
    * Settings.SafetyCheck.UnusedSitePermissionsListCount histogram.
    */
@@ -233,6 +239,13 @@ export interface MetricsBrowserProxy {
    */
   recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
       interaction: SafetyCheckUnusedSitePermissionsModuleInteractions): void;
+
+  /**
+   * Helper function that calls recordBooleanHistogram for the
+   * Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown histogram
+   */
+  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible: boolean):
+      void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -298,6 +311,13 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     ]);
   }
 
+  recordSafetyCheckNotificationsModuleEntryPointShown(visible: boolean) {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      'Settings.SafetyCheck.NotificationsModuleEntryPointShown',
+      visible,
+    ]);
+  }
+
   recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
                                                                number) {
     chrome.send('metricsHandler:recordInHistogram', [
@@ -313,6 +333,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions',
       interaction,
       SafetyCheckUnusedSitePermissionsModuleInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordSafetyCheckUnusedSitePermissionsModuleEntryPointShown(visible:
+                                                                  boolean) {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      'Settings.SafetyCheck.UnusedSitePermissionsModuleEntryPointShown',
+      visible,
     ]);
   }
 

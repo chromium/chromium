@@ -112,15 +112,9 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     await createPage();
-    // An OPEN_UI action will be recorded whenever the element is created, we
-    // reset it here such that the other tests only have to deal with the other
-    // actions.
-    metricsBrowserProxy.resetResolver(
-        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
-    // The histogram recording the number of entries is called upon creating the
-    // element.
-    metricsBrowserProxy.resetResolver(
-        'recordSafetyCheckUnusedSitePermissionsListCountHistogram');
+    // Clear the metrics that were recorded as part of the initial creation of
+    // the page.
+    metricsBrowserProxy.reset();
     assertInitialUi();
   });
 
