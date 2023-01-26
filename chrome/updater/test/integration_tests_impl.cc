@@ -326,8 +326,9 @@ void PrintLog(UpdaterScope scope) {
 void CopyLog(const base::FilePath& src_dir) {
   // TODO(crbug.com/1159189): copy other test artifacts.
   base::FilePath dest_dir = GetLogDestinationDir();
+  const base::FilePath log_path = src_dir.AppendASCII("updater.log");
   if (!dest_dir.empty() && base::PathExists(dest_dir) &&
-      base::PathExists(src_dir)) {
+      base::PathExists(log_path)) {
     dest_dir = dest_dir.AppendASCII(GetTestName());
     EXPECT_TRUE(base::CreateDirectory(dest_dir));
     const base::FilePath dest_file_path = [dest_dir]() {
@@ -337,7 +338,6 @@ void CopyLog(const base::FilePath& src_dir) {
       }
       return path;
     }();
-    const base::FilePath log_path = src_dir.AppendASCII("updater.log");
     VLOG(0) << "Copying updater.log file. From: " << log_path
             << ". To: " << dest_file_path;
     EXPECT_TRUE(base::CopyFile(log_path, dest_file_path));
