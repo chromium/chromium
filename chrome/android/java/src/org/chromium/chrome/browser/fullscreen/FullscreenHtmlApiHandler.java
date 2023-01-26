@@ -808,7 +808,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         mToastFadeAnimation.cancel();
         mToastFadeAnimation.alpha(0)
                 .setDuration(TOAST_FADE_MS)
-                .withEndAction(this::hideImmediatelyNotificationToast);
+                .withEndAction(this::hideImmediatelyNotificationToast)
+                .start();
     }
 
     // ActivityStateListener
