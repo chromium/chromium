@@ -209,7 +209,8 @@
       {
         "args": [
           "--tast-retries=1",
-          "--magic-vm-cache=magic_cros_vm_cache"
+          "--magic-vm-cache=magic_cros_vm_cache",
+          "--tast-shard-method=hash"
         ],
         "merge": {
           "args": [],

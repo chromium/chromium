@@ -1257,6 +1257,9 @@
         'swarming': {
           'shards': 7,
         },
+        'args': [
+          '--tast-shard-method=hash',
+        ],
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
         'args': [
