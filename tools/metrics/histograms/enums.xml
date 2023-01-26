@@ -84377,6 +84377,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Incognito profile"/>
   <int value="3" label="Apis disabled"/>
   <int value="4" label="Site data access blocked"/>
+  <int value="5" label="Mismatched Consent"/>
 </enum>
 
 <enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus">

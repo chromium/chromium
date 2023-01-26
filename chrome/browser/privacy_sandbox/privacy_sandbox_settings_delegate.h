@@ -19,6 +19,7 @@ class PrivacySandboxSettingsDelegate
   // PrivacySandboxSettings::Delegate:
   bool IsPrivacySandboxRestricted() const override;
   bool IsIncognitoProfile() const override;
+  bool HasAppropriateTopicsConsent() const override;
 
  private:
   raw_ptr<Profile> profile_;

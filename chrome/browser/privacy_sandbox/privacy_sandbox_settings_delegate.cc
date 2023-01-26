@@ -7,7 +7,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 
@@ -48,4 +50,19 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
 
 bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
   return profile_->IsIncognitoProfile();
+}
+
+bool PrivacySandboxSettingsDelegate::HasAppropriateTopicsConsent() const {
+  // If the profile doesn't require a release 4 consent, then it always has
+  // an appropriate (i.e. not required) Topics consent.
+  if (!privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+    return true;
+  }
+
+  // Ideally we could consult the PrivacySandboxService, and centralise this
+  // logic. However, that service depends on PrivacySandboxSettings, which will
+  // own this delegate, and so including it here would create a circular
+  // dependency.
+  return profile_->GetPrefs()->GetBoolean(
+      prefs::kPrivacySandboxTopicsConsentGiven);
 }

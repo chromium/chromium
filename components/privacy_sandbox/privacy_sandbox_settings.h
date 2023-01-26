@@ -55,6 +55,11 @@ class PrivacySandboxSettings : public KeyedService {
     // Whether the current profile is Incognito or not. For Incognito, the
     // privacy sandbox APIs are restricted.
     virtual bool IsIncognitoProfile() const = 0;
+
+    // Whether there is an appropriate level of consent for the Topics API.
+    // When this returns false, access control functions for Topics will
+    // return as not allowed.
+    virtual bool HasAppropriateTopicsConsent() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API

@@ -88,3 +88,46 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   // don't restrict the feature.
   EXPECT_FALSE(delegate()->IsPrivacySandboxRestricted());
 }
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       AppropriateTopicsConsent_ConsentNotRequired) {
+  // When the V4 consent required parameter is not present, Topics always has
+  // an appropriate level of consent.
+  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
+  feature_list()->InitAndEnableFeature(
+      privacy_sandbox::kPrivacySandboxSettings4);
+
+  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
+
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.name, "true"}});
+
+  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
+
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings3,
+      {{privacy_sandbox::kPrivacySandboxSettings3ConsentRequired.name,
+        "true"}});
+
+  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       AppropriateTopicsConsent_ConsentRequired) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.name,
+        "true"}});
+
+  // Default state should be a not-active consent.
+  EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
+
+  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, true);
+  EXPECT_TRUE(delegate()->HasAppropriateTopicsConsent());
+
+  prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
+  EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
+}

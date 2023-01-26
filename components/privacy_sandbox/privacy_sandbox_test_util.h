@@ -68,8 +68,15 @@ class MockPrivacySandboxSettingsDelegate
     });
   }
 
+  void SetUpHasAppropriateTopicsConsentResponse(bool has_appropriate_consent) {
+    ON_CALL(*this, HasAppropriateTopicsConsent).WillByDefault([=]() {
+      return has_appropriate_consent;
+    });
+  }
+
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (const, override));
   MOCK_METHOD(bool, IsIncognitoProfile, (), (const, override));
+  MOCK_METHOD(bool, HasAppropriateTopicsConsent, (), (const, override));
 };
 
 // A declarative test case is a collection of key value pairs, which each define
@@ -100,6 +107,7 @@ enum class StateKey {
   kM1TopicsDisabledByPolicy = 21,
   kM1FledgeDisabledByPolicy = 22,
   kM1AdMesaurementDisabledByPolicy = 23,
+  kHasAppropriateTopicsConsent = 24,
 };
 
 // Defines the input to the functions under test.

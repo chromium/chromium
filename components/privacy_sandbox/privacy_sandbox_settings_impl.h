@@ -105,7 +105,8 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
     kIncognitoProfile,
     kApisDisabled,
     kSiteDataAccessBlocked,
-    kMaxValue = kSiteDataAccessBlocked,
+    kMismatchedConsent,
+    kMaxValue = kMismatchedConsent,
   };
 
   static bool IsAllowed(Status status);

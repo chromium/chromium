@@ -269,6 +269,12 @@ void ApplyTestState(
           prefs::kPrivacySandboxM1AdMeasurementEnabled));
       return;
     }
+    case (StateKey::kHasAppropriateTopicsConsent): {
+      SCOPED_TRACE("State Setup: Appropriate Topics Consent");
+      mock_delegate->SetUpHasAppropriateTopicsConsentResponse(
+          GetItemValue<bool>(value));
+      return;
+    }
     default:
       NOTREACHED();
   }

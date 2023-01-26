@@ -103,8 +103,21 @@ PrivacySandboxSettingsImpl::~PrivacySandboxSettingsImpl() = default;
 
 PrivacySandboxSettingsImpl::Status
 PrivacySandboxSettingsImpl::GetM1TopicAllowedStatus() const {
-  return GetM1PrivacySandboxApiEnabledStatus(
+  auto control_status = GetM1PrivacySandboxApiEnabledStatus(
       prefs::kPrivacySandboxM1TopicsEnabled);
+  auto has_appropriate_consent = delegate_->HasAppropriateTopicsConsent();
+
+  // If `control_status` indicates that Topics is allowed, then
+  // `has_appropriate_consent` should be true, as there is no pathway for a user
+  // to enable Topics controls without also granting consent. The inverse does
+  // not hold, as an extension or policy may disable Topics, without necessarily
+  // revoking user consent.
+  if (control_status == Status::kAllowed && !has_appropriate_consent) {
+    // This status will be recorded via UMA, and is indicative of an error.
+    return Status::kMismatchedConsent;
+  }
+
+  return control_status;
 }
 
 bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {

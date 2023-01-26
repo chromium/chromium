@@ -49,6 +49,8 @@ constexpr auto kSiteDataUserDefault = StateKey::kSiteDataUserDefault;
 constexpr auto kSiteDataUserExceptions = StateKey::kSiteDataUserExceptions;
 constexpr auto kIsIncognito = StateKey::kIsIncognito;
 constexpr auto kIsRestrictedAccount = StateKey::kIsRestrictedAccount;
+constexpr auto kHasAppropriateTopicsConsent =
+    StateKey::kHasAppropriateTopicsConsent;
 
 // using enum privacy_sandbox_test_util::InputKey;
 using privacy_sandbox_test_util::InputKey;
@@ -152,6 +154,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
     mock_delegate()->SetUpIsPrivacySandboxRestrictedResponse(
         /*restricted=*/false);
     mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/false);
+    mock_delegate()->SetUpHasAppropriateTopicsConsentResponse(
+        /*has_appropriate_consent=*/true);
   }
 
   privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate*
@@ -1475,6 +1479,66 @@ TEST_F(PrivacySandboxSettingsM1Test,
                         {kAdMeasurementReportingOrigin,
                          url::Origin::Create(GURL("https://embedded.com"))}},
               TestOutput{{kIsPrivateAggregationAllowed, false}});
+}
+
+TEST_F(PrivacySandboxSettingsM1Test, NoAppropriateTopicsConsent) {
+  // Confirm that when appropriate Topics consent is missing, Topics is disabled
+  // while other APIs are unaffected.
+  RunTestCase(
+      TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
+                                   kM1FledgeEnabledUserPrefValue,
+                                   kM1AdMeasurementEnabledUserPrefValue},
+                 true},
+                {kHasAppropriateTopicsConsent, false}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+          {MultipleInputKeys{kFledgeAuctionPartyOrigin,
+                             kAdMeasurementReportingOrigin, kAccessingOrigin},
+           url::Origin::Create(GURL("https://embedded.com"))},
+          {kAdMeasurementSourceOrigin,
+           url::Origin::Create(GURL("https://source-origin.com"))},
+          {kAdMeasurementDestinationOrigin,
+           url::Origin::Create(GURL("https://dest-origin.com"))}},
+      TestOutput{
+          {MultipleOutputKeys{
+               kIsFledgeAllowed, kIsAttributionReportingAllowed,
+               kMaySendAttributionReport, kIsSharedStorageAllowed,
+               kIsSharedStorageSelectURLAllowed, kIsPrivateAggregationAllowed},
+           true},
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+           false},
+          {MultipleOutputKeys{
+               kIsFledgeAllowedMetric, kIsAttributionReportingAllowedMetric,
+               kMaySendAttributionReportMetric, kIsSharedStorageAllowedMetric,
+               kIsSharedStorageSelectURLAllowedMetric,
+               kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric,
+               kIsTopicsAllowedForContextMetric,
+           },
+           static_cast<int>(Status::kMismatchedConsent)}});
+}
+
+TEST_F(PrivacySandboxSettingsM1Test, TopicsConsentStatus) {
+  // Confirm that if Topics is already disabled, and there is no appropriate
+  // consent, the recorded status reflects that Topics is already disabled.
+  RunTestCase(
+      TestState{{kM1TopicsEnabledUserPrefValue, false},
+                {kHasAppropriateTopicsConsent, false}},
+      TestInput{
+          {kTopFrameOrigin, url::Origin::Create(GURL("https://top-frame.com"))},
+          {kTopicsURL, GURL("https://embedded.com")},
+      },
+      TestOutput{
+          {MultipleOutputKeys{kIsTopicsAllowed, kIsTopicsAllowedForContext},
+           false},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedMetric,
+               kIsTopicsAllowedForContextMetric,
+           },
+           static_cast<int>(Status::kApisDisabled)}});
 }
 
 }  // namespace privacy_sandbox
