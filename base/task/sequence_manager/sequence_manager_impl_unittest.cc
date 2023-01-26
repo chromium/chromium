@@ -2415,6 +2415,7 @@ TEST_P(SequenceManagerTest, TimeDomainMigrationWithIncomingImmediateTasks) {
   RunLoop().RunUntilIdle();
   EXPECT_THAT(run_order, ElementsAre(1u));
 
+  sequence_manager()->ResetTimeDomain();
   queue->ShutdownTaskQueue();
 }
 
@@ -2438,6 +2439,7 @@ TEST_P(SequenceManagerTest, TimeDomainDoesNotCauseWakeUp) {
   LazyNow lazy_now2(domain.get());
   EXPECT_EQ(WakeUp{}, sequence_manager()->GetPendingWakeUp(&lazy_now2));
 
+  sequence_manager()->ResetTimeDomain();
   queue->ShutdownTaskQueue();
 }
 
@@ -2470,6 +2472,7 @@ TEST_P(SequenceManagerTest,
   FastForwardBy(Milliseconds(400));
   EXPECT_THAT(run_order, ElementsAre(4u, 3u, 2u, 1u));
 
+  sequence_manager()->ResetTimeDomain();
   queue->ShutdownTaskQueue();
 }
 
