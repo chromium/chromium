@@ -5,7 +5,6 @@
 #include "ash/system/night_light/night_light_feature_pod_controller.h"
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -18,7 +17,6 @@
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/feature_pod_button.h"
-#include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/i18n/time_formatting.h"
@@ -41,6 +39,7 @@ void LogUserNightLightEvent(const bool enabled) {
 NightLightFeaturePodController::NightLightFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
+  DCHECK(tray_controller_);
   Shell::Get()->system_tray_model()->clock()->AddObserver(this);
 }
 
@@ -66,28 +65,6 @@ FeaturePodButton* NightLightFeaturePodController::CreateButton() {
   return button_;
 }
 
-std::unique_ptr<FeatureTile> NightLightFeaturePodController::CreateTile(
-    bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
-  DCHECK(!tile_);
-  auto tile = std::make_unique<FeatureTile>(
-      base::BindRepeating(&NightLightFeaturePodController::OnIconPressed,
-                          weak_factory_.GetWeakPtr()),
-      /*is_togglable=*/true);
-  tile_ = tile.get();
-  const bool visible =
-      Shell::Get()->session_controller()->ShouldEnableSettings();
-  tile_->SetVisible(visible);
-  if (visible) {
-    TrackVisibilityUMA();
-  }
-
-  tile_->SetLabel(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
-  UpdateTile();
-  return tile;
-}
-
 QsFeatureCatalogName NightLightFeaturePodController::GetCatalogName() {
   return QsFeatureCatalogName::kNightLight;
 }
@@ -99,7 +76,7 @@ void NightLightFeaturePodController::OnIconPressed() {
 
   Shell::Get()->night_light_controller()->Toggle();
   LogUserNightLightEvent(Shell::Get()->night_light_controller()->GetEnabled());
-  Update();
+  UpdateButton();
 
   if (Shell::Get()->night_light_controller()->GetEnabled()) {
     base::RecordAction(
@@ -111,9 +88,6 @@ void NightLightFeaturePodController::OnIconPressed() {
 }
 
 void NightLightFeaturePodController::OnLabelPressed() {
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     TrackDiveInUMA();
     base::RecordAction(
@@ -124,20 +98,20 @@ void NightLightFeaturePodController::OnLabelPressed() {
 }
 
 void NightLightFeaturePodController::OnDateFormatChanged() {
-  Update();
+  UpdateButton();
 }
 
 void NightLightFeaturePodController::OnSystemClockTimeUpdated() {
-  Update();
+  UpdateButton();
 }
 
 void NightLightFeaturePodController::OnSystemClockCanSetTimeChanged(
     bool can_set_time) {
-  Update();
+  UpdateButton();
 }
 
 void NightLightFeaturePodController::Refresh() {
-  Update();
+  UpdateButton();
 }
 
 const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
@@ -174,14 +148,6 @@ const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
   }
 }
 
-void NightLightFeaturePodController::Update() {
-  if (features::IsQsRevampEnabled()) {
-    UpdateTile();
-    return;
-  }
-  UpdateButton();
-}
-
 void NightLightFeaturePodController::UpdateButton() {
   auto* controller = Shell::Get()->night_light_controller();
   const bool is_enabled = controller->GetEnabled();
@@ -193,21 +159,6 @@ void NightLightFeaturePodController::UpdateButton() {
                  : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
   button_->SetIconTooltip(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP, tooltip_state));
-}
-
-void NightLightFeaturePodController::UpdateTile() {
-  auto* controller = Shell::Get()->night_light_controller();
-  const bool is_enabled = controller->GetEnabled();
-  tile_->SetToggled(is_enabled);
-  tile_->SetSubLabel(GetPodSubLabel());
-
-  std::u16string tooltip_state = l10n_util::GetStringUTF16(
-      is_enabled ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ENABLED_STATE_TOOLTIP
-                 : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP);
-  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP, tooltip_state));
-  tile_->SetVectorIcon(is_enabled ? kUnifiedMenuNightLightIcon
-                                  : kUnifiedMenuNightLightOffIcon);
 }
 
 }  // namespace ash

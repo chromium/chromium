@@ -22,7 +22,6 @@
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_controller.h"
 #include "ash/system/bluetooth/bluetooth_feature_pod_controller.h"
-#include "ash/system/brightness/quick_settings_display_detailed_view_controller.h"
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 #include "ash/system/camera/autozoom_feature_pod_controller.h"
 #include "ash/system/cast/cast_feature_pod_controller.h"
@@ -180,10 +179,7 @@ UnifiedSystemTrayController::CreateUnifiedQuickSettingsView() {
   unified_view->AddSliderView(volume_slider_controller_->CreateView());
 
   brightness_slider_controller_ =
-      std::make_unique<UnifiedBrightnessSliderController>(
-          model_, views::Button::PressedCallback(base::BindRepeating(
-                      &UnifiedSystemTrayController::ShowDisplayDetailedView,
-                      base::Unretained(this))));
+      std::make_unique<UnifiedBrightnessSliderController>(model_);
   unified_view->AddSliderView(brightness_slider_controller_->CreateView());
 
   return unified_view;
@@ -209,10 +205,7 @@ UnifiedSystemTrayController::CreateQuickSettingsView(int max_height) {
   qs_view->AddSliderView(unified_volume_view_);
 
   brightness_slider_controller_ =
-      std::make_unique<UnifiedBrightnessSliderController>(
-          model_, views::Button::PressedCallback(base::BindRepeating(
-                      &UnifiedSystemTrayController::ShowDisplayDetailedView,
-                      base::Unretained(this))));
+      std::make_unique<UnifiedBrightnessSliderController>(model_);
   unified_brightness_view_ = brightness_slider_controller_->CreateView();
   qs_view->AddSliderView(unified_brightness_view_);
 
@@ -491,12 +484,6 @@ void UnifiedSystemTrayController::ShowAudioDetailedView() {
   showing_audio_detailed_view_ = true;
 }
 
-void UnifiedSystemTrayController::ShowDisplayDetailedView() {
-  ShowDetailedView(
-      std::make_unique<QuickSettingsDisplayDetailedViewController>(this));
-  showing_display_detailed_view_ = true;
-}
-
 void UnifiedSystemTrayController::ShowNotifierSettingsView() {
   if (features::IsOsSettingsAppBadgingToggleEnabled()) {
     return;
@@ -519,7 +506,6 @@ void UnifiedSystemTrayController::ShowCalendarView(
 
   showing_calendar_view_ = true;
   showing_audio_detailed_view_ = false;
-  showing_display_detailed_view_ = false;
 
   for (auto& observer : observers_) {
     observer.OnOpeningCalendarView();
@@ -540,7 +526,6 @@ void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   }
 
   showing_audio_detailed_view_ = false;
-  showing_display_detailed_view_ = false;
 
   // Transfer `detailed_view_controller_` to a scoped object, which will be
   // destroyed once it's out of this method's scope (after resetting
@@ -588,7 +573,6 @@ void UnifiedSystemTrayController::EnsureCollapsed() {
 void UnifiedSystemTrayController::EnsureExpanded() {
   if (detailed_view_controller_) {
     showing_audio_detailed_view_ = false;
-    showing_display_detailed_view_ = false;
     if (features::IsQsRevampEnabled()) {
       quick_settings_view_->ResetDetailedView();
     } else {
@@ -777,7 +761,6 @@ void UnifiedSystemTrayController::ShowDetailedView(
   }
 
   showing_audio_detailed_view_ = false;
-  showing_display_detailed_view_ = false;
   if (features::IsQsRevampEnabled()) {
     bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/true);
     quick_settings_view_->SetDetailedView(controller->CreateView());

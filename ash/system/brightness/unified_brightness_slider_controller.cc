@@ -4,8 +4,6 @@
 
 #include "ash/system/brightness/unified_brightness_slider_controller.h"
 
-#include <memory>
-
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
 #include "ash/system/brightness/unified_brightness_view.h"
@@ -15,32 +13,16 @@
 
 namespace ash {
 
-namespace {
-
-// We don't let the screen brightness go lower than this when it's being
-// adjusted via the slider.  Otherwise, if the user doesn't know about the
-// brightness keys, they may turn the backlight off and not know how to turn
-// it back on.
-static constexpr double kMinBrightnessPercent = 5.0;
-
-}  // namespace
-
 UnifiedBrightnessSliderController::UnifiedBrightnessSliderController(
-    scoped_refptr<UnifiedSystemTrayModel> model,
-    views::Button::PressedCallback callback)
-    : model_(model), callback_(callback) {}
+    scoped_refptr<UnifiedSystemTrayModel> model)
+    : model_(model) {}
 
 UnifiedBrightnessSliderController::~UnifiedBrightnessSliderController() =
     default;
 
-std::unique_ptr<UnifiedBrightnessView>
-UnifiedBrightnessSliderController::CreateBrightnessSlider() {
-  return std::make_unique<UnifiedBrightnessView>(this, model_);
-}
-
 views::View* UnifiedBrightnessSliderController::CreateView() {
   DCHECK(!slider_);
-  slider_ = new UnifiedBrightnessView(this, model_, callback_);
+  slider_ = new UnifiedBrightnessView(this, model_);
   return slider_;
 }
 
@@ -62,12 +44,6 @@ void UnifiedBrightnessSliderController::SliderValueChanged(
     return;
 
   double percent = value * 100.;
-
-  // Saves the actual display brightness value in `UnifiedSystemTrayModel` so
-  // that the brightness slider value is linear to brightness value even if the
-  // value is below `kMinBrightnessPercent`.
-  model_->set_actual_display_brightness_value(value);
-
   // If previous percentage and current percentage are both below the minimum,
   // we don't update the actual brightness.
   if (percent < kMinBrightnessPercent &&

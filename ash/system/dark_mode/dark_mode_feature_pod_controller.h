@@ -28,7 +28,6 @@ class ASH_EXPORT DarkModeFeaturePodController : public FeaturePodControllerBase,
 
   // FeaturePodControllerBase:
   FeaturePodButton* CreateButton() override;
-  std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
   void OnLabelPressed() override;
@@ -39,14 +38,9 @@ class ASH_EXPORT DarkModeFeaturePodController : public FeaturePodControllerBase,
  private:
   void UpdateButton(bool dark_mode_enabled);
 
-  // For QsRevamp:
-  void UpdateTile(bool dark_mode_enabled);
+  UnifiedSystemTrayController* const tray_controller_;
 
-  // Owned by the views hierarchy.
   FeaturePodButton* button_ = nullptr;
-  FeatureTile* tile_ = nullptr;
-
-  base::WeakPtrFactory<DarkModeFeaturePodController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
