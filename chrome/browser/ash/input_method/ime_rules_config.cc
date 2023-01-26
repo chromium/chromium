@@ -92,30 +92,28 @@ bool ImeRulesConfig::IsAutoCorrectDisabled(
     const TextFieldContextualInfo& info) {
   // Check the default domain denylist rules.
   for (const auto& domain : default_auto_correct_domain_denylist_) {
-    if (IsSubDomain(info, domain)) {
+    if (IsSubDomain(info.tab_url, domain)) {
       return true;
     }
   }
   // Check the rule domain denylist rules.
   for (const auto& domain : rule_auto_correct_domain_denylist_) {
-    if (IsSubDomain(info, domain)) {
+    if (IsSubDomain(info.tab_url, domain)) {
       return true;
     }
   }
   return false;
 }
 
-bool ImeRulesConfig::IsSubDomain(const TextFieldContextualInfo& info,
-                                 const std::string& domain) {
+bool ImeRulesConfig::IsSubDomain(const GURL& url, const std::string& domain) {
   const size_t registryLength =
       net::registry_controlled_domains::GetRegistryLength(
-          info.tab_url,
-          net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+          url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
           net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
   if (registryLength == 0) {
     return false;
   }
-  const base::StringPiece urlContent = info.tab_url.host_piece();
+  const base::StringPiece urlContent = url.host_piece();
   const base::StringPiece urlDomain =
       urlContent.substr(0, urlContent.length() - registryLength - 1);
 

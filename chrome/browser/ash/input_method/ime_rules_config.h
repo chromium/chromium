@@ -32,10 +32,9 @@ class ImeRulesConfig {
   // Runs the rule check against contextual info.
   bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 
-  // Checks if domain is a sub-domain of info
+  // Checks if domain is a sub-domain of url
  private:
-  bool IsSubDomain(const TextFieldContextualInfo& info,
-                   const std::string& domain);
+  bool IsSubDomain(const GURL& url, const std::string& domain);
 
  private:
   ImeRulesConfig();
