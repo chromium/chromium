@@ -231,10 +231,17 @@
     background: white;
     border: 2px solid var(--color-new-tab-page-module-item-background);
     border-radius: 50%;
-    height: 48px;
-    margin-top: 8px;
+    display: inline-block;
+    height: 44px;
+    margin-top: 10px;
     position: relative;
-    width: 48px;
+    width: 44px;
+  }
+
+  .thumbnail-fallback-img {
+    height: 28px;
+    margin-top: inherit;
+    width: 28px;
   }
 
   .cart-container cr-icon-button {
@@ -425,8 +432,10 @@
               </template>
               <template id="thumbnailFallback" is="dom-if"
                   if="[[!item.productImageUrls.length]]">
-                <img class="thumbnail-fallback"
-                    src="modules/cart/icons/cart_fallback.svg">
+                <div class="thumbnail-fallback">
+                  <img class="thumbnail-fallback-img"
+                      src="modules/cart/icons/cart_fallback.svg">
+                </div>
               </template>
             </div>
           </a>

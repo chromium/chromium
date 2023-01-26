@@ -148,8 +148,8 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
       assertEquals(null, cartItems[2]!.querySelector('.thumbnail-list'));
       assertEquals(
           'chrome://new-tab-page/modules/cart/icons/cart_fallback.svg',
-          cartItems[2]!.querySelector<HTMLImageElement>(
-                           '.thumbnail-fallback')!.src);
+          cartItems[2]!
+              .querySelector<HTMLImageElement>('.thumbnail-fallback-img')!.src);
 
       assertEquals('https://walmart.com/', cartItems[3]!.href);
       assertEquals(
