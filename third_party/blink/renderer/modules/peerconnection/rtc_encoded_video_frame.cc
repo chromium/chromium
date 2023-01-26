@@ -72,7 +72,7 @@ String RTCVideoCodecTypeFromVideoCodecType(
 }
 
 webrtc::VideoCodecType VideoCodecTypeFromRTCVideoCodecType(
-    String video_codec_type) {
+    const String& video_codec_type) {
   if (video_codec_type == "vp8") {
     return webrtc::VideoCodecType::kVideoCodecVP8;
   } else if (video_codec_type == "vp9") {
@@ -82,6 +82,35 @@ webrtc::VideoCodecType VideoCodecTypeFromRTCVideoCodecType(
   } else {
     NOTREACHED();
     return webrtc::VideoCodecType::kVideoCodecGeneric;
+  }
+}
+
+String RTCEncodedVideoFrameTypeFromVideoFrameType(
+    webrtc::VideoFrameType video_frame_type) {
+  switch (video_frame_type) {
+    case webrtc::VideoFrameType::kEmptyFrame:
+      return "empty";
+    case webrtc::VideoFrameType::kVideoFrameKey:
+      return "key";
+    case webrtc::VideoFrameType::kVideoFrameDelta:
+      return "delta";
+    default:
+      NOTREACHED();
+      return "";
+  }
+}
+
+webrtc::VideoFrameType VideoFrameTypeFromRTCEncodedVideoFrameType(
+    const String& video_frame_type) {
+  if (video_frame_type == "empty") {
+    return webrtc::VideoFrameType::kEmptyFrame;
+  } else if (video_frame_type == "key") {
+    return webrtc::VideoFrameType::kVideoFrameKey;
+  } else if (video_frame_type == "delta") {
+    return webrtc::VideoFrameType::kVideoFrameDelta;
+  } else {
+    NOTREACHED();
+    return webrtc::VideoFrameType::kEmptyFrame;
   }
 }
 
@@ -176,6 +205,9 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata() const {
         LOG(ERROR) << "Unsupported RTCCodecSpecifics.";
         break;
     }
+
+    metadata->setFrameType(RTCEncodedVideoFrameTypeFromVideoFrameType(
+        webrtc_metadata->GetFrameType()));
   }
   return metadata;
 }
@@ -213,6 +245,9 @@ void RTCEncodedVideoFrame::setMetadata(RTCEncodedVideoFrameMetadata* metadata,
   webrtc_metadata.SetSimulcastIdx(metadata->simulcastIdx());
   webrtc::VideoCodecType codec =
       VideoCodecTypeFromRTCVideoCodecType(metadata->codec());
+  webrtc_metadata.SetFrameType(
+      VideoFrameTypeFromRTCEncodedVideoFrameType(metadata->frameType()));
+
   webrtc_metadata.SetCodec(codec);
   switch (codec) {
     case webrtc::VideoCodecType::kVideoCodecVP8: {

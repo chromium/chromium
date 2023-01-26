@@ -37,6 +37,8 @@ dictionary RTCEncodedVideoFrameMetadata {
     RTCVideoCodecType codec;
     [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
     RTCCodecSpecifics codecSpecifics;
+    [RuntimeEnabled=RTCEncodedVideoFrameAdditionalMetadata]
+    RTCEncodedVideoFrameType frameType;
 
     // RTP related metadata
     unsigned long synchronizationSource;
