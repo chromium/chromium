@@ -85,13 +85,39 @@ class AppIconDecoder {
     std::set<ui::ResourceScaleFactor>& incomplete_scale_factors_;
   };
 
+  class FakeDecodeRequestForTesting {
+   public:
+    FakeDecodeRequestForTesting(
+        ui::ResourceScaleFactor scale_factor,
+        AppIconDecoder& host,
+        gfx::ImageSkia& image_skia,
+        std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
+
+    FakeDecodeRequestForTesting(const FakeDecodeRequestForTesting&) = delete;
+    FakeDecodeRequestForTesting& operator=(const FakeDecodeRequestForTesting&) =
+        delete;
+
+    ~FakeDecodeRequestForTesting();
+
+    void Start(std::vector<uint8_t> icon_data);
+
+   private:
+    void DecodeRequestReply(SkBitmap bitmap);
+
+    ui::ResourceScaleFactor scale_factor_;
+    AppIconDecoder& host_;
+    gfx::ImageSkia& image_skia_;
+    std::set<ui::ResourceScaleFactor>& incomplete_scale_factors_;
+    base::WeakPtrFactory<FakeDecodeRequestForTesting> weak_ptr_factory_{this};
+  };
+
   bool SetScaleFactors(
       const std::map<ui::ResourceScaleFactor, IconValuePtr>& icon_datas);
 
   void OnIconRead(std::map<ui::ResourceScaleFactor, IconValuePtr> icon_datas);
 
   void DecodeImage(ui::ResourceScaleFactor scale_factor,
-                   const std::vector<uint8_t>& icon_data,
+                   std::vector<uint8_t> icon_data,
                    gfx::ImageSkia& image_skia,
                    std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
 
@@ -104,12 +130,6 @@ class AppIconDecoder {
   void DiscardDecodeRequest();
 
   void CompleteWithImageSkia(const gfx::ImageSkia& image_skia);
-
-  void DecodeRequestForTesting(
-      ui::ResourceScaleFactor scale_factor,
-      const std::vector<uint8_t>& icon_data,
-      gfx::ImageSkia& image_skia,
-      std::set<ui::ResourceScaleFactor>& incomplete_scale_factors);
 
   const base::FilePath base_path_;
   const std::string app_id_;
@@ -129,6 +149,9 @@ class AppIconDecoder {
 
   // Contains pending image decode requests.
   std::vector<std::unique_ptr<DecodeRequest>> decode_requests_;
+
+  std::vector<std::unique_ptr<FakeDecodeRequestForTesting>>
+      fake_decode_requests_for_testing_;
 
   base::WeakPtrFactory<AppIconDecoder> weak_ptr_factory_{this};
 };

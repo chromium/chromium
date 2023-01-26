@@ -1196,20 +1196,19 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     }
 
     // Update the icon key to fetch the new icon and avoid icon catch,
-    // TODO(crbug.com/1253250): Remove apps::mojom related code.
     apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::AppPtr> apps;
     for (const auto& app_id : app_ids) {
       auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
       app->icon_key =
           std::move(*icon_key_factory.CreateIconKey(apps::IconEffects::kNone));
+      app->icon_key->raw_icon_updated = true;
       apps.push_back(std::move(app));
     }
 
-    apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->AppRegistryCache()
-        .OnApps(std::move(apps), apps::AppType::kArc,
-                false /* should_notify_initialized */);
+    apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+        std::move(apps), apps::AppType::kArc,
+        false /* should_notify_initialized */);
   }
 
   // Set FakeArcAppIconFactory to use FakeArcAppIcon for Arc app icon loading to
