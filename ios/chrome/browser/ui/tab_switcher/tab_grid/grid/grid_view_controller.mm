@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller+private.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_grid_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions/suggested_actions_view_controller.h"
@@ -948,6 +949,22 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                                          toIndex:destinationIndex
                               placeholderContext:context];
     }
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+    dropSessionDidEnter:(id<UIDropSession>)session {
+  if (IsPinnedTabsEnabled()) {
+    // Notify the delegate that a drag cames from another app.
+    [self.delegate gridViewControllerDragSessionWillBegin:self];
+  }
+}
+
+- (void)collectionView:(UICollectionView*)collectionView
+     dropSessionDidEnd:(id<UIDropSession>)session {
+  if (IsPinnedTabsEnabled()) {
+    // Notify the delegate that a drag ends from another app.
+    [self.delegate gridViewControllerDropAnimationDidEnd:self];
   }
 }
 
