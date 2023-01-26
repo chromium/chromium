@@ -1754,8 +1754,7 @@ void WizardController::OnEnrollmentDone() {
   // Restart to make the login page pick up the policy changes resulting from
   // enrollment recovery.  (Not pretty, but this codepath is rarely exercised.)
   if (prescribed_enrollment_config_.mode ==
-          policy::EnrollmentConfig::MODE_RECOVERY ||
-      IsRollbackFlow(*wizard_context_)) {
+      policy::EnrollmentConfig::MODE_RECOVERY) {
     LOG(WARNING) << "Restart Chrome to pick up the policy changes";
     EnrollmentScreen* screen = EnrollmentScreen::Get(screen_manager());
     screen->OnBrowserRestart();
