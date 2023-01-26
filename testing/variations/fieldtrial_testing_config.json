@@ -4144,6 +4144,21 @@
             ]
         }
     ],
+    "DestroyProfileOnBrowserClose": [
+        {
+            "platforms": [
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "DestroyProfileOnBrowserClose",
+                    "enable_features": [
+                        "DestroyProfileOnBrowserClose"
+                    ]
+                }
+            ]
+        }
+    ],
     "DestroySystemProfiles": [
         {
             "platforms": [
