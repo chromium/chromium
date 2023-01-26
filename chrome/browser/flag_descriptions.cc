@@ -711,6 +711,11 @@ const char kContextMenuSearchWithGoogleLensDescription[] =
     "Replaces default image search with an intent to Google Lens when "
     "supported.";
 
+const char kContextMenuGoogleLensSearchOptimizationsName[] =
+    "Google Lens powered image search string variations in the context menu.";
+const char kContextMenuGoogleLensSearchOptimizationsDescription[] =
+    "Replaces Google Lens string variations when Google Lens is supported.";
+
 const char kClientStorageAccessContextAuditingName[] =
     "Access contexts for client-side storage";
 const char kClientStorageAccessContextAuditingDescription[] =

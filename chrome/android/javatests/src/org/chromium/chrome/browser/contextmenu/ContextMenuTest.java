@@ -794,8 +794,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.Add({"enable-features="
-                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS
+                    + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
             "force-fieldtrial-params=FakeStudyName.Enabled:useLensContextMenuAlternateText1/true"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
@@ -822,8 +823,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.Add({"enable-features="
-                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+    @CommandLineFlags.
+    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS
+                    + "<FakeStudyName",
             "force-fieldtrials=FakeStudyName/Enabled",
             "force-fieldtrial-params=FakeStudyName.Enabled:useLensContextMenuAlternateText2/true"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)

@@ -2302,6 +2302,22 @@ const FeatureEntry::FeatureVariation kLensContextMenuSearchVariations[] = {
      std::size(kLensContextMenuSearchOnTablet), nullptr},
 };
 
+const FeatureEntry::FeatureParam kContextMenuSearchImageWithGoogle[] = {
+    {"useLensContextMenuAlternateText1", "true"}};
+
+const FeatureEntry::FeatureParam kContextMenuSearchInsideImageWithGoogle[] = {
+    {"useLensContextMenuAlternateText2", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kContextMenuGoogleLensSearchOptimizationVariations[] = {
+        {"Context Menu: Search image With Google",
+         kContextMenuSearchImageWithGoogle,
+         std::size(kContextMenuSearchImageWithGoogle), nullptr},
+        {"Context Menu: Search inside image With Google",
+         kContextMenuSearchInsideImageWithGoogle,
+         std::size(kContextMenuSearchInsideImageWithGoogle), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::Choice kNotificationSchedulerChoices[] = {
@@ -6906,6 +6922,15 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kContextMenuSearchWithGoogleLens,
          kLensContextMenuSearchVariations,
          "ContextMenuSearchWithGoogleLens")},
+
+    {"context-menu-google-lens-search-optimizations",
+     flag_descriptions::kContextMenuGoogleLensSearchOptimizationsName,
+     flag_descriptions::kContextMenuGoogleLensSearchOptimizationsDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kContextMenuGoogleLensSearchOptimizations,
+         kContextMenuGoogleLensSearchOptimizationVariations,
+         "ContextMenuGoogleLensSearchOptimizations")},
 
     {"lens-camera-assisted-search",
      flag_descriptions::kLensCameraAssistedSearchName,

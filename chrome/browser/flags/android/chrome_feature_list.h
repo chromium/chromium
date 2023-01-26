@@ -70,6 +70,7 @@ BASE_DECLARE_FEATURE(kChromeSurveyNextAndroid);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
 BASE_DECLARE_FEATURE(kContextMenuEnableLensShoppingAllowlist);
 BASE_DECLARE_FEATURE(kContextMenuGoogleLensChip);
+BASE_DECLARE_FEATURE(kContextMenuGoogleLensSearchOptimizations);
 BASE_DECLARE_FEATURE(kContextMenuPopupForAllScreenSizes);
 BASE_DECLARE_FEATURE(kContextMenuSearchWithGoogleLens);
 BASE_DECLARE_FEATURE(kContextMenuShopWithGoogleLens);

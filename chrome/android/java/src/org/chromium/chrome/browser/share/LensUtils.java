@@ -203,13 +203,13 @@ public class LensUtils {
      */
     public static int getLensContextMenuText() {
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                    ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS,
                     USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_1_PARAM_NAME, false)) {
             return R.string.contextmenu_search_image_with_google_lens_alt_text_1;
         }
 
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                    ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS,
                     USE_LENS_CONTEXT_MENU_ALTERNATE_TEXT_2_PARAM_NAME, false)) {
             return R.string.contextmenu_search_image_with_google_lens_alt_text_2;
         }
