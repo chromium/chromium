@@ -314,6 +314,8 @@ void MessagePort::Trace(Visitor* visitor) const {
 bool MessagePort::Accept(mojo::Message* mojo_message) {
   TRACE_EVENT0("blink", "MessagePort::Accept");
 
+  recordreplay::Assert("[RUN-1126] MessagePort::Accept");
+
   BlinkTransferableMessage message;
   if (!mojom::blink::TransferableMessage::DeserializeFromMessage(
           std::move(*mojo_message), &message)) {
@@ -376,6 +378,8 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
 }
 
 Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
+  recordreplay::Assert("[RUN-1126] MessagePort::CreateMessageEvent");
+
   ExecutionContext* context = GetExecutionContext();
   // Dispatch a messageerror event when the target is a remote origin that is
   // not allowed to access the message's data.
@@ -414,6 +418,8 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
+
+  recordreplay::Assert("[RUN-1126] MessagePort::CreateMessageEvent #5");
 
   return MessageEvent::Create(ports, std::move(message.message),
                               user_activation);
