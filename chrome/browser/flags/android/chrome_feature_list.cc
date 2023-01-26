@@ -194,6 +194,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizable90MaximumHeight,
     &kCCTResizableForThirdParties,
     &kCCTResizableSideSheet,
+    &kCCTResizableSideSheetForThirdParties,
     &kCCTRetainingStateInMemory,
     &kCCTResourcePrefetch,
     &kCCTToolbarCustomizations,
@@ -569,6 +570,10 @@ BASE_FEATURE(kCCTResizableForThirdParties,
 
 BASE_FEATURE(kCCTResizableSideSheet,
              "CCTResizableSideSheet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTResizableSideSheetForThirdParties,
+             "CCTResizableSideSheetForThirdParties",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCCTResourcePrefetch,

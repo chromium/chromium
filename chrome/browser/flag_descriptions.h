@@ -2014,6 +2014,8 @@ extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 extern const char kCCTResizableSideSheetName[];
 extern const char kCCTResizableSideSheetDescription[];
+extern const char kCCTResizableSideSheetForThirdPartiesName[];
+extern const char kCCTResizableSideSheetForThirdPartiesDescription[];
 
 extern const char kCCTRetainingStateInMemoryName[];
 extern const char kCCTRetainingStateInMemoryDescription[];

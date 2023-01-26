@@ -6159,6 +6159,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-resizable-side-sheet", flag_descriptions::kCCTResizableSideSheetName,
      flag_descriptions::kCCTResizableSideSheetDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTResizableSideSheet)},
+    {"cct-resizable-side-sheet-for-third-parties",
+     flag_descriptions::kCCTResizableSideSheetForThirdPartiesName,
+     flag_descriptions::kCCTResizableSideSheetForThirdPartiesDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTResizableSideSheetForThirdParties)},
     {"cct-retaining-state-in-memory",
      flag_descriptions::kCCTRetainingStateInMemoryName,
      flag_descriptions::kCCTRetainingStateInMemoryDescription, kOsAndroid,

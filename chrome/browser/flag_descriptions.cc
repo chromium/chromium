@@ -3531,6 +3531,10 @@ const char kCCTResizableForThirdPartiesDescription[] =
 const char kCCTResizableSideSheetName[] = "Side sheet Custom Tabs";
 const char kCCTResizableSideSheetDescription[] =
     "Enable side sheet Custom Tabs";
+const char kCCTResizableSideSheetForThirdPartiesName[] =
+    "Side sheet Custom Tabs (third party)";
+const char kCCTResizableSideSheetForThirdPartiesDescription[] =
+    "Enable side sheet Custom Tabs for third party apps.";
 
 const char kCCTRetainingStateInMemoryName[] =
     "Enable restoring of previous Custom Tab session";

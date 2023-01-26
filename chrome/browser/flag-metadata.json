@@ -919,6 +919,11 @@
     "expiry_milestone": 121
   },
   {
+    "name": "cct-resizable-side-sheet-for-third-parties",
+    "owners": ["katzz", "kgrosu", "jinsukkim"],
+    "expiry_milestone": 123
+  },
+  {
     "name": "cct-retaining-state-in-memory",
     "owners": ["katzz", "wenyufu"],
     "expiry_milestone": 116

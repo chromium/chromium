@@ -60226,6 +60226,7 @@ from previous Chrome versions.
   <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
+  <int value="-579656054" label="CCTResizableSideSheetForThirdParties:enabled"/>
   <int value="-579192400" label="disable-input-view"/>
   <int value="-577982497" label="CupsPrintersUiOverhaul:enabled"/>
   <int value="-577503348" label="GridTabSwitcherForTablets:disabled"/>
@@ -61162,6 +61163,7 @@ from previous Chrome versions.
   <int value="-28079219" label="UseFakeAudioCaptureTimestamps:enabled"/>
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
+  <int value="-25303818" label="CCTResizableSideSheetForThirdParties:disabled"/>
   <int value="-25025176" label="PerformantSplitViewResizing:enabled"/>
   <int value="-24570936" label="DestroyProfileOnBrowserClose:disabled"/>
   <int value="-24217468" label="QuickAnswersTextAnnotator:enabled"/>

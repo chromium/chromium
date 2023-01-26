@@ -78,6 +78,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCctResizable90MaximumHeight,
                 ChromeFeatureList.sCctResizableForThirdParties,
                 ChromeFeatureList.sCctResizableSideSheet,
+                ChromeFeatureList.sCctResizableSideSheetForThirdParties,
                 ChromeFeatureList.sCctRetainableStateInMemory,
                 ChromeFeatureList.sCctToolbarCustomizations,
                 ChromeFeatureList.sCloseTabSuggestions,
@@ -124,6 +125,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sUseChimeAndroidSdk,
                 ChromeFeatureList.sUseLibunwindstackNativeUnwinderAndroid,
                 ChromeFeatureList.sWebApkTrampolineOnInitialIntent);
+
         CachedFeatureFlags.cacheNativeFlags(featuresToCache);
         CachedFeatureFlags.cacheAdditionalNativeFlags();
 
