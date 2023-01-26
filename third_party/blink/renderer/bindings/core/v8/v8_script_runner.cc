@@ -537,7 +537,10 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       }
       if (produce_cache_options ==
               V8CodeCache::ProduceCacheOptions::kProduceCodeCache &&
-          base::FeatureList::IsEnabled(features::kCacheCodeOnIdle)) {
+          base::FeatureList::IsEnabled(features::kCacheCodeOnIdle) &&
+          (features::kCacheCodeOnIdleDelayServiceWorkerOnlyParam.Get()
+               ? execution_context->IsServiceWorkerGlobalScope()
+               : true)) {
         auto delay =
             base::Milliseconds(features::kCacheCodeOnIdleDelayParam.Get());
         // Workers don't have a concept of idle tasks, so use a default task for

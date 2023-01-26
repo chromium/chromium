@@ -723,11 +723,16 @@ BASE_FEATURE(kDiscardCodeCacheAfterFirstUse,
              "DiscardCodeCacheAfterFirstUse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, code cache is produced asynchronously from the script execution
+// (https://crbug.com/1260908).
 BASE_FEATURE(kCacheCodeOnIdle,
              "CacheCodeOnIdle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kCacheCodeOnIdleDelayParam{&kCacheCodeOnIdle,
                                                          "delay-in-ms", 0};
+// Apply CacheCodeOnIdle only for service workers (https://crbug.com/1410082).
+const base::FeatureParam<bool> kCacheCodeOnIdleDelayServiceWorkerOnlyParam{
+    &kCacheCodeOnIdle, "service-worker-only", false};
 
 // Make all pending 'display: auto' web fonts enter the swap or failure period
 // immediately before reaching the LCP time limit (~2500ms), so that web fonts
