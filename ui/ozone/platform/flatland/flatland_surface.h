@@ -104,7 +104,8 @@ class FlatlandSurface : public ui::PlatformWindowSurface {
 
   void RemovePixmapResources(FlatlandPixmapId pixmap_id);
 
-  void OnPresentComplete(zx_time_t actual_presentation_time);
+  void OnPresentComplete(base::TimeTicks actual_presentation_time,
+                         base::TimeDelta presentation_interval);
 
   FlatlandIds CreateOrGetFlatlandIds(gfx::NativePixmap* pixmap,
                                      bool is_primary_plane);

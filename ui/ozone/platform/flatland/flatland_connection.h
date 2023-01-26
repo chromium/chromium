@@ -12,17 +12,19 @@
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 
 namespace ui {
 
 // Helper class used to own fuchsia.ui.composition.Flatland to safely call
-// Present. By limiting the number of Present calls, FlatlandConnection ensures
-// that the Flatland will not be shut down, thus, users of FlatlandConnection
-// should not call Flatland::Present on their own.
+// Present. By limiting the number of Present calls, FlatlandConnection
+// ensures that the Flatland will not be shut down, thus, users of
+// FlatlandConnection should not call Flatland::Present on their own.
 class FlatlandConnection final {
  public:
   using OnFramePresentedCallback =
-      base::OnceCallback<void(zx_time_t actual_presentation_time)>;
+      base::OnceCallback<void(base::TimeTicks actual_presentation_time,
+                              base::TimeDelta future_presentation_interval)>;
   using OnErrorCallback =
       base::OnceCallback<void(fuchsia::ui::composition::FlatlandError error)>;
 
@@ -50,6 +52,10 @@ class FlatlandConnection final {
                OnFramePresentedCallback callback);
 
  private:
+  // Initial fps value to calculate the future presentation interval, that is
+  // used until Flatland's OnNextFrameBegin() callback is received.
+  static constexpr int kInitialFramesPerSecondEstimate = 60;
+
   // Method that is listening to Flatland's OnNextFrameBegin() callback.
   // Returns one or more present credits.
   void OnNextFrameBegin(
@@ -62,6 +68,10 @@ class FlatlandConnection final {
   uint64_t next_transform_id_ = 0;
   uint64_t next_content_id_ = 0;
   uint32_t present_credits_ = 1;
+
+  // Stores the presentation interval for the future frames.
+  base::TimeDelta presentation_interval_ =
+      base::Hertz(kInitialFramesPerSecondEstimate);
 
   struct PendingPresent {
     PendingPresent(fuchsia::ui::composition::PresentArgs present_args,
@@ -78,10 +88,10 @@ class FlatlandConnection final {
   // Keeps track of pending Presents that cannot be committed in the situation
   // when we don't have enough present credits.
   base::queue<PendingPresent> pending_presents_;
-  // Keeps track of release fences for the previous frame, indicating when it is
-  // safe to reuse the resources. Ozone defines and sends release fences for
-  // the current frame, whereas Flatland expects the release fences for the
-  // previous frame resources.
+  // Keeps track of release fences for the previous frame, indicating when it
+  // is safe to reuse the resources. Ozone defines and sends release fences
+  // for the current frame, whereas Flatland expects the release fences for
+  // the previous frame resources.
   std::vector<zx::event> previous_present_release_fences_;
   // Keeps track of Presents that are committed, but Flatland hasn't indicated
   // that have taken effect by calling OnFramePresented().

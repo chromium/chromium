@@ -26,11 +26,6 @@ namespace ui {
 
 namespace {
 
-// Default interval used for vsync callback.
-// TODO(fxbug.dev/93998): Remove the usage of this by calculating fps through
-// Display API and present callbacks.
-constexpr base::TimeDelta kDefaultVsyncInterval = base::Seconds(1) / 60;
-
 std::vector<zx::event> GpuFenceHandlesToZxEvents(
     std::vector<gfx::GpuFenceHandle> handles) {
   std::vector<zx::event> events;
@@ -351,7 +346,9 @@ void FlatlandSurface::RemovePixmapResources(FlatlandPixmapId ids) {
   pixmap_ids_to_flatland_ids_.erase(iter);
 }
 
-void FlatlandSurface::OnPresentComplete(zx_time_t actual_presentation_time) {
+void FlatlandSurface::OnPresentComplete(
+    base::TimeTicks actual_presentation_time,
+    base::TimeDelta presentation_interval) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT_NESTABLE_ASYNC_END1("viz", "FlatlandSurface::PresentFrame",
                                   TRACE_ID_LOCAL(this), "image_id",
@@ -362,9 +359,9 @@ void FlatlandSurface::OnPresentComplete(zx_time_t actual_presentation_time) {
   std::move(frame.completion_callback)
       .Run(gfx::SwapCompletionResult(gfx::SwapResult::SWAP_ACK));
   std::move(frame.presentation_callback)
-      .Run(gfx::PresentationFeedback(
-          base::TimeTicks::FromZxTime(actual_presentation_time),
-          kDefaultVsyncInterval, gfx::PresentationFeedback::kVSync));
+      .Run(gfx::PresentationFeedback(actual_presentation_time,
+                                     presentation_interval,
+                                     gfx::PresentationFeedback::kVSync));
 
   pending_frames_.pop_front();
 }

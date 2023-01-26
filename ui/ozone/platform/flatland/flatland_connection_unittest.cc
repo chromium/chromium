@@ -109,7 +109,7 @@ TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
   flatland_connection.Present(
       std::move(present_args),
       base::BindLambdaForTesting(
-          [&on_presented_called](zx_time_t actual_presentation_time) {
+          [&on_presented_called](base::TimeTicks, base::TimeDelta) {
             on_presented_called = true;
           }));
   task_environment_.RunUntilIdle();
@@ -139,6 +139,66 @@ TEST_F(FlatlandConnectionTest, RespectsPresentCredits) {
   fake_flatland_.FireOnFramePresentedEvent(std::move(frame_presented_info_2));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(on_presented_called);
+}
+
+TEST_F(FlatlandConnectionTest, CalculatesPresentationInterval) {
+  // Set up callbacks which allow sensing of how many presents were handled.
+  size_t presents_called = 0u;
+  fake_flatland_.SetPresentHandler(
+      [&presents_called](fuchsia::ui::composition::PresentArgs present_args) {
+        presents_called++;
+      });
+
+  // Create the FlatlandConnection but don't pump the loop.  No FIDL calls are
+  // completed yet.
+  FlatlandConnection flatland_connection(
+      GetCurrentTestName(),
+      base::BindLambdaForTesting(
+          [](fuchsia::ui::composition::FlatlandError) { FAIL(); }));
+  EXPECT_EQ(presents_called, 0u);
+
+  fuchsia::ui::composition::PresentArgs present_args;
+  present_args.set_requested_presentation_time(0);
+  present_args.set_acquire_fences({});
+  present_args.set_release_fences({});
+  present_args.set_unsquashable(false);
+  bool on_presented_called = false;
+  base::TimeDelta presentation_interval;
+  flatland_connection.Present(
+      std::move(present_args),
+      base::BindLambdaForTesting(
+          [&on_presented_called, &presentation_interval](
+              base::TimeTicks, base::TimeDelta interval) {
+            on_presented_called = true;
+            presentation_interval = interval;
+          }));
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(presents_called, 1u);
+
+  // Fire OnNextFrameBegin() followed by FramePresented() to trigger
+  // OnFramePresentedCallback.
+  const zx_time_t kStartTime = 123;
+  fuchsia::scenic::scheduling::PresentationInfo info_1;
+  info_1.set_presentation_time(kStartTime);
+  const zx_duration_t kInterval = 345;
+  fuchsia::scenic::scheduling::PresentationInfo info_2;
+  info_2.set_presentation_time(kStartTime + kInterval);
+  std::vector<fuchsia::scenic::scheduling::PresentationInfo> infos;
+  infos.push_back(std::move(info_1));
+  infos.push_back(std::move(info_2));
+  fuchsia::ui::composition::OnNextFrameBeginValues on_next_frame_begin_values;
+  on_next_frame_begin_values.set_future_presentation_infos(std::move(infos));
+  on_next_frame_begin_values.set_additional_present_credits(1);
+  fake_flatland_.FireOnNextFrameBeginEvent(
+      std::move(on_next_frame_begin_values));
+
+  fuchsia::scenic::scheduling::FramePresentedInfo frame_presented_info_1;
+  frame_presented_info_1.presentation_infos.resize(1);
+  fake_flatland_.FireOnFramePresentedEvent(std::move(frame_presented_info_1));
+
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(on_presented_called);
+  EXPECT_EQ(base::TimeDelta::FromZxDuration(kInterval), presentation_interval);
 }
 
 TEST_F(FlatlandConnectionTest, ReleaseFences) {
