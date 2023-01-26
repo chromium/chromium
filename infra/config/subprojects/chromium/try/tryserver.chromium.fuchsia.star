@@ -188,11 +188,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "fuchsia-x64-workstation",
-    mirrors = ["ci/fuchsia-x64-workstation"],
-)
-
-try_.builder(
     name = "fuchsia-code-coverage",
     mirrors = ["ci/fuchsia-code-coverage"],
     execution_timeout = 20 * time.hour,

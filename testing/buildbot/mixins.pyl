@@ -529,13 +529,6 @@
       ],
     },
   },
-  'fuchsia-test-workstation': {
-    '$mixin_append': {
-      'args': [
-        '--custom-image=workstation_eng.qemu-x64',
-      ],
-    }
-  },
   'fuchsia_logs': {
     '$mixin_append': {
       'args': [

@@ -2416,13 +2416,6 @@
           '--expected-device-id', 'c0de',
         ],
       },
-      'fuchsia-x64-workstation': {
-        'args': [
-          # Swarming does not report a GPU since tests are run in a VM, but
-          # the VM does report that a GPU is present.
-          '--expected-device-id', 'c0de',
-        ],
-      },
     },
     'replacements': {
       'ChromeOS FYI Release (amd64-generic)': {
@@ -2452,14 +2445,6 @@
         },
       },
       'fuchsia-x64-chrome-rel': {
-        'args': {
-          # The GPU information is not exposed in swarming since Fuchsia
-          # launches an emulator on the GCE machine.
-          '--expected-vendor-id': '1ae0',
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': None,
-        },
-      },
-      'fuchsia-x64-workstation': {
         'args': {
           # The GPU information is not exposed in swarming since Fuchsia
           # launches an emulator on the GCE machine.

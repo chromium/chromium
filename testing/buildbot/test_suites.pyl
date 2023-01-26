@@ -2854,57 +2854,6 @@
       },
     },
 
-    'gpu_fuchsia_common_telemetry_tests': {
-      'info_collection': {
-        'args': [
-          '--expected-vendor-id',
-          '${gpu_vendor_id}',
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'pixel_skia_validating': {
-        'name': 'pixel_skia_gold_validating_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=validating',
-        ],
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'telemetry_test_name': 'pixel',
-      },
-      'screenshot_sync_validating': {
-        'name': 'screenshot_sync_validating_tests',
-        'telemetry_test_name': 'screenshot_sync',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--use-cmd-decoder=validating',
-         ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'trace_test': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'webgl1_conformance': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-        'swarming': {
-          'shards': 18,
-        },
-      }
-    },
-
     'gpu_fyi_and_optional_non_linux_gtests': {
       # gpu_unittests is killing the Swarmed Linux GPU bots similarly to
       # how content_unittests was: http://crbug.com/763498 .
@@ -6088,11 +6037,6 @@
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
-    ],
-
-    'gpu_fuchsia_telemetry_experimental_tests': [
-      'gpu_fuchsia_common_telemetry_tests',
-      'gpu_mediapipe_validating_telemetry_tests',
     ],
 
     'gpu_fuchsia_telemetry_tests': [
