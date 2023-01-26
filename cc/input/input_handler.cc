@@ -1600,9 +1600,6 @@ ScrollNode* InputHandler::GetNodeToScroll(ScrollNode* node) const {
 bool InputHandler::IsInitialScrollHitTestReliable(
     const LayerImpl* layer_impl,
     const LayerImpl* first_scrolling_layer_or_scrollbar) const {
-  if (!first_scrolling_layer_or_scrollbar)
-    return true;
-
   // Hit tests directly on a composited scrollbar are always reliable.
   if (layer_impl->IsScrollbarLayer()) {
     DCHECK(layer_impl == first_scrolling_layer_or_scrollbar);
@@ -1624,11 +1621,19 @@ bool InputHandler::IsInitialScrollHitTestReliable(
       break;
     }
   }
-  if (!closest_scroll_node)
+  // If there's a scrolling layer, we should also have a closest scroll node,
+  // and vice versa. Otherwise, the hit test is not reliable.
+  if ((first_scrolling_layer_or_scrollbar && !closest_scroll_node) ||
+      (closest_scroll_node && !first_scrolling_layer_or_scrollbar)) {
     return false;
+  }
+  if (!first_scrolling_layer_or_scrollbar && !closest_scroll_node) {
+    // It's ok if we have neither.
+    return true;
+  }
 
   // If |first_scrolling_layer_or_scrollbar| is not a scrollbar, it must be
-  // a scrollabe layer with a scroll node. If this scroll node corresponds to
+  // a scrollable layer with a scroll node. If this scroll node corresponds to
   // first scrollable ancestor along the scroll tree for |layer_impl|, the hit
   // test has not escaped to other areas of the scroll tree and is reliable.
   if (!first_scrolling_layer_or_scrollbar->IsScrollbarLayer()) {

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/js-test-resources/gesture-util.js"></script>
+<script src="/js-test-resources/testdriver-actions.js"></script>
+<style>
+
+body {
+  margin: 10px;
+}
+#ifr {
+  width: 400px;
+  height: 300px;
+}
+
+</style>
+<iframe id="ifr" src="about:blank"></iframe>
+<script>
+
+waitForLoad = target => {
+  return new Promise(resolve => {
+    target.addEventListener("load", resolve);
+  });
+};
+
+promise_test(async () => {
+  await waitForLoad(window);
+  const subLoad = waitForLoad(ifr);
+  ifr.src = "http://localhost:8000/misc/resources/oopif-p3d-scroller-subframe.html";
+  const subScroll = new Promise(resolve => {
+    addEventListener("message", e => {
+      resolve(e.data);
+    });
+  });
+  await subLoad;
+  await waitForCompositorCommit();
+  await new test_driver.Actions().scroll(120, 120, 0, 50).send();
+  assert_equals(await subScroll, "scrolled");
+}, "Scroller in preserve-3d in OOPIF can be scrolled.");
+
+</script>
