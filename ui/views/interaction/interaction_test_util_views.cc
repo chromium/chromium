@@ -480,8 +480,8 @@ ui::test::ActionResult InteractionTestUtilSimulatorViews::SelectDropdownItem(
   auto* const editable_combobox = views::AsViewClass<EditableCombobox>(view);
   if (!combobox && !editable_combobox)
     return ui::test::ActionResult::kNotAttempted;
-  auto* const model = combobox ? combobox->GetModel()
-                               : editable_combobox->combobox_model_.get();
+  auto* const model =
+      combobox ? combobox->GetModel() : editable_combobox->GetComboboxModel();
   if (index >= model->GetItemCount()) {
     LOG(ERROR) << "Item index " << index << " is out of range, there are "
                << model->GetItemCount() << " items.";

@@ -28,8 +28,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/gfx/render_text.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/menu_test_utils.h"
@@ -90,17 +90,14 @@ class EditableComboboxTest : public ViewsTestBase {
                             bool show_on_empty = true);
 
   // Initializes the combobox with the given items.
-  void InitEditableCombobox(
-      const std::vector<std::u16string>& items,
-      bool filter_on_edit,
-      bool show_on_empty = true,
-      EditableCombobox::Type type = EditableCombobox::Type::kRegular);
+  void InitEditableCombobox(const std::vector<std::u16string>& items,
+                            bool filter_on_edit,
+                            bool show_on_empty = true);
 
   void InitEditableCombobox(
       const std::vector<ui::SimpleComboboxModel::Item>& items,
       bool filter_on_edit,
-      bool show_on_empty = true,
-      EditableCombobox::Type type = EditableCombobox::Type::kRegular);
+      bool show_on_empty = true);
 
   // Initializes the widget where the combobox and the dummy control live.
   void InitWidget();
@@ -186,25 +183,23 @@ void EditableComboboxTest::InitEditableCombobox(const int item_count,
 void EditableComboboxTest::InitEditableCombobox(
     const std::vector<std::u16string>& strings,
     bool filter_on_edit,
-    bool show_on_empty,
-    EditableCombobox::Type type) {
+    bool show_on_empty) {
   std::vector<ui::SimpleComboboxModel::Item> items;
   for (const auto& item_str : strings)
     items.emplace_back(item_str);
-  InitEditableCombobox(items, filter_on_edit, show_on_empty, type);
+  InitEditableCombobox(items, filter_on_edit, show_on_empty);
 }
 
 // Initializes the combobox with the given items.
 void EditableComboboxTest::InitEditableCombobox(
     const std::vector<ui::SimpleComboboxModel::Item>& items,
     const bool filter_on_edit,
-    const bool show_on_empty,
-    const EditableCombobox::Type type) {
+    const bool show_on_empty) {
   parent_of_combobox_ = new View();
   parent_of_combobox_->SetID(1);
   combobox_ =
       new EditableCombobox(std::make_unique<ui::SimpleComboboxModel>(items),
-                           filter_on_edit, show_on_empty, type);
+                           filter_on_edit, show_on_empty);
   combobox_->SetCallback(base::BindRepeating(
       &EditableComboboxTest::OnContentChanged, base::Unretained(this)));
   combobox_->SetID(2);
@@ -847,28 +842,6 @@ TEST_F(EditableComboboxTest, FilteringNotifiesCallback) {
   ASSERT_EQ(3, change_count());
 }
 
-TEST_F(EditableComboboxTest, PasswordCanBeHiddenAndRevealed) {
-  std::vector<std::u16string> items = {u"item0", u"item1"};
-  InitEditableCombobox(items, /*filter_on_edit=*/false, /*show_on_empty=*/true,
-                       EditableCombobox::Type::kPassword);
-
-  ASSERT_EQ(2u, GetItemCount());
-  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
-            GetItemAt(0));
-  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
-            GetItemAt(1));
-
-  combobox_->RevealPasswords(/*revealed=*/true);
-  ASSERT_EQ(u"item0", GetItemAt(0));
-  ASSERT_EQ(u"item1", GetItemAt(1));
-
-  combobox_->RevealPasswords(/*revealed=*/false);
-  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
-            GetItemAt(0));
-  ASSERT_EQ(std::u16string(5, gfx::RenderText::kPasswordReplacementChar),
-            GetItemAt(1));
-}
-
 TEST_F(EditableComboboxTest, ArrowButtonOpensAndClosesMenu) {
   InitEditableCombobox();
   dummy_focusable_view_->RequestFocus();
@@ -931,18 +904,6 @@ TEST_F(EditableComboboxTest, DragToSelectDoesntOpenTheMenu) {
   PerformMouseEvent(widget_, end_point, ui::ET_MOUSE_RELEASED);
   ASSERT_EQ(u"abc", GetSelectedText());
   EXPECT_FALSE(IsMenuOpen());
-}
-
-TEST_F(EditableComboboxTest, NoCrashWithoutWidget) {
-  std::vector<ui::SimpleComboboxModel::Item> items = {
-      ui::SimpleComboboxModel::Item(u"item0"),
-      ui::SimpleComboboxModel::Item(u"item1")};
-  auto combobox = std::make_unique<EditableCombobox>(
-      std::make_unique<ui::SimpleComboboxModel>(items),
-      /*filter_on_edit=*/false,
-      /*show_on_empty=*/true, EditableCombobox::Type::kPassword);
-  // Showing the dropdown should silently fail.
-  combobox->RevealPasswords(true);
 }
 
 using EditableComboboxDefaultTest = ViewsTestBase;

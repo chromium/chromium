@@ -481,7 +481,7 @@ const ui::ImageModel PageInfoViewFactory::GetManagedPermissionIcon(
 
 // static
 const ui::ImageModel PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon() {
-  return ui::ImageModel::FromVectorIcon(kEyeCrossedIcon, ui::kColorIcon,
+  return ui::ImageModel::FromVectorIcon(views::kEyeCrossedIcon, ui::kColorIcon,
                                         GetIconSize());
 }
 

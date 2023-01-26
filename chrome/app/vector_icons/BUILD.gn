@@ -49,8 +49,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "drag_handle.icon",
     "eol.icon",
     "extension_crashed.icon",
-    "eye.icon",
-    "eye_crossed.icon",
     "file_download_shelf.icon",
     "fingerprint.icon",
     "forward_arrow_touch.icon",

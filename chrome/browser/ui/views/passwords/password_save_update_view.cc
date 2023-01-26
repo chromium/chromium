@@ -52,11 +52,10 @@
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -93,13 +92,10 @@ std::unique_ptr<views::View> CreateRow() {
 
 // Builds a credential row, adds the given elements to the layout.
 // |destination_field| is nullptr if the destination field shouldn't be shown.
-// |password_view_button| is an optional field.
-void BuildCredentialRows(
-    views::View* parent_view,
-    std::unique_ptr<views::View> destination_field,
-    std::unique_ptr<views::View> username_field,
-    std::unique_ptr<views::View> password_field,
-    std::unique_ptr<views::ToggleImageButton> password_view_button) {
+void BuildCredentialRows(views::View* parent_view,
+                         std::unique_ptr<views::View> destination_field,
+                         std::unique_ptr<views::View> username_field,
+                         std::unique_ptr<views::View> password_field) {
   std::unique_ptr<views::Label> username_label(new views::Label(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USERNAME_LABEL),
       views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
@@ -151,11 +147,6 @@ void BuildCredentialRows(
                                views::MaximumFlexSizeRule::kUnbounded));
   password_row->AddChildView(std::move(password_field));
 
-  // The eye icon is also added to the layout if it was passed.
-  if (password_view_button) {
-    password_row->AddChildView(std::move(password_view_button));
-  }
-
   parent_view->AddChildView(std::move(password_row));
 }
 
@@ -167,22 +158,6 @@ std::vector<std::u16string> ToValues(
   for (auto& pair : items)
     passwords.push_back(pair.first);
   return passwords;
-}
-
-std::unique_ptr<views::ToggleImageButton> CreatePasswordViewButton(
-    views::Button::PressedCallback callback,
-    bool are_passwords_revealed) {
-  auto button = std::make_unique<views::ToggleImageButton>(std::move(callback));
-  button->SetInstallFocusRingOnFocus(true);
-  button->SetRequestFocusOnPress(true);
-  button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD));
-  button->SetToggledTooltipText(
-      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
-  button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  button->SetToggled(are_passwords_revealed);
-  return button;
 }
 
 // Creates an EditableCombobox from |PasswordForm.all_possible_usernames| or
@@ -204,8 +179,7 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
           std::vector<ui::SimpleComboboxModel::Item>(usernames.begin(),
                                                      usernames.end())),
       /*filter_on_edit=*/false, /*show_on_empty=*/true,
-      views::EditableCombobox::Type::kRegular, views::style::CONTEXT_BUTTON,
-      views::style::STYLE_PRIMARY, display_arrow);
+      views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY, display_arrow);
   combobox->SetText(form.username_value);
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USERNAME_LABEL));
@@ -214,11 +188,14 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
   return combobox;
 }
 
-// Creates an EditableCombobox from |PasswordForm.all_possible_passwords| or
-// even just |PasswordForm.password_value|.
-std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
+// Creates an EditablePasswordCombobox from
+// `PasswordForm.all_possible_passwords` or even just
+// `PasswordForm.password_value`.
+std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
     const password_manager::PasswordForm& form,
-    bool are_passwords_revealed) {
+    bool are_passwords_revealed,
+    views::EditablePasswordCombobox::IsPasswordRevealPermittedCheck
+        reveal_permitted_check) {
   DCHECK(!form.IsFederatedCredential());
   std::vector<std::u16string> passwords =
       form.all_possible_passwords.empty()
@@ -228,14 +205,16 @@ std::unique_ptr<views::EditableCombobox> CreatePasswordEditableCombobox(
     return password.empty();
   });
   bool display_arrow = !passwords.empty();
-  auto combobox = std::make_unique<views::EditableCombobox>(
+  auto combobox = std::make_unique<views::EditablePasswordCombobox>(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
                                                      passwords.end())),
-      /*filter_on_edit=*/false, /*show_on_empty=*/true,
-      views::EditableCombobox::Type::kPassword, views::style::CONTEXT_BUTTON,
-      STYLE_PRIMARY_MONOSPACED, display_arrow);
+      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, display_arrow);
   combobox->SetText(form.password_value);
+  combobox->SetPasswordIconTooltips(
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
+      l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
+  combobox->SetIsPasswordRevealPermittedCheck(std::move(reveal_permitted_check));
   combobox->RevealPasswords(are_passwords_revealed);
   combobox->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL));
@@ -311,9 +290,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
               ? PasswordBubbleControllerBase::DisplayReason::kAutomatic
               : PasswordBubbleControllerBase::DisplayReason::kUserAction),
       is_update_bubble_(controller_.state() ==
-                        password_manager::ui::PENDING_PASSWORD_UPDATE_STATE),
-      are_passwords_revealed_(
-          controller_.are_passwords_revealed_when_bubble_is_opened()) {
+                        password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
   DCHECK(controller_.state() == password_manager::ui::PENDING_PASSWORD_STATE ||
          controller_.state() ==
              password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
@@ -359,16 +336,12 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
         CreateUsernameEditableCombobox(password_form);
     username_dropdown->SetCallback(base::BindRepeating(
         &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
-    std::unique_ptr<views::EditableCombobox> password_dropdown =
-        CreatePasswordEditableCombobox(password_form, are_passwords_revealed_);
-    password_dropdown->SetCallback(base::BindRepeating(
-        &PasswordSaveUpdateView::OnContentChanged, base::Unretained(this)));
-    std::unique_ptr<views::ToggleImageButton> password_view_button =
-        CreatePasswordViewButton(
-            base::BindRepeating(
-                &PasswordSaveUpdateView::TogglePasswordVisibility,
-                base::Unretained(this)),
-            are_passwords_revealed_);
+    std::unique_ptr<views::EditablePasswordCombobox> password_dropdown =
+        CreateEditablePasswordCombobox(
+            password_form,
+            controller_.are_passwords_revealed_when_bubble_is_opened(),
+            base::BindRepeating(&SaveUpdateBubbleController::RevealPasswords,
+                                base::Unretained(&controller_)));
     // Set up layout:
     SetLayoutManager(std::make_unique<AutoResizingLayout>());
     views::View* root_view = AddChildView(std::make_unique<views::View>());
@@ -393,11 +366,9 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
 
     username_dropdown_ = username_dropdown.get();
     password_dropdown_ = password_dropdown.get();
-    password_view_button_ = password_view_button.get();
     BuildCredentialRows(root_view, std::move(destination_dropdown),
                         std::move(username_dropdown),
-                        std::move(password_dropdown),
-                        std::move(password_view_button));
+                        std::move(password_dropdown));
 
     // The |username_dropdown_| should observe the animating layout manager to
     // close the dropdown menu when the animation starts.
@@ -522,38 +493,11 @@ void PasswordSaveUpdateView::AddedToWidget() {
     MaybeShowIPH(IPHType::kRegular);
 }
 
-void PasswordSaveUpdateView::OnThemeChanged() {
-  PasswordBubbleViewBase::OnThemeChanged();
-  if (password_view_button_) {
-    const auto* color_provider = GetColorProvider();
-    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
-    const SkColor disabled_icon_color =
-        color_provider->GetColor(ui::kColorIconDisabled);
-    views::SetImageFromVectorIconWithColor(password_view_button_, kEyeIcon,
-                                           GetDefaultSizeOfVectorIcon(kEyeIcon),
-                                           icon_color, disabled_icon_color);
-    views::SetToggledImageFromVectorIconWithColor(
-        password_view_button_, kEyeCrossedIcon,
-        GetDefaultSizeOfVectorIcon(kEyeCrossedIcon), icon_color,
-        disabled_icon_color);
-  }
-}
-
 void PasswordSaveUpdateView::OnLayoutIsAnimatingChanged(
     views::AnimatingLayoutManager* source,
     bool is_animating) {
   if (!is_animating)
     MaybeShowIPH(IPHType::kRegular);
-}
-
-void PasswordSaveUpdateView::TogglePasswordVisibility() {
-  if (!are_passwords_revealed_ && !controller_.RevealPasswords())
-    return;
-
-  are_passwords_revealed_ = !are_passwords_revealed_;
-  password_view_button_->SetToggled(are_passwords_revealed_);
-  DCHECK(password_dropdown_);
-  password_dropdown_->RevealPasswords(are_passwords_revealed_);
 }
 
 void PasswordSaveUpdateView::UpdateUsernameAndPasswordInModel() {

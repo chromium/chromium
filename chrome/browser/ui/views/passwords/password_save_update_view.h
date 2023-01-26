@@ -19,7 +19,7 @@ namespace views {
 class AnimatingLayoutManager;
 class Combobox;
 class EditableCombobox;
-class ToggleImageButton;
+class EditablePasswordCombobox;
 }  // namespace views
 
 // A view offering the user the ability to save or update credentials (depending
@@ -64,13 +64,10 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   // View:
   void AddedToWidget() override;
-  void OnThemeChanged() override;
 
   // views::AnimatingLayoutManager::Observer:
   void OnLayoutIsAnimatingChanged(views::AnimatingLayoutManager* source,
                                   bool is_animating) override;
-
-  void TogglePasswordVisibility();
   void UpdateUsernameAndPasswordInModel();
   void UpdateBubbleUIElements();
   std::unique_ptr<views::View> CreateFooterView();
@@ -105,12 +102,9 @@ class PasswordSaveUpdateView : public PasswordBubbleViewBase,
 
   raw_ptr<views::Combobox> destination_dropdown_ = nullptr;
 
+  // The views for the username and password dropdown elements.
   raw_ptr<views::EditableCombobox> username_dropdown_ = nullptr;
-  raw_ptr<views::ToggleImageButton> password_view_button_ = nullptr;
-
-  // The view for the password value.
-  raw_ptr<views::EditableCombobox> password_dropdown_ = nullptr;
-  bool are_passwords_revealed_;
+  raw_ptr<views::EditablePasswordCombobox> password_dropdown_ = nullptr;
 
   // When showing kReauthFailure IPH, the promo controller gives back an
   // ID. This is used to close the bubble later.

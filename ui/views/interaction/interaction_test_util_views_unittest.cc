@@ -385,8 +385,7 @@ TEST_P(InteractionTestUtilViewsTest,
   }
   // Pass the default values for every parameter except for `display_arrow`.
   auto* const box = contents_->AddChildView(std::make_unique<EditableCombobox>(
-      CreateComboboxModel(), false, true, EditableCombobox::Type::kRegular,
-      EditableCombobox::kDefaultTextContext,
+      CreateComboboxModel(), false, true, EditableCombobox::kDefaultTextContext,
       EditableCombobox::kDefaultTextStyle, /* display_arrow =*/false));
   box->SetAccessibleName(u"Editable Combobox");
   auto* const box_el =
