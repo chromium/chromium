@@ -1357,8 +1357,8 @@
     },
 
     'tryserver.chromium.updater': {
-       'mac-updater-try-builder-dbg': 'updater_debug_bot',
-       'mac-updater-try-builder-rel': 'updater_release_trybot',
+       'mac-updater-try-builder-dbg': 'updater_debug_bot_reclient',
+       'mac-updater-try-builder-rel': 'updater_release_trybot_reclient',
        'win-updater-try-builder-dbg': 'updater_debug_bot_reclient',
        'win-updater-try-builder-rel': 'updater_release_trybot_reclient',
     },
@@ -3729,10 +3729,6 @@
       'ubsan_vptr', 'ubsan_no_recover_hack', 'release_bot_reclient',
     ],
 
-    'updater_debug_bot': [
-      'updater_on_win_mac', 'debug_static_bot',
-    ],
-
     'updater_debug_bot_arm64_reclient': [
       'arm64', 'updater_on_win_mac', 'debug_static_bot_reclient',
     ],
@@ -3759,10 +3755,6 @@
 
     'updater_release_bot_x86_reclient': [
       'updater_on_win_mac', 'release_bot_reclient', 'x86',
-    ],
-
-    'updater_release_trybot': [
-      'updater_on_win_mac', 'release_trybot',
     ],
 
     'updater_release_trybot_reclient': [

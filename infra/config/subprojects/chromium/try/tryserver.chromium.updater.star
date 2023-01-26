@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.chromium.updater builder group."""
 
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -14,7 +14,8 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-    goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 consoles.list_view(
@@ -28,9 +29,6 @@ def updater_mac_builder(*, name, **kwargs):
 def updater_windows_builder(*, name, **kwargs):
     kwargs.setdefault("cores", 8)
     kwargs.setdefault("os", os.WINDOWS_DEFAULT)
-    kwargs.setdefault("goma_backend", None)
-    kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
-    kwargs.setdefault("reclient_jobs", reclient.jobs.LOW_JOBS_FOR_CQ)
     return try_.builder(name = name, **kwargs)
 
 updater_mac_builder(
