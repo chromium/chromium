@@ -1303,32 +1303,6 @@
       },
     },
   },
-  # TODO(crbug/1239300): Remove when experiment is done.
-  'chrome_public_persistent_shell_test_apk': {
-    'remove_from': [
-      'android-pie-arm64-rel', # crbug/1239300. Experiment is done on this bot.
-    ],
-    'modifications': {
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 25,
-        },
-      },
-    },
-  },
-  # TODO(crbug/1239300): Remove when experiment is done.
-  'chrome_public_persistent_shell_unit_test_apk': {
-    'modifications': {
-      'android-nougat-x86-rel': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-    },
-  },
   'chrome_public_smoke_test': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
@@ -1921,25 +1895,6 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
-      },
-    },
-  },
-  # TODO(crbug/1239300): Remove when experiment is done.
-  'content_browsertests_persistent_shell': {
-    'modifications': {
-      'android-nougat-x86-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_n.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 25,
-          'dimension_sets': [
-            {
-              # copying android-nougat-x86-rel
-              'cores': '8',
-            },
-          ],
-        },
       },
     },
   },
