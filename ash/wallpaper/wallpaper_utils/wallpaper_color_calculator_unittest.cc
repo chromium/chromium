@@ -180,7 +180,7 @@ TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
   std::vector<SkColor> colors = {kDefaultColor};
   SkColor k_mean_color = kDefaultColor;
   calculator_->set_calculated_colors_for_test(
-      WallpaperCalculatedColors(colors, k_mean_color));
+      WallpaperCalculatedColors(colors, k_mean_color, kDefaultColor));
 
   base::RunLoop run_loop;
   EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));

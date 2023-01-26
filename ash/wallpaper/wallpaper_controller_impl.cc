@@ -2600,8 +2600,10 @@ void WallpaperControllerImpl::SetCalculatedColors(
 void WallpaperControllerImpl::ResetCalculatedColors() {
   static const std::vector<SkColor> kInvalidColors(color_profiles_.size(),
                                                    kInvalidWallpaperColor);
-  SetCalculatedColors(
-      WallpaperCalculatedColors(kInvalidColors, kInvalidWallpaperColor));
+  SetCalculatedColors(WallpaperCalculatedColors(
+      /*prominent_colors=*/kInvalidColors,
+      /*k_mean_color=*/kInvalidWallpaperColor,
+      /*celebi_color=*/kInvalidWallpaperColor));
 }
 
 void WallpaperControllerImpl::CalculateWallpaperColors() {

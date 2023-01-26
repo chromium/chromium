@@ -19,7 +19,8 @@ struct ASH_EXPORT WallpaperCalculatedColors {
   WallpaperCalculatedColors();
 
   WallpaperCalculatedColors(const std::vector<SkColor>& prominent_colors,
-                            SkColor k_mean_color);
+                            SkColor k_mean_color,
+                            SkColor celebi_color);
 
   WallpaperCalculatedColors(const WallpaperCalculatedColors& other);
   WallpaperCalculatedColors& operator=(const WallpaperCalculatedColors& other);
@@ -35,6 +36,9 @@ struct ASH_EXPORT WallpaperCalculatedColors {
 
   std::vector<SkColor> prominent_colors;
   SkColor k_mean_color = SK_ColorTRANSPARENT;
+  // Result of image sampling algorithm as described in
+  // https://arxiv.org/abs/1101.0395.
+  SkColor celebi_color = SK_ColorTRANSPARENT;
 };
 
 }  // namespace ash

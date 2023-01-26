@@ -131,7 +131,8 @@ WallpaperCalculatedColors CalculateWallpaperColor(
   DCHECK_NE(NUM_COLOR_EXTRACTION_RESULTS, result);
   UMA_HISTOGRAM_ENUMERATION("Ash.Wallpaper.ColorExtractionResult2", result,
                             NUM_COLOR_EXTRACTION_RESULTS);
-  return WallpaperCalculatedColors(prominent_colors, k_mean_color);
+  return WallpaperCalculatedColors(prominent_colors, k_mean_color,
+                                   SK_ColorTRANSPARENT);
 }
 
 bool ShouldCalculateSync(const gfx::ImageSkia& image) {

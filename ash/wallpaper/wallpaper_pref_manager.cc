@@ -359,7 +359,8 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     absl::optional<SkColor> cached_k_mean_color = GetCachedKMeanColor(location);
     if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
       return WallpaperCalculatedColors(cached_colors.value(),
-                                       cached_k_mean_color.value());
+                                       cached_k_mean_color.value(),
+                                       SK_ColorTRANSPARENT);
     }
 
     return absl::nullopt;
