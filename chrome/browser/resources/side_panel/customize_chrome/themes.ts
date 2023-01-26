@@ -89,6 +89,8 @@ export class ThemesElement extends PolymerElement {
   }
 
   private onCollectionChange_() {
+    this.header_ = '';
+    this.themes_ = [];
     if (this.selectedCollection) {
       this.pageHandler_.getBackgroundImages(this.selectedCollection!.id)
           .then(({images}) => {
