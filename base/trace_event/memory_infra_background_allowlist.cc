@@ -70,6 +70,7 @@ constexpr auto kDumpProviderAllowlist =
         "PartitionAlloc.AddressSpace",
         "ProcessMemoryMetrics",
         "SharedContextState",
+        "SharedImageManager",
         "SharedMemoryTracker",
         "Skia",
         "Sql",
