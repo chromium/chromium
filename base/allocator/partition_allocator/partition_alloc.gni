@@ -129,8 +129,7 @@ declare_args() {
   # to go through build_overrides
   enable_dangling_raw_ptr_perf_experiment = false
 
-  # TODO(bartekn): Enabled temporarily, disable before reaches Beta.
-  backup_ref_ptr_poison_oob_ptr = enable_backup_ref_ptr_support
+  backup_ref_ptr_poison_oob_ptr = false
 }
 
 declare_args() {
