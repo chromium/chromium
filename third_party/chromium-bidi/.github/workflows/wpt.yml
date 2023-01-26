@@ -54,18 +54,17 @@ jobs:
         working-directory: wpt
       - name: Upload expectations
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: wpt-metadata
           path: wpt-metadata
       - name: Upload logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: logs
           # Note: runBiDiServer.sh will be run multiple times and log.txt will be
           # overwritten. The problem might not be in the log.txt written last.
           path: logs
-
 env:
   FORCE_COLOR: 3
