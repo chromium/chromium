@@ -1032,6 +1032,12 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   [fakeboxFocuserHandler onFakeboxBlur];
 }
 
+- (void)focusOmnibox {
+  id<FakeboxFocuser> fakeboxFocuserHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
+  [fakeboxFocuserHandler fakeboxFocused];
+}
+
 #pragma mark - NewTabPageDelegate
 
 - (void)updateFeedLayout {
@@ -1040,6 +1046,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   if (!self.started) {
     return;
   }
+  // TODO(crbug.com/1406940): Investigate why this order is correct. Intuition
+  // would be that the layout update should happen before telling UIKit to
+  // relayout.
   [self.containedViewController.view setNeedsLayout];
   [self.containedViewController.view layoutIfNeeded];
   [self.NTPViewController updateNTPLayout];

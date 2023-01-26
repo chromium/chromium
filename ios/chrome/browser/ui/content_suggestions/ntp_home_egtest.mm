@@ -143,7 +143,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   config.features_disabled.push_back(kEnableFeedAblation);
-
+  // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
+  config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
   config.features_enabled.push_back(kContentSuggestionsUIModuleRefresh);
   return config;
 }
@@ -580,6 +581,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
   [ChromeEarlGrey goBack];
 
+  [ChromeEarlGreyUI waitForAppToIdle];
+
   // Check that the new position is the same.
   collectionView = [NewTabPageAppInterface collectionView];
   GREYAssertEqual(
@@ -671,6 +674,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Unfocus the omnibox.
   [self unfocusFakeBox];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Check the fake omnibox is displayed again at the same position.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -742,6 +746,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Unfocus the omnibox.
   [self unfocusFakeBox];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Check the fake omnibox is displayed again at the same position.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
