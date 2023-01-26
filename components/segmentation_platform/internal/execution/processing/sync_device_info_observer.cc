@@ -90,18 +90,20 @@ SyncDeviceInfoObserver::~SyncDeviceInfoObserver() {
 
 // Count device by os types and record them in UMA only if not recorded yet.
 void SyncDeviceInfoObserver::OnDeviceInfoChange() {
-  if (!device_info_tracker_->IsSyncing() || device_info_received_) {
+  if (!device_info_tracker_->IsSyncing() ||
+      device_info_status_ == DeviceInfoStatus::INFO_AVAILABLE) {
     return;
   }
 
-  device_info_received_ = true;
+  device_info_status_ = DeviceInfoStatus::INFO_AVAILABLE;
 
   // Run any method calls that were received during initialization.
   while (!pending_actions_.empty()) {
     auto callback = std::move(pending_actions_.front());
     pending_actions_.pop_front();
+    device_info_status_ = DeviceInfoStatus::INFO_AVAILABLE;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
+        FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 
   // Record device count by OS types.
@@ -148,28 +150,40 @@ void SyncDeviceInfoObserver::Process(
       wait_for_device_info_in_seconds = 0;
     }
   }
-  if (wait_for_device_info_in_seconds && !device_info_received_) {
-    // Maybe remove this check so that the client can call any time, just
-    // timeout is sufficient.
-    if (!device_info_tracker_->IsSyncing()) {
-      Tensor inputs(10, ProcessedValue(0));
-      inputs[0] = AS_FLOAT_VAL(1);  // failure.
-      std::move(callback).Run(/*error=*/false, std::move(inputs));
-      return;
-    }
 
-    // TODO(ssid): add timeout, and run callback with failure.
+  if (wait_for_device_info_in_seconds > 0 &&
+      (device_info_status_ == DeviceInfoStatus::TIMEOUT_NOT_POSTED ||
+       device_info_status_ == DeviceInfoStatus::TIMEOUT_POSTED_BUT_NOT_HIT)) {
     pending_actions_.push_back(base::BindOnce(
         &SyncDeviceInfoObserver::ReadyToFinishProcessing,
         weak_ptr_factory_.GetWeakPtr(), input, std::move(callback)));
-    return;
+
+    if (device_info_status_ == DeviceInfoStatus::TIMEOUT_NOT_POSTED) {
+      device_info_status_ = DeviceInfoStatus::TIMEOUT_POSTED_BUT_NOT_HIT;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&SyncDeviceInfoObserver::OnTimeout,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::Seconds(wait_for_device_info_in_seconds));
+    }
+  } else {
+    ReadyToFinishProcessing(
+        input, std::move(callback),
+        device_info_status_ == DeviceInfoStatus::INFO_AVAILABLE);
   }
-  ReadyToFinishProcessing(input, std::move(callback));
 }
 
 void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     const proto::CustomInput& input,
-    ProcessedCallback callback) {
+    ProcessedCallback callback,
+    bool success) {
+  if (!success) {
+    Tensor inputs(10, ProcessedValue(0.0f));
+    inputs[0] = AS_FLOAT_VAL(1);  // failure.
+    std::move(callback).Run(/*error=*/false, std::move(inputs));
+    return;
+  }
+
   int active_threshold = kDefaultActiveDaysThreshold;
   auto it2 = input.additional_args().find("active_days_limit");
   if (it2 != input.additional_args().end()) {
@@ -194,7 +208,7 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
     total_count++;
   }
 
-  Tensor inputs(10, ProcessedValue(0));
+  Tensor inputs(10, ProcessedValue(0.0f));
   inputs[0] = AS_FLOAT_VAL(0);  // success.
   inputs[1] = AS_FLOAT_VAL(
       (device_count_by_type[{FormFactor::kPhone, OsType::kAndroid}]));
@@ -218,6 +232,22 @@ void SyncDeviceInfoObserver::ReadyToFinishProcessing(
   }
   inputs[9] = AS_FLOAT_VAL(total_count - known_type_count);
   std::move(callback).Run(/*error=*/false, std::move(inputs));
+}
+
+void SyncDeviceInfoObserver::OnTimeout() {
+  if (device_info_status_ == DeviceInfoStatus::INFO_AVAILABLE) {
+    return;
+  }
+
+  device_info_status_ = DeviceInfoStatus::INFO_UNAVAILABLE;
+
+  while (!pending_actions_.empty()) {
+    auto callback = std::move(pending_actions_.front());
+    pending_actions_.pop_front();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+  }
+  return;
 }
 
 }  // namespace segmentation_platform::processing
