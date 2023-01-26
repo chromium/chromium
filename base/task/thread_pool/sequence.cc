@@ -37,6 +37,26 @@ class SCOPED_LOCKABLE AnnotateLockAcquired {
   const raw_ref<const CheckedLock> acquired_lock_;
 };
 
+void MaybeMakeCriticalClosure(TaskShutdownBehavior shutdown_behavior,
+                              Task& task) {
+  switch (shutdown_behavior) {
+    case TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN:
+      // Nothing to do.
+      break;
+    case TaskShutdownBehavior::SKIP_ON_SHUTDOWN:
+      // MakeCriticalClosure() is arguably useful for SKIP_ON_SHUTDOWN, possibly
+      // in combination with is_immediate=false. However, SKIP_ON_SHUTDOWN is
+      // the default and hence the theoretical benefits don't warrant the
+      // performance implications.
+      break;
+    case TaskShutdownBehavior::BLOCK_SHUTDOWN:
+      task.task =
+          MakeCriticalClosure(task.posted_from, std::move(task.task),
+                              /*is_immediate=*/task.delayed_run_time.is_null());
+      break;
+  }
+}
+
 }  // namespace
 
 Sequence::Transaction::Transaction(Sequence* sequence)
@@ -67,12 +87,8 @@ void Sequence::Transaction::PushImmediateTask(Task task) {
 
   bool was_unretained = sequence()->IsEmpty() && !sequence()->has_worker_;
   bool queue_was_empty = sequence()->queue_.empty();
-  task.task = sequence()->traits_.shutdown_behavior() ==
-                      TaskShutdownBehavior::BLOCK_SHUTDOWN
-                  ? MakeCriticalClosure(
-                        task.posted_from, std::move(task.task),
-                        /*is_immediate=*/task.delayed_run_time.is_null())
-                  : std::move(task.task);
+
+  MaybeMakeCriticalClosure(sequence()->traits_.shutdown_behavior(), task);
 
   sequence()->queue_.push(std::move(task));
 
@@ -97,11 +113,8 @@ bool Sequence::Transaction::PushDelayedTask(Task task) {
 
   bool top_will_change = sequence()->DelayedSortKeyWillChange(task);
   bool was_empty = sequence()->IsEmpty();
-  task.task =
-      sequence()->traits_.shutdown_behavior() ==
-              TaskShutdownBehavior::BLOCK_SHUTDOWN
-          ? MakeCriticalClosure(task.posted_from, std::move(task.task), false)
-          : std::move(task.task);
+
+  MaybeMakeCriticalClosure(sequence()->traits_.shutdown_behavior(), task);
 
   sequence()->delayed_queue_.insert(std::move(task));
 

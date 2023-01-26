@@ -75,6 +75,9 @@ class PendingCriticalClosure {
 // background running time, |MakeCriticalClosure| should be applied on them
 // before posting. |task_name| is used by the platform to identify any tasks
 // that do not complete in time for suspension.
+//
+// This function is used automatically for tasks posted to a sequence runner
+// using TaskShutdownBehavior::BLOCK_SHUTDOWN.
 #if BUILDFLAG(IS_IOS)
 inline OnceClosure MakeCriticalClosure(StringPiece task_name,
                                        OnceClosure closure,
