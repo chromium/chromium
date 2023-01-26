@@ -70,10 +70,16 @@ def BuildVersion():
   return '%s.%s.%s.%s' % (major, minor, build, patch)
 
 
-def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
+def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose, fast):
   lzma_exec = GetLZMAExec(build_dir)
   cmd = [lzma_exec,
          'a', '-t7z',
+        ]
+  if fast:
+    cmd.append('-mx1')
+  else:
+    cmd.extend(
+      [
           # Flags equivalent to -mx9 (ultra) but with the bcj2 turned on (exe
           # pre-filter). This results in a ~2.3MB decrease in installer size on
           # a 24MB installer.
@@ -89,8 +95,13 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
           '-mb0:1',
           '-mb0s1:2',
           '-mb0s2:3',
-          os.path.abspath(compressed_file),
-          os.path.abspath(input_file),]
+      ])
+  cmd.extend(
+    [
+      os.path.abspath(compressed_file),
+      os.path.abspath(input_file),
+    ]
+  )
   if os.path.exists(compressed_file):
     os.remove(compressed_file)
   RunSystemCommand(cmd, verbose)
@@ -300,14 +311,6 @@ def CreateArchiveFile(options, staging_dir, current_version, prev_version):
     os.remove(archive_file)
     RunSystemCommand(cmd, options.verbose)
 
-  # Do not compress the archive when skip_archive_compression is specified.
-  if options.skip_archive_compression:
-    compressed_file = os.path.join(
-        options.output_dir, options.output_name + COMPRESSED_ARCHIVE_SUFFIX)
-    if os.path.exists(compressed_file):
-      os.remove(compressed_file)
-    return os.path.basename(archive_file)
-
   # If we are generating a patch, run bsdiff against previous build and
   # compress the resulting patch file. If this is not a patch just compress the
   # uncompressed archive file.
@@ -329,7 +332,7 @@ def CreateArchiveFile(options, staging_dir, current_version, prev_version):
   compressed_archive_file_path = os.path.join(options.output_dir,
                                               compressed_archive_file)
   CompressUsingLZMA(options.build_dir, compressed_archive_file_path, orig_file,
-                    options.verbose)
+                    options.verbose, options.fast_archive_compression)
 
   return compressed_archive_file
 
@@ -351,7 +354,7 @@ def PrepareSetupExec(options, current_version, prev_version):
                  '_from_' + prev_version + COMPRESSED_FILE_EXT
     setup_file_path = os.path.join(options.build_dir, setup_file)
     CompressUsingLZMA(options.build_dir, setup_file_path, patch_file,
-                      options.verbose)
+                      options.verbose, options.fast_archive_compression)
   else:
     # Use makecab.py instead of makecab.exe so that this works when building
     # on non-Windows hosts too.
@@ -616,10 +619,10 @@ def _ParseOptions():
       help='Whether this archive is packaging a component build.')
   parser.add_option('--component_ffmpeg_build', default='0',
       help='Whether this archive is packaging with ffmpeg component build.')
-  parser.add_option('--skip_archive_compression',
+  parser.add_option('--fast_archive_compression',
       action='store_true', default=False,
-      help='This will turn off compression of chrome.7z into chrome.packed.7z '
-           'and helpfully delete any old chrome.packed.7z in |output_dir|.')
+      help='This will enable fast compression of chrome.7z into '
+           'chrome.packed.7z.')
   parser.add_option('--depfile',
       help='Generate a depfile with the given name listing the implicit inputs '
            'to the archive process that can be used with a build system.')

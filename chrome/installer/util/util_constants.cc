@@ -81,8 +81,7 @@ const char kInputFile[] = "input-file";
 
 // Specify the path to the compressed Chrome archive for install. If not
 // specified, chrome.packed.7z or chrome.7z in the same directory as setup.exe
-// is used (the packed file is preferred; see kUncompressedArchive to force use
-// of an uncompressed archive).
+// is used.
 const char kInstallArchive[] = "install-archive";
 
 // Specify the file path of Chrome initial preference file.
@@ -179,10 +178,6 @@ const char kSystemLevel[] = "system-level";
 
 // Signals to setup.exe that it should trigger the active setup command.
 const char kTriggerActiveSetup[] = "trigger-active-setup";
-
-// Use the given uncompressed chrome.7z archive as the source of files to
-// install.
-const char kUncompressedArchive[] = "uncompressed-archive";
 
 // If present, setup will uninstall chrome.
 const char kUninstall[] = "uninstall";

@@ -64,7 +64,6 @@ const wchar_t kB7[] = L"B7";
 const wchar_t kBl[] = L"BL";
 const wchar_t kChromeBin[] = L"Chrome-bin";
 const wchar_t kChromePacked7z[] = L"CHROME.PACKED.7Z";
-const wchar_t kChrome7z[] = L"CHROME.7Z";
 const wchar_t kExe[] = L"exe";
 const wchar_t kExpandExe[] = L"expand.exe";
 const wchar_t kExtDll[] = L".dll";
@@ -577,7 +576,6 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
 
   base::FilePath setup_ex_ = work_dir.directory().Append(&kSetupEx_[0]);
   base::FilePath chrome_packed_7z;  // Empty for component builds.
-  base::FilePath chrome_7z;
   const wchar_t* archive_resource_name = nullptr;
   base::FilePath* archive_file = nullptr;
   // Load the original file and extract setup.ex_ and chrome.packed.7z
@@ -599,20 +597,16 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
       return false;
     }
 
-    // Write out chrome.packed.7z (static build) or chrome.7z (component build)
+    // Write out chrome.packed.7z
     if (resource_loader.Load(&kChromePacked7z[0], &kB7[0], &resource_data)) {
       archive_resource_name = &kChromePacked7z[0];
       chrome_packed_7z = work_dir.directory().Append(archive_resource_name);
       archive_file = &chrome_packed_7z;
-    } else if (resource_loader.Load(&kChrome7z[0], &kB7[0], &resource_data)) {
-      archive_resource_name = &kChrome7z[0];
-      chrome_7z = work_dir.directory().Append(archive_resource_name);
-      archive_file = &chrome_7z;
     } else {
       return false;
     }
     DCHECK(archive_resource_name);
-    DCHECK(!chrome_packed_7z.empty() || !chrome_7z.empty());
+    DCHECK(!chrome_packed_7z.empty());
     DCHECK(archive_file);
     written = base::WriteFile(
         *archive_file, reinterpret_cast<const char*>(resource_data.first),
@@ -641,13 +635,12 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
     return false;
   }
 
-  // Unpack chrome.packed.7z (static build only).
-  if (!chrome_packed_7z.empty()) {
-    if (UnPackArchive(chrome_packed_7z, work_dir.directory(), &chrome_7z) !=
-        UNPACK_NO_ERROR) {
-      LOG(DFATAL) << "Failed unpacking \"" << chrome_packed_7z.value() << "\"";
-      return false;
-    }
+  // Unpack chrome.packed.7z.
+  base::FilePath chrome_7z;
+  if (UnPackArchive(chrome_packed_7z, work_dir.directory(), &chrome_7z) !=
+      UNPACK_NO_ERROR) {
+    LOG(DFATAL) << "Failed unpacking \"" << chrome_packed_7z.value() << "\"";
+    return false;
   }
   DCHECK(!chrome_7z.empty());
 
@@ -659,8 +652,7 @@ bool GenerateAlternateVersion(const base::FilePath& original_installer_path,
   }
 
   // Get rid of intermediate files
-  if (!base::DeleteFile(chrome_7z) ||
-      (!chrome_packed_7z.empty() && !base::DeleteFile(chrome_packed_7z)) ||
+  if (!base::DeleteFile(chrome_7z) || (!base::DeleteFile(chrome_packed_7z)) ||
       !base::DeleteFile(setup_ex_)) {
     LOG(DFATAL) << "Failed deleting intermediate files";
     return false;

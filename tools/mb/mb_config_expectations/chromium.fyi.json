@@ -1391,7 +1391,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "skip_archive_compression": false,
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_goma": true
@@ -1402,7 +1401,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "skip_archive_compression": false,
       "symbol_level": 1,
       "target_cpu": "x86",
       "use_goma": true

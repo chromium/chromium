@@ -79,10 +79,10 @@
       'mac-arm64-archive-rel': 'release_bot_mac_strip_minimal_symbols_arm64_reclient',
       'mac-official': 'official_optimize_reclient',
       'win-archive-dbg': 'debug_bot_reclient',
-      'win-archive-rel': 'release_bot_minimal_symbols_enable_archive_compression_reclient',
+      'win-archive-rel': 'release_bot_minimal_symbols_reclient',
       'win-official': 'official_optimize_minimal_symbols_reclient',
       'win32-archive-dbg': 'debug_bot_x86_reclient',
-      'win32-archive-rel': 'release_bot_x86_minimal_symbols_enable_archive_compression_reclient',
+      'win32-archive-rel': 'release_bot_x86_minimal_symbols_reclient',
       'win32-official': 'x86_official_optimize_reclient',
     },
 
@@ -478,8 +478,8 @@
       'win10-rel-no-external-ip': 'gpu_tests_release_bot_minimal_symbols_reclient',
       'win10-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
       'win11-wpt-content-shell-fyi-rel': 'release_trybot_minimal_symbols_reclient',
-      'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols_enable_archive_compression',
-      'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols_enable_archive_compression',
+      'win32-archive-rel-goma-rbe-canary': 'release_bot_x86_minimal_symbols',
+      'win32-archive-rel-goma-rbe-latest': 'release_bot_x86_minimal_symbols',
       'win32-arm64-rel': 'win32_arm64_release_bot_reclient',
     },
 
@@ -3543,10 +3543,6 @@
       'release_bot', 'minimal_symbols',
     ],
 
-    'release_bot_minimal_symbols_enable_archive_compression_reclient': [
-      'release_bot_reclient', 'minimal_symbols', 'enable_archive_compression'
-    ],
-
     'release_bot_minimal_symbols_no_clang': [
       'release_bot', 'minimal_symbols', 'no_clang', 'no_goma',
     ],
@@ -3569,14 +3565,6 @@
 
     'release_bot_x86_minimal_symbols': [
       'release_bot', 'x86', 'minimal_symbols',
-    ],
-
-    'release_bot_x86_minimal_symbols_enable_archive_compression': [
-      'release_bot', 'x86', 'minimal_symbols', 'enable_archive_compression'
-    ],
-
-    'release_bot_x86_minimal_symbols_enable_archive_compression_reclient': [
-      'release_bot_reclient', 'x86', 'minimal_symbols', 'enable_archive_compression'
     ],
 
     'release_bot_x86_minimal_symbols_reclient': [
@@ -4178,13 +4166,6 @@
     'dx12vk': {
       # TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
       'mixins': ['enable_vulkan'],
-    },
-
-    # This config enable compression on main waterfall win builder to reduce the
-    # size of chrome installer which are downloaded by bysecting script many
-    # times.
-    'enable_archive_compression': {
-      'gn_args': 'skip_archive_compression=false',
     },
 
     'enable_blink_animation_use_time_delta': {

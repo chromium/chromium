@@ -2199,7 +2199,7 @@ class MetaBuildWrapper:
     # This function largely exists so it can be overriden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
       self.Print('\nWriting """\\\n%s""" to %s.\n' % (contents, path))
-    with open(path, 'w') as fp:
+    with open(path, 'w', encoding='utf-8', newline='') as fp:
       return fp.write(contents)
 
 

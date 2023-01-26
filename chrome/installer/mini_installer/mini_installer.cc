@@ -567,12 +567,7 @@ ProcessExitResult RunSetup(const Configuration& configuration,
   }
 
   // Append the command line param for chrome archive file.
-  if (!cmd_line.append(L" --") ||
-#if defined(SKIP_ARCHIVE_COMPRESSION)
-      !cmd_line.append(kCmdUncompressedArchive) ||
-#else
-      !cmd_line.append(kCmdInstallArchive) ||
-#endif
+  if (!cmd_line.append(L" --") || !cmd_line.append(kCmdInstallArchive) ||
       !cmd_line.append(L"=\"") || !cmd_line.append(archive_path) ||
       !cmd_line.append(L"\"")) {
     return ProcessExitResult(COMMAND_STRING_OVERFLOW);

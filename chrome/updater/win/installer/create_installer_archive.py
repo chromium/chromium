@@ -31,25 +31,32 @@ TEMP_ARCHIVE_DIR = "temp_installer_archive"
 g_archive_inputs = []
 
 
-def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
+def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose, fast):
     lzma_exec = GetLZMAExec(build_dir)
     cmd = [
         lzma_exec,
         'a',
         '-t7z',
-        # Flags equivalent to -mx9 (ultra) but with the bcj2 turned on (exe
-        # pre-filter). These arguments are the similar to what the Chrome mini
-        # installer is using.
-        '-m0=BCJ2',
-        '-m1=LZMA:d27:fb128',
-        '-m2=LZMA:d22:fb128:mf=bt2',
-        '-m3=LZMA:d22:fb128:mf=bt2',
-        '-mb0:1',
-        '-mb0s1:2',
-        '-mb0s2:3',
+    ]
+    if fast:
+        cmd.append('-mx1')
+    else:
+        cmd.extend([
+            # Flags equivalent to -mx9 (ultra) but with the bcj2 turned on (exe
+            # pre-filter). These arguments are the similar to what the Chrome
+            # mini-installer is using.
+            '-m0=BCJ2',
+            '-m1=LZMA:d27:fb128',
+            '-m2=LZMA:d22:fb128:mf=bt2',
+            '-m3=LZMA:d22:fb128:mf=bt2',
+            '-mb0:1',
+            '-mb0s1:2',
+            '-mb0s2:3',
+        ])
+    cmd.extend([
         os.path.abspath(compressed_file),
         os.path.abspath(input_file),
-    ]
+    ])
     if os.path.exists(compressed_file):
         os.remove(compressed_file)
     RunSystemCommand(cmd, verbose)
@@ -204,21 +211,13 @@ def CreateArchiveFile(options, staging_dir, timestamp):
         os.remove(archive_file)
         RunSystemCommand(cmd, options.verbose)
 
-    # Do not compress the archive when skip_archive_compression is specified.
-    if options.skip_archive_compression:
-        compressed_file = os.path.join(
-            options.output_dir,
-            options.output_name + COMPRESSED_ARCHIVE_SUFFIX)
-        if os.path.exists(compressed_file):
-            os.remove(compressed_file)
-        return os.path.basename(archive_file)
-
     compressed_archive_file = options.output_name + COMPRESSED_ARCHIVE_SUFFIX
     compressed_archive_file_path = os.path.join(options.output_dir,
                                                 compressed_archive_file)
     os.utime(archive_file, (os.stat(archive_file).st_atime, timestamp))
     CompressUsingLZMA(options.build_dir, compressed_archive_file_path,
-                      archive_file, options.verbose)
+                      archive_file, options.verbose,
+                      options.fast_archive_compression)
 
     return compressed_archive_file
 
@@ -331,10 +330,10 @@ def _ParseOptions():
         default='0',
         help='Whether this archive is packaging a component build.')
     parser.add_option(
-        '--skip_archive_compression',
+        '--fast_archive_compression',
         action='store_true',
         default=False,
-        help='Turn off compression of updater.7z into updater.packed.7z and '
+        help='Enable fast compression of updater.7z into updater.packed.7z and '
         'helpfully delete any old updater.packed.7z in |output_dir|.')
     parser.add_option(
         '--depfile',

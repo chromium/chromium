@@ -13,11 +13,7 @@ extern const wchar_t kChromeArchivePrefix[];
 extern const wchar_t kSetupPrefix[];
 
 // Unprefixed command line switch names for setup.exe.
-#if defined(SKIP_ARCHIVE_COMPRESSION)
-extern const wchar_t kCmdUncompressedArchive[];
-#else
 extern const wchar_t kCmdInstallArchive[];
-#endif
 extern const wchar_t kCmdUpdateSetupExe[];
 extern const wchar_t kCmdNewSetupExe[];
 extern const wchar_t kCmdPreviousVersion[];

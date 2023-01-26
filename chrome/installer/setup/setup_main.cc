@@ -1278,36 +1278,32 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
     return TEMP_DIR_FAILED;
   }
 
-  // Uncompress and optionally patch the archive if an uncompressed archive was
-  // not specified on the command line and a compressed archive is found.
+  // Uncompress and optionally patch the archive if a compressed archive is
+  // found.
   *archive_type = UNKNOWN_ARCHIVE_TYPE;
-  base::FilePath uncompressed_archive(
-      cmd_line.GetSwitchValuePath(switches::kUncompressedArchive));
-  if (uncompressed_archive.empty()) {
-    base::Version previous_version;
-    if (cmd_line.HasSwitch(installer::switches::kPreviousVersion)) {
-      previous_version = base::Version(
-          cmd_line.GetSwitchValueASCII(installer::switches::kPreviousVersion));
-    }
+  base::Version previous_version;
+  if (cmd_line.HasSwitch(installer::switches::kPreviousVersion)) {
+    previous_version = base::Version(
+        cmd_line.GetSwitchValueASCII(installer::switches::kPreviousVersion));
+  }
 
-    std::unique_ptr<ArchivePatchHelper> archive_helper(
-        CreateChromeArchiveHelper(
-            setup_exe, cmd_line, installer_state, unpack_path,
-            (previous_version.IsValid()
-                 ? UnPackConsumer::CHROME_ARCHIVE_PATCH
-                 : UnPackConsumer::COMPRESSED_CHROME_ARCHIVE)));
-    if (archive_helper) {
-      VLOG(1) << "Installing Chrome from compressed archive "
-              << archive_helper->compressed_archive().value();
-      if (!UncompressAndPatchChromeArchive(original_state, installer_state,
-                                           archive_helper.get(), archive_type,
-                                           &install_status, previous_version)) {
-        DCHECK_NE(install_status, UNKNOWN_STATUS);
-        return install_status;
-      }
-      uncompressed_archive = archive_helper->target();
-      DCHECK(!uncompressed_archive.empty());
+  std::unique_ptr<ArchivePatchHelper> archive_helper(CreateChromeArchiveHelper(
+      setup_exe, cmd_line, installer_state, unpack_path,
+      (previous_version.IsValid()
+           ? UnPackConsumer::CHROME_ARCHIVE_PATCH
+           : UnPackConsumer::COMPRESSED_CHROME_ARCHIVE)));
+  base::FilePath uncompressed_archive;
+  if (archive_helper) {
+    VLOG(1) << "Installing Chrome from compressed archive "
+            << archive_helper->compressed_archive().value();
+    if (!UncompressAndPatchChromeArchive(original_state, installer_state,
+                                         archive_helper.get(), archive_type,
+                                         &install_status, previous_version)) {
+      DCHECK_NE(install_status, UNKNOWN_STATUS);
+      return install_status;
     }
+    uncompressed_archive = archive_helper->target();
+    DCHECK(!uncompressed_archive.empty());
   }
 
   // Check for an uncompressed archive alongside the current executable if one

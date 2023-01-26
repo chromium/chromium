@@ -15,11 +15,12 @@ import("//ui/base/ui_features.gni")
 import("//v8/gni/v8.gni")
 
 declare_args() {
-  # The Chrome archive is compressed in official builds to reduce the size of
-  # the installer. By default: non-official or component builds, a build mode
-  # targeting developers, do not compress so as to provide quicker build-test
-  # cycles.
-  skip_archive_compression = !is_official_build || is_component_build
+  # The Chrome archive is maximally compressed in official builds to reduce the
+  # size of the installer. By default: non-official or component builds, build
+  # modes targeting developers, use maximum-speed instead of maximum-compression
+  # settings so as to provide quicker build-test cycles. Uncompressed archives
+  # are not supported due to size constraints.
+  fast_archive_compression = !is_official_build || is_component_build
 }
 
 config("mini_installer_compiler_flags") {
@@ -58,10 +59,6 @@ source_set("lib") {
     "//build:branding_buildflags",
     "//chrome/browser/chrome_for_testing:buildflags",
   ]
-
-  if (skip_archive_compression) {
-    defines = [ "SKIP_ARCHIVE_COMPRESSION" ]
-  }
 
   # Initialization may insert unexpected memset calls.
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
@@ -131,8 +128,8 @@ action("mini_installer_archive") {
   ]
 
   outputs = [
-    # See also chrome.packed.7z conditionally added below.
     "$root_out_dir/chrome.7z",
+    "$root_out_dir/chrome.packed.7z",
     "$root_out_dir/setup.ex_",
     packed_files_rc_file,
   ]
@@ -186,10 +183,8 @@ action("mini_installer_archive") {
     args += [ "--component_ffmpeg_build=1" ]
   }
 
-  if (skip_archive_compression) {
-    args += [ "--skip_archive_compression" ]
-  } else {
-    outputs += [ "$root_out_dir/chrome.packed.7z" ]
+  if (fast_archive_compression) {
+    args += [ "--fast_archive_compression" ]
   }
 
   if (enable_nacl) {
