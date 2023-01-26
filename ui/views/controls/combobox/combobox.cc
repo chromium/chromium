@@ -152,6 +152,12 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
       AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(
           &Combobox::ArrowButtonPressed, base::Unretained(this))));
 
+  if (features::IsChromeRefresh2023()) {
+    // TODO(crbug.com/1400024): This setter should be removed and the behavior
+    // made default when ChromeRefresh2023 is finalized.
+    SetEventHighlighting(true);
+  }
+
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
   SetPaintToLayer();
