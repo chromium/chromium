@@ -1115,6 +1115,7 @@ suite('PrivacySandboxAdMeasurementSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.adMeasurementToggle));
     assertFalse(page.$.adMeasurementToggle.checked);
+    assertFalse(page.$.adMeasurementToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('adMeasurementPageToggleSubLabel'),
         page.$.adMeasurementToggle.subLabel);
@@ -1123,6 +1124,7 @@ suite('PrivacySandboxAdMeasurementSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.adMeasurementToggle));
     assertTrue(page.$.adMeasurementToggle.checked);
+    assertFalse(page.$.adMeasurementToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('adMeasurementPageToggleSubLabel'),
         page.$.adMeasurementToggle.subLabel);
@@ -1138,6 +1140,7 @@ suite('PrivacySandboxAdMeasurementSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.adMeasurementToggle));
     assertTrue(page.$.adMeasurementToggle.checked);
+    assertFalse(page.$.adMeasurementToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('adMeasurementPageToggleSubLabel'),
         page.$.adMeasurementToggle.subLabel);
@@ -1146,6 +1149,7 @@ suite('PrivacySandboxAdMeasurementSubpageTests', function() {
     await flushTasks();
     assertTrue(isVisible(page.$.adMeasurementToggle));
     assertFalse(page.$.adMeasurementToggle.checked);
+    assertFalse(page.$.adMeasurementToggle.controlDisabled());
     assertEquals(
         loadTimeData.getString('adMeasurementPageToggleSubLabel'),
         page.$.adMeasurementToggle.subLabel);
@@ -1154,5 +1158,17 @@ suite('PrivacySandboxAdMeasurementSubpageTests', function() {
     assertEquals(
         'Settings.PrivacySandbox.AdMeasurement.Disabled',
         await metricsBrowserProxy.whenCalled('recordAction'));
+  });
+
+  test('adMeasurementManaged', async function() {
+    page.set('prefs.privacy_sandbox.m1.ad_measurement_enabled', {
+      ...page.get('prefs.privacy_sandbox.m1.ad_measurement_enabled'),
+      value: false,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    await flushTasks();
+    assertFalse(page.$.adMeasurementToggle.checked);
+    assertTrue(page.$.adMeasurementToggle.controlDisabled());
   });
 });
