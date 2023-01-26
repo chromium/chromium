@@ -34,10 +34,13 @@ class GestureConfigurationAura : public GestureConfiguration {
  private:
   GestureConfigurationAura() : GestureConfiguration() {
 #if BUILDFLAG(IS_CHROMEOS)
-    // On ChromeOS, use 6 which is derived from the android's default(8),
-    // multiplied by base dpi ratio(0.75).  See crbug.com/1083120 for more
-    // details.
+    // On ChromeOS, the touch slop value of 6 is derived from the android's
+    // default(8), multiplied by base dpi ratio(0.75).  See crbug.com/1083120
+    // for more details.
     set_max_touch_move_in_pixels_for_click(6);
+    // The default stylus slop value of 10 is derived from the UMA data analysis
+    // for making stylus clicks easier for users.  See crbug.com/1181872.
+    set_max_stylus_move_in_pixels_for_click(10);
 #endif
     double touch_slop_distance;
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

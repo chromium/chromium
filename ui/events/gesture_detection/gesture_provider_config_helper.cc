@@ -30,6 +30,7 @@ GestureDetector::Config BuildGestureDetectorConfig(
       base::Milliseconds(gesture_config.show_press_delay_in_ms());
   config.double_tap_timeout =
       base::Milliseconds(gesture_config.double_tap_timeout_in_ms());
+  config.stylus_slop = gesture_config.max_stylus_move_in_pixels_for_click();
   config.touch_slop = gesture_config.max_touch_move_in_pixels_for_click();
   config.double_tap_slop =
       gesture_config.max_distance_between_taps_for_double_tap();

@@ -54,6 +54,8 @@ class GestureConfigurationAndroid : public GestureConfiguration {
     set_max_gesture_bounds_length(kMaxGestureBoundsLengthDips);
     set_max_touch_move_in_pixels_for_click(
         ViewConfiguration::GetTouchSlopInDips());
+    set_max_stylus_move_in_pixels_for_click(
+        ViewConfiguration::GetTouchSlopInDips() * 1.5f);
     set_min_fling_velocity(
         ViewConfiguration::GetMinimumFlingVelocityInDipsPerSecond());
     set_min_gesture_bounds_length(kMinGestureBoundsLengthDips);

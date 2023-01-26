@@ -8,7 +8,6 @@
 
 #include <cmath>
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

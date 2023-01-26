@@ -114,6 +114,12 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   void set_max_touch_down_duration_for_click_in_ms(int val) {
     max_touch_down_duration_for_click_in_ms_ = val;
   }
+  float max_stylus_move_in_pixels_for_click() const {
+    return max_stylus_move_in_pixels_for_click_;
+  }
+  void set_max_stylus_move_in_pixels_for_click(float val) {
+    max_stylus_move_in_pixels_for_click_ = val;
+  }
   float max_touch_move_in_pixels_for_click() const {
     return max_touch_move_in_pixels_for_click_;
   }
@@ -237,6 +243,7 @@ class GESTURE_DETECTION_EXPORT GestureConfiguration {
   float max_swipe_deviation_angle_;
   int max_time_between_double_click_in_ms_;
   int max_touch_down_duration_for_click_in_ms_;
+  float max_stylus_move_in_pixels_for_click_;
   float max_touch_move_in_pixels_for_click_;
   float min_distance_for_pinch_scroll_in_pixels_;
   float min_fling_velocity_;

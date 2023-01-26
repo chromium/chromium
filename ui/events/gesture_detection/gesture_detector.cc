@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
 #include "ui/events/gesture_detection/motion_event.h"
@@ -37,15 +38,20 @@ enum TimeoutEvent {
 
 }  // namespace
 
-// Note: These constants were taken directly from the default (unscaled)
+// Note: Most of these constants were taken directly from the default (unscaled)
 // versions found in Android's ViewConfiguration. Do not change these default
 // values without explicitly consulting an OWNER.
+//
+// Many of these default values get over-ridden by GestureConfiguration
+// parameters.  We have encountered exceptions to this behavior in certain
+// tests, see https://crbug.com/1294244.
 GestureDetector::Config::Config()
     : shortpress_timeout(base::Milliseconds(400)),
       longpress_timeout(base::Milliseconds(500)),
       showpress_timeout(base::Milliseconds(180)),
       double_tap_timeout(base::Milliseconds(300)),
       double_tap_min_time(base::Milliseconds(40)),
+      stylus_slop(12),
       touch_slop(8),
       double_tap_slop(100),
       minimum_fling_velocity(50),
@@ -138,6 +144,7 @@ GestureDetector::GestureDetector(
     : timeout_handler_(new TimeoutGestureHandler(config, this)),
       listener_(listener),
       double_tap_listener_(optional_double_tap_listener),
+      stylus_slop_square_(0),
       touch_slop_square_(0),
       double_tap_touch_slop_square_(0),
       double_tap_slop_square_(0),
@@ -326,7 +333,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
         DCHECK(double_tap_listener_);
         handled |= double_tap_listener_->OnDoubleTapEvent(ev);
       } else if (all_pointers_within_slop_regions_) {
-        if (!IsWithinTouchSlop(ev)) {
+        if (!IsWithinSlopForTap(ev)) {
           handled = listener_->OnScroll(
               *current_down_event_, ev,
               (maximum_pointer_count_ > 1 && secondary_pointer_down_event_)
@@ -385,7 +392,7 @@ bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
       // (independent) slop region.
       // If the event has had more than two pointers down at any time,
       // two finger tap should be prevented.
-      if (maximum_pointer_count_ > 2 || !IsWithinTouchSlop(ev)) {
+      if (maximum_pointer_count_ > 2 || !IsWithinSlopForTap(ev)) {
         two_finger_tap_allowed_for_gesture_ = false;
       }
     } break;
@@ -476,9 +483,11 @@ void GestureDetector::Init(const Config& config) {
   // proportioned).
   const float kSlopEpsilon = .05f;
 
+  const float stylus_slop = config.stylus_slop + kSlopEpsilon;
   const float touch_slop = config.touch_slop + kSlopEpsilon;
   const float double_tap_touch_slop = touch_slop;
   const float double_tap_slop = config.double_tap_slop + kSlopEpsilon;
+  stylus_slop_square_ = stylus_slop * stylus_slop;
   touch_slop_square_ = touch_slop * touch_slop;
   double_tap_touch_slop_square_ = double_tap_touch_slop * double_tap_touch_slop;
   double_tap_slop_square_ = double_tap_slop * double_tap_slop;
@@ -616,7 +625,7 @@ bool GestureDetector::HandleSwipeIfNeeded(const MotionEvent& up,
   return listener_->OnSwipe(*current_down_event_, up, vx, vy);
 }
 
-bool GestureDetector::IsWithinTouchSlop(const MotionEvent& ev) {
+bool GestureDetector::IsWithinSlopForTap(const MotionEvent& ev) {
   // If there have been more than two down pointers in the touch sequence,
   // tapping is not possible. Slop region check is not needed.
   if (maximum_pointer_count_ > 2)
@@ -639,8 +648,14 @@ bool GestureDetector::IsWithinTouchSlop(const MotionEvent& ev) {
 
     float dx = source_pointer_down_event->GetX(source_index) - ev.GetX(i);
     float dy = source_pointer_down_event->GetY(source_index) - ev.GetY(i);
-    if (dx * dx + dy * dy > touch_slop_square_)
+    bool is_stylus_slop_effective =
+        base::FeatureList::IsEnabled(features::kStylusSpecificTapSlop) &&
+        ev.GetToolType(i) == MotionEvent::ToolType::STYLUS;
+    float slop_square =
+        is_stylus_slop_effective ? stylus_slop_square_ : touch_slop_square_;
+    if (dx * dx + dy * dy > slop_square) {
       return false;
+    }
   }
 
   return true;

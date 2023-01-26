@@ -482,6 +482,7 @@ component("gesture_detection") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
+    "//ui/base:features",
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",

@@ -39,6 +39,10 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
     // tap's down event for an interaction to be considered a double-tap.
     base::TimeDelta double_tap_min_time;
 
+    // Distance a stylus-contact can wander before a scroll will occur (in
+    // dips).
+    float stylus_slop;
+
     // Distance a touch can wander before a scroll will occur (in dips).
     float touch_slop;
 
@@ -145,13 +149,14 @@ class GESTURE_DETECTION_EXPORT GestureDetector {
                      const MotionEvent& second_down,
                      bool should_process_double_tap) const;
   bool HandleSwipeIfNeeded(const MotionEvent& up, float vx, float vy);
-  bool IsWithinTouchSlop(const MotionEvent& ev);
+  bool IsWithinSlopForTap(const MotionEvent& ev);
 
   class TimeoutGestureHandler;
   std::unique_ptr<TimeoutGestureHandler> timeout_handler_;
   const raw_ptr<GestureListener> listener_;
   raw_ptr<DoubleTapListener> double_tap_listener_;
 
+  float stylus_slop_square_;
   float touch_slop_square_;
   float double_tap_touch_slop_square_;
   float double_tap_slop_square_;

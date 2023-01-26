@@ -136,6 +136,15 @@ BASE_FEATURE(kPointerLockOptions,
              "PointerLockOptions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
+// tend to slip more than touch taps (presumably because the user doesn't feel
+// the movement friction with a stylus).  As a result, it is harder to tap with
+// a stylus. This feature makes the slop region for stylus input bigger than the
+// touch slop.
+BASE_FEATURE(kStylusSpecificTapSlop,
+             "StylusSpecificTapSlop",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows system caption style for WebVTT Captions.
 BASE_FEATURE(kSystemCaptionStyle,
              "SystemCaptionStyle",
