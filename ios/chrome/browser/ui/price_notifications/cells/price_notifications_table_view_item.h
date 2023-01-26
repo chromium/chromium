@@ -32,6 +32,8 @@ class GURL;
 // The delegate object that is passed down to the
 // PriceNotificationsTableViewCell.
 @property(nonatomic, weak) id<PriceNotificationsTableViewCellDelegate> delegate;
+// The status of whether the item is loading its data from the shoppingService.
+@property(nonatomic, assign) BOOL loading;
 
 @end
 
@@ -59,7 +61,8 @@ class GURL;
 @property(nonatomic, assign) GURL entryURL;
 // Delegate that handles subscription events.
 @property(nonatomic, weak) id<PriceNotificationsTableViewCellDelegate> delegate;
-
+// The status of whether the item is loading its data from the shoppingService.
+@property(nonatomic, assign, getter=isLoading) BOOL loading;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PRICE_NOTIFICATIONS_CELLS_PRICE_NOTIFICATIONS_TABLE_VIEW_ITEM_H_

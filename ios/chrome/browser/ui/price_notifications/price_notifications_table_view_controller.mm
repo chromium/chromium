@@ -65,6 +65,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   // The boolean indicates whether the user has Price tracking item
   // subscriptions displayed on the UI.
   BOOL _hasTrackedItems;
+  // A boolean value that indicates that data is coming from the shoppingService
+  // and that the loading state should be hidden.
+  BOOL _shouldHideLoadingState;
+  // A boolean value that indicates that the loading state is currently being
+  // displayed.
+  BOOL _displayedLoadingState;
 }
 
 #pragma mark - UIViewController
@@ -72,6 +78,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewDidLoad {
   [super viewDidLoad];
   [self initializeTableViewModelIfNeeded];
+  [self addLoadingStateItems];
 
   self.tableView.accessibilityIdentifier =
       kPriceNotificationsTableViewIdentifier;
@@ -94,7 +101,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)setTrackableItem:(PriceNotificationsTableViewItem*)trackableItem
        currentlyTracking:(BOOL)currentlyTracking {
+  _shouldHideLoadingState = YES;
   [self initializeTableViewModelIfNeeded];
+  [self removeLoadingState];
   self.itemOnCurrentSiteIsTracked = currentlyTracking;
   [self.tableViewModel
                      setHeader:
@@ -113,12 +122,19 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 
   [self.tableView
-        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]
+        reloadSections:
+            [NSIndexSet
+                indexSetWithIndexesInRange:
+                    [self createRangeForSectionIdentifier:
+                              SectionIdentifierTrackableItemsOnCurrentSite]]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 - (void)addTrackedItem:(PriceNotificationsTableViewItem*)trackedItem {
+  _shouldHideLoadingState = YES;
   [self initializeTableViewModelIfNeeded];
+  [self removeLoadingState];
+
   TableViewModel* model = self.tableViewModel;
   BOOL shouldReloadSection = NO;
 
@@ -138,7 +154,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 
   [self.tableView
-        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(1, 1)]
+        reloadSections:[NSIndexSet indexSetWithIndexesInRange:
+                                       [self createRangeForSectionIdentifier:
+                                                 SectionIdentifierTrackedItems]]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
@@ -167,7 +185,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
               forSectionWithIdentifier:trackedSection];
           [self.tableView
                 reloadSections:[NSIndexSet
-                                   indexSetWithIndexesInRange:NSMakeRange(1, 1)]
+                                   indexSetWithIndexesInRange:
+                                       [self createRangeForSectionIdentifier:
+                                                 SectionIdentifierTrackedItems]]
               withRowAnimation:UITableViewRowAnimationAutomatic];
         }
 
@@ -203,7 +223,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       forSectionWithIdentifier:trackableSectionID];
 
   [self.tableView
-        reloadSections:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, 1)]
+        reloadSections:
+            [NSIndexSet
+                indexSetWithIndexesInRange:
+                    [self createRangeForSectionIdentifier:
+                              SectionIdentifierTrackableItemsOnCurrentSite]]
       withRowAnimation:UITableViewRowAnimationAutomatic];
 
   [self addTrackedItem:trackableItem];
@@ -296,7 +320,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   [model addSectionWithIdentifier:trackableSectionID];
   [model setHeader:[self createHeaderForSectionIndex:trackableSectionID
-                                             isEmpty:YES]
+                                             isEmpty:NO]
       forSectionWithIdentifier:trackableSectionID];
 
   [model addSectionWithIdentifier:trackedSectionID];
@@ -328,6 +352,81 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       description, view,
       NSDirectionalEdgeInsetsMake(kDescriptionPadding, kDescriptionPadding,
                                   kDescriptionPadding, kDescriptionPadding));
+}
+
+// Adds placeholder items into each section.
+- (void)addLoadingStateItems {
+  if (_shouldHideLoadingState) {
+    return;
+  }
+
+  [self.tableViewModel setHeader:[self createHeaderForSectionIndex:
+                                           SectionIdentifierTrackedItems
+                                                           isEmpty:NO]
+        forSectionWithIdentifier:SectionIdentifierTrackedItems];
+
+  PriceNotificationsTableViewItem* emptyTrackableItem =
+      [[PriceNotificationsTableViewItem alloc] init];
+  PriceNotificationsTableViewItem* emptyTrackedItem =
+      [[PriceNotificationsTableViewItem alloc] init];
+  emptyTrackableItem.loading = YES;
+  emptyTrackedItem.loading = YES;
+  emptyTrackedItem.tracking = YES;
+  [self addItem:emptyTrackableItem
+      toSection:SectionIdentifierTrackableItemsOnCurrentSite];
+  [self addItem:emptyTrackedItem toSection:SectionIdentifierTrackedItems];
+  [self addItem:emptyTrackedItem toSection:SectionIdentifierTrackedItems];
+  _displayedLoadingState = YES;
+}
+
+// Removes the placeholder items from each section.
+- (void)removeLoadingState {
+  if (!_displayedLoadingState) {
+    return;
+  }
+
+  TableViewModel* model = self.tableViewModel;
+
+  NSMutableArray<NSIndexPath*>* itemIndexPaths =
+      [[model indexPathsForItemType:ItemTypeListItem
+                  sectionIdentifier:SectionIdentifierTrackedItems] mutableCopy];
+  [itemIndexPaths
+      addObject:[model indexPathForItemType:ItemTypeListItem
+                          sectionIdentifier:
+                              SectionIdentifierTrackableItemsOnCurrentSite]];
+
+  [model removeItemWithType:ItemTypeListItem
+      fromSectionWithIdentifier:SectionIdentifierTrackableItemsOnCurrentSite
+                        atIndex:0];
+  [model setHeader:[self
+                       createHeaderForSectionIndex:SectionIdentifierTrackedItems
+                                           isEmpty:YES]
+      forSectionWithIdentifier:SectionIdentifierTrackedItems];
+  [model deleteAllItemsFromSectionWithIdentifier:SectionIdentifierTrackedItems];
+
+  if (!self.viewIfLoaded.window) {
+    return;
+  }
+
+  [self.tableView deleteRowsAtIndexPaths:itemIndexPaths
+                        withRowAnimation:UITableViewRowAnimationAutomatic];
+  [self.tableView
+        reloadSections:[NSIndexSet indexSetWithIndexesInRange:
+                                       [self createRangeForSectionIdentifier:
+                                                 SectionIdentifierTrackedItems]]
+      withRowAnimation:UITableViewRowAnimationAutomatic];
+  _displayedLoadingState = NO;
+}
+
+// Creates the NSRanges that encapsulate the various sections within the table
+// view.
+- (NSRange)createRangeForSectionIdentifier:(SectionIdentifier)sectionID {
+  switch (sectionID) {
+    case SectionIdentifierTrackableItemsOnCurrentSite:
+      return NSMakeRange(0, 1);
+    case SectionIdentifierTrackedItems:
+      return NSMakeRange(1, 1);
+  }
 }
 
 @end

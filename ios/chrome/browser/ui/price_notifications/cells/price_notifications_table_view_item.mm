@@ -32,8 +32,28 @@ const CGFloat kCellContentHeight = 64.0;
 const CGFloat kCellContentSpacing = 14;
 // Notification icon's point size.
 const CGFloat kNotificationIconPointSize = 20;
+// The space in between elements in the vertical UIStackView element.
+const CGFloat kVerticalStackViewElementSpacing = 7;
+// The following properties define the dimensions of the various placeholder
+// elements that compose the loading screen.
+const CGFloat kTitlePlaceholderHeight = 16;
+const CGFloat kTitlePlaceholderWidth = 120;
+const CGFloat kURLPlaceholderWidth = 94;
+const CGFloat kPriceChipPlaceholderHeight = 24;
+const CGFloat kPriceChipPlaceholderWidth = 50;
+const CGFloat kTrackButtonPlaceholderHeight = 28;
+const CGFloat kTrackButtonPlaceholderWidth = 70;
 // Identifier for the stop price tracking action item.
 NSString* kActionMenuIdentifier = @"priceTrackingActionMenu";
+
+// A container for the UIView elements that will be added to the UIStackView.
+struct TableViewItemStackContent {
+  UIView* title;
+  UIView* url;
+  UIView* price_chip;
+  UIView* track_button;
+  UIView* menu_button;
+};
 
 // Creates an action menu for stopping a product's subscription to price
 // tracking events.
@@ -57,6 +77,81 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
   NSArray<UIMenuElement*>* menu_elements = @[ stop_tracking ];
 
   return [UIMenu menuWithChildren:menu_elements];
+}
+
+// Creates an empty rectangular UIView that represents the
+// placeholder for an element while the data loads.
+UIView* CreatePlaceholderElement() {
+  UIView* placeholder = [[UIView alloc] initWithFrame:CGRectZero];
+  placeholder.backgroundColor = [UIColor colorNamed:kGrey100Color];
+  placeholder.translatesAutoresizingMaskIntoConstraints = NO;
+  return placeholder;
+}
+
+// A function that creates the horizontal UIStackView that contains and formats
+// the bulk of the item's UI elements.
+UIStackView* CreateHorizontalStack(TableViewItemStackContent content) {
+  // Use stack views to layout the subviews except for the Price Notification
+  // Image.
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    content.title, content.url, content.price_chip
+  ]];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.distribution = UIStackViewDistributionEqualSpacing;
+  verticalStack.alignment = UIStackViewAlignmentLeading;
+  verticalStack.spacing = kVerticalStackViewElementSpacing;
+
+  UIStackView* horizontalStack =
+      [[UIStackView alloc] initWithArrangedSubviews:@[
+        verticalStack, content.menu_button, content.track_button
+      ]];
+  horizontalStack.axis = UILayoutConstraintAxisHorizontal;
+  horizontalStack.spacing = kTableViewHorizontalSpacing;
+  horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
+  horizontalStack.alignment = UIStackViewAlignmentCenter;
+  horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+
+  return horizontalStack;
+}
+
+// Creates the entire loading screen composed of multiple placeholder
+// UIViews.
+UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
+  TableViewItemStackContent content = {
+      CreatePlaceholderElement(), CreatePlaceholderElement(),
+      CreatePlaceholderElement(), track_button, menu_button};
+  content.title.layer.cornerRadius = 2;
+  content.url.layer.cornerRadius = 2;
+  content.price_chip.layer.cornerRadius = kPriceChipPlaceholderHeight / 2;
+  content.menu_button.layer.cornerRadius = kPriceChipPlaceholderHeight / 2;
+  content.track_button.layer.cornerRadius = kTrackButtonPlaceholderHeight / 2;
+
+  UIStackView* horizontalStack = CreateHorizontalStack(content);
+
+  // Set the heights and widths of the placeholders
+  [NSLayoutConstraint activateConstraints:@[
+    [content.title.heightAnchor
+        constraintEqualToConstant:kTitlePlaceholderHeight],
+    [content.title.widthAnchor
+        constraintEqualToConstant:kTitlePlaceholderWidth],
+    [content.url.heightAnchor
+        constraintEqualToConstant:kTitlePlaceholderHeight],
+    [content.url.widthAnchor constraintEqualToConstant:kURLPlaceholderWidth],
+    [content.price_chip.heightAnchor
+        constraintEqualToConstant:kPriceChipPlaceholderHeight],
+    [content.price_chip.widthAnchor
+        constraintEqualToConstant:kPriceChipPlaceholderWidth],
+    [content.track_button.heightAnchor
+        constraintEqualToConstant:kTrackButtonPlaceholderHeight],
+    [content.track_button.widthAnchor
+        constraintEqualToConstant:kTrackButtonPlaceholderWidth],
+    [content.menu_button.heightAnchor
+        constraintEqualToConstant:kPriceChipPlaceholderHeight],
+    [content.menu_button.widthAnchor
+        constraintEqualToAnchor:content.menu_button.heightAnchor]
+  ]];
+
+  return horizontalStack;
 }
 
 }  // namespace
@@ -83,6 +178,7 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
   tableCell.tracking = self.tracking;
   tableCell.accessibilityTraits |= UIAccessibilityTraitButton;
   tableCell.delegate = self.delegate;
+  tableCell.loading = self.loading;
 }
 
 @end
@@ -99,7 +195,20 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
 
 @end
 
-@implementation PriceNotificationsTableViewCell
+@implementation PriceNotificationsTableViewCell {
+  // A blank rectangle that is displays as a placeholder for the title when the
+  // data is loading.
+  // UIView* _titlePlaceholder;
+  UIStackView* _placeholderStackView;
+  // This the UIStackView that contains the data that is returned from the
+  // ShoppingService.
+  UIStackView* _horizontalStack;
+  // These two properties are placeholder elements. They need to be defined as
+  // ivars because their visibility needs to be toggled depending on whether the
+  // PriceNotificationTableViewCell's `tracking` property is true or false.
+  UIView* _menuButtonPlaceholder;
+  UIView* _trackButtonPlaceholder;
+}
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -127,31 +236,23 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
         [[PriceNotificationsImageContainerView alloc] init];
     _priceNotificationsImageContainerView
         .translatesAutoresizingMaskIntoConstraints = NO;
-
     [_trackButton addTarget:self
                      action:@selector(trackItem)
            forControlEvents:UIControlEventTouchUpInside];
 
-    // Use stack views to layout the subviews except for the Price Notification
-    // Image.
-    UIStackView* verticalStack =
-        [[UIStackView alloc] initWithArrangedSubviews:@[
-          _titleLabel, _URLLabel, _priceNotificationsChip
-        ]];
-    verticalStack.axis = UILayoutConstraintAxisVertical;
-    verticalStack.distribution = UIStackViewDistributionEqualSpacing;
-    verticalStack.alignment = UIStackViewAlignmentLeading;
+    TableViewItemStackContent content = {_titleLabel, _URLLabel,
+                                         _priceNotificationsChip, _trackButton,
+                                         _menuButton};
+    _horizontalStack = CreateHorizontalStack(content);
 
-    UIStackView* horizontalStack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ verticalStack, _trackButton, _menuButton ]];
-    horizontalStack.axis = UILayoutConstraintAxisHorizontal;
-    horizontalStack.spacing = kTableViewHorizontalSpacing;
-    horizontalStack.distribution = UIStackViewDistributionEqualSpacing;
-    horizontalStack.alignment = UIStackViewAlignmentCenter;
-    horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
+    _menuButtonPlaceholder = CreatePlaceholderElement();
+    _trackButtonPlaceholder = CreatePlaceholderElement();
+    _placeholderStackView =
+        CreateLoadingScreen(_trackButtonPlaceholder, _menuButtonPlaceholder);
 
     [self.contentView addSubview:_priceNotificationsImageContainerView];
-    [self.contentView addSubview:horizontalStack];
+    [self.contentView addSubview:_horizontalStack];
+    [self.contentView addSubview:_placeholderStackView];
 
     NSLayoutConstraint* heightConstraint = [self.contentView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kCellContentHeight];
@@ -168,23 +269,25 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
 
       // The stack view fills the remaining space, has an intrinsic height, and
       // is centered vertically.
-      [horizontalStack.leadingAnchor
+      [_horizontalStack.leadingAnchor
           constraintEqualToAnchor:self.priceNotificationsImageContainerView
                                       .trailingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [horizontalStack.trailingAnchor
+      [_horizontalStack.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing],
-      [horizontalStack.topAnchor
+      [_horizontalStack.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.contentView.topAnchor
                                       constant:kCellContentSpacing],
-      [horizontalStack.centerYAnchor
+      [_horizontalStack.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
-      [horizontalStack.bottomAnchor
+      [_horizontalStack.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:self.contentView.bottomAnchor
                                       constant:-kCellContentSpacing],
-      heightConstraint
+      heightConstraint,
     ]];
+
+    AddSameConstraints(_horizontalStack, _placeholderStackView);
   }
   return self;
 }
@@ -196,12 +299,16 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
 - (void)setTracking:(BOOL)tracking {
   if (tracking) {
     self.trackButton.hidden = YES;
+    _trackButtonPlaceholder.hidden = YES;
     self.menuButton.hidden = NO;
+    _menuButtonPlaceholder.hidden = NO;
     return;
   }
 
   self.trackButton.hidden = NO;
+  _trackButtonPlaceholder.hidden = NO;
   self.menuButton.hidden = YES;
+  _menuButtonPlaceholder.hidden = YES;
   _tracking = tracking;
 }
 
@@ -215,11 +322,25 @@ UIMenu* CreateOptionMenu(void (^completion_handler)(UIAction* action)) {
   }
 }
 
+- (void)setLoading:(BOOL)isLoading {
+  _loading = isLoading;
+
+  if (_loading) {
+    _horizontalStack.hidden = YES;
+    _placeholderStackView.hidden = NO;
+    return;
+  }
+
+  _horizontalStack.hidden = NO;
+  _placeholderStackView.hidden = YES;
+}
+
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.delegate = nil;
+  self.loading = NO;
 }
 
 #pragma mark - Private
