@@ -821,6 +821,9 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_UnsupportedMultipleVaryHeader) {
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kPartitionedCookies);
+
   ResourceRequest request = CreateRequest("/cacheable?max-age=120");
   request.devtools_request_id = "fake-id";
   StoreResponseToMemoryCache(request);
@@ -850,6 +853,9 @@ TEST_F(NetworkServiceMemoryCacheTest, CanServe_DevToolsAttached) {
     }
   }
   ASSERT_TRUE(has_expected_header);
+
+  EXPECT_EQ(net::CookiePartitionKey::FromURLForTesting(request.url),
+            devtools_observer.response_cookie_partition_key());
 }
 
 TEST_F(NetworkServiceMemoryCacheTest, CanServe_ClientSecurityStateProvided) {

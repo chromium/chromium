@@ -13125,6 +13125,37 @@ TEST_F(URLRequestTest,
   d.RunUntilComplete();
 }
 
+TEST_F(URLRequestTest, CookiePartitionKey) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://foo.test/"));
+
+  {  // Partitioned cookies disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kPartitionedCookies);
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        GURL("ws://foo.test/"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                              kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+    EXPECT_FALSE(r->cookie_partition_key());
+  }
+
+  {  // Partitioned cookies enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kPartitionedCookies);
+    TestDelegate d;
+    std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+        GURL("ws://foo.test/"), DEFAULT_PRIORITY, &d,
+        TRAFFIC_ANNOTATION_FOR_TESTS));
+    r->set_isolation_info(
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, kOrigin,
+                              kOrigin, SiteForCookies::FromOrigin(kOrigin)));
+    EXPECT_TRUE(r->cookie_partition_key());
+    EXPECT_EQ(r->cookie_partition_key()->site(), SchemefulSite(kOrigin));
+  }
+}
+
 class URLRequestMaybeAsyncFirstPartySetsTest
     : public URLRequestTest,
       public testing::WithParamInterface<bool> {

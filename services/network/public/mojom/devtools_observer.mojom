@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/alternate_protocol_usage.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/cookie_partition_key.mojom";
 import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
@@ -91,7 +92,8 @@ interface DevToolsObserver {
     array<HttpRawHeaderPair> headers,
     string? raw_response_headers,
     IPAddressSpace resource_address_space,
-    int32 http_status_code);
+    int32 http_status_code,
+    CookiePartitionKey? cookie_partition_key);
 
   // Called to send information about a private network request that was blocked
   // (then |is_warning| is false), or will be blocked in the future (then

@@ -186,7 +186,9 @@ Running test: deleteAllCookies
 
 Running test: getPartitionedCookies
 Site has cookie in other partition: false
+Current cookie partition key: https://devtools.test
 Site has cookie in other partition: false
+Current cookie partition key: https://devtools.test
 Num of cookies 0
 
 Running test: setPartitionedCookie
@@ -217,7 +219,9 @@ name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https
 
 Running test: getPartitionedCookies
 Site has cookie in other partition: true
+Current cookie partition key: https://devtools.test
 Site has cookie in other partition: true
+Current cookie partition key: https://devtools.test
 Num of cookies 1
 name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: https://devtools.test, secure, session, None
 
@@ -225,7 +229,9 @@ Running test: deleteAllCookies
 
 Running test: getPartitionedCookieFromOpaqueOrigin
 Site has cookie in other partition: false
+Current cookie partition key: https://devtools.test
 Site has cookie in other partition: false
+Current cookie partition key: <opaque>
 Num of cookies 1
 name: __Host-foo, value: bar, domain: example.test, path: /, partitionKey: <opaque>, secure, session, None
 
