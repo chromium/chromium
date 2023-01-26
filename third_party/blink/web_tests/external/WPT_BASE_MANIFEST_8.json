@@ -170083,6 +170083,32 @@
        {}
       ]
      ],
+     "fit-content-block-size-abspos.html": [
+      "d8ce91f9f626f8569bd9452c9fd90ead9a75ee4e",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/fit-content-block-size-fixedpos-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fit-content-block-size-fixedpos.html": [
+      "1f08c6ab9f20747a3ab166a12654e106b5d51efd",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/fit-content-block-size-fixedpos-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "fit-content-contribution-001.html": [
       "efe3d49f4c8e51e9a4d5c0354cf8a35678658f06",
       [
@@ -307864,10 +307890,6 @@
       "c2f7c669497d363e868cb96d2c2bb1ee315fff49",
       []
      ],
-     "parsing-expected.txt": [
-      "cba7633348beabb13a167f57dd130c194d0a7d63",
-      []
-     ],
      "parsing.html.ini": [
       "7d22b607a4fe843d7fd7609995aa2eb4a2bfb082",
       []
@@ -313894,6 +313916,10 @@
      ],
      "dynamic-change-inline-size-003-ref.html": [
       "c8d67a8d27457acc6edaf3a60d31fc005791d6ed",
+      []
+     ],
+     "fit-content-block-size-fixedpos-ref.html": [
+      "0f9f8bd1b0352ea66763232f3a093eb569ca9511",
       []
      ],
      "fit-content-length-percentage-001.html.ini": [
@@ -352556,11 +352582,11 @@
        []
       ],
       "gentestutils.py": [
-       "71d1ece39da9a4f9e9501f09d3e48ca841d2e4cd",
+       "2517568a5a83c9e8539a7c93e69aaf8a085504f4",
        []
       ],
       "gentestutilsunion.py": [
-       "9cfe9dcf135a495006601cbbd5d12bc0acd5b77d",
+       "4c65d688c25f27d6d29f4732f1f250323385a945",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -352687,7 +352713,7 @@
         []
        ],
        "drawing-images-to-the-canvas.yaml": [
-        "83de88113f23a5051bed0296db4ce17c2bec9ebe",
+        "e263bf0253dd121a97f32e3747c32e7799518ccd",
         []
        ],
        "drawing-rectangles-to-the-canvas.yaml": [
@@ -447213,6 +447239,13 @@
         null,
         {}
        ]
+      ],
+      "baseline-source-vertical-align.html": [
+       "32bbe434974df6bfab2a91c42dca3b8e4bf7f43f",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "inheritance.html": [
@@ -448957,7 +448990,7 @@
       ]
      ],
      "parsing.html": [
-      "66d1566586cd7d94f3c1da014e1ef3e4134daeac",
+      "8e445faf1c9b8b0942f684d5093c5a7071d43a91",
       [
        null,
        {}
@@ -623849,7 +623882,7 @@
      ]
     ],
     "getcredential-prf.https.html": [
-     "6f8670f64d19e1a7366eb6cf42a83a3b6eedd387",
+     "61b52ac5958c7b242168285ad5e83581b4c1497e",
      [
       null,
       {
