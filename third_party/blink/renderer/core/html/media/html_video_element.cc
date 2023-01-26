@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "cc/paint/paint_canvas.h"
 #include "media/base/video_frame.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -401,6 +402,9 @@ bool HTMLVideoElement::HasAvailableVideoFrame() const {
 void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
                                     size_t bytes_to_first_frame) {
   DCHECK(GetWebMediaPlayer());
+  if (!base::FeatureList::IsEnabled(features::kLCPVideoFirstFrame)) {
+    return;
+  }
   LayoutObject* layout_object = GetLayoutObject();
   // HasLocalBorderBoxProperties will be false in some cases, specifically
   // picture-in-picture video may return false here.

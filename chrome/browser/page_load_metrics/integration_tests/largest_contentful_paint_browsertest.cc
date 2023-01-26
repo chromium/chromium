@@ -810,6 +810,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
   TestImage(imgSrc, flag_set);
 }
 
+class VideoLCPTypeTest : public LargestContentfulPaintTypeTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LargestContentfulPaintTypeTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeatures(
+        {blink::features::kLCPVideoFirstFrame} /*enabled*/, {} /*disabled*/);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
 // (https://crbug.com/1405307): Flaky on ChromeOS as well.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -817,8 +827,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_DataURIType_SVG) {
 #else
 #define MAYBE_DataURIType_Video DataURIType_Video
 #endif
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_DataURIType_Video) {
+IN_PROC_BROWSER_TEST_F(VideoLCPTypeTest, MAYBE_DataURIType_Video) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kVideo |
                   blink::LargestContentfulPaintType::kDataURI;
