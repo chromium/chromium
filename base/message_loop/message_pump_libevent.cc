@@ -153,9 +153,7 @@ MessagePumpLibevent::MessagePumpLibevent() {
 
 #if BUILDFLAG(ENABLE_MESSAGE_PUMP_EPOLL)
 MessagePumpLibevent::MessagePumpLibevent(decltype(kUseEpoll))
-    : epoll_pump_(std::make_unique<MessagePumpEpoll>()) {
-  epoll_pump_ = std::make_unique<MessagePumpEpoll>();
-}
+    : epoll_pump_(std::make_unique<MessagePumpEpoll>()) {}
 #endif
 
 MessagePumpLibevent::~MessagePumpLibevent() {
