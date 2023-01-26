@@ -351,6 +351,41 @@ base::Value::List AttributionInteropParser::ParseAggregatableReports(
   return aggregatable_results;
 }
 
+base::Value::List AttributionInteropParser::ParseVerboseDebugReports(
+    base::Value::Dict& output) {
+  static constexpr char kKey[] = "verbose_debug_reports";
+
+  base::Value::List reports;
+
+  base::Value* value = output.Find(kKey);
+  if (!value) {
+    return reports;
+  }
+
+  auto context = PushContext(kKey);
+  ParseList(output.Find(kKey),
+            base::BindLambdaForTesting([&](base::Value value) {
+              if (!EnsureDictionary(&value)) {
+                return;
+              }
+
+              base::Value::Dict report;
+
+              base::Value::Dict& value_dict = value.GetDict();
+              MoveValue(value_dict, "report", report, "payload");
+              MoveValue(value_dict, "report_url", report);
+              MoveValue(value_dict, "report_time", report);
+
+              if (has_error()) {
+                return;
+              }
+
+              reports.Append(std::move(report));
+            }));
+
+  return reports;
+}
+
 absl::optional<base::Value>
 AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
   error_manager_.ResetErrorState();
@@ -365,6 +400,9 @@ AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
   base::Value::List aggregatable_results =
       ParseAggregatableReports(output.GetDict());
 
+  base::Value::List verbose_debug_reports =
+      ParseVerboseDebugReports(output.GetDict());
+
   if (has_error()) {
     return absl::nullopt;
   }
@@ -376,6 +414,10 @@ AttributionInteropParser::InteropOutputFromSimulatorOutput(base::Value output) {
 
   if (!aggregatable_results.empty()) {
     dict.Set("aggregatable_results", std::move(aggregatable_results));
+  }
+
+  if (!verbose_debug_reports.empty()) {
+    dict.Set("verbose_debug_reports", std::move(verbose_debug_reports));
   }
 
   return base::Value(std::move(dict));

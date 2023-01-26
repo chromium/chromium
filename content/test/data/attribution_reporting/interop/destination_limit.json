@@ -16,6 +16,7 @@
           "url": "https://reporter1.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
               "destination": "https://destination1.test",
               "source_event_id": "111",
               "expiry": "86400"
@@ -35,6 +36,7 @@
           "url": "https://reporter1.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
               "destination": "https://destination2.test",
               "source_event_id": "222"
             }
@@ -53,6 +55,7 @@
           "url": "https://reporter2.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
               "destination": "https://destination2.test",
               "source_event_id": "333"
             }
@@ -71,6 +74,7 @@
           "url": "https://reporter1.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
               "destination": "https://destination2.test",
               "source_event_id": "444"
             }
@@ -89,6 +93,7 @@
           "url": "https://reporter1.test/register-source",
           "response": {
             "Attribution-Reporting-Register-Source": {
+              "debug_reporting": true,
               "destination": "https://destination3.test",
               "source_event_id": "555"
             }
@@ -248,6 +253,21 @@
         },
         "report_time": "1643498373000",
         "report_url": "https://reporter1.test/.well-known/attribution-reporting/report-event-attribution"
+      }
+    ],
+    "verbose_debug_reports": [
+      {
+        "payload": [{
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "limit": "1",
+            "source_event_id": "222",
+            "source_site": "https://source1.test"
+           },
+           "type": "source-destination-limit"
+        }],
+        "report_time": "1643235575000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

@@ -159,6 +159,19 @@ TEST(AttributionInteropParserTest, ValidOutput) {
             "value": "0x159"
           }]
         }
+      }],
+      "verbose_debug_reports": [{
+        "report": [{
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "limit": "1",
+            "source_event_id": "222",
+            "source_site": "https://source1.test"
+           },
+           "type": "source-destination-limit"
+        }],
+        "report_time": "1643235575000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }]
     })json";
 
@@ -184,6 +197,19 @@ TEST(AttributionInteropParserTest, ValidOutput) {
             "value": "0x159"
           }]
         }
+      }],
+      "verbose_debug_reports": [{
+        "payload": [{
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "limit": "1",
+            "source_event_id": "222",
+            "source_site": "https://source1.test"
+           },
+           "type": "source-destination-limit"
+        }],
+        "report_time": "1643235575000",
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }]
     })json";
 
@@ -841,6 +867,45 @@ const ParseErrorTestCase kParseOutputErrorTestCases[] = {
             "test_info": {
               "histograms": []
             }
+          }]
+        })json",
+    },
+    {
+        R"(["verbose_debug_reports"]: must be a list)",
+        R"json({
+          "verbose_debug_reports": {}
+        })json",
+    },
+    {
+        R"(["verbose_debug_reports"][0]: must be a dictionary)",
+        R"json({
+          "verbose_debug_reports": [""]
+        })json",
+    },
+    {
+        R"(["verbose_debug_reports"][0]["report"]: must be present)",
+        R"json({
+          "verbose_debug_reports": [{
+            "report_time": "",
+            "report_url": ""
+          }]
+        })json",
+    },
+    {
+        R"(["verbose_debug_reports"][0]["report_time"]: must be present)",
+        R"json({
+          "verbose_debug_reports": [{
+            "report": [],
+            "report_url": ""
+          }]
+        })json",
+    },
+    {
+        R"(["verbose_debug_reports"][0]["report_url"]: must be present)",
+        R"json({
+          "verbose_debug_reports": [{
+            "report": [],
+            "report_time": ""
           }]
         })json",
     }};

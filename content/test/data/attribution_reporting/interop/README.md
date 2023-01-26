@@ -372,6 +372,20 @@ The JSON schema is as follows.
           "trigger_debug_key": "789"
         }
       }
+    ],
+
+    "verbose_debug_reports": [
+      {
+        // Upper bound time at which the report would have been sent in
+        // milliseconds since the UNIX epoch.
+        "report_time": "123",
+
+        // URL to which the report would have been sent.
+        "report_url": "https://reporting.example/.well-known/attribution-reporting/debug/verbose"
+
+        // The body of the report.
+        "payload": [...]
+      }
     ]
   }
 }

@@ -92,6 +92,8 @@ class AttributionInteropParser {
 
   base::Value::List ParseAggregatableReports(base::Value::Dict& output);
 
+  base::Value::List ParseVerboseDebugReports(base::Value::Dict& output);
+
   // Returns true if `key` is present in `dict` and the integer is parsed
   // successfully.
   template <typename T>
