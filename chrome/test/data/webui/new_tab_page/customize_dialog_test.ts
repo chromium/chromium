@@ -130,8 +130,7 @@ suite('NewTabPageCustomizeDialogTest', () => {
   suite('backgrounds', () => {
     setup(() => {
       const theme = createTheme();
-      theme.dailyRefreshEnabled = true;
-      theme.backgroundImageCollectionId = 'landscape';
+      theme.dailyRefreshCollectionId = 'landscape';
       theme.backgroundImage =
           createBackgroundImage('https://example.com/image.png');
       customizeDialog.theme = theme;

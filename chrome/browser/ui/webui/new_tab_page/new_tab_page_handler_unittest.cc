@@ -420,7 +420,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_EQ(SkColorSetRGB(0, 0, 1), theme->background_color);
   EXPECT_FALSE(theme->is_custom_background);
   EXPECT_FALSE(theme->is_dark);
-  EXPECT_FALSE(theme->daily_refresh_enabled);
+  EXPECT_FALSE(theme->daily_refresh_collection_id.has_value());
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?bar",
             theme->background_image->url);
@@ -447,7 +447,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_FALSE(theme->background_image_attribution_1.has_value());
   EXPECT_FALSE(theme->background_image_attribution_2.has_value());
   EXPECT_FALSE(theme->background_image_attribution_url.has_value());
-  EXPECT_FALSE(theme->background_image_collection_id.has_value());
   ASSERT_TRUE(theme->most_visited);
   EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
   if (RemoveScrim()) {
@@ -498,7 +497,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
     EXPECT_FALSE(theme->background_image_attribution_1.has_value());
     EXPECT_FALSE(theme->background_image_attribution_2.has_value());
     EXPECT_FALSE(theme->background_image_attribution_url.has_value());
-    EXPECT_FALSE(theme->background_image_collection_id.has_value());
   } else {
     ASSERT_TRUE(theme);
     EXPECT_TRUE(theme->is_custom_background);
@@ -510,8 +508,7 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
     EXPECT_EQ("bar line", theme->background_image_attribution_2);
     EXPECT_EQ("https://foo.com/action",
               theme->background_image_attribution_url);
-    EXPECT_FALSE(theme->daily_refresh_enabled);
-    EXPECT_EQ("baz collection", theme->background_image_collection_id);
+    EXPECT_EQ("baz collection", theme->daily_refresh_collection_id);
   }
   if (RemoveScrim()) {
     EXPECT_TRUE(theme->background_image->scrim_display.has_value());
@@ -524,36 +521,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetCustomBackground) {
     EXPECT_EQ(SkColorSetRGB(0, 0, 4), theme->most_visited->background_color);
   } else {
     EXPECT_EQ(SkColorSetRGB(0, 0, 5), theme->most_visited->background_color);
-  }
-}
-
-TEST_P(NewTabPageHandlerThemeTest, SetDailyRefresh) {
-  new_tab_page::mojom::ThemePtr theme;
-  EXPECT_CALL(mock_page_, SetTheme)
-      .Times(1)
-      .WillOnce(testing::Invoke([&theme](new_tab_page::mojom::ThemePtr arg) {
-        theme = std::move(arg);
-      }));
-  CustomBackground custom_background;
-  custom_background.daily_refresh_enabled = true;
-  custom_background.collection_id = "baz collection";
-  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
-      .WillByDefault(testing::Return(absl::make_optional(custom_background)));
-  ON_CALL(mock_theme_provider_, HasCustomImage(IDR_THEME_NTP_BACKGROUND))
-      .WillByDefault(testing::Return(true));
-
-  ntp_custom_background_service_observer_->OnCustomBackgroundImageUpdated();
-  mock_page_.FlushForTesting();
-
-  ASSERT_TRUE(theme);
-  if (CustomizeChromeSidePanel()) {
-    EXPECT_FALSE(theme->is_custom_background);
-    EXPECT_FALSE(theme->background_image_collection_id.has_value());
-  } else {
-    ASSERT_TRUE(theme);
-    EXPECT_TRUE(theme->is_custom_background);
-    EXPECT_TRUE(theme->daily_refresh_enabled);
-    EXPECT_EQ("baz collection", theme->background_image_collection_id);
   }
 }
 

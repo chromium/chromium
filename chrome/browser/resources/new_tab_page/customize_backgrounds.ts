@@ -96,7 +96,8 @@ export class CustomizeBackgroundsElement extends PolymerElement {
   private getNoBackgroundClass_(): string {
     return this.theme &&
             (this.theme.backgroundImage && !this.theme.isCustomBackground ||
-             !this.theme.backgroundImage && !this.theme.dailyRefreshEnabled) ?
+             !this.theme.backgroundImage &&
+                 !this.theme.dailyRefreshCollectionId) ?
         'selected' :
         '';
   }
@@ -105,7 +106,7 @@ export class CustomizeBackgroundsElement extends PolymerElement {
     const {url} = this.images_[index].imageUrl;
     return this.theme && this.theme.backgroundImage &&
             this.theme.backgroundImage.url.url === url &&
-            !this.theme.dailyRefreshEnabled ?
+            !this.theme.dailyRefreshCollectionId ?
         'selected' :
         '';
   }
@@ -148,11 +149,9 @@ export class CustomizeBackgroundsElement extends PolymerElement {
       attributionUrl,
       imageUrl,
       previewImageUrl,
-      collectionId,
     } = image;
     this.pageHandler_.setBackgroundImage(
-        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl,
-        collectionId);
+        attribution1, attribution2, attributionUrl, imageUrl, previewImageUrl);
   }
 
   private async onSelectedCollectionChange_() {
