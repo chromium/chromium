@@ -73,12 +73,11 @@ import java.util.regex.Pattern;
  * Instrumentation tests for {@link ExternalNavigationHandler}.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-// clang-format off
 @Batch(Batch.UNIT_TESTS)
 @Features.DisableFeatures(ExternalIntentsFeatures.EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME)
-@Features.EnableFeatures(ExternalIntentsFeatures.BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME)
+@Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME,
+        ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME})
 public class ExternalNavigationHandlerTest {
-    // clang-format on
     // Expectations
     private static final int IGNORE = 0x0;
     private static final int START_INCOGNITO = 0x1;
@@ -2591,6 +2590,40 @@ public class ExternalNavigationHandlerTest {
                 2, redirectHandler.getLastCommittedEntryIndexBeforeStartingNavigation());
     }
 
+    private void doTestSubframeIntentTargetsSelf(boolean targetsPackage) {
+        mUrlHandler.mResolveInfoContainsSelf = true;
+        if (!targetsPackage) {
+            mDelegate.setWillResolveToDisambiguationDialog(true);
+        }
+        String url = "intent://www.example.com/#Intent;scheme=https;"
+                + "action=android.intent.action.VIEW;package=" + SELF_PACKAGE_NAME
+                + ";S.browser_fallback_url=https://bad.com;end";
+
+        RedirectHandler redirectHandler = RedirectHandler.create();
+        redirectHandler.updateNewUrlLoading(
+                PageTransition.AUTO_SUBFRAME, false, true, 0, 0, false, true);
+
+        checkUrl(url)
+                .withIsMainFrame(false)
+                .withHasUserGesture(true)
+                .withRedirectHandler(redirectHandler)
+                .withPageTransition(PageTransition.AUTO_SUBFRAME)
+                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, IGNORE);
+        Assert.assertEquals("https://www.example.com/", mUrlHandler.mNewUrlAfterClobbering);
+    }
+
+    @Test
+    @SmallTest
+    public void testSubframeIntentTargetsSelf_Package() {
+        doTestSubframeIntentTargetsSelf(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testSubframeIntentTargetsSelf_Chooser() {
+        doTestSubframeIntentTargetsSelf(false);
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -2772,7 +2805,7 @@ public class ExternalNavigationHandlerTest {
             String dataString = intent.getDataString();
             if (intent.getScheme() != null) {
                 if (dataString.startsWith("http://") || dataString.startsWith("https://")) {
-                    list.add(newResolveInfo("chrome"));
+                    list.add(newResolveInfo(SELF_PACKAGE_NAME));
                 }
                 for (IntentActivity intentActivity : mIntentActivities) {
                     if (dataString.startsWith(intentActivity.urlPrefix())) {

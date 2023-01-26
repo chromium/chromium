@@ -22,6 +22,7 @@ public class ExternalIntentsFeatures extends Features {
     public static final String EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME = "ExternalNavigationDebugLogs";
     public static final String EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME =
             "ExternalNavigationSubframeRedirects";
+    public static final String BLOCK_SUBFRAME_INTENT_TO_SELF_NAME = "BlockSubframeIntentToSelf";
 
     public static final ExternalIntentsFeatures BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE =
             new ExternalIntentsFeatures(0, BLOCK_EXTERNAL_FORM_SUBMIT_WITHOUT_GESTURE_NAME);
@@ -31,6 +32,9 @@ public class ExternalIntentsFeatures extends Features {
 
     public static final ExternalIntentsFeatures EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS =
             new ExternalIntentsFeatures(2, EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME);
+
+    public static final ExternalIntentsFeatures BLOCK_SUBFRAME_INTENT_TO_SELF =
+            new ExternalIntentsFeatures(3, BLOCK_SUBFRAME_INTENT_TO_SELF_NAME);
 
     private final int mOrdinal;
 

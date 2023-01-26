@@ -178,9 +178,17 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_long_timeout.html";
     private static final String NAVIGATION_FROM_PAGE_SHOW =
             BASE_PATH + "navigation_from_page_show.html";
+    private static final String NAVIGATION_TO_SELF_PARENT_FRAME_PAGE =
+            BASE_PATH + "navigation_to_self_with_fallback_parent.html";
+    private static final String NAVIGATION_TO_SELF_PAGE =
+            BASE_PATH + "navigation_to_self_with_fallback.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
-    private static final String NON_BROWSER_PACKAGE = "not.a.browser";
+    // Needs to be a real package on the device so we can get an icon from it. It will not be
+    // launched.
+    private static final String NON_BROWSER_PACKAGE = "com.android.settings";
+
+    private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
 
     @Mock
     private RedirectHandler mRedirectHandler;
@@ -224,7 +232,9 @@ public class UrlOverridingTest {
     private static class TestContext extends ContextWrapper {
         private boolean mResolveToNonBrowserPackage;
         private String mHostToMatch;
+        private String mSchemeToMatch;
         private IntentFilter mFilterForHostMatch;
+        private IntentFilter mFilterForSchemeMatch;
 
         public TestContext(Context baseContext) {
             super(baseContext);
@@ -246,6 +256,11 @@ public class UrlOverridingTest {
         private void setIntentFilterForHost(String host, IntentFilter filter) {
             mHostToMatch = host;
             mFilterForHostMatch = filter;
+        }
+
+        private void setIntentFilterForScheme(String scheme, IntentFilter filter) {
+            mSchemeToMatch = scheme;
+            mFilterForSchemeMatch = filter;
         }
 
         @Override
@@ -270,6 +285,13 @@ public class UrlOverridingTest {
                         return Arrays.asList(info);
                     }
 
+                    if (mSchemeToMatch != null && intent.getScheme() != null
+                            && intent.getScheme().equals(mSchemeToMatch)) {
+                        ResolveInfo info = newResolveInfo(NON_BROWSER_PACKAGE);
+                        info.filter = mFilterForSchemeMatch;
+                        return Arrays.asList(info);
+                    }
+
                     return TestContext.super.getPackageManager().queryIntentActivities(
                             intent, flags);
                 }
@@ -282,6 +304,13 @@ public class UrlOverridingTest {
                             return newResolveInfo(NON_BROWSER_PACKAGE);
                         }
                         return newResolveInfo(OTHER_BROWSER_PACKAGE);
+                    }
+
+                    if (mSchemeToMatch != null && intent.getScheme() != null
+                            && intent.getScheme().equals(mSchemeToMatch)) {
+                        ResolveInfo info = newResolveInfo(NON_BROWSER_PACKAGE);
+                        info.filter = mFilterForSchemeMatch;
+                        return info;
                     }
 
                     // Behave as though play store is not installed - this matches bot emulator
@@ -307,10 +336,11 @@ public class UrlOverridingTest {
         ContextUtils.initApplicationContextForTests(mTestContext);
         IntentFilter filter = new IntentFilter(Intent.ACTION_VIEW);
         filter.addCategory(Intent.CATEGORY_BROWSABLE);
-        filter.addDataScheme("externalappscheme");
+        filter.addDataScheme(EXTERNAL_APP_SCHEME);
         mActivityMonitor = InstrumentationRegistry.getInstrumentation().addMonitor(
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
         mTestServer = mActivityTestRule.getTestServer();
+        mTestContext.setIntentFilterForScheme(EXTERNAL_APP_SCHEME, filter);
     }
 
     @After
@@ -537,15 +567,15 @@ public class UrlOverridingTest {
 
     private void assertMessagePresent() throws Exception {
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-        ApplicationInfo selfInfo = ContextUtils.getApplicationContext().getApplicationInfo();
-        CharSequence selfLabel = pm.getApplicationLabel(selfInfo);
+        ApplicationInfo applicationInfo = pm.getApplicationInfo(NON_BROWSER_PACKAGE, 0);
+        CharSequence label = pm.getApplicationLabel(applicationInfo);
 
         PropertyModel message = getCurrentExternalNavigationMessage();
         Assert.assertNotNull(message);
         Assert.assertThat(message.get(MessageBannerProperties.TITLE),
-                Matchers.containsString(selfLabel.toString()));
+                Matchers.containsString(label.toString()));
         Assert.assertThat(message.get(MessageBannerProperties.DESCRIPTION).toString(),
-                Matchers.containsString(selfLabel.toString()));
+                Matchers.containsString(label.toString()));
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }
 
@@ -1171,7 +1201,8 @@ public class UrlOverridingTest {
     @LargeTest
     public void testServerRedirectionFromIntent() throws Exception {
         TestWebServer webServer = TestWebServer.start();
-        final String redirectTargetUrl = "intent://test/#Intent;scheme=externalappscheme;end";
+        final String redirectTargetUrl =
+                "intent://test/#Intent;scheme=" + EXTERNAL_APP_SCHEME + ";end";
         final String redirectUrl = webServer.setRedirect("/302.html", redirectTargetUrl);
 
         Context context = ContextUtils.getApplicationContext();
@@ -1346,5 +1377,65 @@ public class UrlOverridingTest {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
         }, 10000L, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME,
+            ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME})
+    public void
+    testSubframeNavigationToSelf() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        String targetUrl = mTestServer.getURL(HELLO_PAGE);
+        // Strip off the https: from the URL.
+        String strippedTargetUrl = targetUrl.substring(6);
+        String subframeTarget = "intent:" + strippedTargetUrl + "#Intent;scheme=https;package="
+                + ContextUtils.getApplicationContext().getPackageName() + ";S.browser_fallback_url="
+                + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
+                + ";end";
+
+        // The replace_text parameters for NAVIGATION_TO_SELF_PAGE, which is loaded in
+        // the iframe in NAVIGATION_TO_SELF_PARENT_FRAME_PAGE, have to go through the
+        // embedded test server twice and, as such, have to be base64-encoded twice.
+        byte[] paramBase64Name = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_NAME");
+        byte[] base64ParamTargetUrl = Base64.encode(
+                ApiCompatibilityUtils.getBytesUtf8("PARAM_SELF_URL"), Base64.URL_SAFE);
+        byte[] paramBase64Value = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_VALUE");
+        byte[] base64TargetUrl =
+                Base64.encode(ApiCompatibilityUtils.getBytesUtf8(subframeTarget), Base64.URL_SAFE);
+
+        String originalUrl = mTestServer.getURL(NAVIGATION_TO_SELF_PARENT_FRAME_PAGE
+                + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(base64ParamTargetUrl, Base64.URL_SAFE)
+                + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(base64TargetUrl, Base64.URL_SAFE));
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper subframeRedirect = new CallbackHelper();
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                Assert.assertEquals(originalUrl, navigation.getUrl().getSpec());
+            }
+
+            @Override
+            public void onDidRedirectNavigation(Tab tab, NavigationHandle navigation) {
+                Assert.assertFalse(navigation.isInPrimaryMainFrame());
+                if (targetUrl.equals(navigation.getUrl().getSpec())) {
+                    subframeRedirect.notifyCalled();
+                }
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.addObserver(observer); });
+
+        // Fallback URL from a subframe will not trigger main navigation.
+        OverrideUrlLoadingResult result =
+                loadUrlAndWaitForIntentUrl(originalUrl, true, false, false, originalUrl, false);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
+        subframeRedirect.waitForFirst();
     }
 }
