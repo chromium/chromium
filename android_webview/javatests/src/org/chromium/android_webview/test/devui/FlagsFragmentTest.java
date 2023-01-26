@@ -46,6 +46,7 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -73,6 +74,8 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.ViewUtils;
@@ -512,15 +515,25 @@ public class FlagsFragmentTest {
      */
     private DataInteraction toggleFlag(DataInteraction flagInteraction, Boolean state) {
         String stateText = state == null ? "Default" : state ? "Enabled" : "Disabled";
-        // We first select the spinner on the list of flags.
-        // That will make a dialog appear witch the option we wish to select.
-        flagInteraction.onChildView(withId(R.id.flag_toggle)).perform(click());
-        // We then select the state we want from the dialog.
-        // We cannot use onData because in rare conditions,
-        // the onData check can be performed before the dialog has been displayed.
-        // Adding the inRoot check below ensures that we don't match with the spinner that also
-        // have the state we are waiting for (see crbug.com/1400515 for more details).
-        onView(withText(stateText)).inRoot(isDialog()).perform(click());
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            try {
+                // We first select the spinner on the list of flags.
+                // That will make a dialog appear witch the option we wish to select.
+                flagInteraction.onChildView(withId(R.id.flag_toggle)).perform(click());
+                // We then select the state we want from the dialog.
+                onView(withText(stateText)).inRoot(isDialog()).perform(click());
+            } catch (NoMatchingRootException noMatchException) {
+                // Espresso is flaky with dialogs from Spinners.
+                // It seems to rarely not open the dialog.
+                // To avoid this happening, the tests will re-attempt
+                // to select a flag if the root (ie the dialog), was not
+                // found.
+                // This is safe to do because the first click is explicitly on
+                // a flag toggle, and the second click is explicitly in a dialog.
+                // See crbug.com/1400515 for more details.
+                throw new CriteriaNotSatisfiedException(noMatchException);
+            }
+        });
         // Finally we confirm that the original spinner was updated after the dialog option has
         // been selected.
         flagInteraction.onChildView(withId(R.id.flag_toggle))
