@@ -52,6 +52,7 @@ Cluster CreateCluster(const std::vector<VisitID>& visit_ids) {
                           [](const auto& visit_id) {
                             ClusterVisit visit;
                             visit.annotated_visit.visit_row.visit_id = visit_id;
+                            visit.score = 1;
                             return visit;
                           });
   return cluster;

@@ -1334,9 +1334,11 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
 
   std::vector<history::Cluster> clusters;
+  // This cluster should contribute to keywords.
   clusters.push_back(history::Cluster(
       0,
       {
+          GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(
               /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
@@ -1346,6 +1348,8 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
        {u"z", history::ClusterKeywordData()},
        {u"apples bananas", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
+  // This cluster should NOT contribute to keywords because
+  // `should_show_on_prominent_ui_surfaces` is false.
   clusters.push_back(
       history::Cluster(0,
                        {
@@ -1354,10 +1358,13 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
                        },
                        {{u"sensitive", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
+  // This cluster should NOT contribute to keywords because it only has 1
+  // visible visit.
   clusters.push_back(
       history::Cluster(0,
                        {
                            GetHardcodedClusterVisit(2),
+                           GetHardcodedClusterVisit(2, /*score=*/0),
                        },
                        {{u"singlevisit", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
@@ -1403,9 +1410,11 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
       ComputeURLKeywordForLookup(GURL("https://second-1-day-old-visit.com/"))));
 
   std::vector<history::Cluster> clusters;
+  // This cluster should contribute to keywords.
   clusters.push_back(history::Cluster(
       0,
       {
+          GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(5),
           GetHardcodedClusterVisit(
               /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
@@ -1415,6 +1424,8 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
        {u"z", history::ClusterKeywordData()},
        {u"apples bananas", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
+  // This cluster should NOT contribute to keywords because
+  // `should_show_on_prominent_ui_surfaces` is false.
   clusters.push_back(
       history::Cluster(0,
                        {
@@ -1423,10 +1434,13 @@ TEST_P(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
                        },
                        {{u"sensitive", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
+  // This cluster should NOT contribute to keywords because it only has 1
+  // visible visit.
   clusters.push_back(
       history::Cluster(0,
                        {
                            GetHardcodedClusterVisit(2),
+                           GetHardcodedClusterVisit(2, /*score=*/0),
                        },
                        {{u"singlevisit", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
@@ -1515,13 +1529,13 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   AddIncompleteVisit(7, 7, yesterday);
 
   // Create 4 clusters:
-  std::vector<history::AnnotatedVisit> visits =
-      test_clustering_backend_->LastClusteredVisits();
+  history::ClusterVisit cluster_visit;
+  cluster_visit.score = .5;
   std::vector<history::Cluster> clusters;
   // 1) A cluster with 4 phrases and 6 words. The next cluster's keywords should
   // also be cached since we have less than 5 phrases.
   clusters.push_back(
-      history::Cluster(0, {{}, {}},
+      history::Cluster(0, {cluster_visit, cluster_visit},
                        {{u"one", history::ClusterKeywordData()},
                         {u"two", history::ClusterKeywordData()},
                         {u"three", history::ClusterKeywordData()},
@@ -1530,19 +1544,21 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   // 2) The 2nd cluster has only 1 visit. Since it's keywords won't be cached,
   // they should not affect the max.
   clusters.push_back(history::Cluster(
-      0, {{}},
+      0, {cluster_visit},
       {{u"ignored not cached", history::ClusterKeywordData()},
        {u"elephant penguin kangaroo", history::ClusterKeywordData()}},
       /*should_show_on_prominent_ui_surfaces=*/true));
   // 3) With this 3rd cluster, we'll have 5 phrases and 7 words. Now that we've
   // reached 5 phrases, the next cluster's keywords should not be cached.
   clusters.push_back(
-      history::Cluster(0, {{}, {}}, {{u"seven", history::ClusterKeywordData()}},
+      history::Cluster(0, {cluster_visit, cluster_visit},
+                       {{u"seven", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   // 4) The 4th cluster's keywords should not be cached since we've reached 5
   // phrases.
   clusters.push_back(
-      history::Cluster(0, {{}, {}}, {{u"eight", history::ClusterKeywordData()}},
+      history::Cluster(0, {cluster_visit, cluster_visit},
+                       {{u"eight", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
 
   // Kick off cluster request.

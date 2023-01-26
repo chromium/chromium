@@ -12,10 +12,10 @@
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "base/time/time_to_iso8601.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "components/history/core/browser/history_backend.h"
@@ -421,7 +421,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       // sensitive clusters here.
       continue;
     }
-    if (cluster.visits.size() < 2) {
+    const size_t visible_visits = base::ranges::count_if(
+        cluster.visits,
+        [](const auto& cluster_visit) { return cluster_visit.score > 0; });
+    if (visible_visits < 2) {
       // Only accept keywords from clusters with at least two visits. This is a
       // simple first-pass technique to avoid overtriggering the omnibox action.
       continue;
