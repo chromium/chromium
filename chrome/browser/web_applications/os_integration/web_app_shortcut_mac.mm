@@ -227,7 +227,9 @@ bool AppShimCreationDisabledForTest() {
 bool AppShimRevealDisabledForTest() {
   // Disable app shim reveal in the Finder during tests, to avoid
   // creating Finder windows that are never closed.
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kTestType) ||
+         GetOsIntegrationTestOverride();
 }
 
 base::FilePath GetWritableApplicationsDirectory() {
