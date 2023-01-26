@@ -11,6 +11,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -35,6 +36,7 @@ class BrowsingDataModel {
     kTrustTokens,  // Only issuance information considered.
     kSharedStorage,
     kInterestGroup,
+    kAttributionReporting,
     kPartitionedQuotaStorage,    // Not fetched from disk or deleted.
     kUnpartitionedQuotaStorage,  // Not fetched from disk or deleted.
 
@@ -49,7 +51,8 @@ class BrowsingDataModel {
   // using this information.
   typedef absl::variant<url::Origin,        // Single origin, e.g. Trust Tokens
                         blink::StorageKey,  // Partitioned JS storage
-                        content::InterestGroupManager::InterestGroupDataKey
+                        content::InterestGroupManager::InterestGroupDataKey,
+                        content::AttributionDataModel::DataKey
                         // TODO(crbug.com/1271155): Additional backend keys.
                         >
       DataKey;

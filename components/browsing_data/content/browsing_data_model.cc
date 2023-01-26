@@ -79,6 +79,14 @@ GetPrimaryHost::operator()<content::InterestGroupManager::InterestGroupDataKey>(
   return data_key.owner.host();
 }
 
+template <>
+std::string GetPrimaryHost::operator()<content::AttributionDataModel::DataKey>(
+    const content::AttributionDataModel::DataKey& data_key) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
+            storage_type_);
+  return data_key.reporting_origin().host();
+}
+
 // Helper which allows the lifetime management of a deletion action to occur
 // separately from the BrowsingDataModel itself.
 struct StorageRemoverHelper {
@@ -190,6 +198,19 @@ void StorageRemoverHelper::Visitor::operator()<
   }
 }
 
+template <>
+void StorageRemoverHelper::Visitor::operator()<
+    content::AttributionDataModel::DataKey>(
+    const content::AttributionDataModel::DataKey& data_key) {
+  if (types.Has(BrowsingDataModel::StorageType::kAttributionReporting)) {
+    helper->storage_partition_->GetAttributionDataModel()
+        ->RemoveAttributionDataByDataKey(data_key,
+                                         helper->GetCompleteCallback());
+  } else {
+    NOTREACHED();
+  }
+}
+
 base::OnceClosure StorageRemoverHelper::GetCompleteCallback() {
   callbacks_expected_++;
   return base::BindOnce(&StorageRemoverHelper::BackendFinished,
@@ -243,6 +264,18 @@ void OnInterestGroupsLoaded(
     model->AddBrowsingData(data_key,
                            BrowsingDataModel::StorageType::kInterestGroup,
                            kModerateAmountOfDataInBytes);
+  }
+  std::move(loaded_callback).Run();
+}
+
+void OnAttributionReportingLoaded(
+    BrowsingDataModel* model,
+    base::OnceClosure loaded_callback,
+    std::vector<content::AttributionDataModel::DataKey> attribution_reporting) {
+  for (const auto& data_key : attribution_reporting) {
+    model->AddBrowsingData(
+        data_key, BrowsingDataModel::StorageType::kAttributionReporting,
+        kSmallAmountOfDataInBytes);
   }
   std::move(loaded_callback).Run();
 }
@@ -393,13 +426,21 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
+  bool is_attribution_reporting_enabled =
+      base::FeatureList::IsEnabled(blink::features::kConversionMeasurement);
+
   // TODO(crbug.com/1271155): Derive this from the StorageTypeSet directly.
   int storage_backend_count = 1;
-  if (is_shared_storage_enabled)
+  if (is_shared_storage_enabled) {
     storage_backend_count++;
-  if (is_interest_group_enabled)
+  }
+  if (is_interest_group_enabled) {
     storage_backend_count++;
+  }
 
+  if (is_attribution_reporting_enabled) {
+    storage_backend_count++;
+  }
   base::RepeatingClosure completion =
       base::BarrierClosure(storage_backend_count, std::move(finished_callback));
 
@@ -421,6 +462,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   if (is_interest_group_enabled) {
     storage_partition_->GetInterestGroupManager()->GetAllInterestGroupDataKeys(
         base::BindOnce(&OnInterestGroupsLoaded, this, completion));
+  }
+
+  // Attribution Reporting
+  if (is_attribution_reporting_enabled) {
+    storage_partition_->GetAttributionDataModel()->GetAllDataKeys(
+        base::BindOnce(&OnAttributionReportingLoaded, this, completion));
   }
 }
 
