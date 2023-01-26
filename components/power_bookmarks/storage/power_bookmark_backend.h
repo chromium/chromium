@@ -9,11 +9,16 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/power_bookmarks/common/power_bookmark_observer.h"
 #include "components/power_bookmarks/storage/power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}  // namespace syncer
 
 namespace power_bookmarks {
 
@@ -32,13 +37,17 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
   PowerBookmarkBackend(
       const base::FilePath& database_dir,
       scoped_refptr<base::SequencedTaskRunner> frontend_task_runner,
-      PowerBookmarkObserver* service_observer);
+      base::WeakPtr<PowerBookmarkObserver> service_observer);
   PowerBookmarkBackend(const PowerBookmarkBackend&) = delete;
   PowerBookmarkBackend& operator=(const PowerBookmarkBackend&) = delete;
   virtual ~PowerBookmarkBackend();
 
   void Init(bool use_database);
-  void Shutdown();
+
+  // For sync codebase only: gets a weak reference to the sync controller
+  // delegate.
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetSyncControllerDelegate();
 
   // Returns a vector of Powers for the given `url`. Use `power_type` to
   // restrict which type is returned or use POWER_TYPE_UNSPECIFIED to return
@@ -82,7 +91,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
   std::unique_ptr<Power> GetPowerForGUID(const std::string& guid) override;
   bool CreateOrMergePowerFromSync(const Power& power) override;
   bool DeletePowerFromSync(const std::string& guid) override;
-  syncer::SyncMetadataStore* GetSyncMetadataDatabase() override;
+  PowerBookmarkSyncMetadataDatabase* GetSyncMetadataDatabase() override;
   std::unique_ptr<Transaction> BeginTransaction() override;
   void NotifyPowersChanged() override;
 
@@ -104,7 +113,7 @@ class PowerBookmarkBackend : public PowerBookmarkSyncBridge::Delegate {
 
   // Observer that serves the frontend of power bookmarks.
   // Needs to be called on the frontend task runner.
-  raw_ptr<PowerBookmarkObserver, DanglingUntriaged> service_observer_;
+  base::WeakPtr<PowerBookmarkObserver> service_observer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -28,6 +28,8 @@ static_library("browser_sync") {
     "//components/history/core/browser",
     "//components/history/core/common",
     "//components/password_manager/core/browser",
+    "//components/power_bookmarks/core",
+    "//components/power_bookmarks/core:features",
     "//components/prefs",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",

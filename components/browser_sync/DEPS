@@ -8,6 +8,7 @@ include_rules = [
   "+components/history/core/common",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
+  "+components/power_bookmarks/core",
   "+components/prefs",
   "+components/reading_list/core",
   "+components/reading_list/features",

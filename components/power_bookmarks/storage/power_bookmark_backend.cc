@@ -17,7 +17,7 @@ namespace power_bookmarks {
 PowerBookmarkBackend::PowerBookmarkBackend(
     const base::FilePath& database_dir,
     scoped_refptr<base::SequencedTaskRunner> frontend_task_runner,
-    PowerBookmarkObserver* service_observer)
+    base::WeakPtr<PowerBookmarkObserver> service_observer)
     : database_dir_(database_dir),
       frontend_task_runner_(frontend_task_runner),
       service_observer_(service_observer) {
@@ -53,12 +53,15 @@ void PowerBookmarkBackend::Init(bool use_database) {
 
   bool success = db_->Init();
   DCHECK(success);
+
+  if (bridge_) {
+    bridge_->Init();
+  }
 }
 
-void PowerBookmarkBackend::Shutdown() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  db_.reset();
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+PowerBookmarkBackend::GetSyncControllerDelegate() {
+  return bridge_->change_processor()->GetControllerDelegate();
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForURL(
@@ -194,7 +197,8 @@ bool PowerBookmarkBackend::DeletePowerFromSync(const std::string& guid) {
   return db_->DeletePowerFromSync(guid);
 }
 
-syncer::SyncMetadataStore* PowerBookmarkBackend::GetSyncMetadataDatabase() {
+PowerBookmarkSyncMetadataDatabase*
+PowerBookmarkBackend::GetSyncMetadataDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return db_->GetSyncMetadataDatabase();
 }
@@ -224,7 +228,7 @@ void PowerBookmarkBackend::NotifyPowersChanged() {
   // for the backend and post tasks directly to ensure proper ordering.
   frontend_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&PowerBookmarkObserver::OnPowersChanged,
-                                base::Unretained(service_observer_)));
+                                service_observer_));
 }
 
 }  // namespace power_bookmarks

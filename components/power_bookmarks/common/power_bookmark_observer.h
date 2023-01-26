@@ -10,6 +10,8 @@ namespace power_bookmarks {
 // Observer class for any changes to powers.
 class PowerBookmarkObserver {
  public:
+  virtual ~PowerBookmarkObserver() = default;
+
   // Called whenever there are changes to Powers.
   virtual void OnPowersChanged() = 0;
 };
