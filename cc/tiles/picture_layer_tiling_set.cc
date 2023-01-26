@@ -294,9 +294,6 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
     const gfx::AxisTransform2d& raster_transform,
     scoped_refptr<RasterSource> raster_source,
     bool can_use_lcd_text) {
-  // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("PictureLayerTilingSet::AddTiling");
-
   if (!raster_source_)
     raster_source_ = raster_source;
 
@@ -315,6 +312,8 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
   PictureLayerTiling* appended = tilings_.back().get();
   state_since_last_tile_priority_update_.added_tilings = true;
 
+  recordreplay::Assert("[RUN-550] PictureLayerTilingSet::AddTiling %.2f", appended->contents_scale_key());
+
   std::sort(tilings_.begin(), tilings_.end(), LargestToSmallestScaleFunctor());
   return appended;
 }
@@ -328,6 +327,8 @@ int PictureLayerTilingSet::NumHighResTilings() const {
 
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
     float scale_key) const {
+  recordreplay::Assert("[RUN-550] PictureLayerImpl::FindTilingWithScaleKey %.2f", scale_key);
+
   for (const auto& tiling : tilings_) {
     if (tiling->contents_scale_key() == scale_key)
       return tiling.get();
@@ -388,6 +389,8 @@ void PictureLayerTilingSet::RemoveAllTilings() {
 }
 
 void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
+  recordreplay::Assert("[RUN-550] PictureLayerTilingSet::Remove %.2f", tiling->contents_scale_key());
+
   auto iter = base::ranges::find(tilings_, tiling,
                                  &std::unique_ptr<PictureLayerTiling>::get);
   if (iter == tilings_.end())

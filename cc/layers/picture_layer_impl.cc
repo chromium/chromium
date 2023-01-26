@@ -1289,9 +1289,9 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
   PictureLayerTiling* high_res =
       tilings_->FindTilingWithScaleKey(raster_contents_scale_key());
 
-  // https://linear.app/replay/issue/RUN-550
-  recordreplay::Assert("PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation Start %d",
-                       !!high_res);
+  recordreplay::Assert("[RUN-550] PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation Start %d %d %.2f %.2f",
+                       recordreplay::PointerId(this), !!high_res,
+                       raster_contents_scale_.x(), raster_contents_scale_.y());
 
   gfx::Vector2dF raster_translation;
   bool raster_translation_aligns_pixels =
