@@ -255,6 +255,7 @@ public class SigninFirstRunFragmentTest {
 
         mSigninTestRule.addAccount(
                 CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
 
         checkFragmentWithChildAccount(
                 /* hasDisplayableFullName= */ true, /* hasDisplayableEmail= */ true);
@@ -315,7 +316,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
-        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -434,7 +435,7 @@ public class SigninFirstRunFragmentTest {
         onView(withText(TEST_EMAIL2)).inRoot(isDialog()).perform(click());
 
         checkFragmentWithSelectedAccount(TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null);
-        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
     }
 
     @Test
@@ -446,7 +447,7 @@ public class SigninFirstRunFragmentTest {
         launchActivityWithFragment();
 
         checkFragmentWithSelectedAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1);
-        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(isDisplayed()));
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -454,9 +455,9 @@ public class SigninFirstRunFragmentTest {
     public void testFragmentWithChildAccount() {
         mSigninTestRule.addAccount(
                 CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null, /* avatar= */ null);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
 
         launchActivityWithFragment();
-
         checkFragmentWithChildAccount(
                 /* hasDisplayableFullName= */ true, /* hasDisplayableEmail= */ true);
     }
@@ -467,6 +468,7 @@ public class SigninFirstRunFragmentTest {
         ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         mSigninTestRule.addAccount(CHILD_ACCOUNT_EMAIL, CHILD_FULL_NAME, /* givenName= */ null,
                 /* avatar= */ null, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
 
         launchActivityWithFragment();
 
@@ -480,6 +482,7 @@ public class SigninFirstRunFragmentTest {
         ChromeFeatureList.sHideNonDisplayableAccountEmail.setForTesting(true);
         mSigninTestRule.addAccount(CHILD_ACCOUNT_EMAIL, /* fullName= */ null, /* givenName= */ null,
                 /* avatar= */ null, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        when(mPolicyLoadListenerMock.get()).thenReturn(true);
 
         launchActivityWithFragment();
 
@@ -1172,7 +1175,9 @@ public class SigninFirstRunFragmentTest {
         onView(withText(continueAsText)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_fre_footer)).check(matches(isDisplayed()));
         onView(withText(R.string.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.fre_browser_managed_by_organization)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_disclaimer)).check(matches(isDisplayed()));
+        onView(withText(R.string.fre_browser_managed_by_parents)).check(matches(isDisplayed()));
     }
 
     private void checkContinueButtonWithChildAccount(boolean hasFullNameInButtonText) {
@@ -1197,7 +1202,7 @@ public class SigninFirstRunFragmentTest {
             return !mFragment.getView().findViewById(R.id.signin_fre_selected_account).isShown();
         });
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
-        ViewUtils.waitForView(withId(R.id.fre_browser_managed_by_organization));
+        ViewUtils.waitForView(withId(R.id.fre_browser_managed_by));
         ViewUtils.waitForView(withText(R.string.continue_button));
         ViewUtils.waitForView(withId(R.id.signin_fre_footer));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));

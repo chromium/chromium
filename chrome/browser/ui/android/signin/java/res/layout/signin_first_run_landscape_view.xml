@@ -57,16 +57,18 @@ found in the LICENSE file.
                 app:leading="@dimen/text_size_medium_leading" />
 
             <FrameLayout
-                android:id="@+id/fre_browser_managed_by_organization"
+                android:id="@+id/fre_browser_managed_by"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" >
+                android:layout_marginTop="16dp">
 
                 <include
                     layout="@layout/fre_tos_privacy_disclaimer"
+                    android:id="@+id/privacy_disclaimer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="start" />
+
             </FrameLayout>
 
             <ProgressBar

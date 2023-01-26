@@ -43,6 +43,8 @@ class SigninFirstRunViewBinder {
             final boolean isSelectedAccountSupervised =
                     model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
             view.getSelectedAccountView().setEnabled(!isSelectedAccountSupervised);
+
+            updateBrowserManagedHeaderView(view, model);
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER) {
             final boolean showInitialLoadProgressSpinner =
@@ -59,9 +61,7 @@ class SigninFirstRunViewBinder {
             }
             updateVisibility(view, model);
         } else if (propertyKey == SigninFirstRunProperties.FRE_POLICY) {
-            view.getBrowserManagedHeaderView().setVisibility(
-                    model.get(SigninFirstRunProperties.FRE_POLICY) != null ? View.VISIBLE
-                                                                           : View.GONE);
+            updateBrowserManagedHeaderView(view, model);
         } else if (propertyKey == SigninFirstRunProperties.IS_SIGNIN_SUPPORTED) {
             if (!model.get(SigninFirstRunProperties.IS_SIGNIN_SUPPORTED)) {
                 view.getContinueButtonView().setText(R.string.continue_button);
@@ -72,6 +72,33 @@ class SigninFirstRunViewBinder {
             view.getFooterView().setMovementMethod(LinkMovementMethod.getInstance());
         } else {
             throw new IllegalArgumentException("Unknown property key:" + propertyKey);
+        }
+    }
+
+    private static void updateBrowserManagedHeaderView(
+            SigninFirstRunView view, PropertyModel model) {
+        // Supervised accounts do not have any enterprise policy set, but they set app
+        // restrictions which the policy load listener considers as policy. But if child
+        // accounts are loaded dynamically, policy load listener may say there are no
+        // policies on device. Because of the entangled nature of IS_SELECTED_ACCOUNT_SUPERVISED
+        // and FRE_POLICY they are both handled in this function as one of these properties
+        // will get updated before the other.
+        final boolean hasPolicy = model.get(SigninFirstRunProperties.FRE_POLICY) != null;
+        final boolean isAccountSupervised =
+                model.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED);
+
+        if (isAccountSupervised) {
+            view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
+            view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_parents);
+            view.getPrivacyDisclaimer().setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_account_child_20dp, 0, 0, 0);
+        } else if (hasPolicy) {
+            view.getBrowserManagedHeaderView().setVisibility(View.VISIBLE);
+            view.getPrivacyDisclaimer().setText(R.string.fre_browser_managed_by_organization);
+            view.getPrivacyDisclaimer().setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    R.drawable.ic_business, 0, 0, 0);
+        } else {
+            view.getBrowserManagedHeaderView().setVisibility(View.GONE);
         }
     }
 
