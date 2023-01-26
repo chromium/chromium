@@ -59,37 +59,6 @@ using blink::WebString;
 
 namespace {
 
-class DummyTaskRunner : public base::SingleThreadTaskRunner {
- public:
-  DummyTaskRunner() : thread_id_(base::PlatformThread::CurrentId()) {}
-
-  DummyTaskRunner(const DummyTaskRunner&) = delete;
-  DummyTaskRunner& operator=(const DummyTaskRunner&) = delete;
-
-  bool PostDelayedTask(const base::Location& from_here,
-                       base::OnceClosure task,
-                       base::TimeDelta delay) override {
-    // Drop the delayed task.
-    return false;
-  }
-
-  bool PostNonNestableDelayedTask(const base::Location& from_here,
-                                  base::OnceClosure task,
-                                  base::TimeDelta delay) override {
-    // Drop the delayed task.
-    return false;
-  }
-
-  bool RunsTasksInCurrentSequence() const override {
-    return thread_id_ == base::PlatformThread::CurrentId();
-  }
-
- protected:
-  ~DummyTaskRunner() override {}
-
-  base::PlatformThreadId thread_id_;
-};
-
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
 constexpr gin::V8SnapshotFileType kSnapshotType =
