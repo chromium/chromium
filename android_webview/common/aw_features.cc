@@ -62,6 +62,11 @@ BASE_FEATURE(kWebViewEmptyComponentLoaderPolicy,
              "WebViewEmptyComponentLoaderPolicy",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable dns-prefetch and preconnect in link tags and HTTP header.
+BASE_FEATURE(kWebViewEnableDnsPrefetchAndPreconnect,
+             "WebViewEnableDnsPrefetchAndPreconnect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, passive mixed content (Audio/Video/Image subresources loaded
 // over HTTP on HTTPS sites) will be autoupgraded to HTTPS, and the load will be
 // blocked if the resource fails to load over HTTPS. This only affects apps that

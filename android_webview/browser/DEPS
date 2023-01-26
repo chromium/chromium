@@ -27,6 +27,7 @@ include_rules = [
   "+components/leveldb_proto/public",
   "+components/minidump_uploader",
   "+components/navigation_interception",
+  "+components/network_hints/browser",
   "+components/optimization_guide/core/bloom_filter.h",
   "+components/origin_trials",
   "+components/page_load_metrics/browser",

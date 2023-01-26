@@ -22,6 +22,7 @@ BASE_DECLARE_FEATURE(kWebViewCheckReturnResources);
 BASE_DECLARE_FEATURE(kWebViewConnectionlessSafeBrowsing);
 BASE_DECLARE_FEATURE(kWebViewDisplayCutout);
 BASE_DECLARE_FEATURE(kWebViewEmptyComponentLoaderPolicy);
+BASE_DECLARE_FEATURE(kWebViewEnableDnsPrefetchAndPreconnect);
 BASE_DECLARE_FEATURE(kWebViewEnumerateDevicesCache);
 BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
 BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);

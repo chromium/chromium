@@ -252,6 +252,7 @@ source_set("browser") {
     "//components/metrics:component_metrics",
     "//components/minidump_uploader",
     "//components/navigation_interception",
+    "//components/network_hints/browser",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
     "//components/page_load_metrics/browser",

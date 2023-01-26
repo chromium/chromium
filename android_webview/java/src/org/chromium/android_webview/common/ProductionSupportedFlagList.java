@@ -358,6 +358,7 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT,
                     "Controls whether access to sensitive web content should be restricted."),
             Flag.baseFeature("NavigationRequestPreconnect"),
+            Flag.baseFeature("WebViewEnableDnsPrefetchAndPreconnect"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/url_constants.h"
@@ -25,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "components/android_system_error_page/error_page_populator.h"
 #include "components/js_injection/renderer/js_communication.h"
+#include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/printing/renderer/print_render_frame_helper.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
@@ -166,6 +168,18 @@ void AwContentRendererClient::RenderFrameCreated(
 
   // Owned by |render_frame|.
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
+}
+
+std::unique_ptr<blink::WebPrescientNetworking>
+AwContentRendererClient::CreatePrescientNetworking(
+    content::RenderFrame* render_frame) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebViewEnableDnsPrefetchAndPreconnect)) {
+    return nullptr;
+  }
+
+  return std::make_unique<network_hints::WebPrescientNetworkingImpl>(
+      render_frame);
 }
 
 void AwContentRendererClient::WebViewCreated(
