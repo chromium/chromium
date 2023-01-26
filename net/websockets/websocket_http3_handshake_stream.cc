@@ -4,11 +4,8 @@
 
 #include "net/websockets/websocket_http3_handshake_stream.h"
 
-#include <cstddef>
-#include <set>
 #include <utility>
 
-#include "base/check_op.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "net/base/ip_endpoint.h"
@@ -50,7 +47,6 @@ WebSocketHttp3HandshakeStream::WebSocketHttp3HandshakeStream(
 }
 
 WebSocketHttp3HandshakeStream::~WebSocketHttp3HandshakeStream() {
-  quic_stream_request_.reset();
   RecordHandshakeResult(result_);
 }
 
@@ -153,7 +149,6 @@ int WebSocketHttp3HandshakeStream::ReadResponseBody(
 }
 
 void WebSocketHttp3HandshakeStream::Close(bool not_reusable) {
-  quic_stream_request_.reset();
   if (stream_adapter_) {
     stream_adapter_->Disconnect();
     stream_closed_ = true;

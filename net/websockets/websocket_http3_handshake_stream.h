@@ -162,8 +162,6 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
 
   NetLogWithSource net_log_;
 
-  std::unique_ptr<QuicStreamRequest> quic_stream_request_;
-
   // WebSocketQuicStreamAdapter holding a WeakPtr to `stream_`.
   // This can be passed on to WebSocketBasicStream when created.
   std::unique_ptr<WebSocketQuicStreamAdapter> stream_adapter_;
