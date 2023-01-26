@@ -338,10 +338,6 @@ bool AwAutofillClient::IsContextSecure() const {
            content::SSLStatus::RAN_INSECURE_CONTENT);
 }
 
-bool AwAutofillClient::ShouldShowSigninPromo() {
-  return false;
-}
-
 void AwAutofillClient::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }

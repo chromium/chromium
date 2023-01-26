@@ -43,10 +43,6 @@ const char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
     "autofill.credit_card_fido_auth_offer_checkbox_state";
 #endif
 
-// Number of times the credit card signin promo has been shown.
-const char kAutofillCreditCardSigninPromoImpressionCount[] =
-    "autofill.credit_card_signin_promo_impression_count";
-
 // Boolean that is true if Autofill is enabled and allowed to save data.
 const char kAutofillEnabledDeprecated[] = "autofill.enabled";
 
@@ -130,8 +126,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
-  registry->RegisterIntegerPref(
-      prefs::kAutofillCreditCardSigninPromoImpressionCount, 0);
   registry->RegisterBooleanPref(prefs::kAutofillWalletImportEnabled, true);
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);

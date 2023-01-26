@@ -615,31 +615,11 @@ PopupType BrowserAutofillManager::GetPopupType(const FormData& form,
   }
 }
 
+// TODO(crbug/1346550): Remove ShouldShowCreditCardSigninPromo() as it only
+// returns false.
 bool BrowserAutofillManager::ShouldShowCreditCardSigninPromo(
     const FormData& form,
     const FormFieldData& field) {
-  // Check whether we are dealing with a credit card field and whether it's
-  // appropriate to show the promo (e.g. the platform is supported).
-  AutofillField* autofill_field = GetAutofillField(form, field);
-  if (!autofill_field ||
-      autofill_field->Type().group() != FieldTypeGroup::kCreditCard ||
-      !client()->ShouldShowSigninPromo())
-    return false;
-
-  if (IsFormNonSecure(form))
-    return false;
-
-  // The last step is checking if we are under the limit of impressions.
-  int impression_count = client()->GetPrefs()->GetInteger(
-      prefs::kAutofillCreditCardSigninPromoImpressionCount);
-  if (impression_count < kCreditCardSigninPromoImpressionLimit) {
-    // The promo will be shown. Increment the impression count.
-    client()->GetPrefs()->SetInteger(
-        prefs::kAutofillCreditCardSigninPromoImpressionCount,
-        impression_count + 1);
-    return true;
-  }
-
   return false;
 }
 

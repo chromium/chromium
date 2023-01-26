@@ -1015,15 +1015,6 @@ bool ChromeAutofillClient::IsContextSecure() const {
          security_level != security_state::DANGEROUS;
 }
 
-bool ChromeAutofillClient::ShouldShowSigninPromo() {
-#if !BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return signin::ShouldShowPromo(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-#endif
-}
-
 void ChromeAutofillClient::ExecuteCommand(int id) {
 #if BUILDFLAG(IS_ANDROID)
   if (id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {

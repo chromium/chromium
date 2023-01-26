@@ -761,9 +761,6 @@ class AutofillClient : public RiskDataLoader {
   // If the context is secure.
   virtual bool IsContextSecure() const = 0;
 
-  // Whether it is appropriate to show a signin promo for this user.
-  virtual bool ShouldShowSigninPromo() = 0;
-
   // Handles simple actions for the autofill popups.
   virtual void ExecuteCommand(int id) = 0;
 

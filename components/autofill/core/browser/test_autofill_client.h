@@ -200,7 +200,6 @@ class TestAutofillClient : public AutofillClient {
   // secure. This can be adjusted by calling set_form_origin() with an
   // http:// URL.
   bool IsContextSecure() const override;
-  bool ShouldShowSigninPromo() override;
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;

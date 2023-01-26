@@ -360,11 +360,6 @@ bool AutofillClientImpl::IsContextSecure() const {
   return false;
 }
 
-bool AutofillClientImpl::ShouldShowSigninPromo() {
-  NOTREACHED();
-  return false;
-}
-
 void AutofillClientImpl::ExecuteCommand(int id) {
   NOTREACHED();
 }

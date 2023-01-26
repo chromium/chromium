@@ -283,7 +283,6 @@ class MockAutofillClient : public autofill::AutofillClient {
               (const std::u16string&, const std::u16string&),
               (override));
   MOCK_METHOD(bool, IsContextSecure, (), (const, override));
-  MOCK_METHOD(bool, ShouldShowSigninPromo, (), (override));
   MOCK_METHOD(void, ExecuteCommand, (int), (override));
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const, override));
   MOCK_METHOD(const autofill::AutofillAblationStudy&,

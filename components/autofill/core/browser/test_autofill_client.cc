@@ -380,10 +380,6 @@ bool TestAutofillClient::IsContextSecure() const {
   return form_origin_.SchemeIs("https");
 }
 
-bool TestAutofillClient::ShouldShowSigninPromo() {
-  return false;
-}
-
 void TestAutofillClient::ExecuteCommand(int id) {}
 
 void TestAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {}

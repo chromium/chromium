@@ -834,6 +834,10 @@ const char kMediaRouterTabMirroringSources[] =
     "media_router.tab_mirroring_sources";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Deprecated 01/2023.
+const char kAutofillCreditCardSigninPromoImpressionCount[] =
+    "autofill.credit_card_signin_promo_impression_count";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1120,6 +1124,10 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(kMediaRouterTabMirroringSources);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 01/2023.
+  registry->RegisterIntegerPref(kAutofillCreditCardSigninPromoImpressionCount,
+                                0);
 }
 
 }  // namespace
@@ -2184,6 +2192,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kMediaRouterTabMirroringSources);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 01/2023
+  profile_prefs->ClearPref(kAutofillCreditCardSigninPromoImpressionCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

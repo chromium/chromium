@@ -83,9 +83,6 @@ constexpr uint32_t kWebOTPUsed = 1 << 1;
 constexpr uint32_t kPhoneCollected = 1 << 2;
 }  // namespace phone_collection_metric
 
-// We show the credit card signin promo only a certain number of times.
-constexpr int kCreditCardSigninPromoImpressionLimit = 3;
-
 // Enum for the value patterns metric. Don't renumerate existing value. They are
 // used for metrics.
 enum class ValuePatternsMetric {

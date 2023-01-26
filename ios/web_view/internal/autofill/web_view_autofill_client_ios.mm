@@ -363,10 +363,6 @@ bool WebViewAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-bool WebViewAutofillClientIOS::ShouldShowSigninPromo() {
-  return false;
-}
-
 void WebViewAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }

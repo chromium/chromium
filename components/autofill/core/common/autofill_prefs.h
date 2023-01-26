@@ -27,7 +27,6 @@ extern const char kAutofillCreditCardFidoAuthEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
 #endif
-extern const char kAutofillCreditCardSigninPromoImpressionCount[];
 // Please use kAutofillCreditCardEnabled, kAutofillIBANEnabled and
 // kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];

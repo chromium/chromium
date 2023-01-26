@@ -488,10 +488,6 @@ bool ChromeAutofillClientIOS::IsContextSecure() const {
   return IsContextSecureForWebState(web_state_);
 }
 
-bool ChromeAutofillClientIOS::ShouldShowSigninPromo() {
-  return false;
-}
-
 void ChromeAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
