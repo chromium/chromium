@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -636,6 +637,11 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       int http_response_code) override;
   void CancelNavigation() override;
   bool Credentialless() const override;
+#if !BUILDFLAG(IS_ANDROID)
+  void GetVirtualAuthenticatorManager(
+      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
+          receiver) override;
+#endif
 
  private:
   friend class CSPEmbeddedEnforcementUnitTest;
