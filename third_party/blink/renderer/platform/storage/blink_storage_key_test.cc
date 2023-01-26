@@ -111,7 +111,7 @@ TEST(BlinkStorageKeyTest, BlinkStorageKeyRoundTripConversion) {
         BlinkStorageKey::CreateWithNonce(origin1, nonce),
         BlinkStorageKey::CreateWithNonce(origin2, nonce),
         BlinkStorageKey(origin1, BlinkSchemefulSite(origin2), nullptr,
-                        mojom::blink::AncestorChainBit::kSameSite),
+                        mojom::blink::AncestorChainBit::kCrossSite),
         BlinkStorageKey(origin1, BlinkSchemefulSite(), nullptr,
                         mojom::blink::AncestorChainBit::kSameSite),
         BlinkStorageKey(origin2, BlinkSchemefulSite(), nullptr,
@@ -291,7 +291,7 @@ TEST(BlinkStorageKeyTest, NonceRequiresMatchingOriginSiteAndSameSite) {
   }
 }
 
-TEST(StorageKeyTest, OpaqueTopLevelSiteRequiresSameSite) {
+TEST(BlinkStorageKeyTest, OpaqueTopLevelSiteRequiresSameSite) {
   scoped_refptr<const SecurityOrigin> origin =
       SecurityOrigin::CreateFromString("https://foo.com");
   const BlinkSchemefulSite site(origin);
@@ -319,4 +319,37 @@ TEST(StorageKeyTest, OpaqueTopLevelSiteRequiresSameSite) {
   }
 }
 
+TEST(BlinkStorageKeyTest, OriginAndSiteMismatchRequiresCrossSite) {
+  scoped_refptr<const SecurityOrigin> origin =
+      SecurityOrigin::CreateFromString("https://foo.com");
+  scoped_refptr<const SecurityOrigin> opaque_origin =
+      SecurityOrigin::CreateUniqueOpaque();
+  const BlinkSchemefulSite site(origin);
+  const BlinkSchemefulSite other_site(
+      SecurityOrigin::CreateFromString("https://notfoo.com"));
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    // A matching origin and site can be SameSite or CrossSite.
+    std::ignore = BlinkStorageKey(origin, site, nullptr,
+                                  mojom::blink::AncestorChainBit::kSameSite);
+    std::ignore = BlinkStorageKey(origin, site, nullptr,
+                                  mojom::blink::AncestorChainBit::kCrossSite);
+
+    // A mismatched origin and site cannot be SameSite.
+    EXPECT_DCHECK_DEATH(
+        BlinkStorageKey(origin, other_site, nullptr,
+                        mojom::blink::AncestorChainBit::kSameSite));
+    EXPECT_DCHECK_DEATH(
+        BlinkStorageKey(opaque_origin, other_site, nullptr,
+                        mojom::blink::AncestorChainBit::kSameSite));
+
+    // A mismatched origin and site must be CrossSite.
+    std::ignore = BlinkStorageKey(origin, other_site, nullptr,
+                                  mojom::blink::AncestorChainBit::kCrossSite);
+  }
+}
 }  // namespace blink

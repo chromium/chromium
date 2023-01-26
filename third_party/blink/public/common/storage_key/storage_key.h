@@ -43,15 +43,20 @@ namespace blink {
 // `a.com` frame can be controlled by `b.com`, and is thus considered
 // third-party. The ancestor chain bit tracks this status.
 //
+// TODO(https://crbug.com/1410254): Use kCrossSite for this case.
 // Storage keys can also optionally have a nonce. Keys with different nonces are
 // considered distinct, and distinct from a key with no nonce. This is used to
 // implement iframe credentialless and other forms of storage partitioning.
 // Keys with a nonce disregard the top level site and ancestor chain bit. For
 // consistency we set them to the origin's site and `kSameSite` respectively.
 //
+// TODO(https://crbug.com/1410254): Use kCrossSite for this case.
 // Storage keys might have an opaque top level site (for example, if an
 // iframe is embedded in a data url). These storage keys always have a
 // `kSameSite` ancestor chain bit as it provides no additional distinctiveness.
+//
+// Storage keys might have a top level site and origin that don't match. These
+// storage keys always have a `kCrossSite` ancestor chain bit.
 //
 // For more details on the overall design, see
 // https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
@@ -81,7 +86,8 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Callers may specify an optional `nonce` by passing nullptr.
   // If the `nonce` isn't null, `top_level_site` must be the same as `origin`
   // and `ancestor_chain_bit` must be kSameSite. If `top_level_site` is opaque,
-  // `ancestor_chain_bit` must be `kSameSite`.
+  // `ancestor_chain_bit` must be `kSameSite`, otherwise if `top_level_site`
+  // doesn't match `origin` `ancestor_chain_bit` must be `kCrossSite`.
   static StorageKey CreateWithOptionalNonce(
       const url::Origin& origin,
       const net::SchemefulSite& top_level_site,

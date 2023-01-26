@@ -4010,6 +4010,7 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
     const base::UnguessableToken* nonce) {
   // If the nonce is set the `top_level_site` must be the same as
   // `new_rfh_origin` and the `ancestor_chain_bit` must be kSameSite.
+  // TODO(https://crbug.com/1410254): Cleanup this logic.
   if (nonce) {
     return blink::StorageKey::CreateWithOptionalNonce(
         new_rfh_origin, net::SchemefulSite(new_rfh_origin), nonce,
@@ -4057,18 +4058,18 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
   // Compute the AncestorChainBit. It represents whether every ancestors are
   // all same-site or not. If `top_level_site` is opaque the bit must be
   // kSameSite as this is the default value (which won't be serialized).
-  auto site_for_cookies = net::SiteForCookies::FromOrigin(new_rfh_origin);
   blink::mojom::AncestorChainBit ancestor_chain_bit =
       blink::mojom::AncestorChainBit::kSameSite;
   if (!top_level_site.opaque()) {
     for (auto* ancestor : ancestor_chain) {
-      if (!site_for_cookies.IsFirstParty(origin(ancestor).GetURL())) {
+      if (top_level_site != net::SchemefulSite(origin(ancestor))) {
         ancestor_chain_bit = blink::mojom::AncestorChainBit::kCrossSite;
         break;
       }
     }
   }
 
+  // TODO(https://crbug.com/1410254): Cleanup this logic.
   return blink::StorageKey::CreateWithOptionalNonce(
       new_rfh_origin, top_level_site, nullptr, ancestor_chain_bit);
 }
