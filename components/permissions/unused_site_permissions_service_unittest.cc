@@ -196,6 +196,34 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
   EXPECT_EQ(GURL(tracked_origin.source.primary_pattern.ToString()), url1);
 }
 
+TEST_F(UnusedSitePermissionsServiceTest, TrackUnusedButDontRevoke) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url("https://example1.com");
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  // Grant GEOLOCATION permission for the url.
+  hcsm()->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION,
+      ContentSetting::CONTENT_SETTING_BLOCK, constraint);
+
+  // Travel through time for 20 days.
+  clock()->Advance(base::Days(20));
+
+  // GEOLOCATION permission should be on the tracked unused site permissions
+  // list as it is denied 20 days before. The permission is not suitable for
+  // revocation and this test verifies that RevokeUnusedPermissions() does not
+  // enter infinite loop in such case.
+  service()->UpdateUnusedPermissionsForTesting();
+  auto unused_permissions = service()->GetTrackedUnusedPermissionsForTesting();
+  ASSERT_EQ(unused_permissions.size(), 1u);
+  EXPECT_EQ(unused_permissions[0].type, ContentSettingsType::GEOLOCATION);
+  EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
+}
+
 TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(

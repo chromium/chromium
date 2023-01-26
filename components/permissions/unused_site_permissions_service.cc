@@ -294,6 +294,7 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
       ContentSetting setting =
           content_settings::ValueToContentSetting(entry.source.setting_value);
       if (!content_settings::CanBeAutoRevoked(entry.type, setting)) {
+        permission_itr++;
         continue;
       }
 
