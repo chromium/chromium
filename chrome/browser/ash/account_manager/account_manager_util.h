@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UTIL_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 
 class Profile;
 
 namespace ash {
 
-bool IsAccountManagerAvailable(const Profile* const profile);
+bool IsAccountManagerAvailable(Profile* profile);
 
 // Initializes account manager if it has not been initialized yet. Safe to call
 // multiple times. |cryptohome_root_dir| is root of user's home partition (same

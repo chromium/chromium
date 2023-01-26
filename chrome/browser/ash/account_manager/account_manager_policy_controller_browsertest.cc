@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -10,19 +15,21 @@
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,7 +59,10 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     // Prep private fields.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
-    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestProfile"));
+    profile_builder.SetPath(temp_dir_.GetPath().AppendASCII(
+        BrowserContextHelper::GetUserBrowserContextDirName(
+            user_manager::FakeUserManager::GetFakeUsernameHash(
+                AccountId::FromUserEmail(kFakePrimaryUsername)))));
     profile_builder.SetProfileName(kFakePrimaryUsername);
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(profile_builder);
@@ -73,9 +83,8 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     primary_account_id_ = AccountId::FromUserEmailGaiaId(
         primary_account_info.email, primary_account_info.gaia);
-    const user_manager::User* user = user_manager->AddUser(primary_account_id_);
+    user_manager->AddUser(primary_account_id_);
     user_manager->LoginUser(primary_account_id_);
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile());
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
 
@@ -179,20 +188,16 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
+  const std::string& gaia_id = BrowserContextHelper::Get()
+                                   ->GetUserByBrowserContext(profile())
+                                   ->GetAccountId()
+                                   .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
-  EXPECT_EQ(ProfileHelper::Get()
-                ->GetUserByProfile(profile())
-                ->GetAccountId()
-                .GetGaiaId(),
-            identity_manager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .gaia);
-  EXPECT_EQ(ProfileHelper::Get()
-                ->GetUserByProfile(profile())
-                ->GetAccountId()
-                .GetGaiaId(),
-            accounts[0].key.id());
+  EXPECT_EQ(gaia_id, accounts[0].key.id());
+  EXPECT_EQ(gaia_id, identity_manager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -211,21 +216,16 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop().RunUntilIdle();
 
   // Secondary Accounts must be removed.
+  const std::string& gaia_id = BrowserContextHelper::Get()
+                                   ->GetUserByBrowserContext(profile())
+                                   ->GetAccountId()
+                                   .GetGaiaId();
   accounts = GetAccountManagerAccounts();
   ASSERT_EQ(accounts.size(), 1UL);
-
-  EXPECT_EQ(ProfileHelper::Get()
-                ->GetUserByProfile(profile())
-                ->GetAccountId()
-                .GetGaiaId(),
-            identity_manager()
-                ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                .gaia);
-  EXPECT_EQ(ProfileHelper::Get()
-                ->GetUserByProfile(profile())
-                ->GetAccountId()
-                .GetGaiaId(),
-            accounts[0].key.id());
+  EXPECT_EQ(gaia_id, accounts[0].key.id());
+  EXPECT_EQ(gaia_id, identity_manager()
+                         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                         .gaia);
 }
 
 }  // namespace ash

@@ -6,15 +6,17 @@
 
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
@@ -23,12 +25,13 @@
 
 namespace ash {
 
-bool IsAccountManagerAvailable(const Profile* const profile) {
+bool IsAccountManagerAvailable(Profile* profile) {
   // Signin Profile does not have any accounts associated with it,
   // LockScreenAppProfile and LockScreenProfile do not link to the user's
   // cryptohome.
-  if (!ProfileHelper::IsUserProfile(profile))
+  if (!IsUserBrowserContext(profile)) {
     return false;
+  }
 
   // Account Manager is unavailable on Guest (Incognito) Sessions.
   if (profile->IsGuestSession() || profile->IsOffTheRecord())
