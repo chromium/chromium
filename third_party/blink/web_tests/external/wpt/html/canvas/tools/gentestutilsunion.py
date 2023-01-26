@@ -131,7 +131,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         sys.exit()
 
     templates = yaml.safe_load(open(TEMPLATEFILE, 'r').read())
-    name_mapping = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
+    name_to_sub_dir = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
 
     tests = []
     test_yaml_directory = 'yaml-new'
@@ -154,28 +154,21 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
         CANVASOUTPUTDIR, OFFSCREENCANVASOUTPUTDIR, CANVASIMAGEOUTPUTDIR,
         OFFSCREENCANVASIMAGEOUTPUTDIR
     ]
-    for map_dir in set(name_mapping.values()):
-        testdirs.append('%s/%s' % (CANVASOUTPUTDIR, map_dir))
-        testdirs.append('%s/%s' % (OFFSCREENCANVASOUTPUTDIR, map_dir))
+    for sub_dir in set(name_to_sub_dir.values()):
+        testdirs.append('%s/%s' % (CANVASOUTPUTDIR, sub_dir))
+        testdirs.append('%s/%s' % (OFFSCREENCANVASOUTPUTDIR, sub_dir))
     for d in testdirs:
         try:
             os.mkdir(d)
         except FileExistsError:
             pass  # Ignore if it already exists,
 
-    def map_name(test: Mapping[str, str], name: str) -> str:
-        mapped_name = None
-        for mn in sorted(name_mapping.keys(), key=len, reverse=True):
-            if name.startswith(mn):
-                mapped_name = '%s/%s' % (name_mapping[mn], name)
-                break
-        if not mapped_name:
-            print('LIKELY ERROR: %s has no defined target directory mapping' %
-                  name)
-            return name
-        if 'manual' in test:
-            mapped_name += '-manual'
-        return mapped_name
+    def get_test_sub_dir(name: str) -> str:
+        for prefix in sorted(name_to_sub_dir.keys(), key=len, reverse=True):
+            if name.startswith(prefix):
+                return name_to_sub_dir[prefix]
+        raise InvalidTestDefinitionError(
+            'Test "%s" has no defined target directory mapping' % name)
 
     def expand_test_code(code: str) -> str:
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
@@ -244,7 +237,7 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
             print('Test %s is defined twice' % name)
         used_tests[name] = 1
 
-        mapped_name = map_name(test, name)
+        sub_dir = get_test_sub_dir(name)
 
         if test.get('expected', '') == 'green' and re.search(
                 r'@assert pixel .* 0,0,0,0;', test['code']):
@@ -268,24 +261,18 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
                     r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
                     r'\ncr = cairo.Context(surface)', expected)
 
-                if mapped_name.endswith('-manual'):
-                    png_name = mapped_name[:-len('-manual')]
-                else:
-                    png_name = mapped_name
-                expected_canvas = (expected +
-                                   "\nsurface.write_to_png('%s/%s.png')\n" %
-                                   (CANVASIMAGEOUTPUTDIR, png_name))
-                eval(
-                    compile(expected_canvas, '<test %s>' % test['name'],
-                            'exec'), {}, {'cairo': cairo})
+                expected_canvas = (
+                    expected + "\nsurface.write_to_png('%s.png')\n" %
+                    os.path.join(CANVASIMAGEOUTPUTDIR, sub_dir, name))
+                eval(compile(expected_canvas, '<test %s>' % name, 'exec'), {},
+                     {'cairo': cairo})
 
                 expected_offscreencanvas = (
-                    expected + "\nsurface.write_to_png('%s/%s.png')\n" %
-                    (OFFSCREENCANVASIMAGEOUTPUTDIR, png_name))
+                    expected + "\nsurface.write_to_png('%s.png')\n" %
+                    os.path.join(OFFSCREENCANVASIMAGEOUTPUTDIR, sub_dir, name))
                 eval(
-                    compile(expected_offscreencanvas,
-                            '<test %s>' % test['name'], 'exec'), {},
-                    {'cairo': cairo})
+                    compile(expected_offscreencanvas, '<test %s>' % name,
+                            'exec'), {}, {'cairo': cairo})
 
                 expected_img = '%s.png' % name
 
@@ -364,18 +351,19 @@ def genTestUtils_union(TEMPLATEFILE: str, NAME2DIRFILE: str) -> None:
             'context_args': context_args
         }
 
+        canvas_path = os.path.join(CANVASOUTPUTDIR, sub_dir, name)
+        offscreen_path = os.path.join(OFFSCREENCANVASOUTPUTDIR, sub_dir, name)
+        if 'manual' in test:
+            canvas_path += '-manual'
+            offscreen_path += '-manual'
+
         # Create test cases for canvas and offscreencanvas.
         if HTMLCanvas_test:
-            f = codecs.open('%s/%s.html' % (CANVASOUTPUTDIR, mapped_name), 'w',
-                            'utf-8')
+            f = codecs.open(f'{canvas_path}.html', 'w', 'utf-8')
             f.write(templates['w3ccanvas'] % template_params)
         if OffscreenCanvas_test:
-            f_html = codecs.open(
-                '%s/%s.html' % (OFFSCREENCANVASOUTPUTDIR, mapped_name), 'w',
-                'utf-8')
-            f_worker = codecs.open(
-                '%s/%s.worker.js' % (OFFSCREENCANVASOUTPUTDIR, mapped_name),
-                'w', 'utf-8')
+            f_html = codecs.open(f'{offscreen_path}.html', 'w', 'utf-8')
+            f_worker = codecs.open(f'{offscreen_path}.worker.js', 'w', 'utf-8')
             if ('then(t_pass, t_fail);' in code_canvas):
                 temp_offscreen = templates['w3coffscreencanvas'].replace(
                     't.done();\n', '')

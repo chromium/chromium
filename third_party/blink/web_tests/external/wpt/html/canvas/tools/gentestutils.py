@@ -127,7 +127,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
         sys.exit()
 
     templates = yaml.safe_load(open(TEMPLATEFILE, 'r').read())
-    name_mapping = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
+    name_to_sub_dir = yaml.safe_load(open(NAME2DIRFILE, 'r').read())
 
     tests = []
     test_yaml_directory = 'yaml/element'
@@ -149,27 +149,20 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
 
     # Ensure the test output directories exist.
     testdirs = [TESTOUTPUTDIR, IMAGEOUTPUTDIR]
-    for map_dir in set(name_mapping.values()):
-        testdirs.append('%s/%s' % (TESTOUTPUTDIR, map_dir))
+    for sub_dir in set(name_to_sub_dir.values()):
+        testdirs.append('%s/%s' % (TESTOUTPUTDIR, sub_dir))
     for d in testdirs:
         try:
             os.mkdir(d)
         except FileExistsError:
             pass  # Ignore if it already exists.
 
-    def map_name(test: Mapping[str, str], name: str) -> str:
-        mapped_name = None
-        for mn in sorted(name_mapping.keys(), key=len, reverse=True):
-            if name.startswith(mn):
-                mapped_name = '%s/%s' % (name_mapping[mn], name)
-                break
-        if not mapped_name:
-            print('LIKELY ERROR: %s has no defined target directory mapping' %
-                  name)
-            return name
-        if 'manual' in test:
-            mapped_name += '-manual'
-        return mapped_name
+    def get_test_sub_dir(name: str) -> str:
+        for prefix in sorted(name_to_sub_dir.keys(), key=len, reverse=True):
+            if name.startswith(prefix):
+                return name_to_sub_dir[prefix]
+        raise InvalidTestDefinitionError(
+            'Test "%s" has no defined target directory mapping' % name)
 
     def expand_test_code(code: str) -> str:
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m:
@@ -227,7 +220,7 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
             print('Test %s is defined twice' % name)
         used_tests[name] = 1
 
-        mapped_name = map_name(test, name)
+        sub_dir = get_test_sub_dir(name)
 
         if test.get('expected', '') == 'green' and re.search(
                 r'@assert pixel .* 0,0,0,0;', test['code']):
@@ -251,13 +244,9 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
                     r'surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, \1, \2)'
                     r'\ncr = cairo.Context(surface)', expected)
 
-                if mapped_name.endswith('-manual'):
-                    png_name = mapped_name[:-len('-manual')]
-                else:
-                    png_name = mapped_name
-                expected += "\nsurface.write_to_png('%s/%s.png')\n" % (
-                    IMAGEOUTPUTDIR, png_name)
-                eval(compile(expected, '<test %s>' % test['name'], 'exec'), {},
+                expected += ("\nsurface.write_to_png('%s.png')\n" %
+                             os.path.join(IMAGEOUTPUTDIR, sub_dir, name))
+                eval(compile(expected, '<test %s>' % name, 'exec'), {},
                      {'cairo': cairo})
                 expected_img = '%s.png' % name
 
@@ -335,19 +324,21 @@ def genTestUtils(TESTOUTPUTDIR: str, IMAGEOUTPUTDIR: str, TEMPLATEFILE: str,
             'attributes': attributes,
             'context_args': context_args
         }
+
+        test_path = os.path.join(TESTOUTPUTDIR, sub_dir, name)
+        if 'manual' in test:
+            test_path += '-manual'
+
         if ISOFFSCREENCANVAS:
-            f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, mapped_name), 'w',
-                            'utf-8')
+            f = codecs.open(f'{test_path}.html', 'w', 'utf-8')
             f.write(templates['w3coffscreencanvas'] % template_params)
             timeout = ('// META: timeout=%s\n' %
                        test['timeout'] if 'timeout' in test else '')
             template_params['timeout'] = timeout
-            f = codecs.open('%s/%s.worker.js' % (TESTOUTPUTDIR, mapped_name),
-                            'w', 'utf-8')
+            f = codecs.open(f'{test_path}.worker.js', 'w', 'utf-8')
             f.write(templates['w3cworker'] % template_params)
         else:
-            f = codecs.open('%s/%s.html' % (TESTOUTPUTDIR, mapped_name), 'w',
-                            'utf-8')
+            f = codecs.open(f'{test_path}.html', 'w', 'utf-8')
             f.write(templates['w3ccanvas'] % template_params)
 
     print()
