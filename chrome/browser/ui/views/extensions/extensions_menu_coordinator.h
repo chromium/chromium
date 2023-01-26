@@ -12,6 +12,10 @@ class Browser;
 class ExtensionsMenuViewController;
 class ExtensionsContainer;
 
+namespace views {
+class BubbleDialogDelegate;
+}
+
 // Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator : public views::ViewObserver {
  public:
@@ -38,8 +42,18 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   ExtensionsMenuViewController* GetControllerForTesting() {
     return controller_.get();
   }
+  std::unique_ptr<views::BubbleDialogDelegate>
+  CreateExtensionsMenuBubbleDialogDelegateForTesting(
+      views::View* anchor_view,
+      ExtensionsContainer* extensions_container);
 
  private:
+  // Creates the bubble contents and returns its delegate.
+  std::unique_ptr<views::BubbleDialogDelegate>
+  CreateExtensionsMenuBubbleDialogDelegate(
+      views::View* anchor_view,
+      ExtensionsContainer* extensions_container);
+
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
 

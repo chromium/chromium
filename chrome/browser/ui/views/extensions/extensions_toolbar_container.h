@@ -120,6 +120,8 @@ class ExtensionsToolbarContainer
     return extension_with_open_context_menu_id_;
   }
 
+  int GetNumberOfActionsForTesting() { return actions_.size(); }
+
   // Updates the flex layout rules for the extension toolbar container to have
   // views::MinimumFlexSizeRule::kPreferred when WindowControlsOverlay (WCO) is
   // toggled on for PWAs. Otherwise the extensions icon does not stay visible as

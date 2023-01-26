@@ -26,25 +26,9 @@ void ExtensionsMenuCoordinator::Show(
     ExtensionsContainer* extensions_container) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
-  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
-      anchor_view, views::BubbleBorder::TOP_RIGHT);
-  bubble_delegate->set_margins(gfx::Insets(0));
-  bubble_delegate->set_fixed_width(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  // Let anchor view's MenuButtonController handle the highlight.
-  bubble_delegate->set_highlight_button_when_shown(false);
-  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  bubble_delegate->SetEnableArrowKeyTraversal(true);
-
-  auto* bubble_contents = bubble_delegate->SetContentsView(
-      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
-  bubble_contents->View::AddObserver(this);
-  bubble_tracker_.SetView(bubble_contents);
-
-  controller_ = std::make_unique<ExtensionsMenuViewController>(
-      browser_, extensions_container, bubble_contents, bubble_delegate.get());
-  controller_->OpenMainPage();
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
+      CreateExtensionsMenuBubbleDialogDelegate(anchor_view,
+                                               extensions_container);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
 }
@@ -67,6 +51,43 @@ bool ExtensionsMenuCoordinator::IsShowing() const {
 
 views::Widget* ExtensionsMenuCoordinator::GetExtensionsMenuWidget() {
   return IsShowing() ? bubble_tracker_.view()->GetWidget() : nullptr;
+}
+
+std::unique_ptr<views::BubbleDialogDelegate>
+ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegateForTesting(
+    views::View* anchor_view,
+    ExtensionsContainer* extensions_container) {
+  return CreateExtensionsMenuBubbleDialogDelegate(anchor_view,
+                                                  extensions_container);
+}
+
+std::unique_ptr<views::BubbleDialogDelegate>
+ExtensionsMenuCoordinator::CreateExtensionsMenuBubbleDialogDelegate(
+    views::View* anchor_view,
+    ExtensionsContainer* extensions_container) {
+  DCHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+  auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
+      anchor_view, views::BubbleBorder::TOP_RIGHT);
+  bubble_delegate->set_margins(gfx::Insets(0));
+  bubble_delegate->set_fixed_width(
+      views::LayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  // Let anchor view's MenuButtonController handle the highlight.
+  bubble_delegate->set_highlight_button_when_shown(false);
+  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  bubble_delegate->SetEnableArrowKeyTraversal(true);
+
+  auto* bubble_contents = bubble_delegate->SetContentsView(
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
+  bubble_contents->View::AddObserver(this);
+  bubble_tracker_.SetView(bubble_contents);
+
+  controller_ = std::make_unique<ExtensionsMenuViewController>(
+      browser_, extensions_container, bubble_contents, bubble_delegate.get());
+  controller_->OpenMainPage();
+
+  return bubble_delegate;
 }
 
 void ExtensionsMenuCoordinator::OnViewIsDeleting(views::View* observed_view) {

@@ -9,15 +9,12 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
-#include "chrome/browser/extensions/chrome_extensions_browser_client.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -27,29 +24,25 @@
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/user_script_listener.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/icon_with_badge_image_source.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sessions/content/session_tab_helper.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/notification_types.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
-#include "extensions/common/user_script.h"
-#include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -86,8 +79,11 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
     extension_service_ =
         extensions::ExtensionSystem::Get(profile())->extension_service();
 
-    test_util_ = ExtensionActionTestHelper::Create(browser(), false);
+    // Create web contents before creating the test helper since the
+    // extensions menu needs them (e.g compute the string for current site).
+    AddTab(browser(), GURL(u"https://example.com"));
 
+    test_util_ = ExtensionActionTestHelper::Create(browser(), false);
     view_size_ = test_util_->GetToolbarActionSize();
   }
 
@@ -174,8 +170,6 @@ TEST_F(ExtensionActionViewControllerUnitTest,
   const std::string id =
       CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_PAGE)
           ->id();
-
-  AddTab(browser(), GURL("chrome://newtab"));
 
   content::WebContents* web_contents = GetActiveWebContents();
   ExtensionActionViewController* const action = GetViewControllerForId(id);
