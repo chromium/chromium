@@ -274,6 +274,7 @@ source_set("eg2_tests") {
     "//components/bookmarks/common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/history:constants",
     "//ios/chrome/browser/ui/popup_menu:constants",
