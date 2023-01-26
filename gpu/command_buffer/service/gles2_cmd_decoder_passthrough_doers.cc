@@ -4958,7 +4958,10 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertRGBAToYUVAMailboxesINTERNAL(
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
   if (!lazy_context_) {
-    lazy_context_ = std::make_unique<LazySharedContextState>(this);
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
   }
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
@@ -4978,7 +4981,10 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
   if (!lazy_context_) {
-    lazy_context_ = std::make_unique<LazySharedContextState>(this);
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
   }
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());

@@ -611,6 +611,9 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // about state tracking.
   class LazySharedContextState {
    public:
+    static std::unique_ptr<LazySharedContextState> Create(
+        GLES2DecoderPassthroughImpl* impl);
+
     explicit LazySharedContextState(GLES2DecoderPassthroughImpl* impl);
     ~LazySharedContextState();
 
@@ -619,6 +622,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
     }
 
    private:
+    bool Initialize();
+
     raw_ptr<GLES2DecoderPassthroughImpl> impl_ = nullptr;
     scoped_refptr<SharedContextState> shared_context_state_;
   };
