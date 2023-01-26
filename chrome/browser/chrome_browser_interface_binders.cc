@@ -684,6 +684,7 @@ void BindSpeechRecognitionRecognizerClientHandler(
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
 void BindMediaFoundationRendererNotifierHandler(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererNotifier>
@@ -693,6 +694,7 @@ void BindMediaFoundationRendererNotifierHandler(
                                                         std::move(receiver));
   }
 }
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -844,8 +846,10 @@ void PopulateChromeFrameBinders(
       base::BindRepeating(&BindSpeechRecognitionClientBrowserInterfaceHandler));
   map->Add<media::mojom::SpeechRecognitionRecognizerClient>(
       base::BindRepeating(&BindSpeechRecognitionRecognizerClientHandler));
+#if BUILDFLAG(IS_WIN)
   map->Add<media::mojom::MediaFoundationRendererNotifier>(
       base::BindRepeating(&BindMediaFoundationRendererNotifierHandler));
+#endif
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

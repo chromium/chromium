@@ -494,13 +494,11 @@ bool ShouldInstallSodaDuringPostProfileInit(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(
       ash::features::kOnDeviceSpeechRecognition);
-#else
-#if BUILDFLAG(ENABLE_COMPONENT_UPDATER)
+#elif !BUILDFLAG(IS_CHROMEOS_LACROS) && BUILDFLAG(ENABLE_COMPONENT_UPDATER)
   return !command_line.HasSwitch(switches::kDisableComponentUpdate);
 #else
   return false;
-#endif  // BUILDFLAG(ENABLE_COMPONENT_UPDATER)
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

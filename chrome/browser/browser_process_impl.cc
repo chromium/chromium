@@ -1218,9 +1218,9 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 #endif
 
 // Create the global SodaInstaller instance.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImpl>();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   soda_installer_impl_ = std::make_unique<speech::SodaInstallerImplChromeOS>();

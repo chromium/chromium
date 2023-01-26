@@ -421,7 +421,9 @@ void ChromeBrowserMainExtraPartsProfiles::
     LastTabStandingTrackerFactory::GetInstance();
   }
 #if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   captions::LiveCaptionControllerFactory::GetInstance();
+#endif
   if (base::FeatureList::IsEnabled(media::kLiveTranslate))
     captions::LiveTranslateControllerFactory::GetInstance();
 #endif

@@ -3485,12 +3485,6 @@ static_library("browser") {
       "accessibility/caption_bubble_context_browser.h",
       "accessibility/invert_bubble_prefs.cc",
       "accessibility/invert_bubble_prefs.h",
-      "accessibility/live_caption_controller_factory.cc",
-      "accessibility/live_caption_controller_factory.h",
-      "accessibility/live_caption_speech_recognition_host.cc",
-      "accessibility/live_caption_speech_recognition_host.h",
-      "accessibility/live_caption_unavailability_notifier.cc",
-      "accessibility/live_caption_unavailability_notifier.h",
       "accessibility/live_translate_controller_factory.cc",
       "accessibility/live_translate_controller_factory.h",
       "apps/intent_helper/apps_navigation_throttle.cc",
@@ -4545,6 +4539,23 @@ static_library("browser") {
         "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       ]
     }
+
+    if (!is_chromeos_lacros) {
+      sources += [
+        "accessibility/live_caption_controller_factory.cc",
+        "accessibility/live_caption_controller_factory.h",
+        "accessibility/live_caption_speech_recognition_host.cc",
+        "accessibility/live_caption_speech_recognition_host.h",
+      ]
+    }
+
+    if (is_win) {
+      sources += [
+        "accessibility/live_caption_unavailability_notifier.cc",
+        "accessibility/live_caption_unavailability_notifier.h",
+      ]
+    }
+
     if (enable_extensions) {
       deps += [
         "//extensions/browser",

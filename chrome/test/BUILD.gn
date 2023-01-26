@@ -2380,14 +2380,16 @@ if (!is_android) {
         "../browser/safe_browsing/download_protection/deep_scanning_browsertest.cc",
 
         # Lacros does not seem to have any actual WebView-based UI to test.
-        "../browser/accessibility/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/accessibility/live_translate_controller_browsertest.cc",
         "../browser/ui/webui/webui_webview_browsertest.cc",
 
-        # These tests also run on Lacros, as part of
-        # lacros_chrome_browsertests_run_in_series below.
+        # Lacros shouldn't be rendering captions at all; this should be
+        # delegated to Ash.
         "../browser/accessibility/live_caption_controller_browsertest.cc",
         "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
+
+        # These tests also run on Lacros, as part of
+        # lacros_chrome_browsertests_run_in_series below.
         "../browser/media/webrtc/capture_handle_browsertest.cc",
         "../browser/media/webrtc/conditional_focus_browsertest.cc",
         "../browser/media/webrtc/webrtc_getdisplaymedia_browsertest.cc",
@@ -2405,6 +2407,7 @@ if (!is_android) {
 
     if (is_win) {
       sources += [
+        "../browser/accessibility/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
     }
@@ -4804,8 +4807,6 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      "../browser/accessibility/live_caption_controller_browsertest.cc",
-      "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
       "../browser/apps/intent_helper/supported_links_infobar_delegate_browsertest.cc",
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/extensions/wallpaper_apitest.cc",
@@ -9401,7 +9402,6 @@ if (!is_android) {
       "../browser/ui/test/test_browser_dialog.cc",
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/thumbnails/thumbnail_tab_helper_interactive_uitest.cc",
-      "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
       "../browser/ui/views/autofill/payments/local_card_migration_uitest.cc",
       "../browser/ui/views/autofill/payments/save_iban_bubble_view_uitest.cc",
       "../browser/ui/views/collected_cookies_view_interactive_uitest.cc",
@@ -10008,6 +10008,10 @@ if (!is_android) {
         "chrome/test/data/android/download/[large]wallpaper.dm",
         "chrome/test/data/perf/frame_rate/content/googleblog/images/bse%e2%80%99s+solar+energy+development+center..jpg",
       ]
+    }
+
+    if (!is_chromeos_lacros) {
+      sources += [ "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc" ]
     }
 
     if (is_chromeos_lacros && !is_chromeos_device) {

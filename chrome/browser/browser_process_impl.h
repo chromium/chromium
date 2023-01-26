@@ -381,7 +381,7 @@ class BrowserProcessImpl : public BrowserProcess,
   // but some users of component updater only install per-user.
   std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Used to create a singleton instance of SodaInstallerImpl, which can be
   // retrieved using speech::SodaInstaller::GetInstance().
   // SodaInstallerImpl depends on ComponentUpdateService, so define it here

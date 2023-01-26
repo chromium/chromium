@@ -12,8 +12,6 @@ if (!is_android) {
       "caption_bubble_context_remote.h",
       "caption_bubble_controller.h",
       "caption_bubble_session_observer.h",
-      "live_caption_controller.cc",
-      "live_caption_controller.h",
     ]
 
     deps = [
@@ -60,6 +58,13 @@ if (!is_android) {
         "live_caption_ui_remote_driver.h",
       ]
     }  # is_chromeos_ash
+
+    if (!is_chromeos_lacros) {
+      sources += [
+        "live_caption_controller.cc",
+        "live_caption_controller.h",
+      ]
+    }
   }
 
   static_library("live_translate") {

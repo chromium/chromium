@@ -1530,7 +1530,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #else  // BUILDFLAG(IS_ANDROID)
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);
   BrowserFeaturePromoSnoozeService::RegisterProfilePrefs(registry);
-  captions::LiveCaptionController::RegisterProfilePrefs(registry);
   captions::LiveTranslateController::RegisterProfilePrefs(registry);
   ChromeAuthenticatorRequestDelegate::RegisterProfilePrefs(registry);
   DeviceServiceImpl::RegisterProfilePrefs(registry);
@@ -1564,6 +1563,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   UnifiedAutoplayConfig::RegisterProfilePrefs(registry);
   CartService::RegisterProfilePrefs(registry);
   commerce::ShoppingListUiTabHelper::RegisterProfilePrefs(registry);
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  captions::LiveCaptionController::RegisterProfilePrefs(registry);
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

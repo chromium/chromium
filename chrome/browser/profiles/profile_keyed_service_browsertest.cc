@@ -210,6 +210,8 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     "CleanupManagerLacros",
     "DownloadCoreService",
+#else
+    "LiveCaptionController",
 #endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "AlarmManager",
     "BackgroundContentsService",
@@ -227,7 +229,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "HidDeviceManager",
     "HostContentSettingsMap",
     "LastTabStandingTrackerKeyedService",
-    "LiveCaptionController",
     "MediaRouterUIService",
     "NotificationDisplayService",
     "OptimizationGuideKeyedService",
