@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/time/clock.h"
+#include "base/values.h"
 
 namespace {
 
@@ -76,8 +77,8 @@ bool HttpsOnlyModeAllowlist::IsHttpAllowedForHost(
     return false;
   }
 
-  auto* decision_expiration_value =
-      value.FindKey(kHTTPAllowlistExpirationTimeKey);
+  const base::Value* decision_expiration_value =
+      value.GetDict().Find(kHTTPAllowlistExpirationTimeKey);
   auto decision_expiration = base::ValueToTime(decision_expiration_value);
   if (decision_expiration <= clock_->Now()) {
     // Allowlist entry has expired.
