@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
 
@@ -121,6 +122,10 @@ public interface TasksSurface {
     @VisibleForTesting
     /** Returns whether the MV tiles has been initialized. */
     boolean isMVTilesInitialized();
+
+    @VisibleForTesting
+    /** Returns the tile group delegate. */
+    TileGroupDelegateImpl getTileGroupDelegate();
 
     /**
      * TODO(crbug.com/1315676): Remove this API after the bug is resolved.

@@ -33,6 +33,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="StartSurface.Module.Click" enum="ModuleTypeOnStartAndNTP"
+    expires_after="2023-07-09">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of clicks on different modules of the Start surface
+    page. For most visited tiles: is recorded when 1) user clicks on most
+    visited tiles; 2) long press on most visited tiles to open in a new tab or a
+    new incognito tab or to download the link. This is consistent with
+    MobileNTPMostVisited. The histogram is logged on Start surface and is
+    Android-only.
+  </summary>
+</histogram>
+
 <histogram name="StartSurface.Show.State" enum="StartSurfaceState"
     expires_after="2023-07-12">
   <owner>hanxi@chromium.org</owner>

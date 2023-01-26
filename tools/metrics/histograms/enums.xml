@@ -68957,6 +68957,14 @@ Called by update_use_counter_css.py.-->
   <int value="2" label="ntdll.dll"/>
 </enum>
 
+<enum name="ModuleTypeOnStartAndNTP">
+  <int value="0" label="Most visited tiles"/>
+  <int value="1" label="Omnibox"/>
+  <int value="2" label="Single tab card"/>
+  <int value="3" label="Feed"/>
+  <int value="4" label="Tab switcher button"/>
+</enum>
+
 <enum name="MojoInterfaceName">
   <int value="-1403116593" label="content.mojom.FrameHost"/>
   <int value="-1370606112" label="blink.mojom.LocalFrameHost"/>

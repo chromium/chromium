@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -283,7 +284,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private class NewTabPageTileGroupDelegate extends TileGroupDelegateImpl {
         private NewTabPageTileGroupDelegate(Context context, Profile profile,
                 SuggestionsNavigationDelegate navigationDelegate, SnackbarManager snackbarManager) {
-            super(context, profile, navigationDelegate, snackbarManager);
+            super(context, profile, navigationDelegate, snackbarManager,
+                    BrowserUiUtils.HostSurface.NEW_TAB_PAGE);
         }
 
         @Override
@@ -990,6 +992,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     public NewTabPageManager getNewTabPageManagerForTesting() {
         return mNewTabPageManager;
+    }
+
+    @VisibleForTesting
+    public TileGroup.Delegate getTileGroupDelegateForTesting() {
+        return mTileGroupDelegate;
     }
 
     /**

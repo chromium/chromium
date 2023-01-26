@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/util/AfterStartupTaskUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/AndroidTaskUtils.java",
+    "android/java/src/org/chromium/chrome/browser/util/BrowserUiUtils.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeAccessibilityUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
     "android/java/src/org/chromium/chrome/browser/util/FileSizeUtil.java",

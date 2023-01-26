@@ -51,7 +51,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
@@ -287,17 +286,12 @@ public final class ReturnToChromeUtil {
             StartSurfaceUserData.setOpenedFromStart(newTab);
         }
 
-        if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {
-            if (!TextUtils.equals(UrlConstants.RECENT_TABS_URL, params.getUrl())
-                    && params.getReferrer() == null) {
-                RecordUserAction.record("Suggestions.Tile.Tapped.StartSurface");
-            }
-        } else if (url == null) {
-            RecordUserAction.record("MobileMenuNewTab.StartSurfaceFinale");
-        } else {
+        int transitionAfterMask = params.getTransitionType() & PageTransition.CORE_MASK;
+        if (transitionAfterMask == PageTransition.TYPED
+                || transitionAfterMask == PageTransition.GENERATED) {
             RecordUserAction.record("MobileOmniboxUse.StartSurface");
 
-            // These are duplicated here but would have been recorded by LocationBarLayout#loadUrl.
+            // These are not duplicated here with the recording in LocationBarLayout#loadUrl.
             RecordUserAction.record("MobileOmniboxUse");
             LocaleManager.getInstance().recordLocaleBasedSearchMetrics(
                     false, url, params.getTransitionType());

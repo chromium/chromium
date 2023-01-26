@@ -1076,6 +1076,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Module.Click" enum="ModuleTypeOnStartAndNTP"
+    expires_after="2023-07-09">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <summary>
+    Record the total count of clicks on different modules of the New tab page.
+    For most visited tiles: is recorded when 1) user clicks on most visited
+    tiles; 2) long press on most visited tiles to open in a new tab or open in a
+    new tab in group or a new incognito tab or to download the link. This is
+    consistent with MobileNTPMostVisited. The histogram is logged on New tab
+    page and is Android-only.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Modules.DataRequest" enum="NtpModules"
     expires_after="2023-05-27">
   <owner>danpeng@google.com</owner>

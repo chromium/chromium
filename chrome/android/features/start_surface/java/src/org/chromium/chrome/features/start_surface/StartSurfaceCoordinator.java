@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
+import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -720,6 +721,11 @@ public class StartSurfaceCoordinator implements StartSurface {
     @VisibleForTesting
     public boolean isMVTilesInitializedForTesting() {
         return mTasksSurface.isMVTilesInitialized();
+    }
+
+    @VisibleForTesting
+    public TileGroupDelegateImpl getTileGroupDelegateForTesting() {
+        return mTasksSurface.getTileGroupDelegate();
     }
 
     /**

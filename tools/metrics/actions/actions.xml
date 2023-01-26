@@ -33313,12 +33313,27 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Suggestions.Tile.Tapped.StartSurface">
+<action name="Suggestions.Tile.Tapped.NewTabPage">
   <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <description>
-    User tapped on a suggestions tile while viewing the start surface.
-    Android-only.
+    User tapped on a suggestions tile while viewing the new tab page. This is
+    recorded when 1) user clicks on most visited tiles; 2) long press on most
+    visited tiles to open in a new incognito tab. This is consistent with
+    Suggestions.Tile.Tapped.StartSurface on Start Surface. Android-only.
+  </description>
+</action>
+
+<action name="Suggestions.Tile.Tapped.StartSurface">
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <owner>clank-start@google.com</owner>
+  <description>
+    User tapped on a suggestions tile while viewing the start surface. This is
+    recorded when 1) user clicks on most visited tiles; 2) long press on most
+    visited tiles to open in a new incognito tab. This is consistent with
+    Suggestions.Tile.Tapped.NewTabPage on NTP. Android-only.
   </description>
 </action>
 
