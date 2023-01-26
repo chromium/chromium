@@ -7,6 +7,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_service.h"
 
@@ -97,11 +98,6 @@ mojom::KeyboardSettingsPtr KeyboardPrefHandlerImpl::GetNewKeyboardSettings(
   settings->suppress_meta_fkey_rewrites = kDefaultSuppressMetaFKeyRewrites;
   settings->top_row_are_fkeys = kDefaultTopRowAreFKeys;
   return settings;
-}
-
-bool KeyboardPrefHandlerImpl::IsValidModifier(int val) {
-  return val >= static_cast<int>(mojom::ModifierKey::kMinValue) &&
-         val <= static_cast<int>(mojom::ModifierKey::kMaxValue);
 }
 
 void KeyboardPrefHandlerImpl::UpdateKeyboardSettings(

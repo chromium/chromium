@@ -96,19 +96,6 @@ bool CapsLockNotificationController::IsSearchKeyMappedToCapsLock() {
          static_cast<int>(ui::chromeos::ModifierKey::kCapsLockKey);
 }
 
-// static
-void CapsLockNotificationController::RegisterProfilePrefs(
-    PrefRegistrySimple* registry,
-    bool for_test) {
-  if (for_test) {
-    // There is no remote pref service, so pretend that ash owns the pref.
-    registry->RegisterIntegerPref(
-        prefs::kLanguageRemapSearchKeyTo,
-        static_cast<int>(ui::chromeos::ModifierKey::kSearchKey));
-    return;
-  }
-}
-
 void CapsLockNotificationController::OnCapsLockChanged(bool enabled) {
   // Send an a11y alert.
   Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(

@@ -132,6 +132,51 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Changed"
+    enum="KeyboardModifierRemappingKeys" expires_after="2024-01-23">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the configured modifier remapping for the {Modifier} key when a user
+    changes the setting in the Settings SWA.
+  </summary>
+  <token key="Modifier">
+    <variant name="Alt"/>
+    <variant name="Assistant"/>
+    <variant name="Backspace"/>
+    <variant name="CapsLock"/>
+    <variant name="Control"/>
+    <variant name="Escape"/>
+    <variant name="ExternalCommand"/>
+    <variant name="ExternalMeta"/>
+    <variant name="Search"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Started"
+    enum="KeyboardModifierRemappingKeys" expires_after="2024-01-23">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the configured modifier remapping for the {Modifier} key when a user
+    session is started. Only emitted once per user per session. Default values
+    are not recorded.
+  </summary>
+  <token key="Modifier">
+    <variant name="Alt"/>
+    <variant name="Assistant"/>
+    <variant name="Backspace"/>
+    <variant name="CapsLock"/>
+    <variant name="Control"/>
+    <variant name="Escape"/>
+    <variant name="ExternalCommand"/>
+    <variant name="ExternalMeta"/>
+    <variant name="Search"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Languages.Interaction"
     enum="SettingsLanguagesPageInteraction" expires_after="2023-06-18">
   <owner>myy@chromium.org</owner>

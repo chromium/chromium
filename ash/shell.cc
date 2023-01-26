@@ -131,6 +131,7 @@
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/keyboard_brightness/keyboard_brightness_controller.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
@@ -738,6 +739,7 @@ Shell::~Shell() {
   wm_mode_controller_.reset();
 
   event_rewriter_controller_.reset();
+  keyboard_modifier_metrics_recorder_.reset();
   input_device_tracker_.reset();
   input_device_settings_controller_.reset();
 
@@ -1240,10 +1242,13 @@ void Shell::Init(
       std::make_unique<::wm::WindowModalityController>(this, env);
 
   // The `InputDeviceSettingsController` is a dependency of the
-  // `EventRewriterController` so it must be initialized first.
+  // `EventRewriterController`, `InputDeviceTracker` and
+  // `KeyboardModifierMetricsRecorder` so it must be initialized first.
   input_device_settings_controller_ =
       std::make_unique<InputDeviceSettingsControllerImpl>();
   input_device_tracker_ = std::make_unique<InputDeviceTracker>();
+  keyboard_modifier_metrics_recorder_ =
+      std::make_unique<KeyboardModifierMetricsRecorder>();
   event_rewriter_controller_ = std::make_unique<EventRewriterControllerImpl>();
 
   env_filter_ = std::make_unique<::wm::CompoundEventFilter>();

@@ -54442,6 +54442,17 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="2" label="keyboardUnlock()"/>
 </enum>
 
+<enum name="KeyboardModifierRemappingKeys">
+  <int value="0" label="Meta"/>
+  <int value="1" label="Control"/>
+  <int value="2" label="Alt"/>
+  <int value="3" label="Disabled"/>
+  <int value="4" label="CapsLock"/>
+  <int value="5" label="Escape"/>
+  <int value="6" label="Backspace"/>
+  <int value="7" label="Assistant"/>
+</enum>
+
 <enum name="KeychainMigrationStatus">
   <int value="0" label="Migration hasn't started"/>
   <int value="1" label="Migration succeeded"/>

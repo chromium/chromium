@@ -34,10 +34,10 @@
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/camera/autozoom_nudge_controller.h"
 #include "ash/system/camera/camera_effects_controller.h"
-#include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
+#include "ash/system/input_device_settings/keyboard_modifier_metrics_recorder.h"
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/message_center/message_center_controller.h"
@@ -84,7 +84,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   AmbientController::RegisterProfilePrefs(registry);
   CalendarController::RegisterProfilePrefs(registry);
   CameraEffectsController::RegisterProfilePrefs(registry);
-  CapsLockNotificationController::RegisterProfilePrefs(registry, for_test);
   CaptureModeController::RegisterProfilePrefs(registry);
   CellularSetupNotifier::RegisterProfilePrefs(registry);
   contextual_tooltip::RegisterProfilePrefs(registry);
@@ -105,6 +104,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   LogoutConfirmationController::RegisterProfilePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
   KeyboardControllerImpl::RegisterProfilePrefs(registry);
+  KeyboardModifierMetricsRecorder::RegisterProfilePrefs(registry, for_test);
   MediaControllerImpl::RegisterProfilePrefs(registry);
   MessageCenterController::RegisterProfilePrefs(registry);
   NightLightControllerImpl::RegisterProfilePrefs(registry);

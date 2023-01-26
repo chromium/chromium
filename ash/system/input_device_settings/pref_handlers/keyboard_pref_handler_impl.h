@@ -33,8 +33,6 @@ class ASH_EXPORT KeyboardPrefHandlerImpl : public KeyboardPrefHandler {
       PrefService* prefs,
       const mojom::Keyboard& keyboard,
       const base::Value::Dict& settings_dict);
-
-  bool IsValidModifier(int val);
 };
 
 }  // namespace ash
