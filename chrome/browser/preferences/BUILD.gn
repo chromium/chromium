@@ -45,6 +45,7 @@ java_cpp_strings("java_pref_names_srcjar") {
     "//components/privacy_sandbox/privacy_sandbox_prefs.cc",
     "//components/safe_browsing/core/common/safe_browsing_prefs.cc",
     "//components/signin/public/base/signin_pref_names.cc",
+    "//components/supervised_user/core/common/pref_names.cc",
     "//components/translate/core/browser/translate_pref_names.cc",
   ]
 

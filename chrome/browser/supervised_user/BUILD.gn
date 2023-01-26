@@ -15,6 +15,7 @@ static_library("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
     "//components/prefs",
+    "//components/supervised_user/core/common",
   ]
   if (is_android) {
     sources += [ "android/supervised_user_settings_service_bridge.cc" ]

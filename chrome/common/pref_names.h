@@ -55,21 +55,7 @@ extern const char kSupervisedUserApprovedExtensions[];
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kSupervisedUserMetricsDayId[];
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-extern const char kSupervisedUserCustodianEmail[];
-extern const char kSupervisedUserCustodianName[];
-extern const char kSupervisedUserCustodianObfuscatedGaiaId[];
-extern const char kSupervisedUserCustodianProfileImageURL[];
-extern const char kSupervisedUserCustodianProfileURL[];
-extern const char kSupervisedUserExtensionsMayRequestPermissions[];
-extern const char kSupervisedUserManualHosts[];
-extern const char kSupervisedUserManualURLs[];
-extern const char kSupervisedUserSafeSites[];
-extern const char kSupervisedUserSecondCustodianEmail[];
-extern const char kSupervisedUserSecondCustodianName[];
-extern const char kSupervisedUserSecondCustodianObfuscatedGaiaId[];
-extern const char kSupervisedUserSecondCustodianProfileImageURL[];
-extern const char kSupervisedUserSecondCustodianProfileURL[];
-extern const char kSupervisedUserSharedSettings[];
+
 extern const char kURLsToRestoreOnStartup[];
 extern const char kUserFeedbackAllowed[];
 

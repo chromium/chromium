@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
-#include "chrome/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
+
+#include "components/supervised_user/core/common/pref_names.h"
 
 namespace supervised_users {
 

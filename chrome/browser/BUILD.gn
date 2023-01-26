@@ -2325,6 +2325,7 @@ static_library("browser") {
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/common",
+    "//components/supervised_user/core/common",
     "//components/sync",
     "//components/sync_bookmarks",
     "//components/sync_preferences",
@@ -3465,7 +3466,6 @@ static_library("browser") {
       deps += [
         "//chrome/browser/supervised_user:jni_headers",
         "//components/supervised_user/core/browser",
-        "//components/supervised_user/core/common",
       ]
     }
 
@@ -7406,8 +7406,6 @@ static_library("browser") {
       "supervised_user/parental_control_metrics.cc",
       "supervised_user/parental_control_metrics.h",
       "supervised_user/permission_request_creator.h",
-      "supervised_user/supervised_user_constants.cc",
-      "supervised_user/supervised_user_constants.h",
       "supervised_user/supervised_user_denylist.cc",
       "supervised_user/supervised_user_denylist.h",
       "supervised_user/supervised_user_google_auth_navigation_throttle.cc",

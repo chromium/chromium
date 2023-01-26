@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
-#define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_
 
 namespace supervised_users {
 
@@ -35,4 +35,4 @@ extern const char* const kCustodianInfoPrefs[10];
 
 }  // namespace supervised_users
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_SUPERVISED_USER_CONSTANTS_H_

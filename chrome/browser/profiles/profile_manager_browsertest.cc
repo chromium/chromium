@@ -64,10 +64,10 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/test/test_launcher.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
