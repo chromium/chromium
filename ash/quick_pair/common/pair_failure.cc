@@ -111,6 +111,10 @@ std::ostream& operator<<(std::ostream& stream, PairFailure failure) {
       stream << "[Timed out while waiting for a response after attempt to "
                 "disconnect]";
       break;
+    case PairFailure::kFailedToConnectAfterPairing:
+      stream << "[Failed to connect to discovered device after pairing when "
+                "the device is known to the adapter.]";
+      break;
   }
 
   return stream;

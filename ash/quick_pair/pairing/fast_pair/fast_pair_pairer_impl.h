@@ -89,6 +89,25 @@ class FastPairPairerImpl : public FastPairPairer,
   ~FastPairPairerImpl() override;
 
  private:
+  // There are two flows a device can go through for V2 pairing:
+  // `device::BluetoothAdapter::ConnectDevice` and
+  // `device::BluetoothDevice::Pair`. The flows for each are as follows:
+  //
+  // ConnectDevice : `ConnectDevice` -> `OnConnectDevice -> `ConfirmPasskey` ->
+  // `WritePasskeyAsync` -> `OnPasskeyResponse` -> `DevicePairedChanged`
+  //
+  // Pair: `Pair` -> `ConfirmPasskey` -> `WritePasskeyAsync` ->
+  // `OnPasskeyResponse` -> `DevicePairedChanged` -> `OnPairConnected` ->
+  // `Connect` -> `OnConnected`
+  //
+  // We need to capture which flow we are using in order to correctly stop
+  // the bonding timer when the flow has ended, since each has a different
+  // end.
+  enum class FastPairPairingFlow {
+    kConnectDevice,
+    kPair,
+  };
+
   // device::BluetoothDevice::PairingDelegate
   void RequestPinCode(device::BluetoothDevice* device) override;
   void ConfirmPasskey(device::BluetoothDevice* device,
@@ -101,7 +120,7 @@ class FastPairPairerImpl : public FastPairPairer,
   void KeysEntered(device::BluetoothDevice* device, uint32_t entered) override;
   void AuthorizePairing(device::BluetoothDevice* device) override;
 
-  // device::BluetoothAdapter::Obserer
+  // device::BluetoothAdapter::Observer
   void DevicePairedChanged(device::BluetoothAdapter* adapter,
                            device::BluetoothDevice* device,
                            bool new_paired_status) override;
@@ -117,6 +136,10 @@ class FastPairPairerImpl : public FastPairPairer,
   void OnPairConnected(
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
 
+  // device::BluetoothDevice::Connect callback
+  void OnConnected(
+      absl::optional<device::BluetoothDevice::ConnectErrorCode> error);
+
   // device::BluetoothAdapter::ConnectDevice callbacks
   void OnConnectDevice(device::BluetoothDevice* device);
   void OnConnectError(const std::string& error_message);
@@ -124,9 +147,6 @@ class FastPairPairerImpl : public FastPairPairer,
   // Callback for timeout on creating a bond with |device_| in
   // StartPairing.
   void OnCreateBondTimeout();
-
-  // Callback for timeout on waiting to confirm |device_|'s passkey.
-  void OnConfirmPasskeyTimeout();
 
   //  FastPairHandshakeLookup::Create callback
   void OnHandshakeComplete(scoped_refptr<Device> device,
@@ -161,10 +181,7 @@ class FastPairPairerImpl : public FastPairPairer,
 
   void WriteAccountKey();
 
-  // Initial timestamps used for metrics.
-  base::TimeTicks ask_confirm_passkey_initial_time_;
-  base::TimeTicks confirm_passkey_initial_time_;
-
+  FastPairPairingFlow pairing_flow_;
   uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;
@@ -184,12 +201,8 @@ class FastPairPairerImpl : public FastPairPairer,
   // A timer to time the bonding with |device_| in StartPairing and invoke a
   // timeout if necessary.
   base::OneShotTimer create_bond_timeout_timer_;
-
   base::TimeTicks create_bond_start_time_;
 
-  // A timer which allows this pairer to time out while waiting to confirm
-  // |device_|'s passkey.
-  base::OneShotTimer confirm_passkey_timeout_timer_;
   base::WeakPtrFactory<FastPairPairerImpl> weak_ptr_factory_{this};
 };
 

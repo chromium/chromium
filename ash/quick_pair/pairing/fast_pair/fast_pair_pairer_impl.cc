@@ -35,7 +35,6 @@ namespace {
 
 // 15s timeouts chosen to align with Android's Fast Pair implementation.
 constexpr base::TimeDelta kCreateBondTimeout = base::Seconds(15);
-constexpr base::TimeDelta kConfirmPasskeyTimeout = base::Seconds(15);
 
 std::string MessageTypeToString(
     ash::quick_pair::FastPairMessageType message_type) {
@@ -183,28 +182,62 @@ void FastPairPairerImpl::StartPairing() {
                         "returning success.";
         RecordProtocolPairingStep(FastPairProtocolPairingSteps::kAlreadyPaired,
                                   *device_);
-        RecordProtocolPairingStep(
-            FastPairProtocolPairingSteps::kPairingComplete, *device_);
         AttemptRecordingFastPairEngagementFlow(
             *device_,
             FastPairEngagementFlowEvent::kPairingSucceededAlreadyPaired);
 
         std::move(paired_callback_).Run(device_);
+
+        if (!bt_device->IsConnected()) {
+          QP_LOG(INFO) << __func__ << ": connecting a paired device";
+          create_bond_start_time_ = base::TimeTicks::Now();
+          create_bond_timeout_timer_.Start(
+              FROM_HERE, kCreateBondTimeout,
+              base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
+                             weak_ptr_factory_.GetWeakPtr()));
+          bt_device->Connect(/*pairing_delegate=*/this,
+                             base::BindOnce(&FastPairPairerImpl::OnConnected,
+                                            weak_ptr_factory_.GetWeakPtr()));
+          return;
+        }
+
+        RecordProtocolPairingStep(
+            FastPairProtocolPairingSteps::kDeviceConnected, *device_);
         AttemptSendAccountKey();
         return;
       }
 
+      // There are two flows a device can go through for V2 pairing:
+      // `device::BluetoothAdapter::ConnectDevice` and
+      // `device::BluetoothDevice::Pair`. The flows for each are as follows:
+      //
+      // ConnectDevice : `ConnectDevice` -> `OnConnectDevice -> `ConfirmPasskey`
+      //  -> `WritePasskeyAsync` -> `OnPasskeyResponse` -> `DevicePairedChanged`
+      //
+      // Pair: `Pair` -> `ConfirmPasskey` -> `WritePasskeyAsync` ->
+      // `OnPasskeyResponse` -> `DevicePairedChanged` -> `OnPairConnected` ->
+      // `Connect` -> `OnConnected`
+      //
+      // This timer captures a bonding timeout for the both scenarios.
       create_bond_start_time_ = base::TimeTicks::Now();
       create_bond_timeout_timer_.Start(
           FROM_HERE, kCreateBondTimeout,
           base::BindOnce(&FastPairPairerImpl::OnCreateBondTimeout,
-                         base::Unretained(this)));
+                         weak_ptr_factory_.GetWeakPtr()));
 
+      // TODO(b/266502308): Re-evaluate how we can force a Bluetooth profile
+      // for a device to avoid `device::BluetoothAdapter::ConnectDevice` API.
+      //
+      // The Sony SRS-XB13 is expected to fail `ConnectDevice`, due to SDP
+      // collisions, and succeed on a second retry with
+      // `device::BluetoothDevice::Pair` because the device profile is ready.
       if (bt_device) {
-        bt_device->Pair(this,
+        pairing_flow_ = FastPairPairingFlow::kPair;
+        bt_device->Pair(/*pairing_delegate=*/this,
                         base::BindOnce(&FastPairPairerImpl::OnPairConnected,
                                        weak_ptr_factory_.GetWeakPtr()));
       } else {
+        pairing_flow_ = FastPairPairingFlow::kConnectDevice;
         adapter_->AddPairingDelegate(
             this, device::BluetoothAdapter::PairingDelegatePriority::
                       PAIRING_DELEGATE_PRIORITY_HIGH);
@@ -227,47 +260,10 @@ void FastPairPairerImpl::StartPairing() {
   }
 }
 
-void FastPairPairerImpl::OnPairConnected(
-    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
-  if (!StopCreateBondTimer(__func__)) {
-    return;
-  }
-
-  QP_LOG(INFO) << __func__;
-  RecordPairDeviceResult(/*success=*/!error.has_value());
-
-  if (error) {
-    QP_LOG(WARNING) << "Failed to start pairing procedure by pairing to "
-                       "device due to error: "
-                    << error.value();
-    std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
-    // |this| may be destroyed after this line.
-    RecordPairDeviceErrorReason(error.value());
-    return;
-  }
-
-  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
-                            *device_);
-  ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
-  confirm_passkey_timeout_timer_.Start(
-      FROM_HERE, kConfirmPasskeyTimeout,
-      base::BindOnce(&FastPairPairerImpl::OnConfirmPasskeyTimeout,
-                     base::Unretained(this)));
-}
-
 void FastPairPairerImpl::OnConnectDevice(device::BluetoothDevice* device) {
-  if (!StopCreateBondTimer(__func__)) {
-    return;
-  }
-
   QP_LOG(INFO) << __func__;
-  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kBondSuccessful,
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kDeviceConnected,
                             *device_);
-  ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
-  confirm_passkey_timeout_timer_.Start(
-      FROM_HERE, kConfirmPasskeyTimeout,
-      base::BindOnce(&FastPairPairerImpl::OnConfirmPasskeyTimeout,
-                     base::Unretained(this)));
   RecordConnectDeviceResult(/*success=*/true);
   // The device ID can change between device discovery and connection, so
   // ensure that device images are mapped to the current device ID.
@@ -287,13 +283,9 @@ void FastPairPairerImpl::OnConnectError(const std::string& error_message) {
 
 void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
                                         uint32_t passkey) {
-  confirm_passkey_timeout_timer_.Stop();
   QP_LOG(INFO) << __func__;
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyNegotiated,
                             *device_);
-  RecordConfirmPasskeyAskTime(base::TimeTicks::Now() -
-                              ask_confirm_passkey_initial_time_);
-  confirm_passkey_initial_time_ = base::TimeTicks::Now();
 
   // TODO(b/251281330): Make handling this edge case more robust.
   //
@@ -305,6 +297,10 @@ void FastPairPairerImpl::ConfirmPasskey(device::BluetoothDevice* device,
   if (!FastPairHandshakeLookup::GetInstance()->Get(device_)) {
     QP_LOG(ERROR) << __func__
                   << ": BLE device instance lost during passkey exchange";
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
     device->CancelPairing();
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kBleDeviceLostMidPair);
@@ -331,6 +327,10 @@ void FastPairPairerImpl::OnPasskeyResponse(
   if (failure) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to write passkey. Error: " << failure.value();
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
     RecordWritePasskeyCharacteristicPairFailure(failure.value());
     std::move(pair_failed_callback_).Run(device_, failure.value());
     // |this| may be destroyed after this line.
@@ -348,10 +348,14 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
     const absl::optional<DecryptedPasskey>& passkey) {
   if (!passkey) {
     QP_LOG(WARNING) << "Missing decrypted passkey from parse.";
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyDecryptFailure);
     // |this| may be destroyed after this line.
-    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
 
@@ -360,10 +364,14 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
         << "Incorrect message type from decrypted passkey. Expected: "
         << MessageTypeToString(FastPairMessageType::kProvidersPasskey)
         << ". Actual: " << MessageTypeToString(passkey->message_type);
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kIncorrectPasskeyResponseType);
     // |this| may be destroyed after this line.
-    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
 
@@ -373,26 +381,30 @@ void FastPairPairerImpl::OnParseDecryptedPasskey(
   if (passkey->passkey != expected_passkey_) {
     QP_LOG(ERROR) << "Passkeys do not match. Expected: " << expected_passkey_
                   << ". Actual: " << passkey->passkey;
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyMismatch);
     // |this| may be destroyed after this line.
-    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
 
   RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPasskeyConfirmed,
                             *device_);
   RecordPasskeyCharacteristicDecryptResult(/*success=*/true);
-  RecordPasskeyCharacteristicDecryptTime(base::TimeTicks::Now() -
-                                         decrypt_start_time);
-  RecordConfirmPasskeyConfirmTime(base::TimeTicks::Now() -
-                                  confirm_passkey_initial_time_);
 
   device::BluetoothDevice* pairing_device =
       adapter_->GetDevice(pairing_device_address_);
 
   if (!pairing_device) {
-    QP_LOG(ERROR) << "Bluetooth pairing device lost during write to passkey.";
+    QP_LOG(WARNING) << "Bluetooth pairing device lost during write to passkey.";
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state.
+    StopCreateBondTimer(__func__);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPairingDeviceLost);
     // |this| may be destroyed after this line.
@@ -633,6 +645,7 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
   if (device->GetAddress() == device_->ble_address() ||
       device->GetAddress() == device_->classic_address()) {
     QP_LOG(INFO) << __func__ << ": Completing pairing procedure " << device_;
+
     RecordProtocolPairingStep(FastPairProtocolPairingSteps::kPairingComplete,
                               *device_);
 
@@ -643,16 +656,121 @@ void FastPairPairerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
     // |pairing_procedure_complete_| whereas V1 devices need to run the callback
     // in this function since they don't write account keys, and their pairing
     // procedure is not complete at this point.
+    //
+    // For `ConnectDevice`, this is the end of the flow. Stop the timer since
+    // we have reached a terminal state of success, and start sending the
+    // account key. For `Pair`, we don't `AttemptSendAccountKey` until after
+    // `OnConnected` fires.
     if (device_->version().has_value() &&
-        device_->version().value() == DeviceFastPairVersion::kHigherThanV1) {
+        device_->version().value() == DeviceFastPairVersion::kHigherThanV1 &&
+        pairing_flow_ == FastPairPairingFlow::kConnectDevice) {
+      StopCreateBondTimer(__func__);
+      QP_LOG(INFO) << __func__
+                   << ": Stopping create bond timer and attempting to send "
+                      "account key for ConnectDevice flow";
       adapter_->RemovePairingDelegate(this);
       AttemptSendAccountKey();
-    } else if (pairing_procedure_complete_) {
+    } else if (pairing_procedure_complete_ && device_->version().has_value() &&
+               device_->version().value() == DeviceFastPairVersion::kV1) {
       // This covers the case where we are pairing a v1 device and are using the
       // Bluetooth pairing dialog to do it.
+      QP_LOG(INFO) << __func__
+                   << ": pairing procedure completed for V1 device.";
       std::move(pairing_procedure_complete_).Run(device_);
     }
   }
+}
+
+void FastPairPairerImpl::OnPairConnected(
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  // Check that the timer is still running before continuing. If the timer has
+  // expired, then we already have surface an error through
+  // `OnCreateBondTimeout` and we should not continue here. This handles the
+  // case where this object has not been destroyed yet following a PairFailure,
+  // and the `OnPairConnected` callback executes.
+  if (!create_bond_timeout_timer_.IsRunning()) {
+    return;
+  }
+
+  QP_LOG(INFO) << __func__;
+
+  if (error) {
+    QP_LOG(WARNING) << __func__
+                    << ": Failed to start pairing procedure by pairing to "
+                       "device due to error: "
+                    << error.value();
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state for the `Pair` flow.
+    StopCreateBondTimer(__func__);
+    RecordPairDeviceErrorReason(error.value());
+    RecordPairDeviceResult(/*success=*/false);
+    // |this| may be destroyed after this line.
+    std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
+    return;
+  }
+
+  std::string device_address = device_->classic_address().value();
+  device::BluetoothDevice* bt_device = adapter_->GetDevice(device_address);
+  if (!bt_device) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Bluetooth pairing device lost during during device connection";
+
+    // Stop create bond timer on error because at this point, the pairing is
+    // in a terminal state for the `Pair` flow.
+    StopCreateBondTimer(__func__);
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kPairingDeviceLost);
+    // |this| may be destroyed after this line.
+    return;
+  }
+
+  // We must follow `Pair` with `Connect`. Not all Fast Pair devices initiate
+  // a connection following pairing. For device that do initiate connecting
+  // following pairing, this may result in `OnConnected` to return a failure,
+  // however the connection is successful.
+  QP_LOG(VERBOSE) << __func__
+                  << ": attempting connection to device following pair";
+  bt_device->Connect(/*pairing_delegate=*/this,
+                     base::BindOnce(&FastPairPairerImpl::OnConnected,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairPairerImpl::OnConnected(
+    absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  // Terminal state for `Pair` flow, so we stop the timer here for this path.
+  // We don't need to check which flow we are in here, since we can only
+  // reach this point with `Pair`.
+  if (!StopCreateBondTimer(__func__)) {
+    return;
+  }
+
+  QP_LOG(INFO) << __func__;
+  RecordPairDeviceResult(/*success=*/!error.has_value());
+
+  if (error) {
+    QP_LOG(WARNING) << __func__
+                    << ": Failed to start pairing procedure by pairing to "
+                       "device due to error: "
+                    << error.value();
+    RecordPairDeviceErrorReason(error.value());
+    std::move(pair_failed_callback_)
+        .Run(device_, PairFailure::kFailedToConnectAfterPairing);
+    // |this| may be destroyed after this line.
+    return;
+  }
+
+  RecordProtocolPairingStep(FastPairProtocolPairingSteps::kDeviceConnected,
+                            *device_);
+
+  // The device ID can change between device discovery and connection, so
+  // ensure that device images are mapped to the current device ID.
+  FastPairRepository::Get()->FetchDeviceImages(device_);
+
+  QP_LOG(INFO) << __func__ << ": starting account key write for `Pair` flow";
+  adapter_->RemovePairingDelegate(this);
+  AttemptSendAccountKey();
 }
 
 void FastPairPairerImpl::OnCreateBondTimeout() {
@@ -660,14 +778,6 @@ void FastPairPairerImpl::OnCreateBondTimeout() {
                   << ": Timeout while attempting to create bond with device.";
   std::move(pair_failed_callback_)
       .Run(device_, PairFailure::kCreateBondTimeout);
-}
-
-void FastPairPairerImpl::OnConfirmPasskeyTimeout() {
-  QP_LOG(WARNING)
-      << __func__
-      << ": Timeout while awaiting passkey from GATT connected device.";
-  std::move(pair_failed_callback_)
-      .Run(device_, PairFailure::kConfirmPasskeyTimeout);
 }
 
 bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {

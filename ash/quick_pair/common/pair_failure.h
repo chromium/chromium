@@ -80,7 +80,10 @@ enum class PairFailure {
   kBluetoothDeviceFailureCreatingGattConnection = 28,
   // Timed out while waiting for a response after attempt to disconnect.
   kDisconnectResponseTimeout = 29,
-  kMaxValue = kDisconnectResponseTimeout,
+  // Failed to connect to discovered device after pairing when the device is
+  // known to the adapter.
+  kFailedToConnectAfterPairing = 30,
+  kMaxValue = kFailedToConnectAfterPairing,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

@@ -195,13 +195,13 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairProtocolPairingSteps {
   kPairingStarted = 0,
   kExhaustedRetries = 1,
   kAlreadyPaired = 2,
-  kBondSuccessful = 3,
+  kPairingComplete = 3,
   kPasskeyNegotiated = 4,
   kRecievedPasskeyResponse = 5,
   kPasskeyValidated = 6,
   kPasskeyConfirmed = 7,
-  kPairingComplete = 8,
-  kMaxValue = kPairingComplete,
+  kDeviceConnected = 8,
+  kMaxValue = kDeviceConnected,
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
