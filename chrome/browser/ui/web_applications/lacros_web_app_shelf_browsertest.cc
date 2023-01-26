@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
   AppReadinessWaiter(profile(), app1_id).Await();
-  Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
+  Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser1, app1_id));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
   ASSERT_TRUE(AddTabAtIndex(/*index=*/1, app1_url, ui::PAGE_TRANSITION_TYPED));
 
   AppReadinessWaiter(profile(), app2_id).Await();
-  LaunchWebAppBrowser(profile(), app2_id);
+  LaunchWebAppBrowser(app2_id);
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -154,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Navigation) {
 
   GURL out_of_scope_url = https_server().GetURL("/empty.html");
 
-  Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
+  Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
   {
     NavigateParams params(app_browser1, out_of_scope_url,
                           ui::PAGE_TRANSITION_LINK);
@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Navigation) {
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
 
-  LaunchWebAppBrowser(profile(), app2_id);
+  LaunchWebAppBrowser(app2_id);
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
 
   AppReadinessWaiter(profile(), app_id).Await();
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     auto& sync_bridge =
         WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
 
-    Browser* app_browser1 = LaunchWebAppBrowser(profile(), app1_id);
+    Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
         app1_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app1_id, /*pin=*/true);
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
                                       /*is_user_action=*/true);
     AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
 
-    Browser* app_browser2 = LaunchWebAppBrowser(profile(), app2_id);
+    Browser* app_browser2 = LaunchWebAppBrowser(app2_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
         app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
     waiter.PinOrUnpinItemInShelf(app2_id, /*pin=*/true);

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/protocol_handler_launch_dialog_view.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -41,7 +42,8 @@ AppId InstallTestWebApp(Profile* profile) {
 
 }  // namespace
 
-class ProtocolHandlerLaunchDialogBrowserTest : public InProcessBrowserTest {
+class ProtocolHandlerLaunchDialogBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
   void ShowDialogAndCloseWithReason(views::Widget::ClosedReason reason,
                                     bool expected_allowed,

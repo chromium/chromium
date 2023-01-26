@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -50,10 +51,10 @@ const char kFileLaunchUrl2[] = "https://example.org/file_launch2/";
 // Tests for the `FileHandlerLaunchDialogView` as well as
 // `startup::web_app::MaybeHandleWebAppLaunch()`. As Chrome OS uses the app
 // service to launch PWAs, this test suite is not run there.
-class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
+class FileHandlerLaunchDialogTest : public WebAppControllerBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     InstallTestWebApp();
   }
 

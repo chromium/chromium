@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
@@ -32,7 +33,7 @@ namespace web_app {
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
+class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppIconHealthChecksBrowserTest() {
     WebAppMetrics::DisableAutomaticIconHealthChecksForTesting();
@@ -41,7 +42,7 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
   ~WebAppIconHealthChecksBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
@@ -86,8 +87,6 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
     AppReadinessWaiter(profile(), app_id, apps::Readiness::kReady).Await();
     return app_id;
   }
-
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, HealthyIcons) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include <map>
@@ -15,6 +17,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -49,6 +53,11 @@ apps::FileHandler GetTestFileHandler(const std::string& action,
 class WebAppFileHandlerRegistrationLinuxBrowserTest
     : public InProcessBrowserTest {
  protected:
+  WebAppFileHandlerRegistrationLinuxBrowserTest() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
+  }
+
   WebAppRegistrar& registrar() {
     return WebAppProvider::GetForTest(browser()->profile())->registrar_unsafe();
   }
@@ -59,7 +68,17 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
     result_code_ = result.code;
   }
 
+  void TearDownOnMainThread() override {
+    test::UninstallAllWebApps(browser()->profile());
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      override_registration_.reset();
+    }
+  }
+
   absl::optional<webapps::InstallResultCode> result_code_;
+  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+      override_registration_;
 };
 
 // Verify that the MIME type registration callback is called and that
@@ -72,37 +91,42 @@ IN_PROC_BROWSER_TEST_F(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_with_file_handlers.json"));
 
-  apps::FileHandlers file_handlers;
-  file_handlers.push_back(GetTestFileHandler(
+  apps::FileHandlers expected_file_handlers;
+  expected_file_handlers.push_back(GetTestFileHandler(
       "https://site.api/open-foo",
       {{"application/foo", {".foo"}}, {"application/foobar", {".foobar"}}}));
-  file_handlers.push_back(GetTestFileHandler(
+  expected_file_handlers.push_back(GetTestFileHandler(
       "https://site.api/open-bar", {{"application/bar", {".bar", ".baz"}}}));
 
   std::string expected_file_contents =
       shell_integration_linux::GetMimeTypesRegistrationFileContents(
-          file_handlers);
-  bool path_reached = false;
-  base::RunLoop run_loop;
-  UpdateMimeInfoDatabaseOnLinuxCallback callback = base::BindLambdaForTesting(
-      [&expected_file_contents, &path_reached, &run_loop](
-          base::FilePath filename, std::string xdg_command,
-          std::string file_contents) {
-        EXPECT_EQ(file_contents, expected_file_contents);
-        path_reached = true;
-        run_loop.Quit();
+          expected_file_handlers);
+
+  base::FilePath filename;
+  std::string xdg_command;
+  std::string file_contents;
+  base::RunLoop loop;
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
+      [&](base::FilePath filename_in, std::string xdg_command_in,
+          std::string file_contents_in) {
+        filename = filename_in;
+        xdg_command = xdg_command_in;
+        file_contents = file_contents_in;
+        loop.Quit();
         return true;
-      });
-  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
+      }));
 
   // Override the source as default apps don't get file handlers registered.
   ExternalInstallOptions install_options = CreateInstallOptions(url);
   install_options.install_source = ExternalInstallSource::kExternalPolicy;
   InstallApp(install_options);
-  run_loop.Run();
+
+  loop.Run();
+  EXPECT_EQ(file_contents, expected_file_contents);
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
+      UpdateMimeInfoDatabaseOnLinuxCallback());
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall,
             result_code_.value());
-  ASSERT_TRUE(path_reached);
 }
 
 }  // namespace web_app

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 
 #include <string>
@@ -30,7 +31,7 @@ const auto kExpectedInstallSource =
 
 }  // namespace
 
-class WebAppPrefMigrationBrowserTest : public InProcessBrowserTest {
+class WebAppPrefMigrationBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppPrefMigrationBrowserTest() = default;
   ~WebAppPrefMigrationBrowserTest() override = default;

@@ -70,7 +70,8 @@ std::unique_ptr<WebApp> CreateIsolatedWebApp(const GURL& start_url,
   return web_app;
 }
 
-class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
+class IsolatedWebAppURLLoaderFactoryBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
   explicit IsolatedWebAppURLLoaderFactoryBrowserTest(
       bool enable_isolated_web_apps_feature = true)
@@ -87,12 +88,12 @@ class IsolatedWebAppURLLoaderFactoryBrowserTest : public InProcessBrowserTest {
       scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
     }
 
-    InProcessBrowserTest::SetUp();
+    WebAppControllerBrowserTest::SetUp();
   }
 
   void TearDown() override {
     SetTrustedWebBundleIdsForTesting({});
-    InProcessBrowserTest::TearDown();
+    WebAppControllerBrowserTest::TearDown();
   }
 
   std::unique_ptr<KeyedService> CreateWebAppProvider(Profile* profile) {

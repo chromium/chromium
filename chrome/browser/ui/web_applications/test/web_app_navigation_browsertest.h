@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/content_mock_cert_verifier.h"
@@ -27,7 +28,7 @@ class WebContents;
 
 namespace web_app {
 
-class WebAppNavigationBrowserTest : public InProcessBrowserTest {
+class WebAppNavigationBrowserTest : public WebAppControllerBrowserTest {
  public:
   enum class LinkTarget {
     SELF,

@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -60,7 +61,7 @@ std::string TrimLineEndings(base::StringPiece text) {
 
 }  // namespace
 
-class WebAppInternalsBrowserTest : public InProcessBrowserTest {
+class WebAppInternalsBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppInternalsBrowserTest() = default;
   WebAppInternalsBrowserTest(const WebAppInternalsBrowserTest&) = delete;
@@ -76,12 +77,12 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    InProcessBrowserTest::SetUp();
+    WebAppControllerBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
   }
 
   AppId InstallWebApp(const GURL& app_url) {
@@ -133,8 +134,6 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
 
  private:
   net::EmbeddedTestServer::HandleRequestCallback request_override_;
-
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kRecordWebAppDebugInfo};

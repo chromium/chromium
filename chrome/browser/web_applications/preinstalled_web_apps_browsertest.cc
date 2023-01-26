@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 
 #include "base/test/bind.h"
@@ -25,7 +26,7 @@ using web_app::test::WithCrosapiParam;
 
 namespace web_app {
 
-class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
+class PreinstalledWebAppsBrowserTest : public WebAppControllerBrowserTest,
                                        public WithCrosapiParam {
  public:
   PreinstalledWebAppsBrowserTest() {
@@ -44,7 +45,7 @@ class PreinstalledWebAppsBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    WebAppControllerBrowserTest::SetUpDefaultCommandLine(command_line);
 
     // This was added by PrepareBrowserCommandLineForTests(), re-enable default
     // apps as we wish to test that they get installed.

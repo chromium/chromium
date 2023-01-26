@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 
 #include "base/containers/contains.h"
@@ -96,7 +97,7 @@ constexpr char kValidAppWithDuplicatePathsFileContent[] =
 
 namespace web_app {
 
-class WebAppOriginAssociationManagerTest : public InProcessBrowserTest {
+class WebAppOriginAssociationManagerTest : public WebAppControllerBrowserTest {
  public:
   WebAppOriginAssociationManagerTest() {
     manager_ = std::make_unique<WebAppOriginAssociationManager>();

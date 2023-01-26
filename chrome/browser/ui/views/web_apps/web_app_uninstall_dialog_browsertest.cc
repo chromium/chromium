@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -52,7 +53,8 @@ AppId InstallTestWebApp(Profile* profile) {
 
 }  // namespace
 
-class WebAppUninstallDialogViewBrowserTest : public InProcessBrowserTest {
+class WebAppUninstallDialogViewBrowserTest
+    : public web_app::WebAppControllerBrowserTest {
  private:
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };

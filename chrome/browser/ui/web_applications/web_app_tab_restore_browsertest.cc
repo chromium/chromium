@@ -34,8 +34,7 @@ using WebAppTabRestoreBrowserTest = WebAppNavigationBrowserTest;
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
                        MAYBE_ReopenedPWASizeIsCorrectlyRestored) {
   InstallTestWebApp();
-  Browser* const app_browser =
-      LaunchWebAppBrowserAndWait(profile(), test_web_app_id());
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(app_browser));
   NavigateToURLAndWait(app_browser, test_web_app_start_url());
@@ -67,8 +66,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest,
 // Tests that app windows are correctly restored.
 IN_PROC_BROWSER_TEST_F(WebAppTabRestoreBrowserTest, RestoreAppWindow) {
   InstallTestWebApp();
-  Browser* const app_browser =
-      LaunchWebAppBrowserAndWait(profile(), test_web_app_id());
+  Browser* const app_browser = LaunchWebAppBrowserAndWait(test_web_app_id());
 
   ASSERT_TRUE(app_browser->is_type_app());
   CloseAndWait(app_browser);

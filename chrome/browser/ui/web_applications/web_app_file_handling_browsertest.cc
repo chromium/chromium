@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 #endif
 
 class WebAppFileHandlingIconBrowserTest
-    : public InProcessBrowserTest,
+    : public WebAppControllerBrowserTest,
       public testing::WithParamInterface<bool> {
  public:
   WebAppFileHandlingIconBrowserTest() {

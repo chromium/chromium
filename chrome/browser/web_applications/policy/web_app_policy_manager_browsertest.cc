@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
 #include "base/json/json_reader.h"
@@ -79,7 +80,7 @@ base::Value GetCustomAppIconAndNameItem() {
 }  // namespace
 
 class WebAppPolicyManagerBrowserTest
-    : public InProcessBrowserTest,
+    : public WebAppControllerBrowserTest,
       public testing::WithParamInterface<test::ExternalPrefMigrationTestCases> {
  public:
   WebAppPolicyManagerBrowserTest() {
@@ -112,7 +113,7 @@ class WebAppPolicyManagerBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     externally_installed_app_prefs_ =
         std::make_unique<ExternallyInstalledWebAppPrefs>(profile()->GetPrefs());
   }
@@ -120,7 +121,7 @@ class WebAppPolicyManagerBrowserTest
   void TearDown() override {
     externally_installed_app_prefs_.reset();
 
-    InProcessBrowserTest::TearDown();
+    WebAppControllerBrowserTest::TearDown();
   }
 
   Profile* profile() { return browser()->profile(); }

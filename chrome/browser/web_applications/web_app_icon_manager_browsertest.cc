@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -35,7 +36,7 @@
 
 namespace web_app {
 
-class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
+class WebAppIconManagerBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppIconManagerBrowserTest() = default;
   WebAppIconManagerBrowserTest(const WebAppIconManagerBrowserTest&) = delete;
@@ -53,10 +54,10 @@ class WebAppIconManagerBrowserTest : public InProcessBrowserTest {
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
   }
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    InProcessBrowserTest::SetUp();
+    WebAppControllerBrowserTest::SetUp();
   }
 
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
@@ -108,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   base::RunLoop run_loop;
   WebAppBrowserController::SetIconLoadCallbackForTesting(
       run_loop.QuitClosure());
-  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   run_loop.Run();
 
   gfx::ImageSkia app_icon =

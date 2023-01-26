@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -41,14 +42,14 @@ constexpr char kLaunchHandlerHistogram[] =
 
 using ClientMode = LaunchHandler::ClientMode;
 
-class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
+class WebAppLaunchHandlerBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppLaunchHandlerBrowserTest() = default;
   ~WebAppLaunchHandlerBrowserTest() override = default;
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
@@ -95,10 +96,10 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
   void ExpectNavigateNewBehavior(const AppId& app_id) {
     std::string start_url = GetWebApp(app_id)->start_url().spec();
 
-    Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
+    Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_1), start_url);
 
-    Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+    Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url);
 
     EXPECT_NE(browser_1, browser_2);
@@ -134,7 +135,6 @@ class WebAppLaunchHandlerBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_{
       blink::features::kWebAppEnableLaunchHandler};
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, ClientModeEmpty) {
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
             (LaunchHandler{ClientMode::kNavigateExisting}));
 
   // Create first web app browser window.
-  Browser* app_browser = LaunchWebAppBrowserAndWait(profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(app_web_contents->GetLastCommittedURL(), start_url);
@@ -203,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     NavigateToURLAndWait(app_browser, alt_url);
     EXPECT_EQ(app_web_contents->GetLastCommittedURL(), alt_url);
 
-    Browser* app_browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+    Browser* app_browser_2 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(app_browser, app_browser_2);
     EXPECT_EQ(app_web_contents->GetLastCommittedURL(), start_url);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(app_browser_2), start_url.spec());
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
   EXPECT_EQ(GetLaunchHandler(app_id),
             (LaunchHandler{ClientMode::kFocusExisting}));
 
-  Browser* browser_1 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  Browser* browser_1 = LaunchWebAppBrowserAndWait(app_id);
   content::WebContents* web_contents =
       browser_1->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     EXPECT_EQ(web_contents->GetLastCommittedURL(), in_scope_url);
 
     ASSERT_TRUE(SetUpNextLaunchParamsTargetUrlPromise(browser_1));
-    Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+    Browser* browser_2 = LaunchWebAppBrowser(app_id);
     EXPECT_EQ(browser_1, browser_2);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrlPromise(browser_2),
               start_url.spec());
@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     NavigateToURLAndWait(browser_1, out_of_scope_url);
     EXPECT_EQ(web_contents->GetLastCommittedURL(), out_of_scope_url);
 
-    Browser* browser_2 = LaunchWebAppBrowserAndWait(profile(), app_id);
+    Browser* browser_2 = LaunchWebAppBrowserAndWait(app_id);
     EXPECT_EQ(browser_1, browser_2);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrl(browser_2), start_url.spec());
     EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
@@ -291,7 +291,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
     EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
 
     ASSERT_TRUE(SetUpNextLaunchParamsTargetUrlPromise(browser_1));
-    Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+    Browser* browser_2 = LaunchWebAppBrowser(app_id);
     EXPECT_EQ(browser_1, browser_2);
     EXPECT_EQ(AwaitNextLaunchParamsTargetUrlPromise(browser_2),
               start_url.spec());
@@ -316,9 +316,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
             (LaunchHandler{ClientMode::kFocusExisting}));
 
   // Launch the app three times in quick succession.
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_3 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  Browser* browser_1 = LaunchWebAppBrowser(app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(app_id);
+  Browser* browser_3 = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(browser_2, browser_3);
 
@@ -357,9 +357,9 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
             (LaunchHandler{ClientMode::kNavigateExisting}));
 
   // Launch the app three times in quick succession.
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_3 = LaunchWebAppBrowserAndWait(profile(), app_id);
+  Browser* browser_1 = LaunchWebAppBrowser(app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(app_id);
+  Browser* browser_3 = LaunchWebAppBrowserAndWait(app_id);
   EXPECT_EQ(browser_1, browser_2);
   EXPECT_EQ(browser_2, browser_3);
 
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
 
   // Launch the web app and immediately navigate it out of scope during its
   // initial navigation.
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   GURL out_of_scope_url = embedded_test_server()->GetURL("/empty.html");
   NavigateToURLAndWait(app_browser, out_of_scope_url);
   content::WebContents* web_contents =
@@ -428,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
   AppId app_id =
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
 
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -445,8 +445,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
       InstallTestWebApp("/web_apps/basic.html", /*await_metric=*/false);
   EXPECT_EQ(GetLaunchHandler(app_id), absl::nullopt);
 
-  Browser* browser_1 = LaunchWebAppBrowser(profile(), app_id);
-  Browser* browser_2 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_1 = LaunchWebAppBrowser(app_id);
+  Browser* browser_2 = LaunchWebAppBrowser(app_id);
   EXPECT_NE(browser_1, browser_2);
 
   {
@@ -456,12 +456,13 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, SelectActiveBrowser) {
     web_app->SetLaunchHandler(LaunchHandler{ClientMode::kFocusExisting});
   }
 
-  Browser* browser_3 = LaunchWebAppBrowser(profile(), app_id);
+  Browser* browser_3 = LaunchWebAppBrowser(app_id);
   // Select the most recently opened app window.
   EXPECT_EQ(browser_3, browser_2);
 }
 
-class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
+class WebAppLaunchHandlerDisabledBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
   WebAppLaunchHandlerDisabledBrowserTest() {
     feature_list_.InitWithFeatures(
@@ -471,9 +472,9 @@ class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
 
   Profile* profile() { return browser()->profile(); }
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(profile()));
@@ -481,7 +482,6 @@ class WebAppLaunchHandlerDisabledBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
   AppId app_id = InstallWebAppFromPage(
       browser(), embedded_test_server()->GetURL("/web_apps/basic.html"));
 
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
@@ -501,7 +501,8 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerDisabledBrowserTest,
   histogram_tester.ExpectTotalCount(kLaunchHandlerHistogram, 0);
 }
 
-class WebAppLaunchHandlerOriginTrialBrowserTest : public InProcessBrowserTest {
+class WebAppLaunchHandlerOriginTrialBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
   WebAppLaunchHandlerOriginTrialBrowserTest() {
     feature_list_.InitAndDisableFeature(
@@ -509,7 +510,7 @@ class WebAppLaunchHandlerOriginTrialBrowserTest : public InProcessBrowserTest {
   }
   ~WebAppLaunchHandlerOriginTrialBrowserTest() override = default;
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Using the test public key from docs/origin_trials_integration.md#Testing.
     command_line->AppendSwitchASCII(
@@ -517,14 +518,13 @@ class WebAppLaunchHandlerOriginTrialBrowserTest : public InProcessBrowserTest {
         "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
   }
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     web_app::test::WaitUntilReady(
         web_app::WebAppProvider::GetForTest(browser()->profile()));
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 namespace {
 

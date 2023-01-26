@@ -13,6 +13,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -25,7 +26,7 @@
 
 namespace web_app {
 
-using Result = WebAppUrlLoader::Result;
+using UrlResult = WebAppUrlLoader::Result;
 using UrlComparison = WebAppUrlLoader::UrlComparison;
 
 // Returns a redirect response to |dest| URL.
@@ -60,7 +61,7 @@ HandleMatchingRequestOrReturnEmptyPage(
   return http_response;
 }
 
-class WebAppUrlLoaderTest : public InProcessBrowserTest {
+class WebAppUrlLoaderTest : public WebAppControllerBrowserTest {
  public:
   WebAppUrlLoaderTest() = default;
   WebAppUrlLoaderTest(const WebAppUrlLoaderTest&) = delete;
@@ -72,19 +73,22 @@ class WebAppUrlLoaderTest : public InProcessBrowserTest {
         content::WebContents::CreateParams(browser()->profile()));
 
     host_resolver()->AddRule("*", "127.0.0.1");
+    WebAppControllerBrowserTest::SetUpOnMainThread();
   }
 
   void TearDownOnMainThread() override {
     // The WebContents needs to be destroyed before the profile.
     web_contents_.reset();
+    WebAppControllerBrowserTest::TearDownOnMainThread();
   }
 
-  Result LoadUrlAndWait(UrlComparison url_comparison, const std::string& path) {
-    absl::optional<Result> result;
+  UrlResult LoadUrlAndWait(UrlComparison url_comparison,
+                           const std::string& path) {
+    absl::optional<UrlResult> result;
     base::RunLoop run_loop;
     WebAppUrlLoader loader;
     loader.LoadUrl(embedded_test_server()->GetURL(path), web_contents(),
-                   url_comparison, base::BindLambdaForTesting([&](Result r) {
+                   url_comparison, base::BindLambdaForTesting([&](UrlResult r) {
                      result = r;
                      run_loop.Quit();
                    }));
@@ -117,14 +121,14 @@ class WebAppUrlLoaderTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Loaded) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kUrlLoaded,
+  EXPECT_EQ(UrlResult::kUrlLoaded,
             LoadUrlAndWait(UrlComparison::kExact, "/simple.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, LoadedWithParamChangeIgnored) {
   SetupRedirect("/test-redirect", "/test-redirect?param=stuff");
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kUrlLoaded,
+  EXPECT_EQ(UrlResult::kUrlLoaded,
             LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef,
                            "/test-redirect"));
 }
@@ -135,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
   // server, so we cannot check it in the request handler.
   SetupRedirect("/test-redirect", "/test-redirect?param=foo#ref");
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kUrlLoaded,
+  EXPECT_EQ(UrlResult::kUrlLoaded,
             LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef,
                            "/test-redirect"));
 }
@@ -143,21 +147,21 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, LoadedWithPathChangeIgnored) {
   SetupRedirect("/test-redirect", "/test-redirect-new-path");
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kUrlLoaded,
+  EXPECT_EQ(UrlResult::kUrlLoaded,
             LoadUrlAndWait(UrlComparison::kSameOrigin, "/test-redirect"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, RedirectWithParamChange) {
   SetupRedirect("/test-redirect", "/test-redirect?param=stuff");
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kRedirectedUrlLoaded,
+  EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
             LoadUrlAndWait(UrlComparison::kExact, "/test-redirect"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, RedirectWithPathChange) {
   SetupRedirect("/test-redirect", "/test-redirect-new-path");
   ASSERT_TRUE(embedded_test_server()->Start());
-  EXPECT_EQ(Result::kRedirectedUrlLoaded,
+  EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
             LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef,
                            "/test-redirect"));
 }
@@ -165,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, RedirectWithPathChange) {
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, 302FoundRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL final_url = embedded_test_server()->GetURL("/simple.html");
-  EXPECT_EQ(Result::kRedirectedUrlLoaded,
+  EXPECT_EQ(UrlResult::kRedirectedUrlLoaded,
             LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef,
                            "/server-redirect-302?" + final_url.spec()));
 }
@@ -176,11 +180,11 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner);
 
   WebAppUrlLoader loader;
-  absl::optional<Result> result;
+  absl::optional<UrlResult> result;
 
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
                  UrlComparison::kExact,
-                 base::BindLambdaForTesting([&](Result r) { result = r; }));
+                 base::BindLambdaForTesting([&](UrlResult r) { result = r; }));
 
   // Run all pending tasks. The URL should still be loading.
   EXPECT_TRUE(web_contents()->IsLoading());
@@ -193,18 +197,18 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, Hung) {
   // Forward the clock so that |loader| times out.
   task_runner->FastForwardBy(WebAppUrlLoader::kSecondsToWaitForWebContentsLoad);
   EXPECT_FALSE(web_contents()->IsLoading());
-  EXPECT_EQ(Result::kFailedPageTookTooLong, result.value());
+  EXPECT_EQ(UrlResult::kFailedPageTookTooLong, result.value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  absl::optional<Result> result;
+  absl::optional<UrlResult> result;
 
   base::RunLoop run_loop;
   loader.LoadUrl(embedded_test_server()->GetURL("/hung"), web_contents(),
                  UrlComparison::kExact,
-                 base::BindLambdaForTesting([&](Result r) {
+                 base::BindLambdaForTesting([&](UrlResult r) {
                    result = r;
                    run_loop.Quit();
                  }));
@@ -220,14 +224,14 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, WebContentsDestroyed) {
   ResetWebContents();
   run_loop.Run();
 
-  EXPECT_EQ(Result::kFailedWebContentsDestroyed, result.value());
+  EXPECT_EQ(UrlResult::kFailedWebContentsDestroyed, result.value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, MultipleLoadUrlCalls) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebAppUrlLoader loader;
-  absl::optional<Result> title1_result;
-  absl::optional<Result> title2_result;
+  absl::optional<UrlResult> title1_result;
+  absl::optional<UrlResult> title2_result;
 
   std::unique_ptr<content::WebContents> web_contents1 =
       content::WebContents::Create(
@@ -242,25 +246,25 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, MultipleLoadUrlCalls) {
 
   loader.LoadUrl(embedded_test_server()->GetURL("/title1.html"),
                  web_contents1.get(), UrlComparison::kExact,
-                 base::BindLambdaForTesting([&](Result r) {
+                 base::BindLambdaForTesting([&](UrlResult r) {
                    title1_result = r;
                    barrier_closure.Run();
                  }));
   loader.LoadUrl(embedded_test_server()->GetURL("/title2.html"),
                  web_contents2.get(), UrlComparison::kExact,
-                 base::BindLambdaForTesting([&](Result r) {
+                 base::BindLambdaForTesting([&](UrlResult r) {
                    title2_result = r;
                    barrier_closure.Run();
                  }));
   run_loop.Run();
-  EXPECT_EQ(Result::kUrlLoaded, title1_result.value());
-  EXPECT_EQ(Result::kUrlLoaded, title2_result.value());
+  EXPECT_EQ(UrlResult::kUrlLoaded, title1_result.value());
+  EXPECT_EQ(UrlResult::kUrlLoaded, title2_result.value());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, NetworkError) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(
-      Result::kFailedErrorPageLoaded,
+      UrlResult::kFailedErrorPageLoaded,
       LoadUrlAndWait(UrlComparison::kIgnoreQueryParamsAndRef, "/close-socket"));
 }
 
@@ -275,8 +279,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
   // Prepare for next load.
   base::RunLoop run_loop;
   loader.PrepareForLoad(web_contents(),
-                        base::BindLambdaForTesting([&](Result result) {
-                          EXPECT_EQ(Result::kUrlLoaded, result);
+                        base::BindLambdaForTesting([&](UrlResult result) {
+                          EXPECT_EQ(UrlResult::kUrlLoaded, result);
                           run_loop.Quit();
                         }));
   run_loop.Run();
@@ -325,8 +329,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest,
     EXPECT_TRUE(web_contents()->IsLoading());
     base::RunLoop run_loop;
     loader.PrepareForLoad(web_contents(),
-                          base::BindLambdaForTesting([&](Result result) {
-                            EXPECT_EQ(Result::kUrlLoaded, result);
+                          base::BindLambdaForTesting([&](UrlResult result) {
+                            EXPECT_EQ(UrlResult::kUrlLoaded, result);
                             run_loop.Quit();
                           }));
     run_loop.Run();
@@ -352,8 +356,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, PrepareForLoad_RecordResultMetric) {
   {
     base::RunLoop run_loop;
     loader.PrepareForLoad(web_contents(),
-                          base::BindLambdaForTesting([&](Result result) {
-                            EXPECT_EQ(Result::kUrlLoaded, result);
+                          base::BindLambdaForTesting([&](UrlResult result) {
+                            EXPECT_EQ(UrlResult::kUrlLoaded, result);
                             run_loop.Quit();
                           }));
     run_loop.Run();
@@ -361,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, PrepareForLoad_RecordResultMetric) {
 
   histograms.ExpectTotalCount(kPrepareForLoadResultHistogramName, 1);
   histograms.ExpectBucketCount(kPrepareForLoadResultHistogramName,
-                               Result::kUrlLoaded, 1);
+                               UrlResult::kUrlLoaded, 1);
 
   // Load the next URL.
   LoadUrlAndWait(UrlComparison::kExact, "/title2.html");
@@ -371,8 +375,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, PrepareForLoad_RecordResultMetric) {
   {
     base::RunLoop run_loop;
     loader.PrepareForLoad(web_contents(),
-                          base::BindLambdaForTesting([&](Result result) {
-                            EXPECT_EQ(Result::kUrlLoaded, result);
+                          base::BindLambdaForTesting([&](UrlResult result) {
+                            EXPECT_EQ(UrlResult::kUrlLoaded, result);
                             run_loop.Quit();
                           }));
     run_loop.Run();
@@ -380,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUrlLoaderTest, PrepareForLoad_RecordResultMetric) {
 
   histograms.ExpectTotalCount(kPrepareForLoadResultHistogramName, 2);
   histograms.ExpectBucketCount(kPrepareForLoadResultHistogramName,
-                               Result::kUrlLoaded, 2);
+                               UrlResult::kUrlLoaded, 2);
 }
 
 }  // namespace web_app

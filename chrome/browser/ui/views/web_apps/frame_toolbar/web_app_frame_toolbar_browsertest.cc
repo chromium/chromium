@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -105,18 +106,19 @@ void LoadTestPopUpExtension(Profile* profile) {
 
 }  // namespace
 
-class WebAppFrameToolbarBrowserTest : public InProcessBrowserTest {
+class WebAppFrameToolbarBrowserTest
+    : public web_app::WebAppControllerBrowserTest {
  public:
   WebAppFrameToolbarBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUp() override {
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
-    InProcessBrowserTest::SetUp();
+    WebAppControllerBrowserTest::SetUp();
   }
 
   WebAppFrameToolbarTestHelper* helper() {
@@ -429,7 +431,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
     ASSERT_TRUE(embedded_test_server()->Start());
-    InProcessBrowserTest::SetUp();
+    WebAppFrameToolbarBrowserTest::SetUp();
   }
 
   web_app::AppId InstallAndLaunchWebApp(bool uses_borderless) {
@@ -651,7 +653,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());
     ASSERT_TRUE(embedded_test_server()->Start());
-    InProcessBrowserTest::SetUp();
+    WebAppFrameToolbarBrowserTest::SetUp();
   }
 
   web_app::AppId InstallAndLaunchWebApp() {

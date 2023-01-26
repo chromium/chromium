@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager_impl.h"
 
 #include "base/functional/bind.h"
@@ -43,10 +44,11 @@
 
 namespace web_app {
 
-class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
+class ExternallyManagedAppManagerImplBrowserTest
+    : public WebAppControllerBrowserTest {
  protected:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     // Allow different origins to be handled by the embedded_test_server.
     host_resolver()->AddRule("*", "127.0.0.1");
     test::WaitUntilReady(WebAppProvider::GetForTest(profile()));
@@ -81,9 +83,6 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   absl::optional<webapps::InstallResultCode> result_code_;
-
- private:
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 class ExternallyManagedBrowserTestWithPrefMigrationRead

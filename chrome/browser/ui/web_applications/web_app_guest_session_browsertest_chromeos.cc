@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -27,7 +28,7 @@ using web_app::test::WithCrosapiParam;
 
 namespace web_app {
 
-class WebAppGuestSessionBrowserTest : public InProcessBrowserTest,
+class WebAppGuestSessionBrowserTest : public WebAppControllerBrowserTest,
                                       public WithCrosapiParam {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(ash::switches::kGuestSession);

@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -33,11 +34,7 @@
 
 namespace web_app {
 
-class WebAppsBrowserTest : public InProcessBrowserTest {
- public:
-  WebAppsBrowserTest() = default;
-  ~WebAppsBrowserTest() override = default;
-};
+using WebAppsBrowserTest = WebAppControllerBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(WebAppsBrowserTest, LaunchWithIntent) {
   ASSERT_TRUE(embedded_test_server()->Start());

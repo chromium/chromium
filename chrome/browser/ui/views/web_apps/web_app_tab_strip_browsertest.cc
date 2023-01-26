@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -50,7 +51,7 @@ constexpr char kAppPath[] = "/web_apps/no_service_worker.html";
 }  // namespace
 namespace web_app {
 
-class WebAppTabStripBrowserTest : public InProcessBrowserTest {
+class WebAppTabStripBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppTabStripBrowserTest() = default;
   ~WebAppTabStripBrowserTest() override = default;
@@ -60,7 +61,8 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
                                 features::kDesktopPWAsTabStripSettings},
                                {});
     ASSERT_TRUE(embedded_test_server()->Start());
-    InProcessBrowserTest::SetUp();
+
+    WebAppControllerBrowserTest::SetUp();
   }
 
   struct App {
@@ -82,7 +84,7 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
     web_app_info->user_display_mode = mojom::UserDisplayMode::kTabbed;
     AppId app_id = test::InstallWebApp(profile, std::move(web_app_info));
 
-    Browser* app_browser = LaunchWebAppBrowser(profile, app_id);
+    Browser* app_browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
     return App{app_id, app_browser,
                BrowserView::GetBrowserViewForBrowser(app_browser),
                app_browser->tab_strip_model()->GetActiveWebContents()};
@@ -259,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, AutoNewTabUrl) {
       "/banners/"
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
-  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
@@ -273,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NewTabUrl) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
-  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
@@ -474,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, OpenInChrome) {
   GURL start_url =
       embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
-  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
 
   EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
 
@@ -647,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, TabbedModeMediaCSS) {
       "manifest_test_page.html?manifest=manifest_tabbed_display_override.json");
   AppId app_id = InstallWebAppFromPage(browser(), start_url);
 
-  Browser* app_browser = LaunchWebAppBrowser(browser()->profile(), app_id);
+  Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 

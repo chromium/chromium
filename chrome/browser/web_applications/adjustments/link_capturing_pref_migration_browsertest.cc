@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -15,19 +16,17 @@
 
 namespace web_app {
 
-class LinkCapturingPrefMigrationBrowserTest : public InProcessBrowserTest {
+class LinkCapturingPrefMigrationBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
   LinkCapturingPrefMigrationBrowserTest() = default;
   ~LinkCapturingPrefMigrationBrowserTest() override = default;
 
-  // InProcessBrowserTest:
+  // WebAppControllerBrowserTest:
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    WebAppControllerBrowserTest::SetUpOnMainThread();
     test::WaitUntilReady(WebAppProvider::GetForTest(browser()->profile()));
   }
-
- protected:
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(LinkCapturingPrefMigrationBrowserTest,

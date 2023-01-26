@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
                        OutOfScopeBarRemoval) {
   // Check that the out of scope banner doesn't show after navigating to the
   // different scope in the web app window.
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id_);
+  Browser* app_browser = LaunchWebAppBrowser(app_id_);
   NavigateToURLAndWait(app_browser, extended_scope_page_);
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 }
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOsWebAppExperimentsBrowserTest,
                        FallbackPageThemeColor) {
   // Pages in the extended scope should have a fallback page theme color applied
   // when their URL contains certain substrings.
-  Browser* app_browser = LaunchWebAppBrowser(profile(), app_id_);
+  Browser* app_browser = LaunchWebAppBrowser(app_id_);
   NavigateToURLAndWait(app_browser,
                        extended_scope_.Resolve("app2.html?file%2cdocx"));
   SCOPED_TRACE(

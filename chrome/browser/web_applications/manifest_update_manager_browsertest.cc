@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 
 #include <ios>
@@ -287,7 +288,7 @@ void WaitForUpdatePendingCallback(const GURL& url) {
 
 }  // namespace
 
-class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
+class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
  public:
   ManifestUpdateManagerBrowserTest()
       : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
@@ -312,7 +313,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(http_server_.Start());
     // Suppress globally to avoid OS hooks deployed for system web app during
     // WebAppProvider setup.
-    InProcessBrowserTest::SetUp();
+    WebAppControllerBrowserTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -641,7 +642,6 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
   // pixel color for each size is used as the representation color for that
   // size, even if the image is multi-colored.
   std::vector<std::pair<int, SkColor>> updated_colors_;
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::AutoReset<absl::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 
@@ -4136,8 +4136,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
   // Navigate to the app in a dedicated PWA window. Note that this opens a
   // second browser window.
   GURL url = GetAppURL();
-  Browser* web_app_browser =
-      LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  Browser* web_app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   // Wait for the PWA to a) detect that an update is needed and b) start waiting
   // on its window to close.
@@ -4204,8 +4203,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
   // Navigate to the app in a dedicated PWA window. Note that this opens a
   // second browser window.
   GURL url = GetAppURL();
-  Browser* web_app_browser =
-      LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  Browser* web_app_browser = LaunchWebAppBrowserAndWait(app_id);
 
   // Wait for the PWA to a) detect that an update is needed and b) start waiting
   // on its window to close.
@@ -4329,7 +4327,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerImmediateUpdateBrowserTest,
         icon_load.QuitClosure());
     UpdateCheckResultAwaiter result_awaiter(app_url);
 
-    app_browser = LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+    app_browser = LaunchWebAppBrowserAndWait(app_id);
 
     icon_load.Run();
     EXPECT_EQ(std::move(result_awaiter).AwaitNextResult(),
