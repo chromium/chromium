@@ -55,6 +55,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -1496,5 +1497,12 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
         return mIsStartSurfaceRefactorEnabled
                 ? mIsHomepageShown
                 : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+    }
+
+    @VisibleForTesting
+    public FeedActionDelegate getFeedActionDelegateForTesting() {
+        assert mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR) != null;
+        return mPropertyModel.get(EXPLORE_SURFACE_COORDINATOR)
+                .getFeedActionDelegateForTesting(); // IN-TEST
     }
 }

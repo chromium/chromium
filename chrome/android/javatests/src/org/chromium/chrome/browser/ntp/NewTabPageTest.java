@@ -41,10 +41,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
@@ -59,6 +61,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -160,10 +163,15 @@ public class NewTabPageTest {
     FeedReliabilityLogger mFeedReliabilityLogger;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private Callback mOnVisitComplete;
+    @Mock
+    private Runnable mOnPageLoaded;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
             UrlUtils.getIsolatedTestFilePath("/chrome/test/data/android/feed/hello_world.gcl.bin");
+    private static final String TEST_URL = "https://www.example.com/";
 
     private Tab mTab;
     private NewTabPage mNtp;
@@ -734,6 +742,69 @@ public class NewTabPageTest {
                     5,
                     mHistogramTestRule.getHistogramValueCount(HISTOGRAM_NTP_MODULE_CLICK,
                             BrowserUiUtils.ModuleTypeOnStartAndNTP.MOST_VISITED_TILES));
+        });
+    }
+
+    /**
+     * Test whether the clicking action on Feeds in {@link NewTabPage} is been recorded in
+     * histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramFeedClick_Ntp() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            FeedActionDelegate feedActionDelegate = mNtp.getFeedActionDelegateForTesting();
+
+            // Test click on Feeds or long press then check about this source & topic on Feeds.
+            feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.CURRENT_TAB,
+                    new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                    mOnVisitComplete);
+            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
+                            + " is not recorded correctly when click on Feeds "
+                            + "or long press then check about this source & topic on Feeds.",
+                    1,
+                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
+                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+            // Test long press then open in new tab on Feeds.
+            feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                    new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                    mOnVisitComplete);
+            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
+                            + " is not recorded correctly when long press then open in "
+                            + "new tab on Feeds.",
+                    2,
+                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
+                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+            // Test long press then open in incognito tab on Feeds.
+            feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.OFF_THE_RECORD,
+                    new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                    mOnVisitComplete);
+            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
+                            + " is not recorded correctly when long press then open "
+                            + "in incognito tab on Feeds.",
+                    3,
+                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
+                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+            // Test manage activity or manage interests on Feeds.
+            feedActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+                    new LoadUrlParams(TEST_URL, PageTransition.LINK));
+            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
+                            + " shouldn't be recorded when manage activity or manage interests "
+                            + "on Feeds.",
+                    3,
+                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
+                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+            // Test click Learn More button on Feeds.
+            feedActionDelegate.openHelpPage();
+            assertEquals(HISTOGRAM_NTP_MODULE_CLICK
+                            + " is not recorded correctly when click Learn More button on Feeds.",
+                    4,
+                    RecordHistogram.getHistogramValueCountForTesting(HISTOGRAM_NTP_MODULE_CLICK,
+                            BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
         });
     }
 

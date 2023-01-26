@@ -42,7 +42,10 @@ chromium-metrics-reviews@google.com.
     page. For most visited tiles: is recorded when 1) user clicks on most
     visited tiles; 2) long press on most visited tiles to open in a new tab or a
     new incognito tab or to download the link. This is consistent with
-    MobileNTPMostVisited. The histogram is logged on Start surface and is
+    MobileNTPMostVisited. For feeds: is recorded when 1) user clicks on feeds;
+    2) long press on feeds to open in a new tab or open in a new incognito tab
+    or check about this source and topic; 3) click the learn more button on the
+    top of the feeds section. The histogram is logged on Start surface and is
     Android-only.
   </summary>
 </histogram>

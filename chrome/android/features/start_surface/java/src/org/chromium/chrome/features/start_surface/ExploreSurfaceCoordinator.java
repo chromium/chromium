@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.feed.FeedActionDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedSurfaceDelegate;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.SurfaceType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -139,7 +141,7 @@ public class ExploreSurfaceCoordinator {
         ExploreSurfaceActionDelegate(SnackbarManager snackbarManager, BookmarkModel bookmarkModel,
                 CrowButtonDelegate crowButtonDelegate) {
             super(mActivity, snackbarManager, mExploreSurfaceNavigationDelegate, bookmarkModel,
-                    crowButtonDelegate);
+                    crowButtonDelegate, BrowserUiUtils.HostSurface.START_SURFACE);
         }
 
         @Override
@@ -170,5 +172,10 @@ public class ExploreSurfaceCoordinator {
         public boolean onInterceptTouchEvent(MotionEvent ev) {
             return false;
         }
+    }
+
+    @VisibleForTesting
+    public FeedActionDelegate getFeedActionDelegateForTesting() {
+        return mFeedSurfaceCoordinator.getActionDelegateForTesting(); // IN-TEST
     }
 }

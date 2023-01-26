@@ -496,7 +496,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         FeedActionDelegate actionDelegate = new FeedActionDelegateImpl(activity, snackbarManager,
                 mNewTabPageManager.getNavigationDelegate(), BookmarkModel.getForProfile(profile),
-                crowButtonDelegate) {
+                crowButtonDelegate, BrowserUiUtils.HostSurface.NEW_TAB_PAGE) {
             @Override
             public void openHelpPage() {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_CLICKED_LEARN_MORE);
@@ -997,6 +997,12 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     @VisibleForTesting
     public TileGroup.Delegate getTileGroupDelegateForTesting() {
         return mTileGroupDelegate;
+    }
+
+    @VisibleForTesting
+    public FeedActionDelegate getFeedActionDelegateForTesting() {
+        return ((FeedSurfaceCoordinator) mFeedSurfaceProvider)
+                .getActionDelegateForTesting(); // IN-TEST
     }
 
     /**

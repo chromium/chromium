@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.share.crow.CrowButtonDelegate;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** Tests for FeedActionDelegateImpl. */
@@ -57,7 +58,7 @@ public final class FeedActionDelegateImplTest {
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
         mFeedActionDelegateImpl = new FeedActionDelegateImpl(ContextUtils.getApplicationContext(),
                 mMockSnackbarManager, mMockNavigationDelegate, mMockBookmarkModel,
-                mMockCrowButtonDelegate);
+                mMockCrowButtonDelegate, BrowserUiUtils.HostSurface.NOT_SET);
     }
 
     @Test

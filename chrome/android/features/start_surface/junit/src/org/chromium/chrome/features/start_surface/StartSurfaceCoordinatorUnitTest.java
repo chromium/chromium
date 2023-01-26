@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -24,11 +25,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorder;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -41,6 +44,8 @@ import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -56,9 +61,14 @@ public class StartSurfaceCoordinatorUnitTest {
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
     private static final String USER_ACTION_START_SURFACE_MVT_CLICK =
             "Suggestions.Tile.Tapped.StartSurface";
+    private static final String TEST_URL = "https://www.example.com/";
 
     @Mock
     private UmaRecorder mUmaRecorder;
+    @Mock
+    private Callback mOnVisitComplete;
+    @Mock
+    private Runnable mOnPageLoaded;
 
     @Rule
     public StartSurfaceCoordinatorUnitTestRule mTestRule =
@@ -442,6 +452,72 @@ public class StartSurfaceCoordinatorUnitTest {
                 .recordUserAction(eq(USER_ACTION_START_SURFACE_MVT_CLICK), anyLong());
 
         UmaRecorderHolder.resetForTesting();
+    }
+
+    /**
+     * Test whether the clicking action on Feeds in {@link StartSurface} is been recorded in
+     * histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramFeedClick_StartSurface() {
+        FeedActionDelegate feedActionDelegate =
+                mCoordinator.getMediatorForTesting().getFeedActionDelegateForTesting();
+        // Test click on Feeds or long press then check about this source & topic on Feeds.
+        feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.CURRENT_TAB,
+                new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                mOnVisitComplete);
+        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                        + " is not recorded correctly when click on Feeds or "
+                        + "long press then check about this source & topic on Feeds.",
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+        // Test long press then open in new tab on Feeds.
+        feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.NEW_BACKGROUND_TAB,
+                new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                mOnVisitComplete);
+        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                        + " is not recorded correctly when long press then open in "
+                        + "new tab on Feeds.",
+                2,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+        // Test long press then open in incognito tab on Feeds.
+        feedActionDelegate.openSuggestionUrl(WindowOpenDisposition.OFF_THE_RECORD,
+                new LoadUrlParams(TEST_URL, PageTransition.AUTO_BOOKMARK), false, mOnPageLoaded,
+                mOnVisitComplete);
+        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                        + " is not recorded correctly when long press then open in incognito tab "
+                        + "on Feeds.",
+                3,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+        // Test manage activity or manage interests on Feeds.
+        feedActionDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+                new LoadUrlParams(TEST_URL, PageTransition.LINK));
+        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                        + " shouldn't be recorded when manage activity or manage interests "
+                        + "on Feeds.",
+                3,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
+
+        // Test click Learn More button on Feeds.
+        feedActionDelegate.openHelpPage();
+        assertEquals(HISTOGRAM_START_SURFACE_MODULE_CLICK
+                        + " is not recorded correctly when click Learn More button on Feeds.",
+                4,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        HISTOGRAM_START_SURFACE_MODULE_CLICK,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED));
     }
 
     /**

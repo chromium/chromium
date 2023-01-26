@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.Referrer;
@@ -41,14 +42,18 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     private final SnackbarManager mSnackbarManager;
     private final CrowButtonDelegate mCrowButtonDelegate;
 
+    @BrowserUiUtils.HostSurface
+    private int mHostSurface;
+
     public FeedActionDelegateImpl(Context activityContext, SnackbarManager snackbarManager,
             NativePageNavigationDelegate navigationDelegate, BookmarkModel bookmarkModel,
-            CrowButtonDelegate crowButtonDelegate) {
+            CrowButtonDelegate crowButtonDelegate, @BrowserUiUtils.HostSurface int hostSurface) {
         mActivityContext = activityContext;
         mNavigationDelegate = navigationDelegate;
         mBookmarkModel = bookmarkModel;
         mSnackbarManager = snackbarManager;
         mCrowButtonDelegate = crowButtonDelegate;
+        mHostSurface = hostSurface;
     }
     @Override
     public void downloadPage(String url) {
@@ -83,6 +88,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
             });
         }
         ReturnToChromeUtil.onFeedCardOpened();
+
+        BrowserUiUtils.recordModuleClickHistogram(
+                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
     }
 
     @Override
@@ -94,6 +102,9 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     public void openHelpPage() {
         mNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                 new LoadUrlParams(NEW_TAB_URL_HELP, PageTransition.AUTO_BOOKMARK));
+
+        BrowserUiUtils.recordModuleClickHistogram(
+                mHostSurface, BrowserUiUtils.ModuleTypeOnStartAndNTP.FEED);
     }
 
     @Override

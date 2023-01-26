@@ -1096,4 +1096,9 @@ public class FeedSurfaceCoordinator
     public void clearScrollableContainerDelegateForTesting() {
         mScrollableContainerDelegate = null;
     }
+
+    @VisibleForTesting
+    public FeedActionDelegate getActionDelegateForTesting() {
+        return mActionDelegate;
+    }
 }
