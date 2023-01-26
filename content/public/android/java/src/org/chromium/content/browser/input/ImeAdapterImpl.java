@@ -1079,9 +1079,9 @@ public class ImeAdapterImpl
                         if (mNativeImeAdapterAndroid == 0) return;
                         int contentOffsetY =
                                 (int) mWebContents.getRenderCoordinates().getContentOffsetYPix();
-                        gestureData.startPoint.y -= contentOffsetY;
-                        if (gestureData.endPoint != null) {
-                            gestureData.endPoint.y -= contentOffsetY;
+                        gestureData.startRect.y -= contentOffsetY;
+                        if (gestureData.endRect != null) {
+                            gestureData.endRect.y -= contentOffsetY;
                         }
                         ImeAdapterImplJni.get().handleStylusWritingGestureAction(
                                 mNativeImeAdapterAndroid, ImeAdapterImpl.this,

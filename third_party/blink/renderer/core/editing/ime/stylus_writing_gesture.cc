@@ -106,40 +106,41 @@ std::unique_ptr<StylusWritingGesture> CreateGesture(
   if (!gesture_data) {
     return nullptr;
   }
-  gfx::Point start_point = gesture_data->start_point;
+  gfx::Point start_origin = gesture_data->start_rect.left_center();
   String text_alternative = gesture_data->text_alternative;
 
   switch (gesture_data->action) {
     case mojom::blink::StylusWritingGestureAction::DELETE_TEXT: {
-      if (!gesture_data->end_point.has_value()) {
+      if (!gesture_data->end_rect.has_value()) {
         return nullptr;
       }
       return std::make_unique<blink::StylusWritingGestureDelete>(
-          start_point, gesture_data->end_point.value(), text_alternative,
-          gesture_data->granularity);
+          start_origin, gesture_data->end_rect->right_center(),
+          text_alternative, gesture_data->granularity);
     }
     case mojom::blink::StylusWritingGestureAction::ADD_SPACE_OR_TEXT: {
       return std::make_unique<blink::StylusWritingGestureAddText>(
-          start_point, gesture_data->text_to_insert, text_alternative);
+          start_origin, gesture_data->text_to_insert, text_alternative);
     }
     case mojom::blink::StylusWritingGestureAction::REMOVE_SPACES: {
-      if (!gesture_data->end_point.has_value()) {
+      if (!gesture_data->end_rect.has_value()) {
         return nullptr;
       }
       return std::make_unique<blink::StylusWritingGestureRemoveSpaces>(
-          start_point, gesture_data->end_point.value(), text_alternative);
+          start_origin, gesture_data->end_rect->right_center(),
+          text_alternative);
     }
     case mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE: {
       return std::make_unique<blink::StylusWritingGestureSplitOrMerge>(
-          start_point, text_alternative);
+          start_origin, text_alternative);
     }
     case mojom::blink::StylusWritingGestureAction::SELECT_TEXT: {
-      if (!gesture_data->end_point.has_value()) {
+      if (!gesture_data->end_rect.has_value()) {
         return nullptr;
       }
       return std::make_unique<blink::StylusWritingGestureSelect>(
-          start_point, gesture_data->end_point.value(), text_alternative,
-          gesture_data->granularity);
+          start_origin, gesture_data->end_rect->right_center(),
+          text_alternative, gesture_data->granularity);
     }
     default: {
       NOTREACHED();

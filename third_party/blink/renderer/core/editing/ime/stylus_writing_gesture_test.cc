@@ -141,8 +141,8 @@ TEST_F(StylusWritingGestureTest, TestGestureDelete) {
   mojom::blink::StylusWritingGestureDataPtr gesture_data(
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
-  gesture_data->start_point = gfx::Point(10, 6);
-  gesture_data->end_point = gfx::Point(40, 6);
+  gesture_data->start_rect = gfx::Rect(10, 6, 0, 0);
+  gesture_data->end_rect = gfx::Rect(40, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -156,8 +156,8 @@ TEST_F(StylusWritingGestureTest, TestGestureDelete) {
   mojom::blink::StylusWritingGestureDataPtr gesture_data2(
       mojom::blink::StylusWritingGestureData::New());
   gesture_data2->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
-  gesture_data2->start_point = gfx::Point(80, 6);
-  gesture_data2->end_point = gfx::Point(100, 6);
+  gesture_data2->start_rect = gfx::Rect(80, 6, 0, 0);
+  gesture_data2->end_rect = gfx::Rect(100, 6, 0, 0);
   gesture_data2->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data2));
@@ -195,8 +195,8 @@ TEST_F(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
         mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
     gesture_data->granularity =
         mojom::blink::StylusWritingGestureGranularity::WORD;
-    gesture_data->start_point = gfx::Point(test_case.start, 6);
-    gesture_data->end_point = gfx::Point(test_case.end, 6);
+    gesture_data->start_rect = gfx::Rect(test_case.start, 6, 0, 0);
+    gesture_data->end_rect = gfx::Rect(test_case.end, 6, 0, 0);
     gesture_data->text_alternative = text_alternative;
 
     WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -218,8 +218,8 @@ TEST_F(StylusWritingGestureTest, TestGestureAtEndOfLineWithWordGranularity) {
   gesture_data->action = mojom::blink::StylusWritingGestureAction::DELETE_TEXT;
   gesture_data->granularity =
       mojom::blink::StylusWritingGestureGranularity::WORD;
-  gesture_data->start_point = gfx::Point(0, 6);
-  gesture_data->end_point = gfx::Point(60, 6);
+  gesture_data->start_rect = gfx::Rect(0, 6, 0, 0);
+  gesture_data->end_rect = gfx::Rect(60, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -237,8 +237,8 @@ TEST_F(StylusWritingGestureTest, TestGestureRemoveSpaces) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::REMOVE_SPACES;
-  gesture_data->start_point = gfx::Point(30, 6);
-  gesture_data->end_point = gfx::Point(90, 6);
+  gesture_data->start_rect = gfx::Rect(30, 6, 0, 0);
+  gesture_data->end_rect = gfx::Rect(90, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -253,8 +253,8 @@ TEST_F(StylusWritingGestureTest, TestGestureRemoveSpaces) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data2->action =
       mojom::blink::StylusWritingGestureAction::REMOVE_SPACES;
-  gesture_data2->start_point = gfx::Point(100, 6);
-  gesture_data2->end_point = gfx::Point(120, 6);
+  gesture_data2->start_rect = gfx::Rect(100, 6, 0, 0);
+  gesture_data2->end_rect = gfx::Rect(120, 6, 0, 0);
   gesture_data2->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data2));
@@ -274,8 +274,8 @@ TEST_F(StylusWritingGestureTest, TestGestureRemoveFirstSpace) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::REMOVE_SPACES;
-  gesture_data->start_point = gfx::Point(10, 6);
-  gesture_data->end_point = gfx::Point(100, 6);
+  gesture_data->start_rect = gfx::Rect(10, 6, 0, 0);
+  gesture_data->end_rect = gfx::Rect(100, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -292,8 +292,8 @@ TEST_F(StylusWritingGestureTest, TestGestureSelect) {
   mojom::blink::StylusWritingGestureDataPtr gesture_data(
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action = mojom::blink::StylusWritingGestureAction::SELECT_TEXT;
-  gesture_data->start_point = gfx::Point(10, 6);
-  gesture_data->end_point = gfx::Point(40, 6);
+  gesture_data->start_rect = gfx::Rect(10, 6, 0, 0);
+  gesture_data->end_rect = gfx::Rect(40, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -313,7 +313,7 @@ TEST_F(StylusWritingGestureTest, TestGestureAddSpaceOrText) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::ADD_SPACE_OR_TEXT;
-  gesture_data->start_point = gfx::Point(42, 6);
+  gesture_data->start_rect = gfx::Rect(42, 6, 0, 0);
   gesture_data->text_to_insert = " ";
   gesture_data->text_alternative = text_alternative;
 
@@ -329,7 +329,7 @@ TEST_F(StylusWritingGestureTest, TestGestureAddSpaceOrText) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data2->action =
       mojom::blink::StylusWritingGestureAction::ADD_SPACE_OR_TEXT;
-  gesture_data2->start_point = gfx::Point(120, 6);
+  gesture_data2->start_rect = gfx::Rect(120, 6, 0, 0);
   gesture_data2->text_to_insert = " ";
   gesture_data2->text_alternative = text_alternative;
 
@@ -349,7 +349,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_RemovesAllSpaces) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data->start_point = gfx::Point(42, 6);
+  gesture_data->start_rect = gfx::Rect(42, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -365,7 +365,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_RemovesAllSpaces) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data1->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data1->start_point = gfx::Point(78, 6);
+  gesture_data1->start_rect = gfx::Rect(78, 6, 0, 0);
   gesture_data1->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data1));
@@ -385,7 +385,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_NonEmptyInput) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data->start_point = gfx::Point(42, 6);
+  gesture_data->start_rect = gfx::Rect(42, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));
@@ -400,7 +400,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_NonEmptyInput) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data1->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data1->start_point = gfx::Point(42, 6);
+  gesture_data1->start_rect = gfx::Rect(42, 6, 0, 0);
   gesture_data1->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data1));
@@ -415,7 +415,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_NonEmptyInput) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data2->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data2->start_point = gfx::Point(120, 6);
+  gesture_data2->start_rect = gfx::Rect(120, 6, 0, 0);
   gesture_data2->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data2));
@@ -430,7 +430,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_NonEmptyInput) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data3->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data3->start_point = gfx::Point(4, 6);
+  gesture_data3->start_rect = gfx::Rect(4, 6, 0, 0);
   gesture_data3->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data3));
@@ -449,7 +449,7 @@ TEST_F(StylusWritingGestureTest, TestGestureSplitOrMerge_EmptyInput) {
       mojom::blink::StylusWritingGestureData::New());
   gesture_data->action =
       mojom::blink::StylusWritingGestureAction::SPLIT_OR_MERGE;
-  gesture_data->start_point = gfx::Point(105, 6);
+  gesture_data->start_rect = gfx::Rect(105, 6, 0, 0);
   gesture_data->text_alternative = text_alternative;
 
   WidgetImpl()->HandleStylusWritingGestureAction(std::move(gesture_data));

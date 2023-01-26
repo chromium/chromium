@@ -126,15 +126,15 @@ public class DirectWritingServiceCallbackTest {
         verify(mImeCallback).handleStylusWritingGestureAction(gestureDataCaptor.capture());
         StylusWritingGestureData gestureData = gestureDataCaptor.getValue();
         assertEquals(expectedAction, gestureData.action);
-        assertEquals(GESTURE_START_POINT[0], gestureData.startPoint.x, /* tolerance */ 0.1);
-        assertEquals(GESTURE_START_POINT[1], gestureData.startPoint.y, /* tolerance */ 0.1);
+        assertEquals(GESTURE_START_POINT[0], gestureData.startRect.x, /* tolerance */ 0.1);
+        assertEquals(GESTURE_START_POINT[1], gestureData.startRect.y, /* tolerance */ 0.1);
 
         if (isTwoPointGesture(gestureBundle.getString(
                     DirectWritingServiceCallback.GESTURE_BUNDLE_KEY_GESTURE_TYPE, ""))) {
-            assertEquals(GESTURE_END_POINT[0], gestureData.endPoint.x, /* tolerance */ 0.1);
-            assertEquals(GESTURE_END_POINT[1], gestureData.endPoint.y, /* tolerance */ 0.1);
+            assertEquals(GESTURE_END_POINT[0], gestureData.endRect.x, /* tolerance */ 0.1);
+            assertEquals(GESTURE_END_POINT[1], gestureData.endRect.y, /* tolerance */ 0.1);
         } else {
-            assertNull(gestureData.endPoint);
+            assertNull(gestureData.endRect);
         }
 
         assertEquals(FALLBACK_TEXT, mojoStringToJavaString(gestureData.textAlternative));
@@ -323,8 +323,8 @@ public class DirectWritingServiceCallbackTest {
         verify(mImeCallback).handleStylusWritingGestureAction(argThat(gestureData -> {
             assertEquals(StylusWritingGestureAction.DELETE_TEXT, gestureData.action);
             // assert that start-x and end-x are clamped to Edit bounds.
-            assertEquals(editBounds.left, gestureData.startPoint.x);
-            assertEquals(editBounds.right, gestureData.endPoint.x);
+            assertEquals(editBounds.left, gestureData.startRect.x);
+            assertEquals(editBounds.right, gestureData.endRect.x);
             return true;
         }));
     }

@@ -143,8 +143,8 @@ class DirectWritingServiceCallback
         gestureData.granularity = StylusWritingGestureGranularity.CHARACTER;
         if (gestureType.equals(GESTURE_TYPE_BACKSPACE) || gestureType.equals(GESTURE_TYPE_ZIGZAG)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
-            float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
-            gestureData.endPoint = mojoPointClampedToEditableBounds(endPoint);
+            gestureData.endRect = mojoRectClampedToEditableBounds(
+                    bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT));
             gestureData.action = StylusWritingGestureAction.DELETE_TEXT;
         } else if (gestureType.equals(GESTURE_TYPE_V_SPACE)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_LOWEST_POINT);
@@ -155,8 +155,8 @@ class DirectWritingServiceCallback
         } else if (gestureType.equals(GESTURE_TYPE_U_TYPE_REMOVE_SPACE)
                 || gestureType.equals(GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
-            float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
-            gestureData.endPoint = mojoPointClampedToEditableBounds(endPoint);
+            gestureData.endRect = mojoRectClampedToEditableBounds(
+                    bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT));
             gestureData.action = StylusWritingGestureAction.REMOVE_SPACES;
         } else if (gestureType.equals(GESTURE_I_TYPE_FUNCTIONAL)) {
             startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_CENTER_POINT);
@@ -193,13 +193,13 @@ class DirectWritingServiceCallback
         }
 
         // Populate the common data for all the gestures.
-        gestureData.startPoint = mojoPointClampedToEditableBounds(startPoint);
+        gestureData.startRect = mojoRectClampedToEditableBounds(startPoint);
         gestureData.textAlternative = javaStringToMojoString(textAlternative);
 
         mStylusWritingImeCallback.handleStylusWritingGestureAction(gestureData);
     }
 
-    private org.chromium.gfx.mojom.Point mojoPointClampedToEditableBounds(float[] gesturePoint) {
+    private org.chromium.gfx.mojom.Rect mojoRectClampedToEditableBounds(float[] gesturePoint) {
         // Clamp gesture point to Editable bounds so that gesture is within editable area while
         // finding the gesture offset in blink, and to avoid hitting DCHECKs while doing so.
         float[] adjustedPoint = new float[2];
@@ -207,14 +207,16 @@ class DirectWritingServiceCallback
                 MathUtils.clamp(gesturePoint[0], mEditableBounds.left, mEditableBounds.right);
         adjustedPoint[1] =
                 MathUtils.clamp(gesturePoint[1], mEditableBounds.top, mEditableBounds.bottom);
-        return toMojoPoint(adjustedPoint);
+        return toMojoZeroSizeRect(adjustedPoint);
     }
 
-    private static org.chromium.gfx.mojom.Point toMojoPoint(float[] endPoint) {
-        org.chromium.gfx.mojom.Point point = new org.chromium.gfx.mojom.Point();
-        point.x = (int) endPoint[0];
-        point.y = (int) endPoint[1];
-        return point;
+    private static org.chromium.gfx.mojom.Rect toMojoZeroSizeRect(float[] gesturePoint) {
+        org.chromium.gfx.mojom.Rect rect = new org.chromium.gfx.mojom.Rect();
+        rect.x = (int) gesturePoint[0];
+        rect.y = (int) gesturePoint[1];
+        rect.width = 0;
+        rect.height = 0;
+        return rect;
     }
 
     private static void populateDataForAddSpaceOrTextGesture(
