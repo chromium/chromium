@@ -1871,7 +1871,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("base_value", std::string("bidRejectReason"));
+    bucket_dict.Set("baseValue", std::string("bidRejectReason"));
     bucket_dict.Set("scale", 2);
     bucket_dict.Set("offset", std::string("-255"));
 
@@ -1911,7 +1911,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("base_value", std::string("bidRejectReason"));
+    bucket_dict.Set("baseValue", std::string("bidRejectReason"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     dict.Set("bucket", bucket_dict);
@@ -1940,7 +1940,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
         expected_contribution.Clone());
   }
 
-  // Invalid bucket dictionary, which has no base_value key
+  // Invalid bucket dictionary, which has no "baseValue" key.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
@@ -1964,14 +1964,14 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
                     .empty());
   }
 
-  // Invalid bucket dictionary, whose base_value is invalid.
+  // Invalid bucket dictionary, whose baseValue is invalid.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("base_value", std::string("notValidBaseValue"));
+    bucket_dict.Set("baseValue", std::string("notValidBaseValue"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
     dict.Set("bucket", bucket_dict);
@@ -1995,7 +1995,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("base_value", std::string("winningBid"));
+    bucket_dict.Set("baseValue", std::string("winningBid"));
     bucket_dict.Set("scale", std::string("255"));
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
@@ -2020,7 +2020,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary bucket_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    bucket_dict.Set("base_value", std::string("winningBid"));
+    bucket_dict.Set("baseValue", std::string("winningBid"));
     bucket_dict.Set("offset", 255);
 
     gin::Dictionary dict = gin::Dictionary::CreateEmpty(helper_->isolate());
@@ -2045,7 +2045,7 @@ TEST_F(ContextRecyclerPrivateAggregationExtensionsEnabledTest,
 
     gin::Dictionary value_dict =
         gin::Dictionary::CreateEmpty(helper_->isolate());
-    value_dict.Set("base_value", std::string("winningBid"));
+    value_dict.Set("baseValue", std::string("winningBid"));
     value_dict.Set("scale", 2);
     value_dict.Set("offset", -5);
 

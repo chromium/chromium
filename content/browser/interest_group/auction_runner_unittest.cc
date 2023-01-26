@@ -10443,15 +10443,15 @@ TEST_F(AuctionRunnerTest,
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 1.0, offset: 0n},
+        bucket: {baseValue: 'winningBid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'highestScoringOtherBid', scale: 1.0},
+        bucket: {baseValue: 'highestScoringOtherBid', scale: 1.0},
         value: 2 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason', offset: 0n},
+        bucket: {baseValue: 'bidRejectReason', offset: 0n},
         value: 3 + 100 * bid,
       });
       return {bid: bid, render: interestGroup.ads[0].renderUrl};
@@ -10460,15 +10460,15 @@ TEST_F(AuctionRunnerTest,
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 11 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'highestScoringOtherBid', scale: 1.0, offset: 0n},
+        bucket: {baseValue: 'highestScoringOtherBid', scale: 1.0, offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 13 + 100 * browserSignals.bid,
       });
     }
@@ -10477,15 +10477,15 @@ TEST_F(AuctionRunnerTest,
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 21 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'highestScoringOtherBid'},
+        bucket: {baseValue: 'highestScoringOtherBid'},
         value: 22 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 23 + 100 * bid,
       });
       if (bid === 2) return {desirability: -1, rejectReason: 'invalid-bid'};
@@ -10494,15 +10494,15 @@ TEST_F(AuctionRunnerTest,
 
     function reportResult(auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 31 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'highestScoringOtherBid'},
+        bucket: {baseValue: 'highestScoringOtherBid'},
         value: 32 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 33 + 100 * browserSignals.bid,
       });
     }
@@ -10575,15 +10575,15 @@ TEST_F(AuctionRunnerTest,
         interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
         browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 1.0, offset: 0n},
+        bucket: {baseValue: 'winningBid', scale: 1.0, offset: 0n},
         value: 1 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'highestScoringOtherBid', scale: 1.0},
+        bucket: {baseValue: 'highestScoringOtherBid', scale: 1.0},
         value: 2 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason', offset: 0n},
+        bucket: {baseValue: 'bidRejectReason', offset: 0n},
         value: 3 + 100 * bid,
       });
       return {bid: bid, render: interestGroup.ads[0].renderUrl};
@@ -10592,15 +10592,15 @@ TEST_F(AuctionRunnerTest,
     function reportWin(
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 11 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'highestScoringOtherBid', scale: 1.0, offset: 0n},
+        bucket: {baseValue: 'highestScoringOtherBid', scale: 1.0, offset: 0n},
         value: 12 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 13 + 100 * browserSignals.bid,
       });
     }
@@ -10609,15 +10609,15 @@ TEST_F(AuctionRunnerTest,
   const std::string kSellerScript = R"(
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 21 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'highestScoringOtherBid'},
+        bucket: {baseValue: 'highestScoringOtherBid'},
         value: 22 + 100 * bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 23 + 100 * bid,
       });
       return bid;
@@ -10625,15 +10625,15 @@ TEST_F(AuctionRunnerTest,
 
     function reportResult(auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'winningBid'},
+        bucket: {baseValue: 'winningBid'},
         value: 31 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
-        bucket: {base_value: 'highestScoringOtherBid'},
+        bucket: {baseValue: 'highestScoringOtherBid'},
         value: 32 + 100 * browserSignals.bid,
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'bidRejectReason'},
+        bucket: {baseValue: 'bidRejectReason'},
         value: 33 + 100 * browserSignals.bid,
       });
     }
@@ -10710,15 +10710,15 @@ TEST_F(AuctionRunnerTest,
         browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(1 + 100 * bid),
-        value: {base_value: 'winningBid', scale: 1.0, offset: 0},
+        value: {baseValue: 'winningBid', scale: 1.0, offset: 0},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(2 + 100 * bid),
-        value: {base_value: 'highestScoringOtherBid', scale: 1.0},
+        value: {baseValue: 'highestScoringOtherBid', scale: 1.0},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(3 + 100 * bid),
-        value: {base_value: 'bidRejectReason', offset: 0},
+        value: {baseValue: 'bidRejectReason', offset: 0},
       });
       return {bid: bid, render: interestGroup.ads[0].renderUrl};
     }
@@ -10727,15 +10727,15 @@ TEST_F(AuctionRunnerTest,
         auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
         bucket: BigInt(11 + 100 * browserSignals.bid),
-        value: {base_value: 'winningBid'},
+        value: {baseValue: 'winningBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
         bucket: BigInt(12 + 100 * browserSignals.bid),
-        value: {base_value: 'highestScoringOtherBid'},
+        value: {baseValue: 'highestScoringOtherBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(13 + 100 * browserSignals.bid),
-        value: {base_value: 'bidRejectReason'},
+        value: {baseValue: 'bidRejectReason'},
       });
     }
   )";
@@ -10744,15 +10744,15 @@ TEST_F(AuctionRunnerTest,
     function scoreAd(adMetadata, bid, auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(21 + 100 * bid),
-        value: {base_value: 'winningBid'},
+        value: {baseValue: 'winningBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(22 + 100 * bid),
-        value: {base_value: 'highestScoringOtherBid'},
+        value: {baseValue: 'highestScoringOtherBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(23 + 100 * bid),
-        value: {base_value: 'bidRejectReason'},
+        value: {baseValue: 'bidRejectReason'},
       });
       if (bid === 2) return {desirability: -1, rejectReason: 'invalid-bid'};
       return bid;
@@ -10761,15 +10761,15 @@ TEST_F(AuctionRunnerTest,
     function reportResult(auctionConfig, browserSignals) {
       privateAggregation.reportContributionForEvent('reserved.win', {
         bucket: BigInt(31 + 100 * browserSignals.bid),
-        value: {base_value: 'winningBid'},
+        value: {baseValue: 'winningBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.win', {
         bucket: BigInt(32 + 100 * browserSignals.bid),
-        value: {base_value: 'highestScoringOtherBid'},
+        value: {baseValue: 'highestScoringOtherBid'},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
         bucket: BigInt(33 + 100 * browserSignals.bid),
-        value: {base_value: 'bidRejectReason'},
+        value: {baseValue: 'bidRejectReason'},
       });
     }
   )";
@@ -10833,20 +10833,20 @@ TEST_F(AuctionRunnerTest,
     const bid = %d;
     function reportContributionForEvent() {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 2.1, offset: 10n},
-        value: {base_value: 'winningBid', scale: 2.1, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: 2.1, offset: 10n},
+        value: {baseValue: 'winningBid', scale: 2.1, offset: 20},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 0, offset: 10n},
-        value: {base_value: 'winningBid', scale: 0, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: 0, offset: 10n},
+        value: {baseValue: 'winningBid', scale: 0, offset: 20},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: -1, offset: 10n},
-        value: {base_value: 'winningBid', scale: -1, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: -1, offset: 10n},
+        value: {baseValue: 'winningBid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: -200, offset: 10n},
+        bucket: {baseValue: 'winningBid', scale: -200, offset: 10n},
         value: 1,
       });
     }
@@ -10868,20 +10868,20 @@ TEST_F(AuctionRunnerTest,
   const std::string kSellerScript = R"(
     function reportContributionForEvent() {
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 2.1, offset: 10n},
-        value: {base_value: 'winningBid', scale: 2.1, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: 2.1, offset: 10n},
+        value: {baseValue: 'winningBid', scale: 2.1, offset: 20},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: 0, offset: 10n},
-        value: {base_value: 'winningBid', scale: 0, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: 0, offset: 10n},
+        value: {baseValue: 'winningBid', scale: 0, offset: 20},
       });
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: -1, offset: 10n},
-        value: {base_value: 'winningBid', scale: -1, offset: 20},
+        bucket: {baseValue: 'winningBid', scale: -1, offset: 10n},
+        value: {baseValue: 'winningBid', scale: -1, offset: 20},
       });
       // Bucket overflows due to being negative, so will be clamped to 0.
       privateAggregation.reportContributionForEvent('reserved.always', {
-        bucket: {base_value: 'winningBid', scale: -200, offset: 10n},
+        bucket: {baseValue: 'winningBid', scale: -200, offset: 10n},
         value: 1,
       });
     }

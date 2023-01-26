@@ -88,9 +88,7 @@ absl::optional<auction_worklet::mojom::SignalBucketPtr> GetSignalBucket(
   gin::Dictionary result_dict(isolate, input.As<v8::Object>());
 
   std::string base_value_string;
-  // TODO(qingxinwu): Change it to "baseValue" to be consistent with the
-  // explainer.
-  if (!result_dict.Get("base_value", &base_value_string)) {
+  if (!result_dict.Get("baseValue", &base_value_string)) {
     return absl::nullopt;
   }
 
@@ -145,9 +143,7 @@ absl::optional<auction_worklet::mojom::SignalValuePtr> GetSignalValue(
   gin::Dictionary result_dict(isolate, input.As<v8::Object>());
 
   std::string base_value_string;
-  // TODO(qingxinwu): Change it to "baseValue" to be consistent with the
-  // explainer.
-  if (!result_dict.Get("base_value", &base_value_string)) {
+  if (!result_dict.Get("baseValue", &base_value_string)) {
     return absl::nullopt;
   }
 
