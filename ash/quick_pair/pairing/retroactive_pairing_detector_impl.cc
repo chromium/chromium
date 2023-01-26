@@ -491,7 +491,6 @@ void RetroactivePairingDetectorImpl::RemoveDeviceInformation(
 
 void RetroactivePairingDetectorImpl::RemoveDeviceInformationHelper(
     const std::string& device_address) {
-  QP_LOG(INFO) << __func__;
   potential_retroactive_addresses_.erase(device_address);
   device_pairing_information_.erase(device_address);
 
@@ -512,19 +511,14 @@ void RetroactivePairingDetectorImpl::
   // `CheckPairingInformation` if it has exceeded the allotted time for
   // detecting the scenario (kDetectRetroactiveScenarioTimeout). We clean up
   // these devices here.
-  std::vector<std::string> devices_to_remove;
   for (auto it = device_pairing_information_.begin();
        it != device_pairing_information_.end(); ++it) {
     if (base::Time::Now() >= it->second.expiry_timestamp) {
-      devices_to_remove.push_back(it->first);
+      QP_LOG(VERBOSE) << __func__ << ": Removing device at " << it->first
+                      << "that has exceeded the time allotted for detecting "
+                         "retroactive scenario.";
+      RemoveDeviceInformationHelper(it->first);
     }
-  }
-
-  for (std::string device_address : devices_to_remove) {
-    QP_LOG(VERBOSE) << __func__ << ": Removing device at " << device_address
-                    << "that has exceeded the time allotted for detecting "
-                       "retroactive scenario.";
-    RemoveDeviceInformationHelper(device_address);
   }
 }
 
