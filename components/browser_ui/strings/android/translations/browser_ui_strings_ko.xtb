@@ -152,7 +152,7 @@
 <translation id="4200726100658658164">위치 설정 열기</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
-<translation id="4278390842282768270">허용</translation>
+<translation id="4278390842282768270">허용됨</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
@@ -340,7 +340,7 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
-<translation id="8211406090763984747">이 사이트는 보안 연결(HTTPS)이 사용되었습니다.</translation>
+<translation id="8211406090763984747">이 연결은 안전합니다.</translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8284326494547611709">자막</translation>
