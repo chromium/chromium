@@ -430,18 +430,18 @@ AccountSelectionBubbleView::AccountSelectionBubbleView(
 AccountSelectionBubbleView::~AccountSelectionBubbleView() = default;
 
 void AccountSelectionBubbleView::ShowAccountPicker(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list,
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
     bool show_back_button) {
   // If there are multiple IDPs, then the content::IdentityProviderMetadata
   // passed will be unused since there will be no `header_icon_view_`.
   // Therefore, it is fine to pass the first one into UpdateHeader().
-  DCHECK(idp_data_list.size() == 1u || !header_icon_view_);
-  UpdateHeader(idp_data_list[0].idp_metadata_, accessible_title_,
+  DCHECK(idp_display_data_list.size() == 1u || !header_icon_view_);
+  UpdateHeader(idp_display_data_list[0].idp_metadata, accessible_title_,
                show_back_button);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateAccountChooser(idp_data_list));
+  AddChildView(CreateAccountChooser(idp_display_data_list));
   SizeToContents();
   PreferredSizeChanged();
 
@@ -458,9 +458,10 @@ void AccountSelectionBubbleView::ShowAccountPicker(
 
 void AccountSelectionBubbleView::ShowVerifyingSheet(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_data,
+    const IdentityProviderDisplayData& idp_display_data,
     const std::u16string& title) {
-  UpdateHeader(idp_data.idp_metadata_, title, /*show_back_button=*/false);
+  UpdateHeader(idp_display_data.idp_metadata, title,
+               /*show_back_button=*/false);
 
   RemoveNonHeaderChildViews();
   views::ProgressBar* const progress_bar =
@@ -473,7 +474,7 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
   row->AddChildView(
-      CreateAccountRow(account, idp_data, /*should_hover=*/false));
+      CreateAccountRow(account, idp_display_data, /*should_hover=*/false));
   AddChildView(std::move(row));
   SizeToContents();
   PreferredSizeChanged();
@@ -486,15 +487,15 @@ void AccountSelectionBubbleView::ShowVerifyingSheet(
 void AccountSelectionBubbleView::ShowSingleAccountConfirmDialog(
     const std::u16string& rp_for_display,
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_data) {
-  std::u16string title =
-      l10n_util::GetStringFUTF16(SelectSingleIdpTitleResourceId(rp_context_),
-                                 rp_for_display, idp_data.idp_etld_plus_one_);
-  UpdateHeader(idp_data.idp_metadata_, title, true);
+    const IdentityProviderDisplayData& idp_display_data) {
+  std::u16string title = l10n_util::GetStringFUTF16(
+      SelectSingleIdpTitleResourceId(rp_context_), rp_for_display,
+      idp_display_data.idp_etld_plus_one);
+  UpdateHeader(idp_display_data.idp_metadata, title, true);
 
   RemoveNonHeaderChildViews();
   AddChildView(std::make_unique<views::Separator>());
-  AddChildView(CreateSingleAccountChooser(idp_data, account));
+  AddChildView(CreateSingleAccountChooser(idp_display_data, account));
   SizeToContents();
   PreferredSizeChanged();
 
@@ -620,36 +621,37 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateHeaderView(
 }
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
-  if (idp_data_list.size() == 1u && idp_data_list[0].accounts_.size() == 1u) {
-    return CreateSingleAccountChooser(idp_data_list[0],
-                                      idp_data_list[0].accounts_[0]);
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
+  if (idp_display_data_list.size() == 1u &&
+      idp_display_data_list[0].accounts.size() == 1u) {
+    return CreateSingleAccountChooser(idp_display_data_list[0],
+                                      idp_display_data_list[0].accounts[0]);
   }
-  return CreateMultipleAccountChooser(idp_data_list);
+  return CreateMultipleAccountChooser(idp_display_data_list);
 }
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateSingleAccountChooser(
-    const IdentityProviderDisplayData& idp_data,
+    const IdentityProviderDisplayData& idp_display_data,
     const content::IdentityRequestAccount& account) {
   auto row = std::make_unique<views::View>();
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::VH(0, kLeftRightPadding), kVerticalSpacing));
   row->AddChildView(
-      CreateAccountRow(account, idp_data, /*should_hover=*/false));
+      CreateAccountRow(account, idp_display_data, /*should_hover=*/false));
 
   // Prefer using the given name if it is provided, otherwise fallback to name.
   const std::string display_name =
       account.given_name.empty() ? account.name : account.given_name;
   const content::IdentityProviderMetadata& idp_metadata =
-      idp_data.idp_metadata_;
+      idp_display_data.idp_metadata;
   // We can pass crefs to OnAccountSelected because the `observer_` owns the
   // data.
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(&Observer::OnAccountSelected,
                           base::Unretained(observer_), std::cref(account),
-                          std::cref(idp_data), /*auto_signin=*/false),
+                          std::cref(idp_display_data), /*auto_signin=*/false),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),
       this, idp_metadata.brand_background_color, idp_metadata.brand_text_color);
@@ -675,7 +677,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
       views::CreateEmptyBorder(gfx::Insets::TLBR(5, 0, 0, 0)));
   disclosure_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
 
-  const content::ClientMetadata& client_metadata = idp_data.client_metadata_;
+  const content::ClientMetadata& client_metadata =
+      idp_display_data.client_metadata;
   int disclosure_resource_id = SelectDisclosureTextResourceId(
       client_metadata.privacy_policy_url, client_metadata.terms_of_service_url);
 
@@ -692,7 +695,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   }
 
   // Each link has both <ph name="BEGIN_LINK"> and <ph name="END_LINK">.
-  std::vector<std::u16string> replacements = {idp_data.idp_etld_plus_one_};
+  std::vector<std::u16string> replacements = {
+      idp_display_data.idp_etld_plus_one};
   replacements.insert(replacements.end(), link_data.size() * 2,
                       std::u16string());
 
@@ -716,7 +720,7 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateMultipleAccountChooser(
-    const std::vector<IdentityProviderDisplayData>& idp_data_list) {
+    const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
   auto scroll_view = std::make_unique<views::ScrollView>();
   scroll_view->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
@@ -724,19 +728,19 @@ AccountSelectionBubbleView::CreateMultipleAccountChooser(
       scroll_view->SetContents(std::make_unique<views::View>());
   row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
-  bool is_multi_idp = idp_data_list.size() > 1u;
+  bool is_multi_idp = idp_display_data_list.size() > 1u;
   size_t num_rows = 0;
-  for (const auto& idp_data : idp_data_list) {
+  for (const auto& idp_display_data : idp_display_data_list) {
     if (is_multi_idp) {
       row->AddChildView(CreateIdpHeaderRowForMultiIdp(
-          idp_data.idp_etld_plus_one_, idp_data.idp_metadata_));
+          idp_display_data.idp_etld_plus_one, idp_display_data.idp_metadata));
       ++num_rows;
     }
-    for (const auto& account : idp_data.accounts_) {
+    for (const auto& account : idp_display_data.accounts) {
       row->AddChildView(
-          CreateAccountRow(account, idp_data, /*should_hover=*/true));
+          CreateAccountRow(account, idp_display_data, /*should_hover=*/true));
     }
-    num_rows += idp_data.accounts_.size();
+    num_rows += idp_display_data.accounts.size();
   }
   // The maximum height that the multi-account-picker can have. This value was
   // chosen so that if there are more than two accounts, the picker will show up
@@ -776,7 +780,7 @@ AccountSelectionBubbleView::CreateIdpHeaderRowForMultiIdp(
 
 std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
     const content::IdentityRequestAccount& account,
-    const IdentityProviderDisplayData& idp_data,
+    const IdentityProviderDisplayData& idp_display_data,
     bool should_hover) {
   auto image_view = std::make_unique<AccountImageView>();
   image_view->SetImageSize({kDesiredAvatarSize, kDesiredAvatarSize});
@@ -787,7 +791,7 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateAccountRow(
     auto row = std::make_unique<HoverButton>(
         base::BindRepeating(&Observer::OnAccountSelected,
                             base::Unretained(observer_), std::cref(account),
-                            std::cref(idp_data), /*auto_signin=*/false),
+                            std::cref(idp_display_data), /*auto_signin=*/false),
         std::move(image_view), base::UTF8ToUTF16(account.name),
         base::UTF8ToUTF16(account.email));
     row->SetBorder(views::CreateEmptyBorder(

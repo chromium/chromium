@@ -51,7 +51,8 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
 
 void FedCmAccountSelectionView::Show(
     const std::string& rp_etld_plus_one,
-    const std::vector<content::IdentityProviderData>& identity_provider_data,
+    const std::vector<content::IdentityProviderData>&
+        identity_provider_data_list,
     Account::SignInMode sign_in_mode) {
   // Either Show or ShowFailureDialog has already been called for other IDPs
   // from the same token request. This could happen when accounts fetch fails
@@ -68,8 +69,8 @@ void FedCmAccountSelectionView::Show(
 
   size_t accounts_size = 0u;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
-  for (const auto& identity_provider : identity_provider_data) {
-    idp_data_list_.emplace_back(
+  for (const auto& identity_provider : identity_provider_data_list) {
+    idp_display_data_list_.emplace_back(
         base::UTF8ToUTF16(identity_provider.idp_for_display),
         identity_provider.idp_metadata, identity_provider.client_metadata,
         identity_provider.accounts);
@@ -81,16 +82,16 @@ void FedCmAccountSelectionView::Show(
   state_ = accounts_size == 1u ? State::PERMISSION : State::ACCOUNT_PICKER;
 
   absl::optional<std::u16string> idp_title =
-      identity_provider_data.size() == 1u
-          ? absl::make_optional<std::u16string>(
-                base::UTF8ToUTF16(identity_provider_data[0].idp_for_display))
+      identity_provider_data_list.size() == 1u
+          ? absl::make_optional<std::u16string>(base::UTF8ToUTF16(
+                identity_provider_data_list[0].idp_for_display))
           : absl::nullopt;
   rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
   bubble_widget_ = CreateBubble(browser, rp_for_display_, idp_title, rp_context)
                        ->GetWeakPtr();
   if (sign_in_mode == Account::SignInMode::kAuto) {
-    for (const auto& idp_data : idp_data_list_) {
-      for (const auto& account : idp_data.accounts_) {
+    for (const auto& idp_display_data : idp_display_data_list_) {
+      for (const auto& account : idp_display_data.accounts) {
         if (account.login_state != Account::LoginState::kSignIn) {
           continue;
         }
@@ -99,7 +100,7 @@ void FedCmAccountSelectionView::Show(
         // is generally meant to be called with an associated event, so pass a
         // dummy one, which will be ignored.
         OnAccountSelected(
-            account, idp_data, /*auto_signin=*/true,
+            account, idp_display_data, /*auto_signin=*/true,
             ui::MouseEvent(ui::ET_UNKNOWN, gfx::Point(), gfx::Point(),
                            base::TimeTicks(), 0, 0));
         // Initialize InputEventActivationProtector to handle potentially
@@ -115,7 +116,7 @@ void FedCmAccountSelectionView::Show(
     // Should return in the for loop above.
     DCHECK(false);
   }
-  GetBubbleView()->ShowAccountPicker(idp_data_list_,
+  GetBubbleView()->ShowAccountPicker(idp_display_data_list_,
                                      /*show_back_button=*/false);
   // Initialize InputEventActivationProtector to handle potentially unintended
   // input events.
@@ -240,7 +241,7 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
 
 void FedCmAccountSelectionView::OnAccountSelected(
     const Account& account,
-    const IdentityProviderDisplayData& idp_data,
+    const IdentityProviderDisplayData& idp_display_data,
     bool auto_signin,
     const ui::Event& event) {
   if (!auto_signin &&
@@ -256,7 +257,8 @@ void FedCmAccountSelectionView::OnAccountSelected(
 
     base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
         weak_ptr_factory_.GetWeakPtr());
-    delegate_->OnAccountSelected(idp_data.idp_metadata_.config_url, account);
+    delegate_->OnAccountSelected(idp_display_data.idp_metadata.config_url,
+                                 account);
     // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
     // See https://crbug.com/1393650 for details.
     if (!weak_ptr)
@@ -265,13 +267,13 @@ void FedCmAccountSelectionView::OnAccountSelected(
     const std::u16string title =
         auto_signin ? l10n_util::GetStringFUTF16(
                           IDS_VERIFY_SHEET_TITLE_AUTO_SIGNIN, rp_for_display_,
-                          idp_data.idp_etld_plus_one_)
+                          idp_display_data.idp_etld_plus_one)
                     : l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
-    GetBubbleView()->ShowVerifyingSheet(account, idp_data, title);
+    GetBubbleView()->ShowVerifyingSheet(account, idp_display_data, title);
     return;
   }
   GetBubbleView()->ShowSingleAccountConfirmDialog(rp_for_display_, account,
-                                                  idp_data);
+                                                  idp_display_data);
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
@@ -302,7 +304,7 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   // No need to protect input here since back cannot be the first event.
   state_ = State::ACCOUNT_PICKER;
-  GetBubbleView()->ShowAccountPicker(idp_data_list_,
+  GetBubbleView()->ShowAccountPicker(idp_display_data_list_,
                                      /*show_back_button=*/false);
 }
 

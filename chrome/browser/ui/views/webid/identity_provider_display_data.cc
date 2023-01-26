@@ -9,10 +9,10 @@ IdentityProviderDisplayData::IdentityProviderDisplayData(
     const content::IdentityProviderMetadata& idp_metadata,
     const content::ClientMetadata& client_metadata,
     const std::vector<content::IdentityRequestAccount>& accounts)
-    : idp_etld_plus_one_(idp_etld_plus_one),
-      idp_metadata_(idp_metadata),
-      client_metadata_(client_metadata),
-      accounts_(accounts) {}
+    : idp_etld_plus_one(idp_etld_plus_one),
+      idp_metadata(idp_metadata),
+      client_metadata(client_metadata),
+      accounts(accounts) {}
 
 IdentityProviderDisplayData::IdentityProviderDisplayData(
     const IdentityProviderDisplayData& other) = default;

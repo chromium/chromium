@@ -88,7 +88,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
-                         const IdentityProviderDisplayData& idp_data,
+                         const IdentityProviderDisplayData& idp_display_data,
                          bool auto_signin,
                          const ui::Event& event) override;
   void OnLinkClicked(LinkType link_type,
@@ -108,7 +108,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnDismiss(
       content::IdentityRequestDialogController::DismissReason dismiss_reason);
 
-  std::vector<IdentityProviderDisplayData> idp_data_list_;
+  std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   std::u16string rp_for_display_;
 

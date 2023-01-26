@@ -42,8 +42,9 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     show_verifying_sheet_ = false;
 
     account_ids_.clear();
-    for (content::IdentityRequestAccount account : idp_data_list[0].accounts_)
+    for (content::IdentityRequestAccount account : idp_data_list[0].accounts) {
       account_ids_.push_back(account.id);
+    }
   }
 
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
@@ -198,7 +199,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
   AccountSelectionBubbleView::Observer* observer =
@@ -219,7 +220,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   const char kAccountId2[] = "account_id2";
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignIn}});
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
   AccountSelectionBubbleView::Observer* observer =
@@ -243,7 +244,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
       {kAccountId1, LoginState::kSignUp},
       {kAccountId2, LoginState::kSignUp},
   });
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
   AccountSelectionBubbleView::Observer* observer =
@@ -282,7 +283,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AutoSigninSingleAccountFlow) {
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignIn}});
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
 
@@ -297,7 +298,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   const char kAccountId2[] = "account_id2";
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
       {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignUp}});
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kAuto);
 
@@ -348,7 +349,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
   IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
       {kAccountId1, LoginState::kSignIn},
   });
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
 
   AccountSelectionBubbleView::Observer* observer = nullptr;
   {
@@ -368,7 +369,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
-  const std::vector<Account>& accounts = idp_data.accounts_;
+  const std::vector<Account>& accounts = idp_data.accounts;
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts, SignInMode::kExplicit);
   AccountSelectionBubbleView::Observer* observer =
