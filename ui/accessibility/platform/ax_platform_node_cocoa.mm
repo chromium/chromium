@@ -888,6 +888,7 @@ void CollectAncestorRoles(
 
 //
 // NSAccessibility legacy informal protocol implementation (deprecated).
+// https://developer.apple.com/documentation/appkit/deprecated_symbols/nsaccessibility
 //
 
 - (BOOL)accessibilityIsIgnored {
@@ -1270,7 +1271,11 @@ void CollectAncestorRoles(
   return nil;
 }
 
-// NSAccessibility attributes. Order them according to
+//
+// End of legacy deprecated NSAccessibility informal protocol.
+//
+
+// NSAccessibility (key-based) attributes. Order them according to
 // NSAccessibilityConstants.h, or see https://crbug.com/678898.
 
 - (NSString*)AXAccessKey {
@@ -1609,7 +1614,7 @@ void CollectAncestorRoles(
 }
 
 - (NSNumber*)AXRequired {
-  return [self accessibilityRequired];
+  return [self isAccessibilityRequired] ? @YES : @NO;
 }
 
 - (NSString*)AXRole {
@@ -1949,9 +1954,24 @@ void CollectAncestorRoles(
 }
 
 //
-// UIAccessibility protocol.
+// End of key-based attributes.
 //
 
+//
+// NSAccessibility protocol.
+// https://developer.apple.com/documentation/appkit/nsaccessibilityprotocol
+//
+
+// These methods appear to be the minimum needed to avoid AppKit refusing to
+// handle the element or crashing internally. Most of the remaining old API
+// methods (the ones from NSObject) are implemented in terms of the new
+// NSAccessibility methods.
+//
+// TODO(https://crbug.com/386671): Does this class need to implement the various
+// accessibilityPerformFoo methods, or are the stub implementations from
+// NSAccessibilityElement sufficient?
+
+// NSAccessibility: Configuring Accessibility.
 - (BOOL)isAccessibilityElement {
   if (![self instanceActive])
     return NO;
@@ -1966,21 +1986,6 @@ void CollectAncestorRoles(
     return NO;
 
   return _node->GetData().GetRestriction() != ax::mojom::Restriction::kDisabled;
-}
-
-- (NSArray*)accessibilityCustomContent {
-  if (![self instanceActive])
-    return nil;
-
-  if (@available(macOS 11.0, *)) {
-    NSString* description = [self descriptionIfFromAriaDescription];
-    if ([description length]) {
-      return @[ [AXCustomContent customContentWithLabel:@"description"
-                                                  value:description] ];
-    }
-  }
-
-  return nil;
 }
 
 - (NSRect)accessibilityFrame {
@@ -2068,55 +2073,26 @@ void CollectAncestorRoles(
   return [self AXValue];
 }
 
-//
-// NSAccessibility protocol.
-//
-
-// The methods below implement the NSAccessibility protocol. These methods
-// appear to be the minimum needed to avoid AppKit refusing to handle the
-// element or crashing internally. Most of the remaining old API methods (the
-// ones from NSObject) are implemented in terms of the new NSAccessibility
-// methods.
-//
-// TODO(https://crbug.com/386671): Does this class need to implement the various
-// accessibilityPerformFoo methods, or are the stub implementations from
-// NSAccessibilityElement sufficient?
-- (NSArray*)accessibilityChildren {
-  return [self AXChildren];
-}
-
-- (NSNumber*)accessibilityRequired {
-  TRACE_EVENT1("accessibility", "accessibilityRequired",
-               "role=", ui::ToString([self internalRole]));
-
-  if (![self instanceActive])
-    return nil;
-
-  return _node->HasState(ax::mojom::State::kRequired) ? @YES : @NO;
-}
-
-- (NSAccessibilityRole)accessibilityRole {
-  return [self AXRole];
-}
-
-- (NSArray*)accessibilitySelectedRows {
-  if (![self instanceActive])
-    return nil;
-
-  NSArray* rows = [self accessibilityRows];
-  // accessibilityRows returns an empty array unless instanceActive does,
-  // not exist, so we do not need to check if rows is nil at this time.
-  NSMutableArray* selectedRows = [[[NSMutableArray alloc] init] autorelease];
-  for (id row in rows) {
-    if ([[row accessibilitySelected] boolValue]) {
-      [selectedRows addObject:row];
-    }
+- (void)setAccessibilityValue:(id)value {
+  if (!_node) {
+    return;
   }
-  return selectedRows;
-}
 
-- (NSAccessibilitySubrole)accessibilitySubrole {
-  return [self AXSubrole];
+  ui::AXActionData data;
+  data.action = _node->GetRole() == ax::mojom::Role::kTab
+                    ? ax::mojom::Action::kSetSelection
+                    : ax::mojom::Action::kSetValue;
+  if ([value isKindOfClass:[NSString class]]) {
+    data.value = base::SysNSStringToUTF8(value);
+  } else if ([value isKindOfClass:[NSValue class]]) {
+    // TODO(https://crbug.com/386671): Is this case actually needed? The
+    // NSObject accessibility implementation supported this, but can it actually
+    // occur?
+    NSRange range = [value rangeValue];
+    data.anchor_offset = range.location;
+    data.focus_offset = NSMaxRange(range);
+  }
+  _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
 - (BOOL)isAccessibilitySelectorAllowed:(SEL)selector {
@@ -2181,27 +2157,166 @@ void CollectAncestorRoles(
   return [super isAccessibilitySelectorAllowed:selector];
 }
 
-- (void)setAccessibilityValue:(id)value {
-  if (!_node)
-    return;
-
-  ui::AXActionData data;
-  data.action = _node->GetRole() == ax::mojom::Role::kTab
-                    ? ax::mojom::Action::kSetSelection
-                    : ax::mojom::Action::kSetValue;
-  if ([value isKindOfClass:[NSString class]]) {
-    data.value = base::SysNSStringToUTF8(value);
-  } else if ([value isKindOfClass:[NSValue class]]) {
-    // TODO(https://crbug.com/386671): Is this case actually needed? The
-    // NSObject accessibility implementation supported this, but can it actually
-    // occur?
-    NSRange range = [value rangeValue];
-    data.anchor_offset = range.location;
-    data.focus_offset = NSMaxRange(range);
-  }
-  _node->GetDelegate()->AccessibilityPerformAction(data);
+// NSAccessibility: Determining Relationships.
+- (NSArray*)accessibilityChildren {
+  return [self AXChildren];
 }
 
+// NSAccessibility: Assigning Roles.
+- (BOOL)isAccessibilityRequired {
+  TRACE_EVENT1("accessibility", "accessibilityRequired",
+               "role=", ui::ToString([self internalRole]));
+
+  if (![self instanceActive]) {
+    return NO;
+  }
+
+  return _node->HasState(ax::mojom::State::kRequired);
+}
+
+- (NSAccessibilityRole)accessibilityRole {
+  return [self AXRole];
+}
+
+- (NSAccessibilitySubrole)accessibilitySubrole {
+  return [self AXSubrole];
+}
+
+- (NSString*)accessibilityRoleDescription {
+  TRACE_EVENT1("accessibility", "accessibilityRoleDescription",
+               "role=", ui::ToString([self internalRole]));
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  // Image annotations.
+  if (_node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation ||
+      _node->GetData().GetImageAnnotationStatus() ==
+          ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation) {
+    return base::SysUTF16ToNSString(
+        _node->GetDelegate()->GetLocalizedRoleDescriptionForUnlabeledImage());
+  }
+
+  // ARIA role description.
+  std::string roleDescription;
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
+                                &roleDescription)) {
+    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
+  }
+
+  NSString* role = [self accessibilityRole];
+  switch ([self internalRole]) {
+    case ax::mojom::Role::kColorWell:            // Use platform's "color well"
+    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
+    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
+    case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
+    case ax::mojom::Role::kInputTime:            // Use platform's "time field"
+    case ax::mojom::Role::kMeter:        // Use platform's "level indicator"
+    case ax::mojom::Role::kPopUpButton:  // Use platform's "popup button"
+    case ax::mojom::Role::kTabList:      // Use platform's "tab group"
+    case ax::mojom::Role::kTree:         // Use platform's "outline"
+    case ax::mojom::Role::kTreeItem:     // Use platform's "outline row"
+      break;
+    case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
+      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
+    case ax::mojom::Role::kRootWebArea: {
+      if ([role isEqualToString:NSAccessibilityWebAreaRole]) {
+        return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
+      }
+      // Preserve platform default of "group" in the case of the child
+      // of a presentational <iframe> which has the internal role of
+      // kRootWebArea.
+      break;
+    }
+    default: {
+      std::u16string result =
+          _node->GetDelegate()->GetLocalizedStringForRoleDescription();
+      if (!result.empty()) {
+        return base::SysUTF16ToNSString(result);
+      }
+    }
+  }
+
+  return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
+}
+
+// NSAccessibility: Configuring Table and Outline Views.
+- (NSArray*)accessibilitySelectedRows {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  NSArray* rows = [self accessibilityRows];
+  // accessibilityRows returns an empty array unless instanceActive does,
+  // not exist, so we do not need to check if rows is nil at this time.
+  NSMutableArray* selectedRows = [[[NSMutableArray alloc] init] autorelease];
+  for (id row in rows) {
+    if ([[row accessibilitySelected] boolValue]) {
+      [selectedRows addObject:row];
+    }
+  }
+  return selectedRows;
+}
+
+- (NSArray*)accessibilityColumnHeaderUIElements {
+  if (![self instanceActive]) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
+  DCHECK(delegate);
+
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+
+  // If this is a table, return all column headers.
+  ax::mojom::Role role = _node->GetRole();
+  if (ui::IsTableLike(role)) {
+    for (ui::AXNodeID id : delegate->GetColHeaderNodeIds()) {
+      AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
+      if (colheader) {
+        [ret addObject:colheader];
+      }
+    }
+    return [ret count] ? ret : nil;
+  }
+
+  // Otherwise if this is a cell or a header cell, return the column headers for
+  // it.
+  if (!ui::IsCellOrTableHeader(role)) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeBase* table = _node->GetTable();
+  if (!table) {
+    return nil;
+  }
+
+  absl::optional<int> column = delegate->GetTableCellColIndex();
+  if (!column) {
+    return nil;
+  }
+
+  ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
+  DCHECK(tableDelegate);
+  for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
+    AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
+    if (colheader) {
+      [ret addObject:colheader];
+    }
+  }
+  return [ret count] ? ret : nil;
+}
+
+- (NSArray*)accessibilityRows {
+  // TODO(accessibility) accessibilityRows is defined in
+  // browser_accessibility_cocoa.mm eventually that function definition should
+  // be moved here.
+  return nil;
+}
+
+// NSAccessibility: Setting the Focus.
 - (void)setAccessibilityFocused:(BOOL)isFocused {
   if (!_node)
     return;
@@ -2212,31 +2327,8 @@ void CollectAncestorRoles(
   _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
-- (void)setAccessibilitySelectedText:(NSString*)text {
-  if (!_node)
-    return;
+// NSAccessibility: Configuring Text Elements.
 
-  ui::AXActionData data;
-  data.action = ax::mojom::Action::kReplaceSelectedText;
-  data.value = base::SysNSStringToUTF8(text);
-
-  _node->GetDelegate()->AccessibilityPerformAction(data);
-}
-
-- (void)setAccessibilitySelectedTextRange:(NSRange)range {
-  if (!_node)
-    return;
-
-  ui::AXActionData data;
-  data.action = ax::mojom::Action::kSetSelection;
-  data.anchor_offset = range.location;
-  data.anchor_node_id = _node->GetData().id;
-  data.focus_offset = NSMaxRange(range);
-  data.focus_node_id = _node->GetData().id;
-  _node->GetDelegate()->AccessibilityPerformAction(data);
-}
-
-// "Configuring Text Elements" section of the NSAccessibility formal protocol.
 // These are all "required" methods, although in practice the ones that are left
 // NOTIMPLEMENTED() seem to not be called anywhere (and were NOTIMPLEMENTED in
 // the old API as well).
@@ -2269,6 +2361,18 @@ void CollectAncestorRoles(
   return [self AXSelectedText];
 }
 
+- (void)setAccessibilitySelectedText:(NSString*)text {
+  if (!_node) {
+    return;
+  }
+
+  ui::AXActionData data;
+  data.action = ax::mojom::Action::kReplaceSelectedText;
+  data.value = base::SysNSStringToUTF8(text);
+
+  _node->GetDelegate()->AccessibilityPerformAction(data);
+}
+
 - (NSRange)accessibilitySelectedTextRange {
   if (!_node)
     return NSMakeRange(0, 0);
@@ -2276,6 +2380,20 @@ void CollectAncestorRoles(
   NSRange r;
   [[self AXSelectedTextRange] getValue:&r];
   return r;
+}
+
+- (void)setAccessibilitySelectedTextRange:(NSRange)range {
+  if (!_node) {
+    return;
+  }
+
+  ui::AXActionData data;
+  data.action = ax::mojom::Action::kSetSelection;
+  data.anchor_offset = range.location;
+  data.anchor_node_id = _node->GetData().id;
+  data.focus_offset = NSMaxRange(range);
+  data.focus_node_id = _node->GetData().id;
+  _node->GetDelegate()->AccessibilityPerformAction(data);
 }
 
 - (NSArray*)accessibilitySelectedTextRanges {
@@ -2340,10 +2458,7 @@ void CollectAncestorRoles(
   return [[self AXRangeForPosition:[NSValue valueWithPoint:point]] rangeValue];
 }
 
-//
-// NSAccessibility protocol: setting content and values.
-//
-
+// NSAccessibility: setting content and values.
 - (NSNumber*)accessibilitySelected {
   if (![self instanceActive])
     return nil;
@@ -2369,130 +2484,36 @@ void CollectAncestorRoles(
   return [NSURL URLWithString:(base::SysUTF8ToNSString(url))];
 }
 
-//
-// NSAccessibility protocol: assigning roles.
-//
-
-- (NSString*)accessibilityRoleDescription {
-  TRACE_EVENT1("accessibility", "accessibilityRoleDescription",
-               "role=", ui::ToString([self internalRole]));
-  if (![self instanceActive])
-    return nil;
-
-  // Image annotations.
-  if (_node->GetData().GetImageAnnotationStatus() ==
-          ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation ||
-      _node->GetData().GetImageAnnotationStatus() ==
-          ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation) {
-    return base::SysUTF16ToNSString(
-        _node->GetDelegate()->GetLocalizedRoleDescriptionForUnlabeledImage());
-  }
-
-  // ARIA role description.
-  std::string roleDescription;
-  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kRoleDescription,
-                                &roleDescription)) {
-    return [base::SysUTF8ToNSString(_node->GetStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription)) lowercaseString];
-  }
-
-  NSString* role = [self accessibilityRole];
-  switch ([self internalRole]) {
-    case ax::mojom::Role::kColorWell:            // Use platform's "color well"
-    case ax::mojom::Role::kFooterAsNonLandmark:  // Default: IDS_AX_ROLE_FOOTER
-    case ax::mojom::Role::kHeaderAsNonLandmark:  // Default: IDS_AX_ROLE_HEADER
-    case ax::mojom::Role::kImage:                // Default: IDS_AX_ROLE_GRAPHIC
-    case ax::mojom::Role::kInputTime:            // Use platform's "time field"
-    case ax::mojom::Role::kMeter:     // Use platform's "level indicator"
-    case ax::mojom::Role::kPopUpButton:  // Use platform's "popup button"
-    case ax::mojom::Role::kTabList:   // Use platform's "tab group"
-    case ax::mojom::Role::kTree:      // Use platform's "outline"
-    case ax::mojom::Role::kTreeItem:  // Use platform's "outline row"
-      break;
-    case ax::mojom::Role::kHeader:  // Default: IDS_AX_ROLE_HEADER
-      return l10n_util::GetNSString(IDS_AX_ROLE_BANNER);
-    case ax::mojom::Role::kRootWebArea: {
-      if ([role isEqualToString:NSAccessibilityWebAreaRole])
-        return l10n_util::GetNSString(IDS_AX_ROLE_WEB_AREA);
-      // Preserve platform default of "group" in the case of the child
-      // of a presentational <iframe> which has the internal role of
-      // kRootWebArea.
-      break;
-    }
-    default: {
-      std::u16string result =
-          _node->GetDelegate()->GetLocalizedStringForRoleDescription();
-      if (!result.empty())
-        return base::SysUTF16ToNSString(result);
-    }
-  }
-
-  return NSAccessibilityRoleDescription(role, [self accessibilitySubrole]);
-}
-
-//
-// NSAccessibility protocol: configuring table and outline views.
-//
-
-- (NSArray*)accessibilityColumnHeaderUIElements {
-  if (![self instanceActive])
-    return nil;
-
-  ui::AXPlatformNodeDelegate* delegate = _node->GetDelegate();
-  DCHECK(delegate);
-
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-
-  // If this is a table, return all column headers.
-  ax::mojom::Role role = _node->GetRole();
-  if (ui::IsTableLike(role)) {
-    for (ui::AXNodeID id : delegate->GetColHeaderNodeIds()) {
-      AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
-      if (colheader)
-        [ret addObject:colheader];
-    }
-    return [ret count] ? ret : nil;
-  }
-
-  // Otherwise if this is a cell or a header cell, return the column headers for
-  // it.
-  if (!ui::IsCellOrTableHeader(role))
-    return nil;
-
-  ui::AXPlatformNodeBase* table = _node->GetTable();
-  if (!table)
-    return nil;
-
-  absl::optional<int> column = delegate->GetTableCellColIndex();
-  if (!column)
-    return nil;
-
-  ui::AXPlatformNodeDelegate* tableDelegate = table->GetDelegate();
-  DCHECK(tableDelegate);
-  for (ui::AXNodeID id : tableDelegate->GetColHeaderNodeIds(*column)) {
-    AXPlatformNodeCocoa* colheader = [self fromNodeID:id];
-    if (colheader)
-      [ret addObject:colheader];
-  }
-  return [ret count] ? ret : nil;
-}
-
-- (NSArray*)accessibilityRows {
-  // TODO(accessibility) accessibilityRows is defined in
-  // browser_accessibility_cocoa.mm eventually that function definition should
-  // be moved here.
-  return nil;
-}
-
-//
-// NSAccessibility protocol: configuring linkage elements.
-//
-
+// NSAccessibility: configuring linkage elements.
 - (id)accessibilityTitleUIElement {
   if (![self instanceActive])
     return nil;
 
   return [self titleUIElement];
+}
+
+//
+// End of NSAccessibility protocol.
+//
+
+//
+// AXCustomContentProvider
+// https://developer.apple.com/documentation/accessibility/axcustomcontentprovider/3600104-accessibilitycustomcontent
+//
+
+- (NSArray*)accessibilityCustomContent {
+  if (![self instanceActive])
+    return nil;
+
+  if (@available(macOS 11.0, *)) {
+    NSString* description = [self descriptionIfFromAriaDescription];
+    if ([description length]) {
+      return @[ [AXCustomContent customContentWithLabel:@"description"
+                                                  value:description] ];
+    }
+  }
+
+  return nil;
 }
 
 // MathML attributes.
