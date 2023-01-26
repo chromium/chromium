@@ -537,14 +537,8 @@ TEST_F(SiteEngagementServiceTest, LastShortcutLaunch) {
   EXPECT_DOUBLE_EQ(0.0, service_->GetScore(url2));
 }
 
-// Disabled due to flakiness on Builder Linux Tests. crbug.com/1137759
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CheckHistograms DISABLED_CheckHistograms
-#else
-#define MAYBE_CheckHistograms CheckHistograms
-#endif
-
-TEST_F(SiteEngagementServiceTest, MAYBE_CheckHistograms) {
+// TODO(https://crbug.com/1137759): Flaky test.
+TEST_F(SiteEngagementServiceTest, DISABLED_CheckHistograms) {
   base::HistogramTester histograms;
 
   base::Time current_day = GetReferenceTime();
