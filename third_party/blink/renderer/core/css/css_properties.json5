@@ -2574,7 +2574,6 @@
       computed_style_custom_functions: ["getter"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_marker: true,
-      tree_scoped_value: true,
       supports_incremental_style: true,
     },
     {

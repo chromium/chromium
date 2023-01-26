@@ -34,6 +34,15 @@ String CSSCounterValue::CustomCSSText() const {
   return result.ReleaseString();
 }
 
+const CSSCounterValue& CSSCounterValue::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  DCHECK(!IsScopedValue());
+  return *MakeGarbageCollected<CSSCounterValue>(
+      &To<CSSCustomIdentValue>(identifier_->EnsureScopedValue(tree_scope)),
+      &To<CSSCustomIdentValue>(list_style_->EnsureScopedValue(tree_scope)),
+      separator_);
+}
+
 void CSSCounterValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(identifier_);
   visitor->Trace(list_style_);

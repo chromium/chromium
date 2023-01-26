@@ -2384,13 +2384,8 @@ void Content::ApplyInherit(StyleResolverState& state) const {
 
 void Content::ApplyValue(StyleResolverState& state,
                          const CSSValue& value) const {
-  NOTREACHED();
-}
-
-void Content::ApplyValue(StyleResolverState& state,
-                         const ScopedCSSValue& scoped_value) const {
+  DCHECK(value.IsScopedValue());
   ComputedStyleBuilder& builder = state.StyleBuilder();
-  const CSSValue& value = scoped_value.GetCSSValue();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK(identifier_value->GetValueID() == CSSValueID::kNormal ||
            identifier_value->GetValueID() == CSSValueID::kNone);
@@ -2415,7 +2410,7 @@ void Content::ApplyValue(StyleResolverState& state,
       next_content = MakeGarbageCollected<CounterContentData>(
           AtomicString(counter_value->Identifier()), counter_value->ListStyle(),
           AtomicString(counter_value->Separator()),
-          scoped_value.GetTreeScope());
+          counter_value->GetTreeScope());
     } else if (auto* item_identifier_value =
                    DynamicTo<CSSIdentifierValue>(item.Get())) {
       QuoteType quote_type;

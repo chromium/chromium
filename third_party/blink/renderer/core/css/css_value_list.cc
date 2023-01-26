@@ -41,6 +41,17 @@ CSSValueList::CSSValueList(ValueListSeparator list_separator)
   value_list_separator_ = list_separator;
 }
 
+void CSSValueList::Append(const CSSValue& value) {
+  values_.push_back(value);
+  // Note: this will be changed if we need to support tree scoped names and
+  // references in any subclass.
+  // TODO(crbug.com/1410362): Make CSSValueList immutable so that we don't need
+  // to track it here.
+  if (IsBaseValueList() && !value.IsScopedValue()) {
+    needs_tree_scope_population_ = true;
+  }
+}
+
 bool CSSValueList::RemoveAll(const CSSValue& val) {
   bool found = false;
   for (int index = values_.size() - 1; index >= 0; --index) {
@@ -48,6 +59,19 @@ bool CSSValueList::RemoveAll(const CSSValue& val) {
     if (value && *value == val) {
       values_.EraseAt(index);
       found = true;
+    }
+  }
+  // Note: this will be changed if we need to support tree scoped names and
+  // references in any subclass.
+  // TODO(crbug.com/1410362): Make CSSValueList immutable so that we don't need
+  // to track it here.
+  if (IsBaseValueList()) {
+    needs_tree_scope_population_ = false;
+    for (const CSSValue* value : values_) {
+      if (!value->IsScopedValue()) {
+        needs_tree_scope_population_ = true;
+        break;
+      }
     }
   }
   return found;
@@ -78,7 +102,36 @@ CSSValueList* CSSValueList::Copy() const {
       NOTREACHED();
   }
   new_list->values_ = values_;
+  new_list->needs_tree_scope_population_ = needs_tree_scope_population_;
   return new_list;
+}
+
+const CSSValueList& CSSValueList::PopulateWithTreeScope(
+    const TreeScope* tree_scope) const {
+  // Note: this will be changed if any subclass also involves values that need
+  // TreeScope population, as in that case, we will need to return an instance
+  // of the subclass.
+  DCHECK(IsBaseValueList());
+  DCHECK(!IsScopedValue());
+  CSSValueList* new_list = nullptr;
+  switch (value_list_separator_) {
+    case kSpaceSeparator:
+      new_list = CreateSpaceSeparated();
+      break;
+    case kCommaSeparator:
+      new_list = CreateCommaSeparated();
+      break;
+    case kSlashSeparator:
+      new_list = CreateSlashSeparated();
+      break;
+    default:
+      NOTREACHED();
+  }
+  new_list->values_.ReserveInitialCapacity(values_.size());
+  for (const CSSValue* value : values_) {
+    new_list->values_.push_back(&value->EnsureScopedValue(tree_scope));
+  }
+  return *new_list;
 }
 
 String CSSValueList::CustomCSSText() const {

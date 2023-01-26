@@ -462,10 +462,15 @@ String CSSValue::CssText() const {
 const CSSValue& CSSValue::PopulateWithTreeScope(
     const TreeScope* tree_scope) const {
   switch (GetClassType()) {
+    case kCounterClass:
+      return To<cssvalue::CSSCounterValue>(this)->PopulateWithTreeScope(
+          tree_scope);
     case kCustomIdentClass:
       return To<CSSCustomIdentValue>(this)->PopulateWithTreeScope(tree_scope);
     case kMathFunctionClass:
       return To<CSSMathFunctionValue>(this)->PopulateWithTreeScope(tree_scope);
+    case kValueListClass:
+      return To<CSSValueList>(this)->PopulateWithTreeScope(tree_scope);
     default:
       NOTREACHED();
       return *this;

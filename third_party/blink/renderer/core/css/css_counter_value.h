@@ -33,31 +33,43 @@ namespace cssvalue {
 
 class CSSCounterValue : public CSSValue {
  public:
-  CSSCounterValue(CSSCustomIdentValue* identifier,
-                  CSSCustomIdentValue* list_style,
-                  CSSStringValue* separator)
+  CSSCounterValue(const CSSCustomIdentValue* identifier,
+                  const CSSCustomIdentValue* list_style,
+                  const CSSStringValue* separator)
       : CSSValue(kCounterClass),
         identifier_(identifier),
         list_style_(list_style),
-        separator_(separator) {}
+        separator_(separator) {
+    // There's no way to define a counter() function value where the identifiers
+    // are associated with different tree scopes.
+    DCHECK_EQ(identifier->IsScopedValue(), list_style->IsScopedValue());
+    DCHECK_EQ(identifier->GetTreeScope(), list_style->GetTreeScope());
+    needs_tree_scope_population_ = !list_style->IsScopedValue();
+  }
 
   const String& Identifier() const { return identifier_->Value(); }
   const AtomicString& ListStyle() const { return list_style_->Value(); }
   const String& Separator() const { return separator_->Value(); }
+  const TreeScope* GetTreeScope() const { return list_style_->GetTreeScope(); }
 
   bool Equals(const CSSCounterValue& other) const {
     return Identifier() == other.Identifier() &&
-           ListStyle() == other.ListStyle() && Separator() == other.Separator();
+           ListStyle() == other.ListStyle() &&
+           Separator() == other.Separator() &&
+           IsScopedValue() == other.IsScopedValue() &&
+           GetTreeScope() == other.GetTreeScope();
   }
+
+  const CSSCounterValue& PopulateWithTreeScope(const TreeScope*) const;
 
   String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<CSSCustomIdentValue> identifier_;  // string
-  Member<CSSCustomIdentValue> list_style_;  // ident
-  Member<CSSStringValue> separator_;        // string
+  Member<const CSSCustomIdentValue> identifier_;  // string
+  Member<const CSSCustomIdentValue> list_style_;  // ident
+  Member<const CSSStringValue> separator_;        // string
 };
 
 }  // namespace cssvalue
