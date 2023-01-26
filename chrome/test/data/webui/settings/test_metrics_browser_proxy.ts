@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -13,6 +13,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyCheckInteractionHistogram',
       'recordSafetyCheckNotificationsListCountHistogram',
       'recordSafetyCheckNotificationsModuleInteractionsHistogram',
+      'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
+      'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
       'recordSettingsPageHistogram',
       'recordSafeBrowsingInteractionHistogram',
       'recordPrivacyGuideNextNavigationHistogram',
@@ -38,6 +40,20 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       interaction: SafetyCheckNotificationsModuleInteractions) {
     this.methodCalled(
         'recordSafetyCheckNotificationsModuleInteractionsHistogram',
+        interaction);
+  }
+
+  recordSafetyCheckUnusedSitePermissionsListCountHistogram(suggestions:
+                                                               number) {
+    this.methodCalled(
+        'recordSafetyCheckUnusedSitePermissionsListCountHistogram',
+        suggestions);
+  }
+
+  recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+      interaction: SafetyCheckUnusedSitePermissionsModuleInteractions) {
+    this.methodCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram',
         interaction);
   }
 

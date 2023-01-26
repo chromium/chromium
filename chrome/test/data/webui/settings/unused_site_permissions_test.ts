@@ -8,14 +8,17 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {ContentSettingsTypes, SettingsUnusedSitePermissionsElement, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import {MetricsBrowserProxyImpl, SafetyCheckUnusedSitePermissionsModuleInteractions} from 'chrome://settings/settings.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
 
 // clang-format on
 
 suite('CrSettingsUnusedSitePermissionsTest', function() {
   let browserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   let testElement: SettingsUnusedSitePermissionsElement;
 
@@ -96,6 +99,8 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     testElement = document.createElement('settings-unused-site-permissions');
     testElement.setModelUpdateDelayMsForTesting(0);
     document.body.appendChild(testElement);
+    // Wait until the element has asked for the list of revoked permissions
+    // that will be shown for review.
     await browserProxy.whenCalled('getRevokedUnusedSitePermissionsList');
     flush();
   }
@@ -104,8 +109,28 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
     browserProxy.setUnusedSitePermissions(mockData);
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
     await createPage();
+    // An OPEN_UI action will be recorded whenever the element is created, we
+    // reset it here such that the other tests only have to deal with the other
+    // actions.
+    metricsBrowserProxy.resetResolver(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    // The histogram recording the number of entries is called upon creating the
+    // element.
+    metricsBrowserProxy.resetResolver(
+        'recordSafetyCheckUnusedSitePermissionsListCountHistogram');
     assertInitialUi();
+  });
+
+  test('Capture metric on visit', async function() {
+    await createPage();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.OPEN_REVIEW_UI,
+        result);
   });
 
   test('Unused Site Permission strings', function() {
@@ -146,7 +171,7 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
         siteList[3]!.querySelector('.secondary')!.textContent!.trim());
   });
 
-  test('Collapsible List', function() {
+  test('Collapsible List', async function() {
     const expandButton =
         testElement.shadowRoot!.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
@@ -166,6 +191,11 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     // Button and list are collapsed.
     assertFalse(expandButton.expanded);
     assertFalse(unusedSitePermissionList.opened);
+
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.MINIMIZE, result);
 
     // User expands the list.
     expandButton.click();
@@ -265,5 +295,67 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
         await PluralStringProxyImpl.getInstance().getPluralString(
             'safetyCheckUnusedSitePermissionsToastBulkLabel', 1);
     assertToast(true, expectedSingularToastText);
+  });
+
+  test('Allow again record metrics', async function() {
+    const siteList = getSiteList();
+    siteList[0]!.querySelector('cr-icon-button')!.click();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN, result);
+  });
+
+  test('Undo allow again record metrics', async function() {
+    const siteList = getSiteList();
+    siteList[0]!.querySelector('cr-icon-button')!.click();
+    // Reset the action captured by clicking the block button.
+    metricsBrowserProxy.resetResolver(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    clickUndo();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.UNDO_ALLOW_AGAIN,
+        result);
+  });
+
+  test('Got it record metrics', async function() {
+    clickGotIt();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.ACKNOWLEDGE_ALL,
+        result);
+  });
+
+  test('Undo got it record metrics', async function() {
+    clickGotIt();
+    // Reset the action captured by clicking the got it button.
+    metricsBrowserProxy.resetResolver(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    clickUndo();
+    const result = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram');
+    assertEquals(
+        SafetyCheckUnusedSitePermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL,
+        result);
+  });
+
+  test('Review list size record metrics', async function() {
+    browserProxy.setUnusedSitePermissions(mockData);
+    await createPage();
+    const resultNumSites = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsListCountHistogram');
+    assertEquals(mockData.length, resultNumSites);
+
+    metricsBrowserProxy.resetResolver(
+        'recordSafetyCheckUnusedSitePermissionsListCountHistogram');
+
+    browserProxy.setUnusedSitePermissions([]);
+    await createPage();
+    const resultEmpty = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckUnusedSitePermissionsListCountHistogram');
+    assertEquals(0, resultEmpty);
   });
 });

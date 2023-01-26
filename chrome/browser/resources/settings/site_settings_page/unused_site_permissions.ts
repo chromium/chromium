@@ -22,6 +22,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckUnusedSitePermissionsModuleInteractions} from '../metrics_browser_proxy.js';
 import {ContentSettingsTypes, MODEL_UPDATE_DELAY_MS} from '../site_settings/constants.js';
 import {SiteSettingsMixin} from '../site_settings/site_settings_mixin.js';
 import {SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl, UnusedSitePermissions} from '../site_settings/site_settings_permissions_browser_proxy.js';
@@ -118,6 +119,7 @@ export class SettingsUnusedSitePermissionsElement extends
       unusedSitePermissionsReviewListExpanded_: {
         type: Boolean,
         value: true,
+        observer: 'onListExpandedChanged_',
       },
     };
   }
@@ -135,6 +137,8 @@ export class SettingsUnusedSitePermissionsElement extends
   private subtitleString_: string;
   private toastText_: string|null;
   private unusedSitePermissionsReviewListExpanded_: boolean;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -146,7 +150,12 @@ export class SettingsUnusedSitePermissionsElement extends
 
     const sites =
         await this.browserProxy_.getRevokedUnusedSitePermissionsList();
+    this.metricsBrowserProxy_
+        .recordSafetyCheckUnusedSitePermissionsListCountHistogram(sites.length);
     this.onUnusedSitePermissionListChanged_(sites);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+            SafetyCheckUnusedSitePermissionsModuleInteractions.OPEN_REVIEW_UI);
   }
 
   /** Show info that review is completed when there are no permissions left. */
@@ -239,6 +248,9 @@ export class SettingsUnusedSitePermissionsElement extends
         this.browserProxy_.allowPermissionsAgainForUnusedSite.bind(
             this.browserProxy_, item.origin),
         this.getModelUpdateDelayMs_());
+    this.metricsBrowserProxy_
+        .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+            SafetyCheckUnusedSitePermissionsModuleInteractions.ALLOW_AGAIN);
   }
 
   private async onGotItClick_(e: Event) {
@@ -251,6 +263,9 @@ export class SettingsUnusedSitePermissionsElement extends
     const toastText = await PluralStringProxyImpl.getInstance().getPluralString(
         'safetyCheckUnusedSitePermissionsToastBulkLabel', this.sites_.length);
     this.showUndoToast_(toastText);
+    this.metricsBrowserProxy_
+        .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+            SafetyCheckUnusedSitePermissionsModuleInteractions.ACKNOWLEDGE_ALL);
   }
 
   /* Repopulate the list when unused site permission list is updated. */
@@ -282,6 +297,14 @@ export class SettingsUnusedSitePermissionsElement extends
             this.sites_.length);
   }
 
+  private onListExpandedChanged_(isExpanded: boolean) {
+    if (!isExpanded) {
+      this.metricsBrowserProxy_
+          .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+              SafetyCheckUnusedSitePermissionsModuleInteractions.MINIMIZE);
+    }
+  }
+
   private onUndoClick_(e: Event) {
     e.stopPropagation();
 
@@ -291,12 +314,20 @@ export class SettingsUnusedSitePermissionsElement extends
         this.browserProxy_.undoAllowPermissionsAgainForUnusedSite(
             this.lastUnusedSitePermissionsAllowedAgain_);
         this.lastUnusedSitePermissionsAllowedAgain_ = null;
+        this.metricsBrowserProxy_
+            .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+                SafetyCheckUnusedSitePermissionsModuleInteractions
+                    .UNDO_ALLOW_AGAIN);
         break;
       case Action.GOT_IT:
         assert(this.lastUnusedSitePermissionsListAcknowledged_ !== null);
         this.browserProxy_.undoAcknowledgeRevokedUnusedSitePermissionsList(
             this.lastUnusedSitePermissionsListAcknowledged_);
         this.lastUnusedSitePermissionsListAcknowledged_ = null;
+        this.metricsBrowserProxy_
+            .recordSafetyCheckUnusedSitePermissionsModuleInteractionsHistogram(
+                SafetyCheckUnusedSitePermissionsModuleInteractions
+                    .UNDO_ACKNOWLEDGE_ALL);
         break;
       default:
         assertNotReached();

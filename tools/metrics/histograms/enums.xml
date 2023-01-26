@@ -89624,6 +89624,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Undo block"/>
   <int value="6" label="Undo ignore"/>
   <int value="7" label="Undo reset"/>
+  <int value="8" label="Open review UI"/>
 </enum>
 
 <enum name="SafetyCheckPasswordsStatus">
@@ -89648,6 +89649,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="ENABLED_STANDARD"/>
   <int value="6" label="ENABLED_ENHANCED"/>
   <int value="7" label="ENABLED_STANDARD_AVAILABLE_ENHANCED"/>
+</enum>
+
+<enum name="SafetyCheckUnusedSitePermissionsModuleInteractions">
+  <int value="0" label="Open review UI"/>
+  <int value="1" label="Allow again"/>
+  <int value="2" label="Acknowledge all"/>
+  <int value="3" label="Undo allow again"/>
+  <int value="4" label="Undo acknowledge all"/>
+  <int value="5" label="Minimize review UI"/>
 </enum>
 
 <enum name="SafetyCheckUpdateStatus">

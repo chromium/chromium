@@ -28730,6 +28730,14 @@ should be able to be added at any place in this file.
   <description>User clicks the extensions row in safety check.</description>
 </action>
 
+<action name="Settings.SafetyCheck.ReviewUnusedSitePermissions">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>msramek@chromium.org</owner>
+  <description>
+    User clicks the button in the unused site permissions row in safety check.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.Start">
   <owner>rainhard@chromium.org</owner>
   <owner>andzaytsev@google.com</owner>

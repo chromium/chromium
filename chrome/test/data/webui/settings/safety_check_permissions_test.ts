@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {Router, routes, SafetyCheckIconStatus, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
+import {MetricsBrowserProxyImpl, Router, routes, SafetyCheckIconStatus, SafetyCheckInteractions, SettingsSafetyCheckNotificationPermissionsElement, SettingsSafetyCheckPageElement, SettingsSafetyCheckUnusedSitePermissionsElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {ContentSettingsTypes, NotificationPermission, UnusedSitePermissions, SiteSettingsPermissionsBrowserProxyImpl, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -14,6 +14,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertSafetyCheckChild} from './safety_check_test_utils.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestSiteSettingsPermissionsBrowserProxy} from './test_site_settings_permissions_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 // clang-format on
@@ -21,6 +22,7 @@ import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_brow
 suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   let page: SettingsSafetyCheckUnusedSitePermissionsElement;
   let browserProxy: TestSiteSettingsPermissionsBrowserProxy;
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   const origin1 = 'www.example1.com';
   const origin2 = 'www.example2.com';
@@ -28,6 +30,8 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
   setup(function() {
     browserProxy = new TestSiteSettingsPermissionsBrowserProxy();
     SiteSettingsPermissionsBrowserProxyImpl.setInstance(browserProxy);
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
@@ -85,6 +89,15 @@ suite('SafetyCheckUnusedSitePermissionsUiTests', function() {
 
     // Ensure the correct Settings page is shown.
     assertEquals(routes.SITE_SETTINGS, Router.getInstance().getCurrentRoute());
+
+    const resultHistogram = await metricsBrowserProxy.whenCalled(
+        'recordSafetyCheckInteractionHistogram');
+    assertEquals(
+        SafetyCheckInteractions.UNUSED_SITE_PERMISSIONS_REVIEW,
+        resultHistogram);
+    const resultAction = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals(
+        'Settings.SafetyCheck.ReviewUnusedSitePermissions', resultAction);
   });
 });
 

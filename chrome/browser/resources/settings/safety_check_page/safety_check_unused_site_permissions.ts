@@ -16,6 +16,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {UnusedSitePermissions, SiteSettingsPermissionsBrowserProxy, SiteSettingsPermissionsBrowserProxyImpl} from '../site_settings/site_settings_permissions_browser_proxy.js';
@@ -61,6 +62,8 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
 
   private browserProxy_: SiteSettingsPermissionsBrowserProxy =
       SiteSettingsPermissionsBrowserProxyImpl.getInstance();
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -83,6 +86,11 @@ export class SettingsSafetyCheckUnusedSitePermissionsElement extends
   }
 
   private onButtonClick_() {
+    // Log click both in action and histogram.
+    this.metricsBrowserProxy_.recordSafetyCheckInteractionHistogram(
+        SafetyCheckInteractions.UNUSED_SITE_PERMISSIONS_REVIEW);
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.SafetyCheck.ReviewUnusedSitePermissions');
     Router.getInstance().navigateTo(
         routes.SITE_SETTINGS, /* dynamicParams= */ undefined,
         /* removeSearch= */ true);
