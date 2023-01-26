@@ -7,14 +7,21 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
+#import "ios/chrome/browser/ui/main/scene_state_observer.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+
 @class ContentSuggestionsHeaderViewController;
 
 // This is a private category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
-@interface NewTabPageCoordinator (Private)
+@interface NewTabPageCoordinator (Private) <SceneStateObserver,
+                                            WebStateListObserving>
 
 @property(nonatomic, strong, readonly)
     ContentSuggestionsHeaderViewController* headerController;
+
+@property(nonatomic, assign) web::WebState* webState;
 
 @end
 

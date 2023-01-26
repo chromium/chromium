@@ -1903,7 +1903,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)displayWebState:(web::WebState*)webState {
   DCHECK(webState);
   [self loadViewIfNeeded];
-  self.ntpCoordinator.webState = webState;
 
   // Set this before triggering any of the possible page loads below.
   webState->SetKeepRenderProcessAlive(true);
@@ -1944,7 +1943,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     if (NTPHelper && NTPHelper->IsActive()) {
       NewTabPageCoordinator* coordinator = self.ntpCoordinator;
       UIViewController* viewController = coordinator.viewController;
-      [coordinator ntpDidChangeVisibility:YES];
       viewController.view.frame = [self ntpFrameForWebState:webState];
       [viewController.view layoutIfNeeded];
       // TODO(crbug.com/873729): For a newly created WebState, the session will
@@ -2079,9 +2077,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return nil;
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
-    return self.ntpCoordinator.webState != nil
-               ? self.ntpCoordinator.viewController.view
-               : nil;
+    return self.ntpCoordinator.visible ? self.ntpCoordinator.viewController.view
+                                       : nil;
   }
   DCHECK(self.browser->GetWebStateList()->GetIndexOfWebState(webState) !=
          WebStateList::kInvalidIndex);
@@ -3137,15 +3134,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     oldWebState->WasHidden();
     oldWebState->SetKeepRenderProcessAlive(false);
 
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(oldWebState);
-    if (NTPHelper && NTPHelper->IsActive()) {
-      [self.ntpCoordinator ntpDidChangeVisibility:NO];
-    }
     [self dismissPopups];
   }
-  // TODO(crbug.com/1272513): Move this update to NTPCoordinator.
-  self.ntpCoordinator.webState = newWebState;
   // NOTE: webStateSelected expects to always be called with a
   // non-null WebState.
   if (!newWebState)
@@ -3154,12 +3144,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1272514): Move webstate lifecycle updates to a browser
   // agent.
   self.currentWebState->GetWebViewProxy().scrollViewProxy.clipsToBounds = NO;
-
-  NewTabPageTabHelper* NTPHelper =
-      NewTabPageTabHelper::FromWebState(newWebState);
-  if (NTPHelper && NTPHelper->IsActive()) {
-    [self.ntpCoordinator ntpDidChangeVisibility:YES];
-  }
 
   [self webStateSelected:newWebState notifyToolbar:YES];
 }
@@ -3321,9 +3305,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   if (tabURL == kChromeUINewTabURL && !_isOffTheRecord &&
       ![self canShowTabStrip]) {
-    // Update NTPCoordinator's WebState here since `self.currentWebState` has
-    // not been update to `webState` yet.
-    self.ntpCoordinator.webState = webState;
     // Add a snapshot of the primary toolbar to the background as the
     // animation runs.
     UIViewController* toolbarViewController =
@@ -3341,7 +3322,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       newPage.frame = self.contentArea.bounds;
     }
   }
-  [newPage layoutIfNeeded];
   newPage.userInteractionEnabled = NO;
   NSInteger currentAnimationIdentifier = ++_NTPAnimationIdentifier;
 

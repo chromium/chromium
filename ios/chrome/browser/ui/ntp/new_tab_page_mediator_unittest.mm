@@ -19,9 +19,11 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/fake_url_loading_browser_agent.h"
@@ -37,6 +39,11 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// A random scroll position value to use for testing.
+const CGFloat kSomeScrollPosition = 500.0;
+}  // namespace
 
 class NewTabPageMediatorTest : public PlatformTest {
  public:
@@ -57,8 +64,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     std::unique_ptr<ToolbarTestNavigationManager> navigation_manager =
         std::make_unique<ToolbarTestNavigationManager>();
     navigation_manager_ = navigation_manager.get();
-    fake_web_state_ = std::make_unique<web::FakeWebState>();
-    NewTabPageTabHelper::CreateForWebState(fake_web_state_.get());
+    initial_web_state_ = CreateWebStateWithURL(GURL("chrome://newtab"), 0.0);
     logo_vendor_ = OCMProtocolMock(@protocol(LogoVendor));
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
@@ -76,7 +82,7 @@ class NewTabPageMediatorTest : public PlatformTest {
             chrome_browser_state_.get());
     imageUpdater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
     mediator_ = [[NewTabPageMediator alloc]
-                initWithWebState:fake_web_state_.get()
+                initWithWebState:initial_web_state_.get()
               templateURLService:ios::TemplateURLServiceFactory::
                                      GetForBrowserState(
                                          chrome_browser_state_.get())
@@ -86,6 +92,7 @@ class NewTabPageMediatorTest : public PlatformTest {
            accountManagerService:accountManagerService
                       logoVendor:logo_vendor_
         identityDiscImageUpdater:imageUpdater_];
+    mediator_.browser = browser_.get();
     contentSuggestionsHeaderConsumer_ =
         OCMProtocolMock(@protocol(ContentSuggestionsHeaderConsumer));
     mediator_.contentSuggestionsHeaderConsumer =
@@ -96,12 +103,35 @@ class NewTabPageMediatorTest : public PlatformTest {
   // Explicitly disconnect the mediator.
   ~NewTabPageMediatorTest() override { [mediator_ shutdown]; }
 
+  // Creates a FakeWebState and simulates that it is loaded with a given `url`.
+  std::unique_ptr<web::WebState> CreateWebStateWithURL(
+      const GURL& url,
+      CGFloat scroll_position = 0.0) {
+    auto web_state = std::make_unique<web::FakeWebState>();
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
+    NewTabPageTabHelper::FromWebState(web_state.get())
+        ->SaveNTPState(scroll_position, NewTabPageTabHelper::DefaultFeedType());
+    web_state->SetVisibleURL(url);
+    // Force the DidStopLoading callback.
+    web_state->SetLoading(true);
+    web_state->SetLoading(false);
+    return std::move(web_state);
+  }
+
+  id SetupNTPConsumerMock() {
+    id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+    [[[ntp_consumer expect] andReturnValue:[NSNumber numberWithDouble:0.0]]
+        heightAboveFeed];
+    mediator_.consumer = ntp_consumer;
+    return ntp_consumer;
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<web::FakeWebState> fake_web_state_;
+  std::unique_ptr<web::WebState> initial_web_state_;
   id contentSuggestionsHeaderConsumer_;
   id imageUpdater_;
   id logo_vendor_;
@@ -124,4 +154,56 @@ TEST_F(NewTabPageMediatorTest, TestConsumerSetup) {
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(contentSuggestionsHeaderConsumer_);
+}
+
+// Tests that the the mediator calls the consumer to set the content offset,
+// when a new WebState is set.
+TEST_F(NewTabPageMediatorTest, TestSetContentOffsetForWebState) {
+  id suggestions_mediator = OCMClassMock([ContentSuggestionsMediator class]);
+  mediator_.suggestionsMediator = suggestions_mediator;
+  [mediator_ setUp];
+
+  // Test with WebState that has not been scrolled.
+  id ntp_consumer = SetupNTPConsumerMock();
+  std::unique_ptr<web::WebState> web_state_1 =
+      CreateWebStateWithURL(GURL("chrome://newtab"), 0.0);
+  OCMExpect([ntp_consumer setContentOffsetToTop]);
+  [[[ntp_consumer reject] ignoringNonObjectArgs] setSavedContentOffset:0];
+  OCMExpect([suggestions_mediator refreshMostVisitedTiles]);
+  mediator_.webState = web_state_1.get();
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  EXPECT_OCMOCK_VERIFY(suggestions_mediator);
+
+  // Test with WebState that is scrolled down some.
+  ntp_consumer = SetupNTPConsumerMock();
+  std::unique_ptr<web::WebState> web_state_2 =
+      CreateWebStateWithURL(GURL("chrome://newtab"), kSomeScrollPosition);
+  OCMExpect([ntp_consumer setSavedContentOffset:kSomeScrollPosition]);
+  [[ntp_consumer reject] setContentOffsetToTop];
+  mediator_.webState = web_state_2.get();
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+}
+
+// Tests that the mediator saves the current content offset for a WebState when
+// a new one is assigned.
+TEST_F(NewTabPageMediatorTest, TestSaveContentOffsetForWebState) {
+  id ntp_consumer = OCMProtocolMock(@protocol(NewTabPageConsumer));
+  [[[ntp_consumer expect] andReturnValue:[NSNumber numberWithDouble:0.0]]
+      heightAboveFeed];
+  mediator_.consumer = ntp_consumer;
+  [mediator_ setUp];
+
+  std::unique_ptr<web::WebState> web_state_1 =
+      CreateWebStateWithURL(GURL("chrome://newtab"));
+  [[[ntp_consumer expect]
+      andReturnValue:[NSNumber numberWithDouble:kSomeScrollPosition]]
+      scrollPosition];
+  [[[ntp_consumer expect] andReturnValue:[NSNumber numberWithDouble:0.0]]
+      collectionShiftingOffset];
+  mediator_.webState = web_state_1.get();
+  EXPECT_OCMOCK_VERIFY(ntp_consumer);
+  CGFloat saved_scroll_position =
+      NewTabPageTabHelper::FromWebState(initial_web_state_.get())
+          ->ScrollPositionFromSavedState();
+  EXPECT_EQ(saved_scroll_position, kSomeScrollPosition);
 }
