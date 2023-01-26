@@ -147,6 +147,12 @@ void SetTriggeringOutcome(content::PreloadingAttempt* preloading_attempt,
 
 content::PreloadingFailureReason ToPreloadingFailureReason(
     SearchPrefetchServingReason reason) {
+  // If you are copying this pattern for another prefetch use case beyond
+  // SearchPrefetchServingReason, please take care to ensure that you use a
+  // non-overlapping range after kPreloadingFailureReasonContentEnd. It is
+  // probably a good idea to centralize the allocation of enum ranges whenever a
+  // second case emerges.
+  // TODO(sreejakshetty): Assert that the reasons do not overlap.
   return static_cast<content::PreloadingFailureReason>(
       static_cast<int>(reason) +
       static_cast<int>(content::PreloadingFailureReason::
