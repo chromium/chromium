@@ -91,6 +91,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     Features.WEB_MESSAGE_GET_MESSAGE_PAYLOAD + Features.DEV_SUFFIX,
                     Features.REQUESTED_WITH_HEADER_ALLOW_LIST,
                     Features.IMAGE_DRAG_DROP + Features.DEV_SUFFIX,
+                    Features.RESTRICT_SENSITIVE_WEB_CONTENT + Features.DEV_SUFFIX,
                     // Add new features above. New features must include `+ Features.DEV_SUFFIX`
                     // when they're initially added (this can be removed in a future CL). The final
                     // feature should have a trailing comma for cleaner diffs.
@@ -171,6 +172,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
             ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
             ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST,
             ApiCall.GET_IMAGE_DRAG_DROP_IMPLEMENTATION,
+            ApiCall.RESTRICT_SENSITIVE_WEB_CONTENT,
             // Add new constants above. The final constant should have a trailing comma for cleaner
             // diffs.
             ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -253,8 +255,9 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
         int SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 70;
         int SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST = 71;
         int GET_IMAGE_DRAG_DROP_IMPLEMENTATION = 72;
+        int RESTRICT_SENSITIVE_WEB_CONTENT = 73;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 73;
+        int COUNT = 74;
     }
     // clang-format on
 

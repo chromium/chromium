@@ -593,9 +593,12 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
 
+  content::WebContents* web_contents = wc_getter.Run();
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if (request.is_outermost_main_frame &&
-      base::FeatureList::IsEnabled(
-          features::kWebViewRestrictSensitiveContent)) {
+      ((aw_settings && aw_settings->GetRestrictSensitiveWebContentEnabled()) ||
+       base::FeatureList::IsEnabled(
+           features::kWebViewRestrictSensitiveContent))) {
     auto* origin_verification_bridge =
         AwOriginVerificationSchedulerBridge::GetInstance();
     result.push_back(digital_asset_links::BrowserURLLoaderThrottle::Create(

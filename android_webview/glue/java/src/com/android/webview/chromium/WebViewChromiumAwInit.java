@@ -233,8 +233,7 @@ public class WebViewChromiumAwInit {
                 mWebStorage =
                         new WebStorageAdapter(mFactory, mBrowserContext.getQuotaManagerBridge());
                 if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_RESTRICT_SENSITIVE_CONTENT)) {
-                    AwOriginVerificationScheduler.initAndScheduleAll(
-                            context.getPackageName(), context, awBrowserContext, null);
+                    AwOriginVerificationScheduler.initAndScheduleAll(null);
                 }
                 mAwTracingController = getTracingController();
                 mServiceWorkerController = awBrowserContext.getServiceWorkerController();

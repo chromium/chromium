@@ -187,4 +187,10 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
         recordApiCall(ApiCall.WEB_SETTINGS_GET_ENTERPRISE_AUTHENTICATION_APP_LINK_POLICY_ENABLED);
         return mAwSettings.getEnterpriseAuthenticationAppLinkPolicyEnabled();
     }
+
+    @Override
+    public void enableRestrictSensitiveWebContent() {
+        recordApiCall(ApiCall.RESTRICT_SENSITIVE_WEB_CONTENT);
+        mAwSettings.enableRestrictSensitiveWebContent();
+    }
 }

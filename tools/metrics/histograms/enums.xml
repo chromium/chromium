@@ -3075,6 +3075,9 @@ Unknown properties are collapsed to zero. -->
   <int value="72" label="GET_IMAGE_DRAG_DROP_IMPLEMENTATION">
     WebViewProviderFactory#getDropDataProviderImplementation()
   </int>
+  <int value="73" label="RESTRICT_SENSITIVE_WEB_CONTENT">
+    WebSettingsCompat#enableRestrictSensitiveWebContent()
+  </int>
 </enum>
 
 <enum name="AnnouncementNotificationEvent">

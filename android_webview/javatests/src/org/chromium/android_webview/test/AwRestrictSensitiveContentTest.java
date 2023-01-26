@@ -128,19 +128,17 @@ public class AwRestrictSensitiveContentTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=WebViewRestrictSensitiveContent"})
     public void testInitAndScheduleAll() throws Throwable {
-        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         CountDownLatch countVerifiedLatch = new CountDownLatch(1);
-        mActivityTestRule.runOnUiThread(
-                ()
-                        -> AwOriginVerificationScheduler.initAndScheduleAll(
-                                context.getPackageName(), context,
-                                mActivityTestRule.getAwBrowserContext(),
-                                (res) -> { countVerifiedLatch.countDown(); }));
-        countVerifiedLatch.await();
+        mActivityTestRule.runOnUiThread(() -> {
+            AwOriginVerificationScheduler.initAndScheduleAll(
+                    (res) -> { countVerifiedLatch.countDown(); });
+        });
 
+        countVerifiedLatch.await();
         AwOriginVerificationScheduler scheduler = AwOriginVerificationScheduler.getInstance();
 
+        Assert.assertNotNull(scheduler);
         Set<Origin> pendingOrigins = scheduler.getPendingOriginsForTesting();
         Assert.assertEquals(0, pendingOrigins.size());
     }

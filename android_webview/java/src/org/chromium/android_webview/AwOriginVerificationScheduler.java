@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.digital_asset_links.OriginVerificationScheduler;
 import org.chromium.components.digital_asset_links.OriginVerifier;
@@ -61,10 +62,12 @@ public class AwOriginVerificationScheduler extends OriginVerificationScheduler {
         }
     }
 
-    public static void initAndScheduleAll(String packageName, Context context,
-            AwBrowserContext browserContext, @Nullable Callback<Boolean> callback) {
-        init(packageName, browserContext, context);
+    public static void initAndScheduleAll(@Nullable Callback<Boolean> callback) {
         synchronized (sLock) {
+            if (sInstance == null) {
+                Context context = ContextUtils.getApplicationContext();
+                init(context.getPackageName(), AwBrowserContext.getDefault(), context);
+            }
             sInstance.scheduleAllPendingVerifications(callback);
         }
     }
