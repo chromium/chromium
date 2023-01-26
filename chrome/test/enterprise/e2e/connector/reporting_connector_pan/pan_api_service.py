@@ -15,6 +15,7 @@ import requests
 
 from .pan_event import PanEvent
 
+
 # Constants
 SUCCESS = 0
 PENDING = 1

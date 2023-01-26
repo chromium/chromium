@@ -5,6 +5,7 @@
 from .verifyContent import VerifyContent
 from .verifyable import Verifyable
 from .chrome_reporting_connector_test_case import ChromeReportingConnectorTestCase
+from .device_trust_connector.device_trust_connector_windows_enrollment_test import *
 from .realtime_reporting_bce.realtime_reporting_bce_test import *
 from .reporting_connector_chronicle.reporting_connector_chronicle_test import *
 from .reporting_connector_crowdstrike.reporting_connector_crowdstrike_test import *

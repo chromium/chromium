@@ -44,12 +44,23 @@ def shutdown_chrome():
 
 
 def getElementFromShadowRoot(driver, element, selector):
+  """Gets a first matched WebElement from ShadowRoot."""
   if element is None:
     return None
   else:
     return driver.execute_script(
         "return arguments[0].shadowRoot.querySelector(arguments[1])", element,
         selector)
+
+
+def getElementsFromShadowRoot(driver, element, selector):
+  """Gets a list of matched WebElements from ShadowRoot. """
+  if element is None:
+    return None
+  else:
+    return driver.execute_script(
+        "return arguments[0].shadowRoot.querySelectorAll(arguments[1])",
+        element, selector)
 
 
 def create_chrome_webdriver(chrome_options=None, incognito=False, prefs=None):

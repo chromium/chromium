@@ -5,6 +5,7 @@
 import logging
 import json
 import time
+
 from absl import app
 from pywinauto.application import Application
 from selenium import webdriver
