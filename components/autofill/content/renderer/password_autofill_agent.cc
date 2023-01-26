@@ -162,7 +162,7 @@ void LogHTMLForm(Logger* logger,
 bool CanShowUsernameSuggestion(const PasswordFormFillData& fill_data,
                                const std::u16string& typed_username) {
   std::u16string typed_username_lower = base::i18n::ToLower(typed_username);
-  if (base::StartsWith(base::i18n::ToLower(fill_data.username_field.value),
+  if (base::StartsWith(base::i18n::ToLower(fill_data.preferred_login.username),
                        typed_username_lower, base::CompareCase::SENSITIVE)) {
     return true;
   }
@@ -187,10 +187,10 @@ void FindMatchesByUsername(const PasswordFormFillData& fill_data,
                            std::u16string* username,
                            std::u16string* password) {
   // Look for any suitable matches to current field text.
-  if (DoUsernamesMatch(fill_data.username_field.value, current_username,
+  if (DoUsernamesMatch(fill_data.preferred_login.username, current_username,
                        exact_username_match)) {
-    *username = fill_data.username_field.value;
-    *password = fill_data.password_field.value;
+    *username = fill_data.preferred_login.username;
+    *password = fill_data.preferred_login.password;
     LogMessage(logger, Logger::STRING_USERNAMES_MATCH);
   } else {
     // Scan additional logins for a match.
@@ -1451,8 +1451,8 @@ void PasswordAutofillAgent::SetPasswordFillData(
   }
 
   bool username_password_fields_not_set =
-      form_data.username_field.unique_renderer_id.is_null() &&
-      form_data.password_field.unique_renderer_id.is_null();
+      form_data.username_element_renderer_id.is_null() &&
+      form_data.password_element_renderer_id.is_null();
   if (username_password_fields_not_set) {
     // No fields for filling were found during parsing, which means filling
     // fallback case. So save data for fallback filling.
@@ -1464,7 +1464,7 @@ void PasswordAutofillAgent::SetPasswordFillData(
   std::tie(username_element, password_element) =
       FindUsernamePasswordElements(form_data);
   bool is_single_username_fill =
-      form_data.password_field.unique_renderer_id.is_null();
+      form_data.password_element_renderer_id.is_null();
   WebElement main_element =
       is_single_username_fill ? username_element : password_element;
   if (main_element.IsNull()) {
@@ -1858,7 +1858,7 @@ bool PasswordAutofillAgent::FillUserNameAndPassword(
       // data that this value is placeholder.
       current_username = username_element.Value().Utf16();
     } else if (IsElementEditable(username_element)) {
-      current_username = fill_data.username_field.value;
+      current_username = fill_data.preferred_login.username;
     }
   }
 
@@ -2019,9 +2019,9 @@ std::pair<WebInputElement, WebInputElement>
 PasswordAutofillAgent::FindUsernamePasswordElements(
     const PasswordFormFillData& form_data) {
   const FieldRendererId username_renderer_id =
-      form_data.username_field.unique_renderer_id;
+      form_data.username_element_renderer_id;
   const FieldRendererId password_renderer_id =
-      form_data.password_field.unique_renderer_id;
+      form_data.password_element_renderer_id;
   const bool is_username_present = !username_renderer_id.is_null();
   const bool is_password_present = !password_renderer_id.is_null();
 

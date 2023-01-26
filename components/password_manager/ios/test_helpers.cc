@@ -33,16 +33,10 @@ void SetPasswordFormFillData(const std::string& url,
                              PasswordFormFillData* form_data) {
   form_data->url = GURL(url);
   form_data->form_renderer_id = FormRendererId(unique_renderer_id);
-  autofill::FormFieldData username;
-  username.name = base::UTF8ToUTF16(username_field);
-  username.unique_renderer_id = FieldRendererId(username_unique_id);
-  username.value = base::UTF8ToUTF16(username_value);
-  form_data->username_field = username;
-  autofill::FormFieldData password;
-  password.name = base::UTF8ToUTF16(password_field);
-  password.unique_renderer_id = FieldRendererId(password_unique_id);
-  password.value = base::UTF8ToUTF16(password_value);
-  form_data->password_field = password;
+  form_data->username_element_renderer_id = FieldRendererId(username_unique_id);
+  form_data->preferred_login.username = base::UTF8ToUTF16(username_value);
+  form_data->password_element_renderer_id = FieldRendererId(password_unique_id);
+  form_data->preferred_login.password = base::UTF8ToUTF16(password_value);
   if (additional_username) {
     autofill::PasswordAndMetadata additional_password_data;
     additional_password_data.username = base::UTF8ToUTF16(additional_username);

@@ -398,11 +398,10 @@ struct PasswordAndMetadata {
 struct PasswordFormFillData {
   FormRendererId form_renderer_id;
   url.mojom.Url url;
-  FormFieldData username_field;
-  FormFieldData password_field;
+  FieldRendererId username_element_renderer_id;
+  FieldRendererId password_element_renderer_id;
   bool username_may_use_prefilled_placeholder;
-  string preferred_realm;
-  bool uses_account_store;
+  PasswordAndMetadata preferred_login;
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;
 };

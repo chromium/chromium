@@ -21,18 +21,11 @@ namespace {
 
 autofill::PasswordFormFillData GetTestFillData() {
   autofill::PasswordFormFillData fill_data;
-  autofill::FormFieldData username_field;
-  username_field.name = u"username_field";
-  fill_data.username_field = username_field;
-  autofill::FormFieldData password_field;
-  password_field.name = u"password_field";
-  password_field.form_control_type = "password";
-  fill_data.password_field = password_field;
   // Renderer IDs should match real elements' IDs. They cannot be retrieved in a
   // content::BrowserTestBase, so they are guessed based on the fact the
   // username and password fields are the first two elements on the page.
-  fill_data.username_field.unique_renderer_id = autofill::FieldRendererId(1);
-  fill_data.password_field.unique_renderer_id = autofill::FieldRendererId(2);
+  fill_data.username_element_renderer_id = autofill::FieldRendererId(1);
+  fill_data.password_element_renderer_id = autofill::FieldRendererId(2);
   return fill_data;
 }
 

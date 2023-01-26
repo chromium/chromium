@@ -175,8 +175,9 @@ PasswordFormFillData GetTestPasswordFormFillData() {
 }
 
 MATCHER(WerePasswordsCleared, "Passwords not cleared") {
-  if (!arg.password_field.value.empty())
+  if (!arg.preferred_login.password.empty()) {
     return false;
+  }
 
   for (auto& credentials : arg.additional_logins)
     if (!credentials.password.empty())

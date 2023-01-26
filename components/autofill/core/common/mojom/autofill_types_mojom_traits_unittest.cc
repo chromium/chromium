@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/mojom/test_autofill_types.mojom.h"
+#include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -23,6 +24,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
+
+bool operator==(const PasswordAndMetadata& lhs,
+                const PasswordAndMetadata& rhs) {
+  return lhs.username == rhs.username && lhs.password == rhs.password &&
+         lhs.realm == rhs.realm &&
+         lhs.uses_account_store == rhs.uses_account_store;
+}
 
 const std::vector<const char*> kOptions = {"Option1", "Option2", "Option3",
                                            "Option4"};
@@ -42,14 +50,12 @@ void CreateTestFieldDataPredictions(const std::string& signature,
 void CreateTestPasswordFormFillData(PasswordFormFillData* fill_data) {
   fill_data->form_renderer_id = autofill::FormRendererId(1234);
   fill_data->url = GURL("https://foo.com/");
-  test::CreateTestSelectField("TestUsernameFieldLabel", "TestUsernameFieldName",
-                              "TestUsernameFieldValue", kOptions, kOptions,
-                              &fill_data->username_field);
-  test::CreateTestSelectField("TestPasswordFieldLabel", "TestPasswordFieldName",
-                              "TestPasswordFieldValue", kOptions, kOptions,
-                              &fill_data->password_field);
-  fill_data->preferred_realm = "https://foo.com/";
-  fill_data->uses_account_store = true;
+  fill_data->preferred_login.username = u"TestUsernameFieldValue";
+  fill_data->username_element_renderer_id = test::MakeFieldRendererId();
+  fill_data->preferred_login.password = u"TestPasswordFieldValue";
+  fill_data->password_element_renderer_id = test::MakeFieldRendererId();
+  fill_data->preferred_login.realm = "https://foo.com/";
+  fill_data->preferred_login.uses_account_store = true;
 
   PasswordAndMetadata pr;
   pr.password = u"Tom_Password";
@@ -79,32 +85,12 @@ void CreatePasswordGenerationUIData(
 void CheckEqualPasswordFormFillData(const PasswordFormFillData& expected,
                                     const PasswordFormFillData& actual) {
   EXPECT_EQ(expected.form_renderer_id, actual.form_renderer_id);
-  EXPECT_TRUE(FormFieldData::DeepEqual(
-      test::WithoutUnserializedData(expected.username_field),
-      actual.username_field));
-  EXPECT_TRUE(FormFieldData::DeepEqual(
-      test::WithoutUnserializedData(expected.password_field),
-      actual.password_field));
-  EXPECT_EQ(expected.preferred_realm, actual.preferred_realm);
-  EXPECT_EQ(expected.uses_account_store, actual.uses_account_store);
-
-  {
-    EXPECT_EQ(expected.additional_logins.size(),
-              actual.additional_logins.size());
-    auto iter1 = expected.additional_logins.begin();
-    auto end1 = expected.additional_logins.end();
-    auto iter2 = actual.additional_logins.begin();
-    auto end2 = actual.additional_logins.end();
-    for (; iter1 != end1 && iter2 != end2; ++iter1, ++iter2) {
-      EXPECT_EQ(iter1->username, iter2->username);
-      EXPECT_EQ(iter1->password, iter2->password);
-      EXPECT_EQ(iter1->realm, iter2->realm);
-      EXPECT_EQ(iter1->uses_account_store, iter2->uses_account_store);
-    }
-    ASSERT_EQ(iter1, end1);
-    ASSERT_EQ(iter2, end2);
-  }
-
+  EXPECT_EQ(expected.username_element_renderer_id,
+            actual.username_element_renderer_id);
+  EXPECT_EQ(expected.password_element_renderer_id,
+            actual.password_element_renderer_id);
+  EXPECT_EQ(expected.preferred_login, actual.preferred_login);
+  EXPECT_EQ(expected.additional_logins, actual.additional_logins);
   EXPECT_EQ(expected.wait_for_username, actual.wait_for_username);
 }
 

@@ -358,14 +358,13 @@ bool StructTraits<autofill::mojom::PasswordFormFillDataDataView,
          autofill::PasswordFormFillData* out) {
   if (!data.ReadFormRendererId(&out->form_renderer_id) ||
       !data.ReadUrl(&out->url) ||
-      !data.ReadUsernameField(&out->username_field) ||
-      !data.ReadPasswordField(&out->password_field) ||
-      !data.ReadPreferredRealm(&out->preferred_realm) ||
+      !data.ReadUsernameElementRendererId(&out->username_element_renderer_id) ||
+      !data.ReadPasswordElementRendererId(&out->password_element_renderer_id) ||
+      !data.ReadPreferredLogin(&out->preferred_login) ||
       !data.ReadAdditionalLogins(&out->additional_logins)) {
     return false;
   }
 
-  out->uses_account_store = data.uses_account_store();
   out->wait_for_username = data.wait_for_username();
   out->username_may_use_prefilled_placeholder =
       data.username_may_use_prefilled_placeholder();

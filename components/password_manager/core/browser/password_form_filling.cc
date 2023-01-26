@@ -44,7 +44,7 @@ BASE_FEATURE(kSuppressAccountStoragePromosWhenCredentialServiceDisabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool PreferredRealmIsFromAndroid(const PasswordFormFillData& fill_data) {
-  return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_realm)
+  return FacetURI::FromPotentiallyInvalidSpec(fill_data.preferred_login.realm)
       .IsValidAndroidFacetURI();
 }
 
@@ -285,41 +285,33 @@ PasswordFormFillData CreatePasswordFormFillData(
 
   result.form_renderer_id = form_on_page.form_data.unique_renderer_id;
   result.url = form_on_page.url;
-  result.uses_account_store = preferred_match.IsUsingAccountStore();
   result.wait_for_username = wait_for_username;
 
-  // Note that many of the |FormFieldData| members are not initialized for
-  // |username_field| and |password_field| because they are currently not used
-  // by the password autocomplete code.
-  // Although the |host_frame| is currently not used by Password Manager, it
-  // must be set because serializing an empty LocalFrameToken is illegal.
-  result.username_field.host_frame = form_on_page.form_data.host_frame;
-  result.password_field.host_frame = form_on_page.form_data.host_frame;
-  result.username_field.value = preferred_match.username_value;
-  result.password_field.value = preferred_match.password_value;
+  result.preferred_login.username = preferred_match.username_value;
+  result.preferred_login.password = preferred_match.password_value;
+
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {
     // Fill fields identifying information only for non-fallback case when
     // password element is found. In other cases a fill popup is shown on
     // clicking on each password field so no need in any field identifiers.
-    result.username_field.name = form_on_page.username_element;
-    result.username_field.unique_renderer_id =
+    result.username_element_renderer_id =
         form_on_page.username_element_renderer_id;
     result.username_may_use_prefilled_placeholder =
         form_on_page.username_may_use_prefilled_placeholder;
 
-    result.password_field.name = form_on_page.password_element;
-    result.password_field.unique_renderer_id =
+    result.password_element_renderer_id =
         form_on_page.password_element_renderer_id;
-    result.password_field.form_control_type = "password";
   }
 
-  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match)) {
-    result.preferred_realm = GetPreferredRealm(preferred_match);
-  } else if (!IsSameOrigin(main_frame_origin, form_on_page.url)) {
-    // If the suggestion is for a cross-origin iframe, display the origin of
-    // the suggestion.
-    result.preferred_realm = GetPreferredRealm(preferred_match);
+  result.preferred_login.uses_account_store =
+      preferred_match.IsUsingAccountStore();
+
+  if (IsPublicSuffixMatchOrAffiliationBasedMatch(preferred_match) ||
+      !IsSameOrigin(main_frame_origin, form_on_page.url)) {
+    // If the origins of the |preferred_match|, the main frame and the form's
+    // frame differ, then show the origin of the match.
+    result.preferred_login.realm = GetPreferredRealm(preferred_match);
   }
 
   // Copy additional username/value pairs.

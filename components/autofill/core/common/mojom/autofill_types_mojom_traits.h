@@ -519,14 +519,14 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.url;
   }
 
-  static const autofill::FormFieldData& username_field(
+  static const autofill::FieldRendererId& username_element_renderer_id(
       const autofill::PasswordFormFillData& r) {
-    return r.username_field;
+    return r.username_element_renderer_id;
   }
 
-  static const autofill::FormFieldData& password_field(
+  static const autofill::FieldRendererId& password_element_renderer_id(
       const autofill::PasswordFormFillData& r) {
-    return r.password_field;
+    return r.password_element_renderer_id;
   }
 
   static bool username_may_use_prefilled_placeholder(
@@ -534,13 +534,9 @@ struct StructTraits<autofill::mojom::PasswordFormFillDataDataView,
     return r.username_may_use_prefilled_placeholder;
   }
 
-  static const std::string& preferred_realm(
+  static const autofill::PasswordAndMetadata& preferred_login(
       const autofill::PasswordFormFillData& r) {
-    return r.preferred_realm;
-  }
-
-  static bool uses_account_store(const autofill::PasswordFormFillData& r) {
-    return r.uses_account_store;
+    return r.preferred_login;
   }
 
   static const autofill::PasswordFormFillData::LoginCollection&

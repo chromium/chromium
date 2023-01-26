@@ -166,11 +166,11 @@ void GetSuggestions(const autofill::PasswordFormFillData& fill_data,
                     bool show_all,
                     bool is_password_field,
                     std::vector<autofill::Suggestion>* suggestions) {
-  AppendSuggestionIfMatching(fill_data.username_field.value, current_username,
-                             custom_icon, fill_data.preferred_realm, show_all,
-                             is_password_field, fill_data.uses_account_store,
-                             fill_data.password_field.value.size(),
-                             suggestions);
+  AppendSuggestionIfMatching(
+      fill_data.preferred_login.username, current_username, custom_icon,
+      fill_data.preferred_login.realm, show_all, is_password_field,
+      fill_data.preferred_login.uses_account_store,
+      fill_data.preferred_login.password.size(), suggestions);
 
   int prefered_match = suggestions->size();
 
@@ -350,8 +350,9 @@ void LogAccountStoredPasswordsCountInFillDataAfterUnlock(
                              [](const autofill::PasswordAndMetadata& metadata) {
                                return metadata.uses_account_store;
                              });
-  if (fill_data.uses_account_store)
+  if (fill_data.preferred_login.uses_account_store) {
     ++account_store_passwords_count;
+  }
   metrics_util::LogPasswordsCountFromAccountStoreAfterUnlock(
       account_store_passwords_count);
 }
@@ -599,8 +600,8 @@ void PasswordAutofillManager::OnAddPasswordFillData(
 
   // If there are no username or password suggestions, WebAuthn credentials
   // can still cause a popup to appear.
-  if (fill_data.username_field.value.empty() &&
-      fill_data.password_field.value.empty()) {
+  if (fill_data.preferred_login.username.empty() &&
+      fill_data.preferred_login.password.empty()) {
     return;
   }
 
@@ -876,12 +877,13 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
       item_id == autofill::POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY;
 
   // Look for any suitable matches to current field text.
-  if (fill_data.username_field.value == current_username &&
-      fill_data.uses_account_store == item_uses_account_store) {
+  if (fill_data.preferred_login.username == current_username &&
+      fill_data.preferred_login.uses_account_store == item_uses_account_store) {
     password_and_meta_data->username = current_username;
-    password_and_meta_data->password = fill_data.password_field.value;
-    password_and_meta_data->realm = fill_data.preferred_realm;
-    password_and_meta_data->uses_account_store = fill_data.uses_account_store;
+    password_and_meta_data->password = fill_data.preferred_login.password;
+    password_and_meta_data->realm = fill_data.preferred_login.realm;
+    password_and_meta_data->uses_account_store =
+        fill_data.preferred_login.uses_account_store;
     return true;
   }
 

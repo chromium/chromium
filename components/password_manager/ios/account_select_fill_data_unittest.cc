@@ -67,18 +67,16 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableOneForm) {
   // Suggestions are available for the correct form and field ids.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data_[0].form_renderer_id,
-      form_data_[0].username_field.unique_renderer_id, false));
+      form_data_[0].username_element_renderer_id, false));
   // Suggestion should be available to any password field.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data_[0].form_renderer_id, FieldRendererId(404), true));
 
   // Suggestions are not available for different form renderer_id.
   EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
-      FormRendererId(404), form_data_[0].username_field.unique_renderer_id,
-      false));
+      FormRendererId(404), form_data_[0].username_element_renderer_id, false));
   EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
-      FormRendererId(404), form_data_[0].password_field.unique_renderer_id,
-      true));
+      FormRendererId(404), form_data_[0].password_element_renderer_id, true));
 
   // Suggestions are not available for different field id.
   EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
@@ -93,15 +91,14 @@ TEST_F(AccountSelectFillDataTest, IsSuggestionsAvailableTwoForms) {
   // Suggestions are available for the correct form and field names.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data_[0].form_renderer_id,
-      form_data_[0].username_field.unique_renderer_id, false));
+      form_data_[0].username_element_renderer_id, false));
   // Suggestions are available for the correct form and field names.
   EXPECT_TRUE(account_select_fill_data.IsSuggestionsAvailable(
       form_data_[1].form_renderer_id,
-      form_data_[1].username_field.unique_renderer_id, false));
+      form_data_[1].username_element_renderer_id, false));
   // Suggestions are not available for different form id.
   EXPECT_FALSE(account_select_fill_data.IsSuggestionsAvailable(
-      FormRendererId(404), form_data_[0].username_field.unique_renderer_id,
-      false));
+      FormRendererId(404), form_data_[0].username_element_renderer_id, false));
 }
 
 TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsOneForm) {
@@ -110,8 +107,8 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsOneForm) {
 
   for (bool is_password_field : {false, true}) {
     const FieldRendererId field_id =
-        is_password_field ? form_data_[0].password_field.unique_renderer_id
-                          : form_data_[0].username_field.unique_renderer_id;
+        is_password_field ? form_data_[0].password_element_renderer_id
+                          : form_data_[0].username_element_renderer_id;
     std::vector<UsernameAndRealm> suggestions =
         account_select_fill_data.RetrieveSuggestions(
             form_data_[0].form_renderer_id, field_id, is_password_field);
@@ -136,13 +133,13 @@ TEST_F(AccountSelectFillDataTest, RetrieveSuggestionsTwoForm) {
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id,
-          form_data_[0].username_field.unique_renderer_id, false);
+          form_data_[0].username_element_renderer_id, false);
   EXPECT_EQ(1u, suggestions.size());
   EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), suggestions[0].username);
 
   suggestions = account_select_fill_data.RetrieveSuggestions(
       form_data_[1].form_renderer_id,
-      form_data_[1].username_field.unique_renderer_id, false);
+      form_data_[1].username_element_renderer_id, false);
   EXPECT_EQ(1u, suggestions.size());
   EXPECT_EQ(base::ASCIIToUTF16(kUsernames[1]), suggestions[0].username);
 }
@@ -153,14 +150,14 @@ TEST_F(AccountSelectFillDataTest, RetrievePSLMatchedSuggestions) {
   std::string kAdditionalRealm = "http://b.example.com/";
 
   // Make logins to be PSL matched by setting non-empy realm.
-  form_data_[0].preferred_realm = kRealm;
+  form_data_[0].preferred_login.realm = kRealm;
   form_data_[0].additional_logins.begin()->realm = kAdditionalRealm;
 
   account_select_fill_data.Add(form_data_[0], /*is_cross_origin_iframe=*/false);
   std::vector<UsernameAndRealm> suggestions =
       account_select_fill_data.RetrieveSuggestions(
           form_data_[0].form_renderer_id,
-          form_data_[0].username_field.unique_renderer_id, false);
+          form_data_[0].username_element_renderer_id, false);
   EXPECT_EQ(2u, suggestions.size());
   EXPECT_EQ(base::ASCIIToUTF16(kUsernames[0]), suggestions[0].username);
   EXPECT_EQ(kRealm, suggestions[0].realm);
@@ -182,10 +179,10 @@ TEST_F(AccountSelectFillDataTest, GetFillData) {
       // existing field ids.
       const FieldRendererId password_field_id =
           is_password_field ? FieldRendererId(1000)
-                            : form_data.password_field.unique_renderer_id;
+                            : form_data.password_element_renderer_id;
       const FieldRendererId clicked_field =
           is_password_field ? password_field_id
-                            : form_data.username_field.unique_renderer_id;
+                            : form_data.username_element_renderer_id;
 
       // GetFillData() doesn't have form identifier in arguments, it should be
       // provided in RetrieveSuggestions().
@@ -216,7 +213,7 @@ TEST_F(AccountSelectFillDataTest, GetFillDataOldCredentials) {
   // provided in RetrieveSuggestions().
   account_select_fill_data.RetrieveSuggestions(
       form_data_[0].form_renderer_id,
-      form_data_[0].username_field.unique_renderer_id, false);
+      form_data_[0].username_element_renderer_id, false);
 
   // AccountSelectFillData should keep only last credentials. Check that in
   // request of old credentials nothing is returned.
@@ -231,8 +228,8 @@ TEST_F(AccountSelectFillDataTest, CrossOriginSuggestionHasRealm) {
 
   for (bool is_password_field : {false, true}) {
     const FieldRendererId field_id =
-        is_password_field ? form_data_[0].password_field.unique_renderer_id
-                          : form_data_[0].username_field.unique_renderer_id;
+        is_password_field ? form_data_[0].password_element_renderer_id
+                          : form_data_[0].username_element_renderer_id;
     std::vector<UsernameAndRealm> suggestions =
         account_select_fill_data.RetrieveSuggestions(
             form_data_[0].form_renderer_id, field_id, is_password_field);

@@ -58,20 +58,16 @@ struct PasswordFormFillData {
   // An URL consisting of the scheme, host, port and path; the rest is stripped.
   GURL url;
 
-  // Username and password input fields in the form.
-  FormFieldData username_field;
-  FormFieldData password_field;
+  // Identifiers of the username and password fields.
+  FieldRendererId username_element_renderer_id;
+  FieldRendererId password_element_renderer_id;
 
   // True if the server-side classification believes that the field may be
   // pre-filled with a placeholder in the value attribute.
   bool username_may_use_prefilled_placeholder = false;
 
-  // The signon realm of the preferred user/pass pair.
-  std::string preferred_realm;
-
-  // True iff the password originated from the account store rather than the
-  // local password store.
-  bool uses_account_store = false;
+  // The preferred credential. See |IsBetterMatch| for how it is selected.
+  PasswordAndMetadata preferred_login;
 
   // A list of other matching username->PasswordAndMetadata pairs for the form.
   LoginCollection additional_logins;
