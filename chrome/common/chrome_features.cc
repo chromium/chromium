@@ -1370,13 +1370,11 @@ BASE_FEATURE(kWebAppManifestIconUpdating,
 BASE_FEATURE(
     kWebAppManifestImmediateUpdating,
     "WebAppManifestImmediateUpdating",
-#if BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/1344367): Enable on Mac. Currently disabled due to
+    // TODO(https://crbug.com/1344367): Enable on Mac. Currently disabled due to
     // WebAppIntegration test failures likely due to app shim problems.
+    // TODO(https://crbug.com/1410528): Enable on platforms after WCO
+    // integration is fixed.
     base::FEATURE_DISABLED_BY_DEFAULT
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_MAC)
 );
 #endif  // !BUILDFLAG(IS_ANDROID)
 
