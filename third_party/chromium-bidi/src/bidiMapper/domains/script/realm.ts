@@ -17,13 +17,15 @@
 
 import {Protocol} from 'devtools-protocol';
 import {CommonDataTypes, Script, Message} from '../../../protocol/protocol.js';
-import {ScriptEvaluator} from './scriptEvaluator.js';
+import {ScriptEvaluator, stringifyObject} from './scriptEvaluator.js';
 import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 import {CdpClient} from '../../CdpConnection.js';
 
 export enum RealmType {
   window = 'window',
 }
+
+const scriptEvaluator = new ScriptEvaluator();
 
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
@@ -141,7 +143,7 @@ export class Realm {
 
   delete() {
     Realm.#realmMap.delete(this.realmId);
-    ScriptEvaluator.realmDestroyed(this);
+    scriptEvaluator.realmDestroyed(this);
   }
 
   readonly #realmId: string;
@@ -227,7 +229,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await ScriptEvaluator.callFunction(
+      result: await scriptEvaluator.callFunction(
         this,
         functionDeclaration,
         _this,
@@ -249,7 +251,7 @@ export class Realm {
     await context.awaitUnblocked();
 
     return {
-      result: await ScriptEvaluator.scriptEvaluate(
+      result: await scriptEvaluator.scriptEvaluate(
         this,
         expression,
         awaitPromise,
@@ -259,7 +261,7 @@ export class Realm {
   }
 
   async disown(handle: string): Promise<void> {
-    await ScriptEvaluator.disown(this, handle);
+    await scriptEvaluator.disown(this, handle);
   }
 
   /**
@@ -272,7 +274,7 @@ export class Realm {
     cdpObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
-    return await ScriptEvaluator.serializeCdpObject(
+    return await scriptEvaluator.serializeCdpObject(
       cdpObject,
       resultOwnership,
       this
@@ -289,6 +291,6 @@ export class Realm {
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
-    return ScriptEvaluator.stringifyObject(cdpObject, this);
+    return stringifyObject(cdpObject, this);
   }
 }

@@ -20,13 +20,355 @@ import {Protocol} from 'devtools-protocol';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
 // should be adjusted.
-const EVALUATE_STACKTRACE_LINE_OFFSET = 0;
 const CALL_FUNCTION_STACKTRACE_LINE_OFFSET = 1;
+const EVALUATE_STACKTRACE_LINE_OFFSET = 0;
 const SHARED_ID_DIVIDER = '_element_';
+
+function cdpRemoteObjectToCallArgument(
+  cdpRemoteObject: Protocol.Runtime.RemoteObject
+): Protocol.Runtime.CallArgument {
+  if (cdpRemoteObject.objectId !== undefined) {
+    return {objectId: cdpRemoteObject.objectId};
+  }
+  if (cdpRemoteObject.unserializableValue !== undefined) {
+    return {unserializableValue: cdpRemoteObject.unserializableValue};
+  }
+  return {value: cdpRemoteObject.value};
+}
+
+async function deserializeToCdpArg(
+  argumentValue: Script.ArgumentValue,
+  realm: Realm
+): Promise<Protocol.Runtime.CallArgument> {
+  if ('sharedId' in argumentValue) {
+    const [navigableId, rawBackendNodeId] =
+      argumentValue.sharedId.split(SHARED_ID_DIVIDER);
+
+    const backendNodeId = parseInt(rawBackendNodeId ?? '');
+    if (
+      isNaN(backendNodeId) ||
+      backendNodeId === undefined ||
+      navigableId === undefined
+    ) {
+      throw new Message.InvalidArgumentException(
+        `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
+      );
+    }
+
+    if (realm.navigableId !== navigableId) {
+      throw new Message.NoSuchNodeException(
+        `SharedId "${argumentValue.sharedId}" belongs to different document.`
+      );
+    }
+
+    try {
+      const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
+        backendNodeId,
+        executionContextId: realm.executionContextId,
+      });
+      // TODO: release `obj.object.objectId` after using.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+      return {objectId: obj.object.objectId};
+    } catch (e: any) {
+      // Heuristic to detect "no such node" exception. Based on the  specific
+      // CDP implementation.
+      if (e.code === -32000 && e.message === 'No node with given id found') {
+        throw new Message.NoSuchNodeException(
+          `SharedId "${argumentValue.sharedId}" was not found.`
+        );
+      }
+      throw e;
+    }
+  }
+  if ('handle' in argumentValue) {
+    return {objectId: argumentValue.handle};
+  }
+  switch (argumentValue.type) {
+    // Primitive Protocol Value
+    // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
+    case 'undefined': {
+      return {unserializableValue: 'undefined'};
+    }
+    case 'null': {
+      return {unserializableValue: 'null'};
+    }
+    case 'string': {
+      return {value: argumentValue.value};
+    }
+    case 'number': {
+      if (argumentValue.value === 'NaN') {
+        return {unserializableValue: 'NaN'};
+      } else if (argumentValue.value === '-0') {
+        return {unserializableValue: '-0'};
+      } else if (argumentValue.value === '+Infinity') {
+        return {unserializableValue: '+Infinity'};
+      } else if (argumentValue.value === 'Infinity') {
+        return {unserializableValue: 'Infinity'};
+      } else if (argumentValue.value === '-Infinity') {
+        return {unserializableValue: '-Infinity'};
+      } else {
+        return {
+          value: argumentValue.value,
+        };
+      }
+    }
+    case 'boolean': {
+      return {value: !!argumentValue.value};
+    }
+    case 'bigint': {
+      return {
+        unserializableValue: `BigInt(${JSON.stringify(argumentValue.value)})`,
+      };
+    }
+
+    // Local Value
+    // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-LocalValue
+    case 'date': {
+      return {
+        unserializableValue: `new Date(Date.parse(${JSON.stringify(
+          argumentValue.value
+        )}))`,
+      };
+    }
+    case 'regexp': {
+      return {
+        unserializableValue: `new RegExp(${JSON.stringify(
+          argumentValue.value.pattern
+        )}, ${JSON.stringify(argumentValue.value.flags)})`,
+      };
+    }
+    case 'map': {
+      // TODO(sadym): if non of the nested keys and values has remote
+      // reference, serialize to `unserializableValue` without CDP roundtrip.
+      const keyValueArray = await flattenKeyValuePairs(
+        argumentValue.value,
+        realm
+      );
+      let argEvalResult = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(function (
+            ...args: Protocol.Runtime.CallArgument[]
+          ) {
+            const result = new Map();
+            for (let i = 0; i < args.length; i += 2) {
+              result.set(args[i], args[i + 1]);
+            }
+            return result;
+          }),
+          awaitPromise: false,
+          arguments: keyValueArray,
+          returnByValue: false,
+          executionContextId: realm.executionContextId,
+        }
+      );
+      // TODO: release `argEvalResult.result.objectId`  after using.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+      return {objectId: argEvalResult.result.objectId};
+    }
+    case 'object': {
+      // TODO(sadym): if non of the nested keys and values has remote
+      //  reference, serialize to `unserializableValue` without CDP roundtrip.
+      const keyValueArray = await flattenKeyValuePairs(
+        argumentValue.value,
+        realm
+      );
+
+      let argEvalResult = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(function (
+            ...args: Protocol.Runtime.CallArgument[]
+          ) {
+            const result: Record<
+              string | number | symbol,
+              Protocol.Runtime.CallArgument
+            > = {};
+
+            for (let i = 0; i < args.length; i += 2) {
+              // Key should be either `string`, `number`, or `symbol`.
+              const key = args[i] as string | number | symbol;
+              result[key] = args[i + 1]!;
+            }
+            return result;
+          }),
+          awaitPromise: false,
+          arguments: keyValueArray,
+          returnByValue: false,
+          executionContextId: realm.executionContextId,
+        }
+      );
+      // TODO: release `argEvalResult.result.objectId`  after using.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+      return {objectId: argEvalResult.result.objectId};
+    }
+    case 'array': {
+      // TODO(sadym): if non of the nested items has remote reference,
+      //  serialize to `unserializableValue` without CDP roundtrip.
+      const args = await flattenValueList(argumentValue.value, realm);
+
+      let argEvalResult = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(function (...args: unknown[]) {
+            return args;
+          }),
+          awaitPromise: false,
+          arguments: args,
+          returnByValue: false,
+          executionContextId: realm.executionContextId,
+        }
+      );
+      // TODO: release `argEvalResult.result.objectId`  after using.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+      return {objectId: argEvalResult.result.objectId};
+    }
+    case 'set': {
+      // TODO(sadym): if non of the nested items has remote reference,
+      //  serialize to `unserializableValue` without CDP roundtrip.
+      const args = await flattenValueList(argumentValue.value, realm);
+
+      let argEvalResult = await realm.cdpClient.sendCommand(
+        'Runtime.callFunctionOn',
+        {
+          functionDeclaration: String(function (...args: unknown[]) {
+            return new Set(args);
+          }),
+          awaitPromise: false,
+          arguments: args,
+          returnByValue: false,
+          executionContextId: realm.executionContextId,
+        }
+      );
+      // TODO: release `argEvalResult.result.objectId`  after using.
+      // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
+      return {objectId: argEvalResult.result.objectId};
+    }
+
+    // TODO(sadym): dispose nested objects.
+
+    default:
+      throw new Error(
+        `Value ${JSON.stringify(argumentValue)} is not deserializable.`
+      );
+  }
+}
+
+async function flattenKeyValuePairs(
+  value: CommonDataTypes.MappingLocalValue,
+  realm: Realm
+): Promise<Protocol.Runtime.CallArgument[]> {
+  const keyValueArray: Protocol.Runtime.CallArgument[] = [];
+  for (let pair of value) {
+    const key = pair[0];
+    const value = pair[1];
+
+    let keyArg, valueArg;
+
+    if (typeof key === 'string') {
+      // Key is a string.
+      keyArg = {value: key};
+    } else {
+      // Key is a serialized value.
+      keyArg = await deserializeToCdpArg(key, realm);
+    }
+
+    valueArg = await deserializeToCdpArg(value, realm);
+
+    keyValueArray.push(keyArg);
+    keyValueArray.push(valueArg);
+  }
+  return keyValueArray;
+}
+
+async function flattenValueList(
+  list: CommonDataTypes.ListLocalValue,
+  realm: Realm
+): Promise<Protocol.Runtime.CallArgument[]> {
+  const result: Protocol.Runtime.CallArgument[] = [];
+
+  for (let value of list) {
+    result.push(await deserializeToCdpArg(value, realm));
+  }
+
+  return result;
+}
+
+function webDriverValueToBiDi(
+  webDriverValue: Protocol.Runtime.WebDriverValue,
+  realm: Realm
+): CommonDataTypes.RemoteValue {
+  // This relies on the CDP to implement proper BiDi serialization, except
+  // backendNodeId/sharedId.
+  const result = webDriverValue as any;
+  const bidiValue = result.value;
+  if (bidiValue === undefined) {
+    return result;
+  }
+
+  if (result.type == 'node') {
+    if (bidiValue.hasOwnProperty('backendNodeId')) {
+      bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
+      delete bidiValue['backendNodeId'];
+    }
+    if (bidiValue.hasOwnProperty('children')) {
+      for (const i in bidiValue.children) {
+        bidiValue.children[i] = webDriverValueToBiDi(
+          bidiValue.children[i],
+          realm
+        );
+      }
+    }
+  }
+
+  // Recursively update the nested values.
+  if (['array', 'set'].includes(webDriverValue.type)) {
+    for (const i in bidiValue) {
+      bidiValue[i] = webDriverValueToBiDi(bidiValue[i], realm);
+    }
+  }
+  if (['object', 'map'].includes(webDriverValue.type)) {
+    for (const i in bidiValue) {
+      bidiValue[i] = [
+        webDriverValueToBiDi(bidiValue[i][0], realm),
+        webDriverValueToBiDi(bidiValue[i][1], realm),
+      ];
+    }
+  }
+
+  return result;
+}
+/**
+ * Gets the string representation of an object. This is equivalent to
+ * calling toString() on the object value.
+ * @param cdpObject CDP remote object representing an object.
+ * @param realm
+ * @returns string The stringified object.
+ */
+export async function stringifyObject(
+  cdpObject: Protocol.Runtime.RemoteObject,
+  realm: Realm
+): Promise<string> {
+  let stringifyResult = await realm.cdpClient.sendCommand(
+    'Runtime.callFunctionOn',
+    {
+      functionDeclaration: String(function (
+        obj: Protocol.Runtime.RemoteObject
+      ) {
+        return String(obj);
+      }),
+      awaitPromise: false,
+      arguments: [cdpObject],
+      returnByValue: true,
+      executionContextId: realm.executionContextId,
+    }
+  );
+  return stringifyResult.result.value;
+}
 
 export class ScriptEvaluator {
   // Keeps track of `handle`s and their realms sent to client.
-  static readonly #knownHandlesToRealm: Map<string, string> = new Map();
+  readonly #knownHandlesToRealm: Map<string, string> = new Map();
 
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
@@ -35,12 +377,12 @@ export class ScriptEvaluator {
    * @param resultOwnership indicates desired OwnershipModel.
    * @param realm
    */
-  public static async serializeCdpObject(
+  public async serializeCdpObject(
     cdpRemoteObject: Protocol.Runtime.RemoteObject,
     resultOwnership: Script.OwnershipModel,
     realm: Realm
   ): Promise<CommonDataTypes.RemoteValue> {
-    const arg = this.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
+    const arg = cdpRemoteObjectToCallArgument(cdpRemoteObject);
 
     const cdpWebDriverValue: Protocol.Runtime.CallFunctionOnResponse =
       await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
@@ -57,47 +399,7 @@ export class ScriptEvaluator {
     );
   }
 
-  static #cdpRemoteObjectToCallArgument(
-    cdpRemoteObject: Protocol.Runtime.RemoteObject
-  ): Protocol.Runtime.CallArgument {
-    if (cdpRemoteObject.objectId !== undefined) {
-      return {objectId: cdpRemoteObject.objectId};
-    }
-    if (cdpRemoteObject.unserializableValue !== undefined) {
-      return {unserializableValue: cdpRemoteObject.unserializableValue};
-    }
-    return {value: cdpRemoteObject.value};
-  }
-
-  /**
-   * Gets the string representation of an object. This is equivalent to
-   * calling toString() on the object value.
-   * @param cdpObject CDP remote object representing an object.
-   * @param realm
-   * @returns string The stringified object.
-   */
-  public static async stringifyObject(
-    cdpObject: Protocol.Runtime.RemoteObject,
-    realm: Realm
-  ): Promise<string> {
-    let stringifyResult = await realm.cdpClient.sendCommand(
-      'Runtime.callFunctionOn',
-      {
-        functionDeclaration: String(function (
-          obj: Protocol.Runtime.RemoteObject
-        ) {
-          return String(obj);
-        }),
-        awaitPromise: false,
-        arguments: [cdpObject],
-        returnByValue: true,
-        executionContextId: realm.executionContextId,
-      }
-    );
-    return stringifyResult.result.value;
-  }
-
-  public static async callFunction(
+  public async callFunction(
     realm: Realm,
     functionDeclaration: string,
     _this: Script.ArgumentValue,
@@ -112,13 +414,11 @@ export class ScriptEvaluator {
         return f.apply(deserializedThis, deserializedArgs);
       }}`;
 
-    const thisAndArgumentsList = [
-      await this.#deserializeToCdpArg(_this, realm),
-    ];
+    const thisAndArgumentsList = [await deserializeToCdpArg(_this, realm)];
     thisAndArgumentsList.push(
       ...(await Promise.all(
         _arguments.map(async (a) => {
-          return await this.#deserializeToCdpArg(a, realm);
+          return await deserializeToCdpArg(a, realm);
         })
       ))
     );
@@ -166,7 +466,7 @@ export class ScriptEvaluator {
     }
     return {
       type: 'success',
-      result: await ScriptEvaluator.#cdpToBidiValue(
+      result: await this.#cdpToBidiValue(
         cdpCallFunctionResult,
         realm,
         resultOwnership
@@ -175,15 +475,15 @@ export class ScriptEvaluator {
     };
   }
 
-  static realmDestroyed(realm: Realm) {
+  realmDestroyed(realm: Realm) {
     return Array.from(this.#knownHandlesToRealm.entries())
       .filter(([, r]) => r === realm.realmId)
       .map(([h]) => this.#knownHandlesToRealm.delete(h));
   }
 
-  static async disown(realm: Realm, handle: string) {
+  async disown(realm: Realm, handle: string) {
     // Disowning an object from different realm does nothing.
-    if (ScriptEvaluator.#knownHandlesToRealm.get(handle) !== realm.realmId) {
+    if (this.#knownHandlesToRealm.get(handle) !== realm.realmId) {
       return;
     }
     try {
@@ -200,7 +500,7 @@ export class ScriptEvaluator {
     this.#knownHandlesToRealm.delete(handle);
   }
 
-  static async #serializeCdpExceptionDetails(
+  async #serializeCdpExceptionDetails(
     cdpExceptionDetails: Protocol.Runtime.ExceptionDetails,
     lineOffset: number,
     resultOwnership: Script.OwnershipModel,
@@ -224,10 +524,7 @@ export class ScriptEvaluator {
       realm
     );
 
-    const text = await this.stringifyObject(
-      cdpExceptionDetails.exception!,
-      realm
-    );
+    const text = await stringifyObject(cdpExceptionDetails.exception!, realm);
 
     return {
       exception,
@@ -242,7 +539,7 @@ export class ScriptEvaluator {
     };
   }
 
-  static async #cdpToBidiValue(
+  async #cdpToBidiValue(
     cdpValue:
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse,
@@ -250,7 +547,7 @@ export class ScriptEvaluator {
     resultOwnership: Script.OwnershipModel
   ): Promise<CommonDataTypes.RemoteValue> {
     const cdpWebDriverValue = cdpValue.result.webDriverValue!;
-    const bidiValue = this.webDriverValueToBiDi(cdpWebDriverValue, realm);
+    const bidiValue = webDriverValueToBiDi(cdpWebDriverValue, realm);
 
     if (cdpValue.result.objectId) {
       const objectId = cdpValue.result.objectId;
@@ -270,52 +567,7 @@ export class ScriptEvaluator {
     return bidiValue as CommonDataTypes.RemoteValue;
   }
 
-  static webDriverValueToBiDi(
-    webDriverValue: Protocol.Runtime.WebDriverValue,
-    realm: Realm
-  ): CommonDataTypes.RemoteValue {
-    // This relies on the CDP to implement proper BiDi serialization, except
-    // backendNodeId/sharedId.
-    const result = webDriverValue as any;
-    const bidiValue = result.value;
-    if (bidiValue === undefined) {
-      return result;
-    }
-
-    if (result.type == 'node') {
-      if (bidiValue.hasOwnProperty('backendNodeId')) {
-        bidiValue.sharedId = `${realm.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
-        delete bidiValue['backendNodeId'];
-      }
-      if (bidiValue.hasOwnProperty('children')) {
-        for (const i in bidiValue.children) {
-          bidiValue.children[i] = this.webDriverValueToBiDi(
-            bidiValue.children[i],
-            realm
-          );
-        }
-      }
-    }
-
-    // Recursively update the nested values.
-    if (['array', 'set'].includes(webDriverValue.type)) {
-      for (const i in bidiValue) {
-        bidiValue[i] = this.webDriverValueToBiDi(bidiValue[i], realm);
-      }
-    }
-    if (['object', 'map'].includes(webDriverValue.type)) {
-      for (const i in bidiValue) {
-        bidiValue[i] = [
-          this.webDriverValueToBiDi(bidiValue[i][0], realm),
-          this.webDriverValueToBiDi(bidiValue[i][1], realm),
-        ];
-      }
-    }
-
-    return result;
-  }
-
-  public static async scriptEvaluate(
+  public async scriptEvaluate(
     realm: Realm,
     expression: string,
     awaitPromise: boolean,
@@ -347,273 +599,12 @@ export class ScriptEvaluator {
 
     return {
       type: 'success',
-      result: await ScriptEvaluator.#cdpToBidiValue(
+      result: await this.#cdpToBidiValue(
         cdpEvaluateResult,
         realm,
         resultOwnership
       ),
       realm: realm.realmId,
     };
-  }
-
-  static async #deserializeToCdpArg(
-    argumentValue: Script.ArgumentValue,
-    realm: Realm
-  ): Promise<Protocol.Runtime.CallArgument> {
-    if ('sharedId' in argumentValue) {
-      const [navigableId, rawBackendNodeId] =
-        argumentValue.sharedId.split(SHARED_ID_DIVIDER);
-
-      const backendNodeId = parseInt(rawBackendNodeId ?? '');
-      if (
-        isNaN(backendNodeId) ||
-        backendNodeId === undefined ||
-        navigableId === undefined
-      ) {
-        throw new Message.InvalidArgumentException(
-          `SharedId "${argumentValue.sharedId}" should have format "{navigableId}${SHARED_ID_DIVIDER}{backendNodeId}".`
-        );
-      }
-
-      if (realm.navigableId !== navigableId) {
-        throw new Message.NoSuchNodeException(
-          `SharedId "${argumentValue.sharedId}" belongs to different document.`
-        );
-      }
-
-      try {
-        const obj = await realm.cdpClient.sendCommand('DOM.resolveNode', {
-          backendNodeId,
-          executionContextId: realm.executionContextId,
-        });
-        // TODO: release `obj.object.objectId` after using.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
-        return {objectId: obj.object.objectId};
-      } catch (e: any) {
-        // Heuristic to detect "no such node" exception. Based on the  specific
-        // CDP implementation.
-        if (e.code === -32000 && e.message === 'No node with given id found') {
-          throw new Message.NoSuchNodeException(
-            `SharedId "${argumentValue.sharedId}" was not found.`
-          );
-        }
-        throw e;
-      }
-    }
-    if ('handle' in argumentValue) {
-      return {objectId: argumentValue.handle};
-    }
-    switch (argumentValue.type) {
-      // Primitive Protocol Value
-      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
-      case 'undefined': {
-        return {unserializableValue: 'undefined'};
-      }
-      case 'null': {
-        return {unserializableValue: 'null'};
-      }
-      case 'string': {
-        return {value: argumentValue.value};
-      }
-      case 'number': {
-        if (argumentValue.value === 'NaN') {
-          return {unserializableValue: 'NaN'};
-        } else if (argumentValue.value === '-0') {
-          return {unserializableValue: '-0'};
-        } else if (argumentValue.value === '+Infinity') {
-          return {unserializableValue: '+Infinity'};
-        } else if (argumentValue.value === 'Infinity') {
-          return {unserializableValue: 'Infinity'};
-        } else if (argumentValue.value === '-Infinity') {
-          return {unserializableValue: '-Infinity'};
-        } else {
-          return {
-            value: argumentValue.value,
-          };
-        }
-      }
-      case 'boolean': {
-        return {value: !!argumentValue.value};
-      }
-      case 'bigint': {
-        return {
-          unserializableValue: `BigInt(${JSON.stringify(argumentValue.value)})`,
-        };
-      }
-
-      // Local Value
-      // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-LocalValue
-      case 'date': {
-        return {
-          unserializableValue: `new Date(Date.parse(${JSON.stringify(
-            argumentValue.value
-          )}))`,
-        };
-      }
-      case 'regexp': {
-        return {
-          unserializableValue: `new RegExp(${JSON.stringify(
-            argumentValue.value.pattern
-          )}, ${JSON.stringify(argumentValue.value.flags)})`,
-        };
-      }
-      case 'map': {
-        // TODO(sadym): if non of the nested keys and values has remote
-        // reference, serialize to `unserializableValue` without CDP roundtrip.
-        const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value,
-          realm
-        );
-        let argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(function (
-              ...args: Protocol.Runtime.CallArgument[]
-            ) {
-              const result = new Map();
-              for (let i = 0; i < args.length; i += 2) {
-                result.set(args[i], args[i + 1]);
-              }
-              return result;
-            }),
-            awaitPromise: false,
-            arguments: keyValueArray,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO: release `argEvalResult.result.objectId`  after using.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'object': {
-        // TODO(sadym): if non of the nested keys and values has remote
-        //  reference, serialize to `unserializableValue` without CDP roundtrip.
-        const keyValueArray = await this.#flattenKeyValuePairs(
-          argumentValue.value,
-          realm
-        );
-
-        let argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(function (
-              ...args: Protocol.Runtime.CallArgument[]
-            ) {
-              const result: Record<
-                string | number | symbol,
-                Protocol.Runtime.CallArgument
-              > = {};
-
-              for (let i = 0; i < args.length; i += 2) {
-                // Key should be either `string`, `number`, or `symbol`.
-                const key = args[i] as string | number | symbol;
-                result[key] = args[i + 1]!;
-              }
-              return result;
-            }),
-            awaitPromise: false,
-            arguments: keyValueArray,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO: release `argEvalResult.result.objectId`  after using.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'array': {
-        // TODO(sadym): if non of the nested items has remote reference,
-        //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await ScriptEvaluator.#flattenValueList(
-          argumentValue.value,
-          realm
-        );
-
-        let argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(function (...args: unknown[]) {
-              return args;
-            }),
-            awaitPromise: false,
-            arguments: args,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO: release `argEvalResult.result.objectId`  after using.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
-        return {objectId: argEvalResult.result.objectId};
-      }
-      case 'set': {
-        // TODO(sadym): if non of the nested items has remote reference,
-        //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(argumentValue.value, realm);
-
-        let argEvalResult = await realm.cdpClient.sendCommand(
-          'Runtime.callFunctionOn',
-          {
-            functionDeclaration: String(function (...args: unknown[]) {
-              return new Set(args);
-            }),
-            awaitPromise: false,
-            arguments: args,
-            returnByValue: false,
-            executionContextId: realm.executionContextId,
-          }
-        );
-        // TODO: release `argEvalResult.result.objectId`  after using.
-        // https://github.com/GoogleChromeLabs/chromium-bidi/issues/375
-        return {objectId: argEvalResult.result.objectId};
-      }
-
-      // TODO(sadym): dispose nested objects.
-
-      default:
-        throw new Error(
-          `Value ${JSON.stringify(argumentValue)} is not deserializable.`
-        );
-    }
-  }
-
-  static async #flattenKeyValuePairs(
-    value: CommonDataTypes.MappingLocalValue,
-    realm: Realm
-  ): Promise<Protocol.Runtime.CallArgument[]> {
-    const keyValueArray: Protocol.Runtime.CallArgument[] = [];
-    for (let pair of value) {
-      const key = pair[0];
-      const value = pair[1];
-
-      let keyArg, valueArg;
-
-      if (typeof key === 'string') {
-        // Key is a string.
-        keyArg = {value: key};
-      } else {
-        // Key is a serialized value.
-        keyArg = await this.#deserializeToCdpArg(key, realm);
-      }
-
-      valueArg = await this.#deserializeToCdpArg(value, realm);
-
-      keyValueArray.push(keyArg);
-      keyValueArray.push(valueArg);
-    }
-    return keyValueArray;
-  }
-
-  static async #flattenValueList(
-    list: CommonDataTypes.ListLocalValue,
-    realm: Realm
-  ): Promise<Protocol.Runtime.CallArgument[]> {
-    const result: Protocol.Runtime.CallArgument[] = [];
-
-    for (let value of list) {
-      result.push(await this.#deserializeToCdpArg(value, realm));
-    }
-
-    return result;
   }
 }
