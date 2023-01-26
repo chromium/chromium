@@ -49,7 +49,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
 
   // Adds HTML to the clipboard. The url parameter is optional, but especially
   // useful if the HTML fragment contains relative links.
-  void WriteHTML(const std::u16string& markup, const std::string& source_url);
+  // The `content_type` refers to the sanitization of the markup.
+  void WriteHTML(const std::u16string& markup,
+                 const std::string& source_url,
+                 ClipboardContentType content_type);
 
   // Adds SVG to the clipboard.
   void WriteSvg(const std::u16string& text);

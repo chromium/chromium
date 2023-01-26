@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "ui/base/clipboard/clipboard_content_type.h"
 #include "ui/base/clipboard/file_info.h"
 
 class GURL;
@@ -95,7 +96,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardUtil {
   // Helper method for converting between MS CF_HTML format and plain
   // text/html.
   static std::string HtmlToCFHtml(const std::string& html,
-                                  const std::string& base_url);
+                                  const std::string& base_url,
+                                  ClipboardContentType content_type);
   static void CFHtmlToHtml(const std::string& cf_html,
                            std::string* html,
                            std::string* base_url);

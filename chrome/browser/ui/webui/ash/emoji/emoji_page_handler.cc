@@ -247,7 +247,7 @@ void EmojiPageHandler::CopyGifToClipboard(const GURL& gif) {
   clipboard->WriteHTML(
       base::UTF8ToUTF16(base::StrCat(
           {"<img src=\"", gif.spec(), "\" referrerpolicy=\"no-referrer\">"})),
-      "");
+      "", ui::ClipboardContentType::kSanitized);
 
   // By hiding the emoji picker, we restore focus to the original text field.
   auto embedder = webui_controller_->embedder();

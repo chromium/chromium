@@ -635,8 +635,8 @@ void ClipboardOzone::WritePortableTextRepresentation(ClipboardBuffer buffer,
   // copy/paste selection to the primary selection.
   if (buffer == ClipboardBuffer::kCopyPaste && IsSelectionBufferAvailable()) {
     auto text_iter = objects.find(PortableFormat::kText);
-    if (text_iter != objects.end() && !text_iter->second.empty()) {
-      const auto& char_vector = text_iter->second[0];
+    if (text_iter != objects.end() && !text_iter->second.data.empty()) {
+      const auto& char_vector = text_iter->second.data[0];
       async_clipboard_ozone_->PrepareForWriting();
       if (!char_vector.empty())
         WriteText(&char_vector.front(), char_vector.size());

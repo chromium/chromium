@@ -199,7 +199,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
   // Write a basic ClipboardData which is eligible to render HTML.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url");
+    scw.WriteHTML(u"<img test>", "source_url",
+                  ui::ClipboardContentType::kSanitized);
   }
 
   FlushMessageLoop();
@@ -223,7 +224,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
   // Write a basic ClipboardData which is eligible to render HTML.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<table test>", "source_url");
+    scw.WriteHTML(u"<table test>", "source_url",
+                  ui::ClipboardContentType::kSanitized);
   }
 
   FlushMessageLoop();
@@ -247,7 +249,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
   // Write a basic ClipboardData which is eligible to render HTML.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"html with no img or table tag", "source_url");
+    scw.WriteHTML(u"html with no img or table tag", "source_url",
+                  ui::ClipboardContentType::kSanitized);
   }
 
   FlushMessageLoop();
@@ -271,12 +274,14 @@ TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   // to the clipboard history.
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url_1");
+    scw.WriteHTML(u"<img test>", "source_url_1",
+                  ui::ClipboardContentType::kSanitized);
   }
   FlushMessageLoop();
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url_2");
+    scw.WriteHTML(u"<img test>", "source_url_2",
+                  ui::ClipboardContentType::kSanitized);
   }
   FlushMessageLoop();
 
@@ -304,12 +309,14 @@ TEST_F(ClipboardHistoryResourceManagerTest, DifferentHTML) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img test>", "source_url");
+    scw.WriteHTML(u"<img test>", "source_url",
+                  ui::ClipboardContentType::kSanitized);
   }
   FlushMessageLoop();
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"<img different>", "source_url");
+    scw.WriteHTML(u"<img different>", "source_url",
+                  ui::ClipboardContentType::kSanitized);
   }
   FlushMessageLoop();
 
@@ -330,7 +337,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, IneligibleItem) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
-    scw.WriteHTML(u"test", "source_url");
+    scw.WriteHTML(u"test", "source_url", ui::ClipboardContentType::kSanitized);
     scw.WriteImage(GetRandomBitmap());
   }
   FlushMessageLoop();

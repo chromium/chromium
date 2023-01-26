@@ -43,6 +43,7 @@
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_content_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
@@ -192,7 +193,7 @@ TYPED_TEST(ClipboardTest, HTMLTest) {
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(plain);
-    clipboard_writer.WriteHTML(markup, url);
+    clipboard_writer.WriteHTML(markup, url, ClipboardContentType::kSanitized);
   }
 
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
@@ -282,7 +283,7 @@ TYPED_TEST(ClipboardTest, MultipleBufferTest) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kSelection);
-    clipboard_writer.WriteHTML(markup, url);
+    clipboard_writer.WriteHTML(markup, url, ClipboardContentType::kSanitized);
   }
 
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
@@ -328,7 +329,7 @@ TYPED_TEST(ClipboardTest, TrickyHTMLTest) {
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     clipboard_writer.WriteText(plain);
-    clipboard_writer.WriteHTML(markup, url);
+    clipboard_writer.WriteHTML(markup, url, ClipboardContentType::kSanitized);
   }
 
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
@@ -359,7 +360,7 @@ TYPED_TEST(ClipboardTest, UnicodeHTMLTest) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteHTML(markup, url);
+    clipboard_writer.WriteHTML(markup, url, ClipboardContentType::kSanitized);
 #if BUILDFLAG(IS_ANDROID)
     // Android requires HTML and plain text representations to be written.
     clipboard_writer.WriteText(markup);
@@ -451,7 +452,7 @@ TYPED_TEST(ClipboardTest, MultiFormatTest) {
 
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
-    clipboard_writer.WriteHTML(markup, url);
+    clipboard_writer.WriteHTML(markup, url, ClipboardContentType::kSanitized);
     clipboard_writer.WriteText(text);
   }
 
@@ -994,7 +995,7 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
   {
     ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
     writer.WriteText(u"foo");
-    writer.WriteHTML(u"foo", "bar");
+    writer.WriteHTML(u"foo", "bar", ClipboardContentType::kSanitized);
     writer.WriteBookmark(u"foo", "bar");
     writer.WriteHyperlink(u"foo", "bar");
     writer.WriteWebSmartPaste();
@@ -1041,7 +1042,8 @@ TYPED_TEST(ClipboardTest, WriteTextEmptyParams) {
 
 TYPED_TEST(ClipboardTest, WriteHTMLEmptyParams) {
   ScopedClipboardWriter scw(ClipboardBuffer::kCopyPaste);
-  scw.WriteHTML(std::u16string(), std::string());
+  scw.WriteHTML(std::u16string(), std::string(),
+                ClipboardContentType::kSanitized);
 }
 
 TYPED_TEST(ClipboardTest, EmptySvgTest) {

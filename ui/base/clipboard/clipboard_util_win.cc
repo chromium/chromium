@@ -842,14 +842,18 @@ bool ClipboardUtil::GetWebCustomData(
 // Documentation for the CF_HTML format is available at
 // http://msdn.microsoft.com/en-us/library/aa767917(VS.85).aspx
 std::string ClipboardUtil::HtmlToCFHtml(const std::string& html,
-                                        const std::string& base_url) {
-  if (html.empty())
+                                        const std::string& base_url,
+                                        ClipboardContentType content_type) {
+  // TODO(ansollan): Implement changes to correctly convert unsanitized
+  // text/html to MS CF_HTML.
+  if (html.empty() || content_type == ClipboardContentType::kUnsanitized) {
     return std::string();
+  }
 
-  #define MAX_DIGITS 10
-  #define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
-  #define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
-  #define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
+#define MAX_DIGITS 10
+#define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
+#define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
+#define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
 
   static const char* header = "Version:0.9\r\n"
       "StartHTML:" NUMBER_FORMAT "\r\n"

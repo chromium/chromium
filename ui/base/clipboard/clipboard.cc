@@ -208,38 +208,44 @@ Clipboard::~Clipboard() = default;
 void Clipboard::DispatchPortableRepresentation(PortableFormat format,
                                                const ObjectMapParams& params) {
   // Ignore writes with empty parameters.
-  for (const auto& param : params) {
-    if (param.empty())
+  for (const auto& param : params.data) {
+    if (param.empty()) {
       return;
+    }
   }
 
   switch (format) {
     case PortableFormat::kText:
-      WriteText(&(params[0].front()), params[0].size());
+      WriteText(params.data[0].data(), params.data[0].size());
       break;
 
     case PortableFormat::kHtml:
-      if (params.size() == 2) {
-        if (params[1].empty())
-          return;
-        WriteHTML(&(params[0].front()), params[0].size(), &(params[1].front()),
-                  params[1].size());
-      } else if (params.size() == 1) {
-        WriteHTML(&(params[0].front()), params[0].size(), nullptr, 0);
+      // If the source URL is passed, then the markup shouldn't be empty. If it
+      // is, we can return early.
+      if (params.data.size() == 2 && params.data[1].empty()) {
+        return;
+      }
+      if (params.data.size() == 2) {
+        WriteHTML(params.data[0].data(), params.data[0].size(),
+                  params.data[1].data(), params.data[1].size());
+      } else if (params.data.size() == 1) {
+        // If there isn't a source URL, then we set the URL data to null and
+        // size to 0.
+        WriteHTML(params.data[0].data(), params.data[0].size(), nullptr, 0);
       }
       break;
 
     case PortableFormat::kSvg:
-      WriteSvg(&(params[0].front()), params[0].size());
+      WriteSvg(params.data[0].data(), params.data[0].size());
       break;
 
     case PortableFormat::kRtf:
-      WriteRTF(&(params[0].front()), params[0].size());
+      WriteRTF(params.data[0].data(), params.data[0].size());
       break;
 
     case PortableFormat::kBookmark:
-      WriteBookmark(&(params[0].front()), params[0].size(),
-                    &(params[1].front()), params[1].size());
+      WriteBookmark(params.data[0].data(), params.data[0].size(),
+                    params.data[1].data(), params.data[1].size());
       break;
 
     case PortableFormat::kWebkit:
@@ -251,33 +257,33 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
       // ScopedClipboardWriter actually sizes the buffer to sizeof(SkBitmap*),
       // aliases the contents of the vector to a SkBitmap**, and writes the
       // pointer to the actual SkBitmap in the clipboard object param.
-      const char* packed_pointer_buffer = &params[0].front();
+      const char* packed_pointer_buffer = params.data[0].data();
       WriteBitmap(**reinterpret_cast<SkBitmap* const*>(packed_pointer_buffer));
       break;
     }
 
     case PortableFormat::kFilenames: {
-      std::string uri_list(&(params[0].front()), params[0].size());
+      std::string uri_list(params.data[0].data(), params.data[0].size());
       WriteFilenames(ui::URIListToFileInfos(uri_list));
       break;
     }
 
     case PortableFormat::kData:
       WriteData(ClipboardFormatType::Deserialize(
-                    std::string(&(params[0].front()), params[0].size())),
-                &(params[1].front()), params[1].size());
+                    std::string(params.data[0].data(), params.data[0].size())),
+                params.data[1].data(), params.data[1].size());
       break;
 
     case PortableFormat::kWebCustomFormatMap:
       WriteData(ClipboardFormatType::WebCustomFormatMap(),
-                &(params[0].front()), params[0].size());
+                params.data[0].data(), params.data[0].size());
       break;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case PortableFormat::kEncodedDataTransferEndpoint:
       // Only supported on Lacros.
       WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
-                &(params[0].front()), params[0].size());
+                params.data[0].data(), params.data[0].size());
       break;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -285,6 +291,17 @@ void Clipboard::DispatchPortableRepresentation(PortableFormat format,
       NOTREACHED();
   }
 }
+
+Clipboard::ObjectMapParams::ObjectMapParams(std::vector<ObjectMapParam> data,
+                                            ClipboardContentType content_type)
+    : data(std::move(data)), content_type(content_type) {}
+
+Clipboard::ObjectMapParams::ObjectMapParams(const ObjectMapParams& other) =
+    default;
+
+Clipboard::ObjectMapParams::ObjectMapParams() = default;
+
+Clipboard::ObjectMapParams::~ObjectMapParams() = default;
 
 void Clipboard::DispatchPlatformRepresentations(
     std::vector<Clipboard::PlatformRepresentation> platform_representations) {

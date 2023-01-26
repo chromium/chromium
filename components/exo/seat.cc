@@ -241,7 +241,8 @@ void Seat::OnHTMLRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
                       const std::string& mime_type,
                       std::u16string data) {
-  writer->WriteHTML(std::move(data), std::string());
+  writer->WriteHTML(std::move(data), std::string(),
+                    ui::ClipboardContentType::kSanitized);
   std::move(callback).Run();
 }
 

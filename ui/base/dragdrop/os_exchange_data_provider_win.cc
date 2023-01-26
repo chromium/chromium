@@ -537,7 +537,8 @@ void OSExchangeDataProviderWin::SetHtml(const std::u16string& html,
   std::string utf8_html = base::UTF16ToUTF8(html);
   std::string url = base_url.is_valid() ? base_url.spec() : std::string();
 
-  std::string cf_html = ClipboardUtil::HtmlToCFHtml(utf8_html, url);
+  std::string cf_html = ClipboardUtil::HtmlToCFHtml(
+      utf8_html, url, ClipboardContentType::kSanitized);
   STGMEDIUM storage = CreateStorageForBytes(cf_html.c_str(), cf_html.size());
   data_->contents_.push_back(DataObjectImpl::StoredDataInfo::TakeStorageMedium(
       ClipboardFormatType::HtmlType().ToFormatEtc(), storage));

@@ -14,6 +14,7 @@
 #include "base/synchronization/atomic_flag.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/clipboard/clipboard_content_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
 using content::BrowserThread;
@@ -122,7 +123,8 @@ void ClipboardExtensionHelper::OnImageDecoded(const SkBitmap& bitmap) {
       if (item.type == clipboard::DATA_ITEM_TYPE_TEXTPLAIN)
         scw.WriteText(base::UTF8ToUTF16(item.data));
       else if (item.type == clipboard::DATA_ITEM_TYPE_TEXTHTML)
-        scw.WriteHTML(base::UTF8ToUTF16(item.data), std::string());
+        scw.WriteHTML(base::UTF8ToUTF16(item.data), std::string(),
+                      ui::ClipboardContentType::kSanitized);
     }
   }
   std::move(image_save_success_callback_).Run();
