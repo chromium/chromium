@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/store_metrics_reporter.h"
 #include <memory>
+#include <utility>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -351,6 +352,34 @@ void ReportPasswordIssuesMetrics(
       count_phished);
 }
 
+void ReportStoreMetrics(bool is_account_store,
+                        bool custom_passphrase_sync_enabled,
+                        const std::string& sync_username,
+                        BulkCheckDone bulk_check_done,
+                        std::vector<std::unique_ptr<PasswordForm>> results) {
+  ReportNumberOfAccountsMetrics(is_account_store,
+                                custom_passphrase_sync_enabled, results);
+  ReportLoginsWithSchemesMetrics(is_account_store, results);
+  ReportTimesPasswordUsedMetrics(is_account_store,
+                                 custom_passphrase_sync_enabled, results);
+  ReportPasswordNotesMetrics(is_account_store, results);
+
+  // The remaining metrics are not recorded for the account store:
+  // - SyncingAccountState2 just doesn't make sense, since syncing users only
+  // use
+  //   the profile store.
+  // - DuplicateCredentials *could* be recorded for the account store, but are
+  //   not very critical.
+  // - Compromised credentials are only stored in the profile store.
+  if (is_account_store) {
+    return;
+  }
+
+  ReportSyncingAccountStateMetrics(sync_username, results);
+  ReportDuplicateCredentialsMetrics(results);
+  ReportPasswordIssuesMetrics(bulk_check_done, results);
+}
+
 void ReportMultiStoreMetrics(
     std::unique_ptr<std::map<std::pair<std::string, std::u16string>,
                              std::u16string>> profile_store_results,
@@ -429,6 +458,67 @@ void ReportMultiStoreMetrics(
   }
 }
 
+void ReportAllMetrics(bool custom_passphrase_sync_enabled,
+                      const std::string& sync_username,
+                      BulkCheckDone bulk_check_done,
+                      bool is_opted_in_account_storage,
+                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                          profile_store_results,
+                      absl::optional<std::vector<std::unique_ptr<PasswordForm>>>
+                          account_store_results) {
+  // Maps from (signon_realm, username) to password.
+  std::unique_ptr<
+      std::map<std::pair<std::string, std::u16string>, std::u16string>>
+      profile_store_passwords_per_signon_and_username;
+  std::unique_ptr<
+      std::map<std::pair<std::string, std::u16string>, std::u16string>>
+      account_store_passwords_per_signon_and_username;
+
+  if (profile_store_results.has_value()) {
+    profile_store_passwords_per_signon_and_username = std::make_unique<
+        std::map<std::pair<std::string, std::u16string>, std::u16string>>();
+    for (const std::unique_ptr<PasswordForm>& form :
+         profile_store_results.value()) {
+      profile_store_passwords_per_signon_and_username->insert(std::make_pair(
+          std::make_pair(form->signon_realm, form->username_value),
+          form->password_value));
+    }
+  }
+
+  if (account_store_results.has_value()) {
+    account_store_passwords_per_signon_and_username = std::make_unique<
+        std::map<std::pair<std::string, std::u16string>, std::u16string>>();
+    for (const std::unique_ptr<PasswordForm>& form :
+         account_store_results.value()) {
+      account_store_passwords_per_signon_and_username->insert(std::make_pair(
+          std::make_pair(form->signon_realm, form->username_value),
+          form->password_value));
+    }
+  }
+
+  if (profile_store_results.has_value()) {
+    ReportStoreMetrics(/*is_account_store=*/false,
+                       custom_passphrase_sync_enabled, sync_username,
+                       bulk_check_done,
+                       std::move(profile_store_results).value());
+  }
+  if (account_store_results.has_value()) {
+    ReportStoreMetrics(/*is_account_store=*/true,
+                       custom_passphrase_sync_enabled, sync_username,
+                       bulk_check_done,
+                       std::move(account_store_results).value());
+  }
+
+  // If both stores exist, kick off the MultiStoreMetricsReporter.
+  if (profile_store_passwords_per_signon_and_username &&
+      account_store_passwords_per_signon_and_username) {
+    ReportMultiStoreMetrics(
+        std::move(profile_store_passwords_per_signon_and_username),
+        std::move(account_store_passwords_per_signon_and_username),
+        is_opted_in_account_storage);
+  }
+}
+
 void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::UmaHistogramBoolean(
@@ -485,7 +575,8 @@ StoreMetricsReporter::StoreMetricsReporter(
   bulk_check_done_ =
       BulkCheckDone(prefs->HasPrefPath(prefs::kLastTimePasswordCheckCompleted));
 
-  is_opted_in_ = features_util::IsOptedInForAccountStorage(prefs, sync_service);
+  is_opted_in_account_storage_ =
+      features_util::IsOptedInForAccountStorage(prefs, sync_service);
 
   base::UmaHistogramBoolean(
       base::StrCat({kPasswordManager, ".Enabled4"}),
@@ -525,66 +616,26 @@ void StoreMetricsReporter::OnGetPasswordStoreResults(
 void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
     PasswordStoreInterface* store,
     std::vector<std::unique_ptr<PasswordForm>> results) {
-  bool is_account_store = store == account_store_;
-
-  if (is_account_store) {
-    account_store_results_ = std::make_unique<
-        std::map<std::pair<std::string, std::u16string>, std::u16string>>();
-    for (const std::unique_ptr<PasswordForm>& form : results) {
-      account_store_results_->insert(std::make_pair(
-          std::make_pair(form->signon_realm, form->username_value),
-          form->password_value));
-    }
+  if (store == account_store_) {
+    account_store_results_ = std::move(results);
   } else {
-    profile_store_results_ = std::make_unique<
-        std::map<std::pair<std::string, std::u16string>, std::u16string>>();
-    for (const std::unique_ptr<PasswordForm>& form : results) {
-      profile_store_results_->insert(std::make_pair(
-          std::make_pair(form->signon_realm, form->username_value),
-          form->password_value));
-    }
+    profile_store_results_ = std::move(results);
   }
 
-  ReportStoreMetrics(is_account_store, std::move(results));
-
-  // If we are still expecting more results, there is nothing else to do.
+  // Wait until all expected results are available before starting metrics
+  // reporting.
   if ((profile_store_ && !profile_store_results_) ||
       (account_store_ && !account_store_results_)) {
     return;
   }
 
-  // If both stores exist, kick off the MultiStoreMetricsReporter.
-  if (profile_store_results_ && account_store_results_) {
-    ReportMultiStoreMetrics(std::move(profile_store_results_),
-                            std::move(account_store_results_), is_opted_in_);
-  }
+  ReportAllMetrics(custom_passphrase_sync_enabled_, sync_username_,
+                   bulk_check_done_, is_opted_in_account_storage_,
+                   std::exchange(profile_store_results_, absl::nullopt),
+                   std::exchange(account_store_results_, absl::nullopt));
+
   DCHECK(done_callback_);
   std::move(done_callback_).Run();
-}
-
-void StoreMetricsReporter::ReportStoreMetrics(
-    bool is_account_store,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  ReportNumberOfAccountsMetrics(is_account_store,
-                                custom_passphrase_sync_enabled_, results);
-  ReportLoginsWithSchemesMetrics(is_account_store, results);
-  ReportTimesPasswordUsedMetrics(is_account_store,
-                                 custom_passphrase_sync_enabled_, results);
-  ReportPasswordNotesMetrics(is_account_store, results);
-
-  // The remaining metrics are not recorded for the account store:
-  // - SyncingAccountState2 just doesn't make sense, since syncing users only
-  // use
-  //   the profile store.
-  // - DuplicateCredentials *could* be recorded for the account store, but are
-  //   not very critical.
-  // - Compromised credentials are only stored in the profile store.
-  if (is_account_store)
-    return;
-
-  ReportSyncingAccountStateMetrics(sync_username_, results);
-  ReportDuplicateCredentialsMetrics(results);
-  ReportPasswordIssuesMetrics(bulk_check_done_, results);
 }
 
 StoreMetricsReporter::~StoreMetricsReporter() = default;
