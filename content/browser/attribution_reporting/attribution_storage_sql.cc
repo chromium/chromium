@@ -1688,17 +1688,12 @@ void AttributionStorageSql::ClearData(
   std::vector<StoredSource::Id> source_ids_to_delete;
   int num_event_reports_deleted = 0;
   while (statement.Step()) {
-    if (filter.is_null() ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(0)))) ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(1)))) ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(2))))) {
-      source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
-      if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
+    if (filter.is_null() || filter.Run(blink::StorageKey(DeserializeOrigin(
+                                statement.ColumnString(0))))) {
+      source_ids_to_delete.emplace_back(statement.ColumnInt64(1));
+      if (statement.GetColumnType(2) != sql::ColumnType::kNull) {
         if (!DeleteReportInternal(AttributionReport::EventLevelData::Id(
-                statement.ColumnInt64(4)))) {
+                statement.ColumnInt64(2)))) {
           return;
         }
 
@@ -2463,18 +2458,13 @@ int AttributionStorageSql::ClearAggregatableAttributionsForOriginsInRange(
 
   int num_aggregate_reports_deleted = 0;
   while (statement.Step()) {
-    if (filter.is_null() ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(0)))) ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(1)))) ||
-        filter.Run(
-            blink::StorageKey(DeserializeOrigin(statement.ColumnString(2))))) {
-      source_ids_to_delete.emplace_back(statement.ColumnInt64(3));
-      if (statement.GetColumnType(4) != sql::ColumnType::kNull) {
+    if (filter.is_null() || filter.Run(blink::StorageKey(DeserializeOrigin(
+                                statement.ColumnString(0))))) {
+      source_ids_to_delete.emplace_back(statement.ColumnInt64(1));
+      if (statement.GetColumnType(2) != sql::ColumnType::kNull) {
         if (!DeleteReportInternal(
                 AttributionReport::AggregatableAttributionData::Id(
-                    statement.ColumnInt64(4)))) {
+                    statement.ColumnInt64(2)))) {
           return -1;
         }
         ++num_aggregate_reports_deleted;

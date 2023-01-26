@@ -548,28 +548,28 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           {},
       },
       {
-          "1 deletion: time range and filter match for source origin",
-          now + base::Milliseconds(1),
+          "no deletions: filter doesn't match for source origin",
+          base::Time::Min(),
           base::Time::Max(),
           base::BindRepeating([](const blink::StorageKey& storage_key) {
             return storage_key == blink::StorageKey::CreateFromStringForTesting(
                                       "https://a.s1.test");
           }),
-          {3},
+          {},
       },
       {
-          "2 deletions: filter matches for destination origin",
+          "no deletions: filter doesn't match for destination origin",
           base::Time::Min(),
           base::Time::Max(),
           base::BindRepeating([](const blink::StorageKey& storage_key) {
             return storage_key == blink::StorageKey::CreateFromStringForTesting(
                                       "https://b.d1.test");
           }),
-          {2, 4},
+          {},
       },
       {
-          "1 deletion: filter matches for reporting origin",
-          base::Time::Min(),
+          "1 deletion: time range and filter match for reporting origin",
+          now + base::Milliseconds(1),
           base::Time::Max(),
           base::BindRepeating([](const blink::StorageKey& storage_key) {
             return storage_key == blink::StorageKey::CreateFromStringForTesting(

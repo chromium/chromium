@@ -403,7 +403,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataRangeMultipleReports) {
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(
           std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().source_origin())));
+          blink::StorageKey(source.common_info().reporting_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -457,7 +457,7 @@ TEST_F(AttributionStorageSqlTest, ClearDataWithVestigialConversion) {
       base::Time::Now(), base::Time::Now(),
       base::BindRepeating(
           std::equal_to<blink::StorageKey>(),
-          blink::StorageKey(source.common_info().source_origin())));
+          blink::StorageKey(source.common_info().reporting_origin())));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
   CloseDatabase();
@@ -648,108 +648,6 @@ TEST_F(AttributionStorageSqlTest, MaxReportsPerDestination) {
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
   EXPECT_EQ(3u, rate_limit_rows);
-}
-
-TEST_F(AttributionStorageSqlTest,
-       DeleteRateLimitRowsForSubdomainImpressionOrigin) {
-  OpenDatabase();
-  delegate()->set_max_attributions_per_source(1);
-  delegate()->set_rate_limits({
-      .time_window = base::Days(7),
-      .max_source_registration_reporting_origins =
-          std::numeric_limits<int64_t>::max(),
-      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
-      .max_attributions = std::numeric_limits<int64_t>::max(),
-  });
-  const auto source_origin =
-      *SuitableOrigin::Deserialize("https://sub.impression.example/");
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://a.example/");
-  const auto destination_origin =
-      *SuitableOrigin::Deserialize("https://b.example/");
-  storage()->StoreSource(SourceBuilder()
-                             .SetExpiry(base::Days(30))
-                             .SetSourceOrigin(source_origin)
-                             .SetReportingOrigin(reporting_origin)
-                             .SetDestinationOrigin(destination_origin)
-                             .Build());
-
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder()
-                    .SetDestinationOrigin(destination_origin)
-                    .SetReportingOrigin(reporting_origin)
-                    .Build()));
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(
-      storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
-  storage()->ClearData(base::Time::Min(), base::Time::Max(),
-                       base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                                           blink::StorageKey(source_origin)));
-
-  CloseDatabase();
-  sql::Database raw_db;
-  EXPECT_TRUE(raw_db.Open(db_path()));
-  size_t conversion_rows;
-  sql::test::CountTableRows(&raw_db, "event_level_reports", &conversion_rows);
-  EXPECT_EQ(0u, conversion_rows);
-  size_t rate_limit_rows;
-  sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-  EXPECT_EQ(0u, rate_limit_rows);
-}
-
-TEST_F(AttributionStorageSqlTest,
-       DeleteRateLimitRowsForSubdomainConversionOrigin) {
-  OpenDatabase();
-  delegate()->set_max_attributions_per_source(1);
-  delegate()->set_rate_limits({
-      .time_window = base::Days(7),
-      .max_source_registration_reporting_origins =
-          std::numeric_limits<int64_t>::max(),
-      .max_attribution_reporting_origins = std::numeric_limits<int64_t>::max(),
-      .max_attributions = std::numeric_limits<int64_t>::max(),
-  });
-  const auto source_origin = *SuitableOrigin::Deserialize("https://b.example/");
-  const auto reporting_origin =
-      *SuitableOrigin::Deserialize("https://a.example/");
-  const auto destination_origin =
-      *SuitableOrigin::Deserialize("https://sub.impression.example/");
-  storage()->StoreSource(SourceBuilder()
-                             .SetExpiry(base::Days(30))
-                             .SetSourceOrigin(source_origin)
-                             .SetReportingOrigin(reporting_origin)
-                             .SetDestinationOrigin(destination_origin)
-                             .Build());
-
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
-            MaybeCreateAndStoreEventLevelReport(
-                TriggerBuilder()
-                    .SetDestinationOrigin(destination_origin)
-                    .SetReportingOrigin(reporting_origin)
-                    .Build()));
-  EXPECT_THAT(storage()->GetActiveSources(), SizeIs(1));
-
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(
-      storage()->DeleteReport(AttributionReport::EventLevelData::Id(1)));
-  storage()->ClearData(
-      base::Time::Min(), base::Time::Max(),
-      base::BindRepeating(std::equal_to<blink::StorageKey>(),
-                          blink::StorageKey(destination_origin)));
-
-  CloseDatabase();
-  sql::Database raw_db;
-  EXPECT_TRUE(raw_db.Open(db_path()));
-  size_t conversion_rows;
-  sql::test::CountTableRows(&raw_db, "event_level_reports", &conversion_rows);
-  EXPECT_EQ(0u, conversion_rows);
-  size_t rate_limit_rows;
-  sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-  EXPECT_EQ(0u, rate_limit_rows);
 }
 
 TEST_F(AttributionStorageSqlTest, CantOpenDb_FailsSilentlyInRelease) {

@@ -1788,7 +1788,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForOrigin) {
   base::RunLoop run_loop;
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
-      blink::StorageKey(source.common_info().source_origin()), now, now,
+      blink::StorageKey(source.common_info().reporting_origin()), now, now,
       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -1855,7 +1855,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
     auto impression = *SuitableOrigin::Deserialize(
         base::StringPrintf("https://imp-%d.com/", i));
     auto reporter = *SuitableOrigin::Deserialize(
-        base::StringPrintf("https://reporter-%d.com/", i));
+        base::StringPrintf("https://rep-%d.com/", i));
     auto conv = *SuitableOrigin::Deserialize(
         base::StringPrintf("https://conv-%d.com/", i));
     attribution_manager->HandleSource(SourceBuilder(now)
@@ -1872,7 +1872,7 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
 
   EXPECT_EQ(5u, GetAttributionReportsForTesting(attribution_manager).size());
 
-  // Match against enough Origins to delete three of the imp/conv pairs.
+  // Only those with a matching reporting origin should be deleted.
   base::RunLoop run_loop;
   auto filter_builder = BrowsingDataFilterBuilder::Create(
       BrowsingDataFilterBuilder::Mode::kPreserve);
@@ -1884,16 +1884,14 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
                storage_key == blink::StorageKey::CreateFromStringForTesting(
                                   "https://conv-3.com/") ||
                storage_key == blink::StorageKey::CreateFromStringForTesting(
-                                  "https://rep-4.com/") ||
-               storage_key == blink::StorageKey::CreateFromStringForTesting(
-                                  "https://imp-4.com/");
+                                  "https://rep-4.com/");
       });
   partition->ClearData(
       StoragePartition::REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED, 0,
       filter_builder.get(), func, nullptr, false, now, now,
       run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_EQ(2u, GetAttributionReportsForTesting(attribution_manager).size());
+  EXPECT_EQ(4u, GetAttributionReportsForTesting(attribution_manager).size());
 }
 
 TEST_F(StoragePartitionImplTest, DataRemovalObserver) {

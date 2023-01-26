@@ -39,8 +39,7 @@ inline constexpr const char kSelectInactiveSourcesSql[] =
     ")LIMIT ?";
 
 inline constexpr const char kScanCandidateData[] =
-    "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
-    "I.source_id,C.report_id "
+    "SELECT I.reporting_origin,I.source_id,C.report_id "
     "FROM sources I LEFT JOIN event_level_reports C ON "
     "C.source_id=I.source_id WHERE"
     "(I.source_time BETWEEN ?1 AND ?2)OR"
@@ -62,8 +61,7 @@ inline constexpr const char kDedupKeySql[] =
     "SELECT dedup_key FROM dedup_keys WHERE source_id=? AND report_type=?";
 
 inline constexpr const char kScanCandidateDataAggregatable[] =
-    "SELECT I.source_origin,I.destination_origin,I.reporting_origin,"
-    "I.source_id,A.aggregation_id "
+    "SELECT I.reporting_origin,I.source_id,A.aggregation_id "
     "FROM sources I LEFT JOIN aggregatable_report_metadata A "
     "ON A.source_id=I.source_id WHERE"
     "(I.source_time BETWEEN ?1 AND ?2)OR"
@@ -247,7 +245,7 @@ inline constexpr const char kDeleteRateLimitRangeSql[] =
     "WHERE time BETWEEN ? AND ?";
 
 inline constexpr const char kSelectRateLimitsForDeletionSql[] =
-    "SELECT id,source_origin,destination_origin,reporting_origin "
+    "SELECT id,reporting_origin "
     "FROM rate_limits "
     "WHERE time BETWEEN ? AND ?";
 

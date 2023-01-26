@@ -122,14 +122,17 @@ class AttributionStorage {
   // report time in storage, if any.
   virtual absl::optional<base::Time> AdjustOfflineReportTimes() = 0;
 
-  // Deletes all data in storage for storage keys matching `filter`, between
-  // `delete_begin` and `delete_end` time. More specifically, this:
+  // Deletes all data in storage for reporting origins matching `filter`,
+  // between `delete_begin` and `delete_end` time. More specifically, this:
   // 1. Deletes all sources within the time range. If any report is
   //    attributed to this source it is also deleted.
   // 2. Deletes all reports within the time range. All sources
   //    attributed to the report are also deleted.
+  // 3. Deletes any rate limits matching `filter` or whose corresponding source
+  //    was deleted.
   //
-  // Note: if `filter` is null, it means that all storage keys should match.
+  // Note: if `filter` is null, it means that all reporting origins should
+  // match.
   virtual void ClearData(base::Time delete_begin,
                          base::Time delete_end,
                          StoragePartition::StorageKeyMatcherFunction filter,

@@ -1079,13 +1079,16 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   GURL session_only_origin("https://sessiononly.example");
   auto impression =
       SourceBuilder()
-          .SetSourceOrigin(*SuitableOrigin::Create(session_only_origin))
+          .SetReportingOrigin(*SuitableOrigin::Create(session_only_origin))
           .Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin);
 
   attribution_manager_->HandleSource(impression);
-  attribution_manager_->HandleTrigger(DefaultTrigger());
+  attribution_manager_->HandleTrigger(
+      TriggerBuilder()
+          .SetReportingOrigin(impression.common_info().reporting_origin())
+          .Build());
 
   EXPECT_THAT(StoredSources(), SizeIs(1));
   EXPECT_THAT(StoredReports(), SizeIs(1));
@@ -1095,38 +1098,6 @@ TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
 
   EXPECT_THAT(StoredSources(), IsEmpty());
   EXPECT_THAT(StoredReports(), IsEmpty());
-}
-
-TEST_F(AttributionManagerImplTest,
-       SessionOnlyOrigins_DeletedIfAnyOriginMatches) {
-  const auto session_only_origin =
-      *SuitableOrigin::Deserialize("https://sessiononly.example");
-  // Create impressions which each have the session only origin as one of
-  // impression/conversion/reporting origin.
-  auto impression1 =
-      SourceBuilder().SetSourceOrigin(session_only_origin).Build();
-  auto impression2 =
-      SourceBuilder().SetReportingOrigin(session_only_origin).Build();
-  auto impression3 =
-      SourceBuilder().SetDestinationOrigin(session_only_origin).Build();
-
-  // Create one  impression which is not session only.
-  auto impression4 = SourceBuilder().Build();
-
-  mock_storage_policy_->AddSessionOnly(session_only_origin->GetURL());
-
-  attribution_manager_->HandleSource(impression1);
-  attribution_manager_->HandleSource(impression2);
-  attribution_manager_->HandleSource(impression3);
-  attribution_manager_->HandleSource(impression4);
-
-  EXPECT_THAT(StoredSources(), SizeIs(4));
-
-  ShutdownManager();
-  CreateManager();
-
-  // All session-only impressions should be deleted.
-  EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
 // Tests that trigger priority cannot result in more than the maximum number of

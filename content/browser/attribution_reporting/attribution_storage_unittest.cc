@@ -760,6 +760,27 @@ TEST_F(AttributionStorageTest, ClearDataWithNoMatch_NoDelete) {
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
 
+TEST_F(AttributionStorageTest,
+       ClearData_SourceAndDestinationOriginsIrrelevant) {
+  const auto origin = *SuitableOrigin::Deserialize("https://a.test");
+
+  storage()->StoreSource(SourceBuilder()
+                             .SetSourceOrigin(origin)
+                             .SetDestinationOrigin(origin)
+                             .Build());
+  MaybeCreateAndStoreEventLevelReport(
+      TriggerBuilder().SetDestinationOrigin(origin).Build());
+
+  ASSERT_EQ(storage()->GetActiveSources().size(), 1u);
+  ASSERT_EQ(storage()->GetAttributionReports(base::Time::Max()).size(), 1u);
+
+  storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                       GetMatcher(*origin));
+
+  EXPECT_EQ(storage()->GetActiveSources().size(), 1u);
+  EXPECT_EQ(storage()->GetAttributionReports(base::Time::Max()).size(), 1u);
+}
+
 TEST_F(AttributionStorageTest, ClearDataOutsideRange_NoDelete) {
   base::Time now = base::Time::Now();
   auto impression = SourceBuilder(now).Build();
@@ -779,7 +800,7 @@ TEST_F(AttributionStorageTest, ClearDataImpression) {
     storage()->StoreSource(impression);
     storage()->ClearData(
         now, now + base::Minutes(20),
-        GetMatcher(impression.common_info().destination_origin()));
+        GetMatcher(impression.common_info().reporting_origin()));
     EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingImpressions,
               MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
   }
@@ -795,7 +816,7 @@ TEST_F(AttributionStorageTest, ClearDataImpressionConversion) {
             MaybeCreateAndStoreEventLevelReport(conversion));
 
   storage()->ClearData(now - base::Minutes(20), now + base::Minutes(20),
-                       GetMatcher(impression.common_info().source_origin()));
+                       GetMatcher(impression.common_info().reporting_origin()));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
@@ -854,7 +875,7 @@ TEST_F(AttributionStorageTest, ClearDataWithImpressionOutsideRange) {
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(conversion));
   storage()->ClearData(base::Time::Now(), base::Time::Now(),
-                       GetMatcher(impression.common_info().source_origin()));
+                       GetMatcher(impression.common_info().reporting_origin()));
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 }
 

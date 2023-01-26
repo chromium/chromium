@@ -13,7 +13,7 @@
     {
       "timestamp": "1643235573000",
       "source_origin": "https://s.test",
-      "reporting_origin": "https://r.test",
+      "reporting_origin": "https://r2.test",
       "source_type": "navigation",
       "Attribution-Reporting-Register-Source": {
         "destination": "https://d2.test",
@@ -36,7 +36,7 @@
     },
     {
       "timestamp": "1643235575000",
-      "reporting_origin": "https://r.test",
+      "reporting_origin": "https://r2.test",
       "destination_origin": "https://d2.test",
       "Attribution-Reporting-Register-Trigger": {
         "event_trigger_data": [
@@ -52,7 +52,7 @@
       "timestamp": "1643235574000",
       "delete_begin": "1643235573000",
       "delete_end":  "1643235573000",
-      "origins": ["https://d1.test"]
+      "origins": ["https://r.test"]
     }
   ]
 }
