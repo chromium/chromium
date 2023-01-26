@@ -18,7 +18,6 @@ from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.port.android import (
-    ANDROID_WEBLAYER,
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
 )
@@ -752,10 +751,9 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
             # Aliases for backwards compatibility.
             '--chrome-apk',
             '--system-webview-shell',
-            '--weblayer-shell',
             type=os.path.abspath,
             help=('Path to the browser APK to install and run. '
-                  '(For WebView and WebLayer, this value is the shell. '
+                  '(For WebView, this value is the shell. '
                   'Defaults to an on-device APK if not provided.)'))
         group.add_argument('--webview-provider',
                            type=os.path.abspath,
@@ -763,8 +761,6 @@ class WPTAdapter(common.BaseIsolatedScriptArgsAdapter):
                                  '(WebView only.)'))
         group.add_argument(
             '--additional-apk',
-            # Aliases for backwards compatibility.
-            '--weblayer-support',
             type=os.path.abspath,
             action='append',
             default=[],
@@ -994,7 +990,7 @@ class ChromeAndroidBase(Product):
     def get_browser_package_name(self):
         """Get the name of the package to run tests against.
 
-        For WebView and WebLayer, this package is the shell.
+        For WebView, this package is the shell.
 
         Returns:
             Optional[str]: The name of a package installed on the devices or
@@ -1054,28 +1050,6 @@ class ChromeAndroidBase(Product):
                 exit_stack.enter_context(_install_apk(device, apk))
             logger.info('Provisioned device (serial: %s)', device.serial)
             yield
-
-
-class WebLayer(ChromeAndroidBase):
-    name = ANDROID_WEBLAYER
-    aliases = ['weblayer']
-
-    @property
-    def wpt_args(self):
-        args = list(super().wpt_args)
-        args.append('--test-type=testharness')
-        return args
-
-    def get_browser_package_name(self):
-        return (super().get_browser_package_name()
-                or 'org.chromium.weblayer.shell')
-
-    def get_version_provider_package_name(self):
-        if self._options.additional_apk:
-            support_apk = self._options.additional_apk[0]
-            with contextlib.suppress(apk_helper.ApkHelperError):
-                return apk_helper.GetPackageName(support_apk)
-        return super().get_version_provider_package_name()
 
 
 class WebView(ChromeAndroidBase):
@@ -1166,7 +1140,7 @@ def _make_product_registry():
     product_registry = {}
     product_classes = [Chrome, ContentShell, ChromeiOS]
     if _ANDROID_ENABLED:
-        product_classes.extend([ChromeAndroid, WebView, WebLayer])
+        product_classes.extend([ChromeAndroid, WebView])
     for product_cls in product_classes:
         names = [product_cls.name] + product_cls.aliases
         product_registry.update((name, product_cls) for name in names)
