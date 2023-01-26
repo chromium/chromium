@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/find_in_page/find_in_page_metrics.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
@@ -101,7 +102,7 @@ void JavaScriptFindInPageManagerImpl::Find(NSString* query,
 }
 
 void JavaScriptFindInPageManagerImpl::StartSearch(NSString* query) {
-  base::RecordAction(base::UserMetricsAction(kFindActionName));
+  RecordSearchStartedAction();
   std::set<WebFrame*> all_frames =
       web_state_->GetWebFramesManager()->GetAllWebFrames();
   last_find_request_.Reset(query, all_frames.size());
@@ -251,14 +252,14 @@ void JavaScriptFindInPageManagerImpl::SelectDidFinish(
 }
 
 void JavaScriptFindInPageManagerImpl::SelectNextMatch() {
-  base::RecordAction(base::UserMetricsAction(kFindNextActionName));
+  RecordFindNextAction();
   if (last_find_request_.GoToNextMatch()) {
     SelectCurrentMatch();
   }
 }
 
 void JavaScriptFindInPageManagerImpl::SelectPreviousMatch() {
-  base::RecordAction(base::UserMetricsAction(kFindPreviousActionName));
+  RecordFindPreviousAction();
   if (last_find_request_.GoToPreviousMatch()) {
     SelectCurrentMatch();
   }

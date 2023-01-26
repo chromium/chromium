@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/find_in_page/find_in_page_controller.h"
+
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_model.h"
 #import "ios/chrome/browser/find_in_page/find_in_page_response_delegate.h"
 #import "ios/public/provider/chrome/browser/find_in_page/find_in_page_api.h"
 #import "ios/web/public/find_in_page/find_in_page_manager.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate_bridge.h"
 #import "ios/web/public/web_state.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,6 +24,9 @@ NSString* gSearchTerm;
 }  // namespace
 
 @interface FindInPageController () <CRWFindInPageManagerDelegate>
+
+// Records UKM metric for Find in Page search matches.
+- (void)logFindInPageSearchUKM;
 
 @end
 
@@ -90,6 +96,17 @@ NSString* gSearchTerm;
   [self.findInPageModel updateQuery:gSearchTerm matches:0];
 }
 
+#pragma mark - Private
+
+- (void)logFindInPageSearchUKM {
+  ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(_webState);
+  if (sourceID != ukm::kInvalidSourceId) {
+    ukm::builders::IOS_FindInPageSearchMatches(sourceID)
+        .SetHasMatches(_findInPageModel.matches > 0)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
 #pragma mark - CRWFindInPageManagerDelegate
 
 - (void)findInPageManager:(web::AbstractFindInPageManager*)manager
@@ -99,6 +116,7 @@ NSString* gSearchTerm;
   if (matchCount == 0 && !query) {
     // StopFinding responds with `matchCount` as 0 and `query` as nil.
     [self.responseDelegate findDidStop];
+    [self logFindInPageSearchUKM];
     return;
   }
   [self.findInPageModel updateQuery:query matches:matchCount];

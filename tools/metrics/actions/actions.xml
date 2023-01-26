@@ -9058,17 +9058,17 @@ should be able to be added at any place in this file.
 
 <action name="Find">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>For iOS: see IOS.FindInPage.SearchStarted</description>
 </action>
 
 <action name="FindNext">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>For iOS: see IOS.FindInPage.FindNext</description>
 </action>
 
 <action name="FindPrevious">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of this user action.</description>
+  <description>For iOS: see IOS.FindInPage.FindPrevious</description>
 </action>
 
 <action name="FindString">
@@ -11462,6 +11462,38 @@ should be able to be added at any place in this file.
   <description>
     The number of times the user triggered the &quot;view-location&quot; context
     after a long press on an address.
+  </description>
+</action>
+
+<action name="IOS.FindInPage.FindNext">
+  <owner>qpubert@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user navigated to the next match in Find in Page on
+    iOS. For instance, the user pressed the Next button in the system Find panel
+    or Chrome Find bar, or used the associated keybinding.
+  </description>
+</action>
+
+<action name="IOS.FindInPage.FindPrevious">
+  <owner>qpubert@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user navigated to the previous match in Find in Page
+    on iOS. For instance, the user pressed the Previous button in the system
+    Find panel or Chrome Find bar, or used the associated keybinding.
+  </description>
+</action>
+
+<action name="IOS.FindInPage.SearchStarted">
+  <owner>qpubert@google.com</owner>
+  <owner>djean@chromium.org</owner>
+  <description>
+    The number of times the user started a new Find in Page search on iOS. This
+    is recorded every time the Chrome Find bar is presented and every time the
+    user edits the query. This is not recorded if the Find in Page variant uses
+    the system Find panel (bottom of the screen, right above the keyboard) as
+    opposed to the Chrome Find bar (top of the screen).
   </description>
 </action>
 

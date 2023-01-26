@@ -16,13 +16,6 @@
 
 @class NSString;
 
-namespace {
-// Find in Page UserAction keys.
-const char kFindActionName[] = "Find";
-const char kFindNextActionName[] = "FindNext";
-const char kFindPreviousActionName[] = "FindPrevious";
-}  // namespace
-
 namespace web {
 
 class WebState;

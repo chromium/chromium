@@ -34,6 +34,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 - (void)findDidFinishWithUpdatedModel:(FindInPageModel*)model {
   self.model = model;
 }
+- (void)findDidStop {
+}
 @end
 
 namespace {
@@ -90,6 +92,7 @@ TEST_F(JavaScriptFindInPageControllerTest, VerifyUKMLoggedTrue) {
     base::RunLoop().RunUntilIdle();
     return delegate_.model != nil;
   }));
+  [find_in_page_controller_ disableFindInPage];
   // Single true entry should be recorded for the interaction above.
   const auto& entries =
       test_ukm_recorder_.GetEntriesByName(kFindInPageUkmSearchMatchesEvent);
@@ -109,6 +112,7 @@ TEST_F(JavaScriptFindInPageControllerTest, VerifyUKMLoggedFalse) {
     base::RunLoop().RunUntilIdle();
     return delegate_.model != nil;
   }));
+  [find_in_page_controller_ disableFindInPage];
   // Single false entry should be recorded for the interaction above.
   const auto& entries =
       test_ukm_recorder_.GetEntriesByName(kFindInPageUkmSearchMatchesEvent);

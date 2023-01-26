@@ -20,13 +20,6 @@
 @synthesize currentPoint = _currentPoint;
 @synthesize text = _text;
 
-- (void)setEnabled:(BOOL)enabled {
-  _enabled = enabled;
-  _matches = 0;
-  _currentIndex = 0;
-  _currentPoint = CGPointZero;
-}
-
 - (void)updateQuery:(NSString*)query matches:(NSUInteger)matches {
   if (query)
     self.text = query;

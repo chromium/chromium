@@ -27,6 +27,8 @@ source_set("find_in_page") {
     "find_in_page_manager_delegate_bridge.mm",
     "find_in_page_manager_impl.h",
     "find_in_page_manager_impl.mm",
+    "find_in_page_metrics.h",
+    "find_in_page_metrics.mm",
     "java_script_find_in_page_manager_impl.h",
     "java_script_find_in_page_manager_impl.mm",
     "java_script_find_in_page_request.h",

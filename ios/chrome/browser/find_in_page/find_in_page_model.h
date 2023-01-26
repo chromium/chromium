@@ -14,7 +14,10 @@
 // Should find in page be displayed.
 @property(nonatomic, assign) BOOL enabled;
 
-// The current search string.
+// The current search string. If the system Find panel is used as opposed to the
+// Chrome Find bar, then this will not be updated as the user types a query in
+// the Find panel text field. Instead it will contain the text with which the
+// Find panel was prepopulated before being presented.
 @property(copy, nonatomic, readonly) NSString* text;
 
 // The number of matches for `text`.

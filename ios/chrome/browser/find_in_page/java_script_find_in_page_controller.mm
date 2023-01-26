@@ -205,10 +205,10 @@ const int64_t kContextStringAnnouncementDelayInNanoseconds = 0.1 * NSEC_PER_SEC;
   if (matchCount == 0 && !query) {
     // StopFinding responds with `matchCount` as 0 and `query` as nil.
     [self.responseDelegate findDidStop];
+    [self logFindInPageSearchUKM];
     return;
   }
   [self.findInPageModel updateQuery:query matches:matchCount];
-  [self logFindInPageSearchUKM];
   [self.responseDelegate findDidFinishWithUpdatedModel:self.findInPageModel];
 }
 

@@ -5,6 +5,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/web/find_in_page/find_in_page_manager_impl.h"
+#import "ios/web/find_in_page/find_in_page_metrics.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
@@ -89,6 +90,16 @@ UIFindInteraction* FindInPageManagerImpl::GetOrCreateFindInteraction()
 // Executes find logic for `FindInPageSearch` option.
 void FindInPageManagerImpl::StartSearch(NSString* query)
     API_AVAILABLE(ios(16)) {
+  if (!use_find_interaction_) {
+    // The "IOS.FindInPage.SearchStarted" user action is associated with a new
+    // text search starting i.e. when the Find UI is presented and then whenever
+    // the query changes. However, if a Find interaction is used, `StartSearch`
+    // will only be called when the Find panel is presented. The
+    // "IOS.FindInPage.SearchStarted" user action should not be recorded in this
+    // case.
+    RecordSearchStartedAction();
+  }
+
   // Stop polling Find session in case search is already ongoing.
   StopPollingActiveFindSession();
 
@@ -134,12 +145,9 @@ void FindInPageManagerImpl::SelectPreviousMatch() API_AVAILABLE(ios(16)) {
 }
 
 void FindInPageManagerImpl::StopSearch() API_AVAILABLE(ios(16)) {
-  UIFindSession* find_session = GetActiveFindSession();
-  if (!find_session) {
-    return;
-  }
-
   StopPollingActiveFindSession();
+
+  UIFindSession* find_session = GetActiveFindSession();
   [find_session invalidateFoundResults];
 
   if (use_find_interaction_) {
@@ -207,28 +215,46 @@ void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
     return;
   }
 
-  NSInteger result_count = findSession.resultCount;
-  NSInteger highlighted_result_index = findSession.highlightedResultIndex;
+  NSInteger new_result_count = findSession.resultCount;
+  NSInteger new_highlighted_result_index = findSession.highlightedResultIndex;
+
+  // If the index increased by one or wrapped from the last match to the first,
+  // then it is very likely the user tapped "Next match" or used the associated
+  // keybinding.
+  if (new_highlighted_result_index == current_highlighted_result_index_ + 1 ||
+      (current_highlighted_result_index_ == new_result_count - 1 &&
+       new_highlighted_result_index == 0)) {
+    RecordFindNextAction();
+  }
+
+  // If the index decreased by one or wrapped from the first match to the last,
+  // then it is very likely the user tapped "Previous match" or used the
+  // associated keybinding.
+  if (new_highlighted_result_index == current_highlighted_result_index_ - 1 ||
+      (current_highlighted_result_index_ == 0 &&
+       new_highlighted_result_index == new_result_count - 1)) {
+    RecordFindPreviousAction();
+  }
 
   // If there are results but none is selected, select the first one.
-  if (highlighted_result_index == NSNotFound && result_count > 0) {
+  if (new_highlighted_result_index == NSNotFound && new_result_count > 0) {
     SelectNextMatch();
   }
 
   // If the result count differs from the last reported, report the new value.
-  if (current_result_count_ != result_count) {
-    delegate_->DidHighlightMatches(this, web_state_, result_count,
+  if (current_result_count_ != new_result_count) {
+    delegate_->DidHighlightMatches(this, web_state_, new_result_count,
                                    current_query_);
-    current_result_count_ = result_count;
+    current_result_count_ = new_result_count;
   }
 
   // If the highlighted result index differs from the last reported, report the
   // new value.
-  if (current_highlighted_result_index_ != highlighted_result_index &&
-      highlighted_result_index != NSNotFound) {
-    delegate_->DidSelectMatch(this, web_state_, highlighted_result_index,
+  if (current_highlighted_result_index_ != new_highlighted_result_index &&
+      new_highlighted_result_index != NSNotFound) {
+    delegate_->DidSelectMatch(this, web_state_, new_highlighted_result_index,
                               /*context_string=*/nil);
-    current_highlighted_result_index_ = highlighted_result_index;
+    current_highlighted_result_index_ = new_highlighted_result_index;
   }
 }
 

@@ -727,17 +727,21 @@ TEST_F(JavaScriptFindInPageManagerImplTest, FindInPageNextUpdatesMatchCount) {
 
 // Tests that Find in Page logs correct UserActions for given API calls.
 TEST_F(JavaScriptFindInPageManagerImplTest, FindUserActions) {
-  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindActionName));
+  ASSERT_EQ(0,
+            user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageSearch);
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindActionName));
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("IOS.FindInPage.SearchStarted"));
 
-  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindNextActionName));
+  ASSERT_EQ(0, user_action_tester_.GetActionCount("IOS.FindInPage.FindNext"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPageNext);
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindNextActionName));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount("IOS.FindInPage.FindNext"));
 
-  ASSERT_EQ(0, user_action_tester_.GetActionCount(kFindPreviousActionName));
+  ASSERT_EQ(0,
+            user_action_tester_.GetActionCount("IOS.FindInPage.FindPrevious"));
   GetFindInPageManager()->Find(@"foo", FindInPageOptions::FindInPagePrevious);
-  EXPECT_EQ(1, user_action_tester_.GetActionCount(kFindPreviousActionName));
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount("IOS.FindInPage.FindPrevious"));
 }
 
 }  // namespace web

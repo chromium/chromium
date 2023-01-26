@@ -10471,7 +10471,9 @@ be describing additional metrics about the same event.
   <owner>thegreenfrog@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <summary>
-    Logged when the FindInPage returns a user search request result.
+    Logged when the FindInPage returns a user search request result. Starting
+    from M111, this is only logged at the end of the Find session i.e. when the
+    Find UI is dismissed.
   </summary>
   <metric name="HasMatches" enum="Boolean">
     <summary>
