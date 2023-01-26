@@ -37,6 +37,11 @@ class LargestContentfulPaintCalculatorTest : public RenderingTest {
     trace_event::EnableTracing(TRACE_DISABLED_BY_DEFAULT("loading"));
   }
 
+  void TearDown() override {
+    RenderingTest::TearDown();
+    trace_event::DisableTracing();
+  }
+
   ImagePaintTimingDetector* GetImagePaintTimingDetector() {
     return &GetFrame()
                 .View()
