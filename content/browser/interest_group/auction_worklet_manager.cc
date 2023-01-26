@@ -269,10 +269,14 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
 }
 
 AuctionWorkletManager::WorkletHandle::~WorkletHandle() {
-  // The proxy that owns the SubresourceUrlAuthorizations only gets created if a
-  // process is assigned -- if that never happens, then there aren't isn't any
-  // SubresourceUrlAuthorizations, so don't report WorkletHandle destruction.
-  if (worklet_owner_->subresource_url_authorizations()) {
+  // We register with subresource_url_authorizations() only if
+  // AuthorizeSubresourceUrls() was called, so deregister if that's the case.
+  //
+  // This also must imply that the object should exist --- the proxy that owns
+  // the SubresourceUrlAuthorizations gets created when a process is assigned,
+  // and that's a precondition for calling AuthorizeSubresourceUrls().
+  if (authorized_subresources_) {
+    DCHECK(worklet_owner_->subresource_url_authorizations());
     worklet_owner_->subresource_url_authorizations()
         ->OnWorkletHandleDestruction(this);
   }
@@ -295,6 +299,7 @@ AuctionWorkletManager::WorkletHandle::GetSellerWorklet() {
 
 const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::
     GetSubresourceUrlAuthorizationsForTesting() {
+  DCHECK(authorized_subresources_);
   DCHECK(worklet_owner_->subresource_url_authorizations());
   return *worklet_owner_->subresource_url_authorizations();
 }
@@ -302,33 +307,23 @@ const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::
 AuctionWorkletManager::WorkletHandle::WorkletHandle(
     scoped_refptr<WorkletOwner> worklet_owner,
     base::OnceClosure worklet_available_callback,
-    FatalErrorCallback fatal_error_callback,
-    const SubresourceUrlBuilder& subresource_url_builder)
+    FatalErrorCallback fatal_error_callback)
     : worklet_owner_(std::move(worklet_owner)),
       worklet_available_callback_(std::move(worklet_available_callback)),
-      fatal_error_callback_(std::move(fatal_error_callback)),
-      subresource_url_builder_(&subresource_url_builder) {
+      fatal_error_callback_(std::move(fatal_error_callback)) {
   DCHECK(worklet_available_callback_);
   DCHECK(fatal_error_callback_);
 
   // Delete `worklet_available_callback_` if worklet is already available, since
-  // it won't be needed. Also, since the worklet is created, it's now possible
-  // to authorize subresource URLs -- this should happen now, before the live
-  // WorkletHandle is returned.
+  // it won't be needed.
   if (worklet_owner_->worklet_created()) {
     worklet_available_callback_.Reset();
-    AuthorizeSubresourceUrls();
   }
 
   worklet_owner_->RegisterHandle(this);
 }
 
 void AuctionWorkletManager::WorkletHandle::OnWorkletAvailable() {
-  // The proxy owned by WorkletOwner has been created, so it's now possible to
-  // authorize subresource URLs. This should be done before calling
-  // `worklet_available_callback_`, as the callback will make the worklet
-  // request these URLs.
-  AuthorizeSubresourceUrls();
   DCHECK(worklet_available_callback_);
   std::move(worklet_available_callback_).Run();
 }
@@ -340,28 +335,35 @@ void AuctionWorkletManager::WorkletHandle::OnFatalError(
   std::move(fatal_error_callback_).Run(type, errors);
 }
 
-void AuctionWorkletManager::WorkletHandle::AuthorizeSubresourceUrls() {
+void AuctionWorkletManager::WorkletHandle::AuthorizeSubresourceUrls(
+    const SubresourceUrlBuilder& subresource_url_builder) {
+  if (authorized_subresources_) {
+    return;
+  }
+
+  authorized_subresources_ = true;
+
   DCHECK(worklet_owner_->subresource_url_authorizations());
   std::vector<SubresourceUrlBuilder::BundleSubresourceInfo>
       authorized_subresource_urls;
-  if (subresource_url_builder_->auction_signals()) {
+  if (subresource_url_builder.auction_signals()) {
     authorized_subresource_urls.push_back(
-        *subresource_url_builder_->auction_signals());
+        *subresource_url_builder.auction_signals());
   }
   switch (worklet_owner_->worklet_info().type) {
     case WorkletType::kBidder: {
       const url::Origin bidder_origin =
           url::Origin::Create(worklet_owner_->worklet_info().script_url);
-      auto it =
-          subresource_url_builder_->per_buyer_signals().find(bidder_origin);
-      if (it != subresource_url_builder_->per_buyer_signals().end())
+      auto it = subresource_url_builder.per_buyer_signals().find(bidder_origin);
+      if (it != subresource_url_builder.per_buyer_signals().end()) {
         authorized_subresource_urls.push_back(it->second);
+      }
       break;
     }
     case WorkletType::kSeller: {
-      if (subresource_url_builder_->seller_signals()) {
+      if (subresource_url_builder.seller_signals()) {
         authorized_subresource_urls.push_back(
-            *subresource_url_builder_->seller_signals());
+            *subresource_url_builder.seller_signals());
       }
       break;
     }
@@ -398,7 +400,6 @@ bool AuctionWorkletManager::RequestBidderWorklet(
     const GURL& bidding_logic_url,
     const absl::optional<GURL>& wasm_url,
     const absl::optional<GURL>& trusted_bidding_signals_url,
-    const SubresourceUrlBuilder& subresource_url_builder,
     absl::optional<uint16_t> experiment_group_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
@@ -412,15 +413,13 @@ bool AuctionWorkletManager::RequestBidderWorklet(
                                ? experiment_group_id
                                : absl::nullopt);
   return RequestWorkletInternal(
-      std::move(worklet_info), subresource_url_builder,
-      std::move(worklet_available_callback), std::move(fatal_error_callback),
-      out_worklet_handle);
+      std::move(worklet_info), std::move(worklet_available_callback),
+      std::move(fatal_error_callback), out_worklet_handle);
 }
 
 bool AuctionWorkletManager::RequestSellerWorklet(
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
-    const SubresourceUrlBuilder& subresource_url_builder,
     absl::optional<uint16_t> experiment_group_id,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
@@ -433,9 +432,8 @@ bool AuctionWorkletManager::RequestSellerWorklet(
                            /*signals_url=*/trusted_scoring_signals_url,
                            experiment_group_id);
   return RequestWorkletInternal(
-      std::move(worklet_info), subresource_url_builder,
-      std::move(worklet_available_callback), std::move(fatal_error_callback),
-      out_worklet_handle);
+      std::move(worklet_info), std::move(worklet_available_callback),
+      std::move(fatal_error_callback), out_worklet_handle);
 }
 
 AuctionWorkletManager::WorkletInfo::WorkletInfo(
@@ -456,7 +454,6 @@ AuctionWorkletManager::WorkletInfo::~WorkletInfo() = default;
 
 bool AuctionWorkletManager::RequestWorkletInternal(
     WorkletInfo worklet_info,
-    const SubresourceUrlBuilder& subresource_url_builder,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle) {
@@ -472,7 +469,7 @@ bool AuctionWorkletManager::RequestWorkletInternal(
   }
   out_worklet_handle.reset(new WorkletHandle(
       std::move(worklet), std::move(worklet_available_callback),
-      std::move(fatal_error_callback), subresource_url_builder));
+      std::move(fatal_error_callback)));
   return out_worklet_handle->worklet_created();
 }
 

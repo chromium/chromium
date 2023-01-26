@@ -678,6 +678,8 @@ class InterestGroupAuction::BuyerHelper
     auction_worklet::mojom::KAnonymityBidMode kanon_mode =
         auction_->kanon_mode();
     bid_state->kanon_render_urls = ComputeKAnon(*bid_state->bidder, kanon_mode);
+    bid_state->worklet_handle->AuthorizeSubresourceUrls(
+        *auction_->subresource_url_builder_);
     bid_state->worklet_handle->GetBidderWorklet()->BeginGenerateBid(
         auction_worklet::mojom::BidderWorkletNonSharedParams::New(
             interest_group.name,
@@ -2021,7 +2023,7 @@ void InterestGroupAuction::RequestSellerWorklet() {
                                     *trace_id_);
   if (auction_worklet_manager_->RequestSellerWorklet(
           config_->decision_logic_url, config_->trusted_scoring_signals_url,
-          *subresource_url_builder_, config_->seller_experiment_group_id,
+          config_->seller_experiment_group_id,
           base::BindOnce(&InterestGroupAuction::OnSellerWorkletReceived,
                          base::Unretained(this)),
           base::BindOnce(&InterestGroupAuction::OnSellerWorkletFatalError,
@@ -2196,6 +2198,7 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   score_ad_receivers_.Add(
       this, score_ad_remote.InitWithNewPipeAndPassReceiver(), std::move(bid));
   DCHECK_EQ(0, config_->non_shared_params.NumPromises());
+  seller_worklet_handle_->AuthorizeSubresourceUrls(*subresource_url_builder_);
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
       GetDirectFromSellerSellerSignals(*subresource_url_builder_),
@@ -2602,9 +2605,9 @@ bool InterestGroupAuction::RequestBidderWorklet(
   return auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
       interest_group.bidding_wasm_helper_url,
-      interest_group.trusted_bidding_signals_url, *subresource_url_builder_,
-      experiment_group_id, std::move(worklet_available_callback),
-      std::move(fatal_error_callback), bid_state.worklet_handle);
+      interest_group.trusted_bidding_signals_url, experiment_group_id,
+      std::move(worklet_available_callback), std::move(fatal_error_callback),
+      bid_state.worklet_handle);
 }
 
 }  // namespace content

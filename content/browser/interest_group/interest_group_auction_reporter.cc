@@ -110,7 +110,6 @@ void InterestGroupAuctionReporter::RequestSellerWorklet(
   if (auction_worklet_manager_->RequestSellerWorklet(
           seller_info->auction_config->decision_logic_url,
           seller_info->auction_config->trusted_scoring_signals_url,
-          *seller_info->subresource_url_builder,
           seller_info->auction_config->seller_experiment_group_id,
           base::BindOnce(&InterestGroupAuctionReporter::OnSellerWorkletReceived,
                          base::Unretained(this), base::Unretained(seller_info),
@@ -168,6 +167,8 @@ void InterestGroupAuctionReporter::OnSellerWorkletReceived(
             seller_info->component_auction_modified_bid_params->has_bid);
   }
 
+  seller_worklet_handle_->AuthorizeSubresourceUrls(
+      *seller_info->subresource_url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
       seller_info->auction_config->non_shared_params,
       InterestGroupAuction::GetDirectFromSellerSellerSignals(
@@ -302,8 +303,7 @@ void InterestGroupAuctionReporter::RequestBidderWorklet(
   if (auction_worklet_manager_->RequestBidderWorklet(
           interest_group.bidding_url.value_or(GURL()),
           interest_group.bidding_wasm_helper_url,
-          interest_group.trusted_bidding_signals_url,
-          *bidder_auction.subresource_url_builder, experiment_group_id,
+          interest_group.trusted_bidding_signals_url, experiment_group_id,
           base::BindOnce(&InterestGroupAuctionReporter::OnBidderWorkletReceived,
                          base::Unretained(this), signals_for_winner),
           base::BindOnce(
@@ -356,6 +356,8 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
     }
   }
 
+  bidder_worklet_handle_->AuthorizeSubresourceUrls(
+      *seller_info.subresource_url_builder);
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
       group_name,
       auction_config->non_shared_params.auction_signals.maybe_json(),
