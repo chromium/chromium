@@ -6,20 +6,13 @@
 #include <memory>
 #include <string>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/checked_math.h"
-#include "base/process/launch.h"
-#include "base/process/process.h"
-#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -28,20 +21,20 @@
 #include "build/buildflag.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/ipc/ipc_support.h"
-#include "chrome/updater/persisted_data.h"
-#include "chrome/updater/prefs.h"
-#include "chrome/updater/registration_data.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
-#include "chrome/updater/test_scope.h"
 #include "chrome/updater/update_service.h"
-#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/unittest_util.h"
-#include "chrome/updater/util/util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_LINUX)
+#include <unistd.h>
+
+#include "base/environment.h"
+#include "base/strings/strcat.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <shlobj.h>
@@ -49,6 +42,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/win_constants.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -98,6 +92,17 @@ class IntegrationTest : public ::testing::Test {
     // TODO(crbug.com/1233612) - reenable the code when system tests pass.
     // SetUpTestService();
     ASSERT_NO_FATAL_FAILURE(EnterTestMode(GURL("http://localhost:1234")));
+
+#if BUILDFLAG(IS_LINUX)
+    // On LUCI the XDG_RUNTIME_DIR environment variable may not be set. This is
+    // required for systemctl to connect to its bus in user mode.
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    if (!env->HasVar("XDG_RUNTIME_DIR")) {
+      ASSERT_TRUE(env->SetVar(
+          "XDG_RUNTIME_DIR",
+          base::StrCat({"/run/user/", base::NumberToString(getuid())})));
+    }
+#endif
   }
 
   void TearDown() override {
