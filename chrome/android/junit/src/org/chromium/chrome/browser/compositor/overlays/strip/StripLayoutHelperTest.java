@@ -496,16 +496,41 @@ public class StripLayoutHelperTest {
         float visibleOpacity = StripLayoutHelper.DIVIDER_DEFAULT_OPACITY;
         // clang-format off
         assertEquals("First divider should always be hidden.",
-            hiddenOpacity, tabs[0].getDividerOpacity(), EPSILON);
+                hiddenOpacity, tabs[0].getDividerOpacity(), EPSILON);
         assertEquals("Divider should be at default opacity.",
-            visibleOpacity, tabs[1].getDividerOpacity(), EPSILON);
+                visibleOpacity, tabs[1].getDividerOpacity(), EPSILON);
         assertEquals("Divider is adjacent to selected tab and should be hidden.",
-            hiddenOpacity, tabs[2].getDividerOpacity(), EPSILON);
+                hiddenOpacity, tabs[2].getDividerOpacity(), EPSILON);
         assertEquals("Divider is adjacent to selected tab and should be hidden.",
-            hiddenOpacity, tabs[3].getDividerOpacity(), EPSILON);
+                hiddenOpacity, tabs[3].getDividerOpacity(), EPSILON);
         assertEquals("Divider should be at default opacity.",
-            visibleOpacity, tabs[4].getDividerOpacity(), EPSILON);
+                visibleOpacity, tabs[4].getDividerOpacity(), EPSILON);
         // clang-format on
+    }
+
+    @Test
+    @Feature("Tab Strip Redesign")
+    public void testUpdateForegroundTabContainers() {
+        // Setup with 5 tabs. Select tab 2.
+        initializeTest(false, false, 2);
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabs();
+
+        // Trigger update to set foreground container visibility.
+        mStripLayoutHelper.updateLayout(TIMESTAMP);
+
+        // Verify tabs 2 and 3's dividers are hidden due to selection.
+        float hiddenOpacity = StripLayoutHelper.TAB_OPACITY_HIDDEN;
+        float visibleOpacity = StripLayoutHelper.TAB_OPACITY_VISIBLE_FOREGROUND;
+        assertEquals("Tab is not selected and container should not be visible.", hiddenOpacity,
+                tabs[0].getContainerOpacity(), EPSILON);
+        assertEquals("Tab is not selected and container should not be visible.", hiddenOpacity,
+                tabs[1].getContainerOpacity(), EPSILON);
+        assertEquals("Tab is selected and container should be visible.", visibleOpacity,
+                tabs[2].getContainerOpacity(), EPSILON);
+        assertEquals("Tab is not selected and container should not be visible.", hiddenOpacity,
+                tabs[3].getContainerOpacity(), EPSILON);
+        assertEquals("Tab is not selected and container should not be visible.", hiddenOpacity,
+                tabs[4].getContainerOpacity(), EPSILON);
     }
 
     @Test
