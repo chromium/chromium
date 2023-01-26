@@ -1001,6 +1001,12 @@ const char kAccessibilityAcceleratorNotificationsTimeoutDescription[] =
     "shortcut (docked magnifier, screen magnifier and high contrast) to time "
     "out instead of remaining pinned.";
 
+const char kChromeVoxQ1FastTrackFeaturesName[] =
+    "ChromeVox Q1 Fast-Track Features";
+const char kChromeVoxQ1FastTrackFeaturesDescription[] =
+    "This option enables experimental Accessibility ChromeVox improvements for "
+    "Chrome OS.";
+
 const char kAccessibilityServiceName[] = "Experimental Accessibility Service";
 const char kAccessibilityServiceDescription[] =
     "This option enables the experimental Accessibility Service and runs some "

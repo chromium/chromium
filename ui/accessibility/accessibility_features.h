@@ -254,6 +254,12 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kLayoutExtraction);
 // to the accessibility tree.
 AX_BASE_EXPORT bool IsLayoutExtractionEnabled();
 
+// Enables ChromeVox Q1 Fast-Track Features.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kChromeVoxQ1FastTrackFeatures);
+
+// Returns true if ChromeVox Q1 Fast-Track Features are enabled.
+AX_BASE_EXPORT bool IsChromeVoxQ1FastTrackFeaturesEnabled();
+
 // Enables the experimental Accessibility Service.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);
 

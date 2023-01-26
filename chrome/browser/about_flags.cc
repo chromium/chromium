@@ -6626,6 +6626,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kAccessibilityAcceleratorNotificationsTimeout)},
 
+    {"enable-chromevox-q1-fast-track-features",
+     flag_descriptions::kChromeVoxQ1FastTrackFeaturesName,
+     flag_descriptions::kChromeVoxQ1FastTrackFeaturesDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kChromeVoxQ1FastTrackFeatures)},
+
     {"enable-accessibility-service",
      flag_descriptions::kAccessibilityServiceName,
      flag_descriptions::kAccessibilityServiceDescription, kOsCrOS,
