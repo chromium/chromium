@@ -210,8 +210,13 @@ different set of constraints, please reach out to speed-metrics-dev@chromium.org
 ## Best practices
 
 ### Implementation basics
-* Header, implementation, and unit tests for new observers should be added to
-  the [chrome/browser/page_load_metrics/observers/](/chrome/browser/page_load_metrics/observers/) directory.
+* If your new observer has no outside dependencies, and does not require
+  embedder support, then header, implementation, and unit tests for new
+  observers should be added to the
+  [components/page_load_metrics/browser/observers/](/components/page_load_metrics/browser/observers/)
+  directory. Otherwise, it should be added to the
+  [chrome/browser/page_load_metrics/observers/](/chrome/browser/page_load_metrics/observers/)
+  directory.
 * You may wish to add browser tests to [page_load_metrics_browsertest.cc](/chrome/browser/page_load_metrics/page_load_metrics_browsertest.cc).
 * Instantiate your observer in the `PageLoadMetricsEmbedder::RegisterObservers`
   method in [page_load_metrics_initialize.cc](/chrome/browser/page_load_metrics/page_load_metrics_initialize.cc).
