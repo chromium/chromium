@@ -65,13 +65,6 @@ export class BrailleBackground {
     BrailleBackground.instance = new BrailleBackground();
 
     BridgeHelper.registerHandler(
-        TARGET, Action.BACK_TRANSLATE,
-        cells => new Promise(resolve => {
-          BrailleBackground.instance.getTranslatorManager()
-              .getDefaultTranslator()
-              .backTranslate(cells, resolve);
-        }));
-    BridgeHelper.registerHandler(
         TARGET, Action.REFRESH_BRAILLE_TABLE,
         brailleTable =>
             BrailleBackground.instance.getTranslatorManager().refresh(
@@ -137,6 +130,14 @@ export class BrailleBackground {
   /** @override */
   route(displayPosition) {
     return this.displayManager_.route(displayPosition);
+  }
+
+  /** @override */
+  async backTranslate(cells) {
+    return new Promise(resolve => {
+      this.translatorManager_.getDefaultTranslator().backTranslate(
+          cells, resolve);
+    });
   }
 
   /**

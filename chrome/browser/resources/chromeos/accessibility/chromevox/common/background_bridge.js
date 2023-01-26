@@ -18,7 +18,7 @@ import {QueueMode, TtsSpeechProperties} from './tts_types.js';
 
 export const BackgroundBridge = {};
 
-BackgroundBridge.BrailleBackground = {
+BackgroundBridge.Braille = {
   /**
    * Translate braille cells into text.
    * @param {!ArrayBuffer} cells Cells to be translated.
@@ -26,10 +26,12 @@ BackgroundBridge.BrailleBackground = {
    */
   async backTranslate(cells) {
     return BridgeHelper.sendMessage(
-        BridgeConstants.BrailleBackground.TARGET,
-        BridgeConstants.BrailleBackground.Action.BACK_TRANSLATE, cells);
+        BridgeConstants.Braille.TARGET,
+        BridgeConstants.Braille.Action.BACK_TRANSLATE, cells);
   },
+};
 
+BackgroundBridge.BrailleBackground = {
   /**
    * @param {string} brailleTable The table for this translator to use.
    * @return {!Promise<boolean>}

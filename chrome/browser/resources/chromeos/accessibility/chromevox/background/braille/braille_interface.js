@@ -59,4 +59,11 @@ export class BrailleInterface {
    *     braille cells, not text cells.
    */
   route(braillePosition) {}
+
+  /**
+   * Translate braille cells into text.
+   * @param {!ArrayBuffer} cells Cells to be translated.
+   * @return {!Promise<?string>}
+   */
+  async backTranslate(cells) {}
 }

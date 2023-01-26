@@ -6,6 +6,8 @@
  * @fileoverview Defines a global object that holds references to the three
  * different output engines.
  */
+import {BridgeConstants} from '../common/bridge_constants.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {TtsInterface} from '../common/tts_interface.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
@@ -19,3 +21,13 @@ export const ChromeVox = {
   /** @type {TtsInterface} */
   tts: null,
 };
+
+BridgeHelper.registerHandler(
+    BridgeConstants.Braille.TARGET,
+    BridgeConstants.Braille.Action.BACK_TRANSLATE, cells => {
+      if (ChromeVox.braille) {
+        return ChromeVox.braille.backTranslate(cells);
+      } else {
+        return Promise.resolve(null);
+      }
+    });

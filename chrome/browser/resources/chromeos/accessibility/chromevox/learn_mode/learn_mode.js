@@ -205,7 +205,7 @@ export class LearnMode {
         const cells = new ArrayBuffer(1);
         const view = new Uint8Array(cells);
         view[0] = dots;
-        BackgroundBridge.BrailleBackground.backTranslate(cells).then(res => {
+        BackgroundBridge.Braille.backTranslate(cells).then(res => {
           if (res !== null) {
             LearnMode.output(res);
           }
