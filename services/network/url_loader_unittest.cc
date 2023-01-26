@@ -4765,8 +4765,10 @@ TEST_F(URLLoaderTest, CookieSettingOverrides_NoCors) {
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  EXPECT_FALSE(test_network_delegate()->cookie_setting_overrides().Has(
-      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records, ElementsAre(net::CookieSettingOverrides(),
+                                   net::CookieSettingOverrides()));
 }
 
 TEST_F(URLLoaderTest, CookieSettingOverrides_Cors) {
@@ -4788,8 +4790,16 @@ TEST_F(URLLoaderTest, CookieSettingOverrides_Cors) {
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  EXPECT_TRUE(test_network_delegate()->cookie_setting_overrides().Has(
-      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(
+      records,
+      ElementsAre(
+          net::CookieSettingOverrides(
+              net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
+          net::CookieSettingOverrides(
+              net::CookieSettingOverride::
+                  kTopLevelStorageAccessGrantEligible)));
 }
 
 TEST_F(URLLoaderTest, CookieSettingOverrides_Cors_UnchangedOnRedirects) {
@@ -4812,9 +4822,19 @@ TEST_F(URLLoaderTest, CookieSettingOverrides_Cors_UnchangedOnRedirects) {
 
   client()->RunUntilRedirectReceived();
   loader->FollowRedirect({}, {}, {}, absl::nullopt);
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
 
-  EXPECT_TRUE(test_network_delegate()->cookie_setting_overrides().Has(
-      net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_EQ(records.size(), 4u);
+  for (size_t i = 0; i < records.size(); i++) {
+    EXPECT_EQ(
+        records[i],
+        net::CookieSettingOverrides(
+            net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible))
+        << "element at index " << i << " mismatched.";
+  }
 }
 
 namespace {

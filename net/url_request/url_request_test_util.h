@@ -293,8 +293,9 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
     fps_cache_filter_ = std::move(cache_filter);
   }
 
-  CookieSettingOverrides cookie_setting_overrides() const {
-    return cookie_setting_overrides_;
+  const std::vector<CookieSettingOverrides>& cookie_setting_overrides_records()
+      const {
+    return cookie_setting_overrides_records_;
   }
 
  protected:
@@ -343,6 +344,10 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   // if not.
   int GetRequestId(URLRequest* request);
 
+  void RecordCookieSettingOverrides(CookieSettingOverrides overrides) const {
+    cookie_setting_overrides_records_.push_back(overrides);
+  }
+
   GURL redirect_on_headers_received_url_;
   // URL to mark as retaining its fragment if redirected to at the
   // OnHeadersReceived() stage.
@@ -382,7 +387,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
   FirstPartySetsCacheFilter fps_cache_filter_;
 
-  CookieSettingOverrides cookie_setting_overrides_;
+  mutable std::vector<CookieSettingOverrides> cookie_setting_overrides_records_;
 };
 
 // ----------------------------------------------------------------------------
