@@ -367,7 +367,7 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
 // decoder.
 BASE_FEATURE(kPassthroughYuvRgbConversion,
              "PassthroughYuvRgbConversion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool UseGles2ForOopR() {
 #if BUILDFLAG(IS_ANDROID)
