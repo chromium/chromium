@@ -36,12 +36,15 @@ class UnifiedBrightnessViewTest : public AshTestBase {
         controller()->brightness_slider_controller_.get();
     unified_brightness_view_ = static_cast<UnifiedBrightnessView*>(
         controller()->unified_brightness_view_);
+    brightness_slider_ =
+        brightness_slider_controller_->CreateBrightnessSlider();
   }
 
   void TearDown() override {
     // Tests the environment tears down with the bubble closed.
     // In `UnifiedVolumeViewTest`, the environment is torn down with the bubble
     // open, so we can test both cases.
+    brightness_slider_ = nullptr;
     GetPrimaryUnifiedSystemTray()->CloseBubble();
     AshTestBase::TearDown();
   }
@@ -59,6 +62,10 @@ class UnifiedBrightnessViewTest : public AshTestBase {
     return unified_brightness_view_;
   }
 
+  UnifiedBrightnessView* brightness_slider() {
+    return brightness_slider_.get();
+  }
+
   views::Slider* slider() { return unified_brightness_view_->slider(); }
 
   views::ImageView* slider_icon() {
@@ -72,7 +79,13 @@ class UnifiedBrightnessViewTest : public AshTestBase {
   }
 
  private:
+  // The `UnifiedBrightnessView` containing a `QuickSettingsSlider`, a
+  // `NightLight` button, and a drill-in button.
   UnifiedBrightnessView* unified_brightness_view_ = nullptr;
+
+  // The `UnifiedBrightnessView` containing only a `QuickSettingsSlider`.
+  std::unique_ptr<UnifiedBrightnessView> brightness_slider_ = nullptr;
+
   UnifiedBrightnessSliderController* brightness_slider_controller_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -80,6 +93,7 @@ class UnifiedBrightnessViewTest : public AshTestBase {
 // Tests that `UnifiedBrightnessView` is made up of a `QuickSettingsSlider`, a
 // `NightLight` button, and a drill-in button that leads to the display subpage.
 TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
+  EXPECT_EQ(unified_brightness_view()->children().size(), 3u);
   EXPECT_STREQ(
       unified_brightness_view()->children()[0]->children()[0]->GetClassName(),
       "QuickSettingsSlider");
@@ -88,10 +102,13 @@ TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
   auto* night_light_button =
       static_cast<IconButton*>(unified_brightness_view()->children()[1]);
   EXPECT_STREQ(night_light_button->GetClassName(), "IconButton");
-  EXPECT_EQ(
-      night_light_button->GetAccessibleName(),
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL));
-  EXPECT_EQ(night_light_button->GetTooltipText(), u"Night Light");
+  EXPECT_EQ(night_light_button->GetAccessibleName(),
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_TOGGLE_TOOLTIP,
+                l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_DISABLED_STATE_TOOLTIP)));
+  EXPECT_EQ(night_light_button->GetTooltipText(),
+            u"Toggle Night Light. Night Light is off.");
 
   auto* display_subpage_drill_in_button =
       static_cast<IconButton*>(unified_brightness_view()->children()[2]);
@@ -104,6 +121,15 @@ TEST_F(UnifiedBrightnessViewTest, SliderButtonComponents) {
 
   // TODO(b/259989534): Add a test after adding the display subpage to test the
   // drill-in button.
+}
+
+// Tests that `UnifiedBrightnessView` in the display subpage is made up of a
+// `QuickSettingsSlider`.
+TEST_F(UnifiedBrightnessViewTest, SliderComponent) {
+  EXPECT_EQ(brightness_slider()->children().size(), 1u);
+  EXPECT_STREQ(
+      brightness_slider()->children()[0]->children()[0]->GetClassName(),
+      "QuickSettingsSlider");
 }
 
 // Tests the slider icon matches the slider level.
@@ -126,8 +152,10 @@ TEST_F(UnifiedBrightnessViewTest, SliderIcon) {
         slider_icon()->GetImageModel().GetVectorIcon().vector_icon();
 
     if (level <= 0.0) {
+      // The minimum level for brightness is 0.05, since `SliderValueChanged()`
+      // will adjust the brightness level and set the icon accordingly.
       EXPECT_STREQ(icon->name,
-                   UnifiedBrightnessView::kBrightnessLevelIcons[0]->name);
+                   UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);
     } else if (level <= 0.5) {
       EXPECT_STREQ(icon->name,
                    UnifiedBrightnessView::kBrightnessLevelIcons[1]->name);

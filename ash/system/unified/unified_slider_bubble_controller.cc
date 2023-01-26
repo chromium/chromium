@@ -22,7 +22,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
-#include "ash/system/unified/unified_system_tray_view.h"
+#include "base/functional/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/border.h"
 
@@ -189,6 +189,14 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
     return;
   }
 
+  // When tray bubble is already shown, the brightness slider will get shown in
+  // display detailed view. Bail out if the display details are already showing
+  // to avoid resetting the bubble state.
+  if (slider_type == SLIDER_TYPE_DISPLAY_BRIGHTNESS && tray_->bubble() &&
+      tray_->bubble()->ShowingDisplayDetailedView()) {
+    return;
+  }
+
   if (IsAnyMainBubbleShown()) {
     tray_->EnsureBubbleExpanded();
 
@@ -279,7 +287,9 @@ void UnifiedSliderBubbleController::CreateSliderController() {
       return;
     case SLIDER_TYPE_DISPLAY_BRIGHTNESS:
       slider_controller_ = std::make_unique<UnifiedBrightnessSliderController>(
-          tray_->model().get());
+          tray_->model().get(),
+          base::BindRepeating(&UnifiedSystemTray::ShowDisplayDetailedViewBubble,
+                              base::Unretained(tray_)));
       return;
     case SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE:
       slider_controller_ = std::make_unique<KeyboardBacklightToggleController>(
