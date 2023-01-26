@@ -165,7 +165,8 @@ void KeyRotationManagerImpl::OnDmServerResponse(
                    : RotationStatus::FAILURE_CANNOT_UPLOAD_KEY_RESTORE_FAILED);
     RecordRotationStatus(is_rotation, status);
     SYSLOG(ERROR) << "Device trust key rotation failed. Could not send public "
-                     "key to DM server.";
+                     "key to DM server. HTTP Status: "
+                  << response_code;
     if (upload_key_status == UploadKeyStatus::kFailedKeyConflict) {
       std::move(result_callback).Run(KeyRotationResult::kFailedKeyConflict);
       return;

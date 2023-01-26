@@ -8,17 +8,6 @@
 
 namespace enterprise_connectors {
 
-namespace {
-
-// Max supported value for the UMA histogram exclusive max.
-constexpr int kMaxExitCode = 101;
-constexpr char kPositiveExitCodeHistogramName[] =
-    "Enterprise.DeviceTrust.ManagementService.ExitCode.Positive";
-constexpr char kNegativeExitCodeHistogramName[] =
-    "Enterprise.DeviceTrust.ManagementService.ExitCode.Negative";
-
-}  // namespace
-
 void LogKeyRotationCommandError(KeyRotationCommandError error) {
   static constexpr char kErrorHistogram[] =
       "Enterprise.DeviceTrust.KeyRotationCommand.Error";
@@ -29,16 +18,6 @@ void LogKeyRotationExitCode(int exit_code) {
   static constexpr char kExitCodeHistogram[] =
       "Enterprise.DeviceTrust.KeyRotationCommand.ExitCode";
   base::UmaHistogramSparse(kExitCodeHistogram, exit_code);
-}
-
-void LogManagementServiceExitCode(int exit_code) {
-  if (exit_code < 0) {
-    base::UmaHistogramExactLinear(kNegativeExitCodeHistogramName, -exit_code,
-                                  kMaxExitCode);
-  } else {
-    base::UmaHistogramExactLinear(kPositiveExitCodeHistogramName, exit_code,
-                                  kMaxExitCode);
-  }
 }
 
 #if BUILDFLAG(IS_WIN)

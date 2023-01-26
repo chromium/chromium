@@ -29859,6 +29859,8 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="COM Class not implementing the interface"/>
   <int value="4" label="Updater concurrency"/>
   <int value="5" label="User installation"/>
+  <int value="6" label="Missing Management service"/>
+  <int value="7" label="Process invalid"/>
 </enum>
 
 <enum name="DTKeyRotationResult">

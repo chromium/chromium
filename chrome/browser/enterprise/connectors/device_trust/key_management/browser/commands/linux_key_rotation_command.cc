@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -35,15 +37,20 @@ namespace enterprise_connectors {
 
 namespace {
 
+base::FilePath GetBinaryFilePath() {
+  base::FilePath exe_path;
+  if (base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return exe_path.Append(constants::kBinaryFileName);
+  }
+  return exe_path;
+}
+
 // Builds the command line needed to launch the service. The  `params` specify
 // the needed KeyRotationCommandParams. 'pipe_name` is the name of the pipe to
 //  connect to.
 base::CommandLine GetCommandLine(const KeyRotationCommand::Params& params,
                                  const std::string& pipe_name) {
-  base::FilePath exe_path;
-  bool success = base::PathService::Get(base::DIR_EXE, &exe_path);
-  DCHECK(success);
-  exe_path = exe_path.Append(constants::kBinaryFileName);
+  base::FilePath exe_path = GetBinaryFilePath();
 
   base::CommandLine command_line(exe_path);
   std::string token_base64;
@@ -103,6 +110,15 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
       base::BindOnce(
           [](base::CommandLine command_line, LaunchCallback launch_callback,
              mojo::OutgoingInvitation invitation) {
+            if (!base::PathExists(GetBinaryFilePath())) {
+              SYSLOG(ERROR)
+                  << "Device trust key rotation failed. Could not find "
+                     "management service executable.";
+              LogKeyRotationCommandError(
+                  KeyRotationCommandError::kMissingManagementService);
+              return KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION;
+            }
+
             mojo::PlatformChannel channel;
             base::LaunchOptions options;
             options.allow_new_privs = true;
@@ -112,6 +128,8 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
             if (!process.IsValid()) {
               SYSLOG(ERROR) << "Device trust key rotation failed. Could not "
                                "launch the ChromeManagementService process.";
+              LogKeyRotationCommandError(
+                  KeyRotationCommandError::kProcessInvalid);
               return KeyRotationCommand::Status::FAILED;
             }
 
@@ -125,18 +143,28 @@ void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
             if (!process.WaitForExitWithTimeout(timeouts::kProcessWaitTimeout,
                                                 &exit_code)) {
               SYSLOG(ERROR) << "Device trust key rotation timed out.";
+              LogKeyRotationCommandError(KeyRotationCommandError::kTimeout);
               return KeyRotationCommand::Status::TIMED_OUT;
             }
 
-            LogManagementServiceExitCode(exit_code);
-            if (exit_code == kSuccess) {
-              return KeyRotationCommand::Status::SUCCEEDED;
-            } else if (exit_code != kFailure) {
-              SYSLOG(ERROR)
-                  << "Device trust key rotation failed with exit code: "
-                  << exit_code;
+            LogKeyRotationExitCode(exit_code);
+
+            switch (exit_code) {
+              case kSuccess:
+                return KeyRotationCommand::Status::SUCCEEDED;
+              case kFailedInsufficientPermissions:
+                return KeyRotationCommand::Status::FAILED_INVALID_PERMISSIONS;
+              case kFailedKeyConflict:
+                return KeyRotationCommand::Status::FAILED_KEY_CONFLICT;
+              case kFailure:
+                return KeyRotationCommand::Status::FAILED;
+              case kUnknownFailure:
+              default:
+                SYSLOG(ERROR)
+                    << "Device trust key rotation failed with exit code: "
+                    << exit_code;
+                return KeyRotationCommand::Status::FAILED;
             }
-            return KeyRotationCommand::Status::FAILED;
           },
           command_line, launch_callback_, std::move(invitation)),
       std::move(callback));

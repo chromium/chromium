@@ -8,13 +8,17 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
@@ -32,11 +36,8 @@ namespace enterprise_connectors {
 
 namespace {
 
-constexpr char kManagementServicePositiveExitCodeHistogramName[] =
-    "Enterprise.DeviceTrust.ManagementService.ExitCode.Positive";
-
-constexpr char kManagementServiceNegativeExitCodeHistogramName[] =
-    "Enterprise.DeviceTrust.ManagementService.ExitCode.Negative";
+constexpr char kExitCodeHistogram[] =
+    "Enterprise.DeviceTrust.KeyRotationCommand.ExitCode";
 
 constexpr char kNonce[] = "nonce";
 
@@ -49,9 +50,16 @@ constexpr char kFakeDmServerUrl[] =
     "7C1.2.3&request=browser_public_key_upload";
 
 static constexpr const char* kSwitches[] = {
-
     switches::kRotateDTKey, switches::kDmServerUrl, switches::kPipeName,
     switches::kNonce, mojo::PlatformChannel::kHandleSwitch};
+
+base::FilePath GetBinaryFilePath() {
+  base::FilePath exe_path;
+  if (base::PathService::Get(base::DIR_EXE, &exe_path)) {
+    return exe_path.Append(constants::kBinaryFileName);
+  }
+  return exe_path;
+}
 
 }  // namespace
 
@@ -61,6 +69,7 @@ class LinuxKeyRotationCommandTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
+        scoped_path_override_(base::DIR_EXE),
         rotation_command_(
             LinuxKeyRotationCommand(mock_launch_callback_.Get(),
                                     test_shared_loader_factory_)) {}
@@ -88,35 +97,43 @@ class LinuxKeyRotationCommandTest : public testing::Test {
 
   void StartTestRotation(
       std::string process_name,
-      enterprise_connectors::KeyRotationCommand::Status status) {
+      enterprise_connectors::KeyRotationCommand::Status expected_status) {
     KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl,
                                          kNonce};
+    CreateManagementServiceBinary();
 
-    base::RunLoop run_loop;
     EXPECT_CALL(mock_launch_callback_, Run(_, _))
         .WillOnce([&process_name](const base::CommandLine& command_line,
                                   const base::LaunchOptions& options) {
           EXPECT_TRUE(options.allow_new_privs);
           return LaunchTestProcess(process_name, command_line, options);
         });
-    EXPECT_CALL(mock_trigger_callback_, Run(status))
-        .WillOnce([&run_loop](KeyRotationCommand::Status status) {
-          run_loop.Quit();
-        });
-    rotation_command_.Trigger(params, mock_trigger_callback_.Get());
-    run_loop.Run();
+
+    base::test::TestFuture<KeyRotationCommand::Status> future_status;
+    rotation_command_.Trigger(params, future_status.GetCallback());
+    EXPECT_EQ(future_status.Get(), expected_status);
   }
 
-  base::HistogramTester histogram_tester_;
+  void CreateManagementServiceBinary() {
+    ASSERT_TRUE(base::WriteFile(GetBinaryFilePath(),
+                                base::StringPiece("test_content")));
+  }
 
- private:
+  void ExpectCommandErrorHistogram(KeyRotationCommandError error) {
+    static constexpr char kErrorHistogram[] =
+        "Enterprise.DeviceTrust.KeyRotationCommand.Error";
+    histogram_tester_.ExpectUniqueSample(kErrorHistogram, error, 1);
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  base::ScopedPathOverride scoped_path_override_;
   base::MockCallback<LinuxKeyRotationCommand::LaunchCallback>
       mock_launch_callback_;
+
   LinuxKeyRotationCommand rotation_command_;
-  base::MockCallback<KeyRotationCommand::Callback> mock_trigger_callback_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests for the key mojo invitation where the chrome management service
@@ -159,8 +176,7 @@ MULTIPROCESS_TEST_MAIN(MojoInvitation) {
 
 TEST_F(LinuxKeyRotationCommandTest, MojoAcceptInvitation) {
   StartTestRotation("MojoInvitation", KeyRotationCommand::Status::SUCCEEDED);
-  histogram_tester_.ExpectUniqueSample(
-      kManagementServicePositiveExitCodeHistogramName, Status::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(kExitCodeHistogram, Status::kSuccess, 1);
 }
 
 // Tests for a key rotation when the chrome management service succeeded.
@@ -170,8 +186,7 @@ MULTIPROCESS_TEST_MAIN(Success) {
 
 TEST_F(LinuxKeyRotationCommandTest, RotateSuccess) {
   StartTestRotation("Success", KeyRotationCommand::Status::SUCCEEDED);
-  histogram_tester_.ExpectUniqueSample(
-      kManagementServicePositiveExitCodeHistogramName, Status::kSuccess, 1);
+  histogram_tester_.ExpectUniqueSample(kExitCodeHistogram, Status::kSuccess, 1);
 }
 
 // Tests for a key rotation failure when the chrome management service failed.
@@ -181,8 +196,7 @@ MULTIPROCESS_TEST_MAIN(Failure) {
 
 TEST_F(LinuxKeyRotationCommandTest, RotateFailure) {
   StartTestRotation("Failure", KeyRotationCommand::Status::FAILED);
-  histogram_tester_.ExpectUniqueSample(
-      kManagementServicePositiveExitCodeHistogramName, Status::kFailure, 1);
+  histogram_tester_.ExpectUniqueSample(kExitCodeHistogram, Status::kFailure, 1);
 }
 
 // Tests for a key rotation failure when the chrome management service failed
@@ -193,24 +207,33 @@ MULTIPROCESS_TEST_MAIN(UnknownFailure) {
 
 TEST_F(LinuxKeyRotationCommandTest, RotateFailure_UnknownError) {
   StartTestRotation("UnknownFailure", KeyRotationCommand::Status::FAILED);
-  histogram_tester_.ExpectUniqueSample(
-      kManagementServicePositiveExitCodeHistogramName, Status::kUnknownFailure,
-      1);
+  histogram_tester_.ExpectUniqueSample(kExitCodeHistogram,
+                                       Status::kUnknownFailure, 1);
 }
 
 // Tests for a key rotation failure when an invalid process was launched.
 TEST_F(LinuxKeyRotationCommandTest, RotateFailureInvalidProcess) {
   StartTestRotation("InvalidProcess", KeyRotationCommand::Status::FAILED);
-  histogram_tester_.ExpectTotalCount(
-      kManagementServicePositiveExitCodeHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kExitCodeHistogram, 0);
 }
 
 // Tests that the correct histogram is populated when the LogExitCode method
 // receives a negative exit code.
 TEST_F(LinuxKeyRotationCommandTest, NegativeExitCode) {
-  LogManagementServiceExitCode(-1);
-  histogram_tester_.ExpectUniqueSample(
-      kManagementServiceNegativeExitCodeHistogramName, 1, 1);
+  LogKeyRotationExitCode(-1);
+  histogram_tester_.ExpectUniqueSample(kExitCodeHistogram, -1, 1);
+}
+
+// Tests that the command will fail with the expected message when the
+// management service binary is not found.
+TEST_F(LinuxKeyRotationCommandTest, MissingServiceBinary) {
+  KeyRotationCommand::Params params = {kFakeDMToken, kFakeDmServerUrl, kNonce};
+  base::test::TestFuture<KeyRotationCommand::Status> future_status;
+  rotation_command_.Trigger(params, future_status.GetCallback());
+  EXPECT_EQ(future_status.Get(),
+            KeyRotationCommand::Status::FAILED_INVALID_INSTALLATION);
+  ExpectCommandErrorHistogram(
+      KeyRotationCommandError::kMissingManagementService);
 }
 
 }  // namespace enterprise_connectors

@@ -23,7 +23,9 @@ enum class KeyRotationCommandError {
   kNoInterface = 3,
   kUpdaterConcurrency = 4,
   kUserInstallation = 5,
-  kMaxValue = kUserInstallation,
+  kMissingManagementService = 6,
+  kProcessInvalid = 7,
+  kMaxValue = kProcessInvalid,
 };
 
 // Logs the known key rotation command `error`.
@@ -32,11 +34,6 @@ void LogKeyRotationCommandError(KeyRotationCommandError error);
 // Logs the given `exit_code` as result of a key rotation command. Handles both
 // positive and negative values.
 void LogKeyRotationExitCode(int exit_code);
-
-// Logs the `exit_code` of the management service process after a key rotation
-// was performed.
-// Deprecated: Use `LogKeyRotationExitCode` instead.
-void LogManagementServiceExitCode(int exit_code);
 
 #if BUILDFLAG(IS_WIN)
 // Logs the unexpected `result` code from trying to communicate with the

@@ -120,8 +120,9 @@ int ChromeManagementService::Run(const base::CommandLine* command_line,
         "Device trust key rotation failed. Command missing rotate key switch.");
   }
 
-  if (!std::move(permissions_callback_).Run())
-    return kFailure;
+  if (!std::move(permissions_callback_).Run()) {
+    return kFailedInsufficientPermissions;
+  }
 
   auto platform_channel_endpoint =
       mojo_helper_->GetEndpointFromCommandLine(*command_line);

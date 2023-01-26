@@ -87,7 +87,7 @@ class ChromeManagementServiceTest : public testing::Test {
       EXPECT_CALL(mock_rotation_callback, Run(_)).Times(0);
     }
 
-    ChromeManagementService chrome_management_service = ChromeManagementService(
+    ChromeManagementService chrome_management_service(
         mock_permissions_callback.Get(), mock_rotation_callback.Get(),
         std::move(mojo_helper));
 
@@ -212,7 +212,7 @@ TEST_F(ChromeManagementServiceTest, Failure_IncorrectPermissions) {
   int exit_code = 0;
   ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
       child_process, TestTimeouts::action_timeout(), &exit_code));
-  EXPECT_EQ(kFailure, exit_code);
+  EXPECT_EQ(exit_code, kFailedInsufficientPermissions);
 }
 
 // Tests when the chrome management service failed due to an invalid platform
