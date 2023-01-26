@@ -35,7 +35,8 @@ TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
   ASSERT_TRUE(detailed_view);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "accessibility_detailed_view.rev_0", detailed_view));
+      "accessibility_detailed_view",
+      /*revision_number=*/0, detailed_view));
 }
 
 }  // namespace ash

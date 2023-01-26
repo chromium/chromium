@@ -124,7 +124,8 @@ TEST_F(CalendarUpNextViewPixelTest,
   CreateCalendarUpNextView(std::move(events));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "calendar_up_next_single_upcoming_event.rev_1", Widget()));
+      "calendar_up_next_single_upcoming_event",
+      /*revision_number=*/1, Widget()));
 }
 
 TEST_F(CalendarUpNextViewPixelTest,
@@ -147,7 +148,8 @@ TEST_F(CalendarUpNextViewPixelTest,
   CreateCalendarUpNextView(std::move(events));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "calendar_up_next_multiple_upcoming_events.rev_1", Widget()));
+      "calendar_up_next_multiple_upcoming_events",
+      /*revision_number=*/1, Widget()));
 }
 
 TEST_F(
@@ -174,9 +176,8 @@ TEST_F(
   PressScrollRightButton();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "calendar_up_next_multiple_upcoming_events_press_scroll_right_button.rev_"
-      "0",
-      Widget()));
+      "calendar_up_next_multiple_upcoming_events_press_scroll_right_button",
+      /*revision_number=*/0, Widget()));
 }
 
 }  // namespace ash

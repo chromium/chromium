@@ -122,8 +122,8 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
 
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_answer_card_search_results.rev_0",
-      GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_answer_card_search_results",
+      /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -144,8 +144,8 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
 
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_url_search_results.rev_0",
-      GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_url_search_results",
+      /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -157,7 +157,8 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   ShowAppList();
   HideCursor();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics.rev_0", GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_basics",
+      /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -177,8 +178,8 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone.rev_0",
-      GetAppListTestHelper()->GetBubbleView(),
+      "bubble_launcher_gradient_zone",
+      /*revision_number=*/0, GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
 
@@ -212,8 +213,8 @@ INSTANTIATE_TEST_SUITE_P(RTL, AppListViewTabletPixelTest, testing::Bool());
 // Verifies the default layout for tablet mode launcher.
 TEST_P(AppListViewTabletPixelTest, Basic) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_basics.rev_0",
-      GetAppListTestHelper()->GetAppsContainerView()));
+      "tablet_launcher_basics",
+      /*revision_number=*/0, GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 // Verifies that the top gradient zone of the tablet mode launcher works
@@ -233,8 +234,8 @@ TEST_P(AppListViewTabletPixelTest, TopGradientZone) {
   generator->MoveTouchBy(0, -40);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_top_gradient_zone.rev_0",
-      GetAppListTestHelper()->GetAppsContainerView()));
+      "tablet_launcher_top_gradient_zone",
+      /*revision_number=*/0, GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 // Verifies that the bottom gradient zone of the tablet mode launcher works
@@ -254,8 +255,8 @@ TEST_P(AppListViewTabletPixelTest, BottomGradientZone) {
   generator->MoveTouchBy(0, -90);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "tablet_launcher_bottom_gradient_zone.rev_0",
-      GetAppListTestHelper()->GetAppsContainerView()));
+      "tablet_launcher_bottom_gradient_zone",
+      /*revision_number=*/0, GetAppListTestHelper()->GetAppsContainerView()));
 }
 
 }  // namespace ash

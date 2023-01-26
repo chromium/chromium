@@ -51,7 +51,8 @@ TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortText) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "media_string_view_with_short_text.rev_0", GetMediaStringView()));
+      "media_string_view_with_short_text", /*revision_number=*/0,
+      GetMediaStringView()));
 }
 
 TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortTextDarkMode) {
@@ -72,8 +73,8 @@ TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortTextDarkMode) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "media_string_view_with_short_text_dark_mode.rev_0",
-      GetMediaStringView()));
+      "media_string_view_with_short_text_dark_mode",
+      /*revision_number=*/0, GetMediaStringView()));
 }
 
 TEST_F(MediaStringViewTest, ShowMediaStringViewWithLongText) {
@@ -96,6 +97,7 @@ TEST_F(MediaStringViewTest, ShowMediaStringViewWithLongText) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "media_string_view_with_long_text.rev_1", GetMediaStringView()));
+      "media_string_view_with_long_text", /*revision_number=*/1,
+      GetMediaStringView()));
 }
 }  // namespace ash

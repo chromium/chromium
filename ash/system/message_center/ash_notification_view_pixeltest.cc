@@ -22,11 +22,10 @@ constexpr char kLongTitleString[] =
     "Very Very Very Very Very Very Very Very Very Very Very Very Very Very "
     "Very Very Very Very Long Multiline Title";
 
-constexpr char kShortTitleScreenshot[] = "ash_notification_short_title.rev_1";
+constexpr char kShortTitleScreenshot[] = "ash_notification_short_title";
 constexpr char kMediumTitleScreenshot[] =
-    "ash_notification_multiline_medium_title.rev_1";
-constexpr char kLongTitleScreenshot[] =
-    "ash_notification_multiline_long_title.rev_1";
+    "ash_notification_multiline_medium_title";
+constexpr char kLongTitleScreenshot[] = "ash_notification_multiline_long_title";
 
 }  // namespace
 
@@ -91,7 +90,7 @@ TEST_P(AshNotificationViewTitlePixelTest, NotificationTitleTest) {
   // Compare pixels.
   const std::string screenshot = GetParam().second;
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      screenshot, notification_view));
+      screenshot, /*revision_number=*/1, notification_view));
 }
 
 }  // namespace ash

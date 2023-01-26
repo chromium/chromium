@@ -91,7 +91,8 @@ TEST_F(BluetoothDetailedViewLegacyPixelTest, Basics) {
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bluetooth_detailed_view_legacy.rev_0", detailed_view));
+      "bluetooth_detailed_view_legacy",
+      /*revision_number=*/0, detailed_view));
 }
 
 }  // namespace ash

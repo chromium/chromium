@@ -4,8 +4,11 @@
 
 #include "ash/test/pixel/ash_pixel_differ.h"
 
+#include <string>
+
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
+#include "base/strings/strcat.h"
 
 namespace ash {
 
@@ -18,7 +21,12 @@ AshPixelDiffer::~AshPixelDiffer() = default;
 
 bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
     const std::string& screenshot_name,
+    size_t revision_number,
     const std::vector<gfx::Rect>& rects_in_screen) {
+  // Calculate the full image name incorporating `revision_number`.
+  const std::string full_name = base::StrCat(
+      {screenshot_name, ".rev_", base::NumberToString(revision_number)});
+
   aura::Window* primary_root_window = Shell::Get()->GetPrimaryRootWindow();
   const aura::WindowTreeHost* host = primary_root_window->GetHost();
 
@@ -27,7 +35,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
   if (fabs(host->device_scale_factor() - 1.f) <
       std::numeric_limits<float>::epsilon()) {
     return pixel_diff_.CompareNativeWindowScreenshotInRects(
-        screenshot_name, primary_root_window, primary_root_window->bounds(),
+        full_name, primary_root_window, primary_root_window->bounds(),
         /*algorithm=*/nullptr, rects_in_screen);
   }
 
@@ -44,7 +52,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
   }
 
   return pixel_diff_.CompareNativeWindowScreenshotInRects(
-      screenshot_name, primary_root_window, primary_root_window->bounds(),
+      full_name, primary_root_window, primary_root_window->bounds(),
       /*algorithm=*/nullptr, rects_in_pixel);
 }
 

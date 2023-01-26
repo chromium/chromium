@@ -110,7 +110,8 @@ TEST_P(ChannelIndicatorQuickSettingsViewPixelTest, FeedbackButtonVisible) {
   // Don't capture any part of the UI except for
   // `ChannelIndicatorQuickSettingsView`.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "feedback_button_visible.rev_0", view()));
+      "feedback_button_visible",
+      /*revision_number=*/0, view()));
 }
 
 }  // namespace ash

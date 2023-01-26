@@ -97,8 +97,9 @@ class AppListItemViewPixelTest : public AshTestBase,
 
   AppListItemView* GetItemViewAt(size_t index) {
     auto* const helper = GetAppListTestHelper();
-    if (use_tablet_mode())
+    if (use_tablet_mode()) {
       return helper->GetRootPagedAppsGridView()->GetItemViewAt(index);
+    }
     return helper->GetScrollableAppsGridView()->GetItemViewAt(index);
   }
 
@@ -110,8 +111,7 @@ class AppListItemViewPixelTest : public AshTestBase,
          has_notification() ? "has_notification=true"
                             : "has_notification=false"},
         "|");
-    return base::JoinString({"app_list_item_view", stringified_params, "rev_0"},
-                            ".");
+    return base::JoinString({"app_list_item_view", stringified_params}, ".");
   }
 
   bool use_tablet_mode() const { return std::get<0>(GetParam()); }
@@ -141,7 +141,8 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1)));
+      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+      GetItemViewAt(1)));
 }
 
 // Verifies the layout of the item icons inside a folder.
@@ -158,8 +159,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1),
-      GetItemViewAt(2), GetItemViewAt(3)));
+      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
 }
 
 // Verifies the folder icon is extended when an app is dragged upon it.
@@ -189,8 +190,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), GetItemViewAt(0), GetItemViewAt(1),
-      GetItemViewAt(2), GetItemViewAt(3)));
+      GenerateScreenshotName(), /*revision_number=*/0, GetItemViewAt(0),
+      GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3)));
 
   // Reset the states.
   for (int i = 0; i < max_items_in_folder; ++i) {
@@ -239,6 +240,7 @@ TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
     std::string filename = base::NumberToString(i + 1) + "_items_folder";
     EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
         base::JoinString({GenerateScreenshotName(), filename}, "."),
+        /*revision_number=*/0,
         apps_grid_view->app_drag_icon_proxy_for_test()->GetWidgetForTesting()));
 
     // Release the drag.
