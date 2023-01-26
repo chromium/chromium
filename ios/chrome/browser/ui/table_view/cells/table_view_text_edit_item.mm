@@ -91,7 +91,9 @@ const CGFloat kSymbolSize = 15;
   cell.textField.enabled = self.textFieldEnabled;
 
   if (self.hideIcon) {
-    cell.textField.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    cell.textField.textColor = self.textFieldTextColor
+                                   ? self.textFieldTextColor
+                                   : [UIColor colorNamed:kTextPrimaryColor];
 
     [cell setIcon:TableViewTextEditItemIconTypeNone];
   } else {

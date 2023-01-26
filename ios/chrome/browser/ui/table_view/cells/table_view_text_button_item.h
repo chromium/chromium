@@ -18,6 +18,10 @@
 // Text being displayed above the button alignment.
 @property(nonatomic, readwrite, assign) NSTextAlignment textAlignment;
 
+// Button text alignment.
+@property(nonatomic, readwrite, assign)
+    UIControlContentHorizontalAlignment buttonContentHorizontalAlignment;
+
 // Text for cell button.
 @property(nonatomic, readwrite, strong) NSString* buttonText;
 

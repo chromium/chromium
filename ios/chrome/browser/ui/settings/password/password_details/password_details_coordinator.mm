@@ -10,6 +10,7 @@
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/affiliated_group.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -326,8 +327,14 @@
 
   __weak __typeof(self) weakSelf = self;
 
+  NSString* deleteButtonString =
+      l10n_util::GetNSString(base::FeatureList::IsEnabled(
+                                 password_manager::features::kPasswordsGrouping)
+                                 ? IDS_IOS_DELETE_ACTION_TITLE
+                                 : IDS_IOS_CONFIRM_PASSWORD_DELETION);
+
   [self.actionSheetCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CONFIRM_PASSWORD_DELETION)
+      addItemWithTitle:deleteButtonString
                 action:^{
                   [weakSelf passwordDeletionConfirmedForCompromised:
                                 compromisedPassword

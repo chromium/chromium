@@ -35,6 +35,10 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // The value of the text field.
 @property(nonatomic, copy) NSString* textFieldValue;
 
+// Text color for the text field of the cell. Default is [UIColor
+// colorNamed:kTextPrimaryColor].
+@property(nonatomic, strong) UIColor* textFieldTextColor;
+
 // An icon identifying the text field or its current value, if any.
 @property(nonatomic, copy) UIImage* identifyingIcon;
 

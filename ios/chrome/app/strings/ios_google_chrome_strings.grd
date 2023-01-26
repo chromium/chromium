@@ -561,7 +561,7 @@ Things to consider:
         Chrome couldn't check all passwords. Try again later.
       </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
-        This password was found in a data breach. Google Password Manager recommends changing your password now.
+          Your password was exposed in a data breach. Google Password Manager recommends changing it now.
       </message>
       <message name="IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL" desc="Feature detail text in the Google services Settings for the user to enable/disable Chrome express sign-in from the web [iOS only]">
         Shows prompts to sign in to Chrome.

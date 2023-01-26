@@ -22,6 +22,7 @@ source_set("password_details") {
     "//base",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser/form_parsing",
+    "//components/password_manager/core/common:features",
     "//components/strings",
     "//components/url_formatter",
     "//ios/chrome/app/strings",

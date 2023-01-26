@@ -19,6 +19,10 @@
 // Texts displayed in the details labels of the cell.
 @property(nonatomic, copy) NSArray<NSString*>* detailTexts;
 
+// Text color for the details labels of the cell. Default is [UIColor
+// colorNamed:kTextPrimaryColor].
+@property(nonatomic, strong) UIColor* detailTextColor;
+
 @end
 
 // TableViewCell displaying a title and multiple single-line details texts.
@@ -28,6 +32,7 @@
 @property(nonatomic, strong, readonly) NSArray<UILabel*>* detailLabels;
 
 - (void)setDetails:(NSArray<NSString*>*)detailTexts;
+- (void)setDetailTextColor:(UIColor*)detailTextColor;
 
 @end
 

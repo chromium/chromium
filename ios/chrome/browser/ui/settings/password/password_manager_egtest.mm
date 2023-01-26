@@ -213,10 +213,20 @@ id<GREYMatcher> DeleteButton() {
       nullptr);
 }
 
-// Matcher for the Delete button in Confirmation Alert for password deletion.
+// TODO(crbug.com/1359392): Remove this override when kPasswordsGrouping flag is
+// removed. Matcher for the Delete button in Confirmation Alert for password
+// deletion.
 id<GREYMatcher> DeleteConfirmationButton() {
   return grey_allOf(ButtonWithAccessibilityLabel(l10n_util::GetNSString(
                         IDS_IOS_CONFIRM_PASSWORD_DELETION)),
+                    grey_interactable(), nullptr);
+}
+
+// Matcher for the Delete button in Confirmation Alert for password deletion
+// when password grouping is enabled.
+id<GREYMatcher> DeleteConfirmationButtonForGrouping() {
+  return grey_allOf(ButtonWithAccessibilityLabel(
+                        l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)),
                     grey_interactable(), nullptr);
 }
 
@@ -764,9 +774,17 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self groupingEnabled]
+                                          ? DeleteButtonForUsernameAndPassword(
+                                                @"concrete username",
+                                                @"concrete password")
+                                          : DeleteButton()]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+  [[EarlGrey
+      selectElementWithMatcher:[self groupingEnabled]
+                                   ? DeleteConfirmationButtonForGrouping()
+                                   : DeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait until the alert and the detail view are dismissed.
@@ -821,9 +839,17 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self groupingEnabled]
+                                          ? DeleteButtonForUsernameAndPassword(
+                                                @"concrete username",
+                                                @"concrete password")
+                                          : DeleteButton()]
+      performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+  [[EarlGrey
+      selectElementWithMatcher:[self groupingEnabled]
+                                   ? DeleteConfirmationButtonForGrouping()
+                                   : DeleteConfirmationButton()]
       performAction:grey_tap()];
 
   // Wait until the alert and the detail view are dismissed.
@@ -1057,7 +1083,12 @@ id<GREYMatcher> EditDoneButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButton()] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:[self groupingEnabled]
+                                          ? DeleteButtonForUsernameAndPassword(
+                                                @"concrete username",
+                                                @"concrete password")
+                                          : DeleteButton()]
+      performAction:grey_tap()];
 
   // Close the dialog by taping on Password Details screen.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -2666,7 +2697,7 @@ id<GREYMatcher> EditDoneButton() {
                                           @"user1", @"password1")]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButtonForGrouping()]
       performAction:grey_tap()];
 
   // Check that the current view is still the password details since there is
@@ -2689,7 +2720,7 @@ id<GREYMatcher> EditDoneButton() {
                                           @"user2", @"password2")]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
+  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButtonForGrouping()]
       performAction:grey_tap()];
 
   // Check that the current view is now the password manager since we deleted

@@ -29,6 +29,9 @@
   cell.titleLabel.text = self.titleText;
 
   [cell setDetails:self.detailTexts];
+  [cell setDetailTextColor:self.detailTextColor
+                               ? self.detailTextColor
+                               : [UIColor colorNamed:kTextPrimaryColor]];
 
   cell.accessibilityLabel = [self accessibilityLabelForCell];
 }
@@ -82,6 +85,12 @@
   [self updateForAccessibilityContentSizeCategory:
             UIContentSizeCategoryIsAccessibilityCategory(
                 self.traitCollection.preferredContentSizeCategory)];
+}
+
+- (void)setDetailTextColor:(UIColor*)detailTextColor {
+  for (UILabel* detailsLabel in self.detailLabels) {
+    detailsLabel.textColor = detailTextColor;
+  }
 }
 
 #pragma mark - UITableViewCell
@@ -158,7 +167,6 @@
   for (UILabel* detailsLabel in _detailLabels) {
     detailsLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     detailsLabel.adjustsFontForContentSizeCategory = YES;
-    detailsLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
 }
 
