@@ -1214,10 +1214,15 @@ int GetMaxUnthrottledTimeoutNestingLevel() {
   return kMaxUnthrottledTimeoutNestingLevelParam.Get();
 }
 
-// Enables reporting and web-exposure (respectively) of the time the first frame
-// of an animated image was painted.
+// Enables reporting as LCP of the time the first frame of an animated image was
+// painted.
 BASE_FEATURE(kLCPAnimatedImagesReporting,
              "LCPAnimatedImagesReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables reporting as LCP of the time the first frame of a video was painted.
+BASE_FEATURE(kLCPVideoFirstFrame,
+             "LCPVideoFirstFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOriginAgentClusterDefaultEnabled,
