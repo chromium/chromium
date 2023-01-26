@@ -65,17 +65,16 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"  // nogncheck
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
-#include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"  // nogncheck
 #include "ui/aura/window_delegate.h"
 #include "ui/wm/core/coordinate_conversion.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/window_properties.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -126,7 +125,7 @@ bool PlatformProvidesAbsoluteWindowPositions() {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Returns the aura::Window which stores the window properties for tab-dragging.
 aura::Window* GetWindowForTabDraggingProperties(const TabDragContext* context) {
@@ -142,6 +141,16 @@ bool IsSnapped(const TabDragContext* context) {
   return type == chromeos::WindowStateType::kPrimarySnapped ||
          type == chromeos::WindowStateType::kSecondarySnapped;
 }
+
+#else
+
+bool IsSnapped(const TabDragContext* context) {
+  return false;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // In Chrome OS tablet mode, when dragging a tab/tabs around, the desired
 // browser size during dragging is one-fourth of the workspace size or the
@@ -197,10 +206,6 @@ bool CanDetachFromTabStrip(TabDragContext* context) {
 }
 
 #else
-bool IsSnapped(const TabDragContext* context) {
-  return false;
-}
-
 bool IsShowingInOverview(TabDragContext* context) {
   return false;
 }
