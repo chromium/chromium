@@ -28,7 +28,7 @@ Some SVGs are already pretty minimal, like the ones at [the Material Design Icon
 
 Once you have created an `.icon` file, place it in an appropriate `vector_icon` subdirectory and add the filename to the corresponding `BUILD.gn`. A constant is automatically generated so that the icon can be referenced at runtime. The icon file `foo_bar.icon` is mapped to the constant name of `kFooBarIcon` ('k' + camel-cased filename + 'Icon'), which you can use to reference that icon in code. The icon's name should match its identifier on [the MD icons site](https://material.io/icons/) if that's where it came from. For example, `ic_accessibility` would become `accessibility.icon`.
 
-Make sure not to add [trademarked resources](../../docs/google_chrome_branded_builds.md) such as Google product logos to the Chromium repo.
+**Make sure not to add [trademarked resources](../../docs/google_chrome_branded_builds.md) such as Google product logos to the Chromium repo**. The handful of vector icons that are trademarked live in `//components/vector_icons/google_chrome` with open-source counterparts in `//components/vector_icons/chromium`.
 
 ### Icons with multiple definitions
 
