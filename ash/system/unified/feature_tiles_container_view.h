@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -20,7 +21,8 @@ class UnifiedSystemTrayController;
 // It can place buttons in a 1x2 to 4x2 grid given the available height.
 // Implements pagination to be able to show all visible FeatureTiles.
 class ASH_EXPORT FeatureTilesContainerView : public views::View,
-                                             public PaginationModelObserver {
+                                             public PaginationModelObserver,
+                                             public views::FocusChangeListener {
  public:
   METADATA_HEADER(FeatureTilesContainerView);
 
@@ -54,6 +56,13 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
+  void Layout() override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+
+  // views::FocusChangeListener:
+  void OnWillChangeFocus(views::View* before, views::View* now) override;
+  void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   int displayable_rows() const { return displayable_rows_; }
 
