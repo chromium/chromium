@@ -244,6 +244,7 @@ static_library("ui_controls_protocol") {
     "//components/exo",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:ui_controls_protocol",
+    "//ui/aura",
     "//ui/base:test_support",
     "//ui/events",
   ]

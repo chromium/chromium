@@ -14,7 +14,10 @@
 #include "base/test/bind.h"
 #include "components/exo/wayland/server.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_input_state_controller.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 
@@ -51,6 +54,33 @@ base::OnceClosure UpdateStateAndBindEmitProcessed(struct wl_resource* resource,
       state->pending_request_ids_[resource].erase(id);
     }
   });
+}
+
+// Ensures that a crashed test doesn't leave behind pressed mouse buttons or
+// touch points.
+void ResetPointerAndTouch(UiControlsState* state) {
+  auto* env = aura::Env::GetInstance();
+  int button_flags = env->mouse_button_flags();
+  if (button_flags & ui::EF_LEFT_MOUSE_BUTTON) {
+    ui_controls::SendMouseEvents(ui_controls::LEFT,
+                                 ui_controls::MouseButtonState::UP);
+  }
+  if (button_flags & ui::EF_MIDDLE_MOUSE_BUTTON) {
+    ui_controls::SendMouseEvents(ui_controls::MIDDLE,
+                                 ui_controls::MouseButtonState::UP);
+  }
+  if (button_flags & ui::EF_RIGHT_MOUSE_BUTTON) {
+    ui_controls::SendMouseEvents(ui_controls::RIGHT,
+                                 ui_controls::MouseButtonState::UP);
+  }
+
+  uint32_t touch_ids_down = env->env_controller()->touch_ids_down();
+  for (uint32_t touch_id = 0; touch_id < 32; ++touch_id) {
+    if (touch_ids_down & (1 << touch_id)) {
+      ui_controls::SendTouchEvents(ui_controls::TouchType::RELEASE, touch_id, 0,
+                                   0);
+    }
+  }
 }
 
 void ui_controls_send_key_press(struct wl_client* client,
@@ -138,6 +168,7 @@ const struct zcr_ui_controls_v1_interface ui_controls_implementation = {
 void destroy_ui_controls_resource(struct wl_resource* resource) {
   auto* state = GetUserDataAs<UiControlsState>(resource);
   state->pending_request_ids_.erase(resource);
+  ResetPointerAndTouch(state);
 }
 
 void bind_ui_controls(wl_client* client,
