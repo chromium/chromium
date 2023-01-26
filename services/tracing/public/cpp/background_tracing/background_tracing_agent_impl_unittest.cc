@@ -90,7 +90,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {
   LOCAL_HISTOGRAM_COUNTS("foo1", 10);
 
-  agent()->SetUMACallback("foo1", 20000, 25000, true);
+  agent()->SetUMACallback("foo1", 20000, 25000);
 
   RunUntilIdle();
 
@@ -103,7 +103,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
   // Ensure that a sample exists by the time SetUMACallback is processed.
   LOCAL_HISTOGRAM_COUNTS("foo2", 2);
 
-  agent()->SetUMACallback("foo2", 1, 3, true);
+  agent()->SetUMACallback("foo2", 1, 3);
 
   // RunLoop ensures that SetUMACallback and OnTriggerBackgroundTrace mojo
   // messages are processed.
@@ -116,7 +116,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
-  agent()->SetUMACallback("foo2", 1, 3, true);
+  agent()->SetUMACallback("foo2", 1, 3);
   // RunLoop ensures that SetUMACallback mojo message is processed.
   RunUntilIdle();
 
@@ -132,7 +132,7 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
-  agent()->SetUMACallback("foo2", 1, 3, true);
+  agent()->SetUMACallback("foo2", 1, 3);
   // RunLoop ensures that SetUMACallback mojo message is processed.
   RunUntilIdle();
 
@@ -147,18 +147,6 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
   EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
   EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
-}
-
-TEST_F(BackgroundTracingAgentImplTest, TestHistogramAborts) {
-  LOCAL_HISTOGRAM_COUNTS("foo3", 10);
-
-  agent()->SetUMACallback("foo3", 1, 3, false);
-
-  RunUntilIdle();
-
-  EXPECT_EQ(1, recorder()->on_initialized_count());
-  EXPECT_EQ(0, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ(1, recorder()->on_abort_background_trace_count());
 }
 
 }  // namespace tracing

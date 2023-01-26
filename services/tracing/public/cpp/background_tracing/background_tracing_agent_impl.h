@@ -33,8 +33,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
   // mojom::BackgroundTracingAgent methods:
   void SetUMACallback(const std::string& histogram_name,
                       int32_t histogram_lower_value,
-                      int32_t histogram_upper_value,
-                      bool repeat) override;
+                      int32_t histogram_upper_value) override;
   void ClearUMACallback(const std::string& histogram_name) override;
 
  private:
@@ -42,7 +41,6 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
       base::WeakPtr<BackgroundTracingAgentImpl> weak_self,
       base::Histogram::Sample reference_lower_value,
       base::Histogram::Sample reference_upper_value,
-      bool repeat,
       const char* histogram_name,
       uint64_t name_hash,
       base::Histogram::Sample actual_value);

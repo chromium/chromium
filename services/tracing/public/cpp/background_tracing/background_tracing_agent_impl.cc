@@ -31,8 +31,7 @@ BackgroundTracingAgentImpl::~BackgroundTracingAgentImpl() = default;
 void BackgroundTracingAgentImpl::SetUMACallback(
     const std::string& histogram_name,
     int32_t histogram_lower_value,
-    int32_t histogram_upper_value,
-    bool repeat) {
+    int32_t histogram_upper_value) {
   histogram_last_changed_ = base::Time();
 
   base::WeakPtr<BackgroundTracingAgentImpl> weak_self =
@@ -45,7 +44,7 @@ void BackgroundTracingAgentImpl::SetUMACallback(
           histogram_name,
           base::BindRepeating(&BackgroundTracingAgentImpl::OnHistogramChanged,
                               weak_self, histogram_lower_value,
-                              histogram_upper_value, repeat));
+                              histogram_upper_value));
   histogram_callback_map_.insert(
       {histogram_name, std::move(histogram_observer)});
 
@@ -74,10 +73,6 @@ void BackgroundTracingAgentImpl::SetUMACallback(
       SendTriggerMessage(histogram_name);
       break;
     }
-    if (!repeat) {
-      SendAbortBackgroundTracingMessage();
-      break;
-    }
 
     sample_iterator->Next();
   }
@@ -94,15 +89,11 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
     base::WeakPtr<BackgroundTracingAgentImpl> weak_self,
     base::Histogram::Sample histogram_lower_value,
     base::Histogram::Sample histogram_upper_value,
-    bool repeat,
     const char* histogram_name,
     uint64_t name_hash,
     base::Histogram::Sample actual_value) {
   if (actual_value < histogram_lower_value ||
       actual_value > histogram_upper_value) {
-    if (!repeat && weak_self)
-      weak_self->SendAbortBackgroundTracingMessage();
-
     return;
   }
   TRACE_EVENT("toplevel", "HistogramSampleTrigger",

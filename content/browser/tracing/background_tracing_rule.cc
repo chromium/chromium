@@ -41,7 +41,6 @@ const char kConfigRuleHistogramNameKey[] = "histogram_name";
 const char kConfigRuleHistogramValueOldKey[] = "histogram_value";
 const char kConfigRuleHistogramValue1Key[] = "histogram_lower_value";
 const char kConfigRuleHistogramValue2Key[] = "histogram_upper_value";
-const char kConfigRuleHistogramRepeatKey[] = "histogram_repeat";
 
 const char kConfigRuleTypeMonitorNamed[] =
     "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED";
@@ -178,12 +177,10 @@ class HistogramRule : public BackgroundTracingRule,
  private:
   HistogramRule(const std::string& histogram_name,
                 int histogram_lower_value,
-                int histogram_upper_value,
-                bool repeat)
+                int histogram_upper_value)
       : histogram_name_(histogram_name),
         histogram_lower_value_(histogram_lower_value),
         histogram_upper_value_(histogram_upper_value),
-        repeat_(repeat),
         installed_(false) {}
 
  public:
@@ -193,9 +190,6 @@ class HistogramRule : public BackgroundTracingRule,
         dict.FindString(kConfigRuleHistogramNameKey);
     if (!histogram_name)
       return nullptr;
-
-    // Optional parameter, so we don't need to check if the key exists.
-    bool repeat = dict.FindBool(kConfigRuleHistogramRepeatKey).value_or(true);
 
     absl::optional<int> histogram_lower_value =
         dict.FindInt(kConfigRuleHistogramValue1Key);
@@ -212,9 +206,8 @@ class HistogramRule : public BackgroundTracingRule,
     if (*histogram_lower_value > histogram_upper_value)
       return nullptr;
 
-    std::unique_ptr<BackgroundTracingRule> rule(
-        new HistogramRule(*histogram_name, *histogram_lower_value,
-                          histogram_upper_value, repeat));
+    std::unique_ptr<BackgroundTracingRule> rule(new HistogramRule(
+        *histogram_name, *histogram_lower_value, histogram_upper_value));
 
     return rule;
   }
@@ -232,7 +225,7 @@ class HistogramRule : public BackgroundTracingRule,
         histogram_name_,
         base::BindRepeating(&HistogramRule::OnHistogramChangedCallback,
                             base::Unretained(this), histogram_lower_value_,
-                            histogram_upper_value_, repeat_));
+                            histogram_upper_value_));
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
     installed_ = true;
   }
@@ -243,7 +236,6 @@ class HistogramRule : public BackgroundTracingRule,
     dict.Set(kConfigRuleHistogramNameKey, histogram_name_.c_str());
     dict.Set(kConfigRuleHistogramValue1Key, histogram_lower_value_);
     dict.Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
-    dict.Set(kConfigRuleHistogramRepeatKey, repeat_);
     return dict;
   }
 
@@ -282,7 +274,7 @@ class HistogramRule : public BackgroundTracingRule,
   // BackgroundTracingManagerImpl::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
     agent->SetUMACallback(histogram_name_, histogram_lower_value_,
-                          histogram_upper_value_, repeat_);
+                          histogram_upper_value_);
   }
 
   void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
@@ -291,14 +283,11 @@ class HistogramRule : public BackgroundTracingRule,
 
   void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
                                   base::Histogram::Sample reference_upper_value,
-                                  bool repeat,
                                   const char* histogram_name,
                                   uint64_t name_hash,
                                   base::Histogram::Sample actual_value) {
     if (reference_lower_value > actual_value ||
         reference_upper_value < actual_value) {
-      if (!repeat)
-        AbortTracing();
       return;
     }
 
@@ -333,7 +322,6 @@ class HistogramRule : public BackgroundTracingRule,
   std::string histogram_name_;
   int histogram_lower_value_;
   int histogram_upper_value_;
-  bool repeat_;
   bool installed_;
   std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>
       histogram_sample_callback_;

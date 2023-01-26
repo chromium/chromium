@@ -17,13 +17,10 @@ interface BackgroundTracingAgentClient {
 interface BackgroundTracingAgent {
   // Call this method to begin reporting metrics corresponding to the named
   // histogram. Lower and upper bound values constrain what data is reported.
-  // This results in OnTriggerBackgroundTrace callbacks (multiple if |repeat|
-  // is set to true). If a histogram event does not match and |repeat| is
-  // false, then OnAbortBackgroundTrace is called.
+  // This results in OnTriggerBackgroundTrace callbacks.
   SetUMACallback(string histogram_name,
                  int32 histogram_lower_value,
-                 int32 histogram_upper_value,
-                 bool repeat);
+                 int32 histogram_upper_value);
 
   // Call this method to stop reporting metrics corresponding to the named
   // histogram.

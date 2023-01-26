@@ -220,15 +220,14 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":true,\"histogram_upper_value\":2147483647,"
+            "\"histogram_upper_value\":2147483647,"
             "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
       "{\"mode\":\"PREEMPTIVE_TRACING_MODE\", \"category\": "
       "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
-      "\"histogram_name\":\"foo\", \"histogram_value\": 1, "
-      "\"histogram_repeat\":false}]}");
+      "\"histogram_name\":\"foo\", \"histogram_value\": 1}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
   EXPECT_EQ(config->category_preset(),
@@ -236,7 +235,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":false,\"histogram_upper_value\":2147483647,"
+            "\"histogram_upper_value\":2147483647,"
             "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -252,7 +251,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":true,\"histogram_upper_value\":2,\"rule\":"
+            "\"histogram_upper_value\":2,\"rule\":"
             "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -260,7 +259,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
       "\"BENCHMARK_STARTUP\",\"configs\": [{\"rule\": "
       "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\", "
       "\"histogram_name\":\"foo\", \"histogram_lower_value\": 1, "
-      "\"histogram_upper_value\": 2, \"histogram_repeat\":false}]}");
+      "\"histogram_upper_value\": 2}]}");
   EXPECT_TRUE(config);
   EXPECT_EQ(config->tracing_mode(), BackgroundTracingConfig::PREEMPTIVE);
   EXPECT_EQ(config->category_preset(),
@@ -268,7 +267,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":false,\"histogram_upper_value\":2,\"rule\":"
+            "\"histogram_upper_value\":2,\"rule\":"
             "\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -283,7 +282,7 @@ TEST_F(BackgroundTracingConfigTest, PreemptiveConfigFromValidString) {
   EXPECT_EQ(config->rules().size(), 1u);
   EXPECT_EQ(RuleToString(config->rules()[0]),
             "{\"histogram_lower_value\":1,\"histogram_name\":\"foo\","
-            "\"histogram_repeat\":true,\"histogram_upper_value\":2147483647,"
+            "\"histogram_upper_value\":2147483647,"
             "\"rule\":\"MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE\"}");
 
   config = ReadFromJSONString(
@@ -445,7 +444,7 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
     EXPECT_EQ(
         ConfigToString(config.get()),
         "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
+        "value\":1,\"histogram_name\":\"foo\","
         "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
         "SPECIFIC_HISTOGRAM_AND_VALUE\"}],\"mode\":\"PREEMPTIVE_TRACING_"
         "MODE\"}");
@@ -467,7 +466,7 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
     EXPECT_EQ(
         ConfigToString(config.get()),
         "{\"category\":\"BENCHMARK_STARTUP\",\"configs\":[{\"histogram_lower_"
-        "value\":1,\"histogram_name\":\"foo\",\"histogram_repeat\":true,"
+        "value\":1,\"histogram_name\":\"foo\","
         "\"histogram_upper_value\":2,\"rule\":\"MONITOR_AND_DUMP_WHEN_"
         "SPECIFIC_HISTOGRAM_AND_VALUE\",\"trigger_delay\":10}],\"mode\":"
         "\"PREEMPTIVE_TRACING_MODE\"}");
