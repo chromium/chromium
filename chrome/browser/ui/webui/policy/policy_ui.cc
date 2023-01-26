@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/policy/policy_ui_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "components/grit/policy_resources.h"
 #include "components/grit/policy_resources_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -36,13 +37,13 @@ namespace {
 // chrome://policy/logs page.
 std::string GetOsInfo() {
   // The base format for the OS version and build
-  constexpr char kOSVersionAndBuildFormat[] = "%s, Version: %s";
+  constexpr char kOSVersionAndBuildFormat[] = "Android %s %s";
   return base::StringPrintf(
       kOSVersionAndBuildFormat,
+      (base::SysInfo::OperatingSystemVersion()).c_str(),
       (content::GetAndroidOSInfo(content::IncludeAndroidBuildNumber::Include,
                                  content::IncludeAndroidModel::Include))
-          .c_str(),
-      (base::SysInfo::OperatingSystemVersion()).c_str());
+          .c_str());
 }
 
 // Returns the version information to be displayed on the chrome://policy/logs
@@ -52,7 +53,7 @@ base::Value GetVersionInfo() {
 
   version_info.SetStringPath("revision", version_info::GetLastChange());
   version_info.SetStringPath("version", version_info::GetVersionNumber());
-  version_info.SetStringPath("device_os", GetOsInfo());
+  version_info.SetStringPath("deviceOs", GetOsInfo());
   version_info.SetPath("variations",
                        base::Value(version_ui::GetVariationsList()));
 
@@ -129,6 +130,19 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   };
   source->AddLocalizedStrings(kStrings);
+
+  // Localized strings for chrome://policy/logs.
+  static constexpr webui::LocalizedString kPolicyLogsStrings[] = {
+      {"browserName", IDS_PRODUCT_NAME},
+      {"exportLogsJSON", IDS_EXPORT_POLICY_LOGS_JSON},
+      {"logsTitle", IDS_POLICY_LOGS_TITLE},
+      {"os", IDS_VERSION_UI_OS},
+      {"refreshLogs", IDS_REFRESH_POLICY_LOGS},
+      {"revision", IDS_VERSION_UI_REVISION},
+      {"versionInfoLabel", IDS_VERSION_INFO},
+      {"variations", IDS_VERSION_UI_VARIATIONS},
+  };
+  source->AddLocalizedStrings(kPolicyLogsStrings);
 
 #if BUILDFLAG(IS_ANDROID)
   source->AddBoolean(

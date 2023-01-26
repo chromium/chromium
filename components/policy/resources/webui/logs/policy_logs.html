@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
 <head>
   <meta charset="utf-8">
   <title>Policy Logs</title>
@@ -18,6 +18,16 @@
       display: flex;
       height: 56px;
     }
+  
+    .label {
+      font-weight: bold;
+      padding-inline-end: 5px;
+      vertical-align: top;
+    }
+
+    .label::after {
+      content: ':';
+    }
 
     ul {
       list-style-type: none;
@@ -32,28 +42,28 @@
   </section>
 
   <section id="logs-enabled-container">
-    <h1>Policy Logs</h1>
+    <h1>$i18n{logsTitle}</h1>
 
     <div class="buttons-row">
-      <button id="logs-dump">Export Logs to JSON</button>
-      <button id="logs-refresh">Refresh Logs</button>
+      <button id="logs-dump">$i18n{exportLogsJSON}</button>
+      <button id="logs-refresh">$i18n{refreshLogs}</button>
     </div>
 
-    <h2>Version Information</h2>
+    <h2>$i18n{versionInfoLabel}</h2>
 
     <table id="version-info" aria-label="Version Information">
       <tr>
-        <td>Chrome Version: </td>
+        <td class="label">$i18n{browserName}</td>
         <td id="chrome-version-value" class="version-info-table-data">-</td>
       </tr>
 
       <tr>
-        <td>Chrome Revision: </td>
+        <td class="label">$i18n{revision}</td>
         <td id="chrome-revision-value" class="version-info-table-data">-</td>
       </tr>
 
       <tr>
-        <td id="os-version-label">OS: </td>
+        <td class="label">$i18n{os}</td>
         <td id="os-version-value" class="version-info-table-data">-</td>
       </tr>
     </table>
@@ -62,7 +72,7 @@
 
     <ul id="logs-container" aria-label="Logs List"></ul>
 
-    <h2>Active Variations</h2>
+    <h2>$i18n{variations}</h2>
 
     <ul id="active-variations-container" aria-label="Active Variations List"></ul>
   </section>

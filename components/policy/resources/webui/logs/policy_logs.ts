@@ -58,10 +58,8 @@ function displayVersionInfo() {
   });
 }
 
-function fetchLogs() {
-  return sendWithPromise('getPolicyLogs').then(logsFetched => {
-    logs = logsFetched;
-  });
+async function fetchLogs() {
+  logs = await sendWithPromise('getPolicyLogs');
 }
 
 function initialize() {
