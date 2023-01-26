@@ -33,6 +33,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
       Uploaded,
     };
 
+    UploadInfo(const UploadInfo& upload_info);
     UploadInfo(const std::string& upload_id,
                const base::Time& upload_time,
                const std::string& local_id,
@@ -44,7 +45,6 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
                State state,
                const std::u16string& file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
-    UploadInfo(const UploadInfo& upload_info);
     ~UploadInfo();
 
     // These fields are only valid when |state| == UploadInfo::State::Uploaded.
@@ -62,6 +62,9 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
     // Identifies where the crash comes from.
     std::string source;
+
+    // The MD5sum of the path of the crash meta file.
+    std::string path_hash;
 
     // Formatted file size for locally stored data.
     std::u16string file_size;

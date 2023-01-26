@@ -24,6 +24,7 @@ const char kTestUploadId[] = "0123456789abcdef";
 const char kTestLocalID[] = "fedcba9876543210";
 const char kTestCaptureTime[] = "2345678901";
 const char kTestSource[] = "test_source";
+const char kTestPathHash[] = "1a2b3c4d5e6f";
 
 class TextLogUploadListTest : public testing::Test {
  public:
@@ -525,6 +526,46 @@ TEST_F(TextLogUploadListTest, ParseWithSource_JSON) {
     EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
     EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload.state);
     EXPECT_STREQ(kTestSource, upload.source.c_str());
+  }
+}
+
+TEST_F(TextLogUploadListTest, ParseWithPathHash_JSON) {
+  std::stringstream stream;
+  for (int i = 1; i <= 4; ++i) {
+    stream << "{";
+    stream << "\"upload_time\":\"" << kTestUploadTime << "\",";
+    stream << "\"upload_id\":\"" << kTestUploadId << "\",";
+    stream << "\"local_id\":\"" << kTestLocalID << "\",";
+    stream << "\"capture_time\":\"" << kTestCaptureTime << "\",";
+    stream << "\"state\":"
+           << static_cast<int>(UploadList::UploadInfo::State::Uploaded) << ",";
+    stream << "\"source\":\"" << kTestSource << "\",";
+    stream << "\"path_hash\":\"" << kTestPathHash << "\"";
+    stream << "}" << std::endl;
+  }
+  WriteUploadLog(stream.str());
+
+  scoped_refptr<TextLogUploadList> upload_list =
+      new TextLogUploadList(log_path());
+
+  base::RunLoop run_loop;
+  upload_list->Load(run_loop.QuitClosure());
+  run_loop.Run();
+
+  std::vector<UploadList::UploadInfo> uploads;
+  upload_list->GetUploads(999, &uploads);
+
+  EXPECT_EQ(4u, uploads.size());
+  for (const UploadList::UploadInfo& upload : uploads) {
+    double time_double = upload.upload_time.ToDoubleT();
+    EXPECT_STREQ(kTestUploadTime, base::NumberToString(time_double).c_str());
+    EXPECT_STREQ(kTestUploadId, upload.upload_id.c_str());
+    EXPECT_STREQ(kTestLocalID, upload.local_id.c_str());
+    time_double = upload.capture_time.ToDoubleT();
+    EXPECT_STREQ(kTestCaptureTime, base::NumberToString(time_double).c_str());
+    EXPECT_EQ(UploadList::UploadInfo::State::Uploaded, upload.state);
+    EXPECT_STREQ(kTestSource, upload.source.c_str());
+    EXPECT_STREQ(kTestPathHash, upload.path_hash.c_str());
   }
 }
 
