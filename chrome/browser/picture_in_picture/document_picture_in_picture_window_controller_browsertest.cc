@@ -180,6 +180,14 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(GetRenderWidgetHostView());
   EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
   EXPECT_FALSE(GetRenderWidgetHostView()->HasFocus());
+
+  // Also verify that the window manager agrees about which WebContents is
+  // which; the opener should not be the child web contents, but the child
+  // contents should be(!).
+  EXPECT_FALSE(PictureInPictureWindowManager::IsChildWebContents(
+      window_controller()->GetWebContents()));
+  EXPECT_TRUE(PictureInPictureWindowManager::IsChildWebContents(
+      window_controller()->GetChildWebContents()));
 }
 
 // Regression test for https://crbug.com/1296780 - opening a picture-in-picture

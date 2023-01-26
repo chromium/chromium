@@ -141,6 +141,19 @@ content::WebContents* PictureInPictureWindowManager::GetChildWebContents()
   return pip_window_controller_->GetChildWebContents();
 }
 
+// static
+bool PictureInPictureWindowManager::IsChildWebContents(
+    content::WebContents* wc) {
+  auto* instance =
+      base::Singleton<PictureInPictureWindowManager>::GetIfExists();
+  if (!instance) {
+    // No manager => no pip window.
+    return false;
+  }
+
+  return instance->GetChildWebContents() == wc;
+}
+
 absl::optional<gfx::Rect>
 PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
   return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()

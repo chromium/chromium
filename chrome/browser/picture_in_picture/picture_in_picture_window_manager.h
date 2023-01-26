@@ -69,6 +69,10 @@ class PictureInPictureWindowManager {
   // and will be null for video PiP.
   content::WebContents* GetChildWebContents() const;
 
+  // Helper method that will check if the given WebContents is hosted in a
+  // document PiP window.
+  static bool IsChildWebContents(content::WebContents*);
+
   // Returns the window bounds of the video picture-in-picture or the document
   // picture-in-picture if either of them is present.
   absl::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;

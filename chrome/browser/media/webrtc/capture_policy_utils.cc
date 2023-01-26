@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -164,13 +165,18 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
       return base::BindRepeating(
           [](const GURL& request_origin, content::WebContents* web_contents) {
             DCHECK(web_contents);
-            return url::IsSameOriginWith(
-                request_origin,
-                web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
+            return !PictureInPictureWindowManager::IsChildWebContents(
+                       web_contents) &&
+                   url::IsSameOriginWith(request_origin,
+                                         web_contents->GetLastCommittedURL()
+                                             .DeprecatedGetOriginAsURL());
           },
           request_origin);
     default:
-      return base::BindRepeating([](content::WebContents* wc) { return true; });
+      return base::BindRepeating([](content::WebContents* web_contents) {
+        DCHECK(web_contents);
+        return !PictureInPictureWindowManager::IsChildWebContents(web_contents);
+      });
   }
 }
 
