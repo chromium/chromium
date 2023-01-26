@@ -376,6 +376,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.DialogWindowTooSmall" enum="Boolean"
+    expires_after="2023-06-18">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Records whether the window size was too small to fit the Privacy Sandbox
+    dialog. If the window is too small, the dialog isn't shown. It is recorded
+    after all other conditions to show the dialog were satisfied.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.Enabled"
     enum="SettingsPrivacySandboxEnabled" expires_after="2023-07-09">
   <owner>harrisonsean@chromium.org</owner>

@@ -24,4 +24,8 @@ void ShowPrivacySandboxDialog(Browser* browser,
 // notice the user.
 void ShowPrivacySandboxNoticeBubble(Browser* browser);
 
+// Returns whether a Privacy Sandbox prompt can be shown in the |browser|.
+// Checks if the maximum dialog size fits the prompt.
+bool CanWindowFitPrivacySandboxPrompt(Browser* browser);
+
 #endif  // CHROME_BROWSER_UI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PROMPT_H_

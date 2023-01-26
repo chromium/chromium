@@ -132,6 +132,16 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
       return;
   }
 
+  const bool is_window_too_small = !CanWindowFitPrivacySandboxPrompt(browser);
+  base::UmaHistogramBoolean("Settings.PrivacySandbox.DialogWindowTooSmall",
+                            is_window_too_small);
+  // If the windows size is too small, it is difficult to read or interrupt with
+  // the dialog. The dialog is blocking modal, that is why we want to prevent it
+  // from showing if there isn't enough space.
+  if (is_window_too_small) {
+    return;
+  }
+
   // Record the URL that the prompt was displayed over.
   uint32_t host_hash = base::Hash(navigation_handle->GetURL().IsAboutBlank()
                                       ? "about:blank"
