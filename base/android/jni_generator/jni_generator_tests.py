@@ -882,6 +882,9 @@ import org.chromium.base.BuildInfo;
     self.assertRaises(SyntaxError,
                       jni_generator.ExtractFullyQualifiedJavaClassName,
                       'com/foo/Bar', 'no PACKAGE line')
+    self.assertRaises(AssertionError,
+                      jni_generator.ExtractFullyQualifiedJavaClassName,
+                      'com/foo/Bar.kt', 'Kotlin not supported')
 
   def testMethodNameMangling(self):
     jni_params = jni_generator.JniParams('')

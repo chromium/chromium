@@ -61,6 +61,8 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
                     return Pair.create(i, assignedSelector);
                 }
             }
+            // The following log statement is used in tools/android/build_speed/benchmark.py. Please
+            // update the string there if this string is updated.
             throw new IllegalStateException(
                     "TabModelSelector is assigned to an Activity but has no index.");
         }

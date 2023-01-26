@@ -11,7 +11,6 @@ from __future__ import print_function
 import argparse
 import base64
 import collections
-import errno
 import hashlib
 import os
 import re
@@ -524,13 +523,15 @@ def ExtractJNINamespace(contents):
   return m[0]
 
 
-def ExtractFullyQualifiedJavaClassName(java_file_name, contents):
+def ExtractFullyQualifiedJavaClassName(file_name, contents):
+  assert not file_name.endswith('.kt'), (
+      f'Found {file_name}, but Kotlin is not supported by JNI generator.')
   re_package = re.compile('.*?package (.*?);')
   matches = re.findall(re_package, contents)
   if not matches:
-    raise SyntaxError('Unable to find "package" line in %s' % java_file_name)
+    raise SyntaxError('Unable to find "package" line in %s' % file_name)
   class_path = matches[0].replace('.', '/')
-  class_name = os.path.splitext(os.path.basename(java_file_name))[0]
+  class_name = os.path.splitext(os.path.basename(file_name))[0]
   return class_path + '/' + class_name
 
 
@@ -1659,7 +1660,9 @@ See SampleForTests.java for more details.
   parser.add_argument('--stamp',
                       help='Process --prev_output_dir and touch this file.')
   args = parser.parse_args()
-  input_files = args.input_files
+  # Kotlin files are not supported by jni_generator.py, but they do end up in
+  # the list of source files passed to jni_generator.py.
+  input_files = [f for f in args.input_files if not f.endswith('.kt')]
   output_names = args.output_names
 
   if args.prev_output_dir:

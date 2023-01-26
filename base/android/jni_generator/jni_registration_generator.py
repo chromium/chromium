@@ -949,10 +949,11 @@ def main(argv):
 
   java_file_paths = []
   for f in sources_files:
-    # Skip generated files, since the GN targets do not declare any deps.
+    # Skip generated files, since the GN targets do not declare any deps. Also
+    # skip Kotlin files as they are not supported by JNI generation.
     java_file_paths.extend(
-        p for p in build_utils.ReadSourcesList(f)
-        if p.startswith('..') and p not in args.sources_exclusions)
+        p for p in build_utils.ReadSourcesList(f) if p.startswith('..')
+        and p not in args.sources_exclusions and not p.endswith('.kt'))
   _Generate(java_file_paths,
             args.srcjar_path,
             proxy_opts=proxy_opts,
