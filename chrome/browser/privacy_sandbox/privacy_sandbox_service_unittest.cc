@@ -3610,6 +3610,51 @@ TEST_F(PrivacySandboxServiceM1PromptTest, RestrictedPrompt) {
                   static_cast<int>(PromptSuppressedReason::kRestricted)}});
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
+  // Settings both consent and notice to be true so that we can loop through all
+  // cases interacting with the sentiment service cleanly, without breaking
+  // DCHECKs. Other tests / code paths check that PromptActionOccurred is
+  // working correctly based on notice and consent, and assert that only one is
+  // enabled.
+  feature_list()->Reset();
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{"consent-required", "true"}, {"notice-required", "true"}});
+
+  std::map<PromptAction, TrustSafetySentimentService::FeatureArea>
+      expected_feature_areas;
+  expected_feature_areas = {
+      {PromptAction::kNoticeOpenSettings,
+       TrustSafetySentimentService::FeatureArea::
+           kPrivacySandbox4NoticeSettings},
+      {PromptAction::kNoticeAcknowledge,
+       TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk},
+      {PromptAction::kConsentAccepted,
+       TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentAccept},
+      {PromptAction::kConsentDeclined,
+       TrustSafetySentimentService::FeatureArea::
+           kPrivacySandbox4ConsentDecline}};
+
+  for (int enum_value = 0;
+       enum_value <= static_cast<int>(PromptAction::kMaxValue); ++enum_value) {
+    auto prompt_action = static_cast<PromptAction>(enum_value);
+    if (expected_feature_areas.count(prompt_action)) {
+      EXPECT_CALL(
+          *mock_sentiment_service(),
+          InteractedWithPrivacySandbox4(expected_feature_areas[prompt_action]))
+          .Times(1);
+    } else {
+      EXPECT_CALL(*mock_sentiment_service(),
+                  InteractedWithPrivacySandbox4(testing::_))
+          .Times(0);
+    }
+    privacy_sandbox_service()->PromptActionOccurred(prompt_action);
+    testing::Mock::VerifyAndClearExpectations(mock_sentiment_service());
+  }
+}
+#endif
+
 class PrivacySandboxServiceM1ConsentPromptTest
     : public PrivacySandboxServiceM1PromptTest {};
 

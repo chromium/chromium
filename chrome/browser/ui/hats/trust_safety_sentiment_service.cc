@@ -474,7 +474,9 @@ void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
 }
 
 void TrustSafetySentimentService::InteractedWithPrivacySandbox4(
-    FeatureArea feature_area) {}
+    FeatureArea feature_area) {
+  TriggerOccurred(feature_area, {});
+}
 
 void TrustSafetySentimentService::OnOffTheRecordProfileCreated(
     Profile* off_the_record) {

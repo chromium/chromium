@@ -267,7 +267,6 @@ PrivacySandboxService::GetRequiredPromptType() {
 
 void PrivacySandboxService::PromptActionOccurred(
     PrivacySandboxService::PromptAction action) {
-  InformSentimentService(action);
   RecordPromptActionMetrics(action);
 
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
@@ -275,6 +274,7 @@ void PrivacySandboxService::PromptActionOccurred(
     return;
   }
 
+  InformSentimentService(action);
   if (PromptAction::kNoticeShown == action &&
       PromptType::kNotice == GetRequiredPromptType()) {
     // The Privacy Sandbox pref can be enabled when the notice has been
@@ -293,6 +293,10 @@ void PrivacySandboxService::PromptActionOccurred(
 
 void PrivacySandboxService::PromptActionOccurredM1(
     PrivacySandboxService::PromptAction action) {
+  DCHECK(
+      base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4));
+
+  InformSentimentServiceM1(action);
   if (PromptAction::kNoticeAcknowledge == action ||
       PromptAction::kNoticeOpenSettings == action) {
     if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
@@ -1425,6 +1429,38 @@ void PrivacySandboxService::InformSentimentService(
   }
 
   sentiment_service_->InteractedWithPrivacySandbox3(area);
+#endif
+}
+
+void PrivacySandboxService::InformSentimentServiceM1(
+    PrivacySandboxService::PromptAction action) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!sentiment_service_) {
+    return;
+  }
+
+  TrustSafetySentimentService::FeatureArea area;
+  switch (action) {
+    case PromptAction::kNoticeOpenSettings:
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox4NoticeSettings;
+      break;
+    case PromptAction::kNoticeAcknowledge:
+      area = TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk;
+      break;
+    case PromptAction::kConsentAccepted:
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox4ConsentAccept;
+      break;
+    case PromptAction::kConsentDeclined:
+      area = TrustSafetySentimentService::FeatureArea::
+          kPrivacySandbox4ConsentDecline;
+      break;
+    default:
+      return;
+  }
+
+  sentiment_service_->InteractedWithPrivacySandbox4(area);
 #endif
 }
 

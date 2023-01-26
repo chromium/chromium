@@ -41,6 +41,10 @@ class MockTrustSafetySentimentService : public TrustSafetySentimentService {
               InteractedWithPrivacySandbox3,
               (FeatureArea feature_area),
               (override));
+  MOCK_METHOD(void,
+              InteractedWithPrivacySandbox4,
+              (FeatureArea feature_area),
+              (override));
   MOCK_METHOD(void, RanPasswordCheck, (), (override));
   MOCK_METHOD(void,
               ClearedBrowsingData,
