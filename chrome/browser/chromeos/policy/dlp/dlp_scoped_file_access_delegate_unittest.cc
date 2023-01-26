@@ -7,12 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
 #include "components/file_access/file_access_copy_or_move_delegate_factory.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -92,11 +94,13 @@ TEST_F(DlpScopedFileAccessDelegateTest, TestMultipleInstances) {
 
 class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
  public:
-  content::BrowserTaskEnvironment browser_task_environment_;
+  content::BrowserTaskEnvironment browser_task_environment_{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
+  base::RunLoop run_loop_;
   chromeos::FakeDlpClient fake_dlp_client_;
-  scoped_refptr<base::SingleThreadTaskRunner> UIThread_ =
+  scoped_refptr<base::SingleThreadTaskRunner> ui_thread_ =
       content::GetUIThreadTaskRunner({});
-  scoped_refptr<base::SingleThreadTaskRunner> IOThread_ =
+  scoped_refptr<base::SingleThreadTaskRunner> io_thread_ =
       content::GetIOThreadTaskRunner({});
 
   void SetUp() override {
@@ -107,14 +111,14 @@ class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
   void TestPreInit() {
     EXPECT_FALSE(
         file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
-    UIThread_->PostTask(
+    ui_thread_->PostTask(
         FROM_HERE, base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::Init,
                                   base::Unretained(this)));
   }
 
   void Init() {
     DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
-    IOThread_->PostTask(
+    io_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPostInit,
                        base::Unretained(this)));
@@ -123,14 +127,14 @@ class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
   void TestPostInit() {
     EXPECT_TRUE(
         file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
-    UIThread_->PostTask(
+    ui_thread_->PostTask(
         FROM_HERE, base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::Delete,
                                   base::Unretained(this)));
   }
 
   void Delete() {
     file_access::ScopedFileAccessDelegate::DeleteInstance();
-    IOThread_->PostTask(
+    io_thread_->PostTask(
         FROM_HERE,
         base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPostDelete,
                        base::Unretained(this)));
@@ -139,15 +143,126 @@ class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
   void TestPostDelete() {
     EXPECT_FALSE(
         file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
+    run_loop_.Quit();
   }
 };
 
 TEST_F(DlpScopedFileAccessDelegateTaskTest, TestSync) {
-  IOThread_->PostTask(
+  io_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPreInit,
                      base::Unretained(this)));
-  browser_task_environment_.RunUntilIdle();
+  run_loop_.Run();
+}
+
+TEST_F(DlpScopedFileAccessDelegateTaskTest,
+       TestGetFilesAccessForSystemIONoInstance) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  io_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
+        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+            {file_path}, base::BindLambdaForTesting(
+                             [this](file_access::ScopedFileAccess file_access) {
+                               DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+                               EXPECT_TRUE(file_access.is_allowed());
+                               run_loop_.Quit();
+                             }));
+      }));
+  run_loop_.Run();
+}
+
+// This test should simulate calling RequestFilesAccessForSystemIO with existing
+// callback for the IO thread but destructed DlpScopedFileAccessDelegate on the
+// UI thread.
+TEST_F(DlpScopedFileAccessDelegateTaskTest,
+       TestGetFilesAccessForSystemIODestroyedInstance) {
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  // Dlp would disallow but missing ScopedFileAccessDelegate should fall back to
+  // allow.
+  fake_dlp_client_.SetFileAccessAllowed(false);
+
+  // Post a task on IO thread to sync with to be sure the IO task setting
+  // `request_files_access_for_system_io_callback_` has run.
+  base::RunLoop init;
+  io_thread_->PostTask(
+      FROM_HERE, base::BindOnce(&base::RunLoop::Quit, base::Unretained(&init)));
+  init.Run();
+
+  file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
+      original_callback;
+
+  // Callback that calls the original
+  // request_files_access_for_system_io_callback_ after destructing
+  // DlpScopedFileAccessDelegate.
+  auto decorated_callback = base::BindLambdaForTesting(
+      [this, &original_callback](
+          const std::vector<base::FilePath>& path,
+          base::OnceCallback<void(file_access::ScopedFileAccess)> callback) {
+        ui_thread_->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &file_access::ScopedFileAccessDelegate::DeleteInstance));
+        original_callback->Run(path, std::move(callback));
+      });
+
+  original_callback = file_access::ScopedFileAccessDelegate::
+      SetRequestFilesAccessForSystemIOCallbackForTesting(decorated_callback);
+
+  // The request for file access should be granted as that is the default
+  // behaviour for no running dlp (no rules).
+  io_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
+        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+            {file_path}, base::BindLambdaForTesting(
+                             [this](file_access::ScopedFileAccess file_access) {
+                               DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+                               EXPECT_TRUE(file_access.is_allowed());
+                               run_loop_.Quit();
+                             }));
+      }));
+  run_loop_.Run();
+  delete original_callback;
+}
+
+TEST_F(DlpScopedFileAccessDelegateTaskTest,
+       TestGetFilesAccessForSystemIOAllow) {
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  fake_dlp_client_.SetFileAccessAllowed(true);
+  io_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
+        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+            {file_path}, base::BindLambdaForTesting(
+                             [this](file_access::ScopedFileAccess file_access) {
+                               DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+                               EXPECT_TRUE(file_access.is_allowed());
+                               run_loop_.Quit();
+                             }));
+      }));
+  run_loop_.Run();
+}
+
+TEST_F(DlpScopedFileAccessDelegateTaskTest,
+       TestGetFilesAccessForSystemIODisallow) {
+  DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+  base::FilePath file_path;
+  base::CreateTemporaryFile(&file_path);
+  fake_dlp_client_.SetFileAccessAllowed(false);
+  io_thread_->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this, &file_path]() {
+        file_access::ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+            {file_path}, base::BindLambdaForTesting(
+                             [this](file_access::ScopedFileAccess file_access) {
+                               DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+                               EXPECT_FALSE(file_access.is_allowed());
+                               run_loop_.Quit();
+                             }));
+      }));
+  run_loop_.Run();
 }
 
 }  // namespace policy

@@ -22,9 +22,17 @@ namespace file_access {
 // appropriate proxy. It is used for managed ChromeOs only in the implementation
 // DlpScopedfileAccessDelegate. Only one instance of a class which extends
 // this class can exist at a time. The class itself also manages this one
-// instance. When it is replaced the old instance is destructed.
+// instance. When it is replaced the old instance is destructed. This instance
+// is constructed and destructed on the UI thread. So all methods should only be
+// called from the UI thread. The exception is RequestFilesAccessForSystemIO,
+// which takes care of hopping correctly between the threads and providing this
+// to packages without direct access to the UI thread.
 class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
  public:
+  using RequestFilesAccessForSystemIOCallback =
+      base::RepeatingCallback<void(const std::vector<base::FilePath>&,
+                                   base::OnceCallback<void(ScopedFileAccess)>)>;
+
   ScopedFileAccessDelegate(const ScopedFileAccessDelegate&) = delete;
   ScopedFileAccessDelegate& operator=(const ScopedFileAccessDelegate&) = delete;
 
@@ -54,6 +62,13 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
       const std::vector<base::FilePath>& files,
       base::OnceCallback<void(file_access::ScopedFileAccess)> callback) = 0;
 
+  // Called from the IO thread. Switches to the UI thread and calls
+  // RequestFilesAccessForSystem there. The `callback` is run on the IO thread
+  // again.
+  static void RequestFilesAccessForSystemIO(
+      const std::vector<base::FilePath>& files,
+      base::OnceCallback<void(ScopedFileAccess)> callback);
+
   // Calls base::ThreadPool::PostTaskAndReplyWithResult but `task` is run with
   // file access to `path`. The file access is hold until the call to `reply`
   // returns.
@@ -81,6 +96,13 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
             path, from_here, traits, std::move(task), std::move(reply)));
   }
 
+  // Sets the callback forwarding the RequestFilesAccessForSystem call from IO
+  // to UI thread. Returns the previous callback transferring the ownership to
+  // the caller.
+  static RequestFilesAccessForSystemIOCallback*
+  SetRequestFilesAccessForSystemIOCallbackForTesting(
+      RequestFilesAccessForSystemIOCallback callback);
+
  protected:
   ScopedFileAccessDelegate();
 
@@ -89,6 +111,12 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
   // A single instance of ScopedFileAccessDelegate. Equals nullptr when there's
   // not any data transfer restrictions required.
   static ScopedFileAccessDelegate* scoped_file_access_delegate_;
+
+  // A single instance for a callback living on the IO thread which switches to
+  // the UI thread to call RequestFilesAccessForSystem from there and switch
+  // back to IO thread handing the ScopedFileAccess to another (given) callback.
+  static RequestFilesAccessForSystemIOCallback*
+      request_files_access_for_system_io_callback_;
 };
 
 }  // namespace file_access

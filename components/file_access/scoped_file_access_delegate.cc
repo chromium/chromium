@@ -23,6 +23,28 @@ void ScopedFileAccessDelegate::DeleteInstance() {
   }
 }
 
+// static
+void ScopedFileAccessDelegate::RequestFilesAccessForSystemIO(
+    const std::vector<base::FilePath>& files,
+    base::OnceCallback<void(ScopedFileAccess)> callback) {
+  if (request_files_access_for_system_io_callback_) {
+    request_files_access_for_system_io_callback_->Run(files,
+                                                      std::move(callback));
+  } else {
+    std::move(callback).Run(ScopedFileAccess::Allowed());
+  }
+}
+
+// static
+ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
+ScopedFileAccessDelegate::SetRequestFilesAccessForSystemIOCallbackForTesting(
+    RequestFilesAccessForSystemIOCallback callback) {
+  auto* old_ptr = request_files_access_for_system_io_callback_;
+  request_files_access_for_system_io_callback_ =
+      new RequestFilesAccessForSystemIOCallback(std::move(callback));
+  return old_ptr;
+}
+
 ScopedFileAccessDelegate::ScopedFileAccessDelegate() {
   if (scoped_file_access_delegate_) {
     delete scoped_file_access_delegate_;
@@ -39,5 +61,10 @@ ScopedFileAccessDelegate::~ScopedFileAccessDelegate() {
 // static
 ScopedFileAccessDelegate*
     ScopedFileAccessDelegate::scoped_file_access_delegate_ = nullptr;
+
+// static
+ScopedFileAccessDelegate::RequestFilesAccessForSystemIOCallback*
+    ScopedFileAccessDelegate::request_files_access_for_system_io_callback_ =
+        nullptr;
 
 }  // namespace file_access
