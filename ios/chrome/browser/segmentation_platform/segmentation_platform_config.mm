@@ -10,6 +10,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 #import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #import "components/segmentation_platform/internal/stats.h"
@@ -112,6 +113,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   }
 
   configs.emplace_back(GetConfigForCrossDeviceSegments());
+  configs.emplace_back(DeviceSwitcherModel::GetConfig());
 
   // Add new configs here.
 

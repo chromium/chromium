@@ -97,7 +97,8 @@ class MetadataWriter {
     const uint64_t tensor_length{0};
     const proto::CustomInput::FillPolicy fill_policy{
         proto::CustomInput_FillPolicy_UNKNOWN_FILL_POLICY};
-    const float default_value{0};
+    const size_t default_values_size{0};
+    const float* const default_values = nullptr;
     const char* name{nullptr};
   };
 

@@ -6,6 +6,7 @@ CrossDeviceUserModelTest.*
 CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
+DeviceSwitcherModelTest.*
 DummyModelProviderFactoryImplTest.*
 DummySegmentationPlatformServiceTest.*
 FailedUkmDatabaseTest.*

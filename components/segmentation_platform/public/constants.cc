@@ -42,6 +42,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kIntentionalUserUmaName;
   } else if (segmentation_key == kResumeHeavyUserKey) {
     return kResumeHeavyUserUmaName;
+  } else if (segmentation_key == kDeviceSwitcherKey) {
+    return kDeviceSwitcherUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }

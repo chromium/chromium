@@ -73,6 +73,10 @@ const char kIntentionalUserUmaName[] = "IntentionalUser";
 const char kResumeHeavyUserKey[] = "resume_heavy_user";
 const char kResumeHeavyUserUmaName[] = "ResumeHeavyUser";
 
+// Key for user segment that is likely switched from Chrome on other devices.
+const char kDeviceSwitcherKey[] = "device_switcher";
+const char kDeviceSwitcherUmaName[] = "DeviceSwitcher";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
