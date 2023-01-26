@@ -8,11 +8,13 @@ import 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 import {AppearanceElement} from 'chrome://customize-chrome-side-panel.top-chrome/appearance.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
+import {ManagedDialogElement} from 'chrome://resources/cr_components/managed_dialog/managed_dialog.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
+import {$$, assertNotStyle, assertStyle, createBackgroundImage, createTheme, createThirdPartyThemeInfo, installMock} from './test_support.js';
 
 suite('AppearanceTest', () => {
   let appearanceElement: AppearanceElement;
@@ -83,6 +85,40 @@ suite('AppearanceTest', () => {
     assertNotStyle(appearanceElement.$.themeSnapshot, 'display', 'none');
     assertNotStyle(appearanceElement.$.chromeColors, 'display', 'none');
     assertStyle(appearanceElement.$.thirdPartyLinkButton, 'display', 'none');
+  });
+
+  test('respects policy for edit theme', async () => {
+    const theme = createTheme();
+    theme.backgroundManagedByPolicy = true;
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(appearanceElement);
+
+    appearanceElement.$.editThemeButton.click();
+    await waitAfterNextRender(appearanceElement);
+
+    const managedDialog =
+        $$<ManagedDialogElement>(appearanceElement, 'managed-dialog');
+    assertTrue(!!managedDialog);
+    assertTrue(managedDialog.$.dialog.open);
+  });
+
+  test('respects policy for reset', async () => {
+    const theme = createTheme();
+    theme.backgroundManagedByPolicy = true;
+    callbackRouterRemote.setTheme(theme);
+    await callbackRouterRemote.$.flushForTesting();
+    await waitAfterNextRender(appearanceElement);
+
+    appearanceElement.$.setClassicChromeButton.click();
+    await waitAfterNextRender(appearanceElement);
+
+    const managedDialog =
+        $$<ManagedDialogElement>(appearanceElement, 'managed-dialog');
+    assertTrue(!!managedDialog);
+    assertTrue(managedDialog.$.dialog.open);
+    assertEquals(0, handler.getCallCount('setDefaultColor'));
+    assertEquals(0, handler.getCallCount('removeBackgroundImage'));
   });
 
   suite('third party theme', () => {

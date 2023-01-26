@@ -47,6 +47,8 @@ struct Theme {
   skia.mojom.SkColor color_picker_icon_color;
   // True if the colors are managed by a policy.
   bool colors_managed_by_policy;
+  // True if the background is managed by a policy.
+  bool background_managed_by_policy;
   // Selected collection for daily refresh.
   string? daily_refresh_collection_id;
 };

@@ -25,6 +25,10 @@
   #thirdPartyLinkButton {
     --cr-icon-image: url('chrome://resources/images/open_in_new.svg');
   }
+
+  managed-dialog {
+    --cr-dialog-width: min(calc(100% - 32px), 512px);
+  }
 </style>
 <customize-chrome-theme-snapshot id="themeSnapshot"
     hidden$="[[!showFirstPartyThemeView_]]">
@@ -48,3 +52,9 @@
     label="$i18n{resetToClassicChrome}"
     on-click="onSetClassicChromeClicked_">
 </customize-chrome-hover-button>
+<template is="dom-if" if="[[showManagedDialog_]]" restamp>
+  <managed-dialog on-close="onManagedDialogClosed_"
+      title="$i18n{managedColorsTitle}"
+      body="$i18n{managedColorsBody}">
+  </managed-dialog>
+</template>

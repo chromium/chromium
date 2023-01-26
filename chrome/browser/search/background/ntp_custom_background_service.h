@@ -86,7 +86,7 @@ class NtpCustomBackgroundService : public KeyedService,
   void RemoveObserver(NtpCustomBackgroundServiceObserver* observer);
 
   // Returns whether having a custom background is disabled by policy.
-  bool IsCustomBackgroundDisabledByPolicy();
+  virtual bool IsCustomBackgroundDisabledByPolicy();
 
   // Returns whether a custom background has been set by the user.
   bool IsCustomBackgroundSet();

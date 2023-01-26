@@ -280,6 +280,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
   } else {
     theme->colors_managed_by_policy = false;
   }
+  theme->background_managed_by_policy =
+      ntp_custom_background_service_->IsCustomBackgroundDisabledByPolicy();
   if (theme_service_->UsingExtensionTheme()) {
     const extensions::Extension* theme_extension =
         extensions::ExtensionRegistry::Get(profile_)
