@@ -704,6 +704,13 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   counts_after = total_counts(allocs_intercepted_by_size);
   EXPECT_GT(counts_after, counts_before);
 
+  // With component builds on Android, we cannot intercept calls to functions
+  // inside another component, in this instance the call to vasprintf() inside
+  // libc++. This is not necessarily an issue for allocator shims, as long as we
+  // accept that allocations and deallocations will not be matched at all times.
+  // It is however essential for PartitionAlloc, which is exercized in the test
+  // below.
+#ifndef COMPONENT_BUILD
   // Calls vasprintf() indirectly, see below.
   counts_before = counts_after;
   std::stringstream stream;
@@ -711,6 +718,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   EXPECT_GT(stream.str().size(), 30u);
   counts_after = total_counts(allocs_intercepted_by_size);
   EXPECT_GT(counts_after, counts_before);
+#endif  // COMPONENT_BUILD
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
