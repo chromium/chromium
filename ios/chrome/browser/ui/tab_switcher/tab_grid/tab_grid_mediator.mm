@@ -898,8 +898,11 @@ void RecordTabGridCloseTabsCount(int count) {
     if (!fromSameCollection) {
       // Try to unpin the tab. If the returned index is invalid that means the
       // tab lives in another Browser.
-      int tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
-                                            /*pin_state=*/NO);
+      int tabIndex = WebStateList::kInvalidIndex;
+      if (IsPinnedTabsEnabled()) {
+        tabIndex = SetWebStatePinnedState(self.webStateList, tabInfo.tabID,
+                                          /*pin_state=*/NO);
+      }
       if (tabIndex == WebStateList::kInvalidIndex) {
         // Move tab across Browsers.
         base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
