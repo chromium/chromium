@@ -113,17 +113,6 @@ BASE_FEATURE(kV8TurboFastApiCalls,
              "V8TurboFastApiCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Artificially delays script execution.
-BASE_FEATURE(kV8ScriptAblation,
-             "V8ScriptAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kV8ScriptDelayOnceMs{&kV8ScriptAblation,
-                                                   "V8ScriptDelayOnceMs", 0};
-const base::FeatureParam<int> kV8ScriptDelayMs{&kV8ScriptAblation,
-                                               "V8ScriptDelayMs", 0};
-const base::FeatureParam<double> kV8ScriptDelayFraction{
-    &kV8ScriptAblation, "V8ScriptDelayFraction", 0.0};
-
 // Enables slow histograms that provide detailed information at increased
 // runtime overheads.
 BASE_FEATURE(kV8SlowHistograms,
@@ -139,9 +128,6 @@ BASE_FEATURE(kV8SlowHistogramsSparkplug,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kV8SlowHistogramsSparkplugAndroid,
              "V8SlowHistogramsSparkplugAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kV8SlowHistogramsScriptAblation,
-             "V8SlowHistogramsScriptAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kV8DelayMemoryReducer,

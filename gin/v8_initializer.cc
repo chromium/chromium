@@ -313,27 +313,13 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kV8ScriptAblation)) {
-    if (int delay = features::kV8ScriptDelayMs.Get()) {
-      SetV8FlagsFormatted("--script-delay=%i", delay);
-    }
-    if (int delay = features::kV8ScriptDelayOnceMs.Get()) {
-      SetV8FlagsFormatted("--script-delay-once=%i", delay);
-    }
-    if (double fraction = features::kV8ScriptDelayFraction.Get()) {
-      SetV8FlagsFormatted("--script-delay-fraction=%f", fraction);
-    }
-  }
-
   // Make sure aliases of kV8SlowHistograms only enable the feature to
   // avoid contradicting settings between multiple finch experiments.
   bool any_slow_histograms_alias =
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
-      base::FeatureList::IsEnabled(
-          features::kV8SlowHistogramsSparkplugAndroid) ||
-      base::FeatureList::IsEnabled(features::kV8SlowHistogramsScriptAblation);
+      base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplugAndroid);
   if (any_slow_histograms_alias) {
     SetV8Flags("--slow-histograms");
   } else {
