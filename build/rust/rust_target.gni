@@ -127,7 +127,7 @@ template("rust_target") {
   }
   _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
-    if (current_toolchain != host_toolchain) {
+    if (current_toolchain != host_toolchain_no_sanitizers) {
       _forward_to_host_toolchain = true
     }
     _main_target_suffix = "${target_name}__proc_macro"
@@ -194,8 +194,9 @@ template("rust_target") {
       if (defined(_visibility)) {
         visibility = _visibility
       }
-      public_deps =
-          [ ":${_target_name}${_main_target_suffix}($host_toolchain)" ]
+      public_deps = [
+        ":${_target_name}${_main_target_suffix}($host_toolchain_no_sanitizers)",
+      ]
     }
 
     not_needed(invoker, "*")

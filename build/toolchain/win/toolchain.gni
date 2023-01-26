@@ -26,13 +26,17 @@ if (host_os == "win") {
 
 _clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
 
+# Makes a single MSVC toolchain. Callers should normally instead invoke
+# "msvc_toolchain" which might make an additional toolchain available
+# without sanitizers if required.
+#
 # Parameters:
 #   environment: File name of environment file.
 #
 # You would also define a toolchain_args variable with at least these set:
 #   current_cpu: current_cpu to pass as a build arg
 #   current_os: current_os to pass as a build arg
-template("msvc_toolchain") {
+template("single_msvc_toolchain") {
   toolchain(target_name) {
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
@@ -42,6 +46,9 @@ template("msvc_toolchain") {
 
       # This value needs to be passed through unchanged.
       host_toolchain = host_toolchain
+
+      # This value needs to be passed through unchanged.
+      host_toolchain_no_sanitizers = host_toolchain_no_sanitizers
 
       # Respect the global setting for whether rustc can make binaries.
       rustc_can_link = rustc_can_link
@@ -489,6 +496,44 @@ template("msvc_toolchain") {
 
     tool("action") {
       pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+  }
+}
+
+# Makes a single MSVC toolchain, or possibly two if we
+# need an additional toolchain without sanitizers enabled.
+template("msvc_toolchain") {
+  single_msvc_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "visibility",
+                             "test_only",
+                           ])
+
+    # No need to forward visibility and test_only as they apply to targets not
+    # toolchains, but presubmit checks require that we explicitly exclude them
+  }
+
+  if (using_sanitizer) {
+    # Make an additional toolchain with no sanitizers.
+    single_msvc_toolchain("${target_name}_no_sanitizers") {
+      assert(defined(invoker.toolchain_args),
+             "Toolchains must declare toolchain_args")
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "toolchain_args",
+                               "visibility",
+                               "test_only",
+                             ])
+      toolchain_args = {
+        # Populate toolchain args from the invoker.
+        forward_variables_from(invoker.toolchain_args, "*")
+        toolchain_disables_sanitizers = true
+      }
     }
   }
 }

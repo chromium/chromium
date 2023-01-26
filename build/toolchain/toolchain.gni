@@ -19,6 +19,11 @@ declare_args() {
 
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
+
+  # Whether this toolchain should avoid building any sanitizer support
+  # because it's a host toolchain where we aim to make shared objects that may
+  # be loaded by prebuilt binaries without sanitizer support.
+  toolchain_disables_sanitizers = false
 }
 
 if (generate_linker_map) {
@@ -88,6 +93,10 @@ if (host_os == "win") {
 } else {
   stamp_command = "touch {{output}}"
   copy_command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
+}
+
+if (!defined(toolchain_disables_sanitizers)) {
+  toolchain_disables_sanitizers = false
 }
 
 # This variable is true if the current toolchain is one of the target

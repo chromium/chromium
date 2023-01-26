@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 
 if (is_android) {
@@ -73,6 +74,8 @@ declare_args() {
   # https://crbug.com/1229423
   # NB this may be overridden by individual toolchains
   rustc_can_link = !is_android
+
+  host_toolchain_no_sanitizers = host_toolchain
 }
 
 # Set rustc_version to the in-tree toolchain version, if enabled, or otherwise
@@ -190,3 +193,15 @@ if (is_android) {
 # here. This is not the complete command-line: toolchains should add -o
 # and probably --emit arguments too.
 rustc_common_args = "--crate-name {{crate_name}} {{source}} --crate-type {{crate_type}} {{rustflags}}"
+
+# Rust procedural macros are shared objects loaded into a prebuilt host rustc
+# binary. To build them, we obviously need to build for the host. Not only that,
+# but because the host rustc is prebuilt, it lacks the machinery to be able to
+# load shared objects built using sanitizers (ASAN etc.) For that reason, we need
+# to use a host toolchain that lacks sanitizers. This is only strictly necessary
+# for procedural macros, but we may also choose to build standalone Rust host
+# executable tools using the same toolchain, as they're likely to depend upon
+# similar dependencies (syn, quote etc.) and it saves a little build time.
+if (using_sanitizer || toolchain_disables_sanitizers) {
+  host_toolchain_no_sanitizers = "${host_toolchain}_no_sanitizers"
+}

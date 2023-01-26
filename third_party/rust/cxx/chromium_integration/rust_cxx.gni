@@ -89,8 +89,14 @@ template("rust_cxx") {
     output_h = "{{source_gen_dir}}/{{source_file_part}}.h"
     output_cc = "{{source_gen_dir}}/{{source_file_part}}.cc"
 
-    cxxbridge_target =
-        "//third_party/rust/cxxbridge_cmd/v1:cxxbridge($host_toolchain)"
+    # Below we use $host_toolchain_no_sanitizers rather than $host_toolchain.
+    # Usually this is the same thing, but in sanitizer builds,
+    # host_toolchain_no_sanitizers won't have the sanitizers.
+    # In this case, it's fine either way, so we can choose whichever
+    # is the quicker to build, based on sharing C++ dependencies with
+    # $host_toolchain, or sharing Rust dependencies with proc macros
+    # using $host_toolchain_no_sanitizers.
+    cxxbridge_target = "//third_party/rust/cxxbridge_cmd/v1:cxxbridge($host_toolchain_no_sanitizers)"
 
     cxxbridge_out_dir = get_label_info(cxxbridge_target, "root_out_dir")
     cxxbridge_executable = "${cxxbridge_out_dir}/cxxbridge"

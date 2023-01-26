@@ -243,7 +243,8 @@ template("cargo_crate") {
     # Extra targets required to make build script work
     action("${build_script_name}_output") {
       script = rebase_path("//build/rust/run_build_script.py")
-      build_script_target = ":${build_script_name}($host_toolchain)"
+      build_script_target =
+          ":${build_script_name}($host_toolchain_no_sanitizers)"
       deps = [ build_script_target ]
 
       _build_script_exe_dir =
@@ -296,7 +297,7 @@ template("cargo_crate") {
       }
     }
 
-    if (current_toolchain == host_toolchain) {
+    if (current_toolchain == host_toolchain_no_sanitizers) {
       rust_target(build_script_name) {
         target_type = "executable"
         sources = invoker.build_sources

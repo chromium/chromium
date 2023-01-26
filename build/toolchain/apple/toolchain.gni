@@ -85,8 +85,11 @@ tool_versions =
                 "trim scope")
 
 # Shared toolchain definition. Invocations should set current_os to set the
-# build args in this definition.
-template("apple_toolchain") {
+# build args in this definition. This is titled "single_apple_toolchain"
+# because it makes exactly one toolchain. Callers will normally want to
+# invoke instead "apple_toolchain" which may make an additional toolchain
+# without sanitizers.
+template("single_apple_toolchain") {
   toolchain(target_name) {
     # When invoking this toolchain not as the default one, these args will be
     # passed to the build. They are ignored when this is the default toolchain.
@@ -101,6 +104,10 @@ template("apple_toolchain") {
       # ensure that it's always the same, regardless of the values that may be
       # set on those toolchains.
       host_toolchain = host_toolchain
+
+      # Similarly for the host toolchain which can be used to make .dylibs
+      # that will successfully load into prebuilt tools.
+      host_toolchain_no_sanitizers = host_toolchain_no_sanitizers
 
       # Respect the global setting for whether rustc can make binaries.
       rustc_can_link = rustc_can_link
@@ -730,6 +737,44 @@ template("apple_toolchain") {
 
     tool("action") {
       pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+  }
+}
+
+# Makes a single Apple toolchain, or possibly two if we need a
+# sanitizer-free equivalent.
+template("apple_toolchain") {
+  single_apple_toolchain(target_name) {
+    assert(defined(invoker.toolchain_args),
+           "Toolchains must declare toolchain_args")
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "visibility",
+                             "test_only",
+                           ])
+
+    # No need to forward visibility and test_only as they apply to targets not
+    # toolchains, but presubmit checks require that we explicitly exclude them
+  }
+
+  if (using_sanitizer) {
+    # Make an additional toolchain with no sanitizers.
+    single_apple_toolchain("${target_name}_no_sanitizers") {
+      assert(defined(invoker.toolchain_args),
+             "Toolchains must declare toolchain_args")
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "toolchain_args",
+                               "visibility",
+                               "test_only",
+                             ])
+      toolchain_args = {
+        # Populate toolchain args from the invoker.
+        forward_variables_from(invoker.toolchain_args, "*")
+        toolchain_disables_sanitizers = true
+      }
     }
   }
 }

@@ -119,7 +119,7 @@ assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
 
 # Disable sanitizers for non-target toolchains.
-if (!is_a_target_toolchain) {
+if (!is_a_target_toolchain || toolchain_disables_sanitizers) {
   is_asan = false
   is_cfi = false
   is_hwasan = false
