@@ -188,10 +188,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   std::vector<app_list::reorder::ReorderParam>
   CalculateReorderParamsForRevertOrder() const;
 
-  // If folder with the provided ID has a single child, it reparents the child
-  // to the root app list.
-  void ClearFolderIfItHasSingleChild(const std::string& folder_id);
-
   // Updates the item positions in the ash side. `reorder_params` specifies
   // target positions.
   void UpdateItemPositionWithReorderParam(

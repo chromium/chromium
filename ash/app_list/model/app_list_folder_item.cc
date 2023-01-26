@@ -105,10 +105,6 @@ void AppListFolderItem::SetIsSystemFolder(bool is_system_folder) {
   metadata()->is_system_folder = is_system_folder;
 }
 
-bool AppListFolderItem::ShouldAutoRemove() const {
-  return ChildItemCount() <= (IsSystemFolder() ? 0u : 1u);
-}
-
 std::string AppListFolderItem::GenerateId() {
   return base::GenerateGUID();
 }

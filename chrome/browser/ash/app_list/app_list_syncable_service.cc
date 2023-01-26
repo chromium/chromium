@@ -641,74 +641,12 @@ void AppListSyncableService::HandleUpdateFinished(
 
   if (clean_up_after_init_sync) {
     PruneEmptySyncFolders();
-    CleanUpSingleItemSyncFolder();
   }
 
   // Resume or start observing app list model changes.
   model_updater_observer_->set_active(true);
 
   NotifyObserversSyncUpdated();
-}
-
-void AppListSyncableService::CleanUpSingleItemSyncFolder() {
-  std::vector<std::string> ids_to_be_deleted;
-  for (auto iter = sync_items_.begin(); iter != sync_items_.end();) {
-    SyncItem* sync_item = (iter++)->second.get();
-    const std::string id = sync_item->item_id;
-    if (RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(id)) {
-      // Remember the id of the folder item to be deleted.
-      ids_to_be_deleted.push_back(id);
-    }
-  }
-
-  // Remove the empty folder items.
-  for (auto id : ids_to_be_deleted)
-    DeleteSyncItem(id);
-}
-
-AppListSyncableService::SyncItem*
-AppListSyncableService::GetOnlyChildOfUserCreatedFolder(SyncItem* sync_item) {
-  if (sync_item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER ||
-      IsSystemCreatedSyncFolder(*sync_item))
-    return nullptr;
-
-  const std::string& folder_id = sync_item->item_id;
-  int child_count = 0;
-  SyncItem* child_item = nullptr;
-  for (auto iter = sync_items_.begin(); iter != sync_items_.end();) {
-    SyncItem* item = (iter++)->second.get();
-    if (item->parent_id == folder_id) {
-      ++child_count;
-      child_item = item;
-      if (child_count > 1)
-        return nullptr;
-    }
-  }
-  return child_item;
-}
-
-bool AppListSyncableService::RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
-    const std::string& item_id) {
-  if (ash::features::IsProductivityLauncherEnabled())
-    return false;
-
-  SyncItem* sync_item = FindSyncItem(item_id);
-  if (!sync_item)
-    return false;
-
-  SyncItem* child_item = GetOnlyChildOfUserCreatedFolder(sync_item);
-  if (!child_item)
-    return false;
-
-  // Move the single child item out of folder and put at the same relative
-  // location as the folder.
-  child_item->item_ordinal = sync_item->item_ordinal;
-  child_item->parent_id = "";
-  UpdateSyncItemInLocalStorage(profile_, child_item);
-  SendSyncChange(child_item, SyncChange::ACTION_UPDATE);
-  // Update the app list model updater for the sync change.
-  ProcessExistingSyncItem(child_item);
-  return true;
 }
 
 void AppListSyncableService::AddItem(
@@ -914,8 +852,6 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
     LOG(ERROR) << "UpdateItem: no sync item: " << app_item->id();
     return;
   }
-  std::string app_item_folder_id = app_item->folder_id();
-  std::string sync_item_original_parent_id = sync_item->parent_id;
   bool changed = UpdateSyncItemFromAppItem(app_item, sync_item);
   if (!changed) {
     DVLOG(2) << this << " - Update: SYNC NO CHANGE: " << sync_item->ToString();
@@ -923,15 +859,6 @@ void AppListSyncableService::UpdateSyncItem(const ChromeAppListItem* app_item) {
   }
   UpdateSyncItemInLocalStorage(profile_, sync_item);
   SendSyncChange(sync_item, SyncChange::ACTION_UPDATE);
-
-  // If the |app_item| is moved out from a user created folder, check if
-  // its original folder becomes a single sync item folder. Clean it up if
-  // it does.
-  if (!sync_item_original_parent_id.empty() &&
-      app_item_folder_id != sync_item_original_parent_id) {
-    RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
-        sync_item_original_parent_id);
-  }
 
   PruneRedundantPageBreakItems();
 }
@@ -993,14 +920,8 @@ syncer::StringOrdinal AppListSyncableService::GetPositionAfterApp(
 
 void AppListSyncableService::RemoveItem(const std::string& id,
                                         bool is_uninstall) {
-  SyncItem* item = FindSyncItem(id);
-  const std::string parent_id = item ? item->parent_id : std::string();
-
   RemoveSyncItem(id);
   model_updater_->RemoveItem(id, is_uninstall);
-
-  if (is_uninstall && !parent_id.empty())
-    RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(parent_id);
 
   PruneEmptySyncFolders();
   PruneRedundantPageBreakItems();

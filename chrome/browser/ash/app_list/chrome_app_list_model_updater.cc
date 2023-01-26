@@ -251,24 +251,17 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
 
 void ChromeAppListModelUpdater::RemoveItem(const std::string& id,
                                            bool is_uninstall) {
+  // The item matched by `id` may be unavailable on the local device.
+  if (!model_.FindItem(id)) {
+    return;
+  }
+
   // Copy the ID to the stack since it may to be destroyed in
   // RemoveChromeItem(). See crbug.com/1190347.
   std::string id_copy = id;
 
-  // The item matched by `id` may be unavailable on the local device.
-  ash::AppListItem* item = model_.FindItem(id_copy);
-  if (!item)
-    return;
-  const std::string parent_id = item->folder_id();
-
   item_manager_->RemoveChromeItem(id_copy);
-
   model_.DeleteItem(id_copy);
-
-  if (!parent_id.empty() && is_uninstall &&
-      !ash::features::IsProductivityLauncherEnabled()) {
-    ClearFolderIfItHasSingleChild(parent_id);
-  }
 
   if (is_uninstall) {
     // When item deletion is triggered by local app uninstallation instead of
@@ -759,16 +752,10 @@ void ChromeAppListModelUpdater::RequestMoveItemToFolder(
                             : syncer::StringOrdinal::CreateInitialOrdinal();
     }
 
-    const std::string old_folder_id = item->folder_id();
     std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
     data->folder_id = folder_id;
     data->position = target_position;
     model_.SetItemMetadata(id, std::move(data));
-
-    if (!old_folder_id.empty() &&
-        !ash::features::IsProductivityLauncherEnabled()) {
-      ClearFolderIfItHasSingleChild(old_folder_id);
-    }
   }
 
   // When user moves a local item to a folder, the user is believed to accept
@@ -791,16 +778,12 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   if (!item)
     return;
 
-  const std::string old_parent = item->folder_id();
-  DCHECK(!old_parent.empty());
+  DCHECK(!item->folder_id().empty());
 
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   data->folder_id = "";
   data->position = target_position;
   model_.SetItemMetadata(id, std::move(data));
-
-  if (!ash::features::IsProductivityLauncherEnabled())
-    ClearFolderIfItHasSingleChild(old_parent);
 
   if (is_under_temporary_sort()) {
     EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
@@ -945,7 +928,6 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
   model_.AddItem(CreateAppListItem(chrome_item->CloneMetadata(), this));
 
   // Adjust parent and position of the item getting mergrd into the target item.
-  const std::string old_folder_id = item_to_merge->folder_id();
   std::unique_ptr<ash::AppListItemMetadata> item_to_merge_data =
       item_to_merge->CloneMetadata();
   item_to_merge_data->folder_id = new_folder_id;
@@ -955,14 +937,6 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
   if (current_sort_order == ash::AppListSortOrder::kCustom)
     item_to_merge_data->position = target_item->position().CreateAfter();
   model_.SetItemMetadata(item_to_merge_id, std::move(item_to_merge_data));
-
-  // If the item was removed from a folder, remove the folder as needed.
-  // Note that empty folder will get removed by the app list model itself.
-  if (!old_folder_id.empty() &&
-      !ash::features::IsProductivityLauncherEnabled()) {
-    DCHECK_EQ(ash::AppListSortOrder::kCustom, current_sort_order);
-    ClearFolderIfItHasSingleChild(old_folder_id);
-  }
 
   // Set the target item new folder ID.
   std::unique_ptr<ash::AppListItemMetadata> target_data =
@@ -1180,20 +1154,6 @@ ChromeAppListModelUpdater::CalculateReorderParamsForRevertOrder() const {
   }
 
   return reorder_params;
-}
-
-void ChromeAppListModelUpdater::ClearFolderIfItHasSingleChild(
-    const std::string& folder_id) {
-  ash::AppListFolderItem* folder = model_.FindFolderItem(folder_id);
-  if (folder && folder->ShouldAutoRemove() && folder->ChildItemCount() == 1) {
-    ash::AppListItem* single_child = folder->GetChildItemAt(0);
-    const std::string item_id = single_child->id();
-    std::unique_ptr<ash::AppListItemMetadata> metadata =
-        single_child->CloneMetadata();
-    metadata->folder_id = "";
-    metadata->position = folder->position();
-    model_.SetItemMetadata(item_id, std::move(metadata));
-  }
 }
 
 void ChromeAppListModelUpdater::UpdateItemPositionWithReorderParam(

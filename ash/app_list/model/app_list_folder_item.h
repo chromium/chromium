@@ -98,10 +98,6 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   bool IsSystemFolder() const;
   void SetIsSystemFolder(bool is_system_folder);
 
-  // Returns true if this folder is a candidate for auto-removal (based on its
-  // type and the number of children it has).
-  bool ShouldAutoRemove() const;
-
   // Returns an id for a new folder.
   static std::string GenerateId();
 

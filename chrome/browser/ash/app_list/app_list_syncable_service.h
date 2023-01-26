@@ -356,23 +356,6 @@ class AppListSyncableService : public syncer::SyncableService,
   void HandleUpdateStarted();
   void HandleUpdateFinished(bool clean_up_after_init_sync);
 
-  // Cleans up the folder sync item with only one item in it.
-  // There are some edge cases with synch which will create a folder with only
-  // one item in it, which is not legitimate and the folder should be removed.
-  // We will find such folders after the initial sync and clean them up.
-  void CleanUpSingleItemSyncFolder();
-
-  // Returns child item if |sync_item| is a user created folder with only one
-  // child item in it; otherwise, returns nullptr.
-  SyncItem* GetOnlyChildOfUserCreatedFolder(SyncItem* sync_item);
-
-  // Returns true if |sync_item| is a user created folder with only one
-  // child item in it, the child item will be removed out of the folder and
-  // place at the same location of its original folder.
-  // Otherwise, return false, no change will be made.
-  bool RemoveOnlyChildOutOfUserCreatedFolderIfNecessary(
-      const std::string& item_id);
-
   // Returns true if extension service is ready.
   bool IsExtensionServiceReady() const;
 

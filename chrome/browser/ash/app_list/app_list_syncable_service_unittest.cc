@@ -945,15 +945,9 @@ TEST_F(AppListSyncableServiceTest,
       std::make_unique<syncer::FakeSyncChangeProcessor>());
   content::RunAllTasksUntilIdle();
 
-  const bool productivity_launcher =
-      ash::features::IsProductivityLauncherEnabled();
-  // After the initial sync data is merged, the single item folder is expected
-  // to be cleaned up when productivity launcher is disabled.
-  ASSERT_EQ(productivity_launcher, !!GetSyncItem(kFolderId1));
-  // The child item in the folder should be moved to the top level.
+  ASSERT_TRUE(GetSyncItem(kFolderId1));
   ASSERT_TRUE(GetSyncItem(kChildItemId1));
-  EXPECT_EQ(productivity_launcher ? kFolderId1 : "",
-            GetSyncItem(kChildItemId1)->parent_id);
+  EXPECT_EQ(kFolderId1, GetSyncItem(kChildItemId1)->parent_id);
   EXPECT_TRUE(
       GetSyncItem(kChildItemId1)
           ->item_ordinal.GreaterThan(GetSyncItem(kTopItem)->item_ordinal));
@@ -1023,16 +1017,10 @@ TEST_F(AppListSyncableServiceTest, UpdateSyncItemRemoveLastItemFromFolder) {
   // Move the child_item_1 out of the folder.
   model_updater->SetItemFolderId(child_item_1->id(), "");
 
-  // Verify both child item are moved out of the folder if productivity launcher
-  // is disabled. With productivity launcher enabled, single-item folder should
-  // stay around.
-  const bool productivity_launcher =
-      ash::features::IsProductivityLauncherEnabled();
   ASSERT_TRUE(GetSyncItem(kChildItemId1));
   EXPECT_EQ("", GetSyncItem(kChildItemId1)->parent_id);
   ASSERT_TRUE(GetSyncItem(kChildItemId2));
-  EXPECT_EQ(productivity_launcher ? kFolderId : "",
-            GetSyncItem(kChildItemId2)->parent_id);
+  EXPECT_EQ(kFolderId, GetSyncItem(kChildItemId2)->parent_id);
   EXPECT_EQ("", model_updater->FindItem(kChildItemId1)->folder_id());
 
   // Install the second child app.
@@ -1041,11 +1029,9 @@ TEST_F(AppListSyncableServiceTest, UpdateSyncItemRemoveLastItemFromFolder) {
               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   InstallExtension(child_app_2.get());
 
-  // Verify the second app item is created in the model updater,
-  // and it is not in any folder.
   ChromeAppListItem* child_item_2 = model_updater->FindItem(kChildItemId2);
   ASSERT_TRUE(child_item_2);
-  EXPECT_EQ(productivity_launcher ? kFolderId : "", child_item_2->folder_id());
+  EXPECT_EQ(kFolderId, child_item_2->folder_id());
 }
 
 TEST_F(AppListSyncableServiceTest, PruneRedundantPageBreakItems) {
@@ -1234,24 +1220,9 @@ TEST_F(AppListSyncableServiceTest, PageBreakWithOverflowItem) {
               extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   InstallExtension(app_C1.get());
 
-  // Verify all apps and page breaks are created and the items
-  // in the model updater should look like:
-  // A1 A2 [page break 1]
-  // B1 B2 B3 [page break 2]
-  // C1 [page break 3]
-  // For productivity launcher, page breaks are ignored.
-  const bool productivity_launcher =
-      ash::features::IsProductivityLauncherEnabled();
   auto ordered_items = GetOrderedItemIdsFromModelUpdater();
-  if (productivity_launcher) {
-    EXPECT_THAT(ordered_items, ElementsAre(kItemIdA1, kItemIdA2, kItemIdB1,
-                                           kItemIdB2, kItemIdB3, kItemIdC1));
-  } else {
-    EXPECT_THAT(ordered_items,
-                ElementsAre(kItemIdA1, kItemIdA2, kPageBreakItemId1, kItemIdB1,
-                            kItemIdB2, kItemIdB3, kPageBreakItemId2, kItemIdC1,
-                            kPageBreakItemId3));
-  }
+  EXPECT_THAT(ordered_items, ElementsAre(kItemIdA1, kItemIdA2, kItemIdB1,
+                                         kItemIdB2, kItemIdB3, kItemIdC1));
 
   // On device 1, move A1 from page 1 to page 2 and insert it between B1 and B2.
   // Device 2 should get the following 3 sync changes from device 1:
@@ -1301,22 +1272,10 @@ TEST_F(AppListSyncableServiceTest, PageBreakWithOverflowItem) {
   // Verify a new page break sync item is created.
   EXPECT_TRUE(GetSyncItem(kNewPageBreakItemId));
 
-  // Verify the items in model updater now looks like:
-  // A2 [pagebreak 1]
-  // B1 A1 B2 [new pagebreak]
-  // B3 C1 [pagebreak 3]
-  // For productivity launcher page breaks are ignored.
   auto ordered_items_after_sync = GetOrderedItemIdsFromModelUpdater();
-  if (productivity_launcher) {
-    EXPECT_THAT(ordered_items_after_sync,
-                ElementsAre(kItemIdA2, kItemIdB1, kItemIdA1, kItemIdB2,
-                            kItemIdB3, kItemIdC1));
-  } else {
-    EXPECT_THAT(ordered_items_after_sync,
-                ElementsAre(kItemIdA2, kPageBreakItemId1, kItemIdB1, kItemIdA1,
-                            kItemIdB2, kNewPageBreakItemId, kItemIdB3,
-                            kItemIdC1, kPageBreakItemId3));
-  }
+  EXPECT_THAT(ordered_items_after_sync,
+              ElementsAre(kItemIdA2, kItemIdB1, kItemIdA1, kItemIdB2, kItemIdB3,
+                          kItemIdC1));
 }
 
 TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
