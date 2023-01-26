@@ -533,21 +533,112 @@ IN_PROC_BROWSER_TEST_P(MouseoverLCPTestWithHeuristicFlag,
 }
 
 class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
+ public:
+  void SetUpOnMainThread() override {
+    MetricIntegrationTest::SetUpOnMainThread();
+    waiter_ = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+        web_contents());
+  }
+
+ protected:
+  enum class ElementOrder { kImageFirst, kTextFirst };
+
+  void Wait() { waiter_->Wait(); }
+
+  void TestImage(std::string& imgSrc,
+                 blink::LargestContentfulPaintType flagSet) {
+    AddMinimumLargestContentfulPaintImageExpectation(1);
+
+    Navigate("/lcp_type.html");
+
+    AddImage(imgSrc);
+
+    Wait();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestText(std::string& text, blink::LargestContentfulPaintType flagSet) {
+    AddMinimumLargestContentfulPaintTextExpectation(1);
+
+    Navigate("/lcp_type.html");
+
+    AddText(text);
+
+    Wait();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestTextAndImage(ElementOrder elementOrder,
+                        std::string& text,
+                        std::string& imgSrc,
+                        blink::LargestContentfulPaintType flagSet) {
+    Navigate("/lcp_type.html");
+
+    if (elementOrder == ElementOrder::kTextFirst) {
+      AddMinimumLargestContentfulPaintTextExpectation(1);
+
+      AddText(text);
+
+      Wait();
+
+      AddMinimumLargestContentfulPaintImageExpectation(1);
+
+      AddImage(imgSrc);
+    } else {
+      AddMinimumLargestContentfulPaintImageExpectation(1);
+
+      AddImage(imgSrc);
+
+      Wait();
+
+      AddMinimumLargestContentfulPaintTextExpectation(1);
+
+      AddText(text);
+    }
+
+    Wait();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
+  void TestVideoDataURI(blink::LargestContentfulPaintType flagSet) {
+    AddMinimumLargestContentfulPaintImageExpectation(1);
+    Navigate("/lcp_type_video_data_uri.html");
+
+    Wait();
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+    ExpectUKMPageLoadMetricFlagSetExactMatch(
+        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
+        LargestContentfulPaintTypeToUKMFlags(flagSet));
+  }
+
  private:
-  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter>
-  AddWaiterAndExpectation(uint32_t expectedResourceCount = 1) {
-    auto waiter =
-        std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
-            web_contents());
+  std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter_;
 
-    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
-                                   TimingField::kLargestContentfulPaint);
+  void AddMinimumLargestContentfulPaintTextExpectation(
+      uint32_t expected_count) {
+    waiter_->AddMinimumLargestContentfulPaintTextExpectation(expected_count);
+  }
 
-    // Passing expectedResourceCount + 1 as in addition to the elements on the
-    // page, the html page itself is a completed resource.
-    waiter->AddMinimumCompleteResourcesExpectation(expectedResourceCount + 1);
-
-    return waiter;
+  void AddMinimumLargestContentfulPaintImageExpectation(
+      uint32_t expected_count) {
+    waiter_->AddMinimumLargestContentfulPaintImageExpectation(expected_count);
   }
 
   void Navigate(std::string url) {
@@ -567,125 +658,6 @@ class LargestContentfulPaintTypeTest : public MetricIntegrationTest {
                      content::JsReplace("add_text($1)", text))
                   .error,
               "");
-  }
-
-  void WaitForLcpEmission(int32_t expectedLCPEntryCount = 1) {
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(),
-                     content::JsReplace("wait_for_lcp_entry_emission($1)",
-                                        expectedLCPEntryCount))
-                  .error,
-              "");
-  }
-
-  void WaitForUKMReporting() {
-    std::string script = R"(
-      (
-        async () => {
-          await new Promise(resolve => {
-            setTimeout(resolve, 200);
-          })
-        }
-      )();
-    )";
-
-    EXPECT_EQ(EvalJs(web_contents()->GetPrimaryMainFrame(), script).error, "");
-  }
-
-  // navigate away from the test html page so that metrics are flushed.
-  void NavigateAway(
-      std::unique_ptr<page_load_metrics::PageLoadMetricsTestWaiter> waiter) {
-    // Wait for LCP element to be updated.
-    WaitForUKMReporting();
-
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-    waiter->Wait();
-
-    // Wait for UKM metrics to be flushed.
-    WaitForUKMReporting();
-  }
-
- public:
-  enum class ElementOrder { kImageFirst, kTextFirst };
-  void TestImage(std::string& imgSrc,
-                 blink::LargestContentfulPaintType flagSet) {
-    auto waiter = AddWaiterAndExpectation();
-
-    Navigate("/lcp_type.html");
-
-    AddImage(imgSrc);
-
-    WaitForLcpEmission();
-
-    NavigateAway(std::move(waiter));
-
-    ExpectUKMPageLoadMetricFlagSetExactMatch(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
-        LargestContentfulPaintTypeToUKMFlags(flagSet));
-  }
-
-  void TestText(std::string& text, blink::LargestContentfulPaintType flagSet) {
-    auto waiter = AddWaiterAndExpectation();
-
-    Navigate("/lcp_type.html");
-
-    AddText(text);
-
-    WaitForLcpEmission();
-
-    NavigateAway(std::move(waiter));
-
-    ExpectUKMPageLoadMetricFlagSetExactMatch(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
-        LargestContentfulPaintTypeToUKMFlags(flagSet));
-  }
-
-  void TestTextAndImage(ElementOrder elementOrder,
-                        std::string& text,
-                        std::string& imgSrc,
-                        uint32_t expectedLCPEntryCount,
-                        blink::LargestContentfulPaintType flagSet) {
-    auto waiter = AddWaiterAndExpectation(2);
-
-    Navigate("/lcp_type.html");
-
-    if (elementOrder == ElementOrder::kTextFirst) {
-      AddText(text);
-      // Wait for LCP emission for 1st element before adding the 2nd
-      // element.This is to prevent the case that a larger 2nd element replaces
-      // the 1st element as LCP element before an LCP entry is emitted for the
-      // 1st element.
-      if (expectedLCPEntryCount > 1)
-        WaitForLcpEmission();
-      AddImage(imgSrc);
-    } else {
-      AddImage(imgSrc);
-      if (expectedLCPEntryCount > 1)
-        WaitForLcpEmission();
-      AddText(text);
-    }
-
-    WaitForLcpEmission(expectedLCPEntryCount);
-
-    NavigateAway(std::move(waiter));
-
-    ExpectUKMPageLoadMetricFlagSetExactMatch(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
-        LargestContentfulPaintTypeToUKMFlags(flagSet));
-  }
-
-  void TestVideoDataURI(blink::LargestContentfulPaintType flagSet) {
-    auto waiter = AddWaiterAndExpectation();
-
-    Navigate("/lcp_type_video_data_uri.html");
-
-    WaitForLcpEmission();
-
-    NavigateAway(std::move(waiter));
-
-    ExpectUKMPageLoadMetricFlagSetExactMatch(
-        PageLoad::kPaintTiming_LargestContentfulPaintTypeName,
-        LargestContentfulPaintTypeToUKMFlags(flagSet));
   }
 };
 
@@ -733,28 +705,16 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, ImageType_SVG) {
   TestImage(imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TextType DISABLED_TextType
-#else
-#define MAYBE_TextType TextType
-#endif
-IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, MAYBE_TextType) {
+IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest, TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text = "This is to test LargestContentfulPaintType::kText";
   TestText(text, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LargeTextAndImage_TextType DISABLED_LargeTextAndImage_TextType
-#else
-#define MAYBE_LargeTextAndImage_TextType LargeTextAndImage_TextType
-#endif
 // Case when text that is larger and comes before an image. The
 // LargestContentfulPaintType should be those of a text element.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_LargeTextAndImage_TextType) {
+                       LargeTextAndImage_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text =
       "This is a text that is larger and comes before an image. The "
@@ -762,19 +722,13 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
   std::string imgSrc = "images/green-2x2.png";
 
   // The larger element comes first so 1 LCP entry is expected.
-  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 1, flag_set);
+  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ImageAndLargeText_TextType DISABLED_ImageAndLargeText_TextType
-#else
-#define MAYBE_ImageAndLargeText_TextType ImageAndLargeText_TextType
-#endif
 // Case when text that is larger and comes after an image. The
 // LargestContentfulPaintType should be those of a text element.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_ImageAndLargeText_TextType) {
+                       ImageAndLargeText_TextType) {
   auto flag_set = blink::LargestContentfulPaintType::kText;
   std::string text =
       "This is a text that is larger and comes after an image. The "
@@ -782,19 +736,13 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
   std::string imgSrc = "images/green-2x2.png";
 
   // The larger element comes later so 2 LCP entries are expected.
-  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 2, flag_set);
+  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TextAndLargeImage_ImageType DISABLED_TextAndLargeImage_ImageType
-#else
-#define MAYBE_TextAndLargeImage_ImageType TextAndLargeImage_ImageType
-#endif
 // Case when a text that is smaller and comes before an Image. The
 // LargestContentfulPaintType should be those of an image element.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_TextAndLargeImage_ImageType) {
+                       TextAndLargeImage_ImageType) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage;
@@ -803,19 +751,13 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
       "This is a text that is smaller and comes before an image. The "
       "LargestContentfulPaintType should be those of an image element";
   std::string imgSrc = "images/fail.gif";
-  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, 2, flag_set);
+  TestTextAndImage(ElementOrder::kTextFirst, text, imgSrc, flag_set);
 }
 
-// (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_LargeImageAndText_ImageType DISABLED_LargeImageAndText_ImageType
-#else
-#define MAYBE_LargeImageAndText_ImageType LargeImageAndText_ImageType
-#endif
 // Case when a text that is smaller and comes after an Image. The
 // LargestContentfulPaintType should be those of an image element.
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
-                       MAYBE_LargeImageAndText_ImageType) {
+                       LargeImageAndText_ImageType) {
   auto flag_set = blink::LargestContentfulPaintType::kImage |
                   blink::LargestContentfulPaintType::kGIF |
                   blink::LargestContentfulPaintType::kAnimatedImage;
@@ -823,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTypeTest,
       "This is a text that is smaller and comes after an Image. The "
       "LargestContentfulPaintType should be those of an image element.";
   std::string imgSrc = "images/fail.gif";
-  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, 1, flag_set);
+  TestTextAndImage(ElementOrder::kImageFirst, text, imgSrc, flag_set);
 }
 
 // (https://crbug.com/1385713): Flaky on mac12-arm64-rel M1 Mac CQ.

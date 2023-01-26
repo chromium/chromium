@@ -14,16 +14,4 @@
     document.body.appendChild(paragraph);
   }
 
-  const wait_for_lcp_entry_emission = async (expected_count) => {
-    let expected_entries = [];
-    await new Promise(resolve => {
-      new PerformanceObserver((list, observer) => {
-        expected_entries = expected_entries.concat(list.getEntries());
-        if (expected_entries.length >= expected_count) {
-          observer.disconnect();
-          resolve();
-        }
-      }).observe({ type: "largest-contentful-paint", buffered: true });
-    });
-  };
 </script>
