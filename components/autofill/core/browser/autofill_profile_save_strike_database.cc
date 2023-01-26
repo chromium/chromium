@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "url/gurl.h"
 
 namespace autofill {

@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -313,6 +314,11 @@ bool TestPersonalDataManager::IsSyncFeatureEnabled() const {
 CoreAccountInfo TestPersonalDataManager::GetAccountInfoForPaymentsServer()
     const {
   return account_info_;
+}
+
+const AutofillProfileMigrationStrikeDatabase*
+TestPersonalDataManager::GetProfileMigrationStrikeDatabase() const {
+  return &inmemory_profile_migration_strike_database_;
 }
 
 const AutofillProfileSaveStrikeDatabase*

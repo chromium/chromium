@@ -5,11 +5,10 @@
 #include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
 
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
-// Limit the number of profiles for which an update os blocked.
+// Limit the number of profiles for which an update is blocked.
 constexpr size_t kMaxStrikeEntities = 100;
 
 // Once the limit of profiles is reached, delete 30 to create a bit of headroom.

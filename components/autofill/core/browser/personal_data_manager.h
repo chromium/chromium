@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
@@ -202,7 +203,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the profile with the specified |guid|, or nullptr if there is no
   // profile with the specified |guid|.
-  virtual AutofillProfile* GetProfileByGUID(const std::string& guid);
+  virtual AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
   // Returns the profile with the specified |guid| from the given |profiles|, or
   // nullptr if there is no profile with the specified |guid|.
@@ -503,6 +504,18 @@ class PersonalDataManager : public KeyedService,
   virtual void SetProfilesForAllSources(
       std::vector<AutofillProfile>* new_profiles);
 
+  // Returns true if a `kLocalOrSyncable` profile identified by its guid is
+  // blocked for migration to a `kAccount` profile.
+  bool IsProfileMigrationBlocked(const std::string& guid) const;
+
+  // Adds a strike to block a profile identified by its `guid` for migrations.
+  // Does nothing if the strike database is not available.
+  void AddStrikeToBlockProfileMigration(const std::string& guid);
+
+  // Removes potential strikes to block a profile identified by its `guid` for
+  // migrations. Does nothing if the strike database is not available.
+  void RemoveStrikesToBlockProfileMigration(const std::string& guid);
+
   // Returns true if the import of new profiles should be blocked on `url`.
   // Returns false if the strike database is not available, the `url` is not
   // valid or has no host.
@@ -608,14 +621,23 @@ class PersonalDataManager : public KeyedService,
   friend void SetTestProfiles(Profile* base_profile,
                               std::vector<AutofillProfile>* profiles);
 
+  // Used to get a pointer to the strike database for migrating existing
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
+  AutofillProfileMigrationStrikeDatabase* GetProfileMigrationStrikeDatabase();
+  virtual const AutofillProfileMigrationStrikeDatabase*
+  GetProfileMigrationStrikeDatabase() const;
+
   // Used to get a pointer to the strike database for importing new profiles.
-  // Note, the result can be a nullptr.
+  // Note, the result can be a nullptr, for example, on incognito
+  // mode.
   AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase();
   virtual const AutofillProfileSaveStrikeDatabase*
   GetProfileSaveStrikeDatabase() const;
 
   // Used to get a pointer to the strike database for updating existing
-  // profiles. Note, the result can be a nullptr.
+  // profiles. Note, the result can be a nullptr, for example, on incognito
+  // mode.
   AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase();
   virtual const AutofillProfileUpdateStrikeDatabase*
   GetProfileUpdateStrikeDatabase() const;
@@ -944,6 +966,11 @@ class PersonalDataManager : public KeyedService,
 
   // An observer to listen for changes to prefs::kAutofillWalletImportEnabled.
   std::unique_ptr<BooleanPrefMember> wallet_enabled_pref_;
+
+  // The database that is used to count guid-keyed strikes to suppress the
+  // migration-prompt of new profiles.
+  std::unique_ptr<AutofillProfileMigrationStrikeDatabase>
+      profile_migration_strike_database_;
 
   // The database that is used to count domain-keyed strikes to suppress the
   // import of new profiles.

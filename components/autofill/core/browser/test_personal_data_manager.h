@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "components/autofill/core/browser/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -76,6 +77,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   bool IsDataLoaded() const override;
   bool IsSyncFeatureEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
+  const AutofillProfileMigrationStrikeDatabase*
+  GetProfileMigrationStrikeDatabase() const override;
   const AutofillProfileSaveStrikeDatabase* GetProfileSaveStrikeDatabase()
       const override;
   const AutofillProfileUpdateStrikeDatabase* GetProfileUpdateStrikeDatabase()
@@ -179,6 +182,8 @@ class TestPersonalDataManager : public PersonalDataManager {
   CoreAccountInfo account_info_;
 
   TestInMemoryStrikeDatabase inmemory_strike_database_;
+  AutofillProfileMigrationStrikeDatabase
+      inmemory_profile_migration_strike_database_{&inmemory_strike_database_};
   AutofillProfileSaveStrikeDatabase inmemory_profile_save_strike_database_{
       &inmemory_strike_database_};
   AutofillProfileUpdateStrikeDatabase inmemory_profile_update_strike_database_{

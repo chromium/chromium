@@ -66,6 +66,7 @@ using testing::ElementsAre;
 using testing::Pointee;
 using testing::UnorderedElementsAre;
 
+const char kGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 const char kPrimaryAccountEmail[] = "syncuser@example.com";
 const char16_t kPrimaryAccountEmail16[] = u"syncuser@example.com";
 const std::string kAddressEntryIcon = "accountIcon";
@@ -5374,24 +5375,40 @@ TEST_F(PersonalDataManagerTest, OnAccountsCookieDeletedByUserAction) {
   EXPECT_TRUE(prefs_->GetDict(prefs::kAutofillSyncTransportOptIn).empty());
 }
 
-TEST_F(PersonalDataManagerTest, SaveProfileUpdateStrikes) {
-  std::string guid = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
+TEST_F(PersonalDataManagerTest, SaveProfileMigrationStrikes) {
+  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
 
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(guid));
+  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
 
-  personal_data_->AddStrikeToBlockProfileUpdate(guid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(guid));
-
-  personal_data_->AddStrikeToBlockProfileUpdate(guid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(guid));
+  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
 
   // After the third strike, the guid should be blocked.
-  personal_data_->AddStrikeToBlockProfileUpdate(guid);
-  EXPECT_TRUE(personal_data_->IsProfileUpdateBlocked(guid));
+  personal_data_->AddStrikeToBlockProfileMigration(kGuid);
+  EXPECT_TRUE(personal_data_->IsProfileMigrationBlocked(kGuid));
 
   // Until the strikes are removed again.
-  personal_data_->RemoveStrikesToBlockProfileUpdate(guid);
-  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(guid));
+  personal_data_->RemoveStrikesToBlockProfileMigration(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileMigrationBlocked(kGuid));
+}
+
+TEST_F(PersonalDataManagerTest, SaveProfileUpdateStrikes) {
+  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
+
+  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
+
+  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
+
+  // After the third strike, the guid should be blocked.
+  personal_data_->AddStrikeToBlockProfileUpdate(kGuid);
+  EXPECT_TRUE(personal_data_->IsProfileUpdateBlocked(kGuid));
+
+  // Until the strikes are removed again.
+  personal_data_->RemoveStrikesToBlockProfileUpdate(kGuid);
+  EXPECT_FALSE(personal_data_->IsProfileUpdateBlocked(kGuid));
 }
 
 TEST_F(PersonalDataManagerTest, SaveProfileSaveStrikes) {

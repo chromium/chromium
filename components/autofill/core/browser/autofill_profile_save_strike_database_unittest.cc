@@ -29,13 +29,10 @@ class AutofillProfileSaveStrikeDatabaseTest : public ::testing::Test {
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-
     db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
         temp_dir_.GetPath());
-
     strike_database_service_ = std::make_unique<StrikeDatabase>(
         db_provider_.get(), temp_dir_.GetPath());
-
     strike_database_ = std::make_unique<AutofillProfileSaveStrikeDatabase>(
         strike_database_service_.get());
   }

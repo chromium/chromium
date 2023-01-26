@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_profile_update_strike_database.h"
+#include "components/autofill/core/browser/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,9 +17,9 @@ namespace autofill {
 
 namespace {
 
-class AutofillProfileUpdateStrikeDatabaseTest : public ::testing::Test {
+class AutofillProfileMigrationStrikeDatabaseTest : public ::testing::Test {
  public:
-  AutofillProfileUpdateStrikeDatabaseTest() = default;
+  AutofillProfileMigrationStrikeDatabaseTest() = default;
 
   void SetUp() override {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -27,13 +27,11 @@ class AutofillProfileUpdateStrikeDatabaseTest : public ::testing::Test {
         temp_dir_.GetPath());
     strike_database_service_ = std::make_unique<StrikeDatabase>(
         db_provider_.get(), temp_dir_.GetPath());
-    strike_database_ = std::make_unique<AutofillProfileUpdateStrikeDatabase>(
+    strike_database_ = std::make_unique<AutofillProfileMigrationStrikeDatabase>(
         strike_database_service_.get());
   }
 
   void TearDown() override {
-    // The destruction of |strike_database_service_|'s components is posted
-    // to a task runner, requires running the loop to complete.
     strike_database_.reset();
     strike_database_service_.reset();
     db_provider_.reset();
@@ -45,10 +43,10 @@ class AutofillProfileUpdateStrikeDatabaseTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<StrikeDatabase> strike_database_service_;
-  std::unique_ptr<AutofillProfileUpdateStrikeDatabase> strike_database_;
+  std::unique_ptr<AutofillProfileMigrationStrikeDatabase> strike_database_;
 };
 
-TEST_F(AutofillProfileUpdateStrikeDatabaseTest, AddAndRemoveStrikes) {
+TEST_F(AutofillProfileMigrationStrikeDatabaseTest, AddAndRemoveStrikes) {
   std::string test_guid = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
   strike_database_->AddStrike(test_guid);
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), 1);
