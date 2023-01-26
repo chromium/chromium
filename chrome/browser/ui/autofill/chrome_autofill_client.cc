@@ -228,10 +228,23 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 }
 
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
+  if (!form_data_importer_) {
+    form_data_importer_ = std::make_unique<FormDataImporter>(
+        this, GetPaymentsClient(), GetPersonalDataManager(),
+        GetPersonalDataManager()->app_locale());
+  }
   return form_data_importer_.get();
 }
 
 payments::PaymentsClient* ChromeAutofillClient::GetPaymentsClient() {
+  if (!payments_client_) {
+    payments_client_ = std::make_unique<payments::PaymentsClient>(
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+            ->GetURLLoaderFactory(),
+        GetIdentityManager(), GetPersonalDataManager(),
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext())
+            ->IsOffTheRecord());
+  }
   return payments_client_.get();
 }
 
@@ -1094,18 +1107,6 @@ void ChromeAutofillClient::OnZoomChanged(
 ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeAutofillClient>(*web_contents),
       content::WebContentsObserver(web_contents),
-      payments_client_(std::make_unique<payments::PaymentsClient>(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())
-              ->GetURLLoaderFactory(),
-          GetIdentityManager(),
-          GetPersonalDataManager(),
-          Profile::FromBrowserContext(web_contents->GetBrowserContext())
-              ->IsOffTheRecord())),
-      form_data_importer_(std::make_unique<FormDataImporter>(
-          this,
-          payments_client_.get(),
-          GetPersonalDataManager(),
-          GetPersonalDataManager()->app_locale())),
       log_manager_(
           // TODO(crbug.com/928595): Replace the closure with a callback to the
           // renderer that indicates if log messages should be sent from the

@@ -269,10 +269,13 @@ class ChromeAutofillClient
   std::u16string GetAccountHolderEmail();
   bool SupportsConsentlessExecution(const url::Origin& origin);
 
+  // These members are initialized lazily in their respective getters.
+  // Therefore, do not access the members directly.
   std::unique_ptr<payments::PaymentsClient> payments_client_;
   std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
+
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   std::unique_ptr<LogManager> log_manager_;
   FormInteractionsFlowId flow_id_{};
