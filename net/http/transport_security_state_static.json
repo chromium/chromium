@@ -181193,7 +181193,6 @@
     { "name": "musings.cloud", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "musubi-dev.net", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "musvcs.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "mutua.es", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "mutualidadabogacia.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "muxetv.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "muzamilpc.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
