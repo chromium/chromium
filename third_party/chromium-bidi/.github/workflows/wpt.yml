@@ -22,7 +22,7 @@ jobs:
           node-version: 16
           cache: npm
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Build
         run: npm run build
       - name: Set up Python
