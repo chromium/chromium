@@ -64,6 +64,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillPopupWithKeyboardTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/AutofillUpstreamTest.java",
+  "javatests/src/org/chromium/chrome/browser/autofill/TouchToFillCreditCardTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/settings/AutofillLocalCardEditorTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentTest.java",
   "javatests/src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",
