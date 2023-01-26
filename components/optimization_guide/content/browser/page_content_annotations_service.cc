@@ -374,7 +374,25 @@ void PageContentAnnotationsService::BatchAnnotate(
     std::move(callback).Run(CreateEmptyBatchAnnotationResults(inputs));
     return;
   }
-  annotator_->Annotate(std::move(callback), inputs, annotation_type);
+
+  annotator_->Annotate(
+      base::BindOnce(
+          [](BatchAnnotationCallback original_callback,
+             OptimizationGuideLogger* optimization_guide_logger,
+             const std::vector<BatchAnnotationResult>& batch_result) {
+            if (optimization_guide_logger) {
+              for (const BatchAnnotationResult& result : batch_result) {
+                OPTIMIZATION_GUIDE_LOGGER(
+                    optimization_guide_common::mojom::LogSource::
+                        PAGE_CONTENT_ANNOTATIONS,
+                    optimization_guide_logger)
+                    << "PageContentAnnotationJob Result: " << result.ToString();
+              }
+            }
+            std::move(original_callback).Run(batch_result);
+          },
+          std::move(callback), optimization_guide_logger_),
+      inputs, annotation_type);
 }
 
 absl::optional<ModelInfo> PageContentAnnotationsService::GetModelInfoForType(
