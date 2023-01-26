@@ -497,7 +497,7 @@ class BASE_EXPORT SequenceManagerImpl
     return clock_.load(std::memory_order_acquire);
   }
 
-  const base::TickClock* any_thread_clock_maybe_events_disallowed() {
+  const base::TickClock* any_thread_clock_maybe_events_disallowed() const {
     if (recordreplay::AreEventsDisallowed()) {
       recordreplay::AutoPassThroughEvents pt;
       return any_thread_clock();
