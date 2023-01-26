@@ -71,10 +71,10 @@ struct TaskInfo {
   };
 
   int task_id;
-  NetworkType network_type;
-  bool requires_charging;
-  bool is_persisted;
-  bool update_current;
+  NetworkType network_type = NetworkType::NONE;
+  bool requires_charging = false;
+  bool is_persisted = false;
+  bool update_current = false;
   std::string extras;
 
   absl::optional<PeriodicInfo> periodic_info;

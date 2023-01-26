@@ -50,6 +50,7 @@ void RefreshTaskSchedulerImpl::EnsureScheduled(RefreshTaskId task_id,
   one_off.expires_after_window_end_time = true;
   background_task::TaskInfo task_info(
       static_cast<int>(ToBackgroundTaskId(task_id)), one_off);
+  task_info.is_persisted = true;
   task_info.update_current = true;
   task_info.network_type = background_task::TaskInfo::ANY;
   scheduler_->Schedule(task_info);

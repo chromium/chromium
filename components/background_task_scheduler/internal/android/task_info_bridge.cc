@@ -56,8 +56,10 @@ base::android::ScopedJavaLocalRef<jobject> TaskInfoBridge::CreateTaskInfo(
   }
 
   auto j_extras = base::android::ConvertUTF8ToJavaString(env, task_info.extras);
-  return Java_TaskInfoBridge_createTaskInfo(env, task_info.task_id,
-                                            j_timing_info, j_extras);
+  return Java_TaskInfoBridge_createTaskInfo(
+      env, task_info.task_id, j_timing_info, j_extras,
+      static_cast<int>(task_info.network_type), task_info.requires_charging,
+      task_info.is_persisted, task_info.update_current);
 }
 
 }  // namespace background_task

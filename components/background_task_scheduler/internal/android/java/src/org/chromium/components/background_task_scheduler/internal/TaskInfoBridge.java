@@ -43,15 +43,16 @@ public class TaskInfoBridge {
     }
 
     @CalledByNative
-    private static TaskInfo createTaskInfo(
-            int taskId, TaskInfo.TimingInfo timingInfo, String extras) {
+    private static TaskInfo createTaskInfo(int taskId, TaskInfo.TimingInfo timingInfo,
+            String extras, int networkType, boolean requiresCharging, boolean isPersisted,
+            boolean updateCurrent) {
         Bundle bundle = new Bundle();
         bundle.putString(TaskInfo.SERIALIZED_TASK_EXTRAS, extras);
         TaskInfo taskInfo = TaskInfo.createTask(taskId, timingInfo)
-                                    .setRequiredNetworkType(TaskInfo.NetworkType.ANY)
-                                    .setRequiresCharging(false)
-                                    .setUpdateCurrent(true)
-                                    .setIsPersisted(true)
+                                    .setRequiredNetworkType(networkType)
+                                    .setRequiresCharging(requiresCharging)
+                                    .setUpdateCurrent(updateCurrent)
+                                    .setIsPersisted(isPersisted)
                                     .setExtras(bundle)
                                     .build();
         return taskInfo;
