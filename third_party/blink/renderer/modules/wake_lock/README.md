@@ -42,7 +42,7 @@ The rest of the implementation is found in the following directories:
 
 ### Testing
 
-Validation, exception types, permissions policy integration and general IDL compliance are tested in [web platform tests], while Chromium-specific implementation details (e.g. permission handling) are tested in [web tests].
+Validation, exception types, permissions policy integration and general IDL compliance are tested in [web platform tests].
 
 Larger parts of the Blink implementation are tested as browser and unit tests:
 
@@ -53,7 +53,6 @@ Larger parts of the Blink implementation are tested as browser and unit tests:
 * content_shell implements its own permission logic that mimics what is done in `//chrome` in [`shell_permission_manager.cc`](/content/shell/browser/shell_permission_manager.cc).
 
 [web platform tests]: ../../../web_tests/external/wpt/screen-wake-lock/
-[web tests]: ../../../web_tests/wake-lock/
 
 ## Example workflows
 

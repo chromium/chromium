@@ -1398,7 +1398,6 @@ if (!is_ios) {
       "//third_party/blink/web_tests/view-transition/",
       "//third_party/blink/web_tests/virtual/",
       "//third_party/blink/web_tests/virtualkeyboard/",
-      "//third_party/blink/web_tests/wake-lock/",
       "//third_party/blink/web_tests/wasm/",
       "//third_party/blink/web_tests/webaudio/",
       "//third_party/blink/web_tests/webexposed/",
