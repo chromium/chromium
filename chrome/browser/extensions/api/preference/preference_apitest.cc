@@ -35,6 +35,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -631,16 +632,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionPreferenceApiTest, ThirdPartyCookiesAllowed) {
 
 namespace extensions {
 
-class ExtensionPrefDevToolsConsoleTest : public ExtensionPreferenceApiTest {
+class ExtensionPrefDevToolsIssueTest
+    : public ExtensionPreferenceApiTest,
+      public content::TestDevToolsProtocolClient {
  protected:
-  static constexpr char kExpectedWarning[] =
-      "We’re deprecating the API "
-      "chrome.privacy.websites.privacySandboxEnabled, though it will remain "
-      "active for backward compatibility until release M113. Instead, please "
-      "use chrome.privacy.websites.topicsEnabled, "
-      "chrome.privacy.websites.fledgeEnabled and "
-      "chrome.privacy.websites.adMeasurementEnabled.";
-
   // Builds a test extension dir with a simple html file that runs a js that
   // can call chrome.privacy.websites.privacySandboxEnabled and another API
   // under chrome.privacy (i.e.
@@ -696,17 +691,46 @@ class ExtensionPrefDevToolsConsoleTest : public ExtensionPreferenceApiTest {
     content::ExecuteScriptAsync(web_contents, script);
     EXPECT_TRUE(listener.WaitUntilSatisfied()) << message_;
   }
+
+  void WaitAndCheckForIssueAddedNotification(const GURL& page_html_url) {
+    // STEP 5.1. Wait for notification of a deprecation issue
+    base::Value::Dict params = WaitForNotification("Audits.issueAdded", true);
+
+    // STEP 5.2. Check if the Deprecation Issue has all the correct properties.
+    EXPECT_EQ(*params.FindStringByDottedPath("issue.code"), "DeprecationIssue");
+
+    base::Value::Dict* deprecation_issue_details =
+        params.FindDictByDottedPath("issue.details.deprecationIssueDetails");
+    ASSERT_TRUE(deprecation_issue_details);
+
+    EXPECT_EQ(*deprecation_issue_details->FindString("type"),
+              "PrivacySandboxExtensionsAPI");
+    EXPECT_EQ(*deprecation_issue_details->FindStringByDottedPath(
+                  "sourceCodeLocation.url"),
+              page_html_url.spec());
+    EXPECT_EQ(*deprecation_issue_details->FindIntByDottedPath(
+                  "sourceCodeLocation.columnNumber"),
+              0);
+    EXPECT_EQ(*deprecation_issue_details->FindIntByDottedPath(
+                  "sourceCodeLocation.lineNumber"),
+              0);
+  }
+
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    ExtensionPreferenceApiTest::TearDownOnMainThread();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(EventPage,
-                         ExtensionPrefDevToolsConsoleTest,
+                         ExtensionPrefDevToolsIssueTest,
                          ::testing::Values(ContextType::kPersistentBackground));
 
 // Tests the correct logging of console warning messages when
 // PrivacySandboxEnabled API is called by an extension during the migration
 // period.
-IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
-                       PrivacySandboxMigrationExpectConsoleMessage) {
+IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsIssueTest,
+                       PrivacySandboxMigrationExpectDevToolsIssue) {
   // STEP 1. Build extension.
   TestExtensionDir test_dir;
   BuildTestExtensionDir(test_dir);
@@ -717,35 +741,36 @@ IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
 
   // STEP 3. Navigate to the extension's html page and get access to its Web
   // Contents.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+  GURL page_html_url = extension->GetResourceURL("page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_html_url));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // STEP 4. Check if the deprecation console warning messages
-  // |kExpectedWarning| are logged. Calling
-  // chrome.privacy.websites.privacySandboxEnabled in a non-service worker
-  // context should log a console warning in that context.
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(kExpectedWarning);
+  // STEP 4. Enable Audits so we can wait for issues' notifications.
+  AttachToWebContents(web_contents);
+  SendCommandSync("Audits.enable");
+  ClearNotifications();
+
+  // STEP 5. Check if the deprecation issue shows up in the DevTools Issues tab.
+  // Calling the chrome.privacy.websites.privacySandboxEnabled in a non-service
+  // worker context should report a deprecation issue of type
+  // PrivacySandboxExtensionsAPI to the DevTools Issues tab.
 
   WaitForScriptToFinish(web_contents, "runGetScript();", "finish get");
-  EXPECT_TRUE(console_observer.Wait());
-  EXPECT_EQ(1u, console_observer.messages().size());
-
-  WaitForScriptToFinish(web_contents, "runClearScript();", "finish clear");
-  EXPECT_TRUE(console_observer.Wait());
-  EXPECT_EQ(2u, console_observer.messages().size());
+  WaitAndCheckForIssueAddedNotification(page_html_url);
 
   WaitForScriptToFinish(web_contents, "runSetScript();", "finish set");
-  EXPECT_TRUE(console_observer.Wait());
-  EXPECT_EQ(3u, console_observer.messages().size());
+  WaitAndCheckForIssueAddedNotification(page_html_url);
+
+  WaitForScriptToFinish(web_contents, "runClearScript();", "finish clear");
+  WaitAndCheckForIssueAddedNotification(page_html_url);
 }
 
 // Tests that no console warning messages are logged when other APIs under
 // chrome.privacy are called by an extension.
-IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
-                       PrivacySandboxMigrationDoesNotExpectConsoleMessage) {
+IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsIssueTest,
+                       PrivacySandboxMigrationDoesNotExpectDevToolsIssue) {
   // STEP 1. Build extension.
   TestExtensionDir test_dir;
   BuildTestExtensionDir(test_dir);
@@ -754,25 +779,26 @@ IN_PROC_BROWSER_TEST_P(ExtensionPrefDevToolsConsoleTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // STEP 3. Navigate to the extension's html and get access to its Web
+  // STEP 3. Navigate to the extension's html page and get access to its Web
   // Contents.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), extension->GetResourceURL("page.html")));
+  GURL page_html_url = extension->GetResourceURL("page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_html_url));
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  // STEP 4. Check if no console warning message is logged when another API is
-  // called.
+  // STEP 4. Enable Audits so we can wait for issues' notifications.
+  AttachToWebContents(web_contents);
+  SendCommandSync("Audits.enable");
+  ClearNotifications();
+
+  // STEP 5. Check if no deprecation issue shows up in the DevTools Issues tab
+  // when another API is called.
   // If another extension API (e.g. under chrome.privacy) is called
   // other than chrome.privacy.websites.privacySandboxEnabled, then no
-  // console message should be logged.
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(kExpectedWarning);
-
+  // Deprecation Issue should be reported.
   WaitForScriptToFinish(web_contents, "runHyperlinkAuditingScript();",
                         "finish hyperlinkAuditing");
-  EXPECT_EQ(0u, console_observer.messages().size())
-      << "Found console.warn or console.error with message: "
-      << console_observer.GetMessageAt(0);
+  EXPECT_FALSE(HasExistingNotification()) << "Found other issues!";
 }
 }  // namespace extensions

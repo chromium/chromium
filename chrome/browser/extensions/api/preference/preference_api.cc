@@ -66,12 +66,6 @@ constexpr char kConversionErrorMessage[] =
 constexpr char kPermissionErrorMessage[] =
     "You do not have permission to access the preference '*'. "
     "Be sure to declare in your manifest what permissions you need.";
-constexpr char kPrivacySandboxWarningMessage[] =
-    "We’re deprecating the API chrome.privacy.websites.privacySandboxEnabled, "
-    "though it will remain active for backward compatibility until release "
-    "M113. Instead, please use chrome.privacy.websites.topicsEnabled, "
-    "chrome.privacy.websites.fledgeEnabled and "
-    "chrome.privacy.websites.adMeasurementEnabled.";
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 constexpr char kPrimaryProfileOnlyErrorMessage[] =
     "You may only access the preference '*' in the primary profile.";
@@ -565,6 +559,26 @@ BrowserContextKeyedAPIFactory<PreferenceAPI>::DeclareFactoryDependencies() {
 
 PreferenceFunction::~PreferenceFunction() = default;
 
+// Auxiliary function to build an InspectorInfoPtr to create a Deprecation
+// Issue when the deprecated privacySandboxEnabled API is used
+// TODO(b/263568309): Remove this once the deprecated API is retired.
+blink::mojom::InspectorIssueInfoPtr
+BuildPrivacySandboxDeprecationInspectorIssueInfo(const GURL& source_url) {
+  auto issue_info = blink::mojom::InspectorIssueInfo::New();
+  issue_info->code = blink::mojom::InspectorIssueCode::kDeprecationIssue;
+  issue_info->details = blink::mojom::InspectorIssueDetails::New();
+  auto deprecation_details = blink::mojom::DeprecationIssueDetails::New();
+  deprecation_details->type =
+      blink::mojom::DeprecationIssueType::kPrivacySandboxExtensionsAPI;
+  auto affected_location = blink::mojom::AffectedLocation::New();
+  affected_location->url = source_url.spec();
+  deprecation_details->affected_location = std::move(affected_location);
+  issue_info->details->deprecation_issue_details =
+      std::move(deprecation_details);
+
+  return issue_info;
+}
+
 GetPreferenceFunction::~GetPreferenceFunction() = default;
 
 ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
@@ -628,12 +642,12 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   }
 #endif
 
-  // Warning message to developers in DevTools Console that the API
-  // chrome.privacy.websites.privacySandboxEnabled is being deprecated.
+  // Deprecation issue to developers in the issues tab in Chrome DevTools that
+  // the API chrome.privacy.websites.privacySandboxEnabled is being deprecated.
   // TODO(b/263568309): Remove this once the deprecated API is retired.
   if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
-    WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
-                   kPrivacySandboxWarningMessage);
+    ReportInspectorIssue(
+        BuildPrivacySandboxDeprecationInspectorIssueInfo(source_url()));
   }
 
   PrefService* prefs =
@@ -844,12 +858,12 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
                                              scope, base::Value(false));
   }
 
-  // Warning message to developers in DevTools Console that the API
-  // chrome.privacy.websites.privacySandboxEnabled is being deprecated.
+  // Deprecation issue to developers in the issues tab in Chrome DevTools that
+  // the API chrome.privacy.websites.privacySandboxEnabled is being deprecated.
   // TODO(b/263568309): Remove this once the deprecated API is retired.
   if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
-    WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
-                   kPrivacySandboxWarningMessage);
+    ReportInspectorIssue(
+        BuildPrivacySandboxDeprecationInspectorIssueInfo(source_url()));
   }
 
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
@@ -939,12 +953,12 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   prefs_helper->RemoveExtensionControlledPref(extension_id(), browser_pref,
                                               scope);
 
-  // Warning message to developers in DevTools Console that the API
-  // chrome.privacy.websites.privacySandboxEnabled is being deprecated.
+  // Deprecation issue to developers in the issues tab in Chrome DevTools that
+  // the API chrome.privacy.websites.privacySandboxEnabled is being deprecated.
   // TODO(b/263568309): Remove this once the deprecated API is retired.
   if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
-    WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
-                   kPrivacySandboxWarningMessage);
+    ReportInspectorIssue(
+        BuildPrivacySandboxDeprecationInspectorIssueInfo(source_url()));
   }
 
   // Whenever an extension clears the |kSafeBrowsingEnabled| preference,

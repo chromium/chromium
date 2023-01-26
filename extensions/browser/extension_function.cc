@@ -764,6 +764,16 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
   render_frame_host_->AddMessageToConsole(level, message);
 }
 
+void ExtensionFunction::ReportInspectorIssue(
+    blink::mojom::InspectorIssueInfoPtr info) {
+  // TODO(crbug.com/1096166): Service Worker-based extensions don't have a
+  // RenderFrameHost.
+  if (!render_frame_host_) {
+    return;
+  }
+  render_frame_host_->ReportInspectorIssue(std::move(info));
+}
+
 void ExtensionFunction::SetTransferredBlobs(
     std::vector<blink::mojom::SerializedBlobPtr> blobs) {
   DCHECK(transferred_blobs_.empty());  // Should only be called once.

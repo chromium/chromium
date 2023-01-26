@@ -29,6 +29,7 @@
 #include "ipc/ipc_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
@@ -489,6 +490,9 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // Emits a message to the extension's devtools console.
   void WriteToConsole(blink::mojom::ConsoleMessageLevel level,
                       const std::string& message);
+
+  // Reports an inspector issue to the issues tab in Chrome DevTools
+  void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info);
 
   // Sets the Blobs whose ownership is being transferred to the renderer.
   void SetTransferredBlobs(std::vector<blink::mojom::SerializedBlobPtr> blobs);
