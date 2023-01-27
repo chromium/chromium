@@ -302,7 +302,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
         custom_background->custom_background_attribution_line_2;
     theme->background_image_attribution_url =
         custom_background->custom_background_attribution_action_url;
-    theme->daily_refresh_collection_id = custom_background->collection_id;
+    theme->background_image_collection_id = custom_background->collection_id;
+    theme->daily_refresh_enabled = custom_background->daily_refresh_enabled;
   }
 
   theme->most_visited = std::move(most_visited);
@@ -546,19 +547,18 @@ void NewTabPageHandler::SetBackgroundImage(const std::string& attribution_1,
                                            const std::string& attribution_2,
                                            const GURL& attribution_url,
                                            const GURL& image_url,
-                                           const GURL& thumbnail_url) {
-  // Populating the |collection_id| turns on refresh daily which overrides the
-  // the selected image.
+                                           const GURL& thumbnail_url,
+                                           const std::string& collection_id) {
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       image_url, thumbnail_url, attribution_1, attribution_2, attribution_url,
-      /* collection_id= */ "");
+      collection_id);
   LogEvent(NTP_BACKGROUND_IMAGE_SET);
 }
 
 void NewTabPageHandler::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
-  // Populating the |collection_id| turns on refresh daily which overrides the
-  // the selected image.
+  // Only populating the |collection_id| turns on refresh daily which overrides
+  // the the selected image.
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       /* image_url */ GURL(), /* thumbnail_url */ GURL(),
       /* attribution_line_1= */ "", /* attribution_line_2= */ "",
@@ -1138,6 +1138,7 @@ void NewTabPageHandler::OnCollectionImagesAvailable() {
     image->attribution_url = info.attribution_action_url;
     image->image_url = info.image_url;
     image->preview_image_url = info.thumbnail_image_url;
+    image->collection_id = collection_id;
     images.push_back(std::move(image));
   }
   std::move(background_images_callback_).Run(std::move(images));
