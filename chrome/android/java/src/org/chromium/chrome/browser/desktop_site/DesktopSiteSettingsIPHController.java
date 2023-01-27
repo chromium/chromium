@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -32,20 +33,27 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Controller to manage desktop site settings in-product-help messages to users.
  */
 public class DesktopSiteSettingsIPHController {
-    @VisibleForTesting
     static final String PARAM_IPH_TYPE_GENERIC = "iph_type_generic";
+    static final String PARAM_IPH_TYPE_SPECIFIC = "iph_type_specific";
+    static final String PARAM_SITE_LIST = "site_list";
 
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ActivityTabProvider mActivityTabProvider;
+    private final WebsitePreferenceBridge mWebsitePreferenceBridge;
     private ActivityTabTabObserver mActivityTabTabObserver;
-    private WebsitePreferenceBridge mWebsitePreferenceBridge;
+    // A collection of domains that have been observed to be more functional in desktop mode.
+    private Set<String> mTopDesktopSites = new HashSet<>();
 
     /**
      * Creates and initializes the controller.
@@ -85,11 +93,36 @@ public class DesktopSiteSettingsIPHController {
         mActivityTabProvider = activityTabProvider;
         mWebsitePreferenceBridge = websitePreferenceBridge;
 
-        registerTabObserverForPerSiteIPH(profile);
+        maybeRegisterTabObserverForPerSiteIPH(profile);
     }
 
     public void destroy() {
-        if (mActivityTabTabObserver != null) mActivityTabTabObserver.destroy();
+        if (mActivityTabTabObserver != null) {
+            mActivityTabTabObserver.destroy();
+            mTopDesktopSites.clear();
+        }
+    }
+
+    @VisibleForTesting
+    void showSpecificIPH(@NonNull Tab tab, Profile profile) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_SPECIFIC_FEATURE;
+        if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
+
+        boolean isTabUsingDesktopUserAgent =
+                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
+        boolean desktopSiteGloballyUsed = WebsitePreferenceBridge.isCategoryEnabled(
+                profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
+        // Return early if the desktop user agent is already being used by the tab. If not, and the
+        // global setting is using the desktop user agent, it would imply an existing mobile site
+        // exception on the current tab; return early in this case since the site-level setting has
+        // already been discovered.
+        if (isTabUsingDesktopUserAgent || desktopSiteGloballyUsed) return;
+
+        if (mTopDesktopSites.contains(
+                    UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), true))) {
+            requestShowPerSiteIPH(featureName, R.string.rds_site_settings_specific_iph_text, null);
+        }
     }
 
     @VisibleForTesting
@@ -100,22 +133,8 @@ public class DesktopSiteSettingsIPHController {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        // Return early when the IPH triggering criteria is not satisfied.
-        if (!tracker.wouldTriggerHelpUI(
-                    FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE)) {
-            return;
-        }
-
-        // Do not trigger the IPH on an incognito tab since the setting does not persist.
-        if (tab.isIncognito()) {
-            return;
-        }
-
-        GURL url = tab.getUrl();
-        // Do not trigger the IPH on a chrome:// or a chrome-native:// page.
-        if (UrlUtilities.isInternalScheme(url) || tab.getWebContents() == null) {
-            return;
-        }
+        String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
+        if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
 
         var siteExceptions = mWebsitePreferenceBridge.getContentSettingsExceptions(
                 profile, ContentSettingsType.REQUEST_DESKTOP_SITE);
@@ -132,15 +151,7 @@ public class DesktopSiteSettingsIPHController {
                 ? R.string.rds_site_settings_generic_iph_text_mobile
                 : R.string.rds_site_settings_generic_iph_text_desktop;
 
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(),
-                        FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE, textId,
-                        new Object[] {url.getHost()}, textId, new Object[] {url.getHost()})
-                        .setAnchorView(mToolbarMenuButton)
-                        .setOnShowCallback(
-                                () -> turnOnHighlightForMenuItem(R.id.request_desktop_site_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
-                        .build());
+        requestShowPerSiteIPH(featureName, textId, new Object[] {tab.getUrl().getHost()});
     }
 
     @VisibleForTesting
@@ -148,23 +159,70 @@ public class DesktopSiteSettingsIPHController {
         return mActivityTabTabObserver;
     }
 
-    private void registerTabObserverForPerSiteIPH(Profile profile) {
+    @VisibleForTesting
+    void setTopDesktopSitesForTesting(Set<String> topDesktopSitesForTesting) {
+        mTopDesktopSites = topDesktopSitesForTesting;
+    }
+
+    // Run pre-checks common to both per-site settings IPHs.
+    @VisibleForTesting
+    boolean perSiteIPHPreChecksFailed(@NonNull Tab tab, Tracker tracker, String featureName) {
+        // Return early when the IPH triggering criteria is not satisfied.
+        if (!tracker.wouldTriggerHelpUI(featureName)) {
+            return true;
+        }
+
+        // Do not trigger the IPH on an incognito tab since the setting does not persist.
+        if (tab.isIncognito()) {
+            return true;
+        }
+
+        GURL url = tab.getUrl();
+        // Do not trigger the IPH on a chrome:// or a chrome-native:// page.
+        return UrlUtilities.isInternalScheme(url) || tab.getWebContents() == null;
+    }
+
+    private void requestShowPerSiteIPH(String featureName, int textId, Object[] textArgs) {
+        mUserEducationHelper.requestShowIPH(
+                new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(), featureName,
+                        textId, textArgs, textId, textArgs)
+                        .setAnchorView(mToolbarMenuButton)
+                        .setOnShowCallback(
+                                () -> turnOnHighlightForMenuItem(R.id.request_desktop_site_id))
+                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                        .build());
+    }
+
+    private void maybeRegisterTabObserverForPerSiteIPH(Profile profile) {
         boolean showGenericIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_GENERIC, false);
+        boolean showSpecificIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_SPECIFIC,
+                false);
 
+        if (showSpecificIPH && mTopDesktopSites.isEmpty()) {
+            Collections.addAll(mTopDesktopSites,
+                    ChromeFeatureList
+                            .getFieldTrialParamByFeature(
+                                    ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH,
+                                    PARAM_SITE_LIST)
+                            .split(","));
+            createActivityTabTabObserver(tab -> showSpecificIPH(tab, profile));
+        } else if (showGenericIPH) {
+            createActivityTabTabObserver(tab -> showGenericIPH(tab, profile));
+        }
+    }
+
+    private void createActivityTabTabObserver(Callback<Tab> callback) {
         mActivityTabTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
             @Override
             protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                if (showGenericIPH) {
-                    showGenericIPH(tab, profile);
-                }
+                callback.onResult(tab);
             }
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                if (showGenericIPH) {
-                    showGenericIPH(tab, profile);
-                }
+                callback.onResult(tab);
             }
         };
     }
