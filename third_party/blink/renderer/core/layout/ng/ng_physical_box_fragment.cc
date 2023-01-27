@@ -1875,7 +1875,8 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
 
   // The below IFC check is skipped for LayoutMedia, which can have both of
   // block children and inline children. See crbug.com/1379779.
-  if (!RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() ||
+  if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled() ||
+      !RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() ||
       !layout_object_->IsMedia()) {
     // If we have line boxes, |IsInlineFormattingContext()| is true, but the
     // reverse is not always true.

@@ -634,6 +634,12 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
     builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
     builder.UpdateFontOrientation();
   }
+
+  // Blockify the child boxes of media elements. crbug.com/1379779.
+  if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled() &&
+      IsAtMediaUAShadowBoundary(element)) {
+    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
+  }
 }
 
 bool StyleAdjuster::IsEditableElement(Element* element,

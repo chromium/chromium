@@ -1653,6 +1653,11 @@
       base_feature: "LayoutMediaNGContainer",
     },
     {
+      name: "LayoutMediaNoInlineChildren",
+      base_feature: "LayoutMediaNoInlineChildren",
+      status: "stable",  // Since M112.
+    },
+    {
       // A kill-switch for a fix of crbug.com/1366268.
       name: "LayoutNGDelayScrollOffsetClamping",
       base_feature: "LayoutNGDelayScrollOffsetClamping",

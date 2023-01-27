@@ -138,10 +138,9 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   // check can be removed if ::-webkit-media-controls is made
   // internal.
   if (child->GetNode()->IsMediaControls()) {
-    // IsInline() and StyleRef() don't work at this timing.
-    if (child->IsFlexibleBoxIncludingNG() &&
-        child->GetNode()->GetComputedStyle()->IsDisplayInlineType()) {
-      UseCounter::Count(GetDocument(), WebFeature::kLayoutMediaInlineChildren);
+    if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled()) {
+      // LayoutObject::IsInline() doesn't work at this timing.
+      DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
     }
     return child->IsFlexibleBoxIncludingNG();
   }
@@ -149,8 +148,10 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   if (child->GetNode()->IsTextTrackContainer() ||
       child->GetNode()->IsMediaRemotingInterstitial() ||
       child->GetNode()->IsPictureInPictureInterstitial()) {
-    if (child->GetNode()->GetComputedStyle()->IsDisplayInlineType())
-      UseCounter::Count(GetDocument(), WebFeature::kLayoutMediaInlineChildren);
+    if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled()) {
+      // LayoutObject::IsInline() doesn't work at this timing.
+      DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
+    }
     return true;
   }
 

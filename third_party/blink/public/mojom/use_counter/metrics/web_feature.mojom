@@ -3721,7 +3721,7 @@ enum WebFeature {
   kV8MediaStreamTrack_ApplyConstraints_Method = 4382,
   kViewTransition = 4383,
   kElementTogglePopover = 4384,
-  kLayoutMediaInlineChildren = 4385,
+  kOBSOLETE_LayoutMediaInlineChildren = 4385,
   kReduceAcceptLanguage = 4386,
   // The items above roughly this point are available in the M109 branch.
 
