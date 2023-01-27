@@ -824,19 +824,11 @@ TEST_F(ProcessUtilTest, LaunchAsUser) {
 }
 
 MULTIPROCESS_TEST_MAIN(ChildVerifiesCetDisabled) {
-  auto get_process_mitigation_policy =
-      reinterpret_cast<decltype(&GetProcessMitigationPolicy)>(::GetProcAddress(
-          ::GetModuleHandleW(L"kernel32.dll"), "GetProcessMitigationPolicy"));
-
-  // Not available for Win7 but this process should still work.
-  if (!get_process_mitigation_policy)
-    return kSuccess;
-
-  // Policy not defined for Win < Win10 20H1 but that's also ok.
+  // Policy not defined for Win < Win10 20H1 but that's ok.
   PROCESS_MITIGATION_USER_SHADOW_STACK_POLICY policy = {};
-  if (get_process_mitigation_policy(GetCurrentProcess(),
-                                    ProcessUserShadowStackPolicy, &policy,
-                                    sizeof(policy))) {
+  if (GetProcessMitigationPolicy(GetCurrentProcess(),
+                                 ProcessUserShadowStackPolicy, &policy,
+                                 sizeof(policy))) {
     if (policy.EnableUserShadowStack)
       return 1;
   }
