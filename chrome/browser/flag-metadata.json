@@ -6329,8 +6329,8 @@
   },
   {
     "name": "shelf-auto-hide-separation",
-    "owners": [ "etuck", "//ash/shelf/OWNERS" ],
-    "expiry_milestone": 112
+    "owners": [ "yulunwu", "etuck", "//ash/shelf/OWNERS" ],
+    "expiry_milestone": 114
   },
   {
     "name": "shelf-drag-to-pin",
