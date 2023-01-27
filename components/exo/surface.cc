@@ -54,6 +54,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -1295,10 +1296,16 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
   DCHECK(needs_update_resource_);
   needs_update_resource_ = false;
   if (state_.buffer.has_value() && state_.buffer->buffer()) {
+    gfx::ColorSpace buffer_color_space = state_.basic_state.color_space;
+    // Invalid color spaces cause issues went sent to the buffer. In these cases
+    // revert to passing SRGB as before.
+    if (!buffer_color_space.IsValid()) {
+      buffer_color_space = gfx::ColorSpace::CreateSRGB();
+    }
     if (state_.buffer->buffer()->ProduceTransferableResource(
             resource_manager, std::move(state_.acquire_fence),
             state_.basic_state.only_visible_on_secure_output,
-            &current_resource_,
+            &current_resource_, buffer_color_space,
             window_->GetToplevelWindow()->GetProperty(
                 kProtectedNativePixmapQueryDelegate),
             std::move(state_.per_commit_explicit_release_callback_))) {

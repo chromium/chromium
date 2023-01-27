@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -61,10 +62,12 @@ constexpr char kBufferInUse[] = "BufferInUse";
 class Buffer::Texture : public viz::ContextLostObserver {
  public:
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
-          const gfx::Size& size);
+          const gfx::Size& size,
+          gfx::ColorSpace color_space);
   Texture(scoped_refptr<viz::RasterContextProvider> context_provider,
           gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
+          gfx::ColorSpace color_space,
           unsigned texture_target,
           unsigned query_type,
           base::TimeDelta wait_for_release_time,
@@ -132,7 +135,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
 Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
-    const gfx::Size& size)
+    const gfx::Size& size,
+    gfx::ColorSpace color_space)
     : gpu_memory_buffer_(nullptr),
       size_(size),
       context_provider_(std::move(context_provider)),
@@ -145,10 +149,10 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  mailbox_ = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      gpu::kNullSurfaceHandle);
+  mailbox_ =
+      sii->CreateSharedImage(viz::ResourceFormat::RGBA_8888, size, color_space,
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             usage, gpu::kNullSurfaceHandle);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -161,6 +165,7 @@ Buffer::Texture::Texture(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
+    gfx::ColorSpace color_space,
     unsigned texture_target,
     unsigned query_type,
     base::TimeDelta wait_for_release_delay,
@@ -181,9 +186,8 @@ Buffer::Texture::Texture(
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
   mailbox_ = sii->CreateSharedImage(
-      gpu_memory_buffer_, gpu_memory_buffer_manager,
-      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, usage);
+      gpu_memory_buffer_, gpu_memory_buffer_manager, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -422,6 +426,7 @@ bool Buffer::ProduceTransferableResource(
     std::unique_ptr<gfx::GpuFence> acquire_fence,
     bool secure_output_only,
     viz::TransferableResource* resource,
+    gfx::ColorSpace color_space,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
@@ -467,7 +472,7 @@ bool Buffer::ProduceTransferableResource(
   if (!contents_texture_) {
     contents_texture_ = std::make_unique<Texture>(
         context_provider, context_factory->GetGpuMemoryBufferManager(),
-        gpu_memory_buffer_.get(), texture_target_, query_type_,
+        gpu_memory_buffer_.get(), color_space, texture_target_, query_type_,
         wait_for_release_delay_, is_overlay_candidate_);
   }
   Texture* contents_texture = contents_texture_.get();
@@ -533,8 +538,8 @@ bool Buffer::ProduceTransferableResource(
 
   // Create a mailbox texture that we copy the buffer contents to.
   if (!texture_) {
-    texture_ = std::make_unique<Texture>(context_provider,
-                                         gpu_memory_buffer_->GetSize());
+    texture_ = std::make_unique<Texture>(
+        context_provider, gpu_memory_buffer_->GetSize(), color_space);
   }
   Texture* texture = texture_.get();
 
@@ -708,6 +713,7 @@ bool SolidColorBuffer::ProduceTransferableResource(
     std::unique_ptr<gfx::GpuFence> acquire_fence,
     bool secure_output_only,
     viz::TransferableResource* resource,
+    gfx::ColorSpace color_space,
     ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
     PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
   if (per_commit_explicit_release_callback)

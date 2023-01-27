@@ -19,6 +19,7 @@
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/in_process_context_provider.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -70,7 +71,8 @@ TEST_F(BufferTest, ReleaseCallback) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
@@ -115,7 +117,8 @@ TEST_F(BufferTest, SolidColorReleaseCallback) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   // Solid color buffer is immediately released after commit.
@@ -150,8 +153,8 @@ TEST_F(BufferTest, IsLost) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
-      base::DoNothing());
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr, base::DoNothing());
   ASSERT_TRUE(rv);
 
   scoped_refptr<viz::RasterContextProvider> context_provider =
@@ -177,7 +180,7 @@ TEST_F(BufferTest, IsLost) {
   viz::TransferableResource new_resource;
   rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &new_resource,
-      nullptr, base::DoNothing());
+      gfx::ColorSpace::CreateSRGB(), nullptr, base::DoNothing());
   ASSERT_TRUE(rv);
   buffer->OnDetach();
 
@@ -204,8 +207,8 @@ TEST_F(BufferTest, OnLostResources) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
-      base::DoNothing());
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr, base::DoNothing());
   ASSERT_TRUE(rv);
 
   viz::RasterContextProvider* context_provider =
@@ -239,7 +242,8 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
@@ -296,7 +300,8 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      gfx::ColorSpace::CreateSRGB(), nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
