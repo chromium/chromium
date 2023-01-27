@@ -350,8 +350,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   void NotifyWebAppFileHandlerApprovalStateChanged(const AppId& app_id);
   void NotifyWebAppsWillBeUpdatedFromSync(
       const std::vector<const WebApp*>& new_apps_state);
-  void NotifyWebAppLocallyInstalledStateChanged(const AppId& app_id,
-                                                bool is_locally_installed);
   void NotifyWebAppDisabledStateChanged(const AppId& app_id, bool is_disabled);
   void NotifyWebAppsDisabledModeChanged();
   void NotifyWebAppLastBadgingTimeChanged(const AppId& app_id,

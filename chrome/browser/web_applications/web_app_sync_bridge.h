@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -47,6 +48,7 @@ class AppLock;
 class WebAppCommandManager;
 class WebAppDatabase;
 class WebAppRegistryUpdate;
+class WebAppInstallManager;
 struct RegistryUpdateData;
 
 // A unified sync and storage controller.
@@ -73,7 +75,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
                      WebAppCommandManager* command_manager,
-                     WebAppCommandScheduler* command_scheduler_);
+                     WebAppCommandScheduler* command_scheduler_,
+                     WebAppInstallManager* install_manager_);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
   using RepeatingInstallCallback =
@@ -97,8 +100,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void SetAppIsDisabled(AppLock& lock, const AppId& app_id, bool is_disabled);
 
   void UpdateAppsDisableMode();
-
-  void SetAppIsLocallyInstalled(const AppId& app_id, bool is_locally_installed);
 
   void SetAppLastBadgingTime(const AppId& app_id, const base::Time& time);
 
@@ -142,6 +143,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
 
+  // Used for testing only.
   void set_disable_checks_for_testing(bool disable_checks_for_testing) {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
@@ -150,20 +152,19 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
       const base::flat_set<AppId>& apps_to_uninstall)>;
   void SetRetryIncompleteUninstallsCallbackForTesting(
       RetryIncompleteUninstallsCallback callback);
-
   using InstallWebAppsAfterSyncCallback =
       base::RepeatingCallback<void(std::vector<WebApp*> web_apps,
                                    RepeatingInstallCallback callback)>;
   void SetInstallWebAppsAfterSyncCallbackForTesting(
       InstallWebAppsAfterSyncCallback callback);
-
   using UninstallFromSyncCallback =
       base::RepeatingCallback<void(const std::vector<AppId>& web_apps,
                                    RepeatingUninstallCallback callback)>;
   void SetUninstallFromSyncCallbackForTesting(
       UninstallFromSyncCallback callback);
-
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
+  void SetAppIsLocallyInstalledForTesting(const AppId& app_id,
+                                          bool is_locally_installed);
 
  private:
   void CheckRegistryUpdateData(const RegistryUpdateData& update_data) const;
@@ -205,6 +206,7 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
   raw_ptr<WebAppCommandManager, DanglingUntriaged> command_manager_;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_;
+  raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;

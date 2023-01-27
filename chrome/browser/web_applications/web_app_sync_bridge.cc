@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_database_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -139,7 +140,8 @@ WebAppSyncBridge::~WebAppSyncBridge() = default;
 void WebAppSyncBridge::SetSubsystems(
     AbstractWebAppDatabaseFactory* database_factory,
     WebAppCommandManager* command_manager,
-    WebAppCommandScheduler* command_scheduler) {
+    WebAppCommandScheduler* command_scheduler,
+    WebAppInstallManager* install_manager) {
   DCHECK(database_factory);
   database_ = std::make_unique<WebAppDatabase>(
       database_factory,
@@ -147,6 +149,7 @@ void WebAppSyncBridge::SetSubsystems(
                           base::Unretained(this)));
   command_manager_ = command_manager;
   command_scheduler_ = command_scheduler;
+  install_manager_ = install_manager;
 }
 
 std::unique_ptr<WebAppRegistryUpdate> WebAppSyncBridge::BeginUpdate() {
@@ -280,18 +283,6 @@ void WebAppSyncBridge::UpdateAppsDisableMode() {
     return;
 
   registrar_->NotifyWebAppsDisabledModeChanged();
-}
-
-void WebAppSyncBridge::SetAppIsLocallyInstalled(const AppId& app_id,
-                                                bool is_locally_installed) {
-  {
-    ScopedRegistryUpdate update(this);
-    WebApp* web_app = update->UpdateApp(app_id);
-    if (web_app)
-      web_app->SetIsLocallyInstalled(is_locally_installed);
-  }
-  registrar_->NotifyWebAppLocallyInstalledStateChanged(app_id,
-                                                       is_locally_installed);
 }
 
 void WebAppSyncBridge::SetAppLastBadgingTime(const AppId& app_id,
@@ -769,6 +760,19 @@ void WebAppSyncBridge::SetUninstallFromSyncCallbackForTesting(
     UninstallFromSyncCallback callback) {
   uninstall_from_sync_before_registry_update_callback_for_testing_ =
       std::move(callback);
+}
+
+void WebAppSyncBridge::SetAppIsLocallyInstalledForTesting(
+    const AppId& app_id,
+    bool is_locally_installed) {
+  {
+    ScopedRegistryUpdate update(this);
+    WebApp* web_app = update->UpdateApp(app_id);
+    if (web_app) {
+      web_app->SetIsLocallyInstalled(is_locally_installed);
+    }
+  }
+  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
 void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {

@@ -593,7 +593,7 @@ class ManifestUpdateManagerBrowserTest : public WebAppControllerBrowserTest {
   void InstallAppLocally(const WebApp* web_app) {
     // Doesn't call GetProvider().os_integration_manager().InstallOsHooks() to
     // suppress OS hooks.
-    GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalled(
+    GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
         web_app->app_id(), true);
     GetProvider().sync_bridge_unsafe().SetAppInstallTime(web_app->app_id(),
                                                          base::Time::Now());
@@ -951,7 +951,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "blue"});
   AppId app_id = InstallWebApp();
 
-  GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalled(app_id, false);
+  GetProvider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(app_id,
+                                                                        false);
   EXPECT_FALSE(GetProvider().registrar_unsafe().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});

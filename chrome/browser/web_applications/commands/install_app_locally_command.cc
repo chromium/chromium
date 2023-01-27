@@ -52,19 +52,6 @@ void InstallAppLocallyCommand::StartWithLock(
     return;
   }
 
-  const base::Time& install_time = base::Time::Now();
-  {
-    ScopedRegistryUpdate update(&app_lock_->sync_bridge());
-    WebApp* web_app_to_update = update->UpdateApp(app_id_);
-    if (web_app_to_update) {
-      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
-      web_app_to_update->SetInstallTime(install_time);
-    }
-  }
-  app_lock_->registrar().NotifyWebAppLocallyInstalledStateChanged(
-      app_id_, /*is_locally_installed=*/true);
-  app_lock_->registrar().NotifyWebAppInstallTimeChanged(app_id_, install_time);
-
   // Install OS hooks first.
   InstallOsHooksOptions options;
   options.add_to_desktop = true;
@@ -113,9 +100,20 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   // use that to compare with the results, and record if they all were
   // successful, instead of just shortcuts.
   bool error = os_hooks_errors[web_app::OsHookType::kShortcuts];
+  const base::Time& install_time = base::Time::Now();
+  {
+    ScopedRegistryUpdate update(&app_lock_->sync_bridge());
+    WebApp* web_app_to_update = update->UpdateApp(app_id_);
+    if (web_app_to_update) {
+      web_app_to_update->SetIsLocallyInstalled(/*is_locally_installed=*/true);
+      web_app_to_update->SetInstallTime(install_time);
+    }
+  }
+
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
                             !error);
   app_lock_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id_);
+  app_lock_->registrar().NotifyWebAppInstallTimeChanged(app_id_, install_time);
   debug_log_.Set("command_result", "success");
   ReportResultAndShutdown(CommandResult::kSuccess);
 }

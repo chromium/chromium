@@ -322,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
     web_app_info->description = description;
     app_id = InstallWebApp(std::move(web_app_info));
 
-    provider().sync_bridge_unsafe().SetAppIsLocallyInstalled(
+    provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
         app_id,
         /*is_locally_installed=*/false);
   }
@@ -337,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest,
                                      IconEffects::kBlocked |
                                      IconEffects::kCrOsStandardMask));
 
-  provider().sync_bridge_unsafe().SetAppIsLocallyInstalled(
+  provider().sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
       app_id,
       /*is_locally_installed=*/true);
   mock_app_publisher.Wait();
@@ -758,7 +758,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DisabledState) {
     web_app_info->title = description;
     web_app_info->description = description;
     app2_id = InstallWebApp(std::move(web_app_info));
-    web_app_sync_bridge.SetAppIsLocallyInstalled(
+    web_app_sync_bridge.SetAppIsLocallyInstalledForTesting(
         app2_id,
         /*is_locally_installed=*/false);
   }

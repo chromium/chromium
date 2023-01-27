@@ -1370,17 +1370,6 @@ void WebAppPublisherHelper::OnAppRegistrarDestroyed() {
   registrar_observation_.Reset();
 }
 
-void WebAppPublisherHelper::OnWebAppLocallyInstalledStateChanged(
-    const AppId& app_id,
-    bool is_locally_installed) {
-  const WebApp* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  delegate_->PublishWebApp(CreateWebApp(web_app));
-}
-
 void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
     const std::string& app_id,
     const base::Time& last_launch_time) {

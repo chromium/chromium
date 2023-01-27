@@ -37,10 +37,6 @@ class AppRegistrarObserver : public base::CheckedObserver {
   // a user selecting "always allow" in the prompt or after a policy update.
   virtual void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) {}
 
-  virtual void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
-                                                    bool is_locally_installed) {
-  }
-
   // The disabled status WebApp::chromeos_data().is_disabled of the app backing
   // |app_id| changed.
   virtual void OnWebAppDisabledStateChanged(const AppId& app_id,

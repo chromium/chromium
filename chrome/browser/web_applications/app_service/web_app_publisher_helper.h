@@ -323,8 +323,6 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // AppRegistrarObserver:
   void OnAppRegistrarDestroyed() override;
   void OnWebAppFileHandlerApprovalStateChanged(const AppId& app_id) override;
-  void OnWebAppLocallyInstalledStateChanged(const AppId& app_id,
-                                            bool is_locally_installed) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
       const base::Time& last_launch_time) override;

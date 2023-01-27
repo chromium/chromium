@@ -146,13 +146,6 @@ void WebAppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
     observer.OnWebAppsWillBeUpdatedFromSync(new_apps_state);
 }
 
-void WebAppRegistrar::NotifyWebAppLocallyInstalledStateChanged(
-    const AppId& app_id,
-    bool is_locally_installed) {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnWebAppLocallyInstalledStateChanged(app_id, is_locally_installed);
-}
-
 void WebAppRegistrar::NotifyWebAppDisabledStateChanged(const AppId& app_id,
                                                        bool is_disabled) {
   for (AppRegistrarObserver& observer : observers_)
