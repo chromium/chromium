@@ -894,9 +894,9 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "storage-access-api-for-origin-extension",
+    "prefix": "top-level-storage-access-api",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [ "wpt_internal/storage-access-api" ],
+    "bases": [ "external/wpt/top-level-storage-access-api" ],
     "args": [ "--enable-features=StorageAccessAPI,StorageAccessAPIForOriginExtension" ],
     "expires": "Jul 1, 2023"
   },
