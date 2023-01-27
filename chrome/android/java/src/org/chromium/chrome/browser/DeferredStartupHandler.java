@@ -49,12 +49,19 @@ public class DeferredStartupHandler {
         ThreadUtils.assertOnUiThread();
         // Adding multiple IdleHandlers is okay - they'll remove themselves once the queue is empty.
         Looper.myQueue().addIdleHandler(() -> {
-            Runnable currentTask = mDeferredTasks.poll();
-            if (currentTask != null) currentTask.run();
-            if (mDeferredTasks.isEmpty()) {
-                if (mLatchForTesting != null) mLatchForTesting.countDown();
-                if (sInstance == DeferredStartupHandler.this) sInstance = null;
-                return false;
+            try {
+                Runnable currentTask = mDeferredTasks.poll();
+                if (currentTask != null) currentTask.run();
+                if (mDeferredTasks.isEmpty()) {
+                    if (mLatchForTesting != null) mLatchForTesting.countDown();
+                    if (sInstance == DeferredStartupHandler.this) sInstance = null;
+                    return false;
+                }
+            } catch (Throwable e) {
+                // The Android MessageQueue swallows and logs all thrown exceptions leading to
+                // silently broken deferred startup handlers. Post the exception to avoid Android
+                // swallowing it.
+                new Handler().post(() -> { throw e; });
             }
             // Pump the queue so we get called back if the queue is still idle.
             // Note that we can't simply check myQueue().isIdle() as this will continue to return
