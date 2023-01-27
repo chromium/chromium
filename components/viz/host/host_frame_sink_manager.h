@@ -115,8 +115,13 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   //
   // If there is already a CompositorFrameSink for |frame_sink_id| then calling
   // this will destroy the existing CompositorFrameSink and create a new one.
+  //
+  // |maybe_wait_on_destruction| is for the caller to request that the browser
+  // should wait on frame sync destruction before destroying the platform
+  // window.
   void CreateRootCompositorFrameSink(
-      mojom::RootCompositorFrameSinkParamsPtr params);
+      mojom::RootCompositorFrameSinkParamsPtr params,
+      bool maybe_wait_on_destruction = true);
 
   // Creates a connection from a client to viz, using |request| and |client|,
   // that allows the client to submit CompositorFrames. When no longer needed,
@@ -300,8 +305,6 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
-
-  const bool enable_sync_window_destruction_;
 
   // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;

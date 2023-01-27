@@ -81,7 +81,6 @@ VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 #endif
 VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
-VIZ_COMMON_EXPORT bool IsSyncWindowDestructionEnabled();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();
 VIZ_COMMON_EXPORT bool ShouldUseRealBuffersForPageFlipTest();

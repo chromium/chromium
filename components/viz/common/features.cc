@@ -238,15 +238,6 @@ bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
 }
 
-// If a synchronous IPC should used when destroying windows. This exists to test
-// the impact of removing the sync IPC.
-bool IsSyncWindowDestructionEnabled() {
-  static BASE_FEATURE(kSyncWindowDestruction, "SyncWindowDestruction",
-                      base::FEATURE_ENABLED_BY_DEFAULT);
-
-  return base::FeatureList::IsEnabled(kSyncWindowDestruction);
-}
-
 bool IsSimpleFrameRateThrottlingEnabled() {
   return base::FeatureList::IsEnabled(kSimpleFrameRateThrottling);
 }

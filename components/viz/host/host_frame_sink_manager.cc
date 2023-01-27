@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -24,9 +23,7 @@
 namespace viz {
 
 HostFrameSinkManager::HostFrameSinkManager()
-    : enable_sync_window_destruction_(
-          features::IsSyncWindowDestructionEnabled()),
-      debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
+    : debug_renderer_settings_(CreateDefaultDebugRendererSettings()) {}
 
 HostFrameSinkManager::~HostFrameSinkManager() = default;
 
@@ -130,7 +127,8 @@ void HostFrameSinkManager::SetFrameSinkDebugLabel(
 }
 
 void HostFrameSinkManager::CreateRootCompositorFrameSink(
-    mojom::RootCompositorFrameSinkParamsPtr params) {
+    mojom::RootCompositorFrameSinkParamsPtr params,
+    bool maybe_wait_on_destruction /*=true*/) {
   // Should only be used with an out-of-process display compositor.
   DCHECK(frame_sink_manager_remote_);
 
@@ -150,7 +148,7 @@ void HostFrameSinkManager::CreateRootCompositorFrameSink(
 
   // Only wait on destruction if using GPU compositing for the window.
   data.wait_on_destruction =
-      enable_sync_window_destruction_ && params->gpu_compositing;
+      maybe_wait_on_destruction && params->gpu_compositing;
 
   frame_sink_manager_->CreateRootCompositorFrameSink(std::move(params));
   display_hit_test_query_[frame_sink_id] = std::make_unique<HitTestQuery>();
