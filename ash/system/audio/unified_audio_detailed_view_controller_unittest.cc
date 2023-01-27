@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/audio/audio_detailed_view.h"
 #include "ash/system/audio/mic_gain_slider_controller.h"
+#include "ash/system/audio/mic_gain_slider_view.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -321,6 +322,34 @@ TEST_P(UnifiedAudioDetailedViewControllerTest, DualInternalMicSlider) {
 
   // Verify the slider is visible.
   EXPECT_TRUE(input_sliders_map_.begin()->second->GetVisible());
+}
+
+TEST_P(UnifiedAudioDetailedViewControllerTest,
+       DualInternalMicSliderActiveState) {
+  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
+      GenerateAudioNodeList({kFrontMic, kRearMic}));
+
+  // Verify the device has dual internal mics.
+  EXPECT_TRUE(cras_audio_handler_->HasDualInternalMic());
+
+  std::unique_ptr<views::View> view =
+      audio_detailed_view_controller_->CreateView();
+
+  // Verify there is only 1 slider in the view.
+  EXPECT_EQ(input_sliders_map_.size(), 1u);
+
+  auto* mic_gain_slider_view =
+      static_cast<MicGainSliderView*>(input_sliders_map_.begin()->second);
+
+  // Verify the slider is visible.
+  EXPECT_TRUE(mic_gain_slider_view->GetVisible());
+
+  // For QsRevamp: Verify the slider is active since it's the only slider.
+  if (IsQsRevampEnabled()) {
+    EXPECT_EQ(static_cast<QuickSettingsSlider*>(mic_gain_slider_view->slider())
+                  ->slider_style(),
+              QuickSettingsSlider::Style::kRadioActive);
+  }
 }
 
 TEST_P(UnifiedAudioDetailedViewControllerTest,

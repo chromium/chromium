@@ -140,17 +140,19 @@ void MicGainSliderView::Update(bool by_user) {
   // Gets the input gain for each device to draw each slider in
   // `AudioDetailedView`. If the internal mic stub is showing, don't get the
   // audio level by its id and don't set it invisible.
-  if (features::IsQsRevampEnabled() && !show_internal_stub) {
-    // If the device cannot be found by `device_id_`, hides this view and early
-    // returns to avoid a crash.
-    if (!audio_handler->GetDeviceFromId(device_id_)) {
-      SetVisible(false);
-      return;
+  if (features::IsQsRevampEnabled()) {
+    if (!show_internal_stub) {
+      // If the device cannot be found by `device_id_`, hides this view and
+      // early returns to avoid a crash.
+      if (!audio_handler->GetDeviceFromId(device_id_)) {
+        SetVisible(false);
+        return;
+      }
+      // Inactive input devices don't have a record of their mute states,so we
+      // manually get the level.
+      level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
     }
-    // Inactive input devices don't have a record of their mute states. So we
-    // manually get the level and set the mute state before setting the slider
-    // icon.
-    level = audio_handler->GetInputGainPercentForDevice(device_id_) / 100.f;
+    // Sets `is_muted` for active internal mic stub and all other input devices.
     is_muted = level == 0;
   }
 
@@ -177,16 +179,17 @@ void MicGainSliderView::Update(bool by_user) {
     button()->SetTooltipText(l10n_util::GetStringFUTF16(
         IDS_ASH_STATUS_TRAY_MIC_GAIN, state_tooltip_text));
   } else {
+    // For active internal mic stub, `show_internal_stub` indicates whether it's
+    // showing and `device_id_` doesn't match with `active_device_id`.
+    const bool is_active = show_internal_stub || active_device_id == device_id_;
     static_cast<QuickSettingsSlider*>(slider())->SetSliderStyle(
-        active_device_id != device_id_
-            ? QuickSettingsSlider::Style::kRadioInactive
-            : QuickSettingsSlider::Style::kRadioActive);
+        is_active ? QuickSettingsSlider::Style::kRadioActive
+                  : QuickSettingsSlider::Style::kRadioInactive);
 
     slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
         is_muted ? kMutedMicrophoneIcon : kImeMenuMicrophoneIcon,
-        active_device_id == device_id_
-            ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-            : cros_tokens::kCrosSysSecondary,
+        is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                  : cros_tokens::kCrosSysSecondary,
         kQsSliderIconSize));
   }
 
