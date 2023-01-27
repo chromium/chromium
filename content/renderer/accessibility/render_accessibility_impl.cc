@@ -574,11 +574,13 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
 
   DCHECK(!obj.IsDetached() || !serialize_post_lifecycle_);
 
-  if (serialize_post_lifecycle_) {
-    ScheduleImmediateAXUpdate();
-  } else {
-    legacy_event_schedule_mode_ =
-        LegacyEventScheduleMode::kProcessEventsImmediately;
+  if (IsImmediateProcessingRequiredForEvent(event)) {
+    if (serialize_post_lifecycle_) {
+      ScheduleImmediateAXUpdate();
+    } else {
+      legacy_event_schedule_mode_ =
+          LegacyEventScheduleMode::kProcessEventsImmediately;
+    }
   }
 
   if (!serialize_post_lifecycle_ || !obj.IsDetached()) {
