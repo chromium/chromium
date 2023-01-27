@@ -89,6 +89,7 @@ include_rules = [
   "+components/security_interstitials",
   "+components/security_state",
   "+components/segmentation_platform/public",
+  "+components/segmentation_platform/embedder",
   "+components/send_tab_to_self",
   "+components/services/patch",
   "+components/services/unzip",
