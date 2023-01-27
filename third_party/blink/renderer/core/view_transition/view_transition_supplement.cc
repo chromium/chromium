@@ -106,9 +106,8 @@ ViewTransition* ViewTransitionSupplement::StartTransition(
   DCHECK(!transition_)
       << "skipTransition() should finish existing |transition_|";
 
-  // We need to be connected to a view to have a transition. We also need a
-  // document element, since that's the originating element for the pseudo tree.
-  if (!document.View() || !document.documentElement()) {
+  // We need to be connected to a view to have a transition.
+  if (!document.View()) {
     return nullptr;
   }
 
