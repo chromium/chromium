@@ -9,7 +9,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -27,7 +26,6 @@ class LockManager;
 class ScriptState;
 
 class StorageBucket final : public ScriptWrappable,
-                            public ActiveScriptWrappable<StorageBucket>,
                             public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -47,9 +45,6 @@ class StorageBucket final : public ScriptWrappable,
   LockManager* locks();
   CacheStorage* caches(ExceptionState&);
   ScriptPromise getDirectory(ScriptState*, ExceptionState&);
-
-  // ActiveScriptWrappable
-  bool HasPendingActivity() const final;
 
   // GarbageCollected
   void Trace(Visitor*) const override;

@@ -182,10 +182,6 @@ ScriptPromise StorageBucket::getDirectory(ScriptState* script_state,
                     weak_factory_.GetWeakPtr()));
 }
 
-bool StorageBucket::HasPendingActivity() const {
-  return GetExecutionContext();
-}
-
 void StorageBucket::Trace(Visitor* visitor) const {
   visitor->Trace(idb_factory_);
   visitor->Trace(lock_manager_);

@@ -5,7 +5,6 @@
 // https://github.com/WICG/storage-buckets
 
 [
-  ActiveScriptWrappable,
   RuntimeEnabled=StorageBuckets,
   Exposed=(Window,Worker),
   SecureContext
