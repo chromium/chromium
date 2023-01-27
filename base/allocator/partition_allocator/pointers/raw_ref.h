@@ -196,48 +196,24 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
     swap(lhs.inner_, rhs.inner_);
   }
 
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator==(const raw_ref& lhs,
-                                          const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ == rhs.inner_;
-  }
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator!=(const raw_ref& lhs,
-                                          const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ != rhs.inner_;
-  }
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator<(const raw_ref& lhs,
-                                         const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ < rhs.inner_;
-  }
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator>(const raw_ref& lhs,
-                                         const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ > rhs.inner_;
-  }
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator<=(const raw_ref& lhs,
-                                          const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ <= rhs.inner_;
-  }
-  template <class U>
-  friend PA_ALWAYS_INLINE bool operator>=(const raw_ref& lhs,
-                                          const raw_ref<U, Traits>& rhs) {
-    PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
-    PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
-    return lhs.inner_ >= rhs.inner_;
-  }
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator==(const raw_ref<U, Traits1>& lhs,
+                                          const raw_ref<V, Traits2>& rhs);
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator!=(const raw_ref<U, Traits1>& lhs,
+                                          const raw_ref<V, Traits2>& rhs);
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator<(const raw_ref<U, Traits1>& lhs,
+                                         const raw_ref<V, Traits2>& rhs);
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator>(const raw_ref<U, Traits1>& lhs,
+                                         const raw_ref<V, Traits2>& rhs);
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator<=(const raw_ref<U, Traits1>& lhs,
+                                          const raw_ref<V, Traits2>& rhs);
+  template <typename U, typename V, typename Traits1, typename Traits2>
+  friend PA_ALWAYS_INLINE bool operator>=(const raw_ref<U, Traits1>& lhs,
+                                          const raw_ref<V, Traits2>& rhs);
 
   template <class U, class = std::enable_if_t<!internal::is_raw_ref_v<U>, void>>
   friend PA_ALWAYS_INLINE bool operator==(const raw_ref& lhs, const U& rhs) {
@@ -307,6 +283,49 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ref {
 
   Inner inner_;
 };
+
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator==(const raw_ref<U, Traits1>& lhs,
+                                 const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ == rhs.inner_;
+}
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator!=(const raw_ref<U, Traits1>& lhs,
+                                 const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ != rhs.inner_;
+}
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator<(const raw_ref<U, Traits1>& lhs,
+                                const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ < rhs.inner_;
+}
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator>(const raw_ref<U, Traits1>& lhs,
+                                const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ > rhs.inner_;
+}
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator<=(const raw_ref<U, Traits1>& lhs,
+                                 const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ <= rhs.inner_;
+}
+template <typename U, typename V, typename Traits1, typename Traits2>
+PA_ALWAYS_INLINE bool operator>=(const raw_ref<U, Traits1>& lhs,
+                                 const raw_ref<V, Traits2>& rhs) {
+  PA_RAW_PTR_CHECK(lhs.inner_.get());  // Catch use-after-move.
+  PA_RAW_PTR_CHECK(rhs.inner_.get());  // Catch use-after-move.
+  return lhs.inner_ >= rhs.inner_;
+}
 
 // CTAD deduction guide.
 template <class T>

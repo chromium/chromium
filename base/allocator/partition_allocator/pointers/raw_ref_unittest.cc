@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr_test_support.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -764,12 +765,30 @@ TEST(RawRefPtr, CTADWithConst) {
 using RawPtrCountingImpl = base::internal::RawPtrCountingImplWrapperForTest<
     base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::DisableHooks>>;
 
+// `TraitBundle<DisableHooks, MayDangle>` matches what
+// `CountingRawRefMayDangle` does internally.
+// `UseCountingWrapperForTest` is removed, `DisableHooks` is added, and
+// `MayDangle` is kept.
+using RawPtrCountingMayDangleImpl =
+    base::internal::RawPtrCountingImplWrapperForTest<
+        base::raw_ptr_traits::TraitBundle<base::raw_ptr_traits::MayDangle,
+                                          base::raw_ptr_traits::DisableHooks>>;
+
 template <typename T>
 using CountingRawRef =
     raw_ref<T,
             base::raw_ptr_traits::TraitBundle<
                 base::raw_ptr_traits::UseCountingWrapperForTest>>;
 static_assert(std::is_same_v<CountingRawRef<int>::Impl, RawPtrCountingImpl>);
+
+template <typename T>
+using CountingRawRefMayDangle =
+    raw_ref<T,
+            base::raw_ptr_traits::TraitBundle<
+                base::raw_ptr_traits::MayDangle,
+                base::raw_ptr_traits::UseCountingWrapperForTest>>;
+static_assert(std::is_same_v<CountingRawRefMayDangle<int>::Impl,
+                             RawPtrCountingMayDangleImpl>);
 
 TEST(RawRef, StdLess) {
   int i[] = {1, 1};
@@ -821,6 +840,45 @@ TEST(RawRef, StdLess) {
     EXPECT_FALSE(std::less<CountingRawRef<const int>>()(r2, i[0]));
     EXPECT_EQ(2, RawPtrCountingImpl::wrapped_ptr_less_cnt);
   }
+}
+
+// Verifies that comparing `raw_ref`s with different underlying
+// `TraitBundle`s is a valid utterance and primarily uses the
+// `GetForComparison()` methods.
+TEST(RawRef, OperatorsUseGetForComparison) {
+  int x = 123;
+  CountingRawRef<int> ref1(x);
+  CountingRawRefMayDangle<int> ref2(x);
+
+  RawPtrCountingImpl::ClearCounters();
+  RawPtrCountingMayDangleImpl::ClearCounters();
+
+  EXPECT_TRUE(ref1 == ref2);
+  EXPECT_FALSE(ref1 != ref2);
+  // The use of `PA_RAW_PTR_CHECK()`s to catch dangling references means
+  // that we can't actually readily specify whether there are 0
+  // extractions (`CHECK()`s compiled out) or 2 extractions.
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_comparison_cnt = 2,
+              }),
+              CountersMatch());
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
+                  .get_for_comparison_cnt = 2,
+              }),
+              CountersMatch());
+
+  EXPECT_FALSE(ref1 < ref2);
+  EXPECT_FALSE(ref1 > ref2);
+  EXPECT_TRUE(ref1 <= ref2);
+  EXPECT_TRUE(ref1 >= ref2);
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingImpl>{
+                  .get_for_comparison_cnt = 6,
+              }),
+              CountersMatch());
+  EXPECT_THAT((CountingRawPtrExpectations<RawPtrCountingMayDangleImpl>{
+                  .get_for_comparison_cnt = 6,
+              }),
+              CountersMatch());
 }
 
 #if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
