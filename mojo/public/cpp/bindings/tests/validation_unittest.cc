@@ -242,28 +242,28 @@ class ValidationTest : public testing::Test {
 
 class ValidationIntegrationTest : public ValidationTest {
  public:
-  ValidationIntegrationTest() : test_message_receiver_(nullptr) {}
-
-  ~ValidationIntegrationTest() override {}
+  ValidationIntegrationTest() = default;
+  ~ValidationIntegrationTest() override = default;
 
   void SetUp() override {
     ScopedMessagePipeHandle tester_endpoint;
     ASSERT_EQ(MOJO_RESULT_OK,
               CreateMessagePipe(nullptr, &tester_endpoint, &testee_endpoint_));
     test_message_receiver_ =
-        new TestMessageReceiver(this, std::move(tester_endpoint));
+        std::make_unique<TestMessageReceiver>(this, std::move(tester_endpoint));
   }
 
   void TearDown() override {
-    delete test_message_receiver_;
-    test_message_receiver_ = nullptr;
+    test_message_receiver_.reset();
 
     // Make sure that the other end receives the OnConnectionError()
     // notification.
     PumpMessages();
   }
 
-  MessageReceiver* test_message_receiver() { return test_message_receiver_; }
+  MessageReceiver* test_message_receiver() {
+    return test_message_receiver_.get();
+  }
 
   ScopedMessagePipeHandle testee_endpoint() {
     return std::move(testee_endpoint_);
@@ -293,7 +293,7 @@ class ValidationIntegrationTest : public ValidationTest {
 
   void PumpMessages() { base::RunLoop().RunUntilIdle(); }
 
-  raw_ptr<TestMessageReceiver> test_message_receiver_;
+  std::unique_ptr<TestMessageReceiver> test_message_receiver_;
   ScopedMessagePipeHandle testee_endpoint_;
 };
 
