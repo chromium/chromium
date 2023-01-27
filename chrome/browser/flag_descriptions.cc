@@ -3896,12 +3896,6 @@ const char kRelatedSearchesDescription[] =
     "Enables requesting related searches suggestions. These will be requested "
     "but not shown unless the UI flag is also enabled.";
 
-const char kRelatedSearchesInBarName[] =
-    "Enables showing Related Searches in the peeking bar.";
-const char kRelatedSearchesInBarDescription[] =
-    "Enables showing related searches suggestions in a carousel in the "
-    "peeking bar of the bottom sheet on Android.";
-
 const char kRelatedSearchesUiName[] =
     "Forces showing of the Related Searches UI on Android";
 const char kRelatedSearchesUiDescription[] =

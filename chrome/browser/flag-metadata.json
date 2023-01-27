@@ -6046,21 +6046,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "related-searches-alternate-ux",
-    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "related-searches-in-bar",
-    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "related-searches-simplified-ux",
-    "owners": [ "gangwu", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "related-searches-ui",
     "owners": [ "gangwu", "related-searches-vteam@google.com" ],
     "expiry_milestone": 110

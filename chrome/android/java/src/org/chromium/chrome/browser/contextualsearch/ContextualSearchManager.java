@@ -1843,10 +1843,6 @@ public class ContextualSearchManager
      *         if the feature for showing chips is not enabled.
      */
     private @Nullable List<String> buildRelatedSearches(String defaultSearch) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES_IN_BAR)) {
-            return null;
-        }
-
         List<String> queries = mRelatedSearches.getQueries();
         if (queries.size() == 0) {
             return queries;
