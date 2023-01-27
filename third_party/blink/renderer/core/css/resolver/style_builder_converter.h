@@ -72,7 +72,6 @@ class FontBuilder;
 class RotateTransformOperation;
 class ScaleTransformOperation;
 class ScopedCSSName;
-class ScopedCSSValue;
 class StyleAutoColor;
 class StylePath;
 class StyleResolverState;
@@ -208,8 +207,6 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
                                                  const CSSValue&);
-  static ScopedCSSName* ConvertNoneOrCustomIdent(StyleResolverState&,
-                                                 const ScopedCSSValue&);
   static AnchorScrollValue* ConvertAnchorScroll(StyleResolverState&,
                                                 const CSSValue&);
   static StyleInitialLetter ConvertInitialLetter(StyleResolverState&,
@@ -327,7 +324,7 @@ class StyleBuilderConverter {
                                                 const CSSValue& value);
 
   static ScopedCSSNameList* ConvertContainerName(StyleResolverState&,
-                                                 const ScopedCSSValue&);
+                                                 const CSSValue&);
 
   static absl::optional<StyleIntrinsicLength> ConvertIntrinsicDimension(
       const StyleResolverState&,
@@ -369,7 +366,7 @@ class StyleBuilderConverter {
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
   static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,
-                                                    const ScopedCSSValue&);
+                                                    const CSSValue&);
 };
 
 template <typename T>
