@@ -1682,9 +1682,10 @@ TEST_F(TextureTest, GetLevelImage) {
   // Remove it.
   manager_->UnsetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1);
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
-                                 image.get());
-  // Image should be reset when SetLevelInfo is called.
+
+  // Re-add it, and check that it's reset when SetLevelInfo is called.
+  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
+                               image.get());
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
