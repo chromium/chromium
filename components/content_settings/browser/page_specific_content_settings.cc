@@ -543,7 +543,7 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
 // static
 void PageSpecificContentSettings::InterestGroupJoined(
     content::RenderFrameHost* rfh,
-    const url::Origin api_origin,
+    const url::Origin& api_origin,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings = GetForFrame(rfh);
@@ -554,7 +554,7 @@ void PageSpecificContentSettings::InterestGroupJoined(
 // static
 void PageSpecificContentSettings::TopicAccessed(
     content::RenderFrameHost* rfh,
-    const url::Origin api_origin,
+    const url::Origin& api_origin,
     bool blocked_by_policy,
     privacy_sandbox::CanonicalTopic topic) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -829,7 +829,7 @@ void PageSpecificContentSettings::OnSharedWorkerAccessed(
 }
 
 void PageSpecificContentSettings::OnInterestGroupJoined(
-    const url::Origin api_origin,
+    const url::Origin& api_origin,
     bool blocked_by_policy) {
   if (blocked_by_policy) {
     blocked_interest_group_api_.push_back(api_origin);
@@ -844,7 +844,7 @@ void PageSpecificContentSettings::OnInterestGroupJoined(
 }
 
 void PageSpecificContentSettings::OnTopicAccessed(
-    const url::Origin api_origin,
+    const url::Origin& api_origin,
     bool blocked_by_policy,
     privacy_sandbox::CanonicalTopic topic) {
   // TODO(crbug.com/1286276): Add URL and Topic to local_shared_objects?
@@ -854,7 +854,7 @@ void PageSpecificContentSettings::OnTopicAccessed(
 }
 
 void PageSpecificContentSettings::OnTrustTokenAccessed(
-    const url::Origin api_origin,
+    const url::Origin& api_origin,
     bool blocked) {
   // TODO(crbug.com/1378703): Call this method.
   // The size isn't relevant here and won't be displayed in the UI.

@@ -15,7 +15,6 @@
 #include "components/browsing_topics/common/common_types.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
 #include "components/browsing_topics/util.h"
-#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "content/public/browser/browsing_topics_site_data_manager.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -189,7 +188,8 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
     privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
     history::HistoryService* history_service,
     content::BrowsingTopicsSiteDataManager* site_data_manager,
-    optimization_guide::PageContentAnnotationsService* annotations_service)
+    optimization_guide::PageContentAnnotationsService* annotations_service,
+    TopicAccessedCallback topic_accessed_callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
       site_data_manager_(site_data_manager),
@@ -198,7 +198,9 @@ BrowsingTopicsServiceImpl::BrowsingTopicsServiceImpl(
           profile_path,
           base::BindOnce(
               &BrowsingTopicsServiceImpl::OnBrowsingTopicsStateLoaded,
-              base::Unretained(this))) {
+              base::Unretained(this))),
+      topic_accessed_callback_(std::move(topic_accessed_callback)) {
+  DCHECK(topic_accessed_callback_);
   privacy_sandbox_settings_observation_.Observe(privacy_sandbox_settings);
   history_service_observation_.Observe(history_service);
 
@@ -296,9 +298,9 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
     if (candidate_topic.is_true_topic()) {
       privacy_sandbox::CanonicalTopic canonical_topic(
           candidate_topic.topic(), candidate_topic.taxonomy_version());
-      content_settings::PageSpecificContentSettings::TopicAccessed(
-          main_frame, context_origin, /*blocked_by_policy=*/false,
-          canonical_topic);
+      topic_accessed_callback_.Run(main_frame, context_origin,
+                                   /*blocked_by_policy=*/false,
+                                   canonical_topic);
     }
 
     auto result_topic = blink::mojom::EpochTopic::New();

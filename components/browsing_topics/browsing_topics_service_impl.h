@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_IMPL_H_
 #define COMPONENTS_BROWSING_TOPICS_BROWSING_TOPICS_SERVICE_IMPL_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -105,12 +106,19 @@ class BrowsingTopicsServiceImpl
   friend class BrowsingTopicsBrowserTest;
   friend class TesterBrowsingTopicsService;
 
+  using TopicAccessedCallback =
+      base::RepeatingCallback<void(content::RenderFrameHost* rfh,
+                                   const url::Origin& api_origin,
+                                   bool blocked_by_policy,
+                                   privacy_sandbox::CanonicalTopic topic)>;
+
   BrowsingTopicsServiceImpl(
       const base::FilePath& profile_path,
       privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings,
       history::HistoryService* history_service,
       content::BrowsingTopicsSiteDataManager* site_data_manager,
-      optimization_guide::PageContentAnnotationsService* annotations_service);
+      optimization_guide::PageContentAnnotationsService* annotations_service,
+      TopicAccessedCallback topic_accessed_callback);
 
   void ScheduleBrowsingTopicsCalculation(base::TimeDelta delay);
 
@@ -166,6 +174,8 @@ class BrowsingTopicsServiceImpl
       get_state_for_webui_callbacks_;
 
   base::OneShotTimer schedule_calculate_timer_;
+
+  TopicAccessedCallback topic_accessed_callback_;
 
   base::ScopedObservation<privacy_sandbox::PrivacySandboxSettings,
                           privacy_sandbox::PrivacySandboxSettings::Observer>
