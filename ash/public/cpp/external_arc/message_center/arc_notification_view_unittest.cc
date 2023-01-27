@@ -275,7 +275,13 @@ TEST_P(ArcNotificationViewTest, SlideOut) {
   EXPECT_TRUE(IsRemovedAfterIdle(notification_id));
 }
 
-TEST_P(ArcNotificationViewTest, SlideOutNested) {
+// TODO(crbug.com/1410724): Flaky on MSAN bots.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_SlideOutNested DISABLED_SlideOutNested
+#else
+#define MAYBE_SlideOutNested SlideOutNested
+#endif
+TEST_P(ArcNotificationViewTest, MAYBE_SlideOutNested) {
   ui::ScopedAnimationDurationScaleMode zero_duration_scope(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
