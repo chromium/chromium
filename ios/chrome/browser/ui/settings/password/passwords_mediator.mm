@@ -219,15 +219,26 @@ bool IsPasswordCheckupEnabled() {
     case PasswordCheckState::kIdle:
       return nil;
     case PasswordCheckState::kSignedOut:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(
+                    IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
       break;
     case PasswordCheckState::kOffline:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
       break;
     case PasswordCheckState::kQuotaLimit:
       if ([self canUseAccountPasswordCheckup]) {
-        message = l10n_util::GetNSString(
-            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
+        message =
+            IsPasswordCheckupEnabled()
+                ? l10n_util::GetNSString(
+                      IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE)
+                : l10n_util::GetNSString(
+                      IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
         NSDictionary* linkAttributes = @{
           NSLinkAttributeName :
               net::NSURLWithGURL(password_manager::GetPasswordCheckupURL(
@@ -237,12 +248,18 @@ bool IsPasswordCheckupEnabled() {
         return AttributedStringFromStringWithLink(message, textAttributes,
                                                   linkAttributes);
       } else {
-        message =
-            l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
+        message = IsPasswordCheckupEnabled()
+                      ? l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT)
+                      : l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
       }
       break;
     case PasswordCheckState::kOther:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
       break;
   }
   return [[NSMutableAttributedString alloc] initWithString:message

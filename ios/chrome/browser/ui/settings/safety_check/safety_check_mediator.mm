@@ -15,6 +15,7 @@
 #import "base/version.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -102,6 +103,11 @@ constexpr double kUpdateRowMinDelay = 2.0;
 constexpr double kPasswordRowMinDelay = 1.5;
 constexpr double kSafeBrowsingRowMinDelay = 3.0;
 
+// Returns true if the Password Checkup feature flag is enabled.
+bool IsPasswordCheckupEnabled() {
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordCheckup);
+}
 }  // namespace
 
 @interface SafetyCheckMediator () <BooleanObserver, PasswordCheckObserver> {
@@ -575,31 +581,51 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
   switch (self.currentPasswordCheckState) {
     case PasswordCheckState::kRunning:
     case PasswordCheckState::kNoPasswords:
-      message =
-          l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_NO_PASSWORDS);
+      message = IsPasswordCheckupEnabled()
+                    ? l10n_util::GetNSString(
+                          IDS_IOS_PASSWORD_CHECKUP_ERROR_NO_PASSWORDS)
+                    : l10n_util::GetNSString(
+                          IDS_IOS_PASSWORD_CHECK_ERROR_NO_PASSWORDS);
       break;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle:
       return nil;
     case PasswordCheckState::kSignedOut:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(
+                    IDS_IOS_PASSWORD_CHECKUP_ERROR_SIGNED_OUT)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_SIGNED_OUT);
       break;
     case PasswordCheckState::kOffline:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OFFLINE)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OFFLINE);
       break;
     case PasswordCheckState::kQuotaLimit:
       if ([self canUseAccountPasswordCheckup]) {
-        message = l10n_util::GetNSString(
-            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
+        message =
+            IsPasswordCheckupEnabled()
+                ? l10n_util::GetNSString(
+                      IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT_VISIT_GOOGLE)
+                : l10n_util::GetNSString(
+                      IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT_VISIT_GOOGLE);
         linkURL = password_manager::GetPasswordCheckupURL(
             password_manager::PasswordCheckupReferrer::kPasswordCheck);
       } else {
-        message =
-            l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
+        message = IsPasswordCheckupEnabled()
+                      ? l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_CHECKUP_ERROR_QUOTA_LIMIT)
+                      : l10n_util::GetNSString(
+                            IDS_IOS_PASSWORD_CHECK_ERROR_QUOTA_LIMIT);
       }
       break;
     case PasswordCheckState::kOther:
-      message = l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
+      message =
+          IsPasswordCheckupEnabled()
+              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR_OTHER)
+              : l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECK_ERROR_OTHER);
       break;
   }
   return [self attributedStringWithText:message link:linkURL];
