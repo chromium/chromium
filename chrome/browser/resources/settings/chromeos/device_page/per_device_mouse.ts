@@ -18,6 +18,8 @@ import {routes} from '../os_route.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Mouse} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse.html.js';
 
 const SettingsPerDeviceMouseElementBase =
@@ -38,7 +40,20 @@ class SettingsPerDeviceMouseElement extends SettingsPerDeviceMouseElementBase {
         type: Boolean,
         value: false,
       },
+
+      mice: {
+        type: Array,
+      },
     };
+  }
+
+  protected mice: Mouse[];
+  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
+      getInputDeviceSettingsProvider();
+
+  constructor() {
+    super();
+    this.fetchConnectedMice();
   }
 
   override currentRouteChanged(route: Route): void {
@@ -46,6 +61,11 @@ class SettingsPerDeviceMouseElement extends SettingsPerDeviceMouseElementBase {
     if (route !== routes.PER_DEVICE_MOUSE) {
       return;
     }
+  }
+
+  private async fetchConnectedMice(): Promise<void> {
+    this.mice =
+        await this.inputDeviceSettingsProvider.getConnectedMouseSettings();
   }
 }
 

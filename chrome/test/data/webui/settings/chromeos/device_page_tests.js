@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeTouchpads, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
+import {crosAudioConfigMojomWebui, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, IdleBehavior, LidClosedBehavior, NoteAppLockScreenSupport, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, StorageSpaceState} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -744,6 +744,13 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDeviceMouse), function() {
     let perDeviceMousePage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakeMice(fakeMice);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();
@@ -765,6 +772,12 @@ suite('SettingsDevicePage', function() {
           routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
           '#perDeviceMouseSubpageTitle')));
+    });
+
+    test('per-device mouse page populated', function() {
+      const connectedMice = perDeviceMousePage.mice;
+      assertTrue(!!connectedMice);
+      assertDeepEquals(connectedMice, fakeMice);
     });
   });
 
@@ -809,6 +822,13 @@ suite('SettingsDevicePage', function() {
 
   suite(assert(TestNames.PerDevicePointingStick), function() {
     let perDevicePointingStickPage;
+    let inputDeviceSettingsProvider;
+
+    suiteSetup(() => {
+      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
+      inputDeviceSettingsProvider.setFakePointingSticks(fakePointingSticks);
+      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
+    });
 
     setup(async function() {
       await init();
@@ -832,6 +852,12 @@ suite('SettingsDevicePage', function() {
           Router.getInstance().getCurrentRoute());
       assertTrue(isVisible(perDevicePointingStickPage.shadowRoot.querySelector(
           '#perDevicePointingStickSubpageTitle')));
+    });
+
+    test('per-device pointing stick page populated', function() {
+      const connectedPointingSticks = perDevicePointingStickPage.pointingSticks;
+      assertTrue(!!connectedPointingSticks);
+      assertDeepEquals(connectedPointingSticks, fakePointingSticks);
     });
   });
 

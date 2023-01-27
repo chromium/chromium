@@ -38,14 +38,28 @@ export const fakeTouchpads: Touchpad[] = [
   },
 ];
 
-export const fakeMice: Mouse[] = [{
-  id: 2,
-  name: 'fake-mouse',
-  isExternal: false,
-}];
+export const fakeMice: Mouse[] = [
+  {
+    id: 4,
+    name: 'Razer Basilisk V3',
+    isExternal: true,
+  },
+  {
+    id: 5,
+    name: 'MX Anywhere 2S',
+    isExternal: false,
+  },
+];
 
-export const fakePointingSticks: PointingStick[] = [{
-  id: 3,
-  name: 'fake-pointing-stick',
-  isExternal: false,
-}];
+export const fakePointingSticks: PointingStick[] = [
+  {
+    id: 6,
+    name: 'Default Pointing Stick',
+    isExternal: false,
+  },
+  {
+    id: 7,
+    name: 'Lexmark-Unicomp FSR',
+    isExternal: true,
+  },
+];
