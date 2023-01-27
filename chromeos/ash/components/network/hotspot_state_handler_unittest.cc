@@ -194,6 +194,45 @@ TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {
   EXPECT_EQ(3u, observer_.hotspot_status_changed_count());
 }
 
+TEST_F(HotspotStateHandlerTest, UpdateHotspotConfigWhenProfileLoaded) {
+  const char kInitialSSID[] = "randomized_SSID";
+  const char kInitialPassphrase[] = "randomized_passphrase";
+  const char kLoadedSSID[] = "loaded_SSID";
+  const char kLoadedPassphrase[] = "loaded_passphrase";
+
+  base::Value::Dict config;
+  config.Set(shill::kTetheringConfSSIDProperty,
+             base::HexEncode(kInitialSSID, std::strlen(kInitialSSID)));
+  config.Set(shill::kTetheringConfPassphraseProperty, kInitialPassphrase);
+  config.Set(shill::kTetheringConfAutoDisableProperty, true);
+  config.Set(shill::kTetheringConfBandProperty, shill::kBandAll);
+  config.Set(shill::kTetheringConfMARProperty, false);
+  config.Set(shill::kTetheringConfSecurityProperty, shill::kSecurityWpa2);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringConfigProperty, base::Value(config.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  LoginToRegularUser();
+  EXPECT_EQ(hotspot_state_handler_->GetHotspotConfig()->ssid, kInitialSSID);
+  EXPECT_EQ(hotspot_state_handler_->GetHotspotConfig()->passphrase,
+            kInitialPassphrase);
+
+  // Simulate shill load tethering config from user profile after login.
+  config.Set(shill::kTetheringConfSSIDProperty,
+             base::HexEncode(kLoadedSSID, std::strlen(kLoadedSSID)));
+  config.Set(shill::kTetheringConfPassphraseProperty, kLoadedPassphrase);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringConfigProperty, base::Value(config.Clone()));
+  // Signals "Profiles" property change when user profile is fully loaded.
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kProfilesProperty, base::Value());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(hotspot_state_handler_->GetHotspotConfig()->ssid, kLoadedSSID);
+  EXPECT_EQ(hotspot_state_handler_->GetHotspotConfig()->passphrase,
+            kLoadedPassphrase);
+}
+
 TEST_F(HotspotStateHandlerTest, SetAndGetHotspotConfig) {
   EXPECT_EQ(hotspot_config::mojom::SetHotspotConfigResult::kFailedNotLogin,
             SetHotspotConfig(GenerateTestConfig()));
