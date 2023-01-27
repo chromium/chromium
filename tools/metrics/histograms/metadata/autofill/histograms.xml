@@ -253,6 +253,10 @@ chromium-metrics-reviews@google.com.
   <variant name=".VirtualCardEnrollment" summary="virtual card enrollment"/>
 </variants>
 
+<variants name="IbanTypeToBeSaved">
+  <variant name=".Local" summary="Local IBAN save"/>
+</variants>
+
 <histogram name="Autocomplete.DaysSinceLastUse" units="days"
     expires_after="2023-04-16">
   <owner>battre@chromium.org</owner>
@@ -3738,6 +3742,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes"
+    enum="AutofillSaveType" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records when IBAN save prompt is not offered due to the candidate IBAN
+    having too many strikes. It is recorded when offering IBAN save to user and
+    detects the max strikes has been reached.
+  </summary>
+</histogram>
+
 <histogram
     name="Autofill.StrikeDatabase.LocalCardMigrationNotOfferedDueToMaxStrikes"
     enum="AutofillSaveType" expires_after="2023-07-09">
@@ -3772,6 +3788,20 @@ chromium-metrics-reviews@google.com.
     When a StrikeDatabase fails to initialize, records the number of consecutive
     failed initialization attempts.
   </summary>
+</histogram>
+
+<histogram
+    name="Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved{IbanTypeToBeSaved}"
+    units="strikes" expires_after="2023-09-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the number of &quot;strikes&quot; a given IBAN had when a user
+    decided to save it. It is recorded right after the user clicks the Accept
+    button.
+  </summary>
+  <token key="IbanTypeToBeSaved" variants="IbanTypeToBeSaved"/>
 </histogram>
 
 <histogram

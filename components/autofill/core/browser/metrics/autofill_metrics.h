@@ -165,8 +165,8 @@ class AutofillMetrics {
     NUM_SUBMITTED_SERVER_CARD_EXPIRATION_STATUS_METRICS,
   };
 
-  // Metric to distinguish between local credit card saves and upload credit
-  // card saves.
+  // Metric to distinguish between local and server saves for credit cards or
+  // IBANs.
   enum class SaveTypeMetric {
     LOCAL = 0,
     SERVER = 1,

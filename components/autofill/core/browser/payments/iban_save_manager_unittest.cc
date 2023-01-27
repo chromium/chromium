@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
 #include "base/guid.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/iban.h"
@@ -125,8 +126,7 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_NotEnoughStrikesShouldOfferToSave) {
   IBAN iban(base::GenerateGUID());
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(strike_database_);
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrike(kIbanValue);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
@@ -138,8 +138,7 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_MaxStrikesShouldNotOfferToSave) {
   IBAN iban(base::GenerateGUID());
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
 
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(strike_database_);
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrikes(
       iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
 
@@ -153,8 +152,7 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Accepted_ClearsStrikes) {
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(strike_database_);
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
   iban_save_strike_database.AddStrike(kIbanValue);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
@@ -172,8 +170,7 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Declined_AddsStrike) {
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(strike_database_);
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
@@ -192,8 +189,7 @@ TEST_F(IBANSaveManagerTest, OnUserDidDecideOnLocalSave_Ignored_AddsStrike) {
 
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
 
-  IBANSaveStrikeDatabase iban_save_strike_database =
-      IBANSaveStrikeDatabase(strike_database_);
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
 
   // Verify `kIbanValue` has been successfully added to the strike database.
   EXPECT_EQ(0, iban_save_strike_database.GetStrikes(kIbanValue));
@@ -212,6 +208,40 @@ TEST_F(IBANSaveManagerTest, LocallySaveIBAN_AttemptToOfferIBANLocalSave) {
 
   EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
   EXPECT_TRUE(autofill_client_.ConfirmSaveIBANLocallyWasCalled());
+}
+
+TEST_F(IBANSaveManagerTest,
+       LocallySaveIBAN_MaxStrikesShouldNotOfferToSave_Metrics) {
+  base::HistogramTester histogram_tester;
+  IBAN iban(base::GenerateGUID());
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  iban_save_strike_database.AddStrikes(
+      iban_save_strike_database.GetMaxStrikesLimit(), kIbanValue);
+
+  EXPECT_EQ(iban_save_strike_database.GetMaxStrikesLimit(),
+            iban_save_strike_database.GetStrikes(kIbanValue));
+  EXPECT_FALSE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.IbanSaveNotOfferedDueToMaxStrikes",
+      AutofillMetrics::SaveTypeMetric::LOCAL, 1);
+}
+
+TEST_F(IBANSaveManagerTest, StrikesPresentWhenIBANSaved_Local) {
+  base::HistogramTester histogram_tester;
+  IBAN iban(base::GenerateGUID());
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
+  IBANSaveStrikeDatabase iban_save_strike_database(strike_database_);
+  iban_save_strike_database.AddStrike(kIbanValue);
+
+  EXPECT_TRUE(GetIBANSaveManager().AttemptToOfferIBANLocalSave(iban));
+  GetIBANSaveManager().OnUserDidDecideOnLocalSaveForTesting(
+      AutofillClient::SaveIBANOfferUserDecision::kAccepted,
+      u"My teacher's IBAN");
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.StrikeDatabase.StrikesPresentWhenIbanSaved.Local",
+      /*sample=*/1, /*expected_count=*/1);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
