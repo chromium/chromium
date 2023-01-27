@@ -183,10 +183,6 @@ void FloatingWorkspaceService::InitForV2() {
   desk_sync_service_ = DeskSyncServiceFactory::GetForProfile(profile_);
   StartCaptureAndUploadActiveDesk();
   desk_sync_service_->GetDeskModel()->AddObserver(this);
-  syncer::SyncService* sync_service(
-      SyncServiceFactory::GetForProfile(profile_));
-  if (sync_service)
-    sync_service->TriggerRefresh({syncer::WORKSPACE_DESK});
 }
 
 const sync_sessions::SyncedSession*
