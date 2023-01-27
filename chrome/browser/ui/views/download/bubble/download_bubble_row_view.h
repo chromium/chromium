@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"

@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "extensions/browser/extension_host.h"

@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/policy/core/browser/cloud/user_policy_signin_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -20,6 +19,7 @@
 
 class AccountId;
 class Profile;
+class ProfileManager;
 
 namespace network {
 class SharedURLLoaderFactory;

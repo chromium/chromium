@@ -15,7 +15,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/safe_browsing/buildflags.h"
@@ -29,6 +28,8 @@
 #endif
 
 using offline_items_collection::ContentId;
+
+class Profile;
 
 namespace content {
 class WebContents;

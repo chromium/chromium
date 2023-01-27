@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -32,6 +31,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+class ProfileManager;
 
 namespace apps {
 struct ShareTarget;

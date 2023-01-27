@@ -5,6 +5,7 @@
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

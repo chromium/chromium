@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

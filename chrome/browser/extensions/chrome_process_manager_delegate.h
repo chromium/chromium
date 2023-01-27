@@ -8,7 +8,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -16,6 +15,7 @@
 
 class Browser;
 class Profile;
+class ProfileManager;
 
 namespace extensions {
 

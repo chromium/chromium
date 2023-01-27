@@ -40,6 +40,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"

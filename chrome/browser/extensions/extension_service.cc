@@ -62,6 +62,7 @@
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"

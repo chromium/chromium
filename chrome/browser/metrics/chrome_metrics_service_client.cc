@@ -56,6 +56,7 @@
 #include "chrome/browser/privacy_budget/privacy_budget_metrics_provider.h"
 #include "chrome/browser/privacy_budget/privacy_budget_prefs.h"
 #include "chrome/browser/privacy_budget/privacy_budget_ukm_entry_filter.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"

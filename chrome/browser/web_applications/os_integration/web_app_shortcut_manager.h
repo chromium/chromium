@@ -20,6 +20,10 @@
 
 class Profile;
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}
+
 namespace web_app {
 
 class WebAppFileHandlerManager;

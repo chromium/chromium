@@ -34,6 +34,7 @@
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"

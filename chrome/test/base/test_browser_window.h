@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
