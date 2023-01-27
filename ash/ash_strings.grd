@@ -6179,6 +6179,14 @@ New install
         Turn off
       </message>
 
+      <!-- Lock screen notification -->
+      <message name="IDS_ASH_LOCKSCREEN_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when there are hidden notifications on the lock screen.">
+        Notifications are hidden
+      </message>
+      <message name="IDS_ASH_LOCKSCREEN_NOTIFICATION_DESCRIPTION" desc="Text description used for the notification that show up when there are hidden notifications on the lock screen.">
+        Please unlock to view notifications
+      </message>
+
       <!-- security curtain -->
       <message name="IDS_ASH_CURTAIN_TITLE" desc="Title text displayed to inform the user a remote admin has taken control of the ChromeOs device.">
         Your administrator is controlling your device

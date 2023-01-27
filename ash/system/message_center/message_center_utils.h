@@ -41,6 +41,10 @@ std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView();
 // grouped notifications only need to be counted as one.
 size_t ASH_EXPORT GetNotificationCount();
 
+// Returns true if there are any notifications hidden because we're on the
+// lockscreen. Should be only called if the screen is locked.
+bool AreNotificationsHiddenOnLockscreen();
+
 // Get the notification view controller associated to a certain display.
 message_center::NotificationViewController*
 GetActiveNotificationViewControllerForDisplay(int64_t display_id);

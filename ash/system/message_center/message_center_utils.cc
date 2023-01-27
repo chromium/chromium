@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/system/message_center/session_state_notification_blocker.h"
@@ -66,8 +67,6 @@ std::vector<message_center::Notification*> GetSortedNotificationsWithOwnView() {
 }
 
 size_t GetNotificationCount() {
-  size_t count = 0;
-
   // We need to ignore the `session_state_notification_blocker` when getting the
   // notification count on the lock screen. This is because we want the counter
   // to show the total number of available notifications including notifications
@@ -79,25 +78,51 @@ size_t GetNotificationCount() {
                 ->session_state_notification_blocker()
           : nullptr;
 
-  for (message_center::Notification* notification :
-       message_center::MessageCenter::Get()
-           ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore)) {
-    const std::string& notifier = notification->notifier_id().id;
-    // Don't count these notifications since we have `CameraMicTrayItemView` to
-    // show indicators on the systray.
-    if (notifier == kVmCameraMicNotifierId) {
-      continue;
-    }
+  return base::ranges::count_if(
+      message_center::MessageCenter::Get()
+          ->GetVisibleNotificationsWithoutBlocker(blocker_to_ignore),
+      [](auto* notification) {
+        const std::string& notifier = notification->notifier_id().id;
 
-    // Don't count group child notifications since they're contained in a single
-    // parent view.
-    if (notification->group_child()) {
-      continue;
-    }
+        // Don't count these notifications since we have `CameraMicTrayItemView`
+        // to show indicators on the systray.
+        if (notifier == kVmCameraMicNotifierId) {
+          return false;
+        }
 
-    ++count;
+        // The lockscreen notification is used to signify that there are
+        // notifications hidden. It should not effect the number of
+        // notifications.
+        if (notifier == kLockScreenNotifierId) {
+          return false;
+        }
+        // Don't count group child notifications since they're contained in a
+        // single parent view.
+        if (notification->group_child()) {
+          return false;
+        }
+
+        return true;
+      });
+}
+
+bool AreNotificationsHiddenOnLockscreen() {
+  DCHECK(Shell::Get()->session_controller()->IsScreenLocked());
+
+  // Return true if the `session_state_notification_blocker` is hiding any
+  // notifications.
+  auto* message_center = message_center::MessageCenter::Get();
+  if (message_center->GetVisibleNotifications().size() !=
+      message_center
+          ->GetVisibleNotificationsWithoutBlocker(
+              Shell::Get()
+                  ->message_center_controller()
+                  ->session_state_notification_blocker())
+          .size()) {
+    return true;
   }
-  return count;
+
+  return false;
 }
 
 message_center::NotificationViewController*

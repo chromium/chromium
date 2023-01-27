@@ -9,6 +9,7 @@
 #include "ash/system/cast/cast_notification_controller.h"
 #include "ash/system/do_not_disturb_notification_controller.h"
 #include "ash/system/gesture_education/gesture_education_notification_controller.h"
+#include "ash/system/lock_screen_notification_controller.h"
 #include "ash/system/network/auto_connect_notifier.h"
 #include "ash/system/network/cellular_setup_notifier.h"
 #include "ash/system/network/managed_sim_lock_notifier.h"
@@ -45,6 +46,9 @@ SystemNotificationController::SystemNotificationController()
               : nullptr),
       gesture_education_(
           std::make_unique<GestureEducationNotificationController>()),
+      lock_screen_(features::IsQsRevampEnabled()
+                       ? std::make_unique<LockScreenNotificationController>()
+                       : nullptr),
       power_(std::make_unique<PowerNotificationController>(
           message_center::MessageCenter::Get())),
       power_sounds_(MaybeCreatePowerSoundsController()),
