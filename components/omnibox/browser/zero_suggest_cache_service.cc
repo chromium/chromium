@@ -101,8 +101,20 @@ void ZeroSuggestCacheService::StoreZeroSuggestResponse(
 }
 
 void ZeroSuggestCacheService::ClearCache() {
+  // Clear current contents of in-memory cache.
   ntp_entry_.response_json.clear();
   cache_.Clear();
+
+  // Clear user prefs used for cross-session persistence.
+  if (prefs_) {
+    if (!base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+      return;
+    }
+
+    prefs_->SetString(omnibox::kZeroSuggestCachedResults, "");
+    prefs_->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                    base::Value::Dict());
+  }
 }
 
 bool ZeroSuggestCacheService::IsCacheEmpty() const {
