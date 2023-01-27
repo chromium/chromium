@@ -36,8 +36,9 @@ namespace {
 constexpr GrSurfaceOrigin kSurfaceOrigin = kTopLeft_GrSurfaceOrigin;
 constexpr SkAlphaType kAlphaType = kPremul_SkAlphaType;
 constexpr auto kColorSpace = gfx::ColorSpace::CreateSRGB();
-constexpr uint32_t kUsage =
-    SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_RASTER;
+constexpr uint32_t kUsage = SHARED_IMAGE_USAGE_DISPLAY_READ |
+                            SHARED_IMAGE_USAGE_RASTER |
+                            SHARED_IMAGE_USAGE_CPU_UPLOAD;
 
 // Allocate a bitmap with red pixels. RED_8 will be filled with 0xFF repeating
 // and RG_88 will be filled with OxFF00 repeating.
@@ -48,6 +49,14 @@ SkBitmap MakeRedBitmap(SkColorType color_type, const gfx::Size& size) {
 
   bitmap.eraseColor(SK_ColorRED);
   return bitmap;
+}
+
+std::vector<SkPixmap> GetSkPixmaps(const std::vector<SkBitmap>& bitmaps) {
+  std::vector<SkPixmap> pixmaps;
+  for (auto& bitmap : bitmaps) {
+    pixmaps.push_back(bitmap.pixmap());
+  }
+  return pixmaps;
 }
 
 class WrappedSkImageBackingFactoryTest
@@ -173,11 +182,16 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
       kSurfaceOrigin, kAlphaType, kUsage, /*is_thread_safe=*/false);
   ASSERT_TRUE(backing);
 
-  SkColorType color_type = viz::ToClosestSkColorType(true, format);
+  int num_planes = format.NumberOfPlanes();
+  std::vector<SkBitmap> bitmaps(num_planes);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    SkColorType color_type = ToClosestSkColorType(true, format, plane);
+    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    bitmaps[plane] = MakeRedBitmap(color_type, plane_size);
+  }
 
-  // Upload red pixels and set cleared.
-  SkBitmap bitmap = MakeRedBitmap(color_type, size);
-  ASSERT_TRUE(backing->UploadFromMemory({bitmap.pixmap()}));
+  // Upload pixels and set cleared.
+  ASSERT_TRUE(backing->UploadFromMemory(GetSkPixmaps(bitmaps)));
   backing->SetCleared();
 
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
@@ -193,24 +207,26 @@ TEST_P(WrappedSkImageBackingFactoryTest, Upload) {
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
 
-  // Readback via Skia API and verify pixels.
-  auto* promise_texture =
-      scoped_read_access->promise_image_texture(/*plane_index=*/0);
-  ASSERT_TRUE(promise_texture);
-  auto sk_image = SkImage::MakeFromTexture(
-      context_state_->gr_context(), promise_texture->backendTexture(),
-      kSurfaceOrigin, color_type, kAlphaType, nullptr);
-  ASSERT_TRUE(sk_image);
+  for (int plane = 0; plane < num_planes; ++plane) {
+    auto* promise_texture = scoped_read_access->promise_image_texture(plane);
+    ASSERT_TRUE(promise_texture);
 
-  SkImageInfo dst_info = SkImageInfo::Make(
-      size.width(), size.height(), color_type, kOpaque_SkAlphaType, nullptr);
-  SkBitmap dst_bitmap;
-  dst_bitmap.allocPixels(dst_info);
-  EXPECT_TRUE(sk_image->readPixels(dst_info, dst_bitmap.getPixels(),
-                                   dst_info.minRowBytes(), 0, 0));
+    // Readback via Skia API and verify it's the same pixels that were uploaded.
+    SkColorType color_type = ToClosestSkColorType(true, format, plane);
+    auto sk_image = SkImage::MakeFromTexture(
+        context_state_->gr_context(), promise_texture->backendTexture(),
+        kSurfaceOrigin, color_type, kAlphaType, nullptr);
+    ASSERT_TRUE(sk_image);
 
-  EXPECT_TRUE(
-      cc::MatchesBitmap(dst_bitmap, bitmap, cc::ExactPixelComparator()));
+    SkImageInfo dst_info = bitmaps[plane].info();
+    SkBitmap dst_bitmap;
+    dst_bitmap.allocPixels(dst_info);
+    EXPECT_TRUE(sk_image->readPixels(dst_info, dst_bitmap.getPixels(),
+                                     dst_info.minRowBytes(), 0, 0));
+
+    EXPECT_TRUE(cc::MatchesBitmap(dst_bitmap, bitmaps[plane],
+                                  cc::ExactPixelComparator()));
+  }
 
   scoped_read_access.reset();
   skia_representation.reset();
@@ -224,15 +240,18 @@ std::string TestParamToString(
 // BGRA_1010102 fails to create backing. BGRX_8888 and BGR_565 "work" but Skia
 // just thinks is RGBX_8888 and RGB_565 respectively so upload doesn't work.
 // TODO(kylechar): Add RGBA_F16 where it works.
-const auto kFormats = ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
-                                        viz::SinglePlaneFormat::kRED_8,
-                                        viz::SinglePlaneFormat::kRG_88,
-                                        viz::SinglePlaneFormat::kRGBA_4444,
-                                        viz::SinglePlaneFormat::kRGB_565,
-                                        viz::SinglePlaneFormat::kRGBA_8888,
-                                        viz::SinglePlaneFormat::kBGRA_8888,
-                                        viz::SinglePlaneFormat::kRGBX_8888,
-                                        viz::SinglePlaneFormat::kRGBA_1010102);
+const auto kFormats =
+    ::testing::Values(viz::SinglePlaneFormat::kALPHA_8,
+                      viz::SinglePlaneFormat::kRED_8,
+                      viz::SinglePlaneFormat::kRG_88,
+                      viz::SinglePlaneFormat::kRGBA_4444,
+                      viz::SinglePlaneFormat::kRGB_565,
+                      viz::SinglePlaneFormat::kRGBA_8888,
+                      viz::SinglePlaneFormat::kBGRA_8888,
+                      viz::SinglePlaneFormat::kRGBX_8888,
+                      viz::SinglePlaneFormat::kRGBA_1010102,
+                      viz::MultiPlaneFormat::kYUV_420_BIPLANAR,
+                      viz::MultiPlaneFormat::kYVU_420);
 
 INSTANTIATE_TEST_SUITE_P(,
                          WrappedSkImageBackingFactoryTest,
