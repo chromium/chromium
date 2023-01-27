@@ -119,11 +119,16 @@ network::NetworkQualityTracker* ClientHints::GetNetworkQualityTracker() {
 void ClientHints::GetAllowedClientHintsFromSource(
     const url::Origin& origin,
     blink::EnabledClientHints* client_hints) {
-  ContentSettingsForOneType client_hints_rules;
-  settings_map_->GetSettingsForOneType(ContentSettingsType::CLIENT_HINTS,
-                                       &client_hints_rules);
-  client_hints::GetAllowedClientHintsFromSource(origin, client_hints_rules,
-                                                client_hints);
+  const GURL& url = origin.GetURL();
+  if (!network::IsUrlPotentiallyTrustworthy(url)) {
+    return;
+  }
+
+  client_hints::GetAllowedClientHints(
+      settings_map_->GetWebsiteSetting(
+          url, GURL(), ContentSettingsType::CLIENT_HINTS, nullptr),
+      client_hints);
+
   for (auto hint : additional_hints_)
     client_hints->SetIsEnabled(hint, true);
 }
