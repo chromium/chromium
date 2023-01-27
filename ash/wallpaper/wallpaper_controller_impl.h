@@ -225,6 +225,10 @@ class ASH_EXPORT WallpaperControllerImpl
                            bool show_wallpaper,
                            const base::FilePath& wallpaper_path);
 
+  // Returns false when the color extraction algorithm shouldn't be run based on
+  // system state (e.g. wallpaper image, SessionState, etc.).
+  bool ShouldCalculateColors() const;
+
   // WallpaperController:
   void SetClient(WallpaperControllerClient* client) override;
   void SetDriveFsDelegate(
@@ -633,10 +637,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // state.
   void OnColorCalculationComplete(const WallpaperInfo& info,
                                   const WallpaperCalculatedColors& colors);
-
-  // Returns false when the color extraction algorithm shouldn't be run based on
-  // system state (e.g. wallpaper image, SessionState, etc.).
-  bool ShouldCalculateColors() const;
 
   // The callback when decoding of the always-on-top wallpaper completes.
   void OnAlwaysOnTopWallpaperDecoded(const WallpaperInfo& info,

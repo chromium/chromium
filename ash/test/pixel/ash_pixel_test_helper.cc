@@ -63,6 +63,8 @@ void AshPixelTestHelper::MaybeSetDarkMode() {
 
 void AshPixelTestHelper::SetWallpaper() {
   auto* controller = Shell::Get()->wallpaper_controller();
+  // Reset any wallpaper from other test setup.
+  controller->CreateEmptyWallpaperForTesting();
   controller->set_wallpaper_reload_no_delay_for_test();
 
   switch (params_.wallpaper_init_type) {
@@ -70,13 +72,6 @@ void AshPixelTestHelper::SetWallpaper() {
       gfx::ImageSkia wallpaper_image = CreateSolidColorTestImage(
           {kWallpaperSize, kWallpaperSize}, kWallpaperColor);
       controller->set_allow_blur_or_shield_for_testing();
-
-      DCHECK(!wallpaper_controller_observation_.IsObserving());
-      wallpaper_controller_observation_.Observe(controller);
-
-      base::RunLoop loop;
-      DCHECK(!on_wallpaper_finalized_);
-      on_wallpaper_finalized_ = loop.QuitClosure();
 
       // Use the one shot wallpaper to ensure that the custom wallpaper set by
       // pixel tests does not go away after changing display metrics.
@@ -88,10 +83,18 @@ void AshPixelTestHelper::SetWallpaper() {
                         /*in_date=*/base::Time::Now().LocalMidnight()},
           /*preview_mode=*/false, /*always_on_top=*/false);
 
-      // Wait for `WallpaperControllerObserver::OnWallpaperColorsChanged` so
-      // that colors are finalized before pixel testing views.
-      loop.Run();
-      DCHECK(!wallpaper_controller_observation_.IsObserving());
+      if (controller->ShouldCalculateColors()) {
+        // Wait for `WallpaperControllerObserver::OnWallpaperColorsChanged` so
+        // that colors are finalized before pixel testing views.
+        DCHECK(!wallpaper_controller_observation_.IsObserving());
+        wallpaper_controller_observation_.Observe(controller);
+
+        base::RunLoop loop;
+        DCHECK(!on_wallpaper_finalized_);
+        on_wallpaper_finalized_ = loop.QuitClosure();
+        loop.Run();
+        DCHECK(!wallpaper_controller_observation_.IsObserving());
+      }
       break;
     }
     case pixel_test::WallpaperInitType::kPolicy:
