@@ -222,8 +222,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.DiskCleanupProgress"
     enum="CryptohomeDiskCleanupProgress" expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>dlunev@chromium.org</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     In low disk space scenarios, Cryptohome erases caches while target amount of
     free disk space is not reached. It starts from low priority categories. This
@@ -235,7 +234,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.DiskCleanupResult"
     enum="CryptohomeDiskCleanupResult" expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>dlunev@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
@@ -390,7 +389,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>weifangsun@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     This is an amount of Dmcrypt cache vault space (MB) which was evicted by
     cryptohome due to shortage of remaining disk space. Reported only if
@@ -401,8 +400,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>gwendal@chromium.org</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     Background: In critically low disk space scenarios, cryptohome performs
     cleanup before allowing login to proceed. If enough space is available, this
@@ -417,8 +415,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>gwendal@chromium.org</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     Background: In low disk space scenarios, cryptohome performs cleanup
     periodically. If enough space is available, this operation is skipped and
@@ -432,8 +429,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>dlunev@chromium.org</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     In low disk space scenarios, Cryptohome performs a lot of disk space
     operations to erase data. This is a number of milliseconds taken to perform
@@ -444,9 +440,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
     expires_after="2023-12-01">
-  <owner>dlunev@chromium.org</owner>
   <owner>vsavu@google.com</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     This is an amount of Google Drive cache (MB) which was evicted by cryptohome
     due to shortage of remaining disk space. Reported only if something was
@@ -560,7 +555,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
     enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     When disk space is very low during login, cryptohome will remove other users
     to ensure that the current user can successfully log in. This metric tracks
@@ -575,7 +570,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.LoginDiskCleanupResult"
     enum="CryptohomeDiskCleanupResult" expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     Records the result of triggering disk cleanup during login. Reports failure
     when any error is encountered and skipped if enough disk space is already
@@ -586,7 +581,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     When disk space is very low during login, cryptohome will remove other users
     to ensure that the current user can successfully log in. This metric records
@@ -725,8 +720,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
     expires_after="2023-12-01">
   <owner>vsavu@google.com</owner>
-  <owner>dlunev@chromium.org</owner>
-  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
     The amount of time (s) between disk cleanup runs. If there is sufficient
     disk space, nothing is reported. The first cleanup run after boot is not
