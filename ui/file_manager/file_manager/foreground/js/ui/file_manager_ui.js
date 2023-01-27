@@ -99,7 +99,7 @@ export class FileManagerUI {
      * @const
      */
     this.deleteConfirmDialog = new FilesConfirmDialog(this.element);
-    this.deleteConfirmDialog.setOkLabel(str('PERMANENTLY_DELETE_FOREVER'));
+    this.deleteConfirmDialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
     this.deleteConfirmDialog.focusCancelButton = true;
 
     /**
