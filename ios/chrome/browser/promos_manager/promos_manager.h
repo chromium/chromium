@@ -9,8 +9,10 @@
 
 #import <map>
 
+#import "base/containers/flat_set.h"
 #import "base/containers/small_map.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class ImpressionLimit;
@@ -18,6 +20,24 @@
 namespace promos_manager {
 enum class Promo;
 }  // namespace promos_manager
+
+struct PromoConfigComparator {
+  using is_transparent = std::true_type;
+  constexpr bool operator()(const PromoConfig& lhs,
+                            const PromoConfig& rhs) const {
+    return lhs.identifier < rhs.identifier;
+  }
+  constexpr bool operator()(const promos_manager::Promo& lhs,
+                            const PromoConfig& rhs) const {
+    return lhs < rhs.identifier;
+  }
+  constexpr bool operator()(const PromoConfig& lhs,
+                            const promos_manager::Promo& rhs) const {
+    return lhs.identifier < rhs;
+  }
+};
+
+using PromoConfigsSet = base::flat_set<PromoConfig, PromoConfigComparator>;
 
 // Centralized promos manager for coordinating and scheduling the display of
 // app-wide promos. Feature teams interested in displaying promos should
@@ -61,10 +81,7 @@ class PromosManager {
 
   // Ingests promo-specific impression limits and stores them in-memory for
   // later reference.
-  virtual void InitializePromoImpressionLimits(
-      base::small_map<
-          std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-          promo_impression_limits) = 0;
+  virtual void InitializePromoConfigs(PromoConfigsSet promo_configs) = 0;
 
   // Records the impression of `promo` in the impression history.
   //

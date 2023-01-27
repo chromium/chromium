@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,17 +20,12 @@
 
 @implementation PromosManagerMediator
 
-- (instancetype)
-    initWithPromosManager:(PromosManager*)promosManager
-    promoImpressionLimits:
-        (base::small_map<
-            std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)
-            promoImpressionLimits {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager
+                promoImpressionLimits:(PromoConfigsSet)promoImpressionLimits {
   if (self = [super init]) {
     _promosManager = promosManager;
     if (promoImpressionLimits.size())
-      _promosManager->InitializePromoImpressionLimits(
-          std::move(promoImpressionLimits));
+      _promosManager->InitializePromoConfigs(std::move(promoImpressionLimits));
   }
 
   return self;

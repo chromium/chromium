@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,8 +31,8 @@
 
 #pragma mark - PromoProtocol
 
-- (promos_manager::Promo)identifier {
-  return promos_manager::Promo::WhatsNew;
+- (PromoConfig)config {
+  return PromoConfig(promos_manager::Promo::WhatsNew);
 }
 
 - (void)promoWasDisplayed {

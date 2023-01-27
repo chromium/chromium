@@ -11,6 +11,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
@@ -55,6 +56,14 @@
 
 #pragma mark - PromoProtocol
 
+- (PromoConfig)config {
+  return PromoConfig([self identifier]);
+}
+
+- (void)promoWasDisplayed {
+  base::UmaHistogramBoolean(kIOSPostRestoreSigninDisplayedHistogram, true);
+}
+
 // Conditionally returns the promo identifier (promos_manager::Promo) based on
 // which variation of the Post Restore Sign-in Promo is currently active.
 - (promos_manager::Promo)identifier {
@@ -82,10 +91,6 @@
 
   // Returns the fullscreen, FRE-like promo as the default.
   return promos_manager::Promo::PostRestoreSignInFullscreen;
-}
-
-- (void)promoWasDisplayed {
-  base::UmaHistogramBoolean(kIOSPostRestoreSigninDisplayedHistogram, true);
 }
 
 #pragma mark - StandardPromoAlertHandler

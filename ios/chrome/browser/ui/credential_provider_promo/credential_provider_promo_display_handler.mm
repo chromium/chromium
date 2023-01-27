@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_display_handler.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/ui/commands/credential_provider_promo_commands.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,13 +34,10 @@
 
 #pragma mark - PromoProtocol
 
-- (promos_manager::Promo)identifier {
-  return promos_manager::Promo::CredentialProviderExtension;
-}
-
-- (NSArray<ImpressionLimit*>*)impressionLimits {
-  return [NSArray arrayWithObject:[[ImpressionLimit alloc] initWithLimit:3
-                                                              forNumDays:365]];
+- (PromoConfig)config {
+  return PromoConfig(promos_manager::Promo::CredentialProviderExtension,
+                     nullptr, @[ [[ImpressionLimit alloc] initWithLimit:3
+                                                             forNumDays:365] ]);
 }
 
 @end

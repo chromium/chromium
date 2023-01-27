@@ -53,6 +53,7 @@ source_set("promos_manager") {
     ":promos",
     "//base",
     "//ios/chrome/browser/promos_manager",
+    "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//third_party/abseil-cpp:absl",
   ]

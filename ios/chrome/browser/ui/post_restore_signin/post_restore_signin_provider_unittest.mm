@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
@@ -78,13 +79,13 @@ class PostRestoreSignInProviderTest : public PlatformTest {
 
 TEST_F(PostRestoreSignInProviderTest, hasIdentifierFullscreen) {
   EnableFeatureVariationFullscreen();
-  EXPECT_EQ(provider_.identifier,
+  EXPECT_EQ(provider_.config.identifier,
             promos_manager::Promo::PostRestoreSignInFullscreen);
 }
 
 TEST_F(PostRestoreSignInProviderTest, hasIdentifierAlert) {
   EnableFeatureVariationAlert();
-  EXPECT_EQ(provider_.identifier,
+  EXPECT_EQ(provider_.config.identifier,
             promos_manager::Promo::PostRestoreSignInAlert);
 }
 

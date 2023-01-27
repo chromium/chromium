@@ -49,10 +49,15 @@ source_set("types") {
     "impression_limit.mm",
     "promo.h",
     "promo.mm",
+    "promo_config.h",
+    "promo_config.mm",
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
-  deps = [ ":constants" ]
+  deps = [
+    ":constants",
+    "//base",
+  ]
 }
 
 source_set("constants") {

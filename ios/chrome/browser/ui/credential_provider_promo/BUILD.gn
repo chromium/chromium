@@ -19,6 +19,7 @@ source_set("credential_provider_promo") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/credential_provider_promo:features",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/promos_manager:types",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/promos_manager:promos",

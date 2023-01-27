@@ -186,10 +186,8 @@ void PromosManagerImpl::DeregisterPromo(promos_manager::Promo promo) {
   single_display_pending_promos_.erase(promo);
 }
 
-void PromosManagerImpl::InitializePromoImpressionLimits(
-    base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-        promo_impression_limits) {
-  promo_impression_limits_ = std::move(promo_impression_limits);
+void PromosManagerImpl::InitializePromoConfigs(PromoConfigsSet promo_configs) {
+  promo_configs_ = std::move(promo_configs);
 }
 
 // Determines which promo to display next.
@@ -318,12 +316,13 @@ void PromosManagerImpl::InitializePendingPromos() {
 
 NSArray<ImpressionLimit*>* PromosManagerImpl::PromoImpressionLimits(
     promos_manager::Promo promo) const {
-  auto it = promo_impression_limits_.find(promo);
+  auto it = promo_configs_.find(promo);
 
-  if (it == promo_impression_limits_.end())
+  if (it == promo_configs_.end()) {
     return @[];
+  }
 
-  return it->second;
+  return it->impression_limits;
 }
 
 NSArray<ImpressionLimit*>* PromosManagerImpl::GlobalImpressionLimits() const {

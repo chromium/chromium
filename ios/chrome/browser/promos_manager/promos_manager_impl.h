@@ -18,6 +18,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 // Centralized promos manager for coordinating and scheduling the display of
@@ -115,10 +116,7 @@ class PromosManagerImpl : public PromosManager {
 
   // PromosManager implementation.
   void Init() override;
-  void InitializePromoImpressionLimits(
-      base::small_map<
-          std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-          promo_impression_limits) override;
+  void InitializePromoConfigs(PromoConfigsSet promo_configs) override;
   void RecordImpression(promos_manager::Promo promo) override;
   absl::optional<promos_manager::Promo> NextPromoForDisplay() override;
   void RegisterPromoForContinuousDisplay(promos_manager::Promo promo) override;
@@ -147,10 +145,8 @@ class PromosManagerImpl : public PromosManager {
   // The impression history sorted by `day` (most recent -> least recent).
   std::vector<promos_manager::Impression> impression_history_;
 
-  // Promo-specific impression limits (promos_manager::Promo : [Impression
-  // Limits]).
-  base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-      promo_impression_limits_;
+  // Promo-specific configuration.
+  PromoConfigsSet promo_configs_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROMOS_MANAGER_PROMOS_MANAGER_IMPL_H_

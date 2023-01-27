@@ -22,9 +22,6 @@
 // PromosManagerCommands handler.
 @property(nonatomic, weak) id<PromosManagerCommands> handler;
 
-// The promo-specific impression limits.
-- (NSArray<ImpressionLimit*>*)impressionLimits;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_APP_STORE_RATING_APP_STORE_RATING_DISPLAY_HANDLER_H_

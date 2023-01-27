@@ -16,6 +16,7 @@
 #import "base/time/time.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,10 +29,8 @@ class MockPromosManager : public PromosManager {
   // PromosManager implementation.
   MOCK_METHOD(void, Init, (), (override));
   MOCK_METHOD(void,
-              InitializePromoImpressionLimits,
-              ((base::small_map<
-                  std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-                    promo_impression_limits)),
+              InitializePromoConfigs,
+              ((PromoConfigsSet promo_impression_limits)),
               (override));
   MOCK_METHOD(void,
               RecordImpression,

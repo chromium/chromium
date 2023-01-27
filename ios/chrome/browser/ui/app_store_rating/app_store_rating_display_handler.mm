@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,13 +30,10 @@
 
 #pragma mark - PromoProtocol
 
-- (promos_manager::Promo)identifier {
-  return promos_manager::Promo::AppStoreRating;
-}
-
-- (NSArray<ImpressionLimit*>*)impressionLimits {
-  return [NSArray arrayWithObject:[[ImpressionLimit alloc] initWithLimit:1
-                                                              forNumDays:365]];
+- (PromoConfig)config {
+  return PromoConfig(promos_manager::Promo::AppStoreRating, nullptr,
+                     @[ [[ImpressionLimit alloc] initWithLimit:1
+                                                    forNumDays:365] ]);
 }
 
 @end

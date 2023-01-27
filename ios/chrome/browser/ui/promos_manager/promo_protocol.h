@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 
+struct PromoConfig;
+
 // PromoProtocol defines the minimum set of data required to create a
 // Promo maintained by the PromosManager. A promo object must have a
 // unique mapping to a promo enum (promos_manager::Promo), and
@@ -21,12 +23,9 @@
 @required
 
 // Which promos_manager::Promo the object is uniquely associated with.
-- (promos_manager::Promo)identifier;
+- (PromoConfig)config;
 
 @optional
-
-// The promo-specific impression limits.
-- (NSArray<ImpressionLimit*>*)impressionLimits;
 
 // If implemented, a PromosManagerCommands handler will be provided to the
 // class.

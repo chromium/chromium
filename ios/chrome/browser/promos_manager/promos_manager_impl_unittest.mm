@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promo.h"
+#import "ios/chrome/browser/promos_manager/promo_config.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 #import "testing/platform_test.h"
@@ -1222,14 +1223,13 @@ TEST_F(PromosManagerImplTest, RegistersPromoSpecificImpressionLimits) {
     thricePerWeek,
   ];
 
-  base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>
-      promoImpressionLimits;
-  promoImpressionLimits[promos_manager::Promo::DefaultBrowser] =
-      defaultBrowserLimits;
-  promoImpressionLimits[promos_manager::Promo::CredentialProviderExtension] =
-      credentialProviderLimits;
-  promos_manager_->InitializePromoImpressionLimits(
-      std::move(promoImpressionLimits));
+  PromoConfigsSet promoImpressionLimits;
+  promoImpressionLimits.emplace(promos_manager::Promo::DefaultBrowser, nullptr,
+                                defaultBrowserLimits);
+  promoImpressionLimits.emplace(
+      promos_manager::Promo::CredentialProviderExtension, nullptr,
+      credentialProviderLimits);
+  promos_manager_->InitializePromoConfigs(std::move(promoImpressionLimits));
 
   EXPECT_EQ(promos_manager_->PromoImpressionLimits(
                 promos_manager::Promo::DefaultBrowser),
