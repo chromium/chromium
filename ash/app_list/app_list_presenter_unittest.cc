@@ -3017,9 +3017,11 @@ TEST_F(AppListPresenterTest, ShelfAutoHiddenWhenFullscreen) {
 }
 
 // Tests that a keypress activates the searchbox and that clearing the
-// searchbox, the searchbox remains active.
-// TODO(crbug.com/1360501): Fix to work with the new launcher or remove.
-TEST_F(AppListPresenterTest, DISABLED_KeyPressEnablesSearchBox) {
+// searchbox, the searchbox remains active. Does not apply to bubble launcher,
+// where the search box is always active.
+TEST_F(AppListPresenterTest, KeyPressEnablesSearchBox) {
+  EnableTabletMode(true);
+
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   SearchBoxView* search_box_view = GetAppListView()->search_box_view();
   EXPECT_FALSE(search_box_view->is_search_box_active());
