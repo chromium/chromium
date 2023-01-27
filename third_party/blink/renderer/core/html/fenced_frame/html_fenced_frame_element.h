@@ -58,7 +58,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
 
     virtual void AttachLayoutTree() {}
     virtual bool SupportsFocus() { return false; }
-    virtual void FreezeFrameSize() {}
+    virtual void MarkFrozenFrameSizeStale() {}
     virtual void DidChangeFramePolicy(const FramePolicy& frame_policy) {}
 
    protected:
@@ -120,7 +120,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.
-  void Navigate(const KURL& url);
+  void Navigate(const KURL& url,
+                absl::optional<bool> deprecated_should_freeze_initial_size =
+                    absl::nullopt,
+                absl::optional<gfx::Size> content_size = absl::nullopt);
 
   // This method delegates to `Navigate()` above only if `this` has a non-null
   // `config_`. If that's the case, this method pulls the appropriate URL off of
@@ -150,8 +153,18 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void AttachLayoutTree(AttachContext& context) override;
   bool SupportsFocus() const override;
 
-  void FreezeFrameSize();
-  void FreezeFrameSize(const PhysicalSize&);
+  // Make sure that the fenced frame size is not frozen. (If it is already
+  // unfrozen, this is a no-op.)
+  void UnfreezeFrameSize();
+
+  // Freeze the fenced frame to its (best-effort) "current" size, coerced to the
+  // nearest size in the allow-list. This behavior is deprecated and will be
+  // removed in the future.
+  void FreezeCurrentFrameSize();
+
+  // Freeze the fenced frame to the specified size, optionally coercing the size
+  // to the nearest size in the allow-list (used by `FreezeCurrentFrameSize`).
+  void FreezeFrameSize(const PhysicalSize&, bool should_coerce_size = false);
 
   // Given a size `requested_size`, return the nearest allowed fenced frame
   // size. Note that size restrictions only apply to top-level opaque-ads
@@ -164,7 +177,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   void StartResizeObserver();
   void StopResizeObserver();
   void OnResize(const PhysicalRect& content_box);
-  void UpdateInnerStyleOnFrozenInternalFrame();
 
   class ResizeObserverDelegate final : public ResizeObserver::Delegate {
    public:

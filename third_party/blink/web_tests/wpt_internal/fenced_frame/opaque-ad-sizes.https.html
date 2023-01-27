@@ -12,7 +12,8 @@
 async function runTest(input_width, input_height, output_width, output_height) {
   // Attach a fenced frame whose outer container has dimensions
   // `input_width` by `input_height`.
-  const frame = attachFencedFrameContext({attributes: [["mode", "opaque-ads"],
+  const frame = await attachFencedFrameContext({
+      generator_api: "fledge", attributes: [["mode", "opaque-ads"],
       ["width", input_width], ["height", input_height]]});
 
   const assert_dimensions =

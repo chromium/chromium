@@ -98,9 +98,15 @@ Some tips to keep in mind while writing tests using remote execution:
 * The functions `attachFencedFrameContext()` and `attachIFrameContext()`
   optionally take a dictionary of configs as an argument. You can use it to
   pass:
+  * The API you want to use to generate the fenced frame urn. Either `'fledge'`,
+    `'sharedstorage'`, or default (case-insensitive). When you use this option,
+    the return value becomes a promise so you **must** await it.For example:
+    ```
+    await attachFencedFrameContext({generator_api: 'fledge'});
+    ```
   * HTML source code to inject into the frame's DOM tree. For example:
     ```
-    attachFencedFrameContext({html: '<button id="Button">Click me!</button>'};
+    attachFencedFrameContext({html: '<button id="Button">Click me!</button>'});
     ```
   * Response headers. For example:
     ```
@@ -116,6 +122,9 @@ Some tips to keep in mind while writing tests using remote execution:
     ```
 * There is also a helper `attachIFrameContext()`, which does the same thing
   but for iframes instead of fencedframes.
+* There is also a helper `replaceFrameContext(frame, {options})` which will
+  replace an existing frame context using the same underlying element (i.e., you
+  can use it to test when happens when you navigate an existing frame).
 * Make sure to `await` the result of an `execute` call, even if it doesn't
   return anything.
 * In order to save a global variable, you need to explicitly assign to

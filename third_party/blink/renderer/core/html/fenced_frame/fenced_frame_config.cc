@@ -38,6 +38,27 @@ FencedFrameConfig::FencedFrameConfig(
   CHECK(blink::IsValidUrnUuidURL(*urn));
   KURL urn_uuid = KURL(*urn);
   urn_uuid_.emplace(std::move(urn_uuid));
+
+  // `content_size` and `deprecated_should_freeze_initial_size` temporarily need
+  // to be treated differently than other fields, because for implementation
+  // convenience the fenced frame size is frozen by the embedder. In the long
+  // term, it should be frozen by the browser (i.e. neither the embedder's
+  // renderer nor the fenced frame's renderer), so that it is secure to
+  // compromised renderers.
+  const absl::optional<FencedFrame::RedactedFencedFrameProperty<gfx::Size>>&
+      content_size = config.content_size();
+  if (content_size.has_value() &&
+      content_size->potentially_opaque_value.has_value()) {
+    content_size_.emplace(*content_size->potentially_opaque_value);
+  }
+
+  const absl::optional<FencedFrame::RedactedFencedFrameProperty<bool>>&
+      deprecated_should_freeze_initial_size =
+          config.deprecated_should_freeze_initial_size();
+  if (deprecated_should_freeze_initial_size.has_value()) {
+    deprecated_should_freeze_initial_size_ =
+        *deprecated_should_freeze_initial_size->potentially_opaque_value;
+  }
 }
 
 V8UnionOpaquePropertyOrUSVString* FencedFrameConfig::url() const {

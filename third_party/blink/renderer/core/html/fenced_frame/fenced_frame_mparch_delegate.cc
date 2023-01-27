@@ -57,19 +57,16 @@ bool FencedFrameMPArchDelegate::SupportsFocus() {
   return true;
 }
 
-void FencedFrameMPArchDelegate::FreezeFrameSize() {
-  // With MPArch, mark the layout as stale. Do this unconditionally because
-  // we are rounding the size.
+void FencedFrameMPArchDelegate::MarkFrozenFrameSizeStale() {
+  RemoteFrameView* view =
+      DynamicTo<RemoteFrameView>(GetElement().OwnedEmbeddedContentView());
+  if (view) {
+    view->ResetFrozenSize();
+  }
   if (auto* layout_object = GetElement().GetLayoutObject()) {
     layout_object->SetNeedsLayoutAndFullPaintInvalidation(
         "Froze MPArch fenced frame");
   }
-
-  // Stop the `ResizeObserver`. It is needed only to compute the
-  // frozen size in MPArch. ShadowDOM stays subscribed in order to
-  // update the CSS on the inner iframe element as the outer container's
-  // size changes.
-  GetElement().StopResizeObserver();
 }
 
 void FencedFrameMPArchDelegate::DidChangeFramePolicy(
