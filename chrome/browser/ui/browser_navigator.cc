@@ -279,23 +279,22 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
         Browser::CreateParams browser_params(Browser::TYPE_PICTURE_IN_PICTURE,
                                              profile, params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
-        if (params.contents_to_insert) {
-          auto pip_options =
-              params.contents_to_insert->GetPictureInPictureOptions();
-          if (!pip_options.has_value()) {
-            return {nullptr, -1};
-          }
-          browser_params.initial_bounds = PictureInPictureWindowManager::
-              CalculateInitialPictureInPictureWindowBounds(
-                  *pip_options,
-                  display::Screen::GetScreen()->GetDisplayForNewWindows());
-          browser_params.initial_aspect_ratio =
-              pip_options->initial_aspect_ratio > 0.0
-                  ? pip_options->initial_aspect_ratio
-                  : 1.0;
-          browser_params.lock_aspect_ratio = pip_options->lock_aspect_ratio;
-          browser_params.omit_from_session_restore = true;
+        DCHECK(params.contents_to_insert);
+        auto pip_options =
+            params.contents_to_insert->GetPictureInPictureOptions();
+        if (!pip_options.has_value()) {
+          return {nullptr, -1};
         }
+        browser_params.initial_bounds = PictureInPictureWindowManager::
+            CalculateInitialPictureInPictureWindowBounds(
+                *pip_options,
+                display::Screen::GetScreen()->GetDisplayForNewWindows());
+        browser_params.initial_aspect_ratio =
+            pip_options->initial_aspect_ratio > 0.0
+                ? pip_options->initial_aspect_ratio
+                : 1.0;
+        browser_params.lock_aspect_ratio = pip_options->lock_aspect_ratio;
+        browser_params.omit_from_session_restore = true;
 
         return {Browser::Create(browser_params), -1};
       }
