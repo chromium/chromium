@@ -20,9 +20,8 @@ class AccountSelectionBubbleViewInterface {
   virtual ~AccountSelectionBubbleViewInterface() = default;
 
   // Updates the FedCM bubble to show the "account picker" sheet.
-  virtual void ShowAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list,
-      bool show_back_button) = 0;
+  virtual void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) = 0;
 
   // Updates the FedCM bubble to show the "verifying" sheet.
   virtual void ShowVerifyingSheet(
@@ -35,7 +34,8 @@ class AccountSelectionBubbleViewInterface {
   virtual void ShowSingleAccountConfirmDialog(
       const std::u16string& rp_for_display,
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_data) = 0;
+      const IdentityProviderDisplayData& idp_data,
+      bool show_back_button) = 0;
 
   // Updates the FedCM bubble to show the "failure" sheet.
   virtual void ShowFailureDialog(const std::u16string& rp_for_display,

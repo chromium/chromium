@@ -42,10 +42,9 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
   TestBubbleView(const TestBubbleView&) = delete;
   TestBubbleView& operator=(const TestBubbleView&) = delete;
 
-  void ShowAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_data_list,
-      bool show_back_button) override {
-    show_back_button_ = show_back_button;
+  void ShowMultiAccountPicker(
+      const std::vector<IdentityProviderDisplayData>& idp_data_list) override {
+    show_back_button_ = false;
     sheet_type_ = SheetType::kAccountPicker;
 
     account_ids_.clear();
@@ -64,8 +63,9 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
   void ShowSingleAccountConfirmDialog(
       const std::u16string& rp_for_display,
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_data) override {
-    show_back_button_ = true;
+      const IdentityProviderDisplayData& idp_data,
+      bool show_back_button) override {
+    show_back_button_ = show_back_button;
     sheet_type_ = SheetType::kConfirmAccount;
     account_ids_ = {account.id};
   }
@@ -216,12 +216,11 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlow) {
       static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
 
   EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
             bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 }
@@ -243,8 +242,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowReturning) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
 }
@@ -268,8 +266,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   EXPECT_TRUE(bubble_view_->show_back_button_);
   EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
             bubble_view_->sheet_type_);
@@ -282,15 +279,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   EXPECT_THAT(bubble_view_->account_ids_,
               testing::ElementsAre(kAccountId1, kAccountId2));
 
-  observer->OnAccountSelected(accounts[1], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
   EXPECT_TRUE(bubble_view_->show_back_button_);
   EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
             bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
 
-  observer->OnAccountSelected(accounts[1], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
 }
@@ -377,8 +372,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountSelectedDeletesView) {
   }
 
   // Destroys FedCmAccountSelectionView. Should not cause crash.
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
@@ -401,16 +395,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtection) {
   controller->SetInputEventActivationProtectorForTesting(
       std::move(input_protector));
 
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   // Nothing should change after first account selected.
   EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kAccountPicker,
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
             bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 
-  observer->OnAccountSelected(accounts[0], idp_data, /*auto_signin=*/false,
-                              CreateMouseEvent());
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
   // Should show verifying sheet after first account selected.
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));

@@ -39,17 +39,14 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
    public:
     enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
-    // Called when:
-    // 1. A user either selects the account from the multi-account chooser or
-    // clicks the "continue" button. (auto_signin == false)
-    // 2. Auto sign-in is triggered. (auto_signin == true)
+    // Called when a user either selects the account from the multi-account
+    // chooser or clicks the "continue" button.
     // Takes `account` as well as `idp_display_data` since passing `account_id`
     // is insufficient in the multiple IDP case. The caller should pass a cref,
     // as these objects are owned by the observer.
     virtual void OnAccountSelected(
         const content::IdentityRequestAccount& account,
         const IdentityProviderDisplayData& idp_display_data,
-        bool auto_signin,
         const ui::Event& event) = 0;
 
     // Called when the user clicks "privacy policy" or "terms of service" link.
@@ -75,9 +72,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   ~AccountSelectionBubbleView() override;
 
   // AccountSelectionBubbleViewInterface:
-  void ShowAccountPicker(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-      bool show_back_button) override;
+  void ShowMultiAccountPicker(const std::vector<IdentityProviderDisplayData>&
+                                  idp_display_data_list) override;
   void ShowVerifyingSheet(const content::IdentityRequestAccount& account,
                           const IdentityProviderDisplayData& idp_display_data,
                           const std::u16string& title) override;
@@ -85,7 +81,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   void ShowSingleAccountConfirmDialog(
       const std::u16string& rp_for_display,
       const content::IdentityRequestAccount& account,
-      const IdentityProviderDisplayData& idp_display_data) override;
+      const IdentityProviderDisplayData& idp_display_data,
+      bool show_back_button) override;
 
   void ShowFailureDialog(const std::u16string& rp_for_display,
                          const std::u16string& idp_for_display) override;
@@ -101,11 +98,6 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // `has_idp_icon` is true.
   std::unique_ptr<views::View> CreateHeaderView(const std::u16string& title,
                                                 bool has_idp_icon);
-
-  // Returns a View containing the account chooser, i.e. everything that goes
-  // below the horizontal separator on the initial FedCM bubble.
-  std::unique_ptr<views::View> CreateAccountChooser(
-      const std::vector<IdentityProviderDisplayData>& idp_display_data_list);
 
   // Returns a View for single account chooser. It contains the account
   // information, disclosure text and a button for the user to confirm the
@@ -163,8 +155,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // chooser.
   base::flat_map<GURL, gfx::ImageSkia> idp_images_;
 
-  // Whether the dialog has been populated via either ShowAccountPicker() or
-  // ShowVerifyingSheet().
+  // Whether the dialog has been populated via either ShowMultiAccountPicker()
+  // or ShowVerifyingSheet().
   bool has_sheet_{false};
 
   // View containing the logo of the identity provider and the title.

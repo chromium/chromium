@@ -92,7 +92,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionBubbleView::Observer:
   void OnAccountSelected(const Account& account,
                          const IdentityProviderDisplayData& idp_display_data,
-                         bool auto_signin,
                          const ui::Event& event) override;
   void OnLinkClicked(LinkType link_type,
                      const GURL& url,
@@ -100,8 +99,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
 
-  // Called when the user selected an account AND granted consent.
-  void OnAccountSelected(const content::IdentityRequestAccount& account);
+  void ShowVerifyingSheet(const Account& account,
+                          const IdentityProviderDisplayData& idp_display_data,
+                          bool auto_signin);
 
   // Closes the widget and notifies the delegate.
   void Close();

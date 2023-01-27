@@ -129,24 +129,22 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
     views::BubbleDialogDelegateView::CreateBubble(dialog_)->Show();
   }
 
-  void CreateBubbleWithAccountPicker(
-      bool show_back_button,
-      const std::vector<content::IdentityRequestAccount>& accounts,
-      const std::string& terms_of_service_url) {
+  void CreateSingleAccountPicker(bool show_back_button,
+                                 const content::IdentityRequestAccount& account,
+                                 const std::string& terms_of_service_url) {
     CreateAccountSelectionBubble();
-    std::vector<IdentityProviderDisplayData> idp_data;
-    idp_data.emplace_back(kIdpETLDPlusOne, content::IdentityProviderMetadata(),
-                          CreateTestClientMetadata(terms_of_service_url),
-                          accounts);
-    dialog_->ShowAccountPicker(idp_data,
-                               /*show_back_button=*/show_back_button);
+    IdentityProviderDisplayData idp_data(
+        kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+        CreateTestClientMetadata(terms_of_service_url), {account});
+    dialog_->ShowSingleAccountConfirmDialog(
+        kRpETLDPlusOne, account, idp_data,
+        /*show_back_button=*/show_back_button);
   }
 
   void CreateMultiIdpAccountPicker(
       const std::vector<IdentityProviderDisplayData>& idp_data_list) {
     CreateAccountSelectionBubble(/*exclude_title=*/true);
-    dialog_->ShowAccountPicker(idp_data_list,
-                               /*show_back_button=*/false);
+    dialog_->ShowMultiAccountPicker(idp_data_list);
   }
 
   void CheckAccountRow(views::View* row, const std::string& account_suffix) {
@@ -230,12 +228,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
   void TestSingleAccount(const std::u16string expected_title,
                          bool expect_idp_brand_icon_in_header) {
     const std::string kAccountSuffix = "suffix";
-    std::vector<content::IdentityRequestAccount> accounts =
-        CreateTestIdentityRequestAccounts(
-            {kAccountSuffix},
-            content::IdentityRequestAccount::LoginState::kSignUp);
-    CreateBubbleWithAccountPicker(
-        /*show_back_button=*/false, accounts, kTermsOfServiceUrl);
+    content::IdentityRequestAccount account(CreateTestIdentityRequestAccount(
+        kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp));
+    CreateSingleAccountPicker(
+        /*show_back_button=*/false, account, kTermsOfServiceUrl);
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
@@ -268,12 +264,20 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase {
                             bool expect_idp_brand_icon_in_header,
                             bool expect_idp_row) {
     const std::vector<std::string> kAccountSuffixes = {"0", "1", "2"};
-    std::vector<content::IdentityRequestAccount> account_list =
-        CreateTestIdentityRequestAccounts(
-            kAccountSuffixes,
-            content::IdentityRequestAccount::LoginState::kSignUp);
-    CreateBubbleWithAccountPicker(
-        /*show_back_button=*/false, account_list, /*terms_of_service_url=*/"");
+
+    {
+      std::vector<content::IdentityRequestAccount> account_list =
+          CreateTestIdentityRequestAccounts(
+              kAccountSuffixes,
+              content::IdentityRequestAccount::LoginState::kSignUp);
+
+      CreateAccountSelectionBubble();
+      std::vector<IdentityProviderDisplayData> idp_data;
+      idp_data.emplace_back(
+          kIdpETLDPlusOne, content::IdentityProviderMetadata(),
+          CreateTestClientMetadata(/*terms_of_service_url=*/""), account_list);
+      dialog_->ShowMultiAccountPicker(idp_data);
+    }
 
     std::vector<views::View*> children = dialog()->children();
     ASSERT_EQ(children.size(), 3u);
@@ -391,12 +395,10 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   const std::string kAccountSuffix = "suffix";
-  std::vector<content::IdentityRequestAccount> accounts =
-      CreateTestIdentityRequestAccounts(
-          {kAccountSuffix},
-          content::IdentityRequestAccount::LoginState::kSignUp);
-  CreateBubbleWithAccountPicker(
-      /*show_back_button=*/false, accounts, /*terms_of_service_url=*/"");
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignUp);
+  CreateSingleAccountPicker(
+      /*show_back_button=*/false, account, /*terms_of_service_url=*/"");
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
@@ -431,12 +433,10 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleAccounts) {
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   const std::string kAccountSuffix = "suffix";
-  std::vector<content::IdentityRequestAccount> accounts =
-      CreateTestIdentityRequestAccounts(
-          {kAccountSuffix},
-          content::IdentityRequestAccount::LoginState::kSignIn);
-  CreateBubbleWithAccountPicker(
-      /*show_back_button=*/false, accounts, /*terms_of_service_url=*/"");
+  content::IdentityRequestAccount account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, content::IdentityRequestAccount::LoginState::kSignIn);
+  CreateSingleAccountPicker(
+      /*show_back_button=*/false, account, /*terms_of_service_url=*/"");
 
   std::vector<views::View*> children = dialog()->children();
   ASSERT_EQ(children.size(), 3u);
