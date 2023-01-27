@@ -1263,7 +1263,7 @@
   {
     "name": "cups-ipp-printing-backend",
     "owners": [ "awscreen", "//printing/OWNERS" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "customize-chrome-color-extraction",
@@ -2818,7 +2818,7 @@
   {
     "name": "enable-oop-print-drivers",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "enable-open-in-download",
@@ -5961,7 +5961,7 @@
   {
     "name": "read-printer-capabilities-with-xps",
     "owners": [ "awscreen", "//printing/OWNERS" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "reader-mode-heuristics",
@@ -7036,12 +7036,12 @@
   {
     "name": "use-xps-for-printing",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "use-xps-for-printing-from-pdf",
     "owners": [ "awscreen", "thestig" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 120
   },
   {
     "name": "username-first-flow-fallback-crowdsourcing",
