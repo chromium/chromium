@@ -1,13 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Extracts native methods from a Java file and generates the JNI bindings.
 If you change this, please run and update the tests."""
-
-from __future__ import print_function
-
 import argparse
 import base64
 import collections
@@ -62,7 +59,7 @@ _EXTRACT_METHODS_REGEX = re.compile(
     flags=re.DOTALL)
 
 _NATIVE_PROXY_EXTRACTION_REGEX = re.compile(
-    r'@NativeMethods[\S\s]+?interface\s*'
+    r'@NativeMethods(?:\(\s*"(?P<module_name>\w+)"\s*\))?[\S\s]+?interface\s*'
     r'(?P<interface_name>\w*)\s*(?P<interface_body>{(\s*.*)+?\s*})')
 
 # Use 100 columns rather than 80 because it makes many lines more readable.
@@ -842,9 +839,12 @@ class JNIFromJavaP(object):
         self.constant_fields.append(
             ConstantField(name=match.group('name'), value=value.group('value')))
 
+    # We pass in an empty string for the module (which will make the JNI use the
+    # base module's files) for all javap-derived JNI. There may be a way to get
+    # the module from a jar file, but it's not needed right now.
     self.inl_header_file_generator = InlHeaderFileGenerator(
-        self.namespace, self.fully_qualified_class, [], self.called_by_natives,
-        self.constant_fields, self.jni_params, options)
+        '', self.namespace, self.fully_qualified_class, [],
+        self.called_by_natives, self.constant_fields, self.jni_params, options)
 
   def GetContent(self):
     return self.inl_header_file_generator.GetContent()
@@ -875,17 +875,21 @@ class ProxyHelpers(object):
   MAX_CHARS_FOR_HASHED_NATIVE_METHODS = 8
 
   @staticmethod
-  def GetClass(use_hash):
-    return 'N' if use_hash else 'GEN_JNI'
+  def GetClass(short_name, name_prefix=None):
+    if not name_prefix:
+      name_prefix = ''
+    else:
+      name_prefix += '_'
+    return name_prefix + ('N' if short_name else 'GEN_JNI')
 
   @staticmethod
-  def GetPackage(use_hash):
-    return 'J' if use_hash else 'org/chromium/base/natives'
+  def GetPackage(short_name):
+    return 'J' if short_name else 'org/chromium/base/natives'
 
   @staticmethod
-  def GetQualifiedClass(use_hash):
-    return '%s/%s' % (ProxyHelpers.GetPackage(use_hash),
-                      ProxyHelpers.GetClass(use_hash))
+  def GetQualifiedClass(short_name, name_prefix=None):
+    return '%s/%s' % (ProxyHelpers.GetPackage(short_name),
+                      ProxyHelpers.GetClass(short_name, name_prefix))
 
   @staticmethod
   def CreateHashedMethodName(fully_qualified_class_name, method_name):
@@ -934,8 +938,18 @@ class ProxyHelpers(object):
                                 ptr_type,
                                 include_test_only=True):
     methods = []
+    first_match = True
+    module_name = None
     for match in _NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents):
       interface_body = match.group('interface_body')
+      if first_match:
+        module_name = match.group('module_name')
+        first_match = False
+      else:
+        assert module_name == match.group(
+            'module_name'
+        ), 'JNI cannot belong to two modules in one file {} and {}'.format(
+            module_name, match.group('module_name'))
       for method in _EXTRACT_METHODS_REGEX.finditer(interface_body):
         name = method.group('name')
         if not include_test_only and _NameIsTestOnly(name):
@@ -961,7 +975,9 @@ class ProxyHelpers(object):
             ptr_type=ptr_type)
         methods.append(native)
 
-    return methods
+    if not module_name:
+      module_name = ''
+    return methods, module_name
 
 
 class JNIFromJavaSource(object):
@@ -972,20 +988,19 @@ class JNIFromJavaSource(object):
     self.jni_params = JniParams(fully_qualified_class)
     self.jni_params.ExtractImportsAndInnerClasses(contents)
     jni_namespace = ExtractJNINamespace(contents) or options.namespace
-    natives = ExtractNatives(contents, options.ptr_type)
     called_by_natives = ExtractCalledByNatives(self.jni_params, contents,
                                                options.always_mangle)
 
-    natives += ProxyHelpers.ExtractStaticProxyNatives(fully_qualified_class,
-                                                      contents,
-                                                      options.ptr_type)
+    natives, module_name = ProxyHelpers.ExtractStaticProxyNatives(
+        fully_qualified_class, contents, options.ptr_type)
+    natives += ExtractNatives(contents, options.ptr_type)
 
     if len(natives) == 0 and len(called_by_natives) == 0:
       raise SyntaxError(
           'Unable to find any JNI methods for %s.' % fully_qualified_class)
     inl_header_file_generator = InlHeaderFileGenerator(
-        jni_namespace, fully_qualified_class, natives, called_by_natives, [],
-        self.jni_params, options)
+        module_name, jni_namespace, fully_qualified_class, natives,
+        called_by_natives, [], self.jni_params, options)
     self.content = inl_header_file_generator.GetContent()
 
   def GetContent(self):
@@ -1005,11 +1020,13 @@ class HeaderFileGeneratorHelper(object):
 
   def __init__(self,
                class_name,
+               module_name,
                fully_qualified_class,
                use_proxy_hash,
                split_name=None,
                enable_jni_multiplexing=False):
     self.class_name = class_name
+    self.module_name = module_name
     self.fully_qualified_class = fully_qualified_class
     self.use_proxy_hash = use_proxy_hash
     self.split_name = split_name
@@ -1031,8 +1048,8 @@ class HeaderFileGeneratorHelper(object):
         method_name = EscapeClassName(native.proxy_name)
       return 'Java_%s_%s' % (EscapeClassName(
           ProxyHelpers.GetQualifiedClass(
-              self.use_proxy_hash
-              or self.enable_jni_multiplexing)), method_name)
+              self.use_proxy_hash or self.enable_jni_multiplexing,
+              self.module_name)), method_name)
 
     template = Template('Java_${JAVA_NAME}_native${NAME}')
 
@@ -1047,9 +1064,9 @@ class HeaderFileGeneratorHelper(object):
     ret = collections.OrderedDict()
     for entry in origin:
       if isinstance(entry, NativeMethod) and entry.is_proxy:
-        use_hash = self.use_proxy_hash or self.enable_jni_multiplexing
-        ret[ProxyHelpers.GetClass(use_hash)] \
-          = ProxyHelpers.GetQualifiedClass(use_hash)
+        short_name = self.use_proxy_hash or self.enable_jni_multiplexing
+        ret[ProxyHelpers.GetClass(short_name, self.module_name)] \
+          = ProxyHelpers.GetQualifiedClass(short_name, self.module_name)
         continue
       ret[self.class_name] = self.fully_qualified_class
 
@@ -1083,7 +1100,8 @@ const char kClassPath_${JAVA_CLASS}[] = \
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
       if full_clazz != ProxyHelpers.GetQualifiedClass(
-          self.use_proxy_hash or self.enable_jni_multiplexing):
+          self.use_proxy_hash or self.enable_jni_multiplexing,
+          self.module_name):
         ret += [template.substitute(values)]
 
     class_getter = """\
@@ -1115,7 +1133,8 @@ JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
       if full_clazz != ProxyHelpers.GetQualifiedClass(
-          self.use_proxy_hash or self.enable_jni_multiplexing):
+          self.use_proxy_hash or self.enable_jni_multiplexing,
+          self.module_name):
         ret += [template.substitute(values)]
 
     return ''.join(ret)
@@ -1124,7 +1143,7 @@ JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
 class InlHeaderFileGenerator(object):
   """Generates an inline header file for JNI integration."""
 
-  def __init__(self, namespace, fully_qualified_class, natives,
+  def __init__(self, module_name, namespace, fully_qualified_class, natives,
                called_by_natives, constant_fields, jni_params, options):
     self.namespace = namespace
     self.fully_qualified_class = fully_qualified_class
@@ -1137,6 +1156,7 @@ class InlHeaderFileGenerator(object):
     self.options = options
     self.helper = HeaderFileGeneratorHelper(
         self.class_name,
+        module_name,
         fully_qualified_class,
         self.options.use_proxy_hash,
         split_name=self.options.split_name,

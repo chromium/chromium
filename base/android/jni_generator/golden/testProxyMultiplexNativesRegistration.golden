@@ -127,7 +127,7 @@ JNI_GENERATOR_EXPORT jobjectArray
     jclass jcaller);
 
 
-JNI_GENERATOR_EXPORT jclass Java_J_Ntest_resolve_1for_1class(
+JNI_GENERATOR_EXPORT jclass Java_J_N_resolve_1for_1class(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -137,11 +137,11 @@ JNI_GENERATOR_EXPORT jclass Java_J_Ntest_resolve_1for_1class(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1class was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1class_1array(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -151,11 +151,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1class_1array(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1class_1array was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class_1array was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobject Java_J_Ntest_resolve_1for_1object(
+JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -168,11 +168,11 @@ JNI_GENERATOR_EXPORT jobject Java_J_Ntest_resolve_1for_1object(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1object was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobject Java_J_Ntest_resolve_1for_1object_1O(
+JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object_1O(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobject object_param1) {
@@ -182,11 +182,11 @@ JNI_GENERATOR_EXPORT jobject Java_J_Ntest_resolve_1for_1object_1O(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar(env, jcaller, object_param1);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1object_1O was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1O was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1object_1array(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -199,11 +199,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1object_1array(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1object_1array was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1object_1array_1OA(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobjectArray object_array_param1) {
@@ -213,11 +213,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1object_1array_1OA(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative(env, jcaller, object_array_param1);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1object_1array_1OA was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array_1OA was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jstring Java_J_Ntest_resolve_1for_1string(
+JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -227,11 +227,11 @@ JNI_GENERATOR_EXPORT jstring Java_J_Ntest_resolve_1for_1string(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1string was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jstring Java_J_Ntest_resolve_1for_1string_1R(
+JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jstring string_param1) {
@@ -241,11 +241,11 @@ JNI_GENERATOR_EXPORT jstring Java_J_Ntest_resolve_1for_1string_1R(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString(env, jcaller, string_param1);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1string_1R was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1R was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1string_1array(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -255,11 +255,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1string_1array(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1string_1array was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1string_1array_1RA(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jobjectArray string_array_param1) {
@@ -269,11 +269,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1string_1array_1RA(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(env, jcaller, string_array_param1);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1string_1array_1RA was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array_1RA was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jthrowable Java_J_Ntest_resolve_1for_1throwable(
+JNI_GENERATOR_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -283,11 +283,11 @@ JNI_GENERATOR_EXPORT jthrowable Java_J_Ntest_resolve_1for_1throwable(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1throwable was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1throwable_1array(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -297,11 +297,11 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_Ntest_resolve_1for_1throwable_1array(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1throwable_1array was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable_1array was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jboolean Java_J_Ntest_resolve_1for_1boolean(
+JNI_GENERATOR_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -311,11 +311,11 @@ JNI_GENERATOR_EXPORT jboolean Java_J_Ntest_resolve_1for_1boolean(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1boolean was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1boolean was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT jintArray Java_J_Ntest_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA(
+JNI_GENERATOR_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jint int_param1, jintArray int_array_param1, jlong long_param1, jlongArray long_array_param1, jshort short_param1, jshortArray short_array_param1, jchar char_param1, jcharArray char_array_param1, jbyte byte_param1, jbyteArray byte_array_param1, jdouble double_param1, jdoubleArray double_array_param1, jfloat float_param1, jfloatArray float_array_param1, jboolean boolean_param1, jbooleanArray boolean_array_param1) {
@@ -325,11 +325,11 @@ JNI_GENERATOR_EXPORT jintArray Java_J_Ntest_resolve_1for_1int_1array_1IIAJJASSAC
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA was called with an invalid switch number: " << switch_num;
             return {};
         }
 }
-JNI_GENERATOR_EXPORT void Java_J_Ntest_resolve_1for_1void(
+JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num) {
@@ -339,11 +339,11 @@ JNI_GENERATOR_EXPORT void Java_J_Ntest_resolve_1for_1void(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(env, jcaller);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1void was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void was called with an invalid switch number: " << switch_num;
             return;
         }
 }
-JNI_GENERATOR_EXPORT void Java_J_Ntest_resolve_1for_1void_1LLATTARRAOOAOOA(
+JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
     JNIEnv* env,
     jclass jcaller,
     jlong switch_num, jclass class_param1, jobjectArray class_array_param1, jthrowable throwable_param1, jobjectArray throwable_array_param1, jstring string_param1, jobjectArray string_array_param1, jobject object_param1, jobjectArray object_array_param1, jobject object_param2, jobjectArray object_array_param2) {
@@ -353,7 +353,7 @@ JNI_GENERATOR_EXPORT void Java_J_Ntest_resolve_1for_1void_1LLATTARRAOOAOOA(
             return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
           
           default:
-            CHECK(false) << "JNI multiplexing function Java_J_Ntest_resolve_1for_1void_1LLATTARRAOOAOOA was called with an invalid switch number: " << switch_num;
+            CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA was called with an invalid switch number: " << switch_num;
             return;
         }
 }
@@ -361,37 +361,37 @@ JNI_GENERATOR_EXPORT void Java_J_Ntest_resolve_1for_1void_1LLATTARRAOOAOOA(
 
 
 static const JNINativeMethod kMethods_J_NMAIN_DEX[] = {
-    { "resolve_for_boolean", "(J)Z", reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1boolean) },
+    { "resolve_for_boolean", "(J)Z", reinterpret_cast<void*>(Java_J_N_resolve_1for_1boolean) },
     { "resolve_for_class", "(J)Ljava/lang/Class;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1class) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1class) },
     { "resolve_for_class_array", "(J)[Ljava/lang/Class;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1class_1array) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1class_1array) },
     { "resolve_for_int_array_IIAJJASSACCABBADDAFFAZZA", "(JI[IJ[JS[SC[CB[BD[DF[FZ[Z)[I",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA) },
     { "resolve_for_object", "(J)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1object) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1object) },
     { "resolve_for_object_O", "(JLjava/lang/Object;)Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1object_1O) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1object_1O) },
     { "resolve_for_object_array", "(J)[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1object_1array) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1object_1array) },
     { "resolve_for_object_array_OA", "(J[Ljava/lang/Object;)[Ljava/lang/Object;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1object_1array_1OA) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1object_1array_1OA) },
     { "resolve_for_string", "(J)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1string) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1string) },
     { "resolve_for_string_R", "(JLjava/lang/String;)Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1string_1R) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1string_1R) },
     { "resolve_for_string_array", "(J)[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1string_1array) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1string_1array) },
     { "resolve_for_string_array_RA", "(J[Ljava/lang/String;)[Ljava/lang/String;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1string_1array_1RA) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1string_1array_1RA) },
     { "resolve_for_throwable", "(J)Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1throwable) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1throwable) },
     { "resolve_for_throwable_array", "(J)[Ljava/lang/Throwable;",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1throwable_1array) },
-    { "resolve_for_void", "(J)V", reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1void) },
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1throwable_1array) },
+    { "resolve_for_void", "(J)V", reinterpret_cast<void*>(Java_J_N_resolve_1for_1void) },
     { "resolve_for_void_LLATTARRAOOAOOA",
         "(JLjava/lang/Class;[Ljava/lang/Class;Ljava/lang/Throwable;[Ljava/lang/Throwable;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/Object;[Ljava/lang/Object;Ljava/lang/Object;[Ljava/lang/Object;)V",
-        reinterpret_cast<void*>(Java_J_Ntest_resolve_1for_1void_1LLATTARRAOOAOOA) }
+        reinterpret_cast<void*>(Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA) }
 };
 
 namespace {

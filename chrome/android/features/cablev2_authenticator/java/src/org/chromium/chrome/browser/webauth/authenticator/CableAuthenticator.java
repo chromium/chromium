@@ -403,7 +403,7 @@ class CableAuthenticator {
         return CableAuthenticatorJni.get().validateQRURI(uri);
     }
 
-    @NativeMethods
+    @NativeMethods("cablev2_authenticator")
     interface Natives {
         /**
          * setup is called before any other functions in order for the native code to perform

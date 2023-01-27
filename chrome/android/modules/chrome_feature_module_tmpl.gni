@@ -100,19 +100,18 @@ template("chrome_feature_module") {
                              "version_code",
                              "version_name",
                            ])
-    android_manifest = _module_desc.android_manifest
-    if (defined(_module_desc.android_manifest_dep)) {
-      android_manifest_dep = _module_desc.android_manifest_dep
-    }
+    forward_variables_from(_module_desc,
+                           [
+                             "android_manifest",
+                             "android_manifest_dep",
+                             "uses_split",
+                           ])
     deps = [ ":${target_name}__module_desc_java" ]
     if (defined(_module_desc.pak_deps)) {
       deps += [ ":${target_name}__pak_assets" ]
     }
     if (defined(_module_desc.java_deps)) {
       deps += _module_desc.java_deps
-    }
-    if (defined(_module_desc.uses_split)) {
-      uses_split = _module_desc.uses_split
     }
 
     # Don't embed more translations than required (http://crbug.com/932017).

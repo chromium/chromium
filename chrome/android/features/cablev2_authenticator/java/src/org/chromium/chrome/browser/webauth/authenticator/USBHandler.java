@@ -343,7 +343,7 @@ class USBHandler implements Closeable {
         }
     }
 
-    @NativeMethods
+    @NativeMethods("cablev2_authenticator")
     interface Natives {
         // onUSBData is called when data is read from the USB data. If data is
         // null then an error occurred.

@@ -90,9 +90,9 @@ if (current_toolchain == default_toolchain) {
   app_hooks_impl = "java/src/org/chromium/chrome/browser/AppHooksImpl.java"
 
   # Exclude it from JNI registration if VR is not enabled.
-  chrome_jni_sources_exclusions = []
+  chrome_jni_file_exclusions = []
   if (!enable_vr) {
-    chrome_jni_sources_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
+    chrome_jni_file_exclusions += [ "//chrome/android/features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
   }
 
   jinja_template("chrome_public_android_manifest") {
@@ -2125,7 +2125,7 @@ if (current_toolchain == default_toolchain) {
   generate_jni_registration("chrome_jni_registration") {
     targets = [ ":chrome_public_base_module_java" ]
     manual_jni_registration = true
-    sources_exclusions = chrome_jni_sources_exclusions
+    file_exclusions = chrome_jni_file_exclusions
   }
 
   # The test apks do not use chromium linker, but using manual JNI registration
@@ -2134,7 +2134,7 @@ if (current_toolchain == default_toolchain) {
     testonly = true
     targets = [ ":chrome_public_base_module_java_for_test" ]
     manual_jni_registration = true
-    sources_exclusions = chrome_jni_sources_exclusions
+    file_exclusions = chrome_jni_file_exclusions
   }
 
   # This template instantiates targets responsible for generating pak

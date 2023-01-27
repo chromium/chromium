@@ -10,4 +10,11 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.SOURCE)
-public @interface NativeMethods {}
+public @interface NativeMethods {
+    /**
+     * Tells the build system to call a different GEN_JNI, prefixed by the value we put here. This
+     * should only be used for feature modules where we need a different GEN_JNI. For example, if
+     * you did @NativeMethods("dfmname"), this would call into dfmname_GEN_JNI.java.
+     */
+    public String value() default "";
+}

@@ -54,7 +54,7 @@ public class AndroidVSyncHelper {
         return DisplayAndroidManager.getDefaultDisplayForContext(context).getRefreshRate();
     }
 
-    @NativeMethods
+    @NativeMethods("vr")
     interface Natives {
         void onVSync(long nativeAndroidVSyncHelper, AndroidVSyncHelper caller, long frameTimeNanos);
     }

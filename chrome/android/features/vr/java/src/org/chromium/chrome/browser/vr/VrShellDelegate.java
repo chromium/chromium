@@ -686,7 +686,7 @@ public class VrShellDelegate implements View.OnSystemUiVisibilityChangeListener 
         sInstance = null;
     }
 
-    @NativeMethods
+    @NativeMethods("vr")
     interface Natives {
         long init(VrShellDelegate caller);
         void onLibraryAvailable();

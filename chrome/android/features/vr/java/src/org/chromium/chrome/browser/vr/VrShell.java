@@ -302,7 +302,7 @@ public class VrShell extends GvrLayout implements SurfaceHolder.Callback {
         return mPresentationView;
     }
 
-    @NativeMethods
+    @NativeMethods("vr")
     interface Natives {
         long init(VrShell caller, VrShellDelegate delegate, long gvrApi,
                 boolean reprojectedRendering, WebContents webContents);
