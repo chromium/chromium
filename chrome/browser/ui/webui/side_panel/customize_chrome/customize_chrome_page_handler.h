@@ -64,7 +64,8 @@ class CustomizeChromePageHandler
                           const std::string& attribution_2,
                           const GURL& attribution_url,
                           const GURL& image_url,
-                          const GURL& thumbnail_url) override;
+                          const GURL& thumbnail_url,
+                          const std::string& collection_id) override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
   void GetBackgroundCollections(
       GetBackgroundCollectionsCallback callback) override;

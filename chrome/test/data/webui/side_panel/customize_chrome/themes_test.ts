@@ -8,7 +8,7 @@ import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {BackgroundCollection, CollectionImage, CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import {ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -33,6 +33,7 @@ function createTestImages(length: number): CollectionImage[] {
       attributionUrl: {url: `https://attribution_${i}.jpg`},
       imageUrl: {url: `https://image_${i}.jpg`},
       previewImageUrl: {url: `https://preview_${i}.jpg`},
+      collectionId: `collectionId_${i}`,
     });
   }
   return testImages;
@@ -138,7 +139,9 @@ suite('ThemesTest', () => {
 
     // Turn toggle on.
     const theme = createTheme();
-    theme.dailyRefreshCollectionId = themesElement.selectedCollection!.id;
+    theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+    theme.backgroundImage.collectionId = themesElement.selectedCollection!.id;
+    theme.backgroundImage.dailyRefreshEnabled = true;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
     assertTrue(themesElement.$.refreshDailyToggle.checked);
@@ -160,19 +163,24 @@ suite('ThemesTest', () => {
         let theme = createTheme();
         callbackRouterRemote.setTheme(theme);
         await callbackRouterRemote.$.flushForTesting();
-        assertTrue(!themesElement.$.refreshDailyToggle.checked);
+        assertFalse(themesElement.$.refreshDailyToggle.checked);
 
         // Check that toggle isn't on if refresh daily is a different
         // collection.
         theme = createTheme();
-        theme.dailyRefreshCollectionId = 'different_collection';
+        theme.backgroundImage = createBackgroundImage('chrome://theme/foo');
+        theme.backgroundImage.collectionId = 'different_collection';
+        theme.backgroundImage.dailyRefreshEnabled = true;
         callbackRouterRemote.setTheme(theme);
         await callbackRouterRemote.$.flushForTesting();
-        assertTrue(!themesElement.$.refreshDailyToggle.checked);
+        assertFalse(themesElement.$.refreshDailyToggle.checked);
 
         // Check that toggle is on if refresh daily matches current collection.
         theme = createTheme();
-        theme.dailyRefreshCollectionId = themesElement.selectedCollection!.id;
+        theme.backgroundImage = createBackgroundImage('chrome://theme/bar');
+        theme.backgroundImage.collectionId =
+            themesElement.selectedCollection!.id;
+        theme.backgroundImage.dailyRefreshEnabled = true;
         callbackRouterRemote.setTheme(theme);
         await callbackRouterRemote.$.flushForTesting();
         assertTrue(themesElement.$.refreshDailyToggle.checked);
@@ -209,7 +217,8 @@ suite('ThemesTest', () => {
     assertEquals(checkedTile!.title, 'attribution1_1');
 
     // Set daily refresh.
-    theme.dailyRefreshCollectionId = 'test_collection_id';
+    theme.backgroundImage.collectionId = 'test_collection_id';
+    theme.backgroundImage.dailyRefreshEnabled = true;
     callbackRouterRemote.setTheme(theme);
     await callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(themesElement);
@@ -219,4 +228,36 @@ suite('ThemesTest', () => {
         themesElement.shadowRoot!.querySelectorAll('.theme [checked]');
     assertEquals(0, checkedThemes.length);
   });
+
+  test(
+      'daily refresh toggle is off if refresh daily is not enabled',
+      async () => {
+        await setCollection('test_collection', 2);
+
+        // Check that toggle isn't on if refresh daily is undefined.
+        let theme = createTheme();
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        assertFalse(themesElement.$.refreshDailyToggle.checked);
+
+        // Check that toggle is on if refresh daily matches current collection.
+        theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/bar');
+        theme.backgroundImage.collectionId =
+            themesElement.selectedCollection!.id;
+        theme.backgroundImage.dailyRefreshEnabled = true;
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        assertTrue(themesElement.$.refreshDailyToggle.checked);
+
+        // Check that toggle is off if refresh daily is not enabled
+        theme = createTheme();
+        theme.backgroundImage = createBackgroundImage('chrome://theme/bar');
+        theme.backgroundImage.collectionId =
+            themesElement.selectedCollection!.id;
+        theme.backgroundImage.dailyRefreshEnabled = false;
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        assertFalse(themesElement.$.refreshDailyToggle.checked);
+      });
 });

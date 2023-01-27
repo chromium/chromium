@@ -162,18 +162,17 @@ void CustomizeChromePageHandler::SetBackgroundImage(
     const std::string& attribution_2,
     const GURL& attribution_url,
     const GURL& image_url,
-    const GURL& thumbnail_url) {
-  // Populating the |collection_id| turns on refresh daily which overrides the
-  // the selected image.
+    const GURL& thumbnail_url,
+    const std::string& collection_id) {
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       image_url, thumbnail_url, attribution_1, attribution_2, attribution_url,
-      /* collection_id= */ "");
+      collection_id);
 }
 
 void CustomizeChromePageHandler::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
-  // Populating the |collection_id| turns on refresh daily which overrides the
-  // the selected image.
+  // Only populating the |collection_id| turns on refresh daily which overrides
+  // the the selected image.
   ntp_custom_background_service_->SetCustomBackgroundInfo(
       /* image_url */ GURL(), /* thumbnail_url */ GURL(),
       /* attribution_line_1= */ "", /* attribution_line_2= */ "",
@@ -261,6 +260,9 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image->is_uploaded_image = custom_background->is_uploaded_image;
     background_image->title =
         custom_background->custom_background_attribution_line_1;
+    background_image->collection_id = custom_background->collection_id;
+    background_image->daily_refresh_enabled =
+        custom_background->daily_refresh_enabled;
     if (custom_background->custom_background_main_color.has_value()) {
       background_image->main_color =
           *custom_background->custom_background_main_color;
@@ -297,9 +299,6 @@ void CustomizeChromePageHandler::UpdateTheme() {
   }
   theme->color_picker_icon_color =
       web_contents_->GetColorProvider().GetColor(kColorNewTabPageText);
-  if (custom_background.has_value()) {
-    theme->daily_refresh_collection_id = custom_background->collection_id;
-  }
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   CHECK(native_theme);
   theme->system_dark_mode = native_theme->ShouldUseDarkColors();
@@ -496,6 +495,7 @@ void CustomizeChromePageHandler::OnCollectionImagesAvailable() {
     image->attribution_url = info.attribution_action_url;
     image->image_url = info.image_url;
     image->preview_image_url = info.thumbnail_image_url;
+    image->collection_id = collection_id;
     images.push_back(std::move(image));
   }
   std::move(background_images_callback_).Run(std::move(images));

@@ -45,6 +45,8 @@ export function createBackgroundImage(url: string): BackgroundImage {
     isUploadedImage: false,
     title: '',
     mainColor: undefined,
+    collectionId: '',
+    dailyRefreshEnabled: false,
   };
 }
 
@@ -67,7 +69,6 @@ export function createTheme(systemDarkMode = false): Theme {
     colorPickerIconColor: {value: 0xffff0000},
     colorsManagedByPolicy: false,
     backgroundManagedByPolicy: false,
-    dailyRefreshCollectionId: undefined,
   };
 }
 
