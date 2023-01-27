@@ -247,9 +247,8 @@ CookieSettings::GetCookieSettingWithMetadata(
         IsAllowedByStorageAccessGrant(url, first_party_url)) {
       storage_access_result = net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
-    } else if (overrides.Has(net::CookieSettingOverride::
-                                 kTopLevelStorageAccessGrantEligible) &&
-               ShouldConsiderTopLevelStorageAccessGrants(query_reason) &&
+    } else if (ShouldConsiderTopLevelStorageAccessGrants(query_reason,
+                                                         overrides) &&
                IsAllowedByTopLevelStorageAccessGrant(url, first_party_url)) {
       storage_access_result = net::cookie_util::StorageAccessResult::
           ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT;

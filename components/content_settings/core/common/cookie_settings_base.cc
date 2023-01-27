@@ -157,13 +157,16 @@ bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
 }
 
 bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
-    QueryReason query_reason) const {
+    QueryReason query_reason,
+    net::CookieSettingOverrides overrides) const {
   // Unlike the standard Storage Access API, the top-level version does not
   // unlock unpartitioned storage more generally. It applies only to cookies.
-  return CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
-      query_reason, storage_access_api_enabled_,
-      /*storage_access_api_grants_unpartitioned_storage=*/false,
-      is_storage_partitioned_);
+  return overrides.Has(
+             net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
+         CookieSettingsBase::ShouldConsiderStorageAccessGrantsInternal(
+             query_reason, storage_access_api_enabled_,
+             /*storage_access_api_grants_unpartitioned_storage=*/false,
+             is_storage_partitioned_);
 }
 
 // static

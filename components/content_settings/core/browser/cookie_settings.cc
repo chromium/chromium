@@ -223,9 +223,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
   }
 
   if (block &&
-      overrides.Has(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible) &&
-      ShouldConsiderTopLevelStorageAccessGrants(query_reason)) {
+      ShouldConsiderTopLevelStorageAccessGrants(query_reason, overrides)) {
     ContentSetting host_setting = host_content_settings_map_->GetContentSetting(
         url, first_party_url, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS);
 

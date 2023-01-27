@@ -210,7 +210,8 @@ class CookieSettingsBase {
   // grants, but applies to subresources more broadly (at the top-level rather
   // than only for a single frame).
   bool ShouldConsiderTopLevelStorageAccessGrants(
-      QueryReason query_reason) const;
+      QueryReason query_reason,
+      net::CookieSettingOverrides overrides) const;
 
   // Static version of the above, exposed for testing.
   static bool ShouldConsiderStorageAccessGrantsInternal(
