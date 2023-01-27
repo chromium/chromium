@@ -312,10 +312,46 @@ TEST_F(GifRecordingTest, TabNavigation) {
   EXPECT_FALSE(GetRecordingTypeMenuWidget());
   EXPECT_EQ(RecordingType::kGif, controller->recording_type());
 
-  // The focus is moved to the settings button.
+  // The focus is moved back to the drop down button.
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetRecordingTypeDropDownButton(),
+            test_api.GetCurrentFocusedView()->GetView());
+}
+
+TEST_F(GifRecordingTest, CloseRecordingMenuWhileFocusIsSomewhereElse) {
+  auto* controller = StartRegionVideoCapture();
+
+  // Tab 16 times until we reach the drop down button.
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/16);
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  EXPECT_EQ(FocusGroup::kCaptureButton, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(GetRecordingTypeDropDownButton(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Pressing the spacebar should open the menu, and we should be in the
+  // `kPendingRecordingType` focus group.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_TRUE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(FocusGroup::kPendingRecordingType, test_api.GetCurrentFocusGroup());
+
+  // Now tab 4 times to put the focus on the close button.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
   EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
-  EXPECT_EQ(0u, test_api.GetCurrentFocusIndex());
-  EXPECT_EQ(test_api.GetCaptureModeBarView()->settings_button(),
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(test_api.GetCaptureModeBarView()->close_button(),
+            test_api.GetCurrentFocusedView()->GetView());
+
+  // Press the escape key, the menu should close, but the focus should not
+  // change, since focus was not in or about to be in the menu.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_FALSE(GetRecordingTypeMenuWidget());
+  EXPECT_EQ(FocusGroup::kSettingsClose, test_api.GetCurrentFocusGroup());
+  EXPECT_EQ(1u, test_api.GetCurrentFocusIndex());
+  EXPECT_EQ(test_api.GetCaptureModeBarView()->close_button(),
             test_api.GetCurrentFocusedView()->GetView());
 }
 
