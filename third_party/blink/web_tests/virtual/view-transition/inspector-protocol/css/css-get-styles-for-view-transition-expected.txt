@@ -170,14 +170,10 @@ The test verifies functionality of querying style information for view-transitio
                                         value : 0px
                                     }
                                     [3] : {
-                                        name : will-change
-                                        value : transform
-                                    }
-                                    [4] : {
                                         name : transform-origin
                                         value : left top
                                     }
-                                    [5] : {
+                                    [4] : {
                                         name : pointer-events
                                         value : auto
                                     }
@@ -312,14 +308,10 @@ The test verifies functionality of querying style information for view-transitio
                                         value : 0px
                                     }
                                     [3] : {
-                                        name : will-change
-                                        value : transform
-                                    }
-                                    [4] : {
                                         name : transform-origin
                                         value : left top
                                     }
-                                    [5] : {
+                                    [4] : {
                                         name : pointer-events
                                         value : auto
                                     }
@@ -804,10 +796,6 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
-                                    [4] : {
-                                        name : will-change
-                                        value : opacity
-                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -1090,10 +1078,6 @@ The test verifies functionality of querying style information for view-transitio
                                     [3] : {
                                         name : block-size
                                         value : auto
-                                    }
-                                    [4] : {
-                                        name : will-change
-                                        value : opacity
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1378,10 +1362,6 @@ The test verifies functionality of querying style information for view-transitio
                                         name : block-size
                                         value : auto
                                     }
-                                    [4] : {
-                                        name : will-change
-                                        value : opacity
-                                    }
                                 ]
                                 shorthandEntries : [
                                 ]
@@ -1518,10 +1498,6 @@ The test verifies functionality of querying style information for view-transitio
                                     [3] : {
                                         name : block-size
                                         value : auto
-                                    }
-                                    [4] : {
-                                        name : will-change
-                                        value : opacity
                                     }
                                 ]
                                 shorthandEntries : [
@@ -1796,14 +1772,10 @@ Dumping styles for : ::view-transition-group with id root{
                                 value : 0px
                             }
                             [3] : {
-                                name : will-change
-                                value : transform
-                            }
-                            [4] : {
                                 name : transform-origin
                                 value : left top
                             }
-                            [5] : {
+                            [4] : {
                                 name : pointer-events
                                 value : auto
                             }
@@ -2089,10 +2061,6 @@ Dumping styles for : ::view-transition-old with id root{
                             [3] : {
                                 name : block-size
                                 value : auto
-                            }
-                            [4] : {
-                                name : will-change
-                                value : opacity
                             }
                         ]
                         shorthandEntries : [
@@ -2381,10 +2349,6 @@ Dumping styles for : ::view-transition-new with id root{
                                 name : block-size
                                 value : auto
                             }
-                            [4] : {
-                                name : will-change
-                                value : opacity
-                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -2520,14 +2484,10 @@ Dumping styles for : ::view-transition-group with id shared{
                                 value : 0px
                             }
                             [3] : {
-                                name : will-change
-                                value : transform
-                            }
-                            [4] : {
                                 name : transform-origin
                                 value : left top
                             }
-                            [5] : {
+                            [4] : {
                                 name : pointer-events
                                 value : auto
                             }
@@ -2882,10 +2842,6 @@ Dumping styles for : ::view-transition-old with id shared{
                                 name : block-size
                                 value : auto
                             }
-                            [4] : {
-                                name : will-change
-                                value : opacity
-                            }
                         ]
                         shorthandEntries : [
                         ]
@@ -3172,10 +3128,6 @@ Dumping styles for : ::view-transition-new with id shared{
                             [3] : {
                                 name : block-size
                                 value : auto
-                            }
-                            [4] : {
-                                name : will-change
-                                value : opacity
                             }
                         ]
                         shorthandEntries : [
