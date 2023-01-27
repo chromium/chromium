@@ -30,7 +30,7 @@ public class NetworkTrafficAnnotationTag {
 
     /**
      * For network requests that don't need an annotation, because they're in an
-     * allowlisted file (see tools/traffic_annotation/auditor/safe_list.txt).
+     * allowlisted file (see tools/traffic_annotation/safe_list.txt).
      */
     public static final NetworkTrafficAnnotationTag MISSING_TRAFFIC_ANNOTATION =
             createComplete("undefined", "Function called without traffic annotation.");

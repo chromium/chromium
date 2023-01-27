@@ -6,8 +6,7 @@ copy("annotations_xml") {
   # This rule is referenced by src/BUILD.gn, and auditor.py runs on CQ if any of
   # these files are modified:
   sources = [
-    "auditor/chromeos/safe_list.txt",
-    "auditor/safe_list.txt",
+    "safe_list.txt",
     "summary/annotations.xml",
     "summary/grouping.xml",
   ]

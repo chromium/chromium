@@ -1,5 +1,7 @@
 # This is a comma separated file, specifying the safe list for network traffic
 # annotation auditor. Please refer to README.md for more details.
+
+# Low-level networking code is deliberately excluded from the analysis.
 all,tools/*,*test*,*fuzzer*,*mock*,*fake*,weblayer/*
 all,net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java
 missing,remoting/host/token_validator_factory_impl.cc
@@ -12,7 +14,19 @@ test_annotation,net/quic/quic_chromium_client_session_peer.cc
 all,ash/ambient/backdrop/ambient_backend_controller_impl.cc
 all,chromeos/ash/services/libassistant/chromium_http_connection.cc
 
-# TODO(crbug.com/995852): Fix Android-specific annotations.
+# ChromeOS-specific annotations.
+all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
+all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
+all,chromeos/geolocation/simple_geolocation_request.cc
+all,components/quirks/quirks_client.cc
+all,chromeos/ash/services/device_sync/cryptauth_client_impl.cc
+all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
+all,chrome/browser/ash/app_list/search/arc/recommend_apps_fetcher_impl.cc
+all,chrome/browser/ui/ash/projector/screencast_manager.cc
+all,chrome/services/cups_proxy/socket_manager.cc
+
+# Android-specific annotations.
+# TODO(crbug.com/995852): Complete these.
 missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing,chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/suggestions/TabSuggestionsServerFetcher.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java
@@ -26,7 +40,7 @@ missing,chrome/browser/page_annotations/android/java/src/org/chromium/chrome/bro
 missing,chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java
 missing,net/proxy_resolution/proxy_config_service_android.cc
 
-# Android classes Missing fields internal::contact:email, user_data::type, last_reviewed
+# Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc
 missing_new_fields,missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java
 missing_new_fields,chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java
@@ -47,9 +61,8 @@ missing_new_fields,components/content_creation/notes/core/templates/template_fet
 missing_new_fields,components/image_fetcher/image_fetcher_bridge.cc
 missing_new_fields,components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/util/HttpURLConnectionFactoryImpl.java
 missing_new_fields,components/variations/android/java/src/org/chromium/components/variations/firstrun/VariationsSeedFetcher.java
-# End of Android-specific annotations.
 
-# Classes missing fields internal::contacts:email, user_data::type, last_reviewed
+# Annotations missing fields internal::contacts:email, user_data::type, last_reviewed
 missing_new_fields,ash/ambient/ambient_photo_cache.cc
 missing_new_fields,ash/ambient/ambient_weather_controller.cc
 missing_new_fields,ash/assistant/assistant_controller_impl.cc

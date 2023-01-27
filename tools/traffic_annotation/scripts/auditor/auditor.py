@@ -1323,11 +1323,7 @@ class Exporter:
 class Auditor:
   """Extracts and validates annotations from the codebase."""
 
-  SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" / "auditor" /
-                    "safe_list.txt")
-  # TODO(b/203773498): Remove ChromeOS safelist after cleanup.
-  CHROME_OS_SAFE_LIST_PATH = (SRC_DIR / "tools" / "traffic_annotation" /
-                              "auditor" / "chromeos" / "safe_list.txt")
+  SAFE_LIST_PATH = SRC_DIR / "tools" / "traffic_annotation" / "safe_list.txt"
 
   def __init__(self, current_platform: str, no_filtering: bool = False):
     if current_platform not in SUPPORTED_PLATFORMS:
@@ -1365,9 +1361,6 @@ class Auditor:
         Auditor.SAFE_LIST_PATH.relative_to(SRC_DIR)))
 
     lines = Auditor.SAFE_LIST_PATH.read_text(encoding="utf-8").splitlines()
-    if self.exporter._current_platform == "chromeos":
-      lines += Auditor.CHROME_OS_SAFE_LIST_PATH.read_text(
-          encoding="utf-8").splitlines()
 
     for line in lines:
       # Ignore comments and empty lines.
