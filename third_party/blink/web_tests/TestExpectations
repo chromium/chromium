@@ -2100,7 +2100,6 @@ crbug.com/1072022 [ Linux ] http/tests/security/frameNavigation/xss-ALLOWED-pare
 crbug.com/915903 http/tests/security/inactive-document-with-empty-security-origin.html [ Pass Timeout ]
 crbug.com/987138 [ Linux ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
 crbug.com/987138 [ Win ] media/controls/doubletap-to-jump-forwards.html [ Pass Timeout ]
-crbug.com/1122742 http/tests/devtools/sources/debugger/source-frame-inline-breakpoint-decorations.js [ Pass Timeout ]
 crbug.com/805756 external/wpt/html/semantics/tabular-data/processing-model-1/span-limits.html [ Pass Timeout ]
 
 # crbug.com/1218716: These fail when TrustTokenOriginTrial is enabled.
@@ -4291,8 +4290,6 @@ crbug.com/1015975 media/video-currentTime.html [ Failure Pass ]
 # Sheriff 2019-10-21
 crbug.com/1016456 external/wpt/dom/ranges/Range-mutations-dataChange.html [ Crash Pass Timeout ]
 
-# Sheriff 2019-10-30
-crbug.com/1014810 [ Mac11-arm64 Release ] virtual/threaded/external/wpt/animation-worklet/stateful-animator.https.html [ Crash Pass Timeout ]
 
 # Temporarily disabled to a breakpoint non-determinism issue.
 crbug.com/1019613 http/tests/devtools/sources/debugger/debug-inlined-scripts.js [ Failure Pass ]
@@ -4628,7 +4625,6 @@ crbug.com/1112508 fast/forms/number/number-wheel-event.html [ Failure ]
 
 # Sheriff 2020-07-20
 crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
-crbug.com/1107572 [ Mac11-arm64 Release ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Debug Mac12 ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 crbug.com/1107572 [ Mac11-arm64 Release ] http/tests/devtools/tracing/timeline-style/timeline-style-recalc-with-invalidator-invalidations.js [ Failure Pass ]
 
@@ -5426,7 +5422,6 @@ crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/elements/styles-2/nested-p
 crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-composited-image-orientation.html [ Failure Pass ]
 
-crbug.com/1249176 [ Mac11-arm64 ] svg/animations/animate-setcurrenttime.html [ Crash ]
 
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
@@ -6071,7 +6066,7 @@ crbug.com/1308932 scrollbars/auto-scrollbar-fades-out.html [ Failure ]
 crbug.com/1308932 scrollbars/overlay-scrollbars-within-overflow-scroll.html [ Failure ]
 
 # Sheriff 2022-06-24
-crbug.com/1339211 [ Mac ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
+crbug.com/1339211 [ Mac10.13 Release ] external/wpt/css/css-text-decor/text-decoration-thickness-fixed.html [ Failure Pass ]
 crbug.com/1339291 [ Mac12-arm64 Release ] external/wpt/webaudio/the-audio-api/the-convolvernode-interface/realtime-conv.html [ Failure Pass ]
 crbug.com/1339293 [ Linux ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
 crbug.com/1339293 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/invisible-image.html [ Failure Pass ]
