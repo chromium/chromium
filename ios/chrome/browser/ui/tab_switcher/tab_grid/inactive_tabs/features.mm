@@ -6,6 +6,7 @@
 
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,7 +25,9 @@ const char kTabInactivityThresholdThreeWeeksParam[] =
     "tab-inactivity-threshold-three-weeks";
 
 bool IsInactiveTabsEnabled() {
-  return base::FeatureList::IsEnabled(kTabInactivityThreshold);
+  bool isIPhoneIdiom =
+      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
+  return isIPhoneIdiom && base::FeatureList::IsEnabled(kTabInactivityThreshold);
 }
 
 base::TimeDelta TabInactivityThreshold() {
