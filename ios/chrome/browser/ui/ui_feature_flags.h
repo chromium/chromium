@@ -122,6 +122,9 @@ BASE_DECLARE_FEATURE(kEnableMiniMap);
 // When enabled sort tab by last usage in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridRecencySort);
 
+// Whether the tab grid tabs should be sorted by recency.
+bool IsTabGridSortedByRecency();
+
 // Feature to enable multiline gradient support in fade truncating label.
 BASE_DECLARE_FEATURE(kMultilineFadeTruncatingLabel);
 
@@ -130,8 +133,5 @@ BASE_DECLARE_FEATURE(kEnableAccessibilityIdentifierToOmniboxLeadingImage);
 
 // Flag to enable tab strip context menu.
 BASE_DECLARE_FEATURE(kTabStripContextMenu);
-
-// Whether the tab grid tabs should be sorted by recency.
-bool IsTabGridSortedByRecency();
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

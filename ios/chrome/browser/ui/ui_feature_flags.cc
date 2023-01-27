@@ -134,6 +134,10 @@ BASE_FEATURE(kTabGridRecencySort,
              "TabGridRecencySort",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsTabGridSortedByRecency() {
+  return base::FeatureList::IsEnabled(kTabGridRecencySort);
+}
+
 BASE_FEATURE(kMultilineFadeTruncatingLabel,
              "MultilineFadeTruncatingLabel",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -145,7 +149,3 @@ BASE_FEATURE(kEnableAccessibilityIdentifierToOmniboxLeadingImage,
 BASE_FEATURE(kTabStripContextMenu,
              "TabStripContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabGridSortedByRecency() {
-  return base::FeatureList::IsEnabled(kTabGridRecencySort);
-}
