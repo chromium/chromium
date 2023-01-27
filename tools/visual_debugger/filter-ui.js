@@ -315,14 +315,16 @@ function createFilterComplete(enabled, selector, action, index) {
 function showEditFilterPopup(item) {
   var chip = item.closest(".mdc-chip");
   var index = Array.prototype.indexOf.call(chip.parentNode.children, chip);
+  var filter = Filter.getFilter(index);
 
   const menu = new MDCMenu(chip.querySelector('#filterchipmenu'));
   menu.open = false;
 
   const filterUi = document.createElement('filter-ui');
+  const isEnabled = filter.enabled;
   filterUi.addEventListener('saveFilter', (event) => {
     if (event.detail.selector && event.detail.action) {
-      var newChip = createFilterComplete(event.detail.selector,
+      var newChip = createFilterComplete(isEnabled, event.detail.selector,
         event.detail.action, index);
       chip.replaceWith(newChip);
     }
@@ -333,8 +335,6 @@ function showEditFilterPopup(item) {
   filterUi.style.zIndex = maxZIndex;
 
   showModal(filterUi, '#annotation');
-
-  var filter = Filter.getFilter(index);
 
   // fill form from filter data
   filterUi.querySelector('#filter-ui-title').innerHTML = "Edit Filter";
