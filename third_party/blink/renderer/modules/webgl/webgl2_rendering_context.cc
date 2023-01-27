@@ -178,7 +178,7 @@ void WebGL2RenderingContext::RegisterContextExtensions() {
   RegisterExtension(webgl_multi_draw_);
   RegisterExtension(webgl_multi_draw_instanced_base_vertex_base_instance_,
                     kDraftExtension);
-  RegisterExtension(webgl_provoking_vertex_, kDraftExtension);
+  RegisterExtension(webgl_provoking_vertex_);
   RegisterExtension(webgl_video_texture_, kDraftExtension);
   RegisterExtension(webgl_webcodecs_video_frame_, kDraftExtension);
 }
