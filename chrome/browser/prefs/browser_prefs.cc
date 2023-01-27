@@ -1127,6 +1127,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2023.
   registry->RegisterIntegerPref(kAutofillCreditCardSigninPromoImpressionCount,
                                 0);
+
+  // Deprecated 01/2023.
+  registry->RegisterListPref(kSendDownloadToCloudPref);
 }
 
 }  // namespace
@@ -1883,6 +1886,7 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 
   // Added 01/2023
   local_state->ClearPref(kSendDownloadToCloudPref);
+
 #if BUILDFLAG(IS_MAC)
   local_state->ClearPref(kDeviceTrustDisableKeyCreationPref);
 #endif  // BUILDFLAG(IS_MAC)
@@ -2195,6 +2199,8 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 01/2023
   profile_prefs->ClearPref(kAutofillCreditCardSigninPromoImpressionCount);
 
+  // Added 01/2023
+  profile_prefs->ClearPref(kSendDownloadToCloudPref);
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
