@@ -141,7 +141,8 @@
   <div id="bookmarks" class="bookmarks" hidden="[[!shownBookmarks_.length]]"
       role="[[getBookmarksListRole_(editing_)]]"
       aria-multiselectable="[[editing_]]">
-    <iron-list items="[[shownBookmarks_]]" scroll-target="bookmarks">
+    <iron-list id="shownBookmarksIronList"
+        items="[[shownBookmarks_]]" scroll-target="bookmarks">
       <template>
         <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
             description="[[getBookmarkDescription_(item,

@@ -32,6 +32,7 @@ import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util_ts.js';
+import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
@@ -50,6 +51,7 @@ export interface PowerBookmarksListElement {
     contextMenu: CrLazyRenderElement<PowerBookmarksContextMenuElement>,
     deletionToast: CrLazyRenderElement<CrToastElement>,
     powerBookmarksContainer: HTMLElement,
+    shownBookmarksIronList: IronListElement,
     sortMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
   };
@@ -564,6 +566,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     this.$.sortMenu.close();
     this.compact_ = false;
+    this.$.shownBookmarksIronList.notifyResize();
   }
 
   private onCompactViewClicked_(event: MouseEvent) {
@@ -571,6 +574,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     this.$.sortMenu.close();
     this.compact_ = true;
+    this.$.shownBookmarksIronList.notifyResize();
   }
 
   private onAddTabClicked_() {
