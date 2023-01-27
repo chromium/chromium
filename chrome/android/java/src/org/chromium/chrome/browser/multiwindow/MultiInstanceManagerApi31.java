@@ -214,6 +214,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public int allocInstanceId(int windowId, int taskId, boolean preferNew) {
+        int id = allocInstanceIdInternal(windowId, taskId, preferNew);
+
+        // Immediately write the last accessed time so the id doesn't get reused by another
+        // Activity.
+        if (id != INVALID_INSTANCE_ID) writeLastAccessedTime(id);
+        return id;
+    }
+
+    private int allocInstanceIdInternal(int windowId, int taskId, boolean preferNew) {
         removeInvalidInstanceData();
 
         // Explicitly specified window ID should be preferred. This comes from user selecting
@@ -251,6 +260,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 id = i;
             }
         }
+
         return id;
     }
 
