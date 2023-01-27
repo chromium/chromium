@@ -17,10 +17,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-namespace gfx {
-class ImageSkia;
-}
-
 namespace ash::default_user_image {
 
 // Enumeration of user image eligibility states.
@@ -69,11 +65,11 @@ ui::ResourceScaleFactor GetAdjustedScaleFactorForDefaultImage(
 GURL GetDefaultImageUrl(int index,
                         ui::ResourceScaleFactor scale_factor = ui::k200Percent);
 
-// Returns bitmap of default user image with specified index.
-const gfx::ImageSkia& GetDefaultImageDeprecated(int index);
-
 // Returns ID of default user image with specified index.
 int GetDefaultImageResourceId(int index);
+
+// Returns bitmap of the stub default user image.
+const gfx::ImageSkia& GetStubDefaultImage();
 
 // Returns a random default image index.
 int GetRandomDefaultImageIndex();

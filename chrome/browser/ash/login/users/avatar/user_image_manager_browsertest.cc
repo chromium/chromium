@@ -339,8 +339,7 @@ class UserImageManagerTest : public UserImageManagerTestBase {
 IN_PROC_BROWSER_TEST_F(UserImageManagerTest, PRE_SaveAndLoadUserImage) {
   // Setup a user with JPEG image.
   run_loop_ = std::make_unique<base::RunLoop>();
-  const gfx::ImageSkia& image = default_user_image::GetDefaultImageDeprecated(
-      default_user_image::kFirstDefaultImageIndex);
+  const gfx::ImageSkia& image = default_user_image::GetStubDefaultImage();
   UserImageManager* user_image_manager =
       ChromeUserManager::Get()->GetUserImageManager(test_account_id1_);
   user_image_manager->SaveUserImage(user_manager::UserImage::CreateAndEncode(
@@ -358,9 +357,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveAndLoadUserImage) {
   if (user->image_index() == user_manager::User::USER_IMAGE_INVALID)
     UserImageChangeWaiter().Wait();
   // Check image dimensions. Images can't be compared since JPEG is lossy.
-  const gfx::ImageSkia& saved_image =
-      default_user_image::GetDefaultImageDeprecated(
-          default_user_image::kFirstDefaultImageIndex);
+  const gfx::ImageSkia& saved_image = default_user_image::GetStubDefaultImage();
   EXPECT_EQ(saved_image.width(), user->GetImage().width());
   EXPECT_EQ(saved_image.height(), user->GetImage().height());
 }

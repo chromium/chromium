@@ -9,7 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/check.h"
@@ -268,45 +267,34 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
-    if (ash::features::IsAvatarsCloudMigrationEnabled()) {
-      if (const base::Value::Dict* image_properties =
-              parent_->GetImageProperties()) {
-        image_cache_updated_ =
-            image_properties->FindBool(kImageCacheUpdated).value_or(false);
-      }
-      // Load default image from local cached version if available,
-      // otherwise download from gstatic resources if possible.
-      if (image_cache_updated_ && !image_path_.empty() &&
-          base::PathExists(image_path_) &&
-          !base::DirectoryExists(image_path_)) {
-        // Will refactor to remove this redundant call after the feature flag
-        // IsAvatarsCloudMigrationEnabled is no longer needed.
-        user_image_loader::StartWithFilePathAnimated(
-            parent_->background_task_runner_, image_path_,
-            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
-                           false));
-      } else {
-        if (g_skip_default_user_image_download) {
-          auto user_image = std::make_unique<user_manager::UserImage>(
-              *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                  IDR_LOGIN_DEFAULT_USER));
-          UpdateUser(std::move(user_image));
-          UpdateLocalState();
-          NotifyJobDone();
-          return;
-        }
-        // Fetch the default image from cloud before caching it.
-        image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
-        user_image_loader::StartWithGURLAnimated(
-            image_url_, base::BindOnce(&Job::OnLoadImageDone,
-                                       weak_factory_.GetWeakPtr(), true));
-      }
+    if (const base::Value::Dict* image_properties =
+            parent_->GetImageProperties()) {
+      image_cache_updated_ =
+          image_properties->FindBool(kImageCacheUpdated).value_or(false);
+    }
+    // Load default image from local cached version if available,
+    // otherwise download from gstatic resources if possible.
+    if (image_cache_updated_ && !image_path_.empty() &&
+        base::PathExists(image_path_) && !base::DirectoryExists(image_path_)) {
+      user_image_loader::StartWithFilePathAnimated(
+          parent_->background_task_runner_, image_path_,
+          base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                         false));
     } else {
-      std::unique_ptr<user_manager::UserImage> user_image(
-          new user_manager::UserImage(
-              default_user_image::GetDefaultImageDeprecated(image_index_)));
-      UpdateUser(std::move(user_image));
-      NotifyJobDone();
+      if (g_skip_default_user_image_download) {
+        auto user_image = std::make_unique<user_manager::UserImage>(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_LOGIN_DEFAULT_USER));
+        UpdateUser(std::move(user_image));
+        UpdateLocalState();
+        NotifyJobDone();
+        return;
+      }
+      // Fetch the default image from cloud before caching it.
+      image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+      user_image_loader::StartWithGURLAnimated(
+          image_url_, base::BindOnce(&Job::OnLoadImageDone,
+                                     weak_factory_.GetWeakPtr(), true));
     }
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
@@ -334,35 +322,26 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   DCHECK(default_user_image::IsValidIndex(default_image_index));
 
   image_index_ = default_image_index;
-  if (ash::features::IsAvatarsCloudMigrationEnabled()) {
-    // Fetch the default image from cloud before caching it.
-    image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
 
-    // Set user image to a temp stub image while fetching the default image from
-    // the cloud.
-    auto user_image = std::make_unique<user_manager::UserImage>(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_LOGIN_DEFAULT_USER));
-    UpdateUser(std::move(user_image));
-    UpdateLocalState();
+  // Fetch the default image from cloud before caching it.
+  image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
 
-    if (g_skip_default_user_image_download) {
-      NotifyJobDone();
-      return;
-    }
+  // Set user image to a temp stub image while fetching the default image from
+  // the cloud.
+  auto user_image = std::make_unique<user_manager::UserImage>(
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER));
+  UpdateUser(std::move(user_image));
+  UpdateLocalState();
 
-    user_image_loader::StartWithGURLAnimated(
-        image_url_, base::BindOnce(&Job::OnLoadImageDone,
-                                   weak_factory_.GetWeakPtr(), true));
-  } else {
-    std::unique_ptr<user_manager::UserImage> user_image(
-        new user_manager::UserImage(
-            default_user_image::GetDefaultImageDeprecated(image_index_)));
-
-    UpdateUser(std::move(user_image));
-    UpdateLocalState();
+  if (g_skip_default_user_image_download) {
     NotifyJobDone();
+    return;
   }
+
+  user_image_loader::StartWithGURLAnimated(
+      image_url_,
+      base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(), true));
 }
 
 void UserImageManagerImpl::Job::SetToImage(

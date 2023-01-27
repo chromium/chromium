@@ -25,7 +25,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -288,8 +287,6 @@ const DefaultImageSourceInfoIds kDefaultImageSourceInfoIds[] = {
     {IDS_LOGIN_DEFAULT_USER_AUTHOR_33, IDS_LOGIN_DEFAULT_USER_WEBSITE_33},
 };
 
-constexpr char kDefaultUrlPrefix[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER_";
-constexpr char kZeroDefaultUrl[] = "chrome://theme/IDR_LOGIN_DEFAULT_USER";
 constexpr char kGstaticImagePrefix[] =
     "https://www.gstatic.com/chromecast/home/chromeos/avatars/";
 constexpr char k100PercentPrefix[] = "default_100_percent/";
@@ -356,32 +353,21 @@ GURL GetDefaultImageUrl(
     ui::ResourceScaleFactor scale_factor /*= ui::k200Percent*/) {
   DCHECK(index >= 0 && index < kDefaultImagesCount);
 
-  if (ash::features::IsAvatarsCloudMigrationEnabled()) {
-    ui::ResourceScaleFactor adjusted_scale_factor =
-        GetAdjustedScaleFactorForDefaultImage(index, scale_factor);
-    auto scale_factor_prefix =
-        GetUrlPrefixForScaleFactor(adjusted_scale_factor);
+  ui::ResourceScaleFactor adjusted_scale_factor =
+      GetAdjustedScaleFactorForDefaultImage(index, scale_factor);
+  auto scale_factor_prefix = GetUrlPrefixForScaleFactor(adjusted_scale_factor);
 
-    return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
-                              kDefaultImageInfo[index].path}));
-  }
-
-  if (index == 0)
-    return GURL(kZeroDefaultUrl);
-  return GURL(base::StringPrintf("%s%d", kDefaultUrlPrefix, index));
-}
-
-// DEPRECATED: after the full migration of the avatar images to cloud,
-// this function should be removed since default images will no longer
-// be available in device resources.
-const gfx::ImageSkia& GetDefaultImageDeprecated(int index) {
-  DCHECK(index >= 0 && index < kDefaultImagesCount);
-  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      kDefaultImageInfo[index].resource_id);
+  return GURL(base::StrCat({kGstaticImagePrefix, scale_factor_prefix,
+                            kDefaultImageInfo[index].path}));
 }
 
 int GetDefaultImageResourceId(int index) {
   return kDefaultImageInfo[index].resource_id;
+}
+
+const gfx::ImageSkia& GetStubDefaultImage() {
+  return *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      IDR_LOGIN_DEFAULT_USER);
 }
 
 int GetRandomDefaultImageIndex() {
