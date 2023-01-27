@@ -16,6 +16,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/commander/commander_backend.h"

@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_overrides/simple_overrides.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "extensions/browser/disable_reason.h"

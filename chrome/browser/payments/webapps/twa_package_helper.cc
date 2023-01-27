@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"

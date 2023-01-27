@@ -19,6 +19,7 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/policy_handlers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_constants.h"

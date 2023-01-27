@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 

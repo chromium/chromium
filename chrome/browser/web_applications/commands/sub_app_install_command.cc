@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"

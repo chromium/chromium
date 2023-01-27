@@ -5,6 +5,7 @@
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "extensions/browser/api/storage/storage_api.h"
 #include "extensions/browser/api/storage/storage_frontend.h"

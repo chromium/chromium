@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_test_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
