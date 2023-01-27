@@ -35,6 +35,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/upload_progress.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -281,6 +282,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // cookies. Update consumers and fix that.
   void set_isolation_info(const IsolationInfo& isolation_info) {
     isolation_info_ = isolation_info;
+    cookie_partition_key_ = CookiePartitionKey::FromNetworkIsolationKey(
+        isolation_info.network_isolation_key());
   }
 
   // This will convert the passed NetworkAnonymizationKey to an IsolationInfo.
@@ -296,6 +299,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
       const NetworkAnonymizationKey& network_anonymization_key);
 
   const IsolationInfo& isolation_info() const { return isolation_info_; }
+
+  const absl::optional<CookiePartitionKey>& cookie_partition_key() const {
+    return cookie_partition_key_;
+  }
 
   // Indicate whether SameSite cookies should be attached even though the
   // request is cross-site.
@@ -961,6 +968,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   SiteForCookies site_for_cookies_;
 
   IsolationInfo isolation_info_;
+  // TODO(dylancutler): Have URLRequestHttpJob use this partition key instead of
+  // keeping its own copy.
+  absl::optional<CookiePartitionKey> cookie_partition_key_ = absl::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;
   bool force_ignore_top_frame_party_for_cookies_ = false;

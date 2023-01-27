@@ -84,15 +84,23 @@
           + event.params.siteHasCookieInOtherPartition);
   }
 
+  function listenForResponsePartitionKey(event) {
+    const partitionKey = event.params.cookiePartitionKeyOpaque ?
+      '<opaque>' : event.params.cookiePartitionKey;
+    testRunner.log('Current cookie partition key: ' + partitionKey);
+  }
+
   async function getPartitionedCookies() {
     dp.Network.onRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);
+    dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
 
     await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
     logCookies((await dp.Network.getCookies()).result);
 
     dp.Network.offRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);
+    dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
   }
 
   testRunner.log('Test started');
@@ -276,12 +284,14 @@
     async function getPartitionedCookieFromOpaqueOrigin() {
       dp.Network.onRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);
+      dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
 
       await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php?opaque');
       logCookies((await dp.Network.getCookies()).result);
 
       dp.Network.offRequestWillBeSentExtraInfo(
         listenForSiteHasCookieInOtherPartition);
+      dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
     },
 
     deleteAllCookies,

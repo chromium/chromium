@@ -47,7 +47,9 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
       const absl::optional<std::string>& response_headers_text,
       network::mojom::IPAddressSpace resource_address_space,
-      int32_t http_status_code) override;
+      int32_t http_status_code,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key)
+      override;
   void OnTrustTokenOperationDone(
       const std::string& devtools_request_id,
       network::mojom::TrustTokenOperationResultPtr result) override;

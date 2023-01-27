@@ -42,7 +42,8 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
       mojo::PendingReceiver<mojom::URLLoader> receiver,
       mojo::PendingRemote<mojom::URLLoaderClient> client,
       scoped_refptr<base::RefCountedBytes> content,
-      int64_t encoded_body_length);
+      int64_t encoded_body_length,
+      const absl::optional<net::CookiePartitionKey> cookie_partition_key);
 
   ~NetworkServiceMemoryCacheURLLoader() override;
 
@@ -103,6 +104,8 @@ class NetworkServiceMemoryCacheURLLoader : public mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<mojo::SimpleWatcher> producer_handle_watcher_;
   size_t write_position_ = 0;
+
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
 
   base::WeakPtrFactory<NetworkServiceMemoryCacheURLLoader> weak_ptr_factory_{
       this};

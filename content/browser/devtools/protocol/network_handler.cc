@@ -2945,16 +2945,27 @@ void NetworkHandler::OnResponseReceivedExtraInfo(
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
     const absl::optional<std::string>& response_headers_text,
     network::mojom::IPAddressSpace resource_address_space,
-    int32_t http_status_code) {
+    int32_t http_status_code,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
   if (!enabled_)
     return;
+
+  Maybe<std::string> frontend_partition_key;
+  std::string serialized_key;
+  if (cookie_partition_key && net::CookiePartitionKey::Serialize(
+                                  cookie_partition_key, serialized_key)) {
+    frontend_partition_key = serialized_key;
+  }
 
   frontend_->ResponseReceivedExtraInfo(
       devtools_request_id, BuildProtocolBlockedSetCookies(response_cookie_list),
       GetRawHeaders(response_headers),
       BuildIpAddressSpace(resource_address_space), http_status_code,
       response_headers_text.has_value() ? response_headers_text.value()
-                                        : Maybe<String>());
+                                        : Maybe<String>(),
+      std::move(frontend_partition_key),
+      cookie_partition_key ? !cookie_partition_key->IsSerializeable()
+                           : Maybe<bool>());
 }
 
 void NetworkHandler::OnLoadNetworkResourceFinished(

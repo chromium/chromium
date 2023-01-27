@@ -2257,7 +2257,7 @@ bool URLLoader::DispatchOnRawResponse() {
       std::move(header_array), raw_response_headers,
       private_network_access_checker_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
-      response_headers->response_code());
+      response_headers->response_code(), url_request_->cookie_partition_key());
 
   return true;
 }

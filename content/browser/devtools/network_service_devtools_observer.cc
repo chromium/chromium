@@ -73,14 +73,15 @@ void NetworkServiceDevToolsObserver::OnRawResponse(
     std::vector<network::mojom::HttpRawHeaderPairPtr> response_headers,
     const absl::optional<std::string>& response_headers_text,
     network::mojom::IPAddressSpace resource_address_space,
-    int32_t http_status_code) {
+    int32_t http_status_code,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
   auto* host = GetDevToolsAgentHost();
   if (!host)
     return;
   DispatchToAgents(host, &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
                    devtools_request_id, response_cookie_list, response_headers,
                    response_headers_text, resource_address_space,
-                   http_status_code);
+                   http_status_code, cookie_partition_key);
 }
 
 void NetworkServiceDevToolsObserver::OnTrustTokenOperationDone(

@@ -29,8 +29,10 @@ class NET_EXPORT CookiePartitionKey {
   bool operator<(const CookiePartitionKey& other) const;
 
   // Methods for serializing and deserializing a partition key to/from a string.
-  // This will be used for Android, storing persistent partitioned cookies, and
-  // loading partitioned cookies into Java code.
+  // This is currently used for:
+  // -  Storing persistent partitioned cookies
+  // -  Loading partitioned cookies into Java code
+  // -  Sending cookie partition keys as strings in the DevTools protocol
   //
   // This function returns true if the partition key is not opaque and if nonce_
   // is not present. We do not want to serialize cookies with opaque origins or

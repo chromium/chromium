@@ -24,7 +24,8 @@ NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     scoped_refptr<base::RefCountedBytes> content,
-    int64_t encoded_body_length)
+    int64_t encoded_body_length,
+    const absl::optional<net::CookiePartitionKey> cookie_partition_key)
     : memory_cache_(memory_cache),
       trace_id_(trace_id),
       net_log_(net_log),
@@ -32,7 +33,8 @@ NetworkServiceMemoryCacheURLLoader::NetworkServiceMemoryCacheURLLoader(
       client_(std::move(client)),
       devtools_request_id_(resource_request.devtools_request_id),
       content_(std::move(content)),
-      encoded_body_length_(encoded_body_length) {
+      encoded_body_length_(encoded_body_length),
+      cookie_partition_key_(std::move(cookie_partition_key)) {
   DCHECK(memory_cache_);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "loading", "NetworkServiceMemoryCacheURLLoader",
@@ -148,7 +150,8 @@ void NetworkServiceMemoryCacheURLLoader::MaybeNotifyRawResponse(
   devtools_observer_->OnRawResponse(
       *devtools_request_id_, /*cookies_with_access_result=*/{},
       std::move(header_array), /*raw_response_headers=*/absl::nullopt,
-      mojom::IPAddressSpace::kUnknown, response_head.headers->response_code());
+      mojom::IPAddressSpace::kUnknown, response_head.headers->response_code(),
+      cookie_partition_key_);
 }
 
 void NetworkServiceMemoryCacheURLLoader::WriteMore() {
