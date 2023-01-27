@@ -18,6 +18,14 @@ found in the LICENSE file.
         android:text="x.x.x"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="3dp"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressBackgroundTint="#fff"
+        android:progressTint="#4285F4" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container_view"

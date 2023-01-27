@@ -4,6 +4,9 @@
 
 package org.chromium.webengine.shell;
 
+import android.view.View;
+import android.widget.ProgressBar;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -12,6 +15,7 @@ import org.chromium.webengine.Navigation;
 import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
 import org.chromium.webengine.TabListObserver;
+import org.chromium.webengine.TabManager;
 import org.chromium.webengine.TabObserver;
 
 /**
@@ -38,6 +42,21 @@ public class DefaultObservers {
     }
 
     static class DefaultNavigationObserver extends NavigationObserver {
+        @Nullable
+        private ProgressBar mProgressBar;
+        @Nullable
+        private Tab mTab;
+        @Nullable
+        private TabManager mTabManager;
+
+        public DefaultNavigationObserver(@Nullable ProgressBar progressBar, @Nullable Tab tab,
+                @Nullable TabManager tabManager) {
+            mProgressBar = progressBar;
+            mTab = tab;
+            mTabManager = tabManager;
+        }
+        public DefaultNavigationObserver() {}
+
         @Override
         public void onNavigationFailed(@NonNull Navigation navigation) {
             Log.i(TAG, "received NavigationEvent: 'onNavigationFailed()';");
@@ -55,9 +74,40 @@ public class DefaultObservers {
                             + ", HTTP-StatusCode: " + navigation.getStatusCode()
                             + ", samePage: " + navigation.isSameDocument());
         }
+
+        @Override
+        public void onLoadProgressChanged(double progress) {
+            super.onLoadProgressChanged(progress);
+            int progressValue = (int) Math.rint(progress * 100);
+            Log.i(TAG, "received NavigationEvent: 'onLoadProgressChanged()';");
+            if (mProgressBar == null) {
+                return;
+            }
+            if (mTabManager == null || mTabManager.getActiveTab() == null
+                    || !mTabManager.getActiveTab().equals(mTab)) {
+                return;
+            }
+            if (progressValue != mProgressBar.getMax()) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                mProgressBar.setVisibility(View.INVISIBLE);
+            }
+            mProgressBar.setProgress(progressValue);
+        }
     }
 
     static class DefaultTabListObserver extends TabListObserver {
+        @Nullable
+        private ProgressBar mProgressBar;
+        @Nullable
+        private TabManager mTabManager;
+        public DefaultTabListObserver(
+                @Nullable ProgressBar progressBar, @Nullable TabManager tabManager) {
+            mProgressBar = progressBar;
+            mTabManager = tabManager;
+        }
+        public DefaultTabListObserver() {}
+
         @Override
         public void onActiveTabChanged(@Nullable Tab activeTab) {
             Log.i(TAG, "received TabList Event: 'onActiveTabChanged'-event");
@@ -70,7 +120,7 @@ public class DefaultObservers {
             // Recursively add tab and navigation observers to any new tab.
             tab.registerTabObserver(new DefaultTabObserver());
             tab.getNavigationController().registerNavigationObserver(
-                    new DefaultNavigationObserver());
+                    new DefaultNavigationObserver(mProgressBar, tab, mTabManager));
         }
 
         @Override

@@ -213,7 +213,7 @@ public class WebEngineStateTestActivity extends AppCompatActivity {
         activeTab.registerTabObserver(new DefaultObservers.DefaultTabObserver());
         activeTab.getNavigationController().registerNavigationObserver(
                 new DefaultObservers.DefaultNavigationObserver());
-        activeTab.getNavigationController().navigate("https://google.com");
+        activeTab.getNavigationController().navigate("https://www.google.com");
     }
 
     /**
