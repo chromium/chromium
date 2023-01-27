@@ -1449,6 +1449,16 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Exceptions to this rule should have a fuzzer.
       ],
     ),
+  BanRule(
+    r'/\b#include "base/atomicops\.h"\b',
+    (
+      'Do not use base::subtle atomics, but std::atomic, which are simpler to '
+      'use, have better understood, clearer and richer semantics, and are '
+      'harder to mis-use. See details in base/atomicops.h.'
+    ),
+    False,
+    [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
+  ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
