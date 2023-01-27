@@ -96,7 +96,7 @@
     <cr-link-row id="compromisedRow" class="hr"
         start-icon="[[getIcon_(compromisedPasswords_, 'true', status_)]]"
         label="[[getCompromisedSectionLabel_(status_, compromisedPasswordsText_)]]"
-        sub-label="[[getCompromisedSectionSublabel_(compromisedPasswords_)]]"
+        sub-label="[[getCompromisedSectionSublabel_(status_, compromisedPasswords_)]]"
         show-yellow-icon$="[[didCompromiseCheckFail_(status_)]]"
         show-red-icon$="[[hasIssues_(compromisedPasswords_)]]"
         hide-icon$="[[!hasIssues_(compromisedPasswords_)]]"

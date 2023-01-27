@@ -332,6 +332,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
   }
 
   private getCompromisedSectionSublabel_(): string {
+    if (!this.status_ || !this.compromisedPasswords_) {
+      return '';
+    }
     const brandingName = this.i18n('localPasswordManager');
     switch (this.status_.state) {
       case CheckState.IDLE:
