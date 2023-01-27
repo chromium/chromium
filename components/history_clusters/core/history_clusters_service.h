@@ -31,6 +31,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+class PrefService;
 class TemplateURLService;
 
 namespace optimization_guide {
@@ -97,7 +98,8 @@ class HistoryClustersService : public base::SupportsUserData,
       site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
       TemplateURLService* template_url_service,
       optimization_guide::NewOptimizationGuideDecider*
-          optimization_guide_decider);
+          optimization_guide_decider,
+      PrefService* pref_service);
   HistoryClustersService(const HistoryClustersService&) = delete;
   HistoryClustersService& operator=(const HistoryClustersService&) = delete;
   ~HistoryClustersService() override;
