@@ -54,15 +54,10 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
     // Wait for Personal Data Manager to be fully loaded to prevent that
     // spurious notifications deceive the tests.
     WaitForPersonalDataManagerToBeLoaded(browser()->profile());
-
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            web_contents());
   }
 
   TestAutofillManager* GetAutofillManager() {
-    DCHECK(autofill_manager_injector_);
-    return autofill_manager_injector_->GetForPrimaryMainFrame();
+    return autofill_manager_injector_[web_contents()];
   }
 
   content::WebContents* web_contents() {
@@ -94,8 +89,7 @@ class CreditCardAccessManagerBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 IN_PROC_BROWSER_TEST_F(CreditCardAccessManagerBrowserTest,

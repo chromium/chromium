@@ -35,6 +35,30 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 
+namespace {
+
+class TestAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                      autofill::AutofillClient* client)
+      : BrowserAutofillManager(driver,
+                               client,
+                               "en-US",
+                               EnableDownloadManager(false)) {}
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
+      int min_num_awaited_calls) {
+    return forms_seen_waiter_.Wait(min_num_awaited_calls);
+  }
+
+ private:
+  autofill::TestAutofillManagerWaiter forms_seen_waiter_{
+      *this,
+      {&AutofillManager::Observer::OnAfterFormsSeen}};
+};
+
+}  // namespace
+
 class BrowserNonClientFrameViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
@@ -96,6 +120,8 @@ class BrowserNonClientFrameViewBrowserTest
   raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
   raw_ptr<BrowserView, DanglingUntriaged> app_browser_view_ = nullptr;
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
+  autofill::TestAutofillManagerInjector<TestAutofillManager>
+      autofill_manager_injector_;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
@@ -353,30 +379,6 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
-namespace {
-
-class TestAutofillManager : public autofill::BrowserAutofillManager {
- public:
-  TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                      autofill::AutofillClient* client)
-      : BrowserAutofillManager(driver,
-                               client,
-                               "en-US",
-                               EnableDownloadManager(false)) {}
-
-  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
-      int min_num_awaited_calls) {
-    return forms_seen_waiter_.Wait(min_num_awaited_calls);
-  }
-
- private:
-  autofill::TestAutofillManagerWaiter forms_seen_waiter_{
-      *this,
-      {&AutofillManager::Observer::OnAfterFormsSeen}};
-};
-
-}  // namespace
-
 // TODO(crbug.com/1366531): Fails on Mac 12.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SaveCardIcon DISABLED_SaveCardIcon
@@ -384,14 +386,11 @@ class TestAutofillManager : public autofill::BrowserAutofillManager {
 #define MAYBE_SaveCardIcon SaveCardIcon
 #endif
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, MAYBE_SaveCardIcon) {
-  autofill::TestAutofillManagerFutureInjectors<TestAutofillManager>
-      autofill_manager_injectors;
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
+                       MAYBE_SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
-  ASSERT_TRUE(
-      autofill_manager_injectors[0].GetForPrimaryMainFrame()->WaitForFormsSeen(
-          1));
+  ASSERT_TRUE(autofill_manager_injector_[web_contents_]->WaitForFormsSeen(1));
   ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
 
   content::TestNavigationObserver nav_observer(web_contents_);

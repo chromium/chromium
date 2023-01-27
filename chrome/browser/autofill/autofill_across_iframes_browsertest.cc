@@ -412,7 +412,7 @@ class AutofillAcrossIframesTest : public InProcessBrowserTest {
   content::ContentMockCertVerifier cert_verifier_;
   // Maps relative paths to HTML content.
   std::map<std::string, std::string> pages_;
-  TestAutofillManagerFutureInjectors<TestAutofillManager> injectors_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 // Test fixture for basic filling, in particular for testing the security policy

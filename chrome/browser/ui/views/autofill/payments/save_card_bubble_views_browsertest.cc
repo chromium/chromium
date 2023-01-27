@@ -202,18 +202,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
     // HTML pages in tests. Since ContentAutofillDriver is per RFH, the driver
     // that this method starts observing will also be the one to notify later.
     AddBlankTabAndShow(GetBrowser(0));
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            GetActiveWebContents());
 
     // Set up the URL loader factory for the payments client so we can intercept
     // those network requests too.
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    ContentAutofillDriver::GetForRenderFrameHost(
-        GetActiveWebContents()->GetPrimaryMainFrame())
-        ->autofill_manager()
+    autofill_manager()
         ->client()
         ->GetPaymentsClient()
         ->set_url_loader_factory_for_testing(test_shared_loader_factory_);
@@ -223,13 +218,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
     WaitForPersonalDataManagerToBeLoaded(GetProfile(0));
 
     // Set up this class as the ObserverForTest implementation.
-    credit_card_save_manager_ =
-        ContentAutofillDriver::GetForRenderFrameHost(
-            GetActiveWebContents()->GetPrimaryMainFrame())
-            ->autofill_manager()
-            ->client()
-            ->GetFormDataImporter()
-            ->credit_card_save_manager_.get();
+    credit_card_save_manager_ = autofill_manager()
+                                    ->client()
+                                    ->GetFormDataImporter()
+                                    ->credit_card_save_manager_.get();
     credit_card_save_manager_->SetEventObserverForTesting(this);
     AddEventObserverToController();
 
@@ -240,9 +232,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   // The primary main frame's AutofillManager.
-  TestAutofillManager* GetAutofillManager() {
-    DCHECK(autofill_manager_injector_);
-    return autofill_manager_injector_->GetForPrimaryMainFrame();
+  TestAutofillManager* autofill_manager() {
+    return autofill_manager_injector_[GetActiveWebContents()];
   }
 
   // CreditCardSaveManager::ObserverForTest:
@@ -342,7 +333,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
       ASSERT_TRUE(ui_test_utils::NavigateToURL(
           GetBrowser(0), embedded_test_server()->GetURL(file_path)));
     }
-    ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
+    ASSERT_TRUE(autofill_manager()->WaitForFormsSeen(1));
   }
 
   void SetAccountFullName(const std::string& full_name) {
@@ -754,8 +745,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
  private:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
 

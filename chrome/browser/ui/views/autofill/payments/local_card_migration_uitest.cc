@@ -203,9 +203,6 @@ class LocalCardMigrationBrowserTest
 
     ASSERT_TRUE(SetupClients());
     chrome::NewTab(GetBrowser(0));
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            GetActiveWebContents());
 
     // Set up the URL loader factory for the payments client so we can intercept
     // those network requests too.
@@ -288,8 +285,7 @@ class LocalCardMigrationBrowserTest
   }
 
   TestAutofillManager* GetAutofillManager() {
-    DCHECK(autofill_manager_injector_);
-    return autofill_manager_injector_->GetForPrimaryMainFrame();
+    return autofill_manager_injector_[GetActiveWebContents()];
   }
 
   void NavigateToAndWaitForForm(const std::string& file_path) {
@@ -534,8 +530,7 @@ class LocalCardMigrationBrowserTest
   PersonalDataLoadedObserverMock personal_data_observer_;
 
  private:
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

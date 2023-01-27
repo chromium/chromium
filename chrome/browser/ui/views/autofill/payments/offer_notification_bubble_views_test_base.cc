@@ -60,10 +60,6 @@ void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
               GetActiveWebContents()));
   AddEventObserverToController(controller);
 
-  autofill_manager_injector_ =
-      std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-          GetActiveWebContents());
-
   personal_data_ =
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
   coupon_service_ = CouponServiceFactory::GetForProfile(browser()->profile());
@@ -207,8 +203,7 @@ void OfferNotificationBubbleViewsTestBase::
 
 OfferNotificationBubbleViewsTestBase::TestAutofillManager*
 OfferNotificationBubbleViewsTestBase::GetAutofillManager() {
-  DCHECK(autofill_manager_injector_);
-  return autofill_manager_injector_->GetForPrimaryMainFrame();
+  return autofill_manager_injector_[GetActiveWebContents()];
 }
 
 void OfferNotificationBubbleViewsTestBase::NavigateTo(

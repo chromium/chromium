@@ -17,7 +17,8 @@
 namespace autofill {
 
 // Upon construction, and in response to WebFrameDidBecomeAvailable, installs an
-// BrowserAutofillManager of type `T`.
+// BrowserAutofillManager of type `T` in the main frame of the given `web_state`
+// and all subsequently created frames of the `web_state`.
 //
 // Typical usage as a RAII type:
 //

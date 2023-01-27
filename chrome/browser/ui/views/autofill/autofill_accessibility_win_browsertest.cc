@@ -68,9 +68,6 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     GetWebContents()->SetAccessibilityMode(ui::kAXModeComplete);
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
-            GetWebContents());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -90,8 +87,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   }
 
   TestAutofillManager* GetAutofillManager() {
-    DCHECK(autofill_manager_injector_);
-    return autofill_manager_injector_->GetForPrimaryMainFrame();
+    return autofill_manager_injector_[GetWebContents()];
   }
 
   void NavigateToAndWaitForForm(const GURL& url) {
@@ -114,8 +110,7 @@ class AutofillAccessibilityWinBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 // The test is flaky on Windows. See https://crbug.com/1221273

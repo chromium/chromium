@@ -196,13 +196,12 @@ class AutofillTest : public InProcessBrowserTest {
                                     const FormMap& data,
                                     const std::string& submit_js,
                                     bool simulate_click) {
-    TestAutofillManagerFutureInjectors<TestAutofillManager> injectors;
     GURL url = embedded_test_server()->GetURL("/autofill/" + filename);
     NavigateParams params(browser(), url, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     ui_test_utils::NavigateToURL(&params);
-    ASSERT_EQ(1u, injectors.size());
-    ASSERT_TRUE(injectors[0].GetForPrimaryMainFrame()->WaitForFormsSeen(1));
+    ASSERT_TRUE(
+        autofill_manager_injector_[web_contents()]->WaitForFormsSeen(1));
     // Shortcut explicit save prompts and automatically accept.
     personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
     WindowedPersonalDataManagerObserver observer(browser());
@@ -266,6 +265,9 @@ class AutofillTest : public InProcessBrowserTest {
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+ private:
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
 // Test that Autofill aggregates a minimum valid profile.
@@ -790,9 +792,6 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<MockAutofillManager>>(
-            web_contents());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -800,15 +799,6 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
     // Slower test bots (chromeos, debug, etc) are flaky
     // due to slower loading interacting with deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-
-  void TearDown() override {
-    autofill_manager_injector_ = nullptr;
-    InProcessBrowserTest::TearDown();
-  }
-
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -819,14 +809,12 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  TestAutofillManagerInjector<MockAutofillManager>&
-  autofill_manager_injector() {
-    return *autofill_manager_injector_;
+  MockAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
   }
 
  private:
-  std::unique_ptr<TestAutofillManagerInjector<MockAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<MockAutofillManager> autofill_manager_injector_;
   content::test::PrerenderTestHelper prerender_helper_{
       base::BindRepeating(&AutofillTestPrerendering::web_contents,
                           base::Unretained(this))};
@@ -855,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
   // we set up during render frame creation have been met (i.e., that we did not
   // issue a calls to the driver for either the forms being seen nor the focus
   // update).
-  MockAutofillManager* mock = autofill_manager_injector().GetForFrame(rfh);
+  MockAutofillManager* mock = autofill_manager(rfh);
   testing::Mock::VerifyAndClearExpectations(mock);
   // Next, we ensure that once we activate, we issue the deferred calls.
   base::RunLoop run_loop;
@@ -911,9 +899,6 @@ class AutofillTestFormSubmission
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     SetUpServer();
-    autofill_manager_injector_ =
-        std::make_unique<TestAutofillManagerInjector<MockAutofillManager>>(
-            web_contents());
     NavigateToPage("/form.html");
   }
 
@@ -921,11 +906,6 @@ class AutofillTestFormSubmission
     // Slower test bots (chromeos, debug, etc) are flaky
     // due to slower loading interacting with deferred commits.
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
-  }
-
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
-    autofill_manager_injector_ = nullptr;
   }
 
   void ExecuteScript(const std::string& js) {
@@ -941,9 +921,12 @@ class AutofillTestFormSubmission
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  TestAutofillManagerInjector<MockAutofillManager>&
-  autofill_manager_injector() {
-    return *autofill_manager_injector_;
+  MockAutofillManager* autofill_manager() {
+    return autofill_manager(web_contents()->GetPrimaryMainFrame());
+  }
+
+  MockAutofillManager* autofill_manager(content::RenderFrameHost* rfh) {
+    return autofill_manager_injector_[rfh];
   }
 
  private:
@@ -994,8 +977,7 @@ class AutofillTestFormSubmission
   }
 
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestAutofillManagerInjector<MockAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<MockAutofillManager> autofill_manager_injector_;
 };
 
 // Tests that user-triggered submission triggers a submission event in
@@ -1003,7 +985,7 @@ class AutofillTestFormSubmission
 IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, Submission) {
   base::RunLoop run_loop;
   EXPECT_CALL(
-      *autofill_manager_injector().GetForPrimaryMainFrame(),
+      *autofill_manager(),
       OnFormSubmittedImpl(_, _, mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
       .WillRepeatedly(
@@ -1019,7 +1001,7 @@ IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, Submission) {
 // submission event in BrowserAutofillManager.
 IN_PROC_BROWSER_TEST_P(AutofillTestFormSubmission, ProbableSubmission) {
   base::RunLoop run_loop;
-  EXPECT_CALL(*autofill_manager_injector().GetForPrimaryMainFrame(),
+  EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(
                   _, _, mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)

@@ -149,8 +149,7 @@ class OfferNotificationBubbleViewsTestBase
   std::string GetDefaultTestDetailsUrlString() const;
 
  private:
-  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
-      autofill_manager_injector_;
+  TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_;
   raw_ptr<CouponService, DanglingUntriaged> coupon_service_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;

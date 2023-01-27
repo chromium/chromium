@@ -32,27 +32,27 @@ const char kEditPhoneAndEmailFieldScript[] = R"(
     email_input.blur();
   )";
 
-class TestAutofillManager : public autofill::BrowserAutofillManager {
- public:
-  TestAutofillManager(autofill::ContentAutofillDriver* driver,
-                      autofill::AutofillClient* client)
-      : BrowserAutofillManager(driver,
-                               client,
-                               "en-US",
-                               EnableDownloadManager(false)) {}
-
-  autofill::TestAutofillManagerWaiter& waiter() { return waiter_; }
-
- private:
-  autofill::TestAutofillManagerWaiter waiter_{
-      *this,
-      {&AutofillManager::Observer::OnAfterFormsSeen}};
-};
-
 }  // namespace
 
 class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
  public:
+  class TestAutofillManager : public autofill::BrowserAutofillManager {
+   public:
+    TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                        autofill::AutofillClient* client)
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
+
+    autofill::TestAutofillManagerWaiter& waiter() { return waiter_; }
+
+   private:
+    autofill::TestAutofillManagerWaiter waiter_{
+        *this,
+        {&AutofillManager::Observer::OnAfterFormsSeen}};
+  };
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     content::SetupCrossSiteRedirector(embedded_test_server());
@@ -72,6 +72,14 @@ class FormfillPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
+
+  TestAutofillManager* autofill_manager() {
+    return autofill_manager_injector_[web_contents()];
+  }
+
+ private:
+  autofill::TestAutofillManagerInjector<TestAutofillManager>
+      autofill_manager_injector_;
 };
 
 IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
@@ -79,13 +87,10 @@ IN_PROC_BROWSER_TEST_F(FormfillPageLoadMetricsObserverBrowserTest,
   base::HistogramTester histogram_tester;
 
   // When loading the page, wait until OnFormsSeen().
-  autofill::TestAutofillManagerInjector<TestAutofillManager>
-      autofill_manager_injector(web_contents());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
-  ASSERT_TRUE(
-      autofill_manager_injector.GetForPrimaryMainFrame()->waiter().Wait(1));
+  ASSERT_TRUE(autofill_manager()->waiter().Wait(1));
 
   ASSERT_TRUE(
       content::ExecuteScript(web_contents(), kEditPhoneAndEmailFieldScript));
