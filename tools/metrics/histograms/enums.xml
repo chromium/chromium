@@ -26385,6 +26385,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="104" label="layers.left"/>
   <int value="105" label="layers.right"/>
   <int value="106" label="help.report-translation-issue"/>
+  <int value="107" label="rendering.toggle-prefers-color-scheme"/>
+  <int value="108" label="chrome_recorder.start-recording"/>
+  <int value="109" label="chrome_recorder.replay-recording"/>
+  <int value="110" label="chrome_recorder.toggle-code-view"/>
+  <int value="111" label="chrome_recorder.copy-recording-or-step"/>
 </enum>
 
 <enum name="DevToolsLanguage">
