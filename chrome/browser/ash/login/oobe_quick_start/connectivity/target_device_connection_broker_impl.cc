@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -70,8 +71,9 @@ std::vector<uint8_t> GetEndpointInfoDisplayNameBytes(
 
   std::vector<uint8_t> display_name_bytes(display_name.begin(),
                                           display_name.end());
-  if (display_name_bytes.size() < kMaxEndpointInfoDisplayNameLength)
+  if (display_name_bytes.size() < kMaxEndpointInfoDisplayNameLength) {
     display_name_bytes.push_back(0);
+  }
 
   return display_name_bytes;
 }
@@ -111,11 +113,13 @@ TargetDeviceConnectionBrokerImpl::~TargetDeviceConnectionBrokerImpl() {}
 
 TargetDeviceConnectionBrokerImpl::FeatureSupportStatus
 TargetDeviceConnectionBrokerImpl::GetFeatureSupportStatus() const {
-  if (!bluetooth_adapter_)
+  if (!bluetooth_adapter_) {
     return FeatureSupportStatus::kUndetermined;
+  }
 
-  if (bluetooth_adapter_->IsPresent())
+  if (bluetooth_adapter_->IsPresent()) {
     return FeatureSupportStatus::kSupported;
+  }
 
   return FeatureSupportStatus::kNotSupported;
 }
@@ -174,25 +178,41 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
-  VLOG(1) << "Starting advertising with session id " << random_session_id_
-          << " (" << GetDisplayNameSessionIdDigits(random_session_id_) << ")";
+  // This will start Nearby Connections advertising if Fast Pair advertising
+  // succeeds.
+  StartFastPairAdvertising(std::move(on_start_advertising_callback));
+}
+
+void TargetDeviceConnectionBrokerImpl::StartFastPairAdvertising(
+    ResultCallback callback) {
+  QS_LOG(INFO) << "Starting Fast Pair advertising with session id "
+               << random_session_id_ << " ("
+               << GetDisplayNameSessionIdDigits(random_session_id_) << ")";
 
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
   auto [success_callback, failure_callback] =
-      base::SplitOnceCallback(std::move(on_start_advertising_callback));
+      base::SplitOnceCallback(std::move(callback));
 
   fast_pair_advertiser_->StartAdvertising(
-      // TODO(b/234655072): on success, start Nearby Connections advertising.
-      base::BindOnce(std::move(success_callback), /*success=*/true),
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess,
+          weak_ptr_factory_.GetWeakPtr(), std::move(success_callback)),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
           weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
       random_session_id_);
 }
 
+void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingSuccess(
+    ResultCallback callback) {
+  QS_LOG(INFO) << "Fast Pair advertising started successfully.";
+  StartNearbyConnectionsAdvertising(std::move(callback));
+}
+
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError(
     ResultCallback callback) {
+  QS_LOG(ERROR) << "Fast Pair advertising failed to start.";
   fast_pair_advertiser_.reset();
   std::move(callback).Run(/*success=*/false);
 }
@@ -204,7 +224,7 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
   }
 
   if (!fast_pair_advertiser_) {
-    VLOG(1) << __func__ << " Not currently advertising, ignoring.";
+    QS_LOG(INFO) << __func__ << " Not currently advertising, ignoring.";
     std::move(on_stop_advertising_callback).Run();
     return;
   }
@@ -217,7 +237,8 @@ void TargetDeviceConnectionBrokerImpl::StopAdvertising(
 void TargetDeviceConnectionBrokerImpl::OnStopFastPairAdvertising(
     base::OnceClosure callback) {
   fast_pair_advertiser_.reset();
-  std::move(callback).Run();
+
+  StopNearbyConnectionsAdvertising(std::move(callback));
 }
 
 // The EndpointInfo consists of the following fields:
@@ -247,6 +268,77 @@ std::vector<uint8_t> TargetDeviceConnectionBrokerImpl::GenerateEndpointInfo() {
   endpoint_info.push_back(kEndpointInfoIsQuickStart);
 
   return endpoint_info;
+}
+
+void TargetDeviceConnectionBrokerImpl::StartNearbyConnectionsAdvertising(
+    ResultCallback callback) {
+  if (!nearby_connections_manager_) {
+    QS_LOG(ERROR)
+        << "NearbyConnectionsManager is null, cannot start Nearby Connections "
+           "advertising.";
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  QS_LOG(INFO) << "Starting Nearby Connections Advertising";
+  // TODO(b/234655072): PowerLevel::kHighPower implies using Bluetooth classic,
+  // but we should also advertise over BLE. Nearby Connections does not yet
+  // support BLE as an upgrade medium, so Quick Start over BLE is planned for
+  // post-launch.
+  nearby_connections_manager_->StartAdvertising(
+      GenerateEndpointInfo(), /*listener=*/this, PowerLevel::kHighPower,
+      DataUsage::kOffline,
+      base::BindOnce(&TargetDeviceConnectionBrokerImpl::
+                         OnStartNearbyConnectionsAdvertising,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void TargetDeviceConnectionBrokerImpl::StopNearbyConnectionsAdvertising(
+    base::OnceClosure callback) {
+  if (!nearby_connections_manager_) {
+    QS_LOG(ERROR)
+        << "NearbyConnectionsManager is null, cannot stop Nearby Connections "
+           "advertising.";
+    std::move(callback).Run();
+    return;
+  }
+
+  QS_LOG(INFO) << "Stopping Nearby Connections Advertising";
+  nearby_connections_manager_->StopAdvertising(base::BindOnce(
+      &TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising,
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void TargetDeviceConnectionBrokerImpl::OnStartNearbyConnectionsAdvertising(
+    ResultCallback callback,
+    NearbyConnectionsManager::ConnectionsStatus status) {
+  QS_LOG(INFO) << "Nearby Connections Advertising started with status "
+               << status;
+  bool success =
+      status == NearbyConnectionsManager::ConnectionsStatus::kSuccess;
+  std::move(callback).Run(success);
+}
+
+void TargetDeviceConnectionBrokerImpl::OnStopNearbyConnectionsAdvertising(
+    base::OnceClosure callback,
+    NearbyConnectionsManager::ConnectionsStatus status) {
+  QS_LOG(INFO) << "Nearby Connections Advertising stopped with status "
+               << status;
+  if (status != NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
+    QS_LOG(WARNING) << "Failed to stop Nearby Connections advertising";
+  }
+  std::move(callback).Run();
+}
+
+void TargetDeviceConnectionBrokerImpl::OnIncomingConnection(
+    const std::string& endpoint_id,
+    const std::vector<uint8_t>& endpoint_info,
+    NearbyConnection* connection) {
+  QS_LOG(INFO) << "Nearby Connections incoming connection, endpoint_id="
+               << endpoint_id;
+
+  // TODO(b/234655072): Notify ConnectionLifecycleListener about the incoming
+  // connection so that the Quick Start flow can proceed.
 }
 
 }  // namespace ash::quick_start

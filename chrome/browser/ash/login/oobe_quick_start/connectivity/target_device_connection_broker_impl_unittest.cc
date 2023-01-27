@@ -12,7 +12,11 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service.h"
+#include "chrome/browser/ash/nearby/quick_start_connectivity_service_factory.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
+#include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/constants/devicetype.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -79,8 +83,9 @@ class DeferredBluetoothAdapterFactoryWrapper
     : public TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper {
  public:
   void ReturnAdapter() {
-    if (!adapter_callback_)
+    if (!adapter_callback_) {
       return;
+    }
 
     device::BluetoothAdapterFactory::Get()->GetAdapter(
         std::move(adapter_callback_));
@@ -116,10 +121,11 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
                         base::OnceCallback<void()> error_callback,
                         const RandomSessionId& random_session_id) override {
     ++start_advertising_call_count_;
-    if (should_succeed_on_start_)
+    if (should_succeed_on_start_) {
       std::move(callback).Run();
-    else
+    } else {
       std::move(error_callback).Run();
+    }
   }
 
   void StopAdvertising(base::OnceCallback<void()> callback) override {
@@ -508,5 +514,42 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
 INSTANTIATE_TEST_SUITE_P(TargetDeviceConnectionBrokerImplTest,
                          TargetDeviceConnectionBrokerImplEndpointInfoTest,
                          testing::ValuesIn(kEndpointInfoTestCases));
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StartNearbyConnectionsAdvertising) {
+  FinishFetchingBluetoothAdapter();
+  EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
+
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_TRUE(fake_nearby_connections_manager_.IsAdvertising());
+  EXPECT_EQ(PowerLevel::kHighPower,
+            fake_nearby_connections_manager_.advertising_power_level());
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_TRUE(start_advertising_callback_success_);
+}
+
+TEST_F(TargetDeviceConnectionBrokerImplTest,
+       StartNearbyConnectionsAdvertisingError) {
+  FinishFetchingBluetoothAdapter();
+  FakeNearbyConnectionsManager::ConnectionsCallback callback =
+      fake_nearby_connections_manager_.GetStartAdvertisingCallback();
+  EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
+
+  connection_broker_->StartAdvertising(
+      nullptr,
+      base::BindOnce(
+          &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
+          weak_ptr_factory_.GetWeakPtr()));
+  EXPECT_TRUE(fake_nearby_connections_manager_.IsAdvertising());
+  EXPECT_FALSE(start_advertising_callback_called_);
+
+  std::move(callback).Run(NearbyConnectionsManager::ConnectionsStatus::kError);
+  EXPECT_TRUE(start_advertising_callback_called_);
+  EXPECT_FALSE(start_advertising_callback_success_);
+}
 
 }  // namespace ash::quick_start

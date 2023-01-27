@@ -15,7 +15,9 @@ namespace ash::quick_start {
 
 class FastPairAdvertiser;
 
-class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
+class TargetDeviceConnectionBrokerImpl
+    : public TargetDeviceConnectionBroker,
+      public NearbyConnectionsManager::IncomingConnectionListener {
  public:
   using FeatureSupportStatus =
       TargetDeviceConnectionBroker::FeatureSupportStatus;
@@ -59,14 +61,30 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   // |GenerateEndpointInfo()| directly.
   friend class TargetDeviceConnectionBrokerImplTest;
 
+  // NearbyConnectionsManager::IncomingConnectionListener:
+  void OnIncomingConnection(const std::string& endpoint_id,
+                            const std::vector<uint8_t>& endpoint_info,
+                            NearbyConnection* connection) override;
+
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+  void StartFastPairAdvertising(ResultCallback callback);
+  void OnStartFastPairAdvertisingSuccess(ResultCallback callback);
   void OnStartFastPairAdvertisingError(ResultCallback callback);
   void OnStopFastPairAdvertising(base::OnceClosure callback);
 
   // The EndpointInfo is the set of bytes that SmartSetup on Android expects to
   // be in the Nearby Connections advertisement.
   std::vector<uint8_t> GenerateEndpointInfo();
+
+  void StartNearbyConnectionsAdvertising(ResultCallback callback);
+  void StopNearbyConnectionsAdvertising(base::OnceClosure callback);
+  void OnStartNearbyConnectionsAdvertising(
+      ResultCallback callback,
+      NearbyConnectionsManager::ConnectionsStatus status);
+  void OnStopNearbyConnectionsAdvertising(
+      base::OnceClosure callback,
+      NearbyConnectionsManager::ConnectionsStatus status);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::OnceClosure deferred_start_advertising_callback_;

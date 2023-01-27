@@ -52,6 +52,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   void SetUp() override { CreateBootstrapController(); }
   void TearDown() override {
     bootstrap_controller_->RemoveObserver(fake_observer_.get());
+    TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(nullptr);
   }
 
   void CreateBootstrapController() {

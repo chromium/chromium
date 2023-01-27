@@ -10,6 +10,7 @@ source_set("connectivity") {
   deps = [
     ":decoder",
     "//base",
+    "//chrome/browser/ash/login/oobe_quick_start/logging",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/cpp",
