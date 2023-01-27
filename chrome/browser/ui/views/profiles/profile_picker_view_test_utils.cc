@@ -261,9 +261,13 @@ void CompleteLacrosFirstRun(
   ASSERT_TRUE(ProfilePicker::IsFirstRunOpen());
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 
-  EnterpriseProfileWelcomeHandler* handler = ExpectPickerWelcomeScreenType(
+  ExpectPickerWelcomeScreenType(
       EnterpriseProfileWelcomeUI::ScreenType::kLacrosConsumerWelcome);
-  handler->HandleProceedForTesting(/*should_link_data=*/false);
+  base::Value::List args;
+  args.Append(false);
+  GetPickerWebContents()->GetWebUI()->ProcessWebUIMessage(
+      GetPickerWebContents()->GetURL(), "proceed", std::move(args));
+
   WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
       GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
 

@@ -277,13 +277,6 @@ void EnterpriseProfileWelcomeHandler::HandleInitializedWithSize(
     signin::SetInitializedModalHeight(browser_, web_ui(), args);
 }
 
-void EnterpriseProfileWelcomeHandler::HandleProceedForTesting(
-    bool should_link_data) {
-  base::Value::List args;
-  args.Append(should_link_data);
-  HandleProceed(args);
-}
-
 void EnterpriseProfileWelcomeHandler::HandleProceed(
     const base::Value::List& args) {
   CHECK_EQ(1u, args.size());

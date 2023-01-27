@@ -15,12 +15,13 @@
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 
+enum class IntroChoice;
 class Profile;
 
 // Creates a step to represent the intro. Exposed for testing.
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     ProfilePickerWebContentsHost* host,
-    base::RepeatingCallback<void(bool sign_in)> choice_callback,
+    base::RepeatingCallback<void(IntroChoice)> choice_callback,
     bool enable_animations);
 
 class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
@@ -51,7 +52,7 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
       FinishFlowCallback flow_finished_callback) override;
 
  private:
-  void HandleIntroSigninChoice(bool sign_in);
+  void HandleIntroSigninChoice(IntroChoice choice);
 
   const raw_ptr<Profile> profile_;
   ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;

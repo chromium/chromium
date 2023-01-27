@@ -167,6 +167,7 @@ bool ProfilePickerTurnSyncOnDelegate::
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile first run experience is silently skipped if sync is
     // disabled (there's no point to promo a feature that cannot get enabled).
+    LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
     return true;
   }
 
@@ -273,7 +274,10 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
     return;
   }
 
+  // For the Profile Picker flows, the profile should always be new. Other flows
+  // also handle whether data from the existing profile should be merged.
   DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   LOG(WARNING) << "crbug.com/1340791 | Closed EnterpriseWelcome with choice="
                << static_cast<int>(choice)

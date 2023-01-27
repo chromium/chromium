@@ -10,9 +10,11 @@
 #include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+enum class IntroChoice;
+
 class IntroHandler : public content::WebUIMessageHandler {
  public:
-  explicit IntroHandler(base::RepeatingCallback<void(bool sign_in)> callback,
+  explicit IntroHandler(base::RepeatingCallback<void(IntroChoice)> callback,
                         bool is_device_managed);
 
   IntroHandler(const IntroHandler&) = delete;
@@ -30,9 +32,11 @@ class IntroHandler : public content::WebUIMessageHandler {
   // Chrome.
   void HandleContinueWithAccount(const base::Value::List& args);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Handles "continueWithoutAccount" message from the page. No arguments.
   // This message is sent when the user declines signing in to Chrome.
   void HandleContinueWithoutAccount(const base::Value::List& args);
+#endif
 
   // Handles "initializeMainView" message from the page. No arguments.
   // This message is sent when the view is created.
@@ -42,7 +46,7 @@ class IntroHandler : public content::WebUIMessageHandler {
   // that will be caught and handled in the ts file.
   void FireManagedDisclaimerUpdate(std::string disclaimer);
 
-  const base::RepeatingCallback<void(bool sign_in)> callback_;
+  const base::RepeatingCallback<void(IntroChoice)> callback_;
   const bool is_device_managed_ = false;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<policy::CloudPolicyStore::Observer> policy_store_observer_;

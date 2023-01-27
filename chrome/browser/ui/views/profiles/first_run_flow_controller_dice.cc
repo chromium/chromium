@@ -31,7 +31,7 @@ class IntroStepController : public ProfileManagementStepController {
  public:
   explicit IntroStepController(
       ProfilePickerWebContentsHost* host,
-      base::RepeatingCallback<void(bool sign_in)> choice_callback,
+      base::RepeatingCallback<void(IntroChoice)> choice_callback,
       bool enable_animations)
       : ProfileManagementStepController(host),
         intro_url_(BuildIntroURL(enable_animations)),
@@ -91,7 +91,7 @@ class IntroStepController : public ProfileManagementStepController {
 
   // `choice_callback_` is a `Repeating` one to be able to advance the flow more
   // than once in case we navigate back to this step.
-  const base::RepeatingCallback<void(bool sign_in)> choice_callback_;
+  const base::RepeatingCallback<void(IntroChoice)> choice_callback_;
 
   base::WeakPtrFactory<IntroStepController> weak_ptr_factory_{this};
 };
@@ -145,7 +145,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
 
 std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     ProfilePickerWebContentsHost* host,
-    base::RepeatingCallback<void(bool sign_in)> choice_callback,
+    base::RepeatingCallback<void(IntroChoice)> choice_callback,
     bool enable_animations) {
   return std::make_unique<IntroStepController>(host, std::move(choice_callback),
                                                enable_animations);
@@ -201,8 +201,13 @@ bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
   return true;
 }
 
-void FirstRunFlowControllerDice::HandleIntroSigninChoice(bool sign_in) {
-  if (!sign_in) {
+void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
+  if (choice == IntroChoice::kQuit) {
+    // The view is getting destroyed. The class destructor will handle the rest.
+    return;
+  }
+
+  if (choice == IntroChoice::kContinueWithoutAccount) {
     FinishFlowAndRunInBrowser(profile_, PostHostClearedCallback());
     return;
   }

@@ -11,8 +11,10 @@ export interface IntroBrowserProxy {
   // Called when the user clicks the "sign in" button.
   continueWithAccount(): void;
 
+  // <if expr="enable_dice_support">
   // Called when the user clicks the "continue without account" button.
   continueWithoutAccount(): void;
+  // </if>
 
   // Initializes the FRE intro main view.
   initializeMainView(): void;
@@ -23,9 +25,11 @@ export class IntroBrowserProxyImpl implements IntroBrowserProxy {
     chrome.send('continueWithAccount');
   }
 
+  // <if expr="enable_dice_support">
   continueWithoutAccount() {
     chrome.send('continueWithoutAccount');
   }
+  //</if>
 
   initializeMainView() {
     chrome.send('initializeMainView');

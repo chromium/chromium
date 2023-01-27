@@ -86,20 +86,24 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       is_device_managed));
 }
 
-IntroUI::~IntroUI() = default;
+IntroUI::~IntroUI() {
+  if (!signin_choice_callback_->is_null()) {
+    std::move(signin_choice_callback_.value()).Run(IntroChoice::kQuit);
+  }
+}
 
 void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
   DCHECK(!callback->is_null());
   signin_choice_callback_ = std::move(callback);
 }
 
-void IntroUI::HandleSigninChoice(bool sign_in) {
+void IntroUI::HandleSigninChoice(IntroChoice choice) {
   if (signin_choice_callback_->is_null()) {
     LOG(WARNING) << "Unexpected signin choice event";
   } else {
     // TODO(crbug.com/1347507): Reflect in the UI that the actions are not
     // available, with a spinner and/or disabled buttons.
-    std::move(signin_choice_callback_.value()).Run(sign_in);
+    std::move(signin_choice_callback_.value()).Run(choice);
   }
 }
 

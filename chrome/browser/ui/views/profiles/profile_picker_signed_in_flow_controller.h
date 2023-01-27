@@ -69,7 +69,7 @@ class ProfilePickerSignedInFlowController
 
   // Finishes the sign-in process by moving to the enterprise profile welcome
   // screen.
-  void SwitchToEnterpriseProfileWelcome(
+  virtual void SwitchToEnterpriseProfileWelcome(
       EnterpriseProfileWelcomeUI::ScreenType type,
       signin::SigninChoiceCallback proceed_callback);
 

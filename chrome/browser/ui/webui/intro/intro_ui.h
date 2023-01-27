@@ -6,12 +6,21 @@
 #define CHROME_BROWSER_UI_WEBUI_INTRO_INTRO_UI_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/browser/web_ui_controller.h"
+
+enum class IntroChoice {
+  kContinueWithAccount,
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  kContinueWithoutAccount,
+#endif
+  kQuit,
+};
 
 // Callback specification for `SetSigninChoiceCallback()`.
 using IntroSigninChoiceCallback =
     base::StrongAlias<class IntroSigninChoiceCallbackTag,
-                      base::OnceCallback<void(bool sign_in)>>;
+                      base::OnceCallback<void(IntroChoice)>>;
 
 // The WebUI controller for `chrome://intro`.
 // Drops user inputs until a callback to receive the next one is provided by
@@ -28,7 +37,9 @@ class IntroUI : public content::WebUIController {
   void SetSigninChoiceCallback(IntroSigninChoiceCallback callback);
 
  private:
-  void HandleSigninChoice(bool sign_in);
+  friend class ProfilePickerLacrosFirstRunBrowserTestBase;
+
+  void HandleSigninChoice(IntroChoice choice);
 
   IntroSigninChoiceCallback signin_choice_callback_;
 
