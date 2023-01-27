@@ -37,6 +37,7 @@ class MenuModel;
 }
 
 namespace views {
+class Label;
 class MenuRunner;
 class View;
 }
@@ -82,6 +83,18 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // TabStripRegionView that contains the TabStrip view.
   gfx::Rect GetBoundsForTabStripRegion(
       const gfx::Size& tabstrip_minimum_size) const;
+
+  // Retrieves the maximum bounds in non-client view coordinates for the
+  // WebAppFrameToolbarView that contains Web App controls.
+  gfx::Rect GetBoundsForWebAppFrameToolbar(
+      const gfx::Size& toolbar_preferred_size) const;
+
+  // Lays out the window title for a web app within the given available space.
+  // Unlike the above GetBounds methods this is not just a method to return the
+  // bounds the title should occupy, since different implementations might also
+  // want to change other attributes of the title, such as alignment.
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const;
 
   // Returns the inset of the topmost view in the client view from the top of
   // the non-client view. The topmost view depends on the window type. The

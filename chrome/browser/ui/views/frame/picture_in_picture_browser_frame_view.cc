@@ -365,6 +365,15 @@ gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForTabStripRegion(
   return gfx::Rect();
 }
 
+gfx::Rect PictureInPictureBrowserFrameView::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  return gfx::Rect();
+}
+
+void PictureInPictureBrowserFrameView::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {}
+
 int PictureInPictureBrowserFrameView::GetTopInset(bool restored) const {
   return GetTopAreaHeight();
 }

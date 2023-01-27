@@ -86,8 +86,11 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
 
   if (browser_view->GetIsWebAppType()) {
     if (browser_view->browser()->app_controller()) {
-      set_web_app_frame_toolbar(
-          AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view)));
+      if (!base::FeatureList::IsEnabled(
+              features::kWebAppFrameToolbarInBrowserView)) {
+        set_web_app_frame_toolbar(AddChildView(
+            std::make_unique<WebAppFrameToolbarView>(browser_view)));
+      }
 
       if (browser_view->IsWindowControlsOverlayEnabled()) {
         caption_button_placeholder_container_ =
@@ -98,7 +101,9 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     // The window title appears above the web app frame toolbar (if present),
     // which surrounds the title with minimal-ui buttons on the left,
     // and other controls (such as the app menu button) on the right.
-    if (browser_view->ShouldShowWindowTitle()) {
+    if (browser_view->ShouldShowWindowTitle() &&
+        !base::FeatureList::IsEnabled(
+            features::kWebAppFrameToolbarInBrowserView)) {
       window_title_ = AddChildView(
           std::make_unique<views::Label>(browser_view->GetWindowTitle()));
       window_title_->SetID(VIEW_ID_WINDOW_TITLE);
@@ -161,6 +166,40 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
   }
 
   return bounds;
+}
+
+gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  if (ShouldHideTopUIForFullscreen()) {
+    return gfx::Rect();
+  }
+  gfx::Rect bounds(0, 0, width(),
+                   toolbar_preferred_size.height() + kWebAppMenuMargin * 2);
+
+  // Do not draw caption buttons on fullscreen.
+  if (!frame()->IsFullscreen()) {
+    bounds.Inset(GetCaptionButtonInsets());
+  }
+
+  return bounds;
+}
+
+void BrowserNonClientFrameViewMac::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  gfx::Rect toolbar_bounds(0, 0, width(), available_space.height());
+  gfx::Rect title_bounds = available_space;
+  const int title_padding =
+      base::ClampRound(width() * kTitlePaddingWidthFraction);
+  title_bounds.Inset(gfx::Insets::VH(0, title_padding));
+  window_title_label.SetBoundsRect(GetCenteredTitleBounds(
+      toolbar_bounds, title_bounds,
+      window_title_label.CalculatePreferredSize().width()));
+  // The background of the title area is always opaquely drawn, but when in
+  // immersive fullscreen, it is drawn in a way that isn't detected by the
+  // DCHECK in Label. As such, disable the DCHECK.
+  window_title_label.SetSkipSubpixelRenderingOpacityCheck(
+      browser_view()->IsImmersiveModeEnabled());
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {

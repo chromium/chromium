@@ -141,6 +141,20 @@ gfx::Rect GlassBrowserFrameView::GetBoundsForTabStripRegion(
                    tabstrip_minimum_size.height());
 }
 
+gfx::Rect GlassBrowserFrameView::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+  return gfx::Rect();
+}
+
+void GlassBrowserFrameView::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+}
+
 int GlassBrowserFrameView::GetTopInset(bool restored) const {
   if (browser_view()->GetTabStripVisible() || IsWebUITabStrip())
     return TopAreaHeight(restored);

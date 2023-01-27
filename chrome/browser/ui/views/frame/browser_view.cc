@@ -560,6 +560,23 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return gfx::ToEnclosingRect(bounds_f);
   }
 
+  gfx::Rect GetBoundsForWebAppFrameToolbarInBrowserView() const override {
+    const gfx::Size web_app_frame_toolbar_preferred_size =
+        browser_view_->web_app_frame_toolbar()->GetPreferredSize();
+    gfx::RectF bounds_f(browser_view_->frame()->GetBoundsForWebAppFrameToolbar(
+        web_app_frame_toolbar_preferred_size));
+    views::View::ConvertRectToTarget(browser_view_->parent(), browser_view_,
+                                     &bounds_f);
+    return gfx::ToEnclosingRect(bounds_f);
+  }
+
+  void LayoutWebAppWindowTitle(
+      const gfx::Rect& available_space,
+      views::Label& window_title_label) const override {
+    browser_view_->frame()->LayoutWebAppWindowTitle(available_space,
+                                                    window_title_label);
+  }
+
   int GetTopInsetInBrowserView() const override {
     // BrowserView should fill the full window when window controls overlay
     // is enabled.
@@ -896,6 +913,17 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   tabstrip_ = tabstrip.get();
   tabstrip_controller_ptr->InitFromModel(tabstrip_);
   top_container_ = AddChildView(std::make_unique<TopContainerView>(this));
+
+  if (GetIsWebAppType() && base::FeatureList::IsEnabled(
+                               features::kWebAppFrameToolbarInBrowserView)) {
+    web_app_frame_toolbar_ = top_container_->AddChildView(
+        std::make_unique<WebAppFrameToolbarView>(this));
+    if (ShouldShowWindowTitle()) {
+      web_app_window_title_ = top_container_->AddChildView(
+          std::make_unique<views::Label>(GetWindowTitle()));
+      web_app_window_title_->SetID(VIEW_ID_WINDOW_TITLE);
+    }
+  }
   tab_strip_region_view_ = top_container_->AddChildView(
       std::make_unique<TabStripRegionView>(std::move(tabstrip)));
 
@@ -1109,6 +1137,11 @@ int BrowserView::GetTabStripHeight() const {
   // of layout, when that hasn't yet been updated to reflect the current state.
   // So return what the tabstrip height _ought_ to be right now.
   return GetTabStripVisible() ? tabstrip_->GetPreferredSize().height() : 0;
+}
+
+gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
+  return web_app_frame_toolbar_ ? web_app_frame_toolbar_->GetPreferredSize()
+                                : gfx::Size();
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1431,6 +1464,11 @@ StatusBubble* BrowserView::GetStatusBubble() {
 
 void BrowserView::UpdateTitleBar() {
   frame_->UpdateWindowTitle();
+  if (web_app_window_title_) {
+    DCHECK(GetIsWebAppType());
+    web_app_window_title_->SetText(GetWindowTitle());
+    InvalidateLayout();
+  }
   if (!loading_animation_timer_.IsRunning() && CanChangeWindowIcon())
     frame_->UpdateWindowIcon();
 }
@@ -3882,8 +3920,9 @@ void BrowserView::AddedToWidget() {
   // Widget and move to the constructor.
   SetLayoutManager(std::make_unique<BrowserViewLayout>(
       std::make_unique<BrowserViewLayoutDelegateImpl>(this), this,
-      top_container_, tab_strip_region_view_, tabstrip_, toolbar_,
-      infobar_container_, contents_container_, side_search_side_panel_,
+      top_container_, web_app_frame_toolbar_, web_app_window_title_,
+      tab_strip_region_view_, tabstrip_, toolbar_, infobar_container_,
+      contents_container_, side_search_side_panel_,
       left_aligned_side_panel_separator_, unified_side_panel_,
       right_aligned_side_panel_separator_, immersive_mode_controller_.get(),
       contents_separator_));
@@ -4775,6 +4814,9 @@ void BrowserView::OnInstallableWebAppStatusUpdated() {
 }
 
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
+  if (web_app_frame_toolbar_) {
+    return web_app_frame_toolbar_;
+  }
   if (frame_ && frame_->GetFrameView()) {
     return frame_->GetFrameView()->web_app_frame_toolbar(
         base::PassKey<BrowserView>());
@@ -4783,6 +4825,9 @@ WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
 }
 
 const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
+  if (web_app_frame_toolbar_) {
+    return web_app_frame_toolbar_;
+  }
   if (frame_ && frame_->GetFrameView()) {
     return frame_->GetFrameView()->web_app_frame_toolbar(
         base::PassKey<BrowserView>());
@@ -4793,6 +4838,14 @@ const WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() const {
 void BrowserView::PaintAsActiveChanged() {
   if (web_app_frame_toolbar()) {
     web_app_frame_toolbar()->SetPaintAsActive(frame_->ShouldPaintAsActive());
+  }
+  if (web_app_window_title_) {
+    SkColor frame_color = frame_->GetFrameView()->GetFrameColor(
+        BrowserFrameActiveState::kUseCurrent);
+    SkColor caption_color = frame_->GetFrameView()->GetCaptionColor(
+        BrowserFrameActiveState::kUseCurrent);
+    web_app_window_title_->SetBackgroundColor(frame_color);
+    web_app_window_title_->SetEnabledColor(caption_color);
   }
 }
 

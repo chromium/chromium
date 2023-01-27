@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
@@ -45,6 +46,7 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
+#include "ui/views/window/hit_test_utils.h"
 
 using views::View;
 using web_modal::ModalDialogHostObserver;
@@ -144,6 +146,8 @@ BrowserViewLayout::BrowserViewLayout(
     std::unique_ptr<BrowserViewLayoutDelegate> delegate,
     BrowserView* browser_view,
     views::View* top_container,
+    WebAppFrameToolbarView* web_app_frame_toolbar,
+    views::Label* web_app_window_title,
     TabStripRegionView* tab_strip_region_view,
     TabStrip* tab_strip,
     views::View* toolbar,
@@ -158,6 +162,8 @@ BrowserViewLayout::BrowserViewLayout(
     : delegate_(std::move(delegate)),
       browser_view_(browser_view),
       top_container_(top_container),
+      web_app_frame_toolbar_(web_app_frame_toolbar),
+      web_app_window_title_(web_app_window_title),
       tab_strip_region_view_(tab_strip_region_view),
       toolbar_(toolbar),
       infobar_container_(infobar_container),
@@ -252,6 +258,17 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   views::View::ConvertPointToTarget(parent, browser_view_,
                                     &point_in_browser_view_coords);
 
+  // Check if the point is in the web_app_frame_toolbar_. Because this toolbar
+  // can entirely be within the window controls overlay area, this check needs
+  // to be done before the window controls overlay area check below.
+  if (web_app_frame_toolbar_) {
+    int web_app_component =
+        views::GetHitTestComponent(web_app_frame_toolbar_, point);
+    if (web_app_component != HTNOWHERE) {
+      return web_app_component;
+    }
+  }
+
   // Let the frame handle any events that fall within the bounds of the window
   // controls overlay.
   if (browser_view_->IsWindowControlsOverlayEnabled() &&
@@ -328,8 +345,9 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   // within the client area.
   gfx::Rect bounds_from_toolbar_top = browser_view_->bounds();
   bounds_from_toolbar_top.Inset(gfx::Insets::TLBR(GetClientAreaTop(), 0, 0, 0));
-  if (bounds_from_toolbar_top.Contains(point))
+  if (bounds_from_toolbar_top.Contains(point)) {
     return HTCLIENT;
+  }
 
   // If the point's y coordinate is above the top of the toolbar, but not
   // over the tabstrip (per previous checking in this function), then we
@@ -346,8 +364,9 @@ int BrowserViewLayout::NonClientHitTest(const gfx::Point& point) {
   views::View::ConvertPointToTarget(top_container_, browser_view_,
                                     &toolbar_origin);
   tabstrip_background_bounds.set_height(toolbar_origin.y());
-  if (tabstrip_background_bounds.Contains(point))
+  if (tabstrip_background_bounds.Contains(point)) {
     return HTNOWHERE;
+  }
 
   // If the point is somewhere else, delegate to the default implementation.
   return browser_view_->views::ClientView::NonClientHitTest(point);
@@ -360,7 +379,8 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   TRACE_EVENT0("ui", "BrowserViewLayout::Layout");
   vertical_layout_rect_ = browser_view->GetLocalBounds();
   int top_inset = delegate_->GetTopInsetInBrowserView();
-  int top = LayoutTabStripRegion(top_inset);
+  int top = LayoutTitleBarForWebApp(top_inset);
+  top = LayoutTabStripRegion(top);
   if (delegate_->IsTabStripVisible()) {
     tab_strip_->SetBackgroundOffset(tab_strip_region_view_->GetMirroredX() +
                                     browser_view_->GetMirroredX() +
@@ -430,6 +450,34 @@ int BrowserViewLayout::GetMinWebContentsWidthForTesting() const {
 
 //////////////////////////////////////////////////////////////////////////////
 // BrowserViewLayout, private:
+
+int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
+  TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTitleBarForWebApp");
+  if (!web_app_frame_toolbar_) {
+    return top;
+  }
+
+  gfx::Rect toolbar_bounds(
+      delegate_->GetBoundsForWebAppFrameToolbarInBrowserView());
+
+  web_app_frame_toolbar_->SetVisible(!toolbar_bounds.IsEmpty());
+  if (web_app_window_title_) {
+    web_app_window_title_->SetVisible(!toolbar_bounds.IsEmpty());
+  }
+  if (toolbar_bounds.IsEmpty()) {
+    return top;
+  }
+
+  gfx::Rect window_title_bounds =
+      web_app_frame_toolbar_->LayoutInContainer(toolbar_bounds);
+
+  if (web_app_window_title_) {
+    delegate_->LayoutWebAppWindowTitle(window_title_bounds,
+                                       *web_app_window_title_);
+  }
+
+  return toolbar_bounds.bottom();
+}
 
 int BrowserViewLayout::LayoutTabStripRegion(int top) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutTabStripRegion");

@@ -146,6 +146,25 @@ gfx::Rect BrowserFrame::GetBoundsForTabStripRegion(
                              : gfx::Rect();
 }
 
+gfx::Rect BrowserFrame::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  // This can be invoked before |browser_frame_view_| has been set.
+  return browser_frame_view_
+             ? browser_frame_view_->GetBoundsForWebAppFrameToolbar(
+                   toolbar_preferred_size)
+             : gfx::Rect();
+}
+
+void BrowserFrame::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  // This can be invoked before |browser_frame_view_| has been set.
+  if (browser_frame_view_) {
+    browser_frame_view_->LayoutWebAppWindowTitle(available_space,
+                                                 window_title_label);
+  }
+}
+
 int BrowserFrame::GetTopInset() const {
   return browser_frame_view_->GetTopInset(false);
 }

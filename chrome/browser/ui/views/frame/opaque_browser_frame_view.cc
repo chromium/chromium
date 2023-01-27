@@ -244,6 +244,20 @@ gfx::Rect OpaqueBrowserFrameView::GetBoundsForTabStripRegion(
   return layout_->GetBoundsForTabStripRegion(tabstrip_minimum_size, width());
 }
 
+gfx::Rect OpaqueBrowserFrameView::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+  return gfx::Rect();
+}
+
+void OpaqueBrowserFrameView::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+}
+
 int OpaqueBrowserFrameView::GetTopInset(bool restored) const {
   return browser_view()->GetTabStripVisible()
              ? layout_->GetTabStripInsetsTop(restored)

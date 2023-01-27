@@ -187,6 +187,12 @@ class BrowserView : public BrowserWindow,
   // incognito avatar icon.
   int GetTabStripHeight() const;
 
+  // Returns the preferred size of the Web App Frame Toolbar. Used for example
+  // to determine the height of the title bar.
+  // Returns an empty size if this browser is not for a web app, or if
+  // features::kWebAppFrameToolbarInBrowserView is disabled.
+  gfx::Size GetWebAppFrameToolbarPreferredSize() const;
+
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
 
@@ -966,6 +972,8 @@ class BrowserView : public BrowserWindow,
   // --------------------------------------------------------------------
   // | TopContainerView (top_container_)                                |
   // |  --------------------------------------------------------------  |
+  // |  | Web App toolbar and title (web_app_frame_toolbar_)         |  |
+  // |  |------------------------------------------------------------|  |
   // |  | Tabs (tabstrip_)                                           |  |
   // |  |------------------------------------------------------------|  |
   // |  | Navigation buttons, address bar, menu (toolbar_)           |  |
@@ -989,6 +997,16 @@ class BrowserView : public BrowserWindow,
   // bar. Stacked top in the view hiearachy so it can be used to slide out
   // the top views in immersive fullscreen.
   raw_ptr<TopContainerView, DanglingUntriaged> top_container_ = nullptr;
+
+  // Menu button and page status icons. Only used by web-app windows.
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+      nullptr;
+
+  // Normally the BrowserNonClientFrameView is responsible for rendering the
+  // title of a window when appropriate. However for web applications the title
+  // needs to be more integrated with other UI components part of BrowserView,
+  // so have a title Label for them here.
+  raw_ptr<views::Label, DanglingUntriaged> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
   raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_ =

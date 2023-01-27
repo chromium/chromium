@@ -209,6 +209,20 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForTabStripRegion(
                    tabstrip_minimum_size.height());
 }
 
+gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForWebAppFrameToolbar(
+    const gfx::Size& toolbar_preferred_size) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+  return gfx::Rect();
+}
+
+void BrowserNonClientFrameViewChromeOS::LayoutWebAppWindowTitle(
+    const gfx::Rect& available_space,
+    views::Label& window_title_label) const {
+  // TODO(https://crbug.com/1407240): Implement this method to make
+  // WebAppFrameToolbar-in-BrowserView work.
+}
+
 int BrowserNonClientFrameViewChromeOS::GetTopInset(bool restored) const {
   // TODO(estade): why do callsites in this class hardcode false for |restored|?
 

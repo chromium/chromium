@@ -21,6 +21,7 @@ class ImmersiveModeController;
 class InfoBarContainerView;
 class TabStrip;
 class TabStripRegionView;
+class WebAppFrameToolbarView;
 
 namespace gfx {
 class Point;
@@ -28,6 +29,7 @@ class Point;
 
 namespace views {
 class View;
+class Label;
 class Widget;
 }  // namespace views
 
@@ -52,6 +54,8 @@ class BrowserViewLayout : public views::LayoutManager {
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,
                     BrowserView* browser_view,
                     views::View* top_container,
+                    WebAppFrameToolbarView* web_app_frame_toolbar,
+                    views::Label* web_app_window_title,
                     TabStripRegionView* tab_strip_region_view,
                     TabStrip* tab_strip,
                     views::View* toolbar,
@@ -126,6 +130,7 @@ class BrowserViewLayout : public views::LayoutManager {
 
   // Layout the following controls, starting at |top|, returns the coordinate
   // of the bottom of the control, for laying out the next control.
+  int LayoutTitleBarForWebApp(int top);
   int LayoutTabStripRegion(int top);
   int LayoutWebUITabStrip(int top);
   int LayoutToolbar(int top);
@@ -170,6 +175,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // NOTE: If you add a view, try to add it as a views::View, which makes
   // testing much easier.
   const raw_ptr<views::View, DanglingUntriaged> top_container_;
+  const raw_ptr<WebAppFrameToolbarView, DanglingUntriaged>
+      web_app_frame_toolbar_;
+  const raw_ptr<views::Label, DanglingUntriaged> web_app_window_title_;
   const raw_ptr<TabStripRegionView, DanglingUntriaged> tab_strip_region_view_;
   const raw_ptr<views::View, DanglingUntriaged> toolbar_;
   const raw_ptr<InfoBarContainerView, DanglingUntriaged> infobar_container_;
