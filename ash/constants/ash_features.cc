@@ -542,7 +542,7 @@ BASE_FEATURE(kCryptAuthV2Enrollment,
 // Enables the cryptohome recovery feature:
 // - Enable recovery via the recovery service.
 // - New UI for Cryptohome recovery and Gaia password changed screen.
-// - Adds a "forgot password" button to the error bubble that opens when the
+// - Adds a "recover user" button to the error bubble that opens when the
 //   user fails to enter their correct password.
 BASE_FEATURE(kCryptohomeRecoveryFlow,
              "CryptohomeRecoveryFlow",

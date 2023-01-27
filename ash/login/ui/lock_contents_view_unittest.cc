@@ -1079,8 +1079,8 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
   EXPECT_FALSE(test_api.auth_error_bubble()->GetVisible());
 }
 
-TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
-  // Enable the "forgot password" button.
+TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
+  // Enable the "recover user" button.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kCryptohomeRecoveryFlow);
 
@@ -1112,7 +1112,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
   EXPECT_TRUE(test_api.auth_error_bubble()->GetVisible());
 
   // There should be two buttons in the error bubble: The "learn more" button
-  // and the "forgot password" button, in that order.
+  // and the "recover user" button, in that order.
   std::vector<views::Button*> buttons;
   for (views::View* child :
        test_api.auth_error_bubble()->GetContent()->children()) {
@@ -1121,16 +1121,16 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenForgotPasswordButton) {
     }
   }
   EXPECT_EQ(2u, buttons.size());
-  views::Button* forgot_password_button = buttons[1];
+  views::Button* recover_user_button = buttons[1];
 
   // Expect the ShowGaiaSignin to be called due to button click.
   EXPECT_CALL(*client, ShowGaiaSignin(users()[0].basic_user_info.account_id))
       .Times(1);
 
-  // Move mouse to the "Forgot password" button and click it.
+  // Move mouse to the "Recover user" button and click it.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(
-      forgot_password_button->GetBoundsInScreen().CenterPoint());
+      recover_user_button->GetBoundsInScreen().CenterPoint());
   generator->ClickLeftButton();
 
   // The error bubble should be hidden because of the button press.

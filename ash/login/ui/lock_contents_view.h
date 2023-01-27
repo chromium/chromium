@@ -433,7 +433,7 @@ class ASH_EXPORT LockContentsView
 
   // Called when the user presses buttons in the authentication error bubble.
   void LearnMoreButtonPressed();
-  void ForgotPasswordButtonPressed();
+  void RecoverUserButtonPressed();
 
   // Helper method to allocate a LoginBigUserView instance.
   std::unique_ptr<LoginBigUserView> AllocateLoginBigUserView(
