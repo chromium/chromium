@@ -310,7 +310,7 @@ void RTCVideoDecoderAdapter::Impl::Initialize(
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &RTCVideoDecoderAdapter::Impl::OnOutput, weak_decoder_this_));
   video_decoder_->Initialize(
-      config, /*low_delay=*/false,
+      config, /*low_delay=*/true,
       /*cdm_context=*/nullptr,
       base::BindOnce(
           [](base::OnceCallback<void(bool)> cb,
