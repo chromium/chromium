@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
-#include "chrome/browser/focus_ring_browsertest_mac.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -107,6 +106,10 @@ class FocusRingBrowserTest : public InProcessBrowserTest {
   }
 };
 
+#if BUILDFLAG(IS_MAC)
+using content::MacOSVersionSupportsDarkMode;
+#endif
+
 // TODO(crbug.com/1222757): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_Checkbox DISABLED_Checkbox
@@ -198,8 +201,9 @@ IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_Anchor) {
 #endif
 IN_PROC_BROWSER_TEST_F(FocusRingBrowserTest, MAYBE_DarkModeButton) {
 #if BUILDFLAG(IS_MAC)
-  if (!MacOSVersionSupportsDarkMode())
-    return;
+  if (!MacOSVersionSupportsDarkMode()) {
+    GTEST_SKIP();
+  }
   auto comparator = mac_strict_comparator;
 #else
   cc::AlphaDiscardingExactPixelComparator comparator;
