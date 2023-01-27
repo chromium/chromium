@@ -34,6 +34,11 @@ if (ENABLE_SIMD_OPTIMIZATIONS)
    add_compile_options(-msse4.2 -mpclmul)
    # Required by CPU features detection code.
    add_definitions(-DX86_NOT_WINDOWS)
+   # Apparently some environments (e.g. CentOS) require to explicitly link
+   # with pthread and that is required by the CPU features detection code.
+   find_package (Threads REQUIRED)
+   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
+   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 endif()
 
 #

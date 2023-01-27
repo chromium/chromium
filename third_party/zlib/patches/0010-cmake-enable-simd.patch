@@ -1,5 +1,5 @@
 diff --git a/third_party/zlib/CMakeLists.txt b/third_party/zlib/CMakeLists.txt
-index b412dc7feb732..7241fb3e301ac 100644
+index b412dc7feb732..0431278405046 100644
 --- a/third_party/zlib/CMakeLists.txt
 +++ b/third_party/zlib/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -8,7 +8,7 @@ index b412dc7feb732..7241fb3e301ac 100644
  set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS ON)
  
  project(zlib C)
-@@ -21,6 +21,21 @@ check_include_file(sys/types.h HAVE_SYS_TYPES_H)
+@@ -21,6 +21,26 @@ check_include_file(sys/types.h HAVE_SYS_TYPES_H)
  check_include_file(stdint.h    HAVE_STDINT_H)
  check_include_file(stddef.h    HAVE_STDDEF_H)
  
@@ -25,12 +25,17 @@ index b412dc7feb732..7241fb3e301ac 100644
 +   add_compile_options(-msse4.2 -mpclmul)
 +   # Required by CPU features detection code.
 +   add_definitions(-DX86_NOT_WINDOWS)
++   # Apparently some environments (e.g. CentOS) require to explicitly link
++   # with pthread and that is required by the CPU features detection code.
++   find_package (Threads REQUIRED)
++   SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
++   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
 +endif()
 +
  #
  # Check to see if we have large file support
  #
-@@ -120,10 +135,25 @@ set(ZLIB_SRCS
+@@ -120,10 +140,25 @@ set(ZLIB_SRCS
      zutil.c
  )
  
@@ -60,7 +65,7 @@ index b412dc7feb732..7241fb3e301ac 100644
  endif()
  
  # parse the full version number from zlib.h and include in ZLIB_FULL_VERSION
-@@ -191,23 +221,9 @@ if(NOT SKIP_INSTALL_FILES AND NOT SKIP_INSTALL_ALL )
+@@ -191,23 +226,9 @@ if(NOT SKIP_INSTALL_FILES AND NOT SKIP_INSTALL_ALL )
  endif()
  
  #============================================================================
