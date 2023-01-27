@@ -7004,11 +7004,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "use-multiple-overlays",
-    "owners": [ "khaslett", "//components/viz/OWNERS" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "use-nat64-for-ipv4-literal",
     "owners": [ "horo", "net-dev" ],
     "expiry_milestone": 120
