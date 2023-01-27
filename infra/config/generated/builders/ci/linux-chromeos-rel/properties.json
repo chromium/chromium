@@ -42,15 +42,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-chromeos-inverse-fieldtrials-fyi-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
           "builder": "linux-chromeos-rel",
-          "group": "tryserver.chromium.chromiumos"
-        },
-        {
-          "builder": "linux-chromeos-rel-rts",
           "group": "tryserver.chromium.chromiumos"
         }
       ]
@@ -71,6 +63,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }
