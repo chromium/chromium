@@ -81,7 +81,7 @@ class ShillDeviceClientImpl : public ShillDeviceClient {
                                  shill::kSetPropertyFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
-    ShillClientHelper::AppendValueDataAsVariant(&writer, value);
+    ShillClientHelper::AppendValueDataAsVariant(&writer, name, value);
     GetHelper(device_path)
         ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                           std::move(error_callback));

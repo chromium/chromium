@@ -117,8 +117,11 @@ class ShillClientHelper {
 
   // Appends the value to the writer as a variant. If |value| is a dictionary it
   // will be written as a string -> variant dictionary, a{sv}. If |value| is a
-  // List then it must be a List of String values and is written as type 'as'.
+  // List then it will be written either as a List of String values, 'as', or a
+  // List of Dictionary values, 'aa{ss}', depending on the type of the values in
+  // the list.
   static void AppendValueDataAsVariant(dbus::MessageWriter* writer,
+                                       const std::string& name,
                                        const base::Value& value);
 
   // Appends a string-to-variant dictionary to the writer as an '{sv}' array.

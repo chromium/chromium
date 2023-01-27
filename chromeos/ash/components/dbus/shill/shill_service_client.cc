@@ -125,7 +125,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
                                  shill::kSetPropertyFunction);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(name);
-    ShillClientHelper::AppendValueDataAsVariant(&writer, value);
+    ShillClientHelper::AppendValueDataAsVariant(&writer, name, value);
     helper->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                             std::move(error_callback));
   }

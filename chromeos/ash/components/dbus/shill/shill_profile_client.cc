@@ -118,7 +118,7 @@ void ShillProfileClientImpl::SetProperty(const dbus::ObjectPath& profile_path,
                                shill::kSetPropertyFunction);
   dbus::MessageWriter writer(&method_call);
   writer.AppendString(name);
-  ShillClientHelper::AppendValueDataAsVariant(&writer, property);
+  ShillClientHelper::AppendValueDataAsVariant(&writer, name, property);
   GetHelper(profile_path)
       ->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                         std::move(error_callback));

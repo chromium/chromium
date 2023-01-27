@@ -406,6 +406,7 @@ void AppendStringDictionary(const base::Value& dictionary,
 }
 
 void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
+                                      const std::string& name,
                                       const base::Value& value,
                                       DictionaryType dictionary_type) {
   // Support basic types and string-to-string dictionary.
@@ -428,8 +429,11 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
     }
     case base::Value::Type::LIST: {
       // Support list of string and list of string-to-string dictionary.
+      // For properties that might receive an empty list of dictionaries, always
+      // use aa{ss}.
       const auto& list_view = value.GetList();
-      if (list_view.size() > 0 && list_view.front().is_dict()) {
+      if ((list_view.size() > 0 && list_view.front().is_dict()) ||
+          name == shill::kCellularUserApnListProperty) {
         // aa{ss} to support WireGuard.Peers
         dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("aa{ss}", &variant_writer);
@@ -474,8 +478,10 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
 
 // static
 void ShillClientHelper::AppendValueDataAsVariant(dbus::MessageWriter* writer,
+                                                 const std::string& name,
                                                  const base::Value& value) {
-  AppendValueDataAsVariantInternal(writer, value, DICTIONARY_TYPE_VARIANT);
+  AppendValueDataAsVariantInternal(writer, name, value,
+                                   DICTIONARY_TYPE_VARIANT);
 }
 
 // static
@@ -493,7 +499,8 @@ void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
     DictionaryType dictionary_type = (it.first == shill::kCellularApnProperty)
                                          ? DICTIONARY_TYPE_STRING
                                          : DICTIONARY_TYPE_VARIANT;
-    AppendValueDataAsVariantInternal(&entry_writer, it.second, dictionary_type);
+    AppendValueDataAsVariantInternal(&entry_writer, it.first, it.second,
+                                     dictionary_type);
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);
