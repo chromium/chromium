@@ -26,8 +26,11 @@
 class AutocompleteProviderClient;
 class GURL;
 class SearchTermsData;
-class SuggestionDeletionHandler;
 class TemplateURL;
+
+namespace network {
+class SimpleURLLoader;
+}
 
 // Base functionality for receiving suggestions from a search engine.
 // This class is abstract and should only be used as a base for other
@@ -176,8 +179,6 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   using MatchKey = ACMatchKey<std::u16string, std::string>;
   using MatchMap = std::map<MatchKey, AutocompleteMatch>;
-  using SuggestionDeletionHandlers =
-      std::vector<std::unique_ptr<SuggestionDeletionHandler>>;
 
   // Returns the appropriate value for the fill_into_edit field of an
   // AutcompleteMatch. The result consists of the suggestion text from
@@ -233,15 +234,15 @@ class BaseSearchProvider : public AutocompleteProvider {
   // This gets called when we have requested a suggestion deletion from the
   // server to handle the results of the deletion. It will be called after the
   // deletion request completes.
-  void OnDeletionComplete(bool success,
-                          SuggestionDeletionHandler* handler);
+  void OnDeletionComplete(const network::SimpleURLLoader* source,
+                          std::unique_ptr<std::string> response_body);
 
   raw_ptr<AutocompleteProviderClient> client_;
 
-  // Each deletion handler in this vector corresponds to an outstanding request
+  // Each deletion loader in this vector corresponds to an outstanding request
   // that a server delete a personalized suggestion. Making this a vector of
   // unique_ptr causes us to auto-cancel all such requests on shutdown.
-  SuggestionDeletionHandlers deletion_handlers_;
+  std::vector<std::unique_ptr<network::SimpleURLLoader>> deletion_loaders_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BASE_SEARCH_PROVIDER_H_

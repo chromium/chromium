@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
@@ -78,107 +79,6 @@ std::u16string GetMatchContentsForOnDeviceTailSuggestion(
 }  // namespace
 
 using OEP = metrics::OmniboxEventProto;
-
-// SuggestionDeletionHandler -------------------------------------------------
-
-// This class handles making requests to the server in order to delete
-// personalized suggestions.
-class SuggestionDeletionHandler {
- public:
-  typedef base::OnceCallback<void(bool, SuggestionDeletionHandler*)>
-      DeletionCompletedCallback;
-
-  SuggestionDeletionHandler(AutocompleteProviderClient* client,
-                            const std::string& deletion_url,
-                            DeletionCompletedCallback callback);
-
-  ~SuggestionDeletionHandler();
-
-  SuggestionDeletionHandler(const SuggestionDeletionHandler&) = delete;
-  SuggestionDeletionHandler& operator=(const SuggestionDeletionHandler&) =
-      delete;
-
- private:
-  // Callback from SimpleURLLoader
-  void OnURLLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> response_body);
-
-  std::unique_ptr<network::SimpleURLLoader> deletion_fetcher_;
-  DeletionCompletedCallback callback_;
-};
-
-SuggestionDeletionHandler::SuggestionDeletionHandler(
-    AutocompleteProviderClient* client,
-    const std::string& deletion_url,
-    DeletionCompletedCallback callback)
-    : callback_(std::move(callback)) {
-  GURL url(deletion_url);
-  DCHECK(url.is_valid());
-
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("omnibox_suggest_deletion", R"(
-        semantics {
-          sender: "Omnibox"
-          description:
-            "When users attempt to delete server-provided personalized search "
-            "or navigation suggestions from the omnibox dropdown, Chrome sends "
-            "a message to the server requesting deletion of the suggestion."
-          trigger:
-            "A user attempt to delete a server-provided omnibox suggestion, "
-            "for which the server provided a custom deletion URL."
-          data:
-            "No user data is explicitly sent with the request, but because the "
-            "requested URL is provided by the server for each specific "
-            "suggestion, it necessarily uniquely identifies the suggestion the "
-            "user is attempting to delete."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "Since this can only be triggered on seeing server-provided "
-            "suggestions in the omnibox dropdown, whether it is enabled is the "
-            "same as whether those suggestions are enabled.\n"
-            "Users can control this feature via the 'Use a prediction service "
-            "to help complete searches and URLs typed in the address bar' "
-            "setting under 'Privacy'. The feature is enabled by default."
-          chrome_policy {
-            SearchSuggestEnabled {
-                policy_options {mode: MANDATORY}
-                SearchSuggestEnabled: false
-            }
-          }
-        })");
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
-  variations::AppendVariationsHeaderUnknownSignedIn(
-      request->url,
-      client->IsOffTheRecord() ? variations::InIncognito::kYes
-                               : variations::InIncognito::kNo,
-      request.get());
-  deletion_fetcher_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  deletion_fetcher_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      client->GetURLLoaderFactory().get(),
-      base::BindOnce(&SuggestionDeletionHandler::OnURLLoadComplete,
-                     base::Unretained(this), deletion_fetcher_.get()));
-}
-
-SuggestionDeletionHandler::~SuggestionDeletionHandler() {
-}
-
-void SuggestionDeletionHandler::OnURLLoadComplete(
-    const network::SimpleURLLoader* source,
-    std::unique_ptr<std::string> response_body) {
-  DCHECK(source == deletion_fetcher_.get());
-  const bool ok = source->NetError() == net::OK &&
-                  (source->ResponseInfo() && source->ResponseInfo()->headers &&
-                   source->ResponseInfo()->headers->response_code() == 200);
-  std::move(callback_).Run(ok, this);
-}
-
-// BaseSearchProvider ---------------------------------------------------------
 
 BaseSearchProvider::BaseSearchProvider(AutocompleteProvider::Type type,
                                        AutocompleteProviderClient* client)
@@ -465,10 +365,13 @@ bool BaseSearchProvider::CanSendSuggestRequestWithURL(
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.deletable);
   if (!match.GetAdditionalInfo(BaseSearchProvider::kDeletionUrlKey).empty()) {
-    deletion_handlers_.push_back(std::make_unique<SuggestionDeletionHandler>(
-        client(), match.GetAdditionalInfo(BaseSearchProvider::kDeletionUrlKey),
-        base::BindOnce(&BaseSearchProvider::OnDeletionComplete,
-                       base::Unretained(this))));
+    deletion_loaders_.push_back(
+        client()
+            ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+            ->StartDeletionRequest(
+                match.GetAdditionalInfo(BaseSearchProvider::kDeletionUrlKey),
+                base::BindOnce(&BaseSearchProvider::OnDeletionComplete,
+                               base::Unretained(this))));
   }
 
   const TemplateURL* template_url =
@@ -696,11 +599,16 @@ void BaseSearchProvider::DeleteMatchFromMatches(
 }
 
 void BaseSearchProvider::OnDeletionComplete(
-    bool success, SuggestionDeletionHandler* handler) {
+    const network::SimpleURLLoader* source,
+    std::unique_ptr<std::string> response_body) {
+  const bool success =
+      source->NetError() == net::OK &&
+      (source->ResponseInfo() && source->ResponseInfo()->headers &&
+       source->ResponseInfo()->headers->response_code() == 200);
   RecordDeletionResult(success);
   base::EraseIf(
-      deletion_handlers_,
-      [handler](const std::unique_ptr<SuggestionDeletionHandler>& elem) {
-        return elem.get() == handler;
+      deletion_loaders_,
+      [source](const std::unique_ptr<network::SimpleURLLoader>& loader) {
+        return loader.get() == source;
       });
 }

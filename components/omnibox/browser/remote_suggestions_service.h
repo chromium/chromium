@@ -77,6 +77,12 @@ class RemoteSuggestionsService : public KeyedService {
       const SearchTermsData& search_terms_data,
       CompletionCallback completion_callback);
 
+  // Creates and returns a loader to delete personalized suggestions.
+  // `deletion_url` must be a valid URL.
+  std::unique_ptr<network::SimpleURLLoader> StartDeletionRequest(
+      const std::string& deletion_url,
+      CompletionCallback completion_callback);
+
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

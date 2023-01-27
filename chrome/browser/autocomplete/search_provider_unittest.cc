@@ -22,6 +22,7 @@
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
@@ -39,6 +40,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -75,7 +77,6 @@ ACMatches::const_iterator FindDefaultMatch(const ACMatches& matches) {
   return it;
 }
 
-class SuggestionDeletionHandler;
 class SearchProviderForTest : public SearchProvider {
  public:
   SearchProviderForTest(AutocompleteProviderClient* client,
@@ -135,6 +136,14 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
   bool is_personalized_url_data_collection_active_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
 };
+
+std::unique_ptr<KeyedService> BuildRemoteSuggestionsServiceWithURLLoader(
+    network::TestURLLoaderFactory* test_url_loader_factory,
+    content::BrowserContext* context) {
+  return std::make_unique<RemoteSuggestionsService>(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          test_url_loader_factory));
+}
 
 }  // namespace
 
@@ -216,7 +225,8 @@ class BaseSearchProviderTest : public testing::Test,
   explicit BaseSearchProviderTest(const bool command_line_overrides = false)
       : feature_test_component_(command_line_overrides) {
     // We need the history service, the template url model, and the signin
-    // client initialized with a TestURLLoaderFactory.
+    // client and the remote suggestions service initialized with a
+    // TestURLLoaderFactory.
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -227,6 +237,10 @@ class BaseSearchProviderTest : public testing::Test,
     profile_builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
         base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                            &test_url_loader_factory_));
+    profile_builder.AddTestingFactory(
+        RemoteSuggestionsServiceFactory::GetInstance(),
+        base::BindRepeating(&BuildRemoteSuggestionsServiceWithURLLoader,
                             &test_url_loader_factory_));
     profile_ = profile_builder.Build();
   }
@@ -3703,7 +3717,7 @@ TEST_F(SearchProviderTest, TestDeleteMatch) {
   // Test a successful deletion request.
   provider_->matches_.push_back(match);
   provider_->DeleteMatch(match);
-  EXPECT_FALSE(provider_->deletion_handlers_.empty());
+  EXPECT_FALSE(provider_->deletion_loaders_.empty());
   EXPECT_TRUE(provider_->matches_.empty());
 
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kDeleteUrl));
@@ -3711,14 +3725,14 @@ TEST_F(SearchProviderTest, TestDeleteMatch) {
 
   // Need to spin the event loop to let the fetch result go through.
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(provider_->deletion_handlers_.empty());
+  EXPECT_TRUE(provider_->deletion_loaders_.empty());
   EXPECT_TRUE(provider_->is_success());
 
   // Test a failing deletion request.
   test_url_loader_factory_.ClearResponses();
   provider_->matches_.push_back(match);
   provider_->DeleteMatch(match);
-  EXPECT_FALSE(provider_->deletion_handlers_.empty());
+  EXPECT_FALSE(provider_->deletion_loaders_.empty());
   ASSERT_TRUE(test_url_loader_factory_.IsPending(kDeleteUrl));
 
   auto head = network::mojom::URLResponseHead::New();
@@ -3730,7 +3744,7 @@ TEST_F(SearchProviderTest, TestDeleteMatch) {
                                        network::URLLoaderCompletionStatus());
 
   profile_->BlockUntilHistoryProcessesPendingRequests();
-  EXPECT_TRUE(provider_->deletion_handlers_.empty());
+  EXPECT_TRUE(provider_->deletion_loaders_.empty());
   EXPECT_FALSE(provider_->is_success());
 }
 

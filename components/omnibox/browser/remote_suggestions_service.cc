@@ -20,8 +20,6 @@
 namespace {
 
 void AddVariationHeaders(network::ResourceRequest* request) {
-  // Add Chrome experiment state to the request headers.
-  //
   // Note: It's OK to pass InIncognito::kNo since we are expected to be in
   // non-incognito state here (i.e. remote suggestions are not served in
   // incognito mode).
@@ -107,6 +105,63 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   }
   // Try to attach cookies for signed in user.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
+  // Add Chrome experiment state to the request headers.
+  AddVariationHeaders(request.get());
+
+  // Make loader and start download.
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(std::move(completion_callback), loader.get()));
+  return loader;
+}
+
+std::unique_ptr<network::SimpleURLLoader>
+RemoteSuggestionsService::StartDeletionRequest(
+    const std::string& deletion_url,
+    CompletionCallback completion_callback) {
+  const GURL url(deletion_url);
+  DCHECK(url.is_valid());
+
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("omnibox_suggest_deletion", R"(
+        semantics {
+          sender: "Omnibox"
+          description:
+            "When users attempt to delete server-provided personalized search "
+            "or navigation suggestions from the omnibox dropdown, Chrome sends "
+            "a message to the server requesting deletion of the suggestion."
+          trigger:
+            "A user attempt to delete a server-provided omnibox suggestion, "
+            "for which the server provided a custom deletion URL."
+          data:
+            "No user data is explicitly sent with the request, but because the "
+            "requested URL is provided by the server for each specific "
+            "suggestion, it necessarily uniquely identifies the suggestion the "
+            "user is attempting to delete."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "Since this can only be triggered on seeing server-provided "
+            "suggestions in the omnibox dropdown, whether it is enabled is the "
+            "same as whether those suggestions are enabled.\n"
+            "Users can control this feature via the 'Use a prediction service "
+            "to help complete searches and URLs typed in the address bar' "
+            "setting under 'Privacy'. The feature is enabled by default."
+          chrome_policy {
+            SearchSuggestEnabled {
+                policy_options {mode: MANDATORY}
+                SearchSuggestEnabled: false
+            }
+          }
+        })");
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = url;
+  // Add Chrome experiment state to the request headers.
   AddVariationHeaders(request.get());
 
   // Make loader and start download.
