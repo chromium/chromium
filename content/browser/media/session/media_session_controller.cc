@@ -152,6 +152,13 @@ void MediaSessionController::OnSetMute(int player_id, bool mute) {
 void MediaSessionController::OnRequestMediaRemoting(int player_id) {
   DCHECK_EQ(player_id_, player_id);
 
+  // Media Remoting can't start if the media is paused. So we should start
+  // playing before requesting Media Remoting.
+  if (is_paused_) {
+    web_contents_->media_web_contents_observer()
+        ->GetMediaPlayerRemote(id_)
+        ->RequestPlay();
+  }
   web_contents_->media_web_contents_observer()
       ->GetMediaPlayerRemote(id_)
       ->RequestMediaRemoting();

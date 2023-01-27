@@ -1084,7 +1084,9 @@ void OpenscreenSessionHost::InitMediaRemoter(
 }
 
 void OpenscreenSessionHost::OnRemotingStartTimeout() {
-  DCHECK(state_ != State::kRemoting);
+  if (state_ == State::kRemoting) {
+    return;
+  }
   StopSession();
   RecordRemotePlaybackSessionStartsBeforeTimeout(false);
 }

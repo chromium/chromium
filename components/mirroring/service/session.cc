@@ -1118,7 +1118,9 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
 }
 
 void Session::OnRemotingStartTimeout() {
-  DCHECK(state_ != REMOTING);
+  if (state_ == REMOTING) {
+    return;
+  }
   StopSession();
   RecordRemotePlaybackSessionStartsBeforeTimeout(false);
 }
