@@ -10,10 +10,9 @@ import '//resources/cr_elements/cr_icons.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
-import {IronSelectorElement} from '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
 import {RealboxMatchElement} from './realbox_match.js';
@@ -24,12 +23,6 @@ const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
 
 const CHAR_TYPED_TO_PAINT = 'Realbox.CharTypedToRepaintLatency.ToPaint';
 const RESULT_CHANGED_TO_PAINT = 'Realbox.ResultChangedToRepaintLatency.ToPaint';
-
-export interface RealboxDropdownElement {
-  $: {
-    selector: IronSelectorElement,
-  };
-}
 
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <ntp-realbox>) to change the selection.
@@ -47,6 +40,26 @@ export class RealboxDropdownElement extends PolymerElement {
       //========================================================================
       // Public properties
       //========================================================================
+
+      /** Whether secondary matches can be shown. */
+      canShowSecondaryMatches: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** Whether secondary matches were at any point available to show. */
+      hadSecondaryMatches: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
+
+      /** Whether secondary matches are currently available to show. */
+      hasSecondaryMatches: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
       result: {
         type: Object,
@@ -84,6 +97,9 @@ export class RealboxDropdownElement extends PolymerElement {
     };
   }
 
+  canShowSecondaryMatches: boolean;
+  hadSecondaryMatches: boolean;
+  hasSecondaryMatches: boolean;
   result: AutocompleteResult;
   roundCorners: boolean;
   selectedMatchIndex: number;
@@ -101,6 +117,13 @@ export class RealboxDropdownElement extends PolymerElement {
   // Public methods
   //============================================================================
 
+  /** Filters out secondary matches, if any, unless they can be shown. */
+  get selectableMatchElements() {
+    return this.selectableMatchElements_.filter(
+        matchEl => matchEl.sideType === SideType.kDefaultPrimary ||
+            this.canShowSecondaryMatches);
+  }
+
   /** Unselects the currently selected match, if any. */
   unselect() {
     this.selectedMatchIndex = -1;
@@ -108,7 +131,7 @@ export class RealboxDropdownElement extends PolymerElement {
 
   /** Focuses the selected match, if any. */
   focusSelected() {
-    (this.$.selector.selectedItem as HTMLElement)?.focus();
+    this.selectableMatchElements[this.selectedMatchIndex]?.focus();
   }
 
   /** Selects the first match. */
@@ -130,12 +153,12 @@ export class RealboxDropdownElement extends PolymerElement {
     // Therefore subtract one from the maximum of its value and 0.
     const previous = Math.max(this.selectedMatchIndex, 0) - 1;
     this.selectedMatchIndex =
-        remainder(previous, this.selectableMatchElements_.length);
+        remainder(previous, this.selectableMatchElements.length);
   }
 
   /** Selects the last match. */
   selectLast() {
-    this.selectedMatchIndex = this.selectableMatchElements_.length - 1;
+    this.selectedMatchIndex = this.selectableMatchElements.length - 1;
   }
 
   /**
@@ -145,7 +168,7 @@ export class RealboxDropdownElement extends PolymerElement {
   selectNext() {
     const next = this.selectedMatchIndex + 1;
     this.selectedMatchIndex =
-        remainder(next, this.selectableMatchElements_.length);
+        remainder(next, this.selectableMatchElements.length);
   }
 
   //============================================================================
@@ -200,6 +223,10 @@ export class RealboxDropdownElement extends PolymerElement {
           metricsReporter.clearMark('ResultChanged');
         })
         .catch(() => {});  // Fail silently if 'ResultChanged' is not marked.
+
+    // Update the list of selectable match elements.
+    this.selectableMatchElements_ =
+        [...this.shadowRoot!.querySelectorAll('cr-realbox-match')];
   }
 
   private onToggleButtonMouseDown_(e: Event) {
@@ -210,19 +237,29 @@ export class RealboxDropdownElement extends PolymerElement {
   // Helpers
   //============================================================================
 
+  private classForSide_(side: SideType): string {
+    return side === SideType.kDefaultPrimary ? 'primary-side' :
+                                               'secondary-side';
+  }
+
   private computeHiddenGroupIds_(): number[] {
     return Object.keys(this.result?.suggestionGroupsMap ?? {})
         .map(groupId => Number.parseInt(groupId, 10))
         .filter(groupId => this.result.suggestionGroupsMap[groupId].hidden);
   }
 
+  private isSelected_(match: AutocompleteMatch): boolean {
+    return this.matchIndex_(match) === this.selectedMatchIndex;
+  }
+
   /**
-   * @returns The unique suggestion group IDs while preserving the order in
-   *     which they appear in the list of matches.
+   * @returns The unique suggestion group IDs that belong to given side type
+   *     while preserving the order in which they appear in the list of matches.
    */
-  private groupIds_(): number[] {
+  private groupIdsForSide_(side: SideType): number[] {
     return [...new Set<number>(
-        this.result?.matches?.map(match => match.suggestionGroupId))];
+        this.result?.matches?.map(match => match.suggestionGroupId)
+            .filter(groupId => this.sideTypeForGroup_(groupId) === side))];
   }
 
   /**
@@ -267,6 +304,43 @@ export class RealboxDropdownElement extends PolymerElement {
   }
 
   /**
+   * @returns The list of matches that belong to given side type. Updates if
+   *     secondary matches are currently or were at any point available to show.
+   */
+  private matchesForSide_(side: SideType): AutocompleteMatch[] {
+    const matches = (this.result?.matches ?? [])
+                        .filter(
+                            match => this.sideTypeForGroup_(
+                                         match.suggestionGroupId) === side);
+
+    if (side === SideType.kSecondary) {
+      this.hasSecondaryMatches = !!matches.length;
+      if (!this.hadSecondaryMatches) {
+        this.hadSecondaryMatches = this.hasSecondaryMatches;
+      }
+    }
+
+    return matches;
+  }
+
+  /**
+   * @returns The list of side type to show.
+   */
+  private sideTypes_(): SideType[] {
+    return this.canShowSecondaryMatches ?
+        [SideType.kDefaultPrimary, SideType.kSecondary] :
+        [SideType.kDefaultPrimary];
+  }
+
+  /**
+   * @returns The side type for the given suggestion group ID.
+   */
+  private sideTypeForGroup_(groupId: number): SideType {
+    return this.result?.suggestionGroupsMap[groupId]?.sideType ??
+        SideType.kDefaultPrimary;
+  }
+
+  /**
    * @returns A11y label for suggestion group show/hide toggle button.
    */
   private toggleButtonA11yLabelForGroup_(groupId: number): string {
@@ -295,6 +369,12 @@ export class RealboxDropdownElement extends PolymerElement {
   private toggleButtonTitleForGroup_(groupId: number): string {
     return loadTimeData.getString(
         this.groupIsHidden_(groupId) ? 'showSuggestions' : 'hideSuggestions');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-realbox-dropdown': RealboxDropdownElement;
   }
 }
 

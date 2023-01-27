@@ -3,24 +3,24 @@
     user-select: none;
   }
 
-  #selector {
+  #content {
     background-color: var(--color-realbox-results-background);
     border-radius: calc(0.25 * var(--cr-realbox-height));
     box-shadow: var(--cr-realbox-shadow);
-    display: block;
+    display: flex;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
     padding-top: var(--cr-realbox-height);
   }
 
-  :host([round-corners]) #selector {
+  :host([round-corners]) #content {
     border-radius: calc(0.5 * var(--cr-realbox-height));
     padding-bottom: 18px;
   }
 
   @media (forced-colors: active) {
-    #selector {
+    #content {
       border: 1px solid ActiveBorder;
     }
   }
@@ -58,47 +58,63 @@
           var(--color-realbox-results-icon-selected);
   }
 
-  cr-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+  cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
   .header:-webkit-any(:hover, :focus-within) {
     background-color:
         var(--color-realbox-results-background-hovered);
   }
 
   @media (forced-colors: active) {
-    cr-realbox-match:-webkit-any(:hover, :focus-within, .selected),
+    cr-realbox-match:-webkit-any(:hover, :focus-within, [selected]),
     .header:-webkit-any(:hover, :focus-within) {
       background-color: Highlight;
     }
   }
+
+  .primary-side {
+    flex: 2 1 var(--cr-realbox-min-width);
+    min-width: var(--cr-realbox-min-width);  /* needed for ellipsis. */
+  }
+
+  .secondary-side {
+    display: var(--cr-realbox-secondary-side-display, none);
+    flex: 1 0 calc(var(--cr-realbox-width) - var(--cr-realbox-min-width));
+  }
 </style>
-<iron-selector id="selector" selectable="cr-realbox-match"
-    items="{{selectableMatchElements_}}" selected="{{selectedMatchIndex}}"
-    selected-class="selected">
-  <template is="dom-repeat" items="[[groupIds_(result.matches.*)]]"
-      as="groupId">
-    <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
-      <!-- Header cannot be tabbed into but gets focus when clicked. This stops
-           the dropdown from losing focus and closing as a result. -->
-      <div class="header" data-id$="[[groupId]]" tabindex="-1"
-          on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
-          aria-hidden="true">
-        <span class="text">[[headerForGroup_(groupId)]]</span>
-        <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
-            title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
-            aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
-            on-mousedown="onToggleButtonMouseDown_">
-        </cr-icon-button>
-      </div>
-    </template>
-    <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
-        restamp>
-      <template is="dom-repeat" items="[[result.matches]]" as="match"
-          filter="[[matchIsInGroupFilter_(groupId)]]"
-          on-dom-change="onResultRepaint_">
-        <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-            match-index="[[matchIndex_(match)]]">
-        </cr-realbox-match>
+<div id="content">
+  <template is="dom-repeat" items="[[sideTypes_(canShowSecondaryMatches)]]"
+      as="side">
+    <div class$="[[classForSide_(side)]]">
+      <template is="dom-repeat" items="[[groupIdsForSide_(side, result.matches.*)]]"
+          as="groupId">
+        <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
+          <!-- Header cannot be tabbed into but gets focus when clicked. This stops
+              the dropdown from losing focus and closing as a result. -->
+          <div class="header" data-id$="[[groupId]]" tabindex="-1"
+              on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
+              aria-hidden="true">
+            <span class="text">[[headerForGroup_(groupId)]]</span>
+            <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
+                title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
+                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
+                on-mousedown="onToggleButtonMouseDown_">
+            </cr-icon-button>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!groupIsHidden_(groupId, hiddenGroupIds_.*)]]"
+            restamp>
+          <template is="dom-repeat"
+              items="[[matchesForSide_(side, result.matches.*)]]" as="match"
+              filter="[[matchIsInGroupFilter_(groupId)]]"
+              on-dom-change="onResultRepaint_">
+            <cr-realbox-match tabindex="0" role="option" match="[[match]]"
+                match-index="[[matchIndex_(match)]]"
+                side-type="[[sideTypeForGroup_(groupId)]]"
+                selected$="[[isSelected_(match, selectedMatchIndex)]]">
+            </cr-realbox-match>
+          </template>
+        </template>
       </template>
-    </template>
+    </div>
   </template>
-</iron-selector>
+</div>

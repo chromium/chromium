@@ -1,8 +1,12 @@
 <style>
   :host {
+    --ntp-realbox-width: 449px; /* mid realbox width on NTP. */
+    --ntp-realbox-primary-side-width: var(--ntp-realbox-width);
+    --ntp-realbox-secondary-side-width: calc(0.5 * var(--ntp-realbox-width));
     font-size: 14.6px; /* closely resembles the omnibox input font size. */
   }
 </style>
 <cr-realbox-dropdown id="matches" result="[[result_]]"
+    can-show-secondary-matches="[[canShowSecondaryMatches]]"
     on-dom-change="onResultRepaint_">
 </cr-realbox-dropdown>

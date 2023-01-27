@@ -46,7 +46,7 @@
     width: 6px;
   }
 
-  :host(:is(:focus-visible, .selected:not(:focus-within))) #focus-indicator {
+  :host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator {
     display: block;
   }
 
@@ -102,8 +102,8 @@
   }
 
   /* Uses a dimmed color for description for entities. */
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)):host([is-entity-suggestion]) #description,
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) .dim {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #description,
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) .dim {
     color: var(--color-realbox-results-dim-selected);
   }
 
@@ -111,7 +111,7 @@
     color: var(--color-realbox-results-url);
   }
 
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) .url {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) .url {
     color: var(--color-realbox-results-url-selected);
   }
 
@@ -124,7 +124,7 @@
     opacity: 1;
   }
 
-  :host-context(cr-realbox-match:-webkit-any(:focus-within, .selected)) #remove {
+  :host-context(cr-realbox-match:-webkit-any(:focus-within, [selected])) #remove {
     --cr-icon-button-fill-color:
         var(--color-realbox-results-icon-selected);
     opacity: 1;

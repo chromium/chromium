@@ -75,11 +75,19 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16? tail_suggest_common_prefix;
 };
 
+// Indicates whether a suggestion group is in the primary or the secondary
+// column of suggestions. See //third_party/omnibox_proto/groups.proto.
+enum SideType {
+  kDefaultPrimary = 0,
+  kSecondary = 1,
+};
+
 struct SuggestionGroup {
   mojo_base.mojom.String16 header;  // Header for suggestion group.
   mojo_base.mojom.String16 hide_group_a11y_label;
   mojo_base.mojom.String16 show_group_a11y_label;
-  bool hidden;  // Whether suggestion group is allowed to appear in the results.
+  bool hidden;  // Whether suggestion group should be initially hidden.
+  SideType side_type = SideType.kDefaultPrimary;
 };
 
 struct AutocompleteResult {

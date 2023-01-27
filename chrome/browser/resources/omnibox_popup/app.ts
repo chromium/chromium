@@ -10,10 +10,15 @@ import {AutocompleteResult, PageCallbackRouter} from '//resources/cr_components/
 import {RealboxBrowserProxy} from '//resources/cr_components/omnibox/realbox_browser_proxy.js';
 import {RealboxDropdownElement} from '//resources/cr_components/omnibox/realbox_dropdown.js';
 import {assert} from '//resources/js/assert_ts.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+
+// 675px ~= 449px (--ntp-realbox-primary-side-min-width) * 1.5 + some margin.
+const showSecondaryMatchesMediaQueryList =
+    window.matchMedia('(min-width: 675px)');
 
 export interface OmniboxPopupAppElement {
   $: {
@@ -33,13 +38,23 @@ export class OmniboxPopupAppElement extends PolymerElement {
 
   static get properties() {
     return {
+      /** Whether secondary matches can be shown. */
+      canShowSecondaryMatches: {
+        type: Boolean,
+        value: () => showSecondaryMatchesMediaQueryList.matches &&
+            loadTimeData.getBoolean('showSecondarySide'),
+        reflectToAttribute: true,
+      },
+
       result_: Object,
     };
   }
 
+  canShowSecondaryMatches: boolean;
+  private result_: AutocompleteResult;
+
   private callbackRouter_: PageCallbackRouter;
   private omniboxAutocompleteResultChangedListenerId_: number|null = null;
-  private result_: AutocompleteResult;
   private selectMatchAtLineListenerId_: number|null = null;
 
   constructor() {
@@ -56,6 +71,8 @@ export class OmniboxPopupAppElement extends PolymerElement {
     this.selectMatchAtLineListenerId_ =
         this.callbackRouter_.selectMatchAtLine.addListener(
             this.onSelectMatchAtLine_.bind(this));
+    showSecondaryMatchesMediaQueryList.addEventListener(
+        'change', this.onCanShowSecondaryMatchesChanged_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -65,6 +82,13 @@ export class OmniboxPopupAppElement extends PolymerElement {
         this.omniboxAutocompleteResultChangedListenerId_);
     assert(this.selectMatchAtLineListenerId_);
     this.callbackRouter_.removeListener(this.selectMatchAtLineListenerId_);
+    showSecondaryMatchesMediaQueryList.removeEventListener(
+        'change', this.onCanShowSecondaryMatchesChanged_.bind(this));
+  }
+
+  private onCanShowSecondaryMatchesChanged_(e: MediaQueryListEvent) {
+    this.canShowSecondaryMatches =
+        e.matches && loadTimeData.getBoolean('showSecondarySide');
   }
 
   private onOmniboxAutocompleteResultChanged_(result: AutocompleteResult) {

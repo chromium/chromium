@@ -1,7 +1,9 @@
 <style include="cr-icons">
   :host {
     --cr-realbox-height: 44px;
+    --cr-realbox-min-width: var(--ntp-search-box-width);
     --cr-realbox-shadow: 0 1px 6px 0 var(--color-realbox-shadow);
+    --cr-realbox-width: var(--cr-realbox-min-width);
 
     --ntp-realbox-border-radius: calc(0.5 * var(--cr-realbox-height));
     --ntp-realbox-icon-width: 26px;
@@ -11,6 +13,23 @@
     box-shadow: var(--cr-realbox-shadow);
     font-size: 16px;
     height: var(--cr-realbox-height);
+    width: var(--cr-realbox-width);
+  }
+
+  /**
+   * Maintain a larger width if at any point had secondary matches and they can
+   * currently be shown.
+   */
+  :host([can-show-secondary-matches][had-secondary-matches]) {
+    --cr-realbox-width: calc(var(--cr-realbox-min-width) * 1.5);
+  }
+
+  /**
+   * Show the secondary side if currently having secondary matches and they can
+   * currently be shown.
+   */
+  :host([can-show-secondary-matches][has-secondary-matches]) {
+    --cr-realbox-secondary-side-display: block;
   }
 
   :host([is-dark]) {
@@ -205,6 +224,9 @@
   </template>
   <cr-realbox-dropdown id="matches" role="listbox" result="[[result_]]"
       selected-match-index="{{selectedMatchIndex_}}"
+      can-show-secondary-matches="[[canShowSecondaryMatches]]"
+      had-secondary-matches="{{hadSecondaryMatches}}"
+      has-secondary-matches="{{hasSecondaryMatches}}"
       on-result-repaint="onResultRepaint_" on-match-focusin="onMatchFocusin_"
       on-match-click="onMatchClick_" on-match-remove="onMatchRemove_"
       on-header-focusin="onHeaderFocusin_" hidden$="[[!matchesAreVisible]]">

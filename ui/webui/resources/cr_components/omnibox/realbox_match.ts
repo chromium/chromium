@@ -13,13 +13,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ACMatchClassification, AutocompleteMatch, NavigationPredictor, PageHandlerInterface} from './omnibox.mojom-webui.js';
+import {ACMatchClassification, AutocompleteMatch, NavigationPredictor, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
 import {decodeString16, mojoTimeTicks} from './utils.js';
-
-
 
 // clang-format off
 /**
@@ -99,9 +97,7 @@ export class RealboxMatchElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      match: {
-        type: Object,
-      },
+      match: Object,
 
       /**
        * Index of the match in the autocomplete result. Used to inform embedder
@@ -111,6 +107,8 @@ export class RealboxMatchElement extends PolymerElement {
         type: Number,
         value: -1,
       },
+
+      sideType: Number,
 
       //========================================================================
       // Private properties
@@ -162,6 +160,7 @@ export class RealboxMatchElement extends PolymerElement {
   hasImage: boolean;
   match: AutocompleteMatch;
   matchIndex: number;
+  sideType: SideType;
   private actionIsVisible_: boolean;
   private contentsHtml_: TrustedHTML;
   private descriptionHtml_: TrustedHTML;
