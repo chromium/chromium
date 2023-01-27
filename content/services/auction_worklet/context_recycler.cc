@@ -16,6 +16,7 @@
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
+#include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "gin/converter.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-template.h"
@@ -67,6 +68,16 @@ void ContextRecycler::AddPrivateAggregationBindings(
   private_aggregation_bindings_ = std::make_unique<PrivateAggregationBindings>(
       v8_helper_, private_aggregation_permissions_policy_allowed);
   AddBindings(private_aggregation_bindings_.get());
+}
+
+void ContextRecycler::AddSharedStorageBindings(
+    mojom::AuctionSharedStorageHost* shared_storage_host,
+    bool shared_storage_permissions_policy_allowed) {
+  DCHECK(!shared_storage_bindings_);
+  shared_storage_bindings_ = std::make_unique<SharedStorageBindings>(
+      v8_helper_, shared_storage_host,
+      shared_storage_permissions_policy_allowed);
+  AddBindings(shared_storage_bindings_.get());
 }
 
 void ContextRecycler::AddRegisterAdBeaconBindings() {

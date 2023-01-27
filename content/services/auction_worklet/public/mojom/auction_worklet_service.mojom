@@ -6,6 +6,7 @@ module auction_worklet.mojom;
 
 import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
+import "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
@@ -24,6 +25,7 @@ struct BrowserSignals {
 // worklet.
 struct AuctionWorkletPermissionsPolicyState {
   bool private_aggregation_allowed;
+  bool shared_storage_allowed;
 };
 
 // Used by the browser to load and run FLEDGE worklets. This can run in a
@@ -52,6 +54,10 @@ interface AuctionWorkletService {
   // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
   //  the pipe will abort any in-progress loads and destroy the worklet.
   //
+  // `shared_storage_host` The pipe for the BidderWorklet to send shared storage
+  // requests to the browser process. Will be null if the `kSharedStorageAPI`
+  // feature or the "shared-storage" permissions policy is disabled.
+  //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
   //  command.
@@ -79,6 +85,7 @@ interface AuctionWorkletService {
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
+      pending_remote<AuctionSharedStorageHost>? shared_storage_host,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       url.mojom.Url script_source_url,
@@ -110,6 +117,10 @@ interface AuctionWorkletService {
   //  already, since it's on the AuctionWorkletService pipe instead of the
   //  SellerWorklet pipe.
   //
+  // `shared_storage_host` The pipe for the BidderWorklet to send shared storage
+  // requests to the browser process. Will be null if the `kSharedStorageAPI`
+  // feature or the "shared-storage" permissions policy is disabled.
+  //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
   //  command.
@@ -132,6 +143,7 @@ interface AuctionWorkletService {
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
+      pending_remote<AuctionSharedStorageHost>? shared_storage_host,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
       url.mojom.Url script_source_url,

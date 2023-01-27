@@ -306,7 +306,8 @@ class BidderWorkletTest : public testing::Test {
     top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
     experiment_group_id_ = absl::nullopt;
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
@@ -563,7 +564,8 @@ class BidderWorkletTest : public testing::Test {
     }
 
     auto bidder_worklet_impl = std::make_unique<BidderWorklet>(
-        v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
+        v8_helper_, std::move(shared_storage_host_remote_),
+        pause_for_debugger_on_start, std::move(url_loader_factory),
         url.is_empty() ? interest_group_bidding_url_ : url,
         interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
         top_window_origin_, permissions_policy_state_.Clone(),
@@ -810,6 +812,9 @@ class BidderWorkletTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
   network::TestURLLoaderFactory alternate_url_loader_factory_;
   scoped_refptr<AuctionV8Helper> v8_helper_;
+
+  mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+      shared_storage_host_remote_;
 
   // Reuseable run loop for disconnection errors.
   std::unique_ptr<base::RunLoop> disconnect_run_loop_;
@@ -5393,6 +5398,230 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
        "reporting url for key 'view': 'http://view.example.com/'."});
 }
 
+class BidderWorkletSharedStorageAPIDisabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletSharedStorageAPIDisabledTest() {
+    feature_list_.InitAndDisableFeature(blink::features::kSharedStorageAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateGenerateBidScript(
+          R"({ad: "ad", bid:1, render:"https://response.test/" })",
+          /*extra_code=*/R"(
+          sharedStorage.clear();
+        )"),
+      /*expected_bid=*/nullptr,
+      /*expected_data_version=*/absl::nullopt,
+      /*expected_errors=*/
+      {"https://url.test/:6 Uncaught ReferenceError: sharedStorage is not "
+       "defined."},
+      /*expected_debug_loss_report_url=*/absl::nullopt,
+      /*expected_debug_win_report_url=*/absl::nullopt,
+      /*expected_set_priority=*/absl::nullopt,
+      /*expected_update_priority_signals_overrides=*/{},
+      /*expected_pa_requests=*/{});
+
+  RunReportWinWithFunctionBodyExpectingResult(
+      R"(
+        sharedStorage.clear();
+      )",
+      /*expected_report_url =*/absl::nullopt,
+      /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+      /*expected_errors=*/
+      {"https://url.test/:12 Uncaught ReferenceError: sharedStorage is not "
+       "defined."});
+}
+
+class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
+ public:
+  BidderWorkletSharedStorageAPIEnabledTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       SharedStorageWriteInGenerateBid) {
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+
+  {
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_host_remote_ = receiver.BindNewPipeAndPassRemote();
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+          sharedStorage.set('a', 'b');
+          sharedStorage.set('a', 'b', {ignoreIfPresent: true});
+          sharedStorage.append('a', 'b');
+          sharedStorage.delete('a');
+          sharedStorage.clear();
+        )"),
+        /*expected_bid=*/
+        mojom::BidderWorkletBid::New(
+            "\"ad\"", 1, GURL("https://response.test/"),
+            /*ad_components=*/absl::nullopt, base::TimeDelta()),
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/{},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+
+    // Make sure the shared storage mojom methods are invoked as they use a
+    // dedicated pipe.
+    task_environment_.RunUntilIdle();
+
+    using RequestType =
+        auction_worklet::TestAuctionSharedStorageHost::RequestType;
+    using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
+
+    EXPECT_THAT(test_shared_storage_host.observed_requests(),
+                testing::ElementsAre(Request{.type = RequestType::kSet,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kSet,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = true},
+                                     Request{.type = RequestType::kAppend,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kDelete,
+                                             .key = u"a",
+                                             .value = std::u16string(),
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kClear,
+                                             .key = std::u16string(),
+                                             .value = std::u16string(),
+                                             .ignore_if_present = false}));
+  }
+
+  {
+    shared_storage_host_remote_ =
+        mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
+
+    // Set the shared-storage permissions policy to disallowed.
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/false);
+
+    RunGenerateBidWithJavascriptExpectingResult(
+        CreateGenerateBidScript(
+            R"({ad: "ad", bid:1, render:"https://response.test/" })",
+            /*extra_code=*/R"(
+            sharedStorage.clear();
+          )"),
+        /*expected_bid=*/nullptr,
+        /*expected_data_version=*/absl::nullopt,
+        /*expected_errors=*/
+        {"https://url.test/:6 Uncaught TypeError: The \"shared-storage\" "
+         "Permissions Policy denied the method on sharedStorage."},
+        /*expected_debug_loss_report_url=*/absl::nullopt,
+        /*expected_debug_win_report_url=*/absl::nullopt,
+        /*expected_set_priority=*/absl::nullopt,
+        /*expected_update_priority_signals_overrides=*/{},
+        /*expected_pa_requests=*/{});
+
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
+  }
+}
+
+TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
+       SharedStorageWriteInReportWin) {
+  auction_worklet::TestAuctionSharedStorageHost test_shared_storage_host;
+
+  {
+    mojo::Receiver<auction_worklet::mojom::AuctionSharedStorageHost> receiver(
+        &test_shared_storage_host);
+    shared_storage_host_remote_ = receiver.BindNewPipeAndPassRemote();
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+          sharedStorage.set('a', 'b');
+          sharedStorage.set('a', 'b', {ignoreIfPresent: true});
+          sharedStorage.append('a', 'b');
+          sharedStorage.delete('a');
+          sharedStorage.clear();
+        )",
+        /*expected_report_url =*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_errors=*/{});
+
+    // Make sure the shared storage mojom methods are invoked as they use a
+    // dedicated pipe.
+    task_environment_.RunUntilIdle();
+
+    using RequestType =
+        auction_worklet::TestAuctionSharedStorageHost::RequestType;
+    using Request = auction_worklet::TestAuctionSharedStorageHost::Request;
+
+    EXPECT_THAT(test_shared_storage_host.observed_requests(),
+                testing::ElementsAre(Request{.type = RequestType::kSet,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kSet,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = true},
+                                     Request{.type = RequestType::kAppend,
+                                             .key = u"a",
+                                             .value = u"b",
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kDelete,
+                                             .key = u"a",
+                                             .value = std::u16string(),
+                                             .ignore_if_present = false},
+                                     Request{.type = RequestType::kClear,
+                                             .key = std::u16string(),
+                                             .value = std::u16string(),
+                                             .ignore_if_present = false}));
+  }
+
+  {
+    shared_storage_host_remote_ =
+        mojo::PendingRemote<mojom::AuctionSharedStorageHost>();
+
+    // Set the shared-storage permissions policy to disallowed.
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/false);
+
+    RunReportWinWithFunctionBodyExpectingResult(
+        R"(
+          sharedStorage.clear();
+        )",
+        /*expected_report_url =*/absl::nullopt,
+        /*expected_ad_beacon_map=*/{}, /*expected_pa_requests=*/{},
+        /*expected_errors=*/
+        {"https://url.test/:12 Uncaught TypeError: The \"shared-storage\" "
+         "Permissions Policy denied the method on sharedStorage."});
+
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
+  }
+}
+
 class BidderWorkletPrivateAggregationEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletPrivateAggregationEnabledTest() {
@@ -5521,7 +5750,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
   {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/false);
+            /*private_aggregation_allowed=*/false,
+            /*shared_storage_allowed=*/true);
 
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(
@@ -5542,7 +5772,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
 
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
   }
 
   // Large bucket
@@ -5782,7 +6013,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
   {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/false);
+            /*private_aggregation_allowed=*/false,
+            /*shared_storage_allowed=*/true);
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
@@ -5796,7 +6028,8 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
 
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
-            /*private_aggregation_allowed=*/true);
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
   }
 
   // Large bucket

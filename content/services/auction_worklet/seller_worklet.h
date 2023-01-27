@@ -24,6 +24,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -64,6 +65,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // Starts loading the worklet script on construction.
   SellerWorklet(
       scoped_refptr<AuctionV8Helper> v8_helper,
+      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -261,6 +264,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     V8State(
         scoped_refptr<AuctionV8Helper> v8_helper,
         scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+        mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+            shared_storage_host_remote,
         const GURL& decision_logic_url,
         const absl::optional<GURL>& trusted_scoring_signals_url,
         const url::Origin& top_window_origin,
@@ -316,7 +321,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     friend class base::DeleteHelper<V8State>;
     ~V8State();
 
-    void FinishInit();
+    void FinishInit(mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+                        shared_storage_host_remote);
 
     // Calls `PostScoreAdCallbackToUserThread`, passing in a 0 score and null
     // for all other values. Used on errors, which cause us to drop win/loss
@@ -364,6 +370,8 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
     const url::Origin top_window_origin_;
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const absl::optional<uint16_t> experiment_group_id_;
+
+    mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

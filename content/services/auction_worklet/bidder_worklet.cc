@@ -35,6 +35,7 @@
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/set_priority_bindings.h"
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
+#include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
@@ -47,6 +48,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -110,6 +112,8 @@ bool CreateAdVector(AuctionV8Helper* v8_helper,
 
 BidderWorklet::BidderWorklet(
     scoped_refptr<AuctionV8Helper> v8_helper,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -142,7 +146,8 @@ BidderWorklet::BidderWorklet(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper, debug_id_, script_source_url_, top_window_origin_,
+      new V8State(v8_helper, debug_id_, std::move(shared_storage_host_remote),
+                  script_source_url_, top_window_origin_,
                   std::move(permissions_policy_state), wasm_helper_url_,
                   trusted_bidding_signals_url, weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
@@ -406,6 +411,8 @@ BidderWorklet::ReportWinTask::~ReportWinTask() = default;
 BidderWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     const GURL& script_source_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
@@ -423,7 +430,8 @@ BidderWorklet::V8State::V8State(
       trusted_bidding_signals_url_(trusted_bidding_signals_url) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
+                                std::move(shared_storage_host_remote)));
 }
 
 void BidderWorklet::V8State::SetWorkletScript(
@@ -501,6 +509,15 @@ void BidderWorklet::V8State::ReportWin(
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -779,6 +796,15 @@ BidderWorklet::V8State::GenerateSingleBid(
     fresh_context_recycler->AddForDebuggingOnlyBindings();
     fresh_context_recycler->AddPrivateAggregationBindings(
         permissions_policy_state_->private_aggregation_allowed);
+
+    if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+      fresh_context_recycler->AddSharedStorageBindings(
+          shared_storage_host_remote_.is_bound()
+              ? shared_storage_host_remote_.get()
+              : nullptr,
+          permissions_policy_state_->shared_storage_allowed);
+    }
+
     fresh_context_recycler->AddSetBidBindings();
     fresh_context_recycler->AddSetPriorityBindings();
     fresh_context_recycler->AddSetPrioritySignalsOverrideBindings();
@@ -1005,8 +1031,15 @@ BidderWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 }
 
-void BidderWorklet::V8State::FinishInit() {
+void BidderWorklet::V8State::FinishInit(
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+
+  if (shared_storage_host_remote) {
+    shared_storage_host_remote_.Bind(std::move(shared_storage_host_remote));
+  }
+
   debug_id_->SetResumeCallback(base::BindOnce(
       &BidderWorklet::V8State::PostResumeToUserThread, parent_, user_thread_));
 }

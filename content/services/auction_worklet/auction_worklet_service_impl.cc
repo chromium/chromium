@@ -177,6 +177,8 @@ AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
 
 void AuctionWorkletServiceImpl::LoadBidderWorklet(
     mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -188,7 +190,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     bool has_experiment_group_id,
     uint16_t experiment_group_id) {
   auto bidder_worklet = std::make_unique<BidderWorklet>(
-      auction_bidder_v8_helper_holder_->V8Helper(), pause_for_debugger_on_start,
+      auction_bidder_v8_helper_holder_->V8Helper(),
+      std::move(shared_storage_host_remote), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), script_source_url, wasm_helper_url,
       trusted_bidding_signals_url, top_window_origin,
       std::move(permissions_policy_state),
@@ -206,6 +209,8 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
 
 void AuctionWorkletServiceImpl::LoadSellerWorklet(
     mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -216,7 +221,8 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     bool has_experiment_group_id,
     uint16_t experiment_group_id) {
   auto seller_worklet = std::make_unique<SellerWorklet>(
-      auction_seller_v8_helper_holder_->V8Helper(), pause_for_debugger_on_start,
+      auction_seller_v8_helper_holder_->V8Helper(),
+      std::move(shared_storage_host_remote), pause_for_debugger_on_start,
       std::move(pending_url_loader_factory), decision_logic_url,
       trusted_scoring_signals_url, top_window_origin,
       std::move(permissions_policy_state),

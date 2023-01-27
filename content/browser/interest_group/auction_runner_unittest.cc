@@ -47,6 +47,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -1508,6 +1509,8 @@ class MockAuctionProcessManager
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -1543,6 +1546,8 @@ class MockAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet_receiver,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,

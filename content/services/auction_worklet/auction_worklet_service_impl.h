@@ -56,6 +56,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   // mojom::AuctionWorkletService implementation:
   void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
+      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -68,6 +70,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
       uint16_t experiment_group_id) override;
   void LoadSellerWorklet(
       mojo::PendingReceiver<mojom::SellerWorklet> seller_worklet_receiver,
+      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,

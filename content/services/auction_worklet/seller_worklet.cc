@@ -32,6 +32,7 @@
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
+#include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "gin/converter.h"
@@ -40,6 +41,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -297,6 +299,8 @@ absl::optional<mojom::RejectReason> RejectReasonStringToEnum(
 
 SellerWorklet::SellerWorklet(
     scoped_refptr<AuctionV8Helper> v8_helper,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
@@ -326,10 +330,10 @@ SellerWorklet::SellerWorklet(
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
-      new V8State(v8_helper_, debug_id_, decision_logic_url,
-                  trusted_scoring_signals_url, top_window_origin,
-                  std::move(permissions_policy_state), experiment_group_id,
-                  weak_ptr_factory_.GetWeakPtr()),
+      new V8State(v8_helper_, debug_id_, std::move(shared_storage_host_remote),
+                  decision_logic_url, trusted_scoring_signals_url,
+                  top_window_origin, std::move(permissions_policy_state),
+                  experiment_group_id, weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
@@ -552,6 +556,8 @@ SellerWorklet::ReportResultTask::~ReportResultTask() = default;
 SellerWorklet::V8State::V8State(
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote,
     const GURL& decision_logic_url,
     const absl::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
@@ -569,7 +575,8 @@ SellerWorklet::V8State::V8State(
       experiment_group_id_(experiment_group_id) {
   DETACH_FROM_SEQUENCE(v8_sequence_checker_);
   v8_helper_->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this)));
+      FROM_HERE, base::BindOnce(&V8State::FinishInit, base::Unretained(this),
+                                std::move(shared_storage_host_remote)));
 }
 
 void SellerWorklet::V8State::SetWorkletScript(
@@ -615,6 +622,15 @@ void SellerWorklet::V8State::ScoreAd(
   context_recycler.AddForDebuggingOnlyBindings();
   context_recycler.AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -917,6 +933,15 @@ void SellerWorklet::V8State::ReportResult(
   context_recycler.AddRegisterAdBeaconBindings();
   context_recycler.AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed);
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    context_recycler.AddSharedStorageBindings(
+        shared_storage_host_remote_.is_bound()
+            ? shared_storage_host_remote_.get()
+            : nullptr,
+        permissions_policy_state_->shared_storage_allowed);
+  }
+
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
@@ -1058,8 +1083,15 @@ SellerWorklet::V8State::~V8State() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 }
 
-void SellerWorklet::V8State::FinishInit() {
+void SellerWorklet::V8State::FinishInit(
+    mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+        shared_storage_host_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+
+  if (shared_storage_host_remote) {
+    shared_storage_host_remote_.Bind(std::move(shared_storage_host_remote));
+  }
+
   debug_id_->SetResumeCallback(base::BindOnce(
       &SellerWorklet::V8State::PostResumeToUserThread, parent_, user_thread_));
 }

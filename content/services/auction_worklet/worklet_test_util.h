@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -70,6 +71,50 @@ void AddBidderJsonResponse(
 // Adds a task to `v8_helper->v8_runner()` that blocks until the return value
 // is signaled. The returned event will be deleted afterwards.
 base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
+
+// Receives shared storage mojom messages.
+class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
+ public:
+  enum RequestType {
+    kSet,
+    kAppend,
+    kDelete,
+    kClear,
+  };
+
+  struct Request {
+    RequestType type;
+    std::u16string key;
+    std::u16string value;
+    bool ignore_if_present;
+
+    bool operator==(const Request& rhs) const;
+  };
+
+  TestAuctionSharedStorageHost();
+
+  ~TestAuctionSharedStorageHost() override;
+
+  // mojom::AuctionSharedStorageHost:
+  void Set(const std::u16string& key,
+           const std::u16string& value,
+           bool ignore_if_present) override;
+
+  void Append(const std::u16string& key, const std::u16string& value) override;
+
+  void Delete(const std::u16string& key) override;
+
+  void Clear() override;
+
+  const std::vector<Request>& observed_requests() const {
+    return observed_requests_;
+  }
+
+  void ClearObservedRequests();
+
+ private:
+  std::vector<Request> observed_requests_;
+};
 
 }  // namespace auction_worklet
 

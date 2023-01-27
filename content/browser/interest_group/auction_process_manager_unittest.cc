@@ -27,6 +27,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
@@ -61,6 +62,8 @@ class TestAuctionProcessManager
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -78,6 +81,8 @@ class TestAuctionProcessManager
   void LoadSellerWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::SellerWorklet>
           seller_worklet,
+      mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool should_pause_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
       const GURL& script_source_url,

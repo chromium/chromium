@@ -24,12 +24,14 @@
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/auction_shared_storage_host.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -56,6 +58,9 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
   return auction_worklet::mojom::AuctionWorkletPermissionsPolicyState::New(
       permissions_policy->IsFeatureEnabledForOrigin(
           blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+          worklet_origin),
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
           worklet_origin));
 }
 
@@ -204,7 +209,11 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
           delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
           bidder_worklet_.get()));
       process_handle_.GetService()->LoadBidderWorklet(
-          std::move(worklet_receiver), worklet_debug_->should_pause_on_start(),
+          std::move(worklet_receiver),
+          worklet_manager_->MaybeBindAuctionSharedStorageHost(
+              delegate->GetFrame(),
+              url::Origin::Create(worklet_info_.script_url)),
+          worklet_debug_->should_pause_on_start(),
           std::move(url_loader_factory), worklet_info_.script_url,
           worklet_info_.wasm_url, worklet_info_.signals_url,
           worklet_manager_->top_window_origin(),
@@ -224,7 +233,11 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
           delegate->GetFrame(), &process_handle_, worklet_info_.script_url,
           seller_worklet_.get()));
       process_handle_.GetService()->LoadSellerWorklet(
-          std::move(worklet_receiver), worklet_debug_->should_pause_on_start(),
+          std::move(worklet_receiver),
+          worklet_manager_->MaybeBindAuctionSharedStorageHost(
+              delegate->GetFrame(),
+              url::Origin::Create(worklet_info_.script_url)),
+          worklet_debug_->should_pause_on_start(),
           std::move(url_loader_factory), worklet_info_.script_url,
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
@@ -384,7 +397,14 @@ AuctionWorkletManager::AuctionWorkletManager(
     : auction_process_manager_(auction_process_manager),
       top_window_origin_(std::move(top_window_origin)),
       frame_origin_(std::move(frame_origin)),
-      delegate_(delegate) {}
+      delegate_(delegate) {
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
+    auction_shared_storage_host_ = std::make_unique<AuctionSharedStorageHost>(
+        static_cast<StoragePartitionImpl*>(
+            delegate_->GetFrame()->GetProcess()->GetStoragePartition())
+            ->GetSharedStorageManager());
+  }
+}
 
 AuctionWorkletManager::~AuctionWorkletManager() = default;
 
@@ -478,6 +498,26 @@ void AuctionWorkletManager::OnWorkletNoLongerUsable(WorkletOwner* worklet) {
   DCHECK_EQ(worklet, worklets_[worklet->worklet_info()]);
 
   worklets_.erase(worklet->worklet_info());
+}
+
+mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+AuctionWorkletManager::MaybeBindAuctionSharedStorageHost(
+    RenderFrameHostImpl* auction_runner_rfh,
+    const url::Origin& worklet_origin) {
+  mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost> remote;
+
+  const blink::PermissionsPolicy* permissions_policy =
+      auction_runner_rfh->permissions_policy();
+
+  if (auction_shared_storage_host_ &&
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+          worklet_origin)) {
+    auction_shared_storage_host_->BindNewReceiver(
+        worklet_origin, remote.InitWithNewPipeAndPassReceiver());
+  }
+
+  return remote;
 }
 
 }  // namespace content

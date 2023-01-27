@@ -25,6 +25,7 @@
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/direct_from_seller_signals_requester.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom-forward.h"
@@ -88,6 +89,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // Data is cached and will be reused by ReportWin().
   BidderWorklet(
       scoped_refptr<AuctionV8Helper> v8_helper,
+      mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+          shared_storage_host_remote,
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
@@ -279,6 +282,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     V8State(
         scoped_refptr<AuctionV8Helper> v8_helper,
         scoped_refptr<AuctionV8Helper::DebugId> debug_id,
+        mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+            shared_storage_host_remote,
         const GURL& script_source_url,
         const url::Origin& top_window_origin,
         mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
@@ -419,7 +424,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
         bool restrict_to_kanon_ads);
 
-    void FinishInit();
+    void FinishInit(mojo::PendingRemote<mojom::AuctionSharedStorageHost>
+                        shared_storage_host_remote);
 
     void PostReportWinCallbackToUserThread(
         ReportWinCallbackInternal callback,
@@ -458,6 +464,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
     std::unique_ptr<ContextRecycler> context_recycler_for_origin_group_mode_;
     url::Origin join_origin_for_origin_group_mode_;
+
+    mojo::Remote<mojom::AuctionSharedStorageHost> shared_storage_host_remote_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };

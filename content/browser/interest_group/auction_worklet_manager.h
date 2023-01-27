@@ -16,6 +16,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +33,7 @@ class NetworkAnonymizationKey;
 
 namespace content {
 
+class AuctionSharedStorageHost;
 class RenderFrameHostImpl;
 class SiteInstance;
 class SubresourceUrlAuthorizations;
@@ -252,6 +254,10 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);
 
+  mojo::PendingRemote<auction_worklet::mojom::AuctionSharedStorageHost>
+  MaybeBindAuctionSharedStorageHost(RenderFrameHostImpl* auction_runner_rfh,
+                                    const url::Origin& worklet_origin);
+
   // Accessors used by inner classes. Not strictly needed, but makes it clear
   // which fields they can access.
   AuctionProcessManager* auction_process_manager() {
@@ -265,6 +271,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
   const url::Origin top_window_origin_;
   const url::Origin frame_origin_;
   raw_ptr<Delegate> const delegate_;
+
+  std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
   std::map<WorkletInfo, WorkletOwner*> worklets_;
 };

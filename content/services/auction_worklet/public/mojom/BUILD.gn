@@ -9,6 +9,7 @@ mojom("mojom") {
   disable_variants = true
 
   sources = [
+    "auction_shared_storage_host.mojom",
     "auction_worklet_service.mojom",
     "bidder_worklet.mojom",
     "private_aggregation_request.mojom",

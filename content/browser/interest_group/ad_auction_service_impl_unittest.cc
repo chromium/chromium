@@ -23,10 +23,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_process_manager.h"
@@ -6125,6 +6127,290 @@ function reportResult(auctionConfig, browserSignals) {
   EXPECT_EQ(network_responder_->ReportCount(), 8u);
   EXPECT_TRUE(network_responder_->ReportSent("/bidder_debug_win_2"));
   EXPECT_TRUE(network_responder_->ReportSent("/seller_debug_win_2"));
+}
+
+class AdAuctionServiceImplSharedStorageEnabledTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplSharedStorageEnabledTest() {
+    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+  }
+
+  std::u16string SharedStorageGet(const url::Origin& context_origin,
+                                  const std::u16string& key) {
+    storage::SharedStorageManager* shared_storage_manager =
+        static_cast<StoragePartitionImpl*>(
+            browser_context()->GetDefaultStoragePartition())
+            ->GetSharedStorageManager();
+    DCHECK(shared_storage_manager);
+
+    base::test::TestFuture<storage::SharedStorageManager::GetResult> future;
+    shared_storage_manager->Get(context_origin, key, future.GetCallback());
+    storage::SharedStorageManager::GetResult result = future.Take();
+
+    return result.data;
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(AdAuctionServiceImplSharedStorageEnabledTest, SharedStorageWrite) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  sharedStorage.set('key0', 'value0');
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sharedStorage.append('key0', 'value1');
+  sharedStorage.set('key1', 'value1');
+  sharedStorage.set('key4', 'value4');
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  sharedStorage.set('key2', 'value2');
+  return bid;
+}
+function reportResult() {
+  sharedStorage.append('key2', 'value3');
+  sharedStorage.set('key3', 'value3');
+  sharedStorage.set('key4', 'value4');
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginC;
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  NavigateAndCommit(kUrlA);
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginC};
+
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_NE(auction_result, absl::nullopt);
+
+  // Make sure the shared storage mojom methods are invoked as they use a
+  // dedicated pipe.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key0"), u"value0value1");
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key1"), u"value1");
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key4"), u"value4");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key2"), u"value2value3");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key3"), u"value3");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key4"), u"value4");
+}
+
+TEST_F(AdAuctionServiceImplSharedStorageEnabledTest,
+       ScriptErrorAfterSharedStorageWrite) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  sharedStorage.set('key0', 'value0');
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sharedStorage.set('key1', 'value1');
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  sharedStorage.set('key2', 'value2');
+
+  triggerReferenceError
+
+  return bid;
+}
+function reportResult() {
+  sharedStorage.set('key3', 'value3');
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  NavigateAndCommit(kUrlC);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginC;
+  interest_group.bidding_url = kUrlC.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  NavigateAndCommit(kUrlA);
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginC};
+
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Make sure the shared storage mojom methods are invoked as they use a
+  // dedicated pipe.
+  task_environment()->RunUntilIdle();
+
+  // When scoreAd() throws an exception after a
+  // sharedStorage.set('key2', 'value2'), the write operation should still be
+  // handled.
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key0"), u"value0");
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key1"), u"");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key2"), u"value2");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key3"), u"");
+}
+
+TEST_F(AdAuctionServiceImplSharedStorageEnabledTest,
+       SharedStoragePermissionsPolicyDisallowsSellerOrigin) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  sharedStorage.set('key0', 'value0');
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin(
+    auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sharedStorage.set('key1', 'value1');
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  sharedStorage.set('key2', 'value2');
+  return bid;
+}
+function reportResult() {
+  sharedStorage.set('key3', 'value3');
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  // Allow only (bidder) origin A in the permissions policy. The auction with
+  // seller origin C should fail.
+  auto simulator =
+      NavigationSimulator::CreateBrowserInitiated(kUrlA, web_contents());
+  blink::ParsedPermissionsPolicy policy;
+  policy.emplace_back(
+      blink::mojom::PermissionsPolicyFeature::kSharedStorage,
+      /*allowed_origins=*/
+      std::vector<blink::OriginWithPossibleWildcards>{
+          blink::OriginWithPossibleWildcards(kOriginA,
+                                             /*has_subdomain_wildcard=*/false)},
+      /*matches_all_origins=*/false,
+      /*matches_opaque_src=*/false);
+  simulator->SetPermissionsPolicyHeader(std::move(policy));
+  simulator->Commit();
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginC;
+  auction_config.decision_logic_url = kUrlC.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, absl::nullopt);
+
+  // Make sure the shared storage mojom methods are invoked as they use a
+  // dedicated pipe.
+  task_environment()->RunUntilIdle();
+
+  // Only the sharedStorage.set() from generateBid() was successful.
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key0"), u"value0");
+  EXPECT_EQ(SharedStorageGet(kOriginA, u"key1"), u"");
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key2"), u"");
+  EXPECT_EQ(SharedStorageGet(kOriginC, u"key3"), u"");
+}
+
+class AdAuctionServiceImplSharedStorageDisabledTest
+    : public AdAuctionServiceImplTest {
+ public:
+  AdAuctionServiceImplSharedStorageDisabledTest() {
+    feature_list_.InitAndDisableFeature(blink::features::kSharedStorageAPI);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/1408576): Flaky.
+TEST_F(AdAuctionServiceImplSharedStorageDisabledTest,
+       DISABLED_SharedStorageNotDefined) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  sharedStorage.set('key0', 'value0');
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+)";
+
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.owner = kOriginA;
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.priority = 2;
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_url=*/GURL("https://example.com/render"),
+      /*metadata=*/absl::nullopt);
+  interest_group.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group);
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+
+  absl::optional<GURL> auction_result = RunAdAuctionAndFlush(auction_config);
+  EXPECT_EQ(auction_result, absl::nullopt);
 }
 
 class AdAuctionServiceImplPrivateAggregationEnabledTest
