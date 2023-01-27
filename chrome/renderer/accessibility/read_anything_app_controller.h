@@ -173,6 +173,7 @@ class ReadAnythingAppController
   double GetLineSpacingValue(read_anything::mojom::Spacing line_spacing) const;
 
   ui::AXNode* GetAXNode(ui::AXNodeID ax_node_id) const;
+  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) const;
 
   bool NodeIsContentNode(ui::AXNodeID ax_node_id) const;
 

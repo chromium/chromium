@@ -197,6 +197,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                    focus_offset);
   }
 
+  bool IsNodeIgnoredForReadAnything(ui::AXNodeID ax_node_id) {
+    return controller_->IsNodeIgnoredForReadAnything(ax_node_id);
+  }
+
   size_t GetNumTrees() { return controller_->trees_.size(); }
 
   size_t GetNumPendingUpdates() { return controller_->pending_updates_.size(); }
@@ -510,6 +514,23 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   OnAXTreeDistilled({});
   EXPECT_EQ(true, IsOverline(2));
   EXPECT_EQ(false, IsOverline(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsNodeIgnoredForReadAnything) {
+  ui::AXTreeUpdate update;
+  SetUpdateTreeID(&update);
+  update.nodes.resize(3);
+  update.nodes[0].id = 2;
+  update.nodes[1].id = 3;
+  update.nodes[2].id = 4;
+  update.nodes[0].role = ax::mojom::Role::kStaticText;
+  update.nodes[1].role = ax::mojom::Role::kComboBoxGrouping;
+  update.nodes[2].role = ax::mojom::Role::kButton;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({});
+  EXPECT_EQ(false, IsNodeIgnoredForReadAnything(2));
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(3));
+  EXPECT_EQ(true, IsNodeIgnoredForReadAnything(4));
 }
 
 TEST_F(ReadAnythingAppControllerTest, DisplayNodeIdsContains_Selection) {

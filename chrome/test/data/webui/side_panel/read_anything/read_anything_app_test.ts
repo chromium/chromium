@@ -1051,4 +1051,48 @@ suite('ReadAnythingAppTest', () => {
     const expected = '<div></div>';
     assertContainerInnerHTML(expected);
   });
+
+  test('updateContent interactiveElement', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2
+    // ++++staticText name='hello world' id=3
+    // ++button htmlTag='button' id=4
+    // ++++staticText name='button text' id=5
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'hello world',
+        },
+        {
+          id: 4,
+          role: 'button',
+          htmlTag: 'button',
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'button text',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected = '<div><p>hello world</p></div>';
+    assertContainerInnerHTML(expected);
+  });
 });

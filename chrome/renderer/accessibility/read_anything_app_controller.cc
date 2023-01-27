@@ -27,6 +27,7 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 #include "ui/accessibility/ax_tree.h"
@@ -91,16 +92,19 @@ void SetAXNodeDataRole(v8::Isolate* isolate,
   v8_dict->Get("role", &v8_role);
   std::string role_name;
   gin::ConvertFromV8(isolate, v8_role, &role_name);
-  if (role_name == "rootWebArea")
+  if (role_name == "rootWebArea") {
     ax_node_data->role = ax::mojom::Role::kRootWebArea;
-  else if (role_name == "heading")
+  } else if (role_name == "heading") {
     ax_node_data->role = ax::mojom::Role::kHeading;
-  else if (role_name == "link")
+  } else if (role_name == "link") {
     ax_node_data->role = ax::mojom::Role::kLink;
-  else if (role_name == "paragraph")
+  } else if (role_name == "paragraph") {
     ax_node_data->role = ax::mojom::Role::kParagraph;
-  else if (role_name == "staticText")
+  } else if (role_name == "staticText") {
     ax_node_data->role = ax::mojom::Role::kStaticText;
+  } else if (role_name == "button") {
+    ax_node_data->role = ax::mojom::Role::kButton;
+  }
 }
 
 void SetAXNodeDataHtmlTag(v8::Isolate* isolate,
@@ -595,14 +599,20 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
     // first ancestor in the queue. Exit the loop early if an ancestor is
     // already in display_node_ids_; this means that all of the remaining
     // ancestors in the queue are also already in display_node_ids.
+    // IsNodeIgnoredForReadAnything removes control nodes from display_node_ids,
+    // which is used by GetChildren(). This effectively prunes the tree at the
+    // control node. For example, a button and its static text inside will be
+    // removed.
     base::queue<ui::AXNode*> ancestors =
         content_node->GetAncestorsCrossingTreeBoundaryAsQueue();
     while (!ancestors.empty()) {
       ui::AXNodeID ancestor_id = ancestors.front()->id();
       if (base::Contains(display_node_ids_, ancestor_id))
         break;
-      display_node_ids_.insert(ancestor_id);
       ancestors.pop();
+      if (!IsNodeIgnoredForReadAnything(ancestor_id)) {
+        display_node_ids_.insert(ancestor_id);
+      }
     }
 
     // Add all descendant ids to the set.
@@ -613,7 +623,9 @@ void ReadAnythingAppController::PostProcessDistillableAXTree() {
       continue;
     while (next_node != deepest_last_child) {
       next_node = next_node->GetNextUnignoredInTreeOrder();
-      display_node_ids_.insert(next_node->id());
+      if (!IsNodeIgnoredForReadAnything(next_node->id())) {
+        display_node_ids_.insert(next_node->id());
+      }
     }
   }
 }
@@ -702,8 +714,9 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
   DCHECK(ax_node);
   for (auto it = ax_node->UnignoredChildrenBegin();
        it != ax_node->UnignoredChildrenEnd(); ++it) {
-    if (base::Contains(display_node_ids_, it->id()))
+    if (base::Contains(display_node_ids_, it->id())) {
       child_ids.push_back(it->id());
+    }
   }
   return child_ids;
 }
@@ -787,6 +800,15 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
+}
+
+bool ReadAnythingAppController::IsNodeIgnoredForReadAnything(
+    ui::AXNodeID ax_node_id) const {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  // Ignore interactive elements.
+  ax::mojom::Role role = ax_node->GetRole();
+  return ui::IsControl(role) || ui::IsSelect(role);
 }
 
 void ReadAnythingAppController::OnConnected() {
