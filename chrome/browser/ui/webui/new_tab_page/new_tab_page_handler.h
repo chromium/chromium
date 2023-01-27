@@ -125,6 +125,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void SetCustomizeChromeSidePanelVisible(
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;
+  void IncrementCustomizeChromeButtonOpenCount() override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,

@@ -530,6 +530,7 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpModulesShownCount, 0);
   registry->RegisterTimePref(prefs::kNtpModulesFirstShownTime, base::Time());
   registry->RegisterBooleanPref(prefs::kNtpModulesFreVisible, true);
+  registry->RegisterIntegerPref(prefs::kNtpCustomizeChromeButtonOpenCount, 0);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
@@ -872,6 +873,16 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
       CustomizeChromeTabHelper::FromWebContents(web_contents_);
   customize_chrome_tab_helper->SetCustomizeChromeSidePanelVisible(visible,
                                                                   section_enum);
+}
+
+void NewTabPageHandler::IncrementCustomizeChromeButtonOpenCount() {
+  CHECK(profile_);
+  CHECK(profile_->GetPrefs());
+  profile_->GetPrefs()->SetInteger(
+      prefs::kNtpCustomizeChromeButtonOpenCount,
+      profile_->GetPrefs()->GetInteger(
+          prefs::kNtpCustomizeChromeButtonOpenCount) +
+          1);
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

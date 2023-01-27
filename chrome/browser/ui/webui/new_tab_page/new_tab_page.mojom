@@ -315,6 +315,9 @@ interface PageHandler {
   // Shows or hides the customize chrome in unified side panel.
   SetCustomizeChromeSidePanelVisible(bool visible,
                                      CustomizeChromeSection section);
+  // Increment the number of times the user has opened the side panel
+  // with the customize chrome button.
+  IncrementCustomizeChromeButtonOpenCount();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
