@@ -14,6 +14,8 @@
 
 namespace file_manager::io_task {
 
+void IOTask::Resume(ResumeParams) {}
+
 EntryStatus::EntryStatus(storage::FileSystemURL file_url,
                          absl::optional<base::File::Error> file_error)
     : url(file_url), error(file_error) {}

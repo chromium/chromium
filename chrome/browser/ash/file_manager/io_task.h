@@ -184,6 +184,9 @@ class IOTask {
   virtual void Execute(ProgressCallback progress_callback,
                        CompleteCallback complete_callback) = 0;
 
+  // Resumes a task.
+  virtual void Resume(ResumeParams params);
+
   // Cancels the task. This should set the progress state to be |kCancelled|,
   // but not call any of Execute()'s callbacks. The task will be deleted
   // synchronously after this call returns.

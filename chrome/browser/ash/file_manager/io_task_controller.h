@@ -45,6 +45,9 @@ class IOTaskController {
   // Queues an IOTask and returns its ID.
   IOTaskId Add(std::unique_ptr<IOTask> task);
 
+  // Resumes a task from the queue.
+  void Resume(IOTaskId task_id, ResumeParams params);
+
   // Cancels or removes a task from the queue.
   void Cancel(IOTaskId task_id);
 

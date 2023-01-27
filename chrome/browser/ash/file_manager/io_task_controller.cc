@@ -70,6 +70,18 @@ IOTaskId IOTaskController::Add(std::unique_ptr<IOTask> task) {
   return task_id;
 }
 
+void IOTaskController::Resume(IOTaskId task_id, ResumeParams params) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = tasks_.find(task_id);
+  if (it != tasks_.end()) {
+    IOTask* task = it->second.get();
+    task->Resume(std::move(params));
+  } else {
+    LOG(WARNING) << "Failed to resume task: " << task_id << " not found";
+  }
+}
+
 void IOTaskController::Cancel(IOTaskId task_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
