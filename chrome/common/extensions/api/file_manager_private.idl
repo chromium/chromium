@@ -1010,11 +1010,11 @@ dictionary PauseParams {
   // The conflict file name.
   DOMString? conflictName;
 
-  // Set true if there are potentially multiple conflicted file names.
-  boolean? conflictMultiple;
-
   // True if the conflict file name is a directory.
   boolean? conflictIsDirectory;
+
+  // Set true if there are potentially multiple conflicted file names.
+  boolean? conflictMultiple;
 };
 
 // Resume IO Task parameters, see file_manager::io_task::ResumeParams.
