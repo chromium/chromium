@@ -57,3 +57,12 @@
   padding-block-end: 16px;
   padding-block-start: 16px;
 }
+
+.settings-cr-link-row {
+  --cr-icon-button-margin-start: 0px;
+}
+
+/* Hide the default icon element.*/
+cr-link-row[hide-icon]::part(icon) {
+  display: none;
+}

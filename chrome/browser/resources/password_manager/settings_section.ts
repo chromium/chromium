@@ -20,7 +20,6 @@ export interface SettingsSectionElement {
   $: {
     autosigninToggle: PrefToggleButtonElement,
     blockedSitesList: HTMLElement,
-    exportPasswordsButton: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
   };
 }
@@ -49,14 +48,10 @@ export class SettingsSectionElement extends I18nMixin
           return loadTimeData.getBoolean('isPasswordManagerShortcutInstalled');
         },
       },
-
-      /** Whether password export dialog is shown. */
-      showPasswordsExportDialog_: Boolean,
     };
   }
 
   private blockedSites_: BlockedSite[];
-  private showPasswordsExportDialog_: boolean;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -92,20 +87,6 @@ export class SettingsSectionElement extends I18nMixin
     // TODO(crbug.com/1358448): Hide the button for users after the shortcut is
     // installed.
     PasswordManagerImpl.getInstance().showAddShortcutDialog();
-  }
-
-  /**
-   * Opens the export passwords dialog.
-   */
-  private onExportClick_() {
-    this.showPasswordsExportDialog_ = true;
-  }
-
-  /**
-   * Closes the export passwords dialog.
-   */
-  private onPasswordsExportDialogClosed_() {
-    this.showPasswordsExportDialog_ = false;
   }
 
   /**

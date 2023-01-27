@@ -168,15 +168,15 @@ suite('SettingsSectionTest', function() {
     assertFalse(!!settings.shadowRoot!.querySelector('#addShortcutBanner'));
   });
 
-  test('Export dialog appears after clicking on button', async function() {
+  // TODO(crbug/1394416): Update test after the export element is shown
+  // only if there are passwords available.
+  test('Password exporter element is visible', async function() {
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await flushTasks();
 
-    settings.$.exportPasswordsButton.click();
-    await passwordManager.whenCalled('exportPasswords');
-    const exportPasswordsDialog =
-        settings!.shadowRoot!.querySelector('passwords-export-dialog');
-    assertTrue(!!exportPasswordsDialog);
+    const PasswordsExporterElement =
+        settings!.shadowRoot!.querySelector('password-exporter');
+    assertTrue(!!PasswordsExporterElement);
   });
 });

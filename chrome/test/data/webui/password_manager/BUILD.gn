@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "password_manager_routing_test.ts",
     "password_manager_side_bar_test.ts",
     "passwords_export_dialog_test.ts",
+    "passwords_export_test.ts",
     "passwords_section_test.ts",
     "settings_section_test.ts",
     "site_favicon_test.ts",

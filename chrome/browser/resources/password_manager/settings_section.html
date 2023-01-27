@@ -1,12 +1,4 @@
 <style include="shared-style cr-shared-style">
-  cr-link-row {
-    --cr-icon-button-margin-start: 0px;
-  }
-
-  cr-link-row[hide-icon]::part(icon) {
-    display: none;
-  }
-
   #blockedSitesTitle {
     margin-top: 28px;
   }
@@ -49,23 +41,17 @@
       sub-label="$i18n{autosigninDescription}"
       pref-key="credentials_enable_autosignin">
   </pref-toggle-button>
-  <cr-link-row id="trustedVaultBanner" class="cr-row"
+  <cr-link-row id="trustedVaultBanner" class="cr-row settings-cr-link-row"
       label="$i18n{trustedVaultBannerLabelOfferOptIn}"
       sub-label="$i18n{trustedVaultBannerSubLabelOfferOptIn}" external>
   </cr-link-row>
-  <cr-link-row id="importPasswords" class="cr-row"
+  <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
       label="$i18n{importPasswords}"
       sub-label="$i18n{importPasswordsDescription}" hide-icon>
   </cr-link-row>
-  <cr-link-row id="exportPasswordsBanner" class="cr-row"
-      label="$i18n{exportPasswords}"
-      sub-label="$i18n{exportPasswordsDescription}" hide-icon>
-      <cr-button id="exportPasswordsButton" on-click="onExportClick_">
-          $i18n{downloadFile}
-      </cr-button>
-  </cr-link-row>
+  <password-exporter></password-exporter>
   <template is="dom-if" if="[[!isPasswordManagerShortcutInstalled_]]" restamp>
-    <cr-link-row id="addShortcutBanner" class="cr-row"
+    <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
         on-click="onAddShortcutClick_" label="$i18n{addShortcut}"
         sub-label="$i18n{addShortcutDescription}" hide-icon>
     </cr-link-row>
@@ -92,8 +78,3 @@
     </template>
   </div>
 </div>
-<template is="dom-if" if="[[showPasswordsExportDialog_]]" restamp>
-  <passwords-export-dialog
-    on-passwords-export-dialog-close="onPasswordsExportDialogClosed_">
-  </passwords-export-dialog>
-</template>
