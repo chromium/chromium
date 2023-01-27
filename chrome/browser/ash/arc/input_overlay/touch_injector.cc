@@ -608,6 +608,12 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (display_mode_ != DisplayMode::kView)
     return SendEvent(continuation, &event);
 
+  if (display_overlay_controller_ && display_mode_ == DisplayMode::kView) {
+    display_overlay_controller_->SetMenuEntryHoverState(
+        LocatedEventOnMenuEntry(event, content_bounds_,
+                                /*press_required=*/false));
+  }
+
   // |display_overlay_controller_| is null for unittest.
   if (display_overlay_controller_ &&
       LocatedEventOnMenuEntry(event, content_bounds_,

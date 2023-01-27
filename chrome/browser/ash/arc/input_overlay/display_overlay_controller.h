@@ -84,6 +84,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void OnActionRemoved(Action* action);
   void OnActionTrashButtonPressed(Action* action);
 
+  // For menu entry hover state:
+  void SetMenuEntryHoverState(bool curr_hover_state);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;

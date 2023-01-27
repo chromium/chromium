@@ -24,6 +24,9 @@ class MenuEntryView : public views::ImageButton {
   MenuEntryView& operator=(const MenuEntryView&) = delete;
   ~MenuEntryView() override;
 
+  // Change hover state for menu entry button.
+  void ChangeHoverState(bool is_hovered);
+
   // views::View:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -49,12 +52,18 @@ class MenuEntryView : public views::ImageButton {
 
   OnPositionChangedCallback on_position_changed_callback_;
 
+  // Change menu entry properties if currently in dragging state.
+  void ChangeMenuEntryOnDrag(bool is_dragging);
+
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
   // This view's position when drag starts.
   gfx::Point start_drag_view_pos_;
   // If this view is in a dragging state.
   bool is_dragging_ = false;
+
+  // The current hover state for the menu entry.
+  bool hover_state_ = false;
 
   // TODO(b/260937747): Update or remove when removing flags
   // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.

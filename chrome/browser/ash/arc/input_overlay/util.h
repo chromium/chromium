@@ -16,6 +16,10 @@ constexpr int kArrowKeyMoveDistance = 2;
 // Update |position| according to |key| if |key| is arrow key.
 bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position);
 
+// TODO(b/260937747): Update or remove when removing flags
+// |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
+bool AllowReposition();
+
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UTIL_H_

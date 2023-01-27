@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/input_overlay/util.h"
 
+#include "ash/constants/ash_features.h"
+
 namespace arc::input_overlay {
 
 bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
@@ -23,6 +25,11 @@ bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
     default:
       return false;
   }
+}
+
+bool AllowReposition() {
+  return ash::features::IsArcInputOverlayAlphaV2Enabled() ||
+         ash::features::IsArcInputOverlayBetaEnabled();
 }
 
 }  // namespace arc::input_overlay
