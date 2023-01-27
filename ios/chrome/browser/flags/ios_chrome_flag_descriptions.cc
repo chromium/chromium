@@ -202,6 +202,12 @@ extern const char kLongPressSurroundingTextName[] =
 extern const char kLongPressSurroundingTextDescription[] =
     "When enabled, long pressing a text will analyze larger part of the text.";
 
+const char kCloseAllTabsConfirmationName[] =
+    "Close All Tabs Confirmation Dialog";
+const char kCloseAllTabsConfirmationDescription[] =
+    "When enabled, tapping the Close All Tabs now shows a confirmation dialog "
+    "(before deletion), instead of an Undo button (after deletion).";
+
 const char kContentSuggestionsUIModuleRefreshName[] =
     "Content Suggestions UI Module Refresh";
 const char kContentSuggestionsUIModuleRefreshDescription[] =

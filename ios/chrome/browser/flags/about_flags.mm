@@ -1282,6 +1282,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableFeedSyntheticCapabilitiesName,
      flag_descriptions::kEnableFeedSyntheticCapabilitiesDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableFeedSyntheticCapabilities)},
+    {"close-all-tabs-confirmation",
+     flag_descriptions::kCloseAllTabsConfirmationName,
+     flag_descriptions::kCloseAllTabsConfirmationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kCloseAllTabsConfirmation)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
