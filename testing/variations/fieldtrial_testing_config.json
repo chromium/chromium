@@ -6901,7 +6901,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithDecisionInBrowser_V2",
+                    "name": "EnabledWithDecisionInBrowser_V3",
                     "enable_features": [
                         "AppIconInIntentChip",
                         "LinkCapturingUiUpdate"
