@@ -109,7 +109,7 @@ void SystemNudgeController::RecordNudgeAction(NudgeCatalogName catalog_name) {
 
 void SystemNudgeController::ShowNudge() {
   if (nudge_ && !nudge_->widget()->IsClosed()) {
-    hide_nudge_timer_.AbandonAndStop();
+    hide_nudge_timer_->AbandonAndStop();
     nudge_->Close();
   }
 
@@ -119,10 +119,11 @@ void SystemNudgeController::ShowNudge() {
   StartFadeAnimation(/*show=*/true);
   RecordNudgeShown(nudge_->catalog_name());
 
+  hide_nudge_timer_ = std::make_unique<base::OneShotTimer>();
   // Start a timer to close the nudge after a set amount of time.
-  hide_nudge_timer_.Start(FROM_HERE, kNudgeShowTime,
-                          base::BindOnce(&SystemNudgeController::HideNudge,
-                                         weak_ptr_factory_.GetWeakPtr()));
+  hide_nudge_timer_->Start(FROM_HERE, kNudgeShowTime,
+                           base::BindOnce(&SystemNudgeController::HideNudge,
+                                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SystemNudgeController::ForceCloseAnimatingNudge() {
@@ -130,7 +131,7 @@ void SystemNudgeController::ForceCloseAnimatingNudge() {
 }
 
 void SystemNudgeController::FireHideNudgeTimerForTesting() {
-  hide_nudge_timer_.FireNow();
+  hide_nudge_timer_->FireNow();
 }
 
 void SystemNudgeController::ResetNudgeRegistryForTesting() {
@@ -150,6 +151,7 @@ SystemNudgeController::GetNudgeRegistry() {
 }
 
 void SystemNudgeController::StartFadeAnimation(bool show) {
+  hide_nudge_timer_.reset();
   // Clean any pending animation observer.
   hide_nudge_animation_observer_.reset();
 
@@ -159,6 +161,9 @@ void SystemNudgeController::StartFadeAnimation(bool show) {
     return;
 
   ui::Layer* layer = nudge_->widget()->GetLayer();
+  if (layer->GetAnimator()->is_animating()) {
+    return;
+  }
   gfx::Rect widget_bounds = layer->bounds();
 
   gfx::Transform scaled_nudge_transform;

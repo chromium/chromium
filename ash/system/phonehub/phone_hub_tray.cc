@@ -60,11 +60,23 @@ constexpr int kIconSpacing = 12;
 constexpr auto kBubblePadding =
     gfx::Insets::TLBR(0, 0, kBubbleBottomPaddingDip, 0);
 
+bool IsInUserSession() {
+  SessionControllerImpl* session_controller =
+      Shell::Get()->session_controller();
+  return session_controller->GetSessionState() ==
+             session_manager::SessionState::ACTIVE &&
+         !session_controller->IsRunningInAppMode();
+}
+
 }  // namespace
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPhoneHub),
-      ui_controller_(new PhoneHubUiController()) {
+      ui_controller_(new PhoneHubUiController()),
+      phone_hub_nudge_controller_(
+          features::IsPhoneHubNudgeEnabled()
+              ? std::make_unique<PhoneHubNudgeController>()
+              : nullptr) {
   // By default, if the individual buttons did not handle the event consider it
   // as a phone hub icon event.
   SetPressedCallback(base::BindRepeating(&PhoneHubTray::PhoneHubIconActivated,
@@ -385,7 +397,14 @@ void PhoneHubTray::CloseBubble() {
 void PhoneHubTray::UpdateVisibility() {
   DCHECK(ui_controller_.get());
   auto ui_state = ui_controller_->ui_state();
-  SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden);
+  SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden &&
+                      IsInUserSession());
+  if (features::IsPhoneHubNudgeEnabled() && IsInUserSession()) {
+    if (ui_state == PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
+      phone_hub_nudge_controller_->ShowNudge();
+      // TODO (b/266853434): Animation of icon.
+    }
+  }
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {
@@ -413,8 +432,11 @@ void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
   // Simply toggle between visible/invisibvle
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {
     CloseBubble();
-  } else {
-    ShowBubble();
+    return;
+  }
+  ShowBubble();
+  if (features::IsPhoneHubNudgeEnabled()) {
+    phone_hub_nudge_controller_->HideNudge();
   }
 }
 

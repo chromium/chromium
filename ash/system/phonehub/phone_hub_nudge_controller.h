@@ -8,13 +8,15 @@
 #include "ash/system/tray/system_nudge_controller.h"
 
 namespace ash {
-
+// This class controls showing a nudge when a user is eligible for Phone Hub.
 class ASH_EXPORT PhoneHubNudgeController : public SystemNudgeController {
  public:
-  explicit PhoneHubNudgeController(std::u16string nudge_content_);
+  PhoneHubNudgeController();
   PhoneHubNudgeController(const PhoneHubNudgeController&) = delete;
   PhoneHubNudgeController& operator=(const PhoneHubNudgeController&) = delete;
   ~PhoneHubNudgeController() override;
+
+  void SetNudgeContent();
 
  protected:
   // SystemNudgeController: Creates PhoneHubNudge
