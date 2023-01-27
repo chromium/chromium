@@ -2405,6 +2405,8 @@ RegisterWebContentsCreationCallback(
 // and/or main. This can be useful to enable when the process hosting the window
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
+
+bool MacOSVersionSupportsDarkMode();
 #endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content

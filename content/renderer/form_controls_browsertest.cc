@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
-#include "content/browser/form_controls_browsertest_mac.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
@@ -104,9 +103,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // TODO(wangxianzhu): Tighten these parameters.
     auto comparator = cc::FuzzyPixelComparator()
                           .DiscardAlpha()
-                          .SetErrorPixelsPercentageLimit(26.f)
+                          .SetErrorPixelsPercentageLimit(5.f, 25.f)
                           .SetAvgAbsErrorLimit(20.f)
-                          .SetAbsErrorLimit(120);
+                          .SetAbsErrorLimit(120, 2);
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || (OS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
     // Different versions of android may have slight differences in rendering.
@@ -116,9 +115,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // This also applies to different versions of other OSes.
     auto comparator = cc::FuzzyPixelComparator()
                           .DiscardAlpha()
-                          .SetErrorPixelsPercentageLimit(11.f)
+                          .SetErrorPixelsPercentageLimit(1.f, 2.f)
                           .SetAvgAbsErrorLimit(5.f)
-                          .SetAbsErrorLimit(140);
+                          .SetAbsErrorLimit(10, 2);
 #else
     cc::AlphaDiscardingExactPixelComparator comparator;
 #endif
@@ -150,8 +149,9 @@ class FormControlsBrowserTest : public ContentBrowserTest {
 #endif
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_checkbox",
           "<input type=checkbox>"
@@ -167,8 +167,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Checkbox) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_radio",
           "<input type=radio>"
@@ -185,12 +186,14 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
 #if BUILDFLAG(IS_MAC)
-  if (!MacOSVersionSupportsDarkMode())
-    return;
+  if (!MacOSVersionSupportsDarkMode()) {
+    GTEST_SKIP();
+  }
 #endif
 
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_dark_mode_text_selection",
           "<meta name=\"color-scheme\" content=\"dark\">"
@@ -208,8 +211,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, DarkModeTextSelection) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_input",
           "<style>body {margin: 8px} input {width: 150px; "
@@ -231,8 +235,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Input) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Textarea) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_textarea",
           R"HTML(
@@ -251,8 +256,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Textarea) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_button",
           R"HTML(
@@ -283,8 +289,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Button) {
 #define MAYBE_ColorInput ColorInput
 #endif
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_color_input",
           R"HTML(
@@ -302,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_ColorInput) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_select",
           R"HTML(
@@ -325,8 +333,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Select) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MultiSelect) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_multi_select",
           R"HTML(
@@ -351,8 +360,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MultiSelect) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_progress",
           R"HTML(
@@ -371,8 +381,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Progress) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Meter) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_meter",
           R"HTML(
@@ -398,8 +409,9 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Meter) {
 }
 
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Range) {
-  if (SkipTestForOldAndroidVersions())
-    return;
+  if (SkipTestForOldAndroidVersions()) {
+    GTEST_SKIP();
+  }
 
   RunTest("form_controls_browsertest_range",
           R"HTML(
