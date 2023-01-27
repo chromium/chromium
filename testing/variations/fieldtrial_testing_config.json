@@ -9074,7 +9074,8 @@
                     "name": "FixLinkPrefetchDNSAndPreconnectInNetworkService_20230120",
                     "enable_features": [
                         "PreconnectInNetworkService",
-                        "PrefetchDNSWithURL"
+                        "PrefetchDNSWithURL",
+                        "WebViewEnableDnsPrefetchAndPreconnect"
                     ]
                 }
             ]
