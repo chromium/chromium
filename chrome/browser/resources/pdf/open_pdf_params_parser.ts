@@ -201,7 +201,32 @@ export class OpenPdfParamsParser {
    * @return Whether the toolbar UI element should be shown.
    */
   shouldShowToolbar(url: string): boolean {
-    return this.parseUrlParams_(url).get('toolbar') !== '0';
+    const urlParams = this.parseUrlParams_(url);
+    const navpanes = urlParams.get('navpanes');
+    const toolbar = urlParams.get('toolbar');
+
+    // If navpanes is set to '1', then the toolbar must be shown, regardless of
+    // the value of toolbar.
+    return navpanes === '1' || toolbar !== '0';
+  }
+
+  /**
+   * @param url that needs to be parsed.
+   * @param sidenavCollapsed the default sidenav state if there are no
+   *     overriding open parameters.
+   * @return Whether the sidenav UI element should be shown.
+   */
+  shouldShowSidenav(url: string, sidenavCollapsed: boolean): boolean {
+    const urlParams = this.parseUrlParams_(url);
+    const navpanes = urlParams.get('navpanes');
+    const toolbar = urlParams.get('toolbar');
+
+    // If there are no relevant open parameters, default to the original value.
+    if (navpanes === null && toolbar === null) {
+      return !sidenavCollapsed;
+    }
+
+    return navpanes === '1';
   }
 
   /**

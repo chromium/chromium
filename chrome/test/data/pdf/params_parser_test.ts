@@ -333,9 +333,48 @@ chrome.test.runTests([
     chrome.test.assertEq(undefined, params.view);
     chrome.test.assertEq(undefined, params.viewPosition);
 
+    chrome.test.succeed();
+  },
+  /**
+   * Test toolbar and navpane params.
+   */
+  function testParamsToolbarAndNavpane() {
+    const paramsParser = getParamsParser();
+
     // Checking #toolbar=0 to disable the toolbar.
     chrome.test.assertFalse(paramsParser.shouldShowToolbar(`${URL}#toolbar=0`));
     chrome.test.assertTrue(paramsParser.shouldShowToolbar(`${URL}#toolbar=1`));
+
+    // Checking #navpanes=0 to collapse the sidenav.
+    chrome.test.assertFalse(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=0`, false));
+    chrome.test.assertFalse(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=0`, true));
+    chrome.test.assertTrue(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=1`, false));
+    chrome.test.assertTrue(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=1`, true));
+
+    // Checking #navpanes=0&toolbars=1 shows the toolbar and a collapsed
+    // sidenav.
+    chrome.test.assertTrue(
+        paramsParser.shouldShowToolbar(`${URL}#navpanes=0&toolbar=1`));
+    chrome.test.assertFalse(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=0&toolbar=1`, false));
+    chrome.test.assertFalse(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=0&toolbar=1`, true));
+
+    // Checking #navpanes=1&toolbars=0 shows the toolbar and the sidenav.
+    chrome.test.assertTrue(
+        paramsParser.shouldShowToolbar(`${URL}#navpanes=1&toolbar=0`));
+    chrome.test.assertTrue(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=1&toolbar=0`, false));
+    chrome.test.assertTrue(
+        paramsParser.shouldShowSidenav(`${URL}#navpanes=1&toolbar=0`, true));
+
+    // Checking no relevant parameters defaults to !sidenavCollapsed.
+    chrome.test.assertFalse(paramsParser.shouldShowSidenav(`${URL}`, true));
+    chrome.test.assertTrue(paramsParser.shouldShowSidenav(`${URL}`, false));
 
     chrome.test.succeed();
   },

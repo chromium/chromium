@@ -315,6 +315,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (this.toolbarEnabled_) {
       this.$.toolbar.hidden = false;
     }
+    const showSidenav = this.paramsParser.shouldShowSidenav(
+        this.originalUrl, this.sidenavCollapsed_);
+    this.sidenavCollapsed_ = !showSidenav;
 
     this.navigator_ = new PdfNavigator(
         this.originalUrl, this.viewport, this.paramsParser,
