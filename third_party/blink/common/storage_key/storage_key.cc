@@ -94,8 +94,11 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
     // There is no nonce.
 
-    if (key_origin.opaque())
+    // The origin should not be opaque and the serialization should be
+    // reversible.
+    if (key_origin.opaque() || key_origin.GetURL().spec() != in) {
       return absl::nullopt;
+    }
 
     return StorageKey(key_origin, key_top_level_site, nullptr,
                       blink::mojom::AncestorChainBit::kSameSite);
@@ -119,11 +122,27 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the caret
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
+      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      key_origin = url::Origin::Create(GURL(origin_substr));
+
+      // The origin should not be opaque and the serialization should be
+      // reversible.
+      if (key_origin.opaque() || key_origin.GetURL().spec() != origin_substr) {
+        return absl::nullopt;
+      }
 
       // The top_level_site is the portion beyond the first separator.
-      key_top_level_site =
-          net::SchemefulSite(GURL(in.substr(pos_first_caret + 2)));
+      int length_of_site = pos_second_caret - (pos_first_caret + 2);
+      const base::StringPiece top_level_site_substr =
+          in.substr(pos_first_caret + 2, length_of_site);
+      key_top_level_site = net::SchemefulSite(GURL(top_level_site_substr));
+
+      // The top level site should not be opaque and the serialization should be
+      // reversible.
+      if (key_top_level_site.opaque() ||
+          key_top_level_site.Serialize() != top_level_site_substr) {
+        return absl::nullopt;
+      }
 
       // There is no nonce or ancestor chain bit.
 
@@ -147,7 +166,14 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the caret
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
+      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      key_origin = url::Origin::Create(GURL(origin_substr));
+
+      // The origin should not be opaque and the serialization should be
+      // reversible.
+      if (key_origin.opaque() || key_origin.GetURL().spec() != origin_substr) {
+        return absl::nullopt;
+      }
 
       // The ancestor_chain_bit is the portion beyond the first separator.
       int raw_bit;
@@ -167,8 +193,7 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // The origin shouldn't be opaque and ancestor chain bit must be CrossSite
       // as otherwise should have simply encoded the origin and the input is
       // malformed.
-      if (key_origin.opaque() ||
-          ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
+      if (ancestor_chain_bit != blink::mojom::AncestorChainBit::kCrossSite) {
         return absl::nullopt;
       }
 
@@ -196,9 +221,12 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the first
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
+      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      key_origin = url::Origin::Create(GURL(origin_substr));
 
-      if (key_origin.opaque()) {
+      // The origin should not be opaque and the serialization should be
+      // reversible.
+      if (key_origin.opaque() || key_origin.GetURL().spec() != origin_substr) {
         return absl::nullopt;
       }
 
@@ -251,7 +279,14 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the first
       // separator.
-      key_origin = url::Origin::Create(GURL(in.substr(0, pos_first_caret)));
+      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      key_origin = url::Origin::Create(GURL(origin_substr));
+
+      // The origin should not be opaque and the serialization should be
+      // reversible.
+      if (key_origin.opaque() || key_origin.GetURL().spec() != origin_substr) {
+        return absl::nullopt;
+      }
 
       // The first high 64 bits of the sites's nonce are next, between the first
       // separators.
@@ -277,6 +312,11 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       const absl::optional<base::UnguessableToken> site_nonce =
           base::UnguessableToken::Deserialize(nonce_high, nonce_low);
 
+      // The nonce must have content.
+      if (!site_nonce) {
+        return absl::nullopt;
+      }
+
       // Make sure we found the final separator, it's valid, that it's the
       // correct attribute.
       if (pos_third_caret == std::string::npos ||
@@ -293,11 +333,15 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       }
 
       // The precursor is the rest of the input.
-      const GURL url_precursor(in.substr(pos_third_caret + 2));
+      const base::StringPiece url_precursor_substr =
+          in.substr(pos_third_caret + 2);
+      const GURL url_precursor(url_precursor_substr);
       const url::SchemeHostPort tuple_precursor(url_precursor);
 
-      if (key_origin.opaque() || !site_nonce ||
-          (!url_precursor.is_empty() && !tuple_precursor.IsValid())) {
+      // The precursor must be empry or valid, and the serialization should be
+      // reversible.
+      if ((!url_precursor.is_empty() && !tuple_precursor.IsValid()) ||
+          tuple_precursor.Serialize() != url_precursor_substr) {
         return absl::nullopt;
       }
 
@@ -318,9 +362,24 @@ absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 }
 
 // static
+absl::optional<StorageKey> StorageKey::DeserializeForLocalStorage(
+    base::StringPiece in) {
+  // We have to support the local storage specific variant that lacks the
+  // trailing slash.
+  const url::Origin maybe_origin = url::Origin::Create(GURL(in));
+  if (!maybe_origin.opaque() && maybe_origin.Serialize() == in) {
+    return StorageKey(maybe_origin, net::SchemefulSite(maybe_origin), nullptr,
+                      blink::mojom::AncestorChainBit::kSameSite);
+  }
+
+  // Otherwise we fallback on base deserialization.
+  return Deserialize(in);
+}
+
+// static
 StorageKey StorageKey::CreateFromStringForTesting(const std::string& origin) {
-  absl::optional<StorageKey> result = Deserialize(origin);
-  return result.value_or(StorageKey());
+  url::Origin actual_origin = url::Origin::Create(GURL(origin));
+  return CreateForTesting(actual_origin, net::SchemefulSite(actual_origin));
 }
 
 // static
@@ -350,7 +409,6 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
 StorageKey StorageKey::CreateWithNonceForTesting(
     const url::Origin& origin,
     const base::UnguessableToken& nonce) {
-  DCHECK(!nonce.is_empty());
   // The AncestorChainBit is not applicable to StorageKeys with a non-empty
   // nonce, so they are initialized to be kSameSite.
   return StorageKey(origin, net::SchemefulSite(origin), &nonce,
@@ -363,7 +421,6 @@ StorageKey StorageKey::CreateWithOptionalNonce(
     const net::SchemefulSite& top_level_site,
     const base::UnguessableToken* nonce,
     blink::mojom::AncestorChainBit ancestor_chain_bit) {
-  DCHECK(!nonce || !nonce->is_empty());
   return StorageKey(origin, top_level_site, nonce, ancestor_chain_bit);
 }
 
@@ -548,17 +605,11 @@ std::string StorageKey::SerializeForLocalStorage() const {
 
   // If this is a third-party StorageKey we'll use the standard serialization
   // scheme when partitioning is enabled or if there is a nonce.
-  if (nonce_.has_value() ||
-      (IsThirdPartyContext() && IsThirdPartyStoragePartitioningEnabled())) {
+  if (IsThirdPartyContext()) {
     return Serialize();
   }
 
   // Otherwise localStorage expects a slightly different scheme, so call that.
-  //
-  // TODO(https://crbug.com/1199077): Since the deserialization function can
-  // handle Serialize() or SerializeForLocalStorage(), investigate whether we
-  // can change the serialization scheme for 1p localStorage without a
-  // migration.
   return origin_.Serialize();
 }
 
@@ -603,17 +654,14 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 }
 
 const net::SiteForCookies StorageKey::ToNetSiteForCookies() const {
-  if (nonce_ ||
-      ancestor_chain_bit_ == blink::mojom::AncestorChainBit::kCrossSite) {
+  if (IsThirdPartyContext()) {
     // If any of the ancestor frames are cross-site to `origin_` then the
     // SiteForCookies should be null. The existence of `nonce_` means the same
     // thing.
     return net::SiteForCookies();
   }
 
-  // The `ancestor_chain_bit_` being kSameSite should already indicate that the
-  // `top_level_site_` and `origin_` are same-site.
-  DCHECK(top_level_site_ == net::SchemefulSite(origin_));
+  // Otherwise we are in a first party context.
   return net::SiteForCookies(top_level_site_);
 }
 

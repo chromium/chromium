@@ -121,13 +121,18 @@ class BLINK_COMMON_EXPORT StorageKey {
   // deserialized StorageKey will be equivalent to the StorageKey that was
   // initially serialized.
   //
-  // Can be called on the output of either Serialize() or
-  // SerializeForLocalStorage(), as it can handle both formats.
+  // Only supports the output of Serialize().
   static absl::optional<StorageKey> Deserialize(base::StringPiece in);
 
-  // Transforms a string into a StorageKey if possible (and an opaque StorageKey
-  // if not). Currently calls Deserialize, but this may change in future.
-  // For use in tests only.
+  // Transforms a string in the format used for localStorage (without trailing
+  // slashes) into a StorageKey if possible.
+  // Prefer Deserialize() for uses other than localStorage.
+  // TODO(https://crbug.com/1410254): Move this to LocalStorage code.
+  static absl::optional<StorageKey> DeserializeForLocalStorage(
+      base::StringPiece in);
+
+  // Transforms a string into a first-party StorageKey by interpreting it as an
+  // origin. For use in tests only.
   static StorageKey CreateFromStringForTesting(const std::string& origin);
 
   // Takes in two url::Origin types representing origin and top-level site and
@@ -160,6 +165,7 @@ class BLINK_COMMON_EXPORT StorageKey {
   // Serializes into a string in the format used for localStorage (without
   // trailing slashes). Prefer Serialize() for uses other than localStorage. Do
   // not call if `origin_` is opaque.
+  // TODO(https://crbug.com/1410254): Move this to LocalStorage code.
   std::string SerializeForLocalStorage() const;
 
   // `IsThirdPartyContext` returns true if the StorageKey is for a context that

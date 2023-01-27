@@ -219,6 +219,12 @@ TEST_F(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
       SCOPED_TRACE(test.origin_str);
       StorageKey key(url::Origin::Create(GURL(test.origin_str)));
       EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
+      if (key.origin().scheme() != "file") {
+        EXPECT_EQ(StorageKey::DeserializeForLocalStorage(test.origin_str), key);
+        EXPECT_EQ(
+            StorageKey::DeserializeForLocalStorage(test.expected_serialization),
+            key);
+      }
     }
   }
 }
@@ -299,10 +305,10 @@ TEST_F(StorageKeyTest, Deserialize) {
   } kTestCases[] = {
       // Correct usage of origin.
       {"https://example.com/", true, false},
-      // Correct: localstorage serialization doesn't have a trailing slash.
-      {"https://example.com", true, false},
       // Correct usage of test.example origin.
       {"https://test.example/", true, false},
+      // Correct usage of origin with port.
+      {"https://example.com:90/", true, false},
       // Invalid origin URL.
       {"I'm not a valid URL.", false},
       // Empty string origin URL.
@@ -336,9 +342,9 @@ TEST_F(StorageKeyTest, Deserialize) {
       // Malformed first party serialization.
       {"https://www.example.com/^0https://example.com", false},
       // Malformed ancestor chain bit value - outside range.
-      {"https://example.com^35", false},
+      {"https://example.com/^35", false},
       // Correct ancestor chain bit value.
-      {"https://example.com^31", true},
+      {"https://example.com/^31", true},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -370,7 +376,8 @@ TEST_F(StorageKeyTest, CreateFromStringForTesting) {
 // StorageKey, is equivalent to the original.
 TEST_F(StorageKeyTest, SerializeDeserialize) {
   const char* kTestCases[] = {"https://example.com", "https://sub.test.example",
-                              "file://", "file://example.fileshare.com"};
+                              "https://example.com:90", "file://",
+                              "file://example.fileshare.com"};
 
   for (const char* test : kTestCases) {
     SCOPED_TRACE(test);
@@ -381,7 +388,7 @@ TEST_F(StorageKeyTest, SerializeDeserialize) {
     absl::optional<StorageKey> key_deserialized =
         StorageKey::Deserialize(key_string);
     absl::optional<StorageKey> key_deserialized_from_local_storage =
-        StorageKey::Deserialize(key_string_for_local_storage);
+        StorageKey::DeserializeForLocalStorage(key_string_for_local_storage);
 
     ASSERT_TRUE(key_deserialized.has_value());
     ASSERT_TRUE(key_deserialized_from_local_storage.has_value());
@@ -407,6 +414,7 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
 
   net::SchemefulSite SiteExample(GURL("https://example.com"));
   net::SchemefulSite SiteTest(GURL("https://test.example"));
+  net::SchemefulSite SitePort(GURL("https://example.com:90"));
   net::SchemefulSite SiteFile(GURL("file:///"));
 
   struct {
@@ -417,9 +425,11 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
       {"https://example.com/", SiteExample},
       {"https://test.example", SiteTest},
       {"https://sub.test.example/", SiteTest},
+      {"https://example.com:90", SitePort},
       // 3p context case
       {"https://example.com/", SiteTest},
       {"https://sub.test.example/", SiteExample},
+      {"https://sub.test.example/", SitePort},
       // File case.
       {"file:///foo/bar", SiteFile},
   };
@@ -435,7 +445,7 @@ TEST_F(StorageKeyTest, SerializeDeserializePartitioned) {
     absl::optional<StorageKey> key_deserialized =
         StorageKey::Deserialize(key_string);
     absl::optional<StorageKey> key_deserialized_from_local_storage =
-        StorageKey::Deserialize(key_string_for_local_storage);
+        StorageKey::DeserializeForLocalStorage(key_string_for_local_storage);
 
     ASSERT_TRUE(key_deserialized.has_value());
     ASSERT_TRUE(key_deserialized_from_local_storage.has_value());
@@ -483,7 +493,7 @@ TEST_F(StorageKeyTest, SerializeDeserializeNonce) {
     absl::optional<StorageKey> key_deserialized =
         StorageKey::Deserialize(key_string);
     absl::optional<StorageKey> key_deserialized_from_local_storage =
-        StorageKey::Deserialize(key_string_for_local_storage);
+        StorageKey::DeserializeForLocalStorage(key_string_for_local_storage);
 
     ASSERT_TRUE(key_deserialized.has_value());
     ASSERT_TRUE(key_deserialized_from_local_storage.has_value());
@@ -1305,6 +1315,61 @@ TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
                   StorageKey::CreateFromOriginAndIsolationInfo(
                       test_case.new_origin, test_case.isolation_info));
       }
+    }
+  }
+}
+
+TEST_F(StorageKeyTest, MalformedOriginsAndSchemefulSites) {
+  std::string kTestCases[] = {
+      // We cannot omit the slash in a first party key.
+      "https://example.com",
+      // We cannot add a path in a first party key.
+      "https://example.com/a",
+      // We cannot omit the slash in a same-site third party key.
+      "https://example.com^31",
+      // We cannot add a path in a same-site third party key.
+      "https://example.com/a^31",
+      // We cannot omit the slash in a nonce key.
+      "https://example.com^11^21",
+      // We cannot add a path in a nonce key.
+      "https://example.com/a^11^21",
+      // We cannot omit the first slash in a third-party key.
+      "https://example.com^0https://example.com",
+      // We cannot add a final slash in a third-party key.
+      "https://example.com/^0https://example.com/",
+      // We cannot add a first path in a third-party key.
+      "https://example.com/a^0https://example.com/",
+      // We cannot add a final path in a third-party key.
+      "https://example.com/^0https://example.com/a",
+      // We cannot omit the slash in an opaque top level site key.
+      "https://example.com^44^55^6",
+      // We cannot add a path in an opaque top level site key.
+      "https://example.com/a^44^55^6",
+      // We cannot omit the first slash in an opaque precursor key.
+      "https://example.com^44^55^6https://example.com",
+      // We cannot add a final slash in an opaque precursor key.
+      "https://example.com/^44^55^6https://example.com/",
+      // We cannot add a first path in an opaque precursor key.
+      "https://example.com/a^44^55^6https://example.com",
+      // We cannot add a final path in an opaque precursor key.
+      "https://example.com/^44^55^6https://example.com/a",
+      // We cannot omit the slash in a first party file key.
+      "file://",
+      // We cannot add a path in a first party file key.
+      "file:///a",
+      // We cannot add a slash in a third party file key.
+      "https://example.com/^0file:///",
+      // We cannot add a path in a third party file key.
+      "https://example.com/^0file:///a",
+  };
+
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+    for (const auto& test_case : kTestCases) {
+      SCOPED_TRACE(test_case);
+      EXPECT_FALSE(StorageKey::Deserialize(test_case));
     }
   }
 }

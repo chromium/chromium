@@ -103,7 +103,7 @@ absl::optional<blink::StorageKey> ExtractStorageKeyFromMetaDataKey(
   DCHECK_GT(key.size(), std::size(kMetaPrefix));
   const base::StringPiece key_string(reinterpret_cast<const char*>(key.data()),
                                      key.size());
-  return blink::StorageKey::Deserialize(
+  return blink::StorageKey::DeserializeForLocalStorage(
       key_string.substr(std::size(kMetaPrefix)));
 }
 

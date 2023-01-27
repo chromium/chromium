@@ -28,13 +28,30 @@ DEFINE_PROTO_FUZZER(
         net::features::kThirdPartyStoragePartitioning, toggle);
 
     blink::StorageKey storage_key = Convert(storage_key_fuzzer.storage_key());
-    std::string result = storage_key.Serialize();
+
+    // General serialization test.
     absl::optional<blink::StorageKey> maybe_storage_key =
-        blink::StorageKey::Deserialize(result);
+        blink::StorageKey::Deserialize(storage_key.Serialize());
+    assert(storage_key == maybe_storage_key.value());
+
+    // LocalStorage serialization test.
+    maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
+        storage_key.SerializeForLocalStorage());
+    assert(storage_key == maybe_storage_key.value());
+
+    // General deserialization test.
+    maybe_storage_key =
+        blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
     if (maybe_storage_key) {
-      assert(storage_key == maybe_storage_key.value());
+      assert(maybe_storage_key.Serialize() == storage_key_fuzzer.deserialize());
     }
 
-    blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
+    // LocalStorage deserialization test.
+    maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
+        storage_key_fuzzer.deserialize());
+    if (maybe_storage_key) {
+      assert(maybe_storage_key.SerializeForLocalStorage() ==
+             storage_key_fuzzer.deserialize());
+    }
   }
 }
