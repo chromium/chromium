@@ -11,6 +11,7 @@ import static org.chromium.content_public.browser.test.util.TestThreadUtils.runO
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
 
@@ -29,7 +30,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -67,7 +67,7 @@ public class TouchToFillCreditCardRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(3)
+                    .setRevision(4)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -138,16 +138,15 @@ public class TouchToFillCreditCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(
-            message =
-                    "https://crbug.com/1407272 - This test is temporarily disabled to suppress the flake impact.")
-    public void
-    testShowsOneCardHalfState() throws IOException {
+    public void testShowsOneCardHalfState() throws IOException {
         runOnUiThreadBlocking(() -> { mCoordinator.showSheet(new CreditCard[] {VISA}, true); });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
-        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_one_card_half_state");
+        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
+                                                  .findViewById(R.id.bottom_sheet)
+                                                  .getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_credit_card_sheet_one_card_half_state");
     }
 
     @Test
@@ -166,18 +165,17 @@ public class TouchToFillCreditCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(
-            message =
-                    "https://crbug.com/1407272 - This test is temporarily disabled to suppress the flake impact.")
-    public void
-    testShowsTwoCardsHalfState() throws IOException {
+    public void testShowsTwoCardsHalfState() throws IOException {
         runOnUiThreadBlocking(() -> {
             mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD}, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
-        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_two_cards_half_state");
+        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
+                                                  .findViewById(R.id.bottom_sheet)
+                                                  .getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_credit_card_sheet_two_cards_half_state");
     }
 
     @Test
@@ -196,18 +194,17 @@ public class TouchToFillCreditCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(
-            message =
-                    "https://crbug.com/1407272 - This test is temporarily disabled to suppress the flake impact.")
-    public void
-    testShowsThreeCardsHalfState() throws IOException {
+    public void testShowsThreeCardsHalfState() throws IOException {
         runOnUiThreadBlocking(() -> {
             mCoordinator.showSheet(new CreditCard[] {VISA, MASTER_CARD, DISCOVER}, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
-        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_three_cards_half_state");
+        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
+                                                  .findViewById(R.id.bottom_sheet)
+                                                  .getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_credit_card_sheet_three_cards_half_state");
     }
 
     @Test
@@ -227,19 +224,18 @@ public class TouchToFillCreditCardRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(
-            message =
-                    "https://crbug.com/1407272 - This test is temporarily disabled to suppress the flake impact.")
-    public void
-    testShowsFourCardsHalfState() throws IOException {
+    public void testShowsFourCardsHalfState() throws IOException {
         runOnUiThreadBlocking(() -> {
             mCoordinator.showSheet(
                     new CreditCard[] {VISA, MASTER_CARD, DISCOVER, AMERICAN_EXPRESS}, true);
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        View rootView = mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
-        mRenderTestRule.render(rootView, "touch_to_fill_credit_card_sheet_four_cards_half_state");
+        ViewGroup bottomSheetParentView = (ViewGroup) mActivityTestRule.getActivity()
+                                                  .findViewById(R.id.bottom_sheet)
+                                                  .getParent();
+        mRenderTestRule.render(
+                bottomSheetParentView, "touch_to_fill_credit_card_sheet_four_cards_half_state");
     }
 
     @Test
