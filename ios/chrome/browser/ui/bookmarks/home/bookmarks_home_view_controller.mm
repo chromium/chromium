@@ -938,11 +938,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self setTableViewEditing:NO];
 }
 
-- (void)bookmarksCoordinatorDidStop:(BookmarksCoordinator*)coordinator {
-  // TODO(crbug.com/805182): Use this method to tear down
-  // `self.bookmarksCoordinator`.
-}
-
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded {

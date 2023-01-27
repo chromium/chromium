@@ -15,10 +15,6 @@
 - (void)bookmarksCoordinatorWillCommitTitleOrURLChange:
     (BookmarksCoordinator*)coordinator;
 
-// Called when the coordinator is stopped and the receiver can safely free any
-// references to `coordinator`.
-- (void)bookmarksCoordinatorDidStop:(BookmarksCoordinator*)coordinator;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARKS_COORDINATOR_DELEGATE_H_
