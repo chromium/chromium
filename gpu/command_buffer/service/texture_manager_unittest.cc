@@ -1676,15 +1676,14 @@ TEST_F(TextureTest, GetLevelImage) {
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
   // Set image.
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
-  manager_->SetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1, image.get(),
-                          Texture::BOUND);
+  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
+                               image.get());
   EXPECT_FALSE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
   // Remove it.
-  manager_->SetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1, nullptr,
-                          Texture::UNBOUND);
+  manager_->UnsetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1);
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
-  manager_->SetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1, image.get(),
-                          Texture::UNBOUND);
+  manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 1,
+                                 image.get());
   // Image should be reset when SetLevelInfo is called.
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 1, GL_RGBA, 2, 2, 1,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
@@ -1698,8 +1697,8 @@ TEST_F(TextureTest, SetLevelImageState) {
   Texture* texture = texture_ref_->texture();
   // Set image, initially BOUND.
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
-  manager_->SetLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0, image.get(),
-                          Texture::BOUND);
+  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
+                               image.get());
   Texture::ImageState state;
   texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
   EXPECT_EQ(state, Texture::BOUND);
@@ -2092,8 +2091,7 @@ TEST_P(ProduceConsumeTextureTest, ProduceConsumeTextureWithImage) {
   manager_->SetLevelInfo(texture_ref_.get(), target, 0, GL_RGBA, 0, 0, 1, 0,
                          GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect());
 #if !BUILDFLAG(IS_ANDROID)
-  manager_->SetLevelImage(texture_ref_.get(), target, 0, image.get(),
-                          Texture::BOUND);
+  manager_->SetBoundLevelImage(texture_ref_.get(), target, 0, image.get());
 #endif
   GLuint service_id = texture->service_id();
   Texture* produced_texture = Produce(texture_ref_.get());
@@ -2402,15 +2400,15 @@ TEST_F(SharedTextureTest, Images) {
   EXPECT_FALSE(texture_manager1_->HaveImages());
   EXPECT_FALSE(texture_manager2_->HaveImages());
   scoped_refptr<gl::GLImage> image1(new gl::GLImageStub);
-  texture_manager1_->SetLevelImage(ref1.get(), GL_TEXTURE_2D, 1, image1.get(),
-                                   Texture::BOUND);
+  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
+                                        image1.get());
   EXPECT_TRUE(ref1->texture()->HasImages());
   EXPECT_TRUE(ref2->texture()->HasImages());
   EXPECT_TRUE(texture_manager1_->HaveImages());
   EXPECT_TRUE(texture_manager2_->HaveImages());
   scoped_refptr<gl::GLImage> image2(new gl::GLImageStub);
-  texture_manager1_->SetLevelImage(ref1.get(), GL_TEXTURE_2D, 1, image2.get(),
-                                   Texture::BOUND);
+  texture_manager1_->SetBoundLevelImage(ref1.get(), GL_TEXTURE_2D, 1,
+                                        image2.get());
   EXPECT_TRUE(ref1->texture()->HasImages());
   EXPECT_TRUE(ref2->texture()->HasImages());
   EXPECT_TRUE(texture_manager1_->HaveImages());

@@ -1896,12 +1896,23 @@ void Texture::SetLevelImageInternal(GLenum target,
   UpdateHasImages();
 }
 
-void Texture::SetLevelImage(GLenum target,
-                            GLint level,
-                            gl::GLImage* image,
-                            ImageState state) {
+void Texture::SetBoundLevelImage(GLenum target,
+                                 GLint level,
+                                 gl::GLImage* image) {
   SetStreamTextureServiceId(0);
-  SetLevelImageInternal(target, level, image, state);
+  SetLevelImageInternal(target, level, image, ImageState::BOUND);
+}
+
+void Texture::SetUnboundLevelImage(GLenum target,
+                                   GLint level,
+                                   gl::GLImage* image) {
+  SetStreamTextureServiceId(0);
+  SetLevelImageInternal(target, level, image, ImageState::UNBOUND);
+}
+
+void Texture::UnsetLevelImage(GLenum target, GLint level) {
+  SetStreamTextureServiceId(0);
+  SetLevelImageInternal(target, level, nullptr, ImageState::UNBOUND);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -2586,13 +2597,27 @@ GLsizei TextureManager::ComputeMipMapCount(GLenum target,
   }
 }
 
-void TextureManager::SetLevelImage(TextureRef* ref,
-                                   GLenum target,
-                                   GLint level,
-                                   gl::GLImage* image,
-                                   Texture::ImageState state) {
+void TextureManager::SetBoundLevelImage(TextureRef* ref,
+                                        GLenum target,
+                                        GLint level,
+                                        gl::GLImage* image) {
   DCHECK(ref);
-  ref->texture()->SetLevelImage(target, level, image, state);
+  ref->texture()->SetBoundLevelImage(target, level, image);
+}
+
+void TextureManager::SetUnboundLevelImage(TextureRef* ref,
+                                          GLenum target,
+                                          GLint level,
+                                          gl::GLImage* image) {
+  DCHECK(ref);
+  ref->texture()->SetUnboundLevelImage(target, level, image);
+}
+
+void TextureManager::UnsetLevelImage(TextureRef* ref,
+                                     GLenum target,
+                                     GLint level) {
+  DCHECK(ref);
+  ref->texture()->UnsetLevelImage(target, level);
 }
 
 size_t TextureManager::GetSignatureSize() const {

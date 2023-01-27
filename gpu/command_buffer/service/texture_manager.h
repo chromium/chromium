@@ -307,19 +307,26 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   bool GetLevelType(
       GLint target, GLint level, GLenum* type, GLenum* internal_format) const;
 
-  // Set the image for a particular level. If a GLImage was previously set with
-  // BindToServiceId(), this will reset |service_id_| back to
-  // |owned_service_id_|, removing the service id override set by the
-  // BindToServiceId.
-  void SetLevelImage(GLenum target,
-                     GLint level,
-                     gl::GLImage* image,
-                     ImageState state);
+  // Set an image that has already been bound for a particular level. If a
+  // GLImage was previously set with BindToServiceId(), this will reset
+  // |service_id_| back to |owned_service_id_|, removing the service id override
+  // set by the BindToServiceId.
+  void SetBoundLevelImage(GLenum target, GLint level, gl::GLImage* image);
+
+  // Set an image that needs binding for a particular level. If a
+  // GLImage was previously set with BindToServiceId(), this will reset
+  // |service_id_| back to |owned_service_id_|, removing the service id
+  // override set by the BindToServiceId.
+  void SetUnboundLevelImage(GLenum target, GLint level, gl::GLImage* image);
+
+  // Unset the image for a particular level. After this call, GetLevelImage()
+  // will return nullptr.
+  void UnsetLevelImage(GLenum target, GLint level);
 
 #if BUILDFLAG(IS_ANDROID)
   // Overrides |service_id_| with a texture bound to
-  // the stream texture. See SetStreamTextureServiceId() for the details of how
-  // |service_id| is used.
+  // the stream texture. See SetStreamTextureServiceId() for the details of
+  // how |service_id| is used.
   void BindToServiceId(GLuint service_id);
 #endif
 
@@ -511,7 +518,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
     std::vector<LevelInfo> level_infos;
   };
 
-  // Helper for SetLevel*Image.
+  // Helper for Set*LevelImage.
   void SetLevelImageInternal(GLenum target,
                              GLint level,
                              gl::GLImage* image,
@@ -1102,11 +1109,17 @@ class GPU_GLES2_EXPORT TextureManager
     return memory_type_tracker_->GetMemRepresented();
   }
 
-  void SetLevelImage(TextureRef* ref,
-                     GLenum target,
-                     GLint level,
-                     gl::GLImage* image,
-                     Texture::ImageState state);
+  void SetBoundLevelImage(TextureRef* ref,
+                          GLenum target,
+                          GLint level,
+                          gl::GLImage* image);
+
+  void SetUnboundLevelImage(TextureRef* ref,
+                            GLenum target,
+                            GLint level,
+                            gl::GLImage* image);
+
+  void UnsetLevelImage(TextureRef* ref, GLenum target, GLint level);
 
   size_t GetSignatureSize() const;
 

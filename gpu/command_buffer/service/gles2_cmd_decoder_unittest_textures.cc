@@ -3384,8 +3384,8 @@ TEST_P(GLES2DecoderManualInitTest, DrawWithGLImageExternal) {
                                           0, GL_RGBA, 1, 1, 1, 0, GL_RGBA,
                                           GL_UNSIGNED_BYTE, gfx::Rect(1, 1));
 #if !BUILDFLAG(IS_ANDROID)
-  group().texture_manager()->SetLevelImage(texture_ref, GL_TEXTURE_EXTERNAL_OES,
-                                           0, image.get(), Texture::BOUND);
+  group().texture_manager()->SetBoundLevelImage(
+      texture_ref, GL_TEXTURE_EXTERNAL_OES, 0, image.get());
 #endif
 
   DoBindTexture(GL_TEXTURE_EXTERNAL_OES, client_texture_id_, kServiceTextureId);

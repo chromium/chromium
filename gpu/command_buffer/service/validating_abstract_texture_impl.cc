@@ -61,9 +61,13 @@ void ValidatingAbstractTextureImpl::SetUnboundImage(gl::GLImage* image) {
   const GLint level = 0;
 
   // Configure the new image.
-  Texture::ImageState state = Texture::ImageState::UNBOUND;
-  GetTextureManager()->SetLevelImage(texture_ref_.get(), target, level, image,
-                                     state);
+  if (image) {
+    GetTextureManager()->SetUnboundLevelImage(texture_ref_.get(), target, level,
+                                              image);
+  } else {
+    GetTextureManager()->UnsetLevelImage(texture_ref_.get(), target, level);
+  }
+
   GetTextureManager()->SetLevelCleared(texture_ref_.get(), target, level,
                                        image);
 }
@@ -77,10 +81,13 @@ void ValidatingAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
   const GLint level = 0;
 
   // Configure the new image.
-  Texture::ImageState state =
-      image ? Texture::ImageState::BOUND : Texture::ImageState::UNBOUND;
-  GetTextureManager()->SetLevelImage(texture_ref_.get(), target, level, image,
-                                     state);
+  if (image) {
+    GetTextureManager()->SetBoundLevelImage(texture_ref_.get(), target, level,
+                                            image);
+  } else {
+    GetTextureManager()->UnsetLevelImage(texture_ref_.get(), target, level);
+  }
+
   GetTextureManager()->SetLevelCleared(texture_ref_.get(), target, level,
                                        image);
 }

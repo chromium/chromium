@@ -3225,8 +3225,8 @@ bool BackTexture::AllocateNativeGpuMemoryBuffer(const gfx::Size& size,
   decoder_->texture_manager()->SetLevelInfo(
       texture_ref_.get(), Target(), 0, format, size.width(), size.height(), 1,
       0, format, GL_UNSIGNED_BYTE, gfx::Rect(size));
-  decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
-                                             image_.get(), Texture::BOUND);
+  decoder_->texture_manager()->SetBoundLevelImage(texture_ref_.get(), Target(),
+                                                  0, image_.get());
 
   if (!is_cleared || zero) {
     GLuint fbo;
@@ -3253,8 +3253,9 @@ void BackTexture::DestroyNativeGpuMemoryBuffer(bool have_context) {
         "BackTexture::DestroyNativeGpuMemoryBuffer",
         decoder_->error_state_.get());
 
-    decoder_->texture_manager()->SetLevelImage(texture_ref_.get(), Target(), 0,
-                                               nullptr, Texture::UNBOUND);
+    decoder_->texture_manager()->UnsetLevelImage(texture_ref_.get(), Target(),
+                                                 0);
+
     image_ = nullptr;
   }
 }
@@ -18536,8 +18537,11 @@ void GLES2DecoderImpl::AttachImageToTextureWithDecoderBinding(
     return;
   }
 
-  texture_manager()->SetLevelImage(ref, texture_target, 0, image,
-                                   gpu::gles2::Texture::UNBOUND);
+  if (image) {
+    texture_manager()->SetUnboundLevelImage(ref, texture_target, 0, image);
+  } else {
+    texture_manager()->UnsetLevelImage(ref, texture_target, 0);
+  }
 }
 #elif !BUILDFLAG(IS_ANDROID)
 void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
@@ -18554,8 +18558,11 @@ void GLES2DecoderImpl::AttachImageToTextureWithClientBinding(
     return;
   }
 
-  texture_manager()->SetLevelImage(ref, texture_target, 0, image,
-                                   gpu::gles2::Texture::BOUND);
+  if (image) {
+    texture_manager()->SetBoundLevelImage(ref, texture_target, 0, image);
+  } else {
+    texture_manager()->UnsetLevelImage(ref, texture_target, 0);
+  }
 }
 #endif
 
