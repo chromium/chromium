@@ -5496,12 +5496,12 @@ TEST_P(DesksTest, ContinueScrollBar) {
   current_index += desks_in_one_page;
 
   // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
-  // desk button and library button are smaller, two scrolls will reach the end
-  // of the desks bar view, thus we verify the right of the visible scroll view.
+  // desk button is smaller, two scrolls will reach the end of the desks bar
+  // view, thus we verify the right of the visible scroll view.
   if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
     EXPECT_EQ(
         scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
-        GetExpandedStateLibraryButton(desks_bar)->bounds().right());
+        GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
   } else {
     EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
               mini_views[current_index]->bounds().x());
@@ -6480,12 +6480,12 @@ TEST_P(DesksTest, ScrollBarByDraggedDesk) {
   current_index += desks_in_one_page;
 
   // When `Jellyroll` is enabled and the maximum number of desks is 8, the new
-  // desk button and library button are smaller, two scrolls will reach the end
-  // of the desks bar view, thus we verify the right of the visible scroll view.
+  // desk button is smaller, two scrolls will reach the end of the desks bar
+  // view, thus we verify the right of the visible scroll view.
   if (features::IsJellyrollEnabled() && !features::Is16DesksEnabled()) {
     EXPECT_EQ(
         scroll_view->GetVisibleRect().right() - focus_ring_width_and_padding,
-        GetExpandedStateLibraryButton(desks_bar)->bounds().right());
+        GetExpandedStateNewDeskButton(desks_bar)->bounds().right());
   } else {
     EXPECT_EQ(scroll_view->GetVisibleRect().x() + focus_ring_width_and_padding,
               mini_views[current_index]->bounds().x());

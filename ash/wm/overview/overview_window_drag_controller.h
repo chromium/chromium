@@ -185,10 +185,10 @@ class ASH_EXPORT OverviewWindowDragController {
   // after a gesture is completed if there is an animation.
   void DestroyFloatDragHelper();
 
-  // Scale up the new desk button on the desks bar from expanded state to
-  // drag and drop state to make the new desk button a drop target for the
-  // window being dragged. It's triggered by `new_desk_button_scale_up_timer_`.
-  // Refer to `new_desk_button_scale_up_timer_` for more information.
+  // Scale up the new desk button on the desks bar from expanded state to active
+  // state to make the new desk button a drop target for the window being
+  // dragged. It's triggered by `new_desk_button_scale_up_timer_`. Refer to
+  // `new_desk_button_scale_up_timer_` for more information.
   void MaybeScaleUpNewDeskButton();
 
   OverviewSession* overview_session_;

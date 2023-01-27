@@ -1551,10 +1551,11 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
       return false;
 
     if (features::IsJellyrollEnabled()) {
-      // Make sreut that new desk button goes back to the expanded state after
+      // Make sure that new desk button goes back to the expanded state after
       // the window is dropped on an existing desk.
-      desks_bar_view_->UpdateNewDeskButton(
-          CrOSNextDeskIconButton::State::kExpanded);
+      desks_bar_view_->UpdateDeskIconButtonState(
+          desks_bar_view_->new_desk_button(),
+          /*target_state=*/CrOSNextDeskIconButton::State::kExpanded);
     }
 
     return desks_controller->MoveWindowFromActiveDeskTo(
@@ -1852,10 +1853,17 @@ void OverviewGrid::ShowSavedDeskLibrary() {
 
   UpdateSaveDeskButtons();
 
+  // When desks bar is at zero state, the library button's state update will be
+  // handled by `UpdateNewMiniViews` when expanding the desks bar.
   if (desks_bar_view_->IsZeroState()) {
     desks_bar_view_->UpdateNewMiniViews(/*initializing_bar_view=*/false,
                                         /*expanding_bar_view=*/true);
+  } else if (features::IsJellyrollEnabled()) {
+    desks_bar_view_->UpdateDeskIconButtonState(
+        desks_bar_view_->library_button(),
+        /*target_state=*/CrOSNextDeskIconButton::State::kActive);
   }
+
   desks_bar_view_->UpdateButtonsForSavedDeskGrid();
 }
 
@@ -1906,6 +1914,14 @@ void OverviewGrid::HideSavedDeskLibrary(bool exit_overview) {
                       /*animate=*/true,
                       base::BindOnce(&OverviewGrid::OnSavedDeskGridFadedOut,
                                      weak_ptr_factory_.GetWeakPtr()));
+  if (features::IsJellyrollEnabled()) {
+    // The saved desk library is hidden because of a new desk is created for
+    // saved desk. We have animation of adding a new desk for the library
+    // button, thus to avoid the animation glitches, directly update the state
+    // for the library button instead of applying the scale animation to it.
+    desks_bar_view_->library_button()->UpdateState(
+        CrOSNextDeskIconButton::State::kExpanded);
+  }
 }
 
 bool OverviewGrid::IsShowingSavedDeskLibrary() const {

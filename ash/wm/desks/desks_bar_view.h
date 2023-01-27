@@ -235,12 +235,14 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Bring focus to the name view of the desk with `desk_index`.
   void NudgeDeskName(int desk_index);
 
-  // Called to update state of `new_desk_button_` to the given
-  // `target_state` for drag and drop window. To make the button a drop target
-  // for the window being dragged, the button needs to be updated to the
-  // `kDragAndDrop` state. At the end of the drag, the button needs to be
-  // updated to the `kExpanded` state.
-  void UpdateNewDeskButton(CrOSNextDeskIconButton::State target_state);
+  // Called to update state of `button` and apply the scale animation to the
+  // button. For the new desk button, this is called when the make the new desk
+  // button a drop target for the window being dragged or at the end of the
+  // drag. For the library button, this is called when the library is clicked at
+  // the expanded state. Please note this will only be used to switch the states
+  // of the `button` between the expanded and active.
+  void UpdateDeskIconButtonState(CrOSNextDeskIconButton* button,
+                                 CrOSNextDeskIconButton::State target_state);
 
  private:
   friend class DesksBarScrollViewLayout;

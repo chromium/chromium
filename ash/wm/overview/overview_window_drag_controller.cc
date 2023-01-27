@@ -819,7 +819,9 @@ OverviewWindowDragController::CompleteNormalDrag(
     // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
     if (!overview_session_->is_shutting_down()) {
       if (features::IsJellyrollEnabled()) {
-        current_grid->desks_bar_view()->UpdateNewDeskButton(
+        auto* desks_bar_view = current_grid->desks_bar_view();
+        desks_bar_view->UpdateDeskIconButtonState(
+            desks_bar_view->new_desk_button(),
             CrOSNextDeskIconButton::State::kExpanded);
       } else {
         current_grid->MaybeShrinkDesksBarView();
@@ -864,7 +866,9 @@ OverviewWindowDragController::CompleteNormalDrag(
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
     if (features::IsJellyrollEnabled()) {
-      current_grid->desks_bar_view()->UpdateNewDeskButton(
+      auto* desks_bar_view = current_grid->desks_bar_view();
+      desks_bar_view->UpdateDeskIconButtonState(
+          desks_bar_view->new_desk_button(),
           CrOSNextDeskIconButton::State::kExpanded);
     } else {
       current_grid->MaybeShrinkDesksBarView();
@@ -1039,10 +1043,15 @@ void OverviewWindowDragController::MaybeScaleUpNewDeskButton() {
     return;
   }
 
-  item_->overview_grid()
-      ->desks_bar_view()
-      ->UpdateNewDeskButton(/*target_state=*/
-                            CrOSNextDeskIconButton::State::kDragAndDrop);
+  auto* desks_bar_view = item_->overview_grid()->desks_bar_view();
+  auto* new_desk_button = desks_bar_view->new_desk_button();
+
+  if (!new_desk_button->GetEnabled()) {
+    return;
+  }
+
+  desks_bar_view->UpdateDeskIconButtonState(
+      new_desk_button, /*target_state=*/CrOSNextDeskIconButton::State::kActive);
 }
 
 }  // namespace ash

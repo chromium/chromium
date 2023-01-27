@@ -62,10 +62,14 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
     kZero,
     // The state of the button when the DesksBarView is in expanded state.
     kExpanded,
-    // The state of when a window is dragged over the new desk button and held
-    // for 500 milliseconds, we can create a new desk. The new desk button state
-    // will change to reflect that.
-    kDragAndDrop,
+    // The state of when the user is interacting with the button. For the new
+    // desk button, active state represents a state that a window is dragged
+    // over the new desk button and held for 500 milliseconds, then the new desk
+    // button becomes a drop target. For the library button, active state
+    // represents that the library button is clicked and the saved desk library
+    // is shown. In active state, the button has the same size as the desk
+    // preview.
+    kActive,
   };
 
   CrOSNextDeskIconButton(DesksBarView* bar_view,
@@ -88,9 +92,9 @@ class ASH_EXPORT CrOSNextDeskIconButton : public CrOSNextDeskButtonBase {
     paint_as_active_ = paint_as_active;
   }
 
-  // Called when the button's state (kZero, kExpanded, kDragAndDrop) gets
-  // updated. It updates `state_` to store the most updated state and focus ring
-  // radius based on `state_`.
+  // Called when the button's state (kZero, kExpanded, kActive) gets updated. It
+  // updates `state_` to store the most updated state, corner radius of the
+  // background and the focus ring based on `state_`.
   void UpdateState(State state);
 
   bool IsPointOnButton(const gfx::Point& screen_location) const;

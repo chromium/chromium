@@ -18,6 +18,7 @@ class View;
 
 namespace ash {
 
+class CrOSNextDeskIconButton;
 class DesksBarView;
 class DeskMiniView;
 class ExpandedDesksBarButton;
@@ -115,13 +116,14 @@ void PerformLibraryButtonVisibilityAnimation(
     views::View* new_desk_button,
     int shift_x);
 
-// Performs the `new_desk_button_` scale animation based on the given arguments.
-// It also shifts the mini views to the left and the library button to the right
+// Performs the scale animation to the given `button` based on the given
+// arguments. It also shifts the mini views, new desk button or library button
 // by `shift_x` with animation.
 // * Notes:
 // - It assumes all the mini views in `bar_view`, new desk button and library
 // button have been laid out in their final positions.
-void PerformNewDeskButtonScaleAnimationCrOSNext(
+void PerformDeskIconButtonScaleAnimationCrOSNext(
+    CrOSNextDeskIconButton* button,
     DesksBarView* bar_view,
     const gfx::Transform& new_desk_button_rects_transform,
     int shift_x);

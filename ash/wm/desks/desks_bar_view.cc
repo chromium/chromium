@@ -1155,11 +1155,10 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   }
 
   if (features::IsJellyrollEnabled()) {
-    if (new_desk_button_->state() ==
-        CrOSNextDeskIconButton::State::kDragAndDrop) {
+    if (new_desk_button_->state() == CrOSNextDeskIconButton::State::kActive) {
       // Make sure the new desk button is updated to expanded state from the
-      // drag and drop state. This can happen when dropping the window on the
-      // new desk button.
+      // active state. This can happen when dropping the window on the new desk
+      // button.
       new_desk_button_->UpdateState(CrOSNextDeskIconButton::State::kExpanded);
     }
   }
@@ -1313,6 +1312,15 @@ void DesksBarView::UpdateLibraryButtonVisibilityCrOSNext() {
   // If the visibility of the library button doesn't change, return early.
   if (library_button_->GetVisible() == should_show_ui) {
     return;
+  }
+
+  library_button_->SetVisible(should_show_ui);
+  if (should_show_ui) {
+    if (overview_grid_->WillShowSavedDeskLibrary()) {
+      library_button_->UpdateState(CrOSNextDeskIconButton::State::kActive);
+    } else {
+      library_button_->UpdateState(CrOSNextDeskIconButton::State::kExpanded);
+    }
   }
 
   if (mini_views_.empty()) {
@@ -1556,29 +1564,31 @@ void DesksBarView::MaybeUpdateCombineDesksTooltips() {
   }
 }
 
-void DesksBarView::UpdateNewDeskButton(
+void DesksBarView::UpdateDeskIconButtonState(
+    CrOSNextDeskIconButton* button,
     CrOSNextDeskIconButton::State target_state) {
   DCHECK(features::IsJellyrollEnabled());
   DCHECK_NE(target_state, CrOSNextDeskIconButton::State::kZero);
 
-  if (new_desk_button_->state() == target_state) {
+  if (button->state() == target_state) {
     return;
   }
 
   const int begin_x = GetFirstMiniViewXOffset();
-  const gfx::Rect current_bounds(new_desk_button_->GetBoundsInScreen());
+  gfx::Rect current_bounds = button->GetBoundsInScreen();
 
-  new_desk_button_->UpdateState(target_state);
+  button->UpdateState(target_state);
   Layout();
 
-  const gfx::RectF target_bounds(new_desk_button_->GetBoundsInScreen());
+  gfx::RectF target_bounds = gfx::RectF(new_desk_button_->GetBoundsInScreen());
   gfx::Transform scale_transform;
   const int shift_x = begin_x - GetFirstMiniViewXOffset();
   scale_transform.Translate(shift_x, 0);
   scale_transform.Scale(current_bounds.width() / target_bounds.width(),
                         current_bounds.height() / target_bounds.height());
 
-  PerformNewDeskButtonScaleAnimationCrOSNext(this, scale_transform, shift_x);
+  PerformDeskIconButtonScaleAnimationCrOSNext(button, this, scale_transform,
+                                              shift_x);
 }
 
 void DesksBarView::OnContentsScrolled() {

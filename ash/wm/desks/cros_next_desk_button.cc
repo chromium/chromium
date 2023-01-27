@@ -37,12 +37,12 @@ constexpr int kDefaultDeskButtonMinWidth = 56;
 
 // The desk icon button's corner radius.
 constexpr int kIconButtonCornerRadius = 18;
-constexpr int kDragAndDropStateCornerRadius = 8;
+constexpr int kActiveStateCornerRadius = 8;
 
 // Focus rings' corner radius of the desk icon button at different states.
 constexpr int kZeroStateFocusRingRadius = 16;
 constexpr int kExpandedStateFocusRingRadius = 24;
-constexpr int kDragToDropStateFocusRingRadius = 10;
+constexpr int kActiveStateFocusRingRadius = 10;
 
 constexpr int kZeroStateButtonHeight = 28;
 
@@ -56,8 +56,8 @@ int GetFocusRingRadiusForState(CrOSNextDeskIconButton::State state) {
       return kZeroStateFocusRingRadius;
     case CrOSNextDeskIconButton::State::kExpanded:
       return kExpandedStateFocusRingRadius;
-    case CrOSNextDeskIconButton::State::kDragAndDrop:
-      return kDragToDropStateFocusRingRadius;
+    case CrOSNextDeskIconButton::State::kActive:
+      return kActiveStateFocusRingRadius;
   }
 }
 
@@ -138,11 +138,11 @@ CrOSNextDeskIconButton::CrOSNextDeskIconButton(
       this, gfx::Insets(kFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
   views::FocusRing::Get(this)->SetHasFocusPredicate([&](views::View* view) {
-    return IsViewHighlighted() ||
-           ((state_ == State::kDragAndDrop &&
-             bar_view_->dragged_item_over_bar() &&
-             IsPointOnButton(bar_view_->last_dragged_item_screen_location())) ||
-            paint_as_active_);
+    if (IsViewHighlighted() || (state_ == State::kActive && paint_as_active_)) {
+      return true;
+    }
+    return state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
+           IsPointOnButton(bar_view_->last_dragged_item_screen_location());
   });
 }
 
@@ -154,8 +154,8 @@ int CrOSNextDeskIconButton::GetCornerRadiusOnState(State state) {
     case CrOSNextDeskIconButton::State::kZero:
     case CrOSNextDeskIconButton::State::kExpanded:
       return kIconButtonCornerRadius;
-    case CrOSNextDeskIconButton::State::kDragAndDrop:
-      return kDragAndDropStateCornerRadius;
+    case CrOSNextDeskIconButton::State::kActive:
+      return kActiveStateCornerRadius;
   }
 }
 
@@ -200,7 +200,7 @@ gfx::Size CrOSNextDeskIconButton::CalculatePreferredSize() const {
     return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
   }
 
-  DCHECK_EQ(state_, State::kDragAndDrop);
+  DCHECK_EQ(state_, State::kActive);
   return gfx::Size(desk_preview_bounds.width(), desk_preview_bounds.height());
 }
 
@@ -208,10 +208,10 @@ void CrOSNextDeskIconButton::UpdateFocusState() {
   absl::optional<ui::ColorId> new_focus_color_id;
 
   if (IsViewHighlighted() ||
-      (state_ == State::kDragAndDrop && bar_view_->dragged_item_over_bar() &&
+      (state_ == State::kActive && bar_view_->dragged_item_over_bar() &&
        IsPointOnButton(bar_view_->last_dragged_item_screen_location()))) {
     new_focus_color_id = ui::kColorAshFocusRing;
-  } else if (paint_as_active_) {
+  } else if (state_ == State::kActive && paint_as_active_) {
     new_focus_color_id = kColorAshCurrentDeskColor;
   } else {
     new_focus_color_id = absl::nullopt;
@@ -255,7 +255,7 @@ void CrOSNextDeskIconButton::UpdateEnabledState() {
   SetBackground(views::CreateRoundedRectBackground(
       is_disabled ? ColorUtil::GetDisabledColor(background_enabled_color)
                   : background_enabled_color,
-      kIconButtonCornerRadius));
+      GetCornerRadiusOnState(state_)));
   SetImageModel(STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     *button_icon_, is_disabled ? ColorUtil::GetDisabledColor(

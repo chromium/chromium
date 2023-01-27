@@ -1131,11 +1131,19 @@ const Desk* DesksController::CreateNewDeskForSavedDesk(
   if (animation_)
     animation_.reset();
 
-  // Desk name was set to a default name upon creation. If
-  // `customized_desk_name` is not empty, override desk name to be
-  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
-  // naming conflicts.
-  std::u16string desk_name = CreateUniqueDeskName(customized_desk_name);
+  // Call `HideSavedDeskLibrary` before the new desk is created to update the
+  // state of the library button, otherwise the library button will be laid out
+  // with the wrong state when the new desk is created.
+  if (template_type == DeskTemplateType::kTemplate ||
+      template_type == DeskTemplateType::kFloatingWorkspace) {
+    if (auto* session =
+            Shell::Get()->overview_controller()->overview_session()) {
+      session->HideSavedDeskLibrary();
+      for (auto& grid : session->grid_list()) {
+        grid->RemoveAllItemsForSavedDeskLaunch();
+      }
+    }
+  }
 
   switch (template_type) {
     case DeskTemplateType::kTemplate:
@@ -1152,6 +1160,12 @@ const Desk* DesksController::CreateNewDeskForSavedDesk(
   }
 
   Desk* desk = desks().back().get();
+
+  // Desk name was set to a default name upon creation. If
+  // `customized_desk_name` is not empty, override desk name to be
+  // `customized_desk_name` or `customized_desk_name ({counter})` to resolve
+  // naming conflicts.
+  std::u16string desk_name = CreateUniqueDeskName(customized_desk_name);
 
   if (!desk_name.empty()) {
     desk->SetName(desk_name, /*set_by_user=*/true);
@@ -1183,13 +1197,6 @@ const Desk* DesksController::CreateNewDeskForSavedDesk(
             desk->GetDeskContainerForRoot(window->GetRootWindow());
         destination_container->AddChild(window);
       }
-    }
-
-    if (auto* session =
-            Shell::Get()->overview_controller()->overview_session()) {
-      session->HideSavedDeskLibrary();
-      for (auto& grid : session->grid_list())
-        grid->RemoveAllItemsForSavedDeskLaunch();
     }
 
     ActivateDesk(desk, DesksSwitchSource::kLaunchTemplate);
