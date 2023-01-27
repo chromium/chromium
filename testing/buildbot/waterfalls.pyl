@@ -6767,6 +6767,22 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'mac13-blink-rel': {
+        'mixins': [
+          'mac_beta_x64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
+      'mac13.arm64-blink-rel': {
+        'mixins': [
+          'mac_beta_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_webkit_isolated_scripts',
+        },
+      },
       'win10.20h2-blink-rel': {
         'mixins': [
             'win10',
