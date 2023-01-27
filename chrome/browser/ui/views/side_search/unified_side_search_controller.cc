@@ -97,15 +97,13 @@ void UnifiedSideSearchController::SidePanelAvailabilityChanged(
     bool should_close) {
   if (should_close) {
     auto* registry = SidePanelRegistry::Get(web_contents());
-    if (registry && registry->active_entry().has_value() &&
-        registry->active_entry().value()->key().id() ==
-            SidePanelEntry::Id::kSideSearch) {
-      registry->ResetActiveEntry();
+    if (registry && registry->GetEntryForKey(
+                        SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch))) {
+      registry->Deregister(
+          SidePanelEntry::Key(SidePanelEntry::Id::kSideSearch));
     }
-    CloseSidePanel();
-  } else {
-    UpdateSidePanel();
   }
+  UpdateSidePanel();
 }
 
 void UnifiedSideSearchController::DidFinishNavigation(

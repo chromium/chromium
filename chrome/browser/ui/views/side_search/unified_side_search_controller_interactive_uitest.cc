@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
   EXPECT_FALSE(side_panel->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
+IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SideSearchCrashesCloseSideSearch) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
   coordinator->SetNoDelaysForTesting(true);
@@ -608,9 +608,9 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
   EXPECT_TRUE(rph_first_tab->Shutdown(content::RESULT_CODE_KILLED));
   crash_observer_first_tab.Wait();
 
-  // Switch to the first tab, the side panel should still be closed.
+  // Switch to the first tab, the side panel should still be open.
   ActivateTabAt(browser(), 0);
-  EXPECT_FALSE(side_panel->GetVisible());
+  EXPECT_TRUE(side_panel->GetVisible());
   EXPECT_EQ(nullptr, GetSidePanelContentsFor(browser(), 0));
 
   // Reopening the side panel should restore the side panel and its contents.
@@ -820,6 +820,20 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
                 ->key()
                 .id());
   browser()->tab_strip_model()->CloseAllTabs();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SideSearchV2Test,
+    SidePanelAvailabilityChangedShouldNotCloseSidePanelWhenSideSearchIsNotOpen) {
+  auto* browser_view = BrowserViewFor(browser());
+  auto* coordinator = browser_view->side_panel_coordinator();
+  coordinator->SetNoDelaysForTesting();
+  coordinator->Show(SidePanelEntry::Id::kReadingList);
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
+  auto* side_search_controller = UnifiedSideSearchController::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  side_search_controller->SidePanelAvailabilityChanged(true);
+  EXPECT_TRUE(GetSidePanelFor(browser())->GetVisible());
 }
 
 // Fixture base to test feature engagement functionality for the side search
