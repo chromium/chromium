@@ -2707,6 +2707,9 @@ extern const char kArcGhostWindowNewStyleDescription[];
 extern const char kArcGameModeName[];
 extern const char kArcGameModeDescription[];
 
+extern const char kArcIdleManagerName[];
+extern const char kArcIdleManagerDescription[];
+
 extern const char kArcInstantResponseWindowOpenName[];
 extern const char kArcInstantResponseWindowOpenDescription[];
 

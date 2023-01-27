@@ -9348,6 +9348,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kBookmarksRefresh)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"arc-idle-manager", flag_descriptions::kArcIdleManagerName,
+     flag_descriptions::kArcIdleManagerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(arc::kEnableArcIdleManager)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

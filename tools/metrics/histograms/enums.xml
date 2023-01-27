@@ -62335,6 +62335,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationListening:disabled"/>
   <int value="632340413" label="network-settings-config"/>
   <int value="632456816" label="HistoryClustersOnDeviceClustering:enabled"/>
+  <int value="632631179" label="ArcIdleManager:enabled"/>
   <int value="633442161" label="ExperimentalUi:disabled"/>
   <int value="634789085" label="LayeredAPI:disabled"/>
   <int value="635076832" label="MarkHttpAs:disabled"/>
@@ -62984,6 +62985,7 @@ from previous Chrome versions.
   <int value="1004263091"
       label="AdaptiveButtonInTopToolbarCustomizationV2:enabled"/>
   <int value="1004593833" label="LevelDBPerformRewrite:enabled"/>
+  <int value="1004788743" label="ArcIdleManager:disabled"/>
   <int value="1004909189"
       label="ContentSuggestionsThumbnailDominantColor:disabled"/>
   <int value="1005684777" label="PictureInPicture:disabled"/>

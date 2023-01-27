@@ -4718,6 +4718,10 @@ const char kArcGameModeDescription[] =
     "ARC Fullscreen Games will request accomodation from ChromeOS for "
     "sustained performance.";
 
+const char kArcIdleManagerName[] = "Enable ARC Idle Manager";
+const char kArcIdleManagerDescription[] =
+    "ARC will turn on Android's doze mode when idle.";
+
 extern const char kArcInstantResponseWindowOpenName[] =
     "Enable Instance Response for ARC app window open";
 extern const char kArcInstantResponseWindowOpenDescription[] =
