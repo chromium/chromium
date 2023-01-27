@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<title>View transitions: try to start a transition without a document element</title>
+<link rel="help" href="https://drafts.csswg.org/css-view-transitions-1/">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id=frame srcdoc='<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10"></svg>'>
+</iframe>
+
+<script>
+async_test((t) => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    t.step(() => assert_equals(frame.contentDocument.documentElement, null, "document element"));
+    t.step(() => assert_equals(frame.contentDocument.startViewTransition(), null, "transition object"));
+    t.done();
+  }));
+}, "transition without document element is null")
+</script>
