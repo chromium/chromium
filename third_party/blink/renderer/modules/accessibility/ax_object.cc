@@ -2878,6 +2878,20 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     SetNeedsToUpdateChildren();
   }
 
+  // Call children changed on included ancestor.
+  // This must be called before cached_is_ignored_* are updated, otherwise a
+  // performance optimization depending on LastKnownIsIncludedInTreeValue()
+  // may misfire.
+  if (included_in_tree_changed) {
+    if (AXObject* parent = CachedParentObject()) {
+      // Defers a ChildrenChanged() on the first included ancestor.
+      // Must defer it, otherwise it can cause reentry into
+      // UpdateCachedAttributeValuesIfNeeded() on |this|.
+      // ParentObjectUnignored()->SetNeedsToUpdateChildren();
+      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
+    }
+  }
+
   cached_is_ignored_ = is_ignored;
   cached_is_ignored_but_included_in_tree_ = is_ignored_but_included_in_tree;
   // Compute live region root, which can be from any ARIA live value, including
@@ -2897,15 +2911,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   }
   cached_aria_column_index_ = ComputeAriaColumnIndex();
   cached_aria_row_index_ = ComputeAriaRowIndex();
-
-  if (included_in_tree_changed) {
-    if (AXObject* parent = CachedParentObject()) {
-      // Defers a ChildrenChanged() on the first included ancestor.
-      // Must defer it, otherwise it can cause reentry into
-      // UpdateCachedAttributeValuesIfNeeded() on |this|.
-      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
-    }
-  }
 
   if (GetLayoutObject() && GetLayoutObject()->IsText()) {
     cached_local_bounding_box_rect_for_accessibility_ =
