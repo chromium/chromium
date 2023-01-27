@@ -197,11 +197,7 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(kAccountCircleIcon);
 
   if (icon_str == "settingsIcon") {
-    return ImageViewFromVectorIcon(
-        base::FeatureList::IsEnabled(
-            autofill::features::kAutofillUseConsistentPopupSettingsIcons)
-            ? kMonoColorProductIcon
-            : vector_icons::kSettingsIcon);
+    return ImageViewFromVectorIcon(kMonoColorProductIcon);
   }
 
   if (icon_str == "empty")

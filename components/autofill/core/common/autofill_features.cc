@@ -556,12 +556,6 @@ BASE_FEATURE(kAutofillUseImprovedLabelDisambiguation,
              "AutofillUseImprovedLabelDisambiguation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to use the same icon for the settings section in the popup
-// footer.
-BASE_FEATURE(kAutofillUseConsistentPopupSettingsIcons,
-             "AutofillUseConsistentPopupSettingsIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to use the combined heuristic and the autocomplete section
 // implementation for section splitting or not. See https://crbug.com/1076175.
 BASE_FEATURE(kAutofillUseNewSectioningMethod,

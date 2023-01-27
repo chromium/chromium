@@ -3356,12 +3356,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillMoreProminentPopupName,
      flag_descriptions::kAutofillMoreProminentPopupDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillMoreProminentPopup)},
-    {"autofill-use-consistent-popup-settings-icons",
-     flag_descriptions::kAutofillUseConsistentPopupSettingsIconsName,
-     flag_descriptions::kAutofillUseConsistentPopupSettingsIconsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillUseConsistentPopupSettingsIcons)},
     {"smooth-scrolling", flag_descriptions::kSmoothScrollingName,
      flag_descriptions::kSmoothScrollingDescription,
      // Mac has a separate implementation with its own setting to disable.

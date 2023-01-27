@@ -180,8 +180,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillSectioningModeExpand;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillRefillByFormRendererId);
-COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillUseConsistentPopupSettingsIcons);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillEnableAblationStudy);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>

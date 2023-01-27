@@ -310,9 +310,6 @@ extern const char kAutofillUpstreamAllowAllEmailDomainsDescription[];
 extern const char kAutofillMoreProminentPopupName[];
 extern const char kAutofillMoreProminentPopupDescription[];
 
-extern const char kAutofillUseConsistentPopupSettingsIconsName[];
-extern const char kAutofillUseConsistentPopupSettingsIconsDescription[];
-
 extern const char kAutofillUseImprovedLabelDisambiguationName[];
 extern const char kAutofillUseImprovedLabelDisambiguationDescription[];
 

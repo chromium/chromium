@@ -5711,9 +5711,6 @@
                     "name": "Full Color - Profile Icon Disabled",
                     "enable_features": [
                         "AutofillBrandingIOS"
-                    ],
-                    "disable_features": [
-                        "AutofillUseConsistentPopupSettingsIcons"
                     ]
                 },
                 {
@@ -5732,9 +5729,6 @@
                     },
                     "enable_features": [
                         "AutofillBrandingIOS"
-                    ],
-                    "disable_features": [
-                        "AutofillUseConsistentPopupSettingsIcons"
                     ]
                 }
             ]

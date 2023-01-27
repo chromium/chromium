@@ -515,12 +515,6 @@ const char kAutofillRemoveCardExpirationAndTypeTitlesDescription[] =
     "When enabled, expiration and type titles will be removed from the Chrome "
     "Payment Settings page on desktop platforms.";
 
-const char kAutofillUseConsistentPopupSettingsIconsName[] =
-    "Consistent Autofill settings icon";
-const char kAutofillUseConsistentPopupSettingsIconsDescription[] =
-    "If enabled, all Autofill data types including addresses, credit cards and "
-    "passwords will use a consistent icon in the popup settings footer.";
-
 const char kAutofillSaveAndFillVPAName[] =
     "Offer save and autofill of UPI/VPA values";
 const char kAutofillSaveAndFillVPADescription[] =
