@@ -473,7 +473,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'dedede-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'DEDEDE_RELEASE_LKGM',
   },
   'CROS_DEDEDE_RELEASE_DEV': {
@@ -509,7 +509,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'eve-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'EVE_RELEASE_LKGM',
   },
   'CROS_EVE_RELEASE_DEV': {
@@ -555,7 +555,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'hana-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'HANA_RELEASE_LKGM',
   },
   'CROS_HANA_RELEASE_DEV': {
@@ -591,7 +591,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'herobrine-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'HEROBRINE_RELEASE_LKGM',
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
@@ -600,7 +600,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'jacuzzi-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'JACUZZI_RELEASE_LKGM',
   },
   'CROS_JACUZZI_RELEASE_DEV': {
@@ -676,7 +676,7 @@
       'cros_chrome_version': '111.0.5557.0',
       'cros_img': 'octopus-release/R111-15327.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_LKGM',
   },
   'CROS_OCTOPUS_RELEASE_DEV': {
@@ -712,7 +712,7 @@
       'cros_chrome_version': '111.0.5550.0',
       'cros_img': 'strongbad-release/R111-15326.0.0',
     },
-    'enabled': True,
+    'enabled': False,
     'identifier': 'STRONGBAD_RELEASE_LKGM',
   },
   'CROS_STRONGBAD_RELEASE_DEV': {
