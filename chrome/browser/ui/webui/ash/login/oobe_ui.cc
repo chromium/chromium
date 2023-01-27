@@ -96,7 +96,6 @@
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/smart_privacy_protection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/ssh_configured_handler.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
@@ -419,7 +418,8 @@ void OobeUI::ConfigureOobeDisplay() {
   auto password_change_handler =
       std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>();
 
-  AddScreenHandler(std::make_unique<GaiaScreenHandler>());
+  AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
+                                                       error_screen));
 
   AddScreenHandler(std::make_unique<SamlConfirmPasswordHandler>());
 
@@ -428,11 +428,6 @@ void OobeUI::ConfigureOobeDisplay() {
   AddScreenHandler(std::make_unique<OfflineLoginScreenHandler>());
 
   AddScreenHandler(std::move(password_change_handler));
-
-  auto signin_screen_handler = std::make_unique<SigninScreenHandler>(
-      network_state_informer_, error_screen, GetHandler<GaiaScreenHandler>());
-  signin_screen_handler_ = signin_screen_handler.get();
-  AddWebUIHandler(std::move(signin_screen_handler));
 
   AddWebUIHandler(std::make_unique<SshConfiguredHandler>());
 

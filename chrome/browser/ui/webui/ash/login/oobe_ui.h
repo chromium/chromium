@@ -31,7 +31,6 @@ namespace ash {
 class ErrorScreen;
 class NetworkStateInformer;
 class OobeDisplayChooser;
-class SigninScreenHandler;
 
 // A custom WebUI that defines datasource for out-of-box-experience (OOBE) UI:
 // - welcome screen (setup language/keyboard/network).
@@ -99,10 +98,6 @@ class OobeUI : public ui::MojoWebUIController {
   OobeScreenId previous_screen() const { return previous_screen_; }
 
   const std::string& display_type() const { return display_type_; }
-
-  SigninScreenHandler* signin_screen_handler() {
-    return signin_screen_handler_;
-  }
 
   NetworkStateInformer* network_state_informer_for_test() const {
     return network_state_informer_.get();
@@ -179,10 +174,6 @@ class OobeUI : public ui::MojoWebUIController {
 
   // Reference to CoreOobeHandler that handles common requests of Oobe page.
   CoreOobeHandler* core_handler_ = nullptr;
-
-  // Reference to SigninScreenHandler that handles sign-in screen requests and
-  // forwards calls from native code to JS side.
-  SigninScreenHandler* signin_screen_handler_ = nullptr;
 
   std::vector<BaseWebUIHandler*> webui_handlers_;       // Non-owning pointers.
   std::vector<BaseWebUIHandler*> webui_only_handlers_;  // Non-owning pointers.

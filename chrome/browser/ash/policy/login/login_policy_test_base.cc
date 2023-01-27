@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "google_apis/gaia/fake_gaia.h"

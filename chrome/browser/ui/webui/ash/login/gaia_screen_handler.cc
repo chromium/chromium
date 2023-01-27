@@ -34,8 +34,10 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
+#include "chrome/browser/ash/login/error_screens_histogram_helper.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/profile_auth_data.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/ash/login/saml/saml_metric_utils.h"
@@ -61,6 +63,7 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/certificate_provider/pin_dialog_manager.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/net/nss_temp_certs_cache_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -68,11 +71,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/cookie_waiter.h"
 #include "chrome/browser/ui/webui/ash/login/enrollment_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/channel_info.h"
@@ -102,6 +106,8 @@
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_source.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -172,6 +178,9 @@ void RecordAPILogin(bool is_third_party_idp, bool is_api_used) {
   }
   base::UmaHistogramEnumeration("ChromeOS.SAML.APILogin", login_type);
 }
+
+// Timeout used to prevent infinite connecting to a flaky network.
+constexpr base::TimeDelta kConnectingTimeout = base::Seconds(60);
 
 GaiaScreenHandler::GaiaScreenMode GetGaiaScreenMode(const std::string& email) {
   int authentication_behavior = 0;
@@ -310,9 +319,28 @@ base::Value::Dict MakeSecurityTokenPinDialogParameters(
   return params;
 }
 
+bool IsProxyError(NetworkStateInformer::State state,
+                  NetworkError::ErrorReason reason,
+                  net::Error frame_error) {
+  return NetworkStateInformer::IsProxyError(state, reason) ||
+         (reason == NetworkError::ERROR_REASON_FRAME_ERROR &&
+          (frame_error == net::ERR_PROXY_CONNECTION_FAILED ||
+           frame_error == net::ERR_TUNNEL_CONNECTION_FAILED));
+}
+
 }  // namespace
 
-GaiaScreenHandler::GaiaScreenHandler() : BaseScreenHandler(kScreenId) {}
+GaiaScreenHandler::GaiaScreenHandler(
+    const scoped_refptr<NetworkStateInformer>& network_state_informer,
+    ErrorScreen* error_screen)
+    : BaseScreenHandler(kScreenId),
+      network_state_informer_(network_state_informer),
+      error_screen_(error_screen),
+      histogram_helper_(std::make_unique<ErrorScreensHistogramHelper>(
+          ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)) {
+  DCHECK(network_state_informer_.get());
+  DCHECK(error_screen_);
+}
 
 GaiaScreenHandler::~GaiaScreenHandler() {
   if (is_security_token_pin_enabled_)
@@ -553,15 +581,14 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
     VLOG(1) << "Skipping reloading of Gaia since gaia is loading.";
     return;
   }
-  const NetworkStateInformer::State state =
-      signin_screen_handler_->GetNetworkStateInformerStateForMigration();
+  const NetworkStateInformer::State state = network_state_informer_->state();
   if (state != NetworkStateInformer::ONLINE &&
-      !signin_screen_handler_->proxy_auth_dialog_need_reload_) {
+      !proxy_auth_dialog_need_reload_) {
     VLOG(1) << "Skipping reloading of Gaia since network state=" << state;
     return;
   }
 
-  signin_screen_handler_->proxy_auth_dialog_need_reload_ = false;
+  proxy_auth_dialog_need_reload_ = false;
   VLOG(1) << "Reloading Gaia.";
   LoadAuthExtension(force_reload);
 }
@@ -907,8 +934,7 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   frame_error_ = net::OK;
   frame_state_ = FRAME_STATE_LOADED;
 
-  const NetworkStateInformer::State state =
-      signin_screen_handler_->GetNetworkStateInformerStateForMigration();
+  const NetworkStateInformer::State state = network_state_informer_->state();
   if (state == NetworkStateInformer::ONLINE)
     UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
@@ -1127,8 +1153,17 @@ void GaiaScreenHandler::SetSAMLPrincipalsAPIUsed(bool is_third_party_idp,
 }
 
 void GaiaScreenHandler::Show() {
-  // Start network observation.
-  signin_screen_handler_->StartNetworkObservation();
+  histogram_helper_->OnScreenShow();
+
+  network_state_informer_->AddObserver(this);
+
+  // Start listening for HTTP login requests.
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_NEEDED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_SUPPLIED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, chrome::NOTIFICATION_AUTH_CANCELLED,
+                 content::NotificationService::AllSources());
 
   base::Value::Dict data;
   if (LoginDisplayHost::default_host())
@@ -1139,8 +1174,9 @@ void GaiaScreenHandler::Show() {
 }
 
 void GaiaScreenHandler::Hide() {
-  signin_screen_handler_->StopNetworkObservation();
   hidden_ = true;
+  network_state_informer_->RemoveObserver(this);
+  registrar_.RemoveAll();
 }
 
 void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
@@ -1328,6 +1364,10 @@ void GaiaScreenHandler::SetReauthRequestToken(
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {
   VLOG(1) << "LoadAuthExtension, force: " << force;
+  if (!initialized_) {
+    VLOG(1) << "Handler wasn't initialized";
+    return;
+  }
   if (frame_state_ == FRAME_STATE_LOADING && !force) {
     VLOG(1) << "Skip loading the Auth extension as it's already being loaded";
     return;
@@ -1354,8 +1394,216 @@ void GaiaScreenHandler::LoadAuthExtension(bool force) {
 }
 
 void GaiaScreenHandler::UpdateState(NetworkError::ErrorReason reason) {
-  if (signin_screen_handler_ && !hidden_)
-    signin_screen_handler_->UpdateState(reason);
+  // ERROR_REASON_FRAME_ERROR is an explicit signal from GAIA frame so it should
+  // force network error UI update.
+  bool force_update = reason == NetworkError::ERROR_REASON_FRAME_ERROR;
+  UpdateStateInternal(reason, force_update);
+}
+
+void GaiaScreenHandler::UpdateStateInternal(NetworkError::ErrorReason reason,
+                                            bool force_update) {
+  // Do nothing once user has signed in or sign in is in progress.
+  auto* existing_user_controller = ExistingUserController::current_controller();
+  if (existing_user_controller &&
+      (existing_user_controller->IsUserSigninCompleted() ||
+       existing_user_controller->IsSigninInProgress())) {
+    return;
+  }
+
+  NetworkStateInformer::State state = network_state_informer_->state();
+
+  // Skip "update" notification about OFFLINE state from
+  // NetworkStateInformer if previous notification already was
+  // delayed.
+  if ((state == NetworkStateInformer::OFFLINE ||
+       network_state_ignored_until_proxy_auth_) &&
+      !force_update && !update_state_callback_.IsCancelled()) {
+    return;
+  }
+
+  update_state_callback_.Cancel();
+
+  if ((state == NetworkStateInformer::OFFLINE && !force_update) ||
+      network_state_ignored_until_proxy_auth_) {
+    update_state_callback_.Reset(
+        base::BindOnce(&GaiaScreenHandler::UpdateStateInternal,
+                       weak_factory_.GetWeakPtr(), reason, true));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, update_state_callback_.callback(), offline_timeout_);
+    return;
+  }
+
+  // Don't show or hide error screen if we're in connecting state.
+  if (state == NetworkStateInformer::CONNECTING && !force_update) {
+    if (connecting_callback_.IsCancelled()) {
+      // First notification about CONNECTING state.
+      connecting_callback_.Reset(
+          base::BindOnce(&GaiaScreenHandler::UpdateStateInternal,
+                         weak_factory_.GetWeakPtr(), reason, true));
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, connecting_callback_.callback(), kConnectingTimeout);
+    }
+    return;
+  }
+  connecting_callback_.Cancel();
+
+  const bool is_online = NetworkStateInformer::IsOnline(state, reason);
+  const bool is_behind_captive_portal =
+      NetworkStateInformer::IsBehindCaptivePortal(state, reason);
+  const bool is_gaia_loading_timeout =
+      (reason == NetworkError::ERROR_REASON_LOADING_TIMEOUT);
+  const bool is_gaia_error =
+      frame_error() != net::OK && frame_error() != net::ERR_NETWORK_CHANGED;
+  const bool error_screen_should_overlay = IsGaiaVisible();
+  const bool from_not_online_to_online_transition =
+      is_online && last_network_state_ != NetworkStateInformer::ONLINE;
+  last_network_state_ = state;
+  proxy_auth_dialog_need_reload_ =
+      (reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED) &&
+      (state == NetworkStateInformer::PROXY_AUTH_REQUIRED) &&
+      (proxy_auth_dialog_reload_times_ > 0);
+
+  bool reload_gaia = false;
+
+  // This check is needed, because kiosk apps are started from GaiaScreen right
+  // now.
+  if (!(IsGaiaVisible() || IsGaiaHiddenByError())) {
+    return;
+  }
+
+  if (is_online || !is_behind_captive_portal) {
+    error_screen_->HideCaptivePortal();
+  }
+
+  // Reload frame if network state is changed from {!ONLINE} -> ONLINE state.
+  if (reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED &&
+      from_not_online_to_online_transition) {
+    // Schedules a immediate retry.
+    LOG(WARNING) << "Retry frame load since network has been changed.";
+    gaia_reload_reason_ = reason;
+    reload_gaia = true;
+  }
+
+  if (reason == NetworkError::ERROR_REASON_PROXY_CONFIG_CHANGED &&
+      error_screen_should_overlay) {
+    // Schedules a immediate retry.
+    LOG(WARNING) << "Retry frameload since proxy settings has been changed.";
+    gaia_reload_reason_ = reason;
+    reload_gaia = true;
+  }
+
+  if (reason == NetworkError::ERROR_REASON_FRAME_ERROR &&
+      reason != gaia_reload_reason_ &&
+      !IsProxyError(state, reason, frame_error())) {
+    LOG(WARNING) << "Retry frame load due to reason: "
+                 << NetworkError::ErrorReasonString(reason);
+    gaia_reload_reason_ = reason;
+    reload_gaia = true;
+  }
+
+  if (is_gaia_loading_timeout) {
+    LOG(WARNING) << "Retry frame load due to loading timeout.";
+    reload_gaia = true;
+  }
+
+  if (proxy_auth_dialog_need_reload_) {
+    --proxy_auth_dialog_reload_times_;
+    LOG(WARNING) << "Retry frame load to show proxy auth dialog";
+    reload_gaia = true;
+  }
+
+  if (!is_online || is_gaia_loading_timeout || is_gaia_error) {
+    if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
+      error_screen_->SetParentScreen(GaiaView::kScreenId);
+      error_screen_->SetHideCallback(base::BindOnce(
+          &GaiaScreenHandler::OnErrorScreenHide, weak_factory_.GetWeakPtr()));
+      histogram_helper_->OnErrorShow(error_screen_->GetErrorState());
+    }
+    // Show `ErrorScreen` or update network error message.
+    error_screen_->ShowNetworkErrorMessage(state, reason);
+  } else {
+    HideOfflineMessage(state, reason);
+  }
+
+  if (reload_gaia) {
+    ReloadGaia(/*force_reload=*/true);
+  }
+}
+
+void GaiaScreenHandler::HideOfflineMessage(NetworkStateInformer::State state,
+                                           NetworkError::ErrorReason reason) {
+  if (!IsGaiaHiddenByError()) {
+    return;
+  }
+
+  gaia_reload_reason_ = NetworkError::ERROR_REASON_NONE;
+
+  error_screen_->Hide();
+
+  // Forces a reload for Gaia screen on hiding error message.
+  if (IsGaiaVisible() || IsGaiaHiddenByError()) {
+    ReloadGaia(reason == NetworkError::ERROR_REASON_NETWORK_STATE_CHANGED);
+  }
+}
+
+void GaiaScreenHandler::Observe(int type,
+                                const content::NotificationSource& source,
+                                const content::NotificationDetails& details) {
+  switch (type) {
+    case chrome::NOTIFICATION_AUTH_NEEDED: {
+      network_state_ignored_until_proxy_auth_ = true;
+      update_state_callback_.Cancel();
+      break;
+    }
+    case chrome::NOTIFICATION_AUTH_SUPPLIED: {
+      if (IsGaiaHiddenByError()) {
+        // Start listening to network state notifications immediately, hoping
+        // that the network will switch to ONLINE soon.
+        update_state_callback_.Cancel();
+        ReenableNetworkStateUpdatesAfterProxyAuth();
+      } else {
+        // Gaia is not hidden behind an error yet. Discard last cached network
+        // state notification and wait for `kProxyAuthTimeout` before
+        // considering network update notifications again (hoping the network
+        // will become ONLINE by then).
+        update_state_callback_.Cancel();
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth,
+                weak_factory_.GetWeakPtr()),
+            kProxyAuthTimeout);
+      }
+      break;
+    }
+    case chrome::NOTIFICATION_AUTH_CANCELLED: {
+      update_state_callback_.Cancel();
+      ReenableNetworkStateUpdatesAfterProxyAuth();
+      break;
+    }
+    default:
+      NOTREACHED() << "Unexpected notification " << type;
+  }
+}
+
+void GaiaScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
+  network_state_ignored_until_proxy_auth_ = false;
+}
+
+void GaiaScreenHandler::OnErrorScreenHide() {
+  histogram_helper_->OnErrorHide();
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
+  ReloadGaia(/*force_reload=*/true);
+  ShowScreenDeprecated(GaiaView::kScreenId);
+}
+
+bool GaiaScreenHandler::IsGaiaVisible() {
+  return GetCurrentScreen() == GaiaView::kScreenId;
+}
+
+bool GaiaScreenHandler::IsGaiaHiddenByError() {
+  return (GetCurrentScreen() == ErrorScreenView::kScreenId) &&
+         (error_screen_->GetParentScreen() == GaiaView::kScreenId);
 }
 
 void GaiaScreenHandler::SAMLConfirmPassword(

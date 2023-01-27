@@ -2843,8 +2843,6 @@ static_library("ui") {
       "webui/ash/login/saml_confirm_password_handler.h",
       "webui/ash/login/signin_fatal_error_screen_handler.cc",
       "webui/ash/login/signin_fatal_error_screen_handler.h",
-      "webui/ash/login/signin_screen_handler.cc",
-      "webui/ash/login/signin_screen_handler.h",
       "webui/ash/login/smart_privacy_protection_screen_handler.cc",
       "webui/ash/login/smart_privacy_protection_screen_handler.h",
       "webui/ash/login/ssh_configured_handler.cc",

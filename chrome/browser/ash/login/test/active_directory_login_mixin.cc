@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/webui/ash/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -61,13 +60,6 @@ void ActiveDirectoryLoginMixin::SetUpInProcessBrowserTestFixture() {
 
 void ActiveDirectoryLoginMixin::SetUpOnMainThread() {
   test::WaitForOobeJSReady();
-
-  // Set the threshold to a max value to disable the offline message screen on
-  // slow configurations like MSAN, where it otherwise triggers on every run.
-  LoginDisplayHost::default_host()
-      ->GetOobeUI()
-      ->signin_screen_handler()
-      ->SetOfflineTimeoutForTesting(base::TimeDelta::Max());
 
   message_queue_ = std::make_unique<content::DOMMessageQueue>(
       LoginDisplayHost::default_host()->GetOobeWebContents());

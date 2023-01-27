@@ -13,13 +13,17 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_access_result.h"
@@ -37,7 +41,7 @@ class NSSTempCertsCacheChromeOS;
 namespace ash {
 
 class PublicSamlUrlFetcher;
-class SigninScreenHandler;
+class ErrorScreensHistogramHelper;
 
 class GaiaView : public base::SupportsWeakPtr<GaiaView> {
  public:
@@ -99,9 +103,12 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
 };
 
 // A class that handles WebUI hooks in Gaia screen.
-class GaiaScreenHandler : public BaseScreenHandler,
-                          public GaiaView,
-                          public chromeos::SecurityTokenPinDialogHost {
+class GaiaScreenHandler
+    : public BaseScreenHandler,
+      public GaiaView,
+      public chromeos::SecurityTokenPinDialogHost,
+      public content::NotificationObserver,
+      public NetworkStateInformer::NetworkStateInformerObserver {
  public:
   using TView = GaiaView;
 
@@ -121,7 +128,9 @@ class GaiaScreenHandler : public BaseScreenHandler,
     FRAME_STATE_ERROR
   };
 
-  GaiaScreenHandler();
+  GaiaScreenHandler(
+      const scoped_refptr<NetworkStateInformer>& network_state_informer,
+      ErrorScreen* error_screen);
 
   GaiaScreenHandler(const GaiaScreenHandler&) = delete;
   GaiaScreenHandler& operator=(const GaiaScreenHandler&) = delete;
@@ -154,13 +163,23 @@ class GaiaScreenHandler : public BaseScreenHandler,
       SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) override;
   void CloseSecurityTokenPinDialog() override;
 
+  // NetworkStateInformer::NetworkStateInformerObserver:
+  void UpdateState(NetworkError::ErrorReason reason) override;
+
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
 
- private:
-  // TODO(xiaoyinh): remove this dependency.
-  friend class SigninScreenHandler;
+  // To avoid spurious error messages on flaky networks, the offline message is
+  // only shown if the network is offline for a threshold number of seconds.
+  // This method provides an ability to reduce the threshold to zero, allowing
+  // the offline message to show instantaneously in tests. The threshold can
+  // also be set to a high value to disable the offline message on slow
+  // configurations like MSAN, where it otherwise triggers on every run.
+  void set_offline_timeout_for_testing(base::TimeDelta offline_timeout) {
+    offline_timeout_ = offline_timeout;
+  }
 
+ private:
   void LoadGaia(const login::GaiaContext& context);
 
   // Callback that loads GAIA after version and stat consent information has
@@ -278,14 +297,29 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // extension reloading, if it has already been loaded.
   void LoadAuthExtension(bool force);
 
-  // Remainder of NetworkStateInformerObserver. This function will be moved to
-  // GaiaScreen.
-  void UpdateState(NetworkError::ErrorReason reason);
+  void UpdateStateInternal(NetworkError::ErrorReason reason, bool force_update);
+  void HideOfflineMessage(NetworkStateInformer::State state,
+                          NetworkError::ErrorReason reason);
 
-  // TODO(antrim): remove this dependency.
-  void set_signin_screen_handler(SigninScreenHandler* handler) {
-    signin_screen_handler_ = handler;
-  }
+  // content::NotificationObserver implementation:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
+
+  // Returns true if current visible screen is the Gaia sign-in page.
+  bool IsGaiaVisible();
+
+  // Returns true if current visible screen is the error screen over
+  // Gaia sign-in page.
+  bool IsGaiaHiddenByError();
+
+  // After proxy auth information has been supplied, this function re-enables
+  // responding to network state notifications.
+  void ReenableNetworkStateUpdatesAfterProxyAuth();
+
+  // Error screen hide callback which records error screen metrics and shows
+  // GAIA.
+  void OnErrorScreenHide();
 
   // Returns temporary unused device Id.
   std::string GetTemporaryDeviceId();
@@ -351,12 +385,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::string test_services_;
   bool test_expects_complete_login_ = false;
 
-  // Non-owning ptr to SigninScreenHandler instance. Should not be used
-  // in dtor.
-  // TODO(antrim): GaiaScreenHandler shouldn't communicate with
-  // signin_screen_handler directly.
-  SigninScreenHandler* signin_screen_handler_ = nullptr;
-
   // Makes untrusted authority certificates from device policy available for
   // client certificate discovery.
   std::unique_ptr<network::NSSTempCertsCacheChromeOS>
@@ -408,6 +436,46 @@ class GaiaScreenHandler : public BaseScreenHandler,
   std::unique_ptr<SamlChallengeKeyHandler> saml_challenge_key_handler_for_test_;
 
   std::unique_ptr<OnlineLoginHelper> online_login_helper_;
+
+  // Network state informer used to keep signin screen up.
+  scoped_refptr<NetworkStateInformer> network_state_informer_;
+
+  const base::raw_ptr<ErrorScreen> error_screen_;
+
+  NetworkStateInformer::State last_network_state_ =
+      NetworkStateInformer::UNKNOWN;
+
+  base::CancelableOnceCallback<void()> update_state_callback_;
+  base::CancelableOnceCallback<void()> connecting_callback_;
+
+  content::NotificationRegistrar registrar_;
+
+  // Whether we're currently ignoring network state updates because a proxy auth
+  // UI pending (or we're waiting for a grace period after the proxy auth UI is
+  // finished for the network to switch into the ONLINE state).
+  bool network_state_ignored_until_proxy_auth_ = false;
+
+  // Used for pending GAIA reloads.
+  NetworkError::ErrorReason gaia_reload_reason_ =
+      NetworkError::ERROR_REASON_NONE;
+
+  // If network has accidentally changed to the one that requires proxy
+  // authentication, we will automatically reload gaia page that will bring
+  // "Proxy authentication" dialog to the user. To prevent flakiness, we will do
+  // it at most 3 times.
+  int proxy_auth_dialog_reload_times_ = 3;
+
+  // True if we need to reload gaia page to bring back "Proxy authentication"
+  // dialog.
+  bool proxy_auth_dialog_need_reload_ = false;
+
+  bool is_offline_timeout_for_test_set_ = false;
+
+  // Timeout to delay first notification about offline state for a
+  // current network.
+  base::TimeDelta offline_timeout_ = base::Seconds(1);
+
+  std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   base::WeakPtrFactory<GaiaScreenHandler> weak_factory_{this};
 };

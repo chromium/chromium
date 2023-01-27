@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -166,10 +165,6 @@ IN_PROC_BROWSER_TEST_F(DeviceDisablingTest, DisableWithEphemeralUsers) {
       oobe_ui->network_state_informer_for_test();
   ASSERT_TRUE(network_state_informer);
   network_state_informer->AddObserver(this);
-  SigninScreenHandler* const signin_screen_handler =
-      oobe_ui->signin_screen_handler();
-  ASSERT_TRUE(signin_screen_handler);
-  signin_screen_handler->SetOfflineTimeoutForTesting(base::Seconds(0));
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
   network_state_change_wait_run_loop_->Run();

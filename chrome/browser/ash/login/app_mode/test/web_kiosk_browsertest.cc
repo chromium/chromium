@@ -33,7 +33,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -316,13 +316,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest,
 IN_PROC_BROWSER_TEST_F(WebKioskTest,
                        AlreadyInstalledWithConfigureAcceleratorPressed) {
   SetOnline(false);
-  PrepareAppLaunch();
   // Set the threshold to a max value to disable the offline message screen,
-  // otherwise it would interfere with app launch.
+  // otherwise it would interfere with app launch. This is needed as this is
+  // happening on the GaiaScreen in terms of screens of WizardController.
   LoginDisplayHost::default_host()
       ->GetOobeUI()
-      ->signin_screen_handler()
-      ->SetOfflineTimeoutForTesting(base::TimeDelta::Max());
+      ->GetHandler<GaiaScreenHandler>()
+      ->set_offline_timeout_for_testing(base::TimeDelta::Max());
+  PrepareAppLaunch();
   LaunchApp();
 
   // Block app launch after it is being installed.
