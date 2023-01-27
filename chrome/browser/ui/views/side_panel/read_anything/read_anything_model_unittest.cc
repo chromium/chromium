@@ -26,7 +26,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
               (override));
   MOCK_METHOD(void,
               OnActiveAXTreeIDChanged,
-              (const ui::AXTreeID& tree_id),
+              (const ui::AXTreeID& tree_id, const ukm::SourceId& ukm_source_id),
               (override));
   MOCK_METHOD(void,
               OnAXTreeDestroyed,
@@ -74,12 +74,12 @@ TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
   EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
@@ -91,17 +91,17 @@ TEST_F(ReadAnythingModelTest, RemovedModelObserversDoNotReceiveNotifications) {
   model_->AddObserver(&model_observer_2_);
 
   EXPECT_CALL(model_observer_1_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_1_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
   EXPECT_CALL(model_observer_2_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_2_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_2_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(0);
 
   EXPECT_CALL(model_observer_3_, AccessibilityEventReceived(_)).Times(0);
-  EXPECT_CALL(model_observer_3_, OnActiveAXTreeIDChanged(_)).Times(0);
+  EXPECT_CALL(model_observer_3_, OnActiveAXTreeIDChanged(_, _)).Times(0);
   EXPECT_CALL(model_observer_3_, OnReadAnythingThemeChanged(_, _, _, _, _, _))
       .Times(1);
 
@@ -130,10 +130,10 @@ TEST_F(ReadAnythingModelTest, NotificationsOnAccessibilityEventReceived) {
 TEST_F(ReadAnythingModelTest, NotificationsOnActiveAXTreeIDChanged) {
   model_->AddObserver(&model_observer_1_);
 
-  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_)).Times(1);
+  EXPECT_CALL(model_observer_1_, OnActiveAXTreeIDChanged(_, _)).Times(1);
 
   ui::AXTreeID tree_id;
-  model_->OnActiveAXTreeIDChanged(tree_id);
+  model_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId);
 }
 
 TEST_F(ReadAnythingModelTest, NotificationsOnAXTreeDestroyed) {

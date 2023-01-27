@@ -260,6 +260,7 @@ void ReadAnythingController::WebContentsDestroyed(
 
 void ReadAnythingController::NotifyActiveAXTreeIDChanged() {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
+  ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   if (active_) {
     content::WebContents* web_contents =
         browser_->tab_strip_model()->GetActiveWebContents();
@@ -272,9 +273,10 @@ void ReadAnythingController::NotifyActiveAXTreeIDChanged() {
       return;
     }
     tree_id = render_frame_host->GetAXTreeID();
+    ukm_source_id = render_frame_host->GetPageUkmSourceId();
     ObserveAccessibilityEventsOnActiveTab();
   }
-  model_->OnActiveAXTreeIDChanged(tree_id);
+  model_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
 }
 
 void ReadAnythingController::ObserveAccessibilityEventsOnActiveTab() {

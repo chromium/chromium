@@ -19,7 +19,9 @@ class MockAXTreeDistiller : public AXTreeDistiller {
       : AXTreeDistiller(render_frame, base::NullCallback()) {}
   MOCK_METHOD(void,
               Distill,
-              (const ui::AXTree& tree, const ui::AXTreeUpdate& snapshot),
+              (const ui::AXTree& tree,
+               const ui::AXTreeUpdate& snapshot,
+               const ukm::SourceId& ukm_source_id),
               (override));
 };
 
@@ -127,7 +129,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
-    controller_->OnActiveAXTreeIDChanged(tree_id);
+    controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId);
   }
 
   void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids) {

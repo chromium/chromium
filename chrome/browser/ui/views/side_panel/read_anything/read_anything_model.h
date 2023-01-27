@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_menu_model.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "content/public/browser/ax_event_notification_details.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/models/combobox_model.h"
 
 using read_anything::mojom::Spacing;
@@ -163,7 +164,8 @@ class ReadAnythingModel {
    public:
     virtual void AccessibilityEventReceived(
         const content::AXEventNotificationDetails& details) {}
-    virtual void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {}
+    virtual void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                                         const ukm::SourceId& ukm_source_id) {}
     virtual void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {}
     virtual void OnReadAnythingThemeChanged(
         const std::string& font_name,
@@ -190,7 +192,8 @@ class ReadAnythingModel {
 
   void AccessibilityEventReceived(
       const content::AXEventNotificationDetails& details);
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id);
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                               const ukm::SourceId& ukm_source_id);
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id);
 
   void SetSelectedFontByIndex(size_t new_index);

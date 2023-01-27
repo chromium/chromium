@@ -72,8 +72,9 @@ void ReadAnythingPageHandler::AccessibilityEventReceived(
 }
 
 void ReadAnythingPageHandler::OnActiveAXTreeIDChanged(
-    const ui::AXTreeID& tree_id) {
-  page_->OnActiveAXTreeIDChanged(tree_id);
+    const ui::AXTreeID& tree_id,
+    const ukm::SourceId& ukm_source_id) {
+  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
 }
 
 void ReadAnythingPageHandler::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {

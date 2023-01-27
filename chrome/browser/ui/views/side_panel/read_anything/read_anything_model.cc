@@ -127,9 +127,11 @@ void ReadAnythingModel::AccessibilityEventReceived(
   }
 }
 
-void ReadAnythingModel::OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
+void ReadAnythingModel::OnActiveAXTreeIDChanged(
+    const ui::AXTreeID& tree_id,
+    const ukm::SourceId& ukm_source_id) {
   for (Observer& obs : observers_) {
-    obs.OnActiveAXTreeIDChanged(tree_id);
+    obs.OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
   }
 }
 

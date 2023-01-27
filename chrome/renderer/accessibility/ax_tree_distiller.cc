@@ -102,12 +102,13 @@ AXTreeDistiller::AXTreeDistiller(
 AXTreeDistiller::~AXTreeDistiller() = default;
 
 void AXTreeDistiller::Distill(const ui::AXTree& tree,
-                              const ui::AXTreeUpdate& snapshot) {
+                              const ui::AXTreeUpdate& snapshot,
+                              const ukm::SourceId& ukm_source_id) {
   // If Read Anything with Screen 2x is enabled, kick off Screen 2x run, which
   // distills the AXTree in the utility process using ML.
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    DistillViaScreen2x(tree, snapshot);
+    DistillViaScreen2x(tree, snapshot, ukm_source_id);
     return;
   }
 #endif
@@ -128,10 +129,11 @@ void AXTreeDistiller::DistillViaAlgorithm(const ui::AXTree& tree) {
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
-                                         const ui::AXTreeUpdate& snapshot) {
+                                         const ui::AXTreeUpdate& snapshot,
+                                         const ukm::SourceId& ukm_source_id) {
   DCHECK(main_content_extractor_.is_bound());
   main_content_extractor_->ExtractMainContent(
-      snapshot,
+      snapshot, ukm_source_id,
       base::BindOnce(&AXTreeDistiller::ProcessScreen2xResult,
                      weak_ptr_factory_.GetWeakPtr(), std::cref(tree)));
 }

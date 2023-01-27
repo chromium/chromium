@@ -90,6 +90,7 @@ include_rules = [
   "+services/tracing/public/cpp",
   "+services/metrics/public/cpp/mojo_ukm_recorder.h",
   "+services/metrics/public/cpp/ukm_builders.h",
+  "+services/metrics/public/cpp/ukm_source_id.h",
   "+skia",
   "+storage/common",
   "+third_party/blink/public/mojom",

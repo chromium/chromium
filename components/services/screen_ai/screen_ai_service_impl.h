@@ -18,6 +18,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace ukm {
+class UkmRecorder;
+}
 
 namespace screen_ai {
 
@@ -125,6 +130,11 @@ class ScreenAIService : public mojom::ScreenAIService,
 
   void SetLibraryFunctions(std::unique_ptr<LibraryFunctions> library_functions);
 
+  static void RecordMetrics(ukm::SourceId ukm_source_id,
+                            ukm::UkmRecorder* ukm_recorder,
+                            base::TimeDelta elapsed_time,
+                            bool success);
+
  private:
   std::unique_ptr<LibraryFunctions> library_functions_;
 
@@ -140,6 +150,7 @@ class ScreenAIService : public mojom::ScreenAIService,
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
+                          ukm::SourceId ukm_source_id,
                           ContentExtractionCallback callback) override;
 
   // mojom::ScreenAIService:
@@ -174,6 +185,7 @@ class ScreenAIService : public mojom::ScreenAIService,
                                 bool run_layout_extraction,
                                 ui::AXTreeUpdate* annotation);
   void ExtractMainContentInternal(const ui::AXTreeUpdate& snapshot,
+                                  const ukm::SourceId& ukm_source_id,
                                   std::vector<int32_t>* content_node_ids);
 
   // Library function calls are isolated to have specific compiler directives.

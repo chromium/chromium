@@ -40,7 +40,7 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
         render_frame,
         base::BindRepeating(&AXTreeDistillerTestBase::OnAXTreeDistilled,
                             base::Unretained(this), &tree));
-    distiller_->Distill(tree, snapshot);
+    distiller_->Distill(tree, snapshot, ukm::kInvalidSourceId);
   }
 
   void OnAXTreeDistilled(ui::AXTree* tree,

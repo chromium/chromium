@@ -1,6 +1,9 @@
 include_rules = [
   "+google/protobuf",
+  "+components/ukm",
   "+content/public/browser",
+  "+sandbox/policy",
+  "+services/metrics/public/cpp",
   "+ui/accessibility/accessibility_features.h",
   "+ui/accessibility/ax_enum_util.h",
   "+ui/accessibility/ax_enums.mojom.h",
@@ -15,5 +18,4 @@ include_rules = [
   "+ui/accessibility/ax_tree_update.h",
   "+ui/accessibility/test_ax_tree_update_json_reader.h",
   "+ui/gfx/geometry",
-  "+sandbox/policy"
 ]

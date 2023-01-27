@@ -63,7 +63,8 @@ class ReadAnythingPageHandler : public read_anything::mojom::PageHandler,
   // ReadAnythingModel::Observer:
   void AccessibilityEventReceived(
       const content::AXEventNotificationDetails& details) override;
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) override;
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                               const ukm::SourceId& ukm_source_id) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnReadAnythingThemeChanged(
       const std::string& font_name,

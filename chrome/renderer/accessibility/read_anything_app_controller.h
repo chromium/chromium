@@ -15,6 +15,7 @@
 #include "gin/wrappable.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_observer.h"
@@ -83,7 +84,8 @@ class ReadAnythingAppController
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,
       const std::vector<ui::AXEvent>& events) override;
-  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) override;
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
+                               ukm::SourceId ukm_source_id) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
@@ -190,6 +192,10 @@ class ReadAnythingAppController
 
   // The AXTreeID of the currently active web contents.
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
+
+  // The UKM source ID of the main frame of the active web contents, whose
+  // AXTree has ID active_tree_id_. This is used for metrics collection.
+  ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
 
   // Distillation is slow and happens out-of-process when Screen2x is running.
   // This boolean marks when distillation is in progress to avoid sending

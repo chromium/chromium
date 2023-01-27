@@ -197,6 +197,41 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ScreenAI">
+  <owner>abigailbklein@google.com</owner>
+  <owner>rhalavati@google.com</owner>
+  <owner>kyungjunlee@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page.
+  </summary>
+  <metric name="Screen2xDistillationTime.Failure">
+    <summary>
+      The amount of time (ms) required to distill a web page if distillation
+      failed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Screen2xDistillationTime.Success">
+    <summary>
+      The amount of time (ms) required to distill a web page if distillation
+      succeeded.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="AccuracyTipDialog">
   <obsolete>
     Deprecated as of 12/2022.

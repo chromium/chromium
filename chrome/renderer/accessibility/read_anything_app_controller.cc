@@ -362,12 +362,14 @@ void ReadAnythingAppController::UnserializeUpdates(
 }
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
-    const ui::AXTreeID& tree_id) {
+    const ui::AXTreeID& tree_id,
+    ukm::SourceId ukm_source_id) {
   if (tree_id == active_tree_id_) {
     return;
   }
   ui::AXTreeID previous_active_tree_id = active_tree_id_;
   active_tree_id_ = tree_id;
+  active_ukm_source_id_ = ukm_source_id;
   // Unserialize all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
@@ -393,6 +395,7 @@ void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
     // TODO(crbug.com/1266555): If distillation is in progress, cancel the
     // distillation request.
     active_tree_id_ = ui::AXTreeIDUnknown();
+    active_ukm_source_id_ = ukm::kInvalidSourceId;
   }
   // Under rare circumstances, an accessibility tree is not constructed in a
   // tab. For example, after a browser restart, old tabs are only laid out after
@@ -458,7 +461,7 @@ void ReadAnythingAppController::Distill() {
   ui::AXTreeUpdate snapshot;
   CHECK(serializer.SerializeChanges(tree->root(), &snapshot));
   distillation_in_progress_ = true;
-  distiller_->Distill(*tree, snapshot);
+  distiller_->Distill(*tree, snapshot, active_ukm_source_id_);
 }
 
 void ReadAnythingAppController::OnAXTreeDistilled(
@@ -872,7 +875,7 @@ void ReadAnythingAppController::SetContentForTesting(
   ui::AXTreeUpdate snapshot =
       GetSnapshotFromV8SnapshotLite(isolate, v8_snapshot_lite);
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
-  OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id);
+  OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId);
   OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 }
 

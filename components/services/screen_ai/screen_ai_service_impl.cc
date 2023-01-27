@@ -26,6 +26,8 @@
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "components/services/screen_ai/screen_ai_ax_tree_serializer.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -424,6 +426,7 @@ bool ScreenAIService::CallLibraryLayoutExtractionFunction(
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
+                                         ukm::SourceId ukm_source_id,
                                          ContentExtractionCallback callback) {
   std::unique_ptr<std::vector<int32_t>> content_node_ids =
       std::make_unique<std::vector<int32_t>>();
@@ -435,7 +438,7 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
       FROM_HERE,
       base::BindOnce(&ScreenAIService::ExtractMainContentInternal,
                      weak_ptr_factory_.GetWeakPtr(), std::move(snapshot),
-                     base::Unretained(node_ids_ptr)),
+                     std::move(ukm_source_id), base::Unretained(node_ids_ptr)),
       base::BindOnce(
           [](ContentExtractionCallback callback,
              std::unique_ptr<std::vector<int32_t>> content_node_ids) {
@@ -446,6 +449,7 @@ void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
 
 void ScreenAIService::ExtractMainContentInternal(
     const ui::AXTreeUpdate& snapshot,
+    const ukm::SourceId& ukm_source_id,
     std::vector<int32_t>* content_node_ids) {
   DCHECK(content_node_ids);
   std::string serialized_snapshot = SnapshotToViewHierarchy(snapshot);
@@ -460,9 +464,8 @@ void ScreenAIService::ExtractMainContentInternal(
   if (!success) {
     VLOG(1) << "Screen2x did not return main content.";
     DCHECK(content_node_ids->empty());
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
-        elapsed_time);
+    RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
+                  /* success= */ false);
     return;
   }
 
@@ -474,8 +477,34 @@ void ScreenAIService::ExtractMainContentInternal(
   VLOG(2) << "Screen2x returned " << content_node_ids->size() << " node ids:";
   for (int32_t i : *content_node_ids)
     VLOG(2) << i;
-  base::UmaHistogramTimes(
-      "Accessibility.ScreenAI.Screen2xDistillationTime.Success", elapsed_time);
+  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time,
+                /* success= */ true);
+}
+
+// static
+void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
+                                    ukm::UkmRecorder* ukm_recorder,
+                                    base::TimeDelta elapsed_time,
+                                    bool success) {
+  if (success) {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.Screen2xDistillationTime.Success",
+        elapsed_time);
+    if (ukm_source_id != ukm::kInvalidSourceId) {
+      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
+          .SetScreen2xDistillationTime_Success(elapsed_time.InMilliseconds())
+          .Record(ukm_recorder);
+    }
+  } else {
+    base::UmaHistogramTimes(
+        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
+        elapsed_time);
+    if (ukm_source_id != ukm::kInvalidSourceId) {
+      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
+          .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
+          .Record(ukm_recorder);
+    }
+  }
 }
 
 NO_SANITIZE("cfi-icall")
