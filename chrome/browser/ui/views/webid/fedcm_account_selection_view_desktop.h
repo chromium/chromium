@@ -16,7 +16,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class AccountSelectionBubbleViewInterface;
-class Browser;
 
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
@@ -58,9 +57,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
 
-  // Creates bubble views::Widget.
-  virtual views::Widget* CreateBubble(
-      Browser* browser,
+  // Creates the bubble. Sets the bubble's accessible title. Registers any
+  // observers.
+  virtual views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& rp_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context);
@@ -70,6 +69,10 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
  private:
   enum class State {
+    // User is shown message that they are not currently signed-in to IdP.
+    // Dialog has button to sign-in to IdP.
+    IDP_SIGNIN_STATUS_MISMATCH,
+
     // User is shown list of accounts they have with IDP and is prompted to
     // select an account.
     ACCOUNT_PICKER,
