@@ -5544,16 +5544,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wallpaper.ColorExtractionResult2"
-    enum="WallpaperColorExtractionResult" expires_after="M92">
-  <owner>newcomer@chromium.org</owner>
-  <owner>tbuckley@chromium.org</owner>
-  <summary>
-    Tracks the success rate for wallpaper color extraction. Recorded each time
-    the wallpaper image changes for each extracted wallpaper prominent color.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Wallpaper.CustomLayout" enum="WallpaperLayout"
     expires_after="2023-04-24">
   <owner>xiaohuic@chromium.org</owner>
