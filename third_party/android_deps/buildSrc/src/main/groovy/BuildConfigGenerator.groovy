@@ -112,7 +112,7 @@ class BuildConfigGenerator extends DefaultTask {
         # Copyright 2021 The Chromium Authors
         # Use of this source code is governed by a BSD-style license that can be
         # found in the LICENSE file.
-    '''.stripIndent()
+    '''.stripIndent(/* forceGroovyBehavior */ true)
 
     // This cache allows us to download license files from the same URL at most once.
     static final ConcurrentMap<String, String> URL_TO_STRING_CACHE = new ConcurrentHashMap<>()
@@ -206,7 +206,7 @@ class BuildConfigGenerator extends DefaultTask {
 
             Local Modifications:
             No modifications.
-            """.stripIndent()
+            """.stripIndent(/* forceGroovyBehavior */ true)
     }
 
     static String makeCipdYaml(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket, String repoPath) {
@@ -229,7 +229,7 @@ class BuildConfigGenerator extends DefaultTask {
             description: "${dependency.displayName}"
             data:
             - file: ${dependency.fileName}
-            """.stripIndent()
+            """.stripIndent(/* forceGroovyBehavior */ true)
     }
 
     static void validateLicenses(ChromiumDepGraph.DependencyDescription dependency) {
@@ -300,7 +300,7 @@ class BuildConfigGenerator extends DefaultTask {
               pkg_prefix: "${pkgPrefix}"
               universal: true
             }
-            """.stripIndent()
+            """.stripIndent(/* forceGroovyBehavior */ true)
     }
 
     static String make3ppFetch(Template fetchTemplate, ChromiumDepGraph.DependencyDescription dependency) {
@@ -507,7 +507,7 @@ class BuildConfigGenerator extends DefaultTask {
                 java_prebuilt("${targetName}") {
                   jar_path = "${libPath}/${dependency.fileName}"
                   output_name = "${dependency.id}"
-                """.stripIndent())
+                """.stripIndent(/* forceGroovyBehavior */ true))
             if (dependency.supportsAndroid) {
                 sb.append('  supports_android = true\n')
             } else {
@@ -520,11 +520,11 @@ class BuildConfigGenerator extends DefaultTask {
                 android_aar_prebuilt("${targetName}") {
                   aar_path = "${libPath}/${dependency.fileName}"
                   info_path = "${libPath}/${BuildConfigGenerator.reducedDepencencyId(dependency.id)}.info"
-            """.stripIndent())
+            """.stripIndent(/* forceGroovyBehavior */ true))
         } else if (dependency.extension == 'group') {
             sb.append("""\
                 java_group("${targetName}") {
-            """.stripIndent())
+            """.stripIndent(/* forceGroovyBehavior */ true))
         } else {
             throw new IllegalStateException('Dependency type should be JAR or AAR')
         }
@@ -547,8 +547,8 @@ class BuildConfigGenerator extends DefaultTask {
         String aliasedLib = ALIASED_LIBS.get(dependency.id)
         if (aliasedLib) {
             // Cannot add only the specific target because doing so breaks nested template target.
-            String visibilityLabel = aliasedLib.replaceAll(":.*", ":*")
-            sb.append("  # Target is swapped out when internal code is enabled.\n")
+            String visibilityLabel = aliasedLib.replaceAll(':.*', ':*')
+            sb.append('  # Target is swapped out when internal code is enabled.\n')
             sb.append("  # Please depend on $aliasedLib instead.\n")
             sb.append("  visibility = [ \"$visibilityLabel\" ]\n")
         } else if (!dependency.visible) {
@@ -606,7 +606,6 @@ class BuildConfigGenerator extends DefaultTask {
         return "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"
     }
 
-    /* groovylint-disable-next-line MethodSize */
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
         addPreconditionsOverrideTreatment(sb, dependencyId)
 
@@ -900,16 +899,16 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'net_bytebuddy_byte_buddy_agent':
             case 'net_bytebuddy_byte_buddy':
-              sb.append('  # Can\'t find com.sun.jna classes.\n')
-              sb.append('  enable_bytecode_checks = false\n')
-              break
+                sb.append('  # Can\'t find com.sun.jna classes.\n')
+                sb.append('  enable_bytecode_checks = false\n')
+                break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
                 sb.append('requires_android = true')
                 break
             case 'org_mockito_mockito_core':
-              sb.append('  # Can\'t find org.opentest4j.AssertionFailedError classes.\n')
-              sb.append('  enable_bytecode_checks = false\n')
-              break
+                sb.append('  # Can\'t find org.opentest4j.AssertionFailedError classes.\n')
+                sb.append('  enable_bytecode_checks = false\n')
+                break
         }
     }
 
@@ -1075,7 +1074,7 @@ class BuildConfigGenerator extends DefaultTask {
             throw new IllegalStateException('DEPS insertion point not found.')
         }
         depsFile.write(matcher.replaceFirst("${DEPS_TOKEN_START}\n${sb}\n  ${DEPS_TOKEN_END}"))
-                                       }
+    }
 
     private boolean isTargetAutorolled(String targetName) {
         for (String autorolledLibPrefix in AUTOROLLED_LIB_PREFIXES) {

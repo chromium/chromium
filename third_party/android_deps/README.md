@@ -114,6 +114,9 @@ Here is a sample `.groovylintrc.json` file:
     "extends": "recommended",
     "rules": {
         "CatchException": "off",
+        "ClassSize": {
+            "enabled": false
+        },
         "CompileStatic": "off",
         "DuplicateMapLiteral": "off",
         "DuplicateNumberLiteral": "off",
@@ -123,10 +126,8 @@ Here is a sample `.groovylintrc.json` file:
         "JavaIoPackageAccess": "off",
         "MethodCount": "off",
         "NestedForLoop": "off",
-        "ThrowRuntimeException": "off",
-        "formatting.Indentation": {
-            "spacesPerIndentLevel": 4
-        }
+        "SpaceBeforeClosingBrace": "off",
+        "ThrowRuntimeException": "off"
     }
 }
 ```
