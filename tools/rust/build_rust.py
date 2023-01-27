@@ -265,33 +265,32 @@ def RunXPy(sub, args, llvm_bins_path, zlib_path, libxml2_dirs, build_mac_arm,
         RUSTENV['CFLAGS'] += f' -isysroot {sdk_path}'
         RUSTENV['CXXFLAGS'] += f' -isysroot {sdk_path}'
         RUSTENV['LDFLAGS'] += f' -isysroot {sdk_path}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (f' -Clink-arg=-isysroot {sdk_path}')
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
+            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
         RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -Clink-arg=-isysroot {sdk_path}')
+            f' -Clink-arg=-isysroot -Clink-arg={sdk_path}')
 
     if zlib_path:
         RUSTENV['CFLAGS'] += f' -I{zlib_path}'
         RUSTENV['CXXFLAGS'] += f' -I{zlib_path}'
         RUSTENV['LDFLAGS'] += f' {LD_PATH_FLAG}{zlib_path}'
-        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (f' -Clink-arg='
-                                           f'{LD_PATH_FLAG}{zlib_path}')
-        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (f' -Clink-arg='
-                                               f'{LD_PATH_FLAG}{zlib_path}')
+        RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
+            f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
+        RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+            f' -Clink-arg={LD_PATH_FLAG}{zlib_path}')
 
     if libxml2_dirs:
         RUSTENV['CFLAGS'] += f' -I{libxml2_dirs.include_dir}'
         RUSTENV['CXXFLAGS'] += f' -I{libxml2_dirs.include_dir}'
         RUSTENV['LDFLAGS'] += f' {LD_PATH_FLAG}{libxml2_dirs.lib_dir}'
         RUSTENV['RUSTFLAGS_BOOTSTRAP'] += (
-            f' -Clink-arg='
-            f'{LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
+            f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
         RUSTENV['RUSTFLAGS_NOT_BOOTSTRAP'] += (
-            f' -Clink-arg='
-            f'{LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
+            f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
 
     if gcc_toolchain_path:
         # We use these flags to avoid linking with the system libstdc++.
-        gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}')
+        gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}'
         RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
         RUSTENV['CXXFLAGS'] += f' {gcc_toolchain_flag}'
         RUSTENV['LDFLAGS'] += f' {gcc_toolchain_flag}'
