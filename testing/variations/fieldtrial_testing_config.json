@@ -6463,21 +6463,6 @@
             ]
         }
     ],
-    "IsVoiceSearchEnabledCache": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IsVoiceSearchEnabledCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysAndroidPreStable": [
         {
             "platforms": [

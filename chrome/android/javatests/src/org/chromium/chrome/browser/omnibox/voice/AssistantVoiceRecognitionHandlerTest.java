@@ -141,7 +141,6 @@ public class AssistantVoiceRecognitionHandlerTest {
             RecognitionTestHelper.setAudioCapturePref(true);
             mHandler.removeObserver(mObserver);
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
-            mHandler.setIsVoiceSearchEnabledCacheForTesting(null);
             mWindowAndroid.destroy();
         });
     }

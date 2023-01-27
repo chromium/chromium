@@ -232,7 +232,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInfobarScrollOptimization,
     &kInstanceSwitcher,
     &kInstantStart,
-    &kIsVoiceSearchEnabledCache,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
     &kNotificationPermissionVariant,
@@ -726,10 +725,6 @@ BASE_FEATURE(kInfobarScrollOptimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kIsVoiceSearchEnabledCache,
-             "IsVoiceSearchEnabledCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationPermissionVariant,
              "NotificationPermissionVariant",

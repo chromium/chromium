@@ -154,7 +154,6 @@ public class AssistantActionsHandlerTest {
             assertNotNull(mHandler);
             mHandler.removeObserver(mObserver);
             VoiceRecognitionHandler.setIsRecognitionIntentPresentForTesting(null);
-            mHandler.setIsVoiceSearchEnabledCacheForTesting(null);
             mWindowAndroid.destroy();
         });
     }
