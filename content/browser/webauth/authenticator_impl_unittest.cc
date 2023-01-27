@@ -7676,58 +7676,68 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
   const int kOk = 0;
   const int kNonsense = 1;
   const int kNotAllow = 2;
+  const device::UserVerificationRequirement kUV =
+      device::UserVerificationRequirement::kRequired;
+  const device::UserVerificationRequirement kUP =
+      device::UserVerificationRequirement::kDiscouraged;
+  const device::UserVerificationRequirement kUVPref =
+      device::UserVerificationRequirement::kPreferred;
 
   const struct {
     bool supported_by_authenticator;
     bool is_resident;
     blink::mojom::ProtectionPolicy protection;
     bool enforce;
-    bool uv;
+    device::UserVerificationRequirement uv;
     int expected_outcome;
     blink::mojom::ProtectionPolicy resulting_policy;
   } kExpectations[] = {
       // clang-format off
     // Support | Resdnt | Level      | Enf  |  UV  || Result   | Prot level
-    {  false,   false,   UNSPECIFIED, false, false,   kOk,       NONE},
-    {  false,   false,   UNSPECIFIED, true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   false,   NONE,        false, false,   kNonsense, UNSPECIFIED},
-    {  false,   false,   NONE,        true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   false,   UV_OR_CRED,  false, false,   kOk,       NONE},
-    {  false,   false,   UV_OR_CRED,  true,  false,   kNotAllow, UNSPECIFIED},
-    {  false,   false,   UV_OR_CRED,  false, true,    kOk,       NONE},
-    {  false,   false,   UV_OR_CRED,  true,  true,    kNotAllow, UNSPECIFIED},
-    {  false,   false,   UV_REQ,      false, false,   kNonsense, UNSPECIFIED},
-    {  false,   false,   UV_REQ,      false, true,    kOk,       NONE},
-    {  false,   false,   UV_REQ,      true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   false,   UV_REQ,      true,  true,    kNotAllow, UNSPECIFIED},
-    {  false,   true,    UNSPECIFIED, false, false,   kOk,       NONE},
-    {  false,   true,    UNSPECIFIED, true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   true,    NONE,        false, false,   kOk,       NONE},
-    {  false,   true,    NONE,        true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   true,    UV_OR_CRED,  false, false,   kOk,       NONE},
-    {  false,   true,    UV_OR_CRED,  true,  false,   kNotAllow, UNSPECIFIED},
-    {  false,   true,    UV_REQ,      false, false,   kNonsense, UNSPECIFIED},
-    {  false,   true,    UV_REQ,      false, true,    kOk,       NONE},
-    {  false,   true,    UV_REQ,      true,  false,   kNonsense, UNSPECIFIED},
-    {  false,   true,    UV_REQ,      true,  true,    kNotAllow, UNSPECIFIED},
+    {  false,   false,   UNSPECIFIED, false, kUP,     kOk,       NONE},
+    {  false,   false,   UNSPECIFIED, true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   false,   UNSPECIFIED, false, kUVPref, kOk,       NONE},
+    {  false,   false,   NONE,        false, kUP,     kNonsense, UNSPECIFIED},
+    {  false,   false,   NONE,        true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   false,   UV_OR_CRED,  false, kUP,     kOk,       NONE},
+    {  false,   false,   UV_OR_CRED,  true,  kUP,     kNotAllow, UNSPECIFIED},
+    {  false,   false,   UV_OR_CRED,  false, kUV,     kOk,       NONE},
+    {  false,   false,   UV_OR_CRED,  true,  kUV,     kNotAllow, UNSPECIFIED},
+    {  false,   false,   UV_REQ,      false, kUP,     kNonsense, UNSPECIFIED},
+    {  false,   false,   UV_REQ,      false, kUV,     kOk,       NONE},
+    {  false,   false,   UV_REQ,      true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   false,   UV_REQ,      true,  kUV,     kNotAllow, UNSPECIFIED},
+    {  false,   true,    UNSPECIFIED, false, kUP,     kOk,       NONE},
+    {  false,   true,    UNSPECIFIED, true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   true,    NONE,        false, kUP,     kOk,       NONE},
+    {  false,   true,    NONE,        true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   true,    UV_OR_CRED,  false, kUP,     kOk,       NONE},
+    {  false,   true,    UV_OR_CRED,  true,  kUP,     kNotAllow, UNSPECIFIED},
+    {  false,   true,    UV_REQ,      false, kUP,     kNonsense, UNSPECIFIED},
+    {  false,   true,    UV_REQ,      false, kUV,     kOk,       NONE},
+    {  false,   true,    UV_REQ,      true,  kUP,     kNonsense, UNSPECIFIED},
+    {  false,   true,    UV_REQ,      true,  kUV,     kNotAllow, UNSPECIFIED},
 
     // For the case where the authenticator supports credProtect we do not
     // repeat the cases above that are |kNonsense| on the assumption that
     // authenticator support is irrelevant. Therefore these are just the non-
     // kNonsense cases from the prior block.
-    {  true,    false,   UNSPECIFIED, false, false,   kOk,       NONE},
-    {  true,    false,   UV_OR_CRED,  false, false,   kOk,       UV_OR_CRED},
-    {  true,    false,   UV_OR_CRED,  true,  false,   kOk,       UV_OR_CRED},
-    {  true,    false,   UV_OR_CRED,  false, true,    kOk,       UV_OR_CRED},
-    {  true,    false,   UV_OR_CRED,  true,  true,    kOk,       UV_OR_CRED},
-    {  true,    false,   UV_REQ,      false, true,    kOk,       UV_REQ},
-    {  true,    false,   UV_REQ,      true,  true,    kOk,       UV_REQ},
-    {  true,    true,    UNSPECIFIED, false, false,   kOk,       UV_OR_CRED},
-    {  true,    true,    NONE,        false, false,   kOk,       NONE},
-    {  true,    true,    UV_OR_CRED,  false, false,   kOk,       UV_OR_CRED},
-    {  true,    true,    UV_OR_CRED,  true,  false,   kOk,       UV_OR_CRED},
-    {  true,    true,    UV_REQ,      false, true,    kOk,       UV_REQ},
-    {  true,    true,    UV_REQ,      true,  true,    kOk,       UV_REQ},
+    {  true,    false,   UNSPECIFIED, false, kUP,     kOk,       NONE},
+    {  true,    false,   UV_OR_CRED,  false, kUP,     kOk,       UV_OR_CRED},
+    {  true,    false,   UV_OR_CRED,  true,  kUP,     kOk,       UV_OR_CRED},
+    {  true,    false,   UV_OR_CRED,  false, kUV,     kOk,       UV_OR_CRED},
+    {  true,    false,   UV_OR_CRED,  true,  kUV,     kOk,       UV_OR_CRED},
+    {  true,    false,   UV_REQ,      false, kUV,     kOk,       UV_REQ},
+    {  true,    false,   UV_REQ,      true,  kUV,     kOk,       UV_REQ},
+    {  true,    true,    UNSPECIFIED, false, kUP,     kOk,       UV_OR_CRED},
+    {  true,    true,    UNSPECIFIED, false, kUVPref, kOk,       UV_REQ},
+    {  true,    true,    NONE,        false, kUP,     kOk,       NONE},
+    {  true,    true,    NONE,        false, kUVPref, kOk,       NONE},
+    {  true,    true,    UV_OR_CRED,  false, kUP,     kOk,       UV_OR_CRED},
+    {  true,    true,    UV_OR_CRED,  true,  kUP,     kOk,       UV_OR_CRED},
+    {  true,    true,    UV_OR_CRED,  false, kUVPref, kOk,       UV_OR_CRED},
+    {  true,    true,    UV_REQ,      false, kUV,     kOk,       UV_REQ},
+    {  true,    true,    UV_REQ,      true,  kUV,     kOk,       UV_REQ},
       // clang-format on
   };
 
@@ -7739,7 +7749,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
     virtual_device_factory_->SetCtap2Config(config);
     virtual_device_factory_->mutable_state()->registrations.clear();
 
-    SCOPED_TRACE(::testing::Message() << "uv=" << test.uv);
+    SCOPED_TRACE(::testing::Message() << "uv=" << UVToString(test.uv));
     SCOPED_TRACE(::testing::Message() << "enforce=" << test.enforce);
     SCOPED_TRACE(::testing::Message()
                  << "level=" << ProtectionPolicyDescription(test.protection));
@@ -7753,9 +7763,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, CredProtectRegistration) {
                          : device::ResidentKeyRequirement::kDiscouraged;
     options->protection_policy = test.protection;
     options->enforce_protection_policy = test.enforce;
-    options->authenticator_selection->user_verification_requirement =
-        test.uv ? device::UserVerificationRequirement::kRequired
-                : device::UserVerificationRequirement::kDiscouraged;
+    options->authenticator_selection->user_verification_requirement = test.uv;
 
     AuthenticatorStatus status =
         AuthenticatorMakeCredential(std::move(options)).status;

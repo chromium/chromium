@@ -33,6 +33,7 @@
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -57,7 +58,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/authenticator.h"
-#include "device/fido/features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -330,6 +330,68 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   return discovery_factory;
+}
+
+absl::optional<device::CredProtectRequest> ProtectionPolicyToCredProtect(
+    blink::mojom::ProtectionPolicy protection_policy,
+    const device::MakeCredentialOptions& make_credential_options) {
+  switch (protection_policy) {
+    case blink::mojom::ProtectionPolicy::UNSPECIFIED:
+      // Some platform authenticators have the behaviour that uv=required
+      // demands a local reauthentication but uv=preferred can be satisfied by
+      // just clicking a button. Since the device has to be unlocked by the
+      // user, this seems to balance the demands of uv=required against the
+      // fact that quite a number of (non-mobile) devices lack biometrics and
+      // thus full UV requires entering the local password. Since password
+      // autofill doesn't demand entering the local password all the time, it
+      // would be sad if WebAuthn was much worse in that respect.
+      //
+      // Also, some sites have (or will) implement a sign-in flow where the
+      // user enters their username and then the site makes a WebAuthn
+      // request, with an allowlist, where completing that request is
+      // sufficient to sign-in. I.e. there's no additional password challenge.
+      // Since these sites are trying to replace passwords, we expect them to
+      // set uv=preferred in order to work well with the platform behaviour
+      // detailed in the first paragraph.
+      //
+      // If such sites remembered the UV flag from the registration and enforced
+      // it at assertion time, that would break situations where closing a
+      // laptop lid covers the biometric sensor and makes entering a password
+      // preferable. But without any enforcement of the UV flag, someone could
+      // pick a security key off the ground and do a uv=false request to get a
+      // sufficient assertion.
+      //
+      // Thus if rk=required and uv=preferred, credProtect level three is set
+      // to tell security keys to only create an assertion after UV for this
+      // credential. (Sites can still override this by setting a specific
+      // credProtect level.)
+      //
+      // If a site sets rk=preferred then we assume that they're doing something
+      // unusual and will only set credProtect level two.
+      //
+      // See also
+      // https://chromium.googlesource.com/chromium/src/+/main/content/browser/webauth/cred_protect.md
+      if (make_credential_options.resident_key ==
+              device::ResidentKeyRequirement::kRequired &&
+          make_credential_options.user_verification ==
+              device::UserVerificationRequirement::kPreferred &&
+          base::FeatureList::IsEnabled(device::kWebAuthnCredProtectThree)) {
+        return device::CredProtectRequest::kUVRequired;
+      }
+      if (make_credential_options.resident_key !=
+          device::ResidentKeyRequirement::kDiscouraged) {
+        // Otherwise, kUVOrCredIDRequired is made the default unless
+        // the authenticator defaults to something better.
+        return device::CredProtectRequest::kUVOrCredIDRequiredOrBetter;
+      }
+      return absl::nullopt;
+    case blink::mojom::ProtectionPolicy::NONE:
+      return device::CredProtectRequest::kUVOptional;
+    case blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED:
+      return device::CredProtectRequest::kUVOrCredIDRequired;
+    case blink::mojom::ProtectionPolicy::UV_REQUIRED:
+      return device::CredProtectRequest::kUVRequired;
+  }
 }
 
 }  // namespace
@@ -697,27 +759,9 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
 
-  absl::optional<device::CredProtectRequest> cred_protect_request;
-  switch (options->protection_policy) {
-    case blink::mojom::ProtectionPolicy::UNSPECIFIED:
-      if (might_create_resident_key) {
-        // If not specified, kUVOrCredIDRequired is made the default unless
-        // the authenticator defaults to something better.
-        cred_protect_request =
-            device::CredProtectRequest::kUVOrCredIDRequiredOrBetter;
-      }
-      break;
-    case blink::mojom::ProtectionPolicy::NONE:
-      cred_protect_request = device::CredProtectRequest::kUVOptional;
-      break;
-    case blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED:
-      cred_protect_request = device::CredProtectRequest::kUVOrCredIDRequired;
-      break;
-    case blink::mojom::ProtectionPolicy::UV_REQUIRED:
-      cred_protect_request = device::CredProtectRequest::kUVRequired;
-      break;
-  }
-
+  absl::optional<device::CredProtectRequest> cred_protect_request =
+      ProtectionPolicyToCredProtect(options->protection_policy,
+                                    *make_credential_options_);
   if (cred_protect_request) {
     make_credential_options_->cred_protect_request = {
         {*cred_protect_request, options->enforce_protection_policy}};

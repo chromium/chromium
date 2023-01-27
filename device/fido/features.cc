@@ -52,4 +52,9 @@ BASE_FEATURE(kWebAuthnNoPasskeysError,
              "WebAuthenticationNoPasskeysError",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Added in M112. Remove in or after M115.
+BASE_FEATURE(kWebAuthnCredProtectThree,
+             "WebAuthenticationCredProtectThree",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device
