@@ -2177,9 +2177,6 @@ extern const char kPageInfoStoreInfoDescription[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetName[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[];
 
-extern const char kPersistShareHubOnAppSwitchName[];
-extern const char kPersistShareHubOnAppSwitchDescription[];
-
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
 extern const char kQueryTilesNTPName[];

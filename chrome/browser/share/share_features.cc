@@ -8,9 +8,6 @@
 
 namespace share {
 
-BASE_FEATURE(kPersistShareHubOnAppSwitch,
-             "PersistShareHubOnAppSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kScreenshotsForAndroidV2,
              "ScreenshotsForAndroidV2",
              base::FEATURE_DISABLED_BY_DEFAULT);

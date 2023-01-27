@@ -12,7 +12,6 @@
 
 namespace share {
 
-BASE_DECLARE_FEATURE(kPersistShareHubOnAppSwitch);
 BASE_DECLARE_FEATURE(kScreenshotsForAndroidV2);
 BASE_DECLARE_FEATURE(kSharingDesktopScreenshotsEdit);
 BASE_DECLARE_FEATURE(kUpcomingSharingFeatures);
