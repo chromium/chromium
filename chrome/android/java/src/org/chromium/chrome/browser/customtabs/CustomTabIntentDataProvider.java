@@ -241,6 +241,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR";
 
     /**
+     * Extra that, if set, makes the Custom Tab Activity's width to be x pixels, the Custom Tab
+     * will behave as a side sheet. x will be clamped between 33% and 100% of screen width.
+     */
+    public static final String EXTRA_INITIAL_ACTIVITY_WIDTH_PX =
+            "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX";
+
+    /**
      * Extra that, if set, makes the toolbar's top corner radii to be x pixels. This will only have
      * effect if the custom tab is behaving as a bottom sheet. Currently, this is capped at 16dp.
      * TODO(jinsukkim): Deprecate this.
@@ -318,6 +325,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     private final ColorProvider mColorProvider;
 
     private final @Px int mInitialActivityHeight;
+    private final @Px int mInitialActivityWidth;
     private final @Px int mPartialTabToolbarCornerRadius;
 
     private final boolean mIsPartialCustomTabFixedHeight;
@@ -360,7 +368,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     public static void configureIntentForResizableCustomTab(Context context, Intent intent) {
-        if (getInitialActivityHeightFromIntent(intent) == 0) {
+        if (getInitialActivityHeightFromIntent(intent) == 0
+                && (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()
+                        || getInitialActivityWidthFromIntent(intent) == 0)) {
             // fallback to normal Custom Tab.
             return;
         }
@@ -377,6 +387,12 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int heightPx2 = IntentUtils.safeGetIntExtra(
                 intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 0);
         return heightPx2 > 0 ? heightPx2 : 0;
+    }
+
+    private static int getInitialActivityWidthFromIntent(Intent intent) {
+        int widthPx = IntentUtils.safeGetIntExtra(
+                intent, CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 0);
+        return widthPx > 0 ? widthPx : 0;
     }
 
     /**
@@ -494,6 +510,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 CustomTabsConnection.getInstance().setupDynamicFeatures(intent);
 
         mInitialActivityHeight = getInitialActivityHeightFromIntent(intent);
+        mInitialActivityWidth = getInitialActivityWidthFromIntent(intent);
         mPartialTabToolbarCornerRadius = getToolbarCornerRadiusFromIntent(context, intent);
 
         // The default behavior is that the PCCT's height is resizable.
@@ -799,6 +816,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (isPartialHeightCustomTab()) {
             featureUsage.log(CustomTabsFeature.CTF_PARTIAL);
         }
+        if (isPartialWidthCustomTab()) {
+            featureUsage.log(CustomTabsFeature.CTF_PARTIAL_SIDE_SHEET);
+        }
         if (mRemoteViewsPendingIntent != null) {
             featureUsage.log(CustomTabsFeature.EXTRA_REMOTEVIEWS_PENDINGINTENT);
         }
@@ -875,6 +895,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     @Override
     public boolean isPartialHeightCustomTab() {
         return getInitialActivityHeight() > 0;
+    }
+
+    @Override
+    public boolean isPartialWidthCustomTab() {
+        return getInitialActivityWidth() > 0;
     }
 
     @Override
@@ -1134,6 +1159,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         boolean enabledDueToThirdParty = ChromeFeatureList.sCctResizableForThirdParties.isEnabled()
                 && isAllowedThirdParty(getClientPackageName());
         return (mIsTrustedIntent || enabledDueToThirdParty) ? mInitialActivityHeight : 0;
+    }
+
+    @Override
+    public @Px int getInitialActivityWidth() {
+        if (!ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return 0;
+
+        boolean enabledDueToThirdParty =
+                ChromeFeatureList.sCctResizableSideSheetForThirdParties.isEnabled()
+                && isAllowedThirdParty(getClientPackageName());
+        return (mIsTrustedIntent || enabledDueToThirdParty) ? mInitialActivityWidth : 0;
     }
 
     boolean isAllowedThirdParty(String packageName) {

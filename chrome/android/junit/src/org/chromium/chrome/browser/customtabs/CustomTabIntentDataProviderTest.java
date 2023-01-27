@@ -313,6 +313,56 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testInitialActivityWidth_1Pdisabled() {
+        ChromeFeatureList.sCctResizableSideSheet.setForTesting(false);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
+    }
+
+    @Test
+    public void testInitialActivityWidth_3Penabled_notdenied() {
+        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
+        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.pixar.woody");
+        CustomTabsConnection.setInstanceForTesting(connection);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Width should be 50", 50, dataProvider.getInitialActivityWidth());
+    }
+
+    @Test
+    public void testInitialActivityWidth_3Penabled_denied() {
+        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
+        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(true);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn("com.dc.joker");
+        CustomTabsConnection.setInstanceForTesting(connection);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        CustomTabIntentDataProvider.DENYLIST_ENTRIES.setForTesting(
+                "com.dc.joker|com.marvel.thanos");
+        assertEquals("Width should be 0", 0, dataProvider.getInitialActivityWidth());
+    }
+
+    @Test
+    public void testInitialActivityWidth_3Pdisabled() {
+        ChromeFeatureList.sCctResizableSideSheet.setForTesting(true);
+        ChromeFeatureList.sCctResizableSideSheetForThirdParties.setForTesting(false);
+        Intent intent = new CustomTabsIntent.Builder().build().intent;
+        intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_WIDTH_PX, 50);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals("Width should be 50", 50, dataProvider.getInitialActivityWidth());
+    }
+
+    @Test
     public void partialCustomTabHeightResizeBehavior_Default() {
         Intent intent = new Intent().putExtra(
                 CustomTabIntentDataProvider.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR,
