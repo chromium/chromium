@@ -13252,6 +13252,24 @@
             ]
         }
     ],
+    "WebRTC-SendBufferSizeBytes": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "262144,_V1"
+                }
+            ]
+        }
+    ],
     "WebRTC-SendPacketsOnWorkerThread": [
         {
             "platforms": [
