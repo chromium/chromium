@@ -4,17 +4,23 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {Page, PasswordManagerAppElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, Page, PasswordManagerAppElement, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('PasswordManagerAppTest', function() {
   let app: PasswordManagerAppElement;
 
+  let openWindowProxy: TestOpenWindowProxy;
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     app = document.createElement('password-manager-app');
     document.body.appendChild(app);
     app.setNarrowForTesting(false);
@@ -124,5 +130,14 @@ suite('PasswordManagerAppTest', function() {
             UrlParam.SEARCH_TERM)));
     assertFalse(Router.getInstance().currentRoute.queryParameters.has(
         UrlParam.START_CHECK));
+  });
+
+  test('Test help button', async function() {
+    const button =
+        app.$.toolbar.shadowRoot!.querySelector<HTMLElement>('#helpButton');
+    assertTrue(!!button);
+    button.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('passwordManagerLearnMoreURL'));
   });
 });

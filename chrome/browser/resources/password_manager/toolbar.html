@@ -15,5 +15,7 @@
     search-prompt="$i18n{searchPrompt}"
     autofocus on-search-changed="onSearchChanged_"
     role="banner" show-menu="[[narrow]]" narrow="[[narrow]]">
-  <cr-icon-button iron-icon="cr:help-outline"></cr-icon-button>
+  <cr-icon-button id="helpButton" iron-icon="cr:help-outline"
+      title="$i18n{help}" on-click="onHelpClick_">
+  </cr-icon-button>
 </cr-toolbar>

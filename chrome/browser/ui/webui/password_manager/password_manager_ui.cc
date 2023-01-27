@@ -101,6 +101,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"exportPasswordsTryAgain", IDS_PASSWORD_MANAGER_UI_EXPORT_TRY_AGAIN},
       {"exportingPasswordsTitle", IDS_PASSWORD_MANAGER_UI_EXPORTING_TITLE},
       {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
+      {"help", IDS_PASSWORD_MANAGER_UI_HELP},
       {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},
       {"importPasswords", IDS_PASSWORD_MANAGER_UI_IMPORT_BANNER_TITLE},
       {"importPasswordsDescription",
@@ -171,6 +172,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
           password_manager::GetPasswordCheckupURL(
               password_manager::PasswordCheckupReferrer::kPasswordCheck)
               .spec()));
+
+  source->AddString("passwordManagerLearnMoreURL",
+                    chrome::kPasswordManagerLearnMoreURL);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Overwrite ubranded logo for Chrome-branded builds.

@@ -8,6 +8,8 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Page, Route, RouteObserverMixin, Router, UrlParam} from './router.js';
@@ -19,8 +21,11 @@ export interface PasswordManagerToolbarElement {
   };
 }
 
-export class PasswordManagerToolbarElement extends RouteObserverMixin
-(PolymerElement) {
+const PasswordManagerToolbarElementBase =
+    I18nMixin(RouteObserverMixin(PolymerElement));
+
+export class PasswordManagerToolbarElement extends
+    PasswordManagerToolbarElementBase {
   static get is() {
     return 'password-manager-toolbar';
   }
@@ -60,6 +65,11 @@ export class PasswordManagerToolbarElement extends RouteObserverMixin
     if (searchTerm !== this.searchField.getValue()) {
       this.searchField.setValue(searchTerm);
     }
+  }
+
+  private onHelpClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.i18n('passwordManagerLearnMoreURL'));
   }
 }
 
