@@ -7,6 +7,7 @@
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "ipc/ipc_platform_file.h"
+#include "net/cert/cert_verify_result.h"
 #include "net/http/http_util.h"
 
 namespace IPC {

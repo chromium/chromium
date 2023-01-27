@@ -785,6 +785,7 @@ mojom("mojom_network_param") {
         "//services/network/public/cpp/net_ipc_param_traits.h",
         "//services/network/public/cpp/network_param_mojom_traits.h",
       ]
+      traits_private_headers = [ "//net/cert/cert_verify_result.h" ]
       traits_public_deps =
           [ "//services/network/public/cpp:network_param_mojom_support" ]
     },
