@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {classMap, css, customElement, html, property, PropertyValues, svg, XfBase} from './xf_base.js';
+import {util} from '../common/js/util.js';
+
+import {classMap, css, customElement, html, property, PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {
@@ -14,6 +16,13 @@ export class XfIcon extends XfBase {
    * (from `XfIcon.types`).
    */
   @property({type: String, reflect: true}) type = '';
+
+  /**
+   * Some icon data are directly passed from outside in base64 format. If
+   * `iconSet` is provided, `type` will be ignored.
+   */
+  @property({attribute: false})
+  iconSet: chrome.fileManagerPrivate.IconSet|null = null;
 
   static get sizes() {
     return {
@@ -29,7 +38,7 @@ export class XfIcon extends XfBase {
       ARCHIVE: 'archive',
       AUDIO: 'audio',
       BRUSCHETTA: 'bruschetta',
-      CAMERA_FOLDER: 'camera_folder',
+      CAMERA_FOLDER: 'camera-folder',
       COMPUTER: 'computer',
       COMPUTERS_GRAND_ROOT: 'computers_grand_root',
       CROSTINI: 'crostini',
@@ -104,6 +113,14 @@ export class XfIcon extends XfBase {
         </span>`;
     }
 
+    if (this.iconSet) {
+      const backgroundImageStyle = {
+        'background-image': util.iconSetToCSSBackgroundImageValue(this.iconSet),
+      };
+      return html`<span class="keep-color" style=${
+          styleMap(backgroundImageStyle)}></span>`;
+    }
+
     const shouldKeepColor = [
       XfIcon.types.EXCEL,
       XfIcon.types.POWERPOINT,
@@ -123,6 +140,10 @@ export class XfIcon extends XfBase {
   }
 
   private validateTypeProperty_(type: string) {
+    if (this.iconSet) {
+      // Ignore checking "type" if iconSet is provided.
+      return;
+    }
     if (!type) {
       console.warn('Empty type will result in an square being rendered.');
       return;
@@ -210,7 +231,7 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/volumes/linux_files.svg);
     }
 
-    :host([type="camera_folder"]) span {
+    :host([type="camera-folder"]) span {
       -webkit-mask-image: url(../foreground/images/volumes/camera.svg);
     }
 

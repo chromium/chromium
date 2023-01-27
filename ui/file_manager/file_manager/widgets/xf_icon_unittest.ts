@@ -65,3 +65,59 @@ export async function testIconSize(done: () => void) {
 
   done();
 }
+
+export async function testIconSetWithLowDPI(done: () => void) {
+  const icon = await getIcon();
+  icon.iconSet = {
+    icon16x16Url: 'fake-base64-data',
+    icon32x32Url: undefined,
+  };
+  await waitForElementUpdate(icon);
+
+  const span = getSpanFromIcon(icon);
+  assertTrue(span.classList.contains('keep-color'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
+      '-webkit-image-set'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1x'));
+  assertFalse(window.getComputedStyle(span).backgroundImage.includes('2x'));
+
+  done();
+}
+
+
+export async function testIconSetWithHighDPI(done: () => void) {
+  const icon = await getIcon();
+  icon.iconSet = {
+    icon16x16Url: undefined,
+    icon32x32Url: 'fake-base64-data',
+  };
+  await waitForElementUpdate(icon);
+
+  const span = getSpanFromIcon(icon);
+  assertTrue(span.classList.contains('keep-color'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
+      '-webkit-image-set'));
+  assertFalse(window.getComputedStyle(span).backgroundImage.includes('1x'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2x'));
+
+  done();
+}
+
+
+export async function testIconSetWithBothDPI(done: () => void) {
+  const icon = await getIcon();
+  icon.iconSet = {
+    icon16x16Url: 'fake-base64-data',
+    icon32x32Url: 'fake-base64-data',
+  };
+  await waitForElementUpdate(icon);
+
+  const span = getSpanFromIcon(icon);
+  assertTrue(span.classList.contains('keep-color'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes(
+      '-webkit-image-set'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('1x'));
+  assertTrue(window.getComputedStyle(span).backgroundImage.includes('2x'));
+
+  done();
+}

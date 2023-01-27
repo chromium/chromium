@@ -7,6 +7,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 
+import {XfIcon} from './xf_icon.js';
 import {XfTree} from './xf_tree.js';
 import {TREE_ITEM_INDENT, TreeItemCollapsedEvent, TreeItemExpandedEvent, TreeItemRenamedEvent, XfTreeItem} from './xf_tree_item.js';
 
@@ -68,7 +69,7 @@ function getTreeItemInnerElements(treeItem: XfTreeItem): {
   treeRow: HTMLDivElement,
   expandIcon: HTMLSpanElement,
   treeLabel: HTMLSpanElement,
-  treeLabelIcon: HTMLSpanElement,
+  treeLabelIcon: XfIcon,
   trailingIcon: HTMLSlotElement,
   treeChildren: HTMLUListElement,
 } {
@@ -522,6 +523,27 @@ export async function testNoRenameWithEmptyString(done: () => void) {
   assertFalse(item1.editing);
   assertEquals('item1', treeLabel.textContent);
   assertEquals('item1', item1.label);
+
+  done();
+}
+
+/** Tests that iconSet has higher priority than icon property. */
+export async function testIconSetIgnoreIcon(done: () => void) {
+  await setUpSingleTreeItem();
+
+  // Set both icon and iconSet.
+  const item1 = getTreeItemById('item1');
+  item1.icon = XfIcon.types.ANDROID_FILES;
+  item1.iconSet = {
+    icon16x16Url: undefined,
+    icon32x32Url: 'fake-base64-data',
+  };
+  await waitForElementUpdate(item1);
+
+  // Check only iconSet property is set for the xf-icon.
+  const {treeLabelIcon} = getTreeItemInnerElements(item1);
+  assertEquals(null, treeLabelIcon.type);
+  assertEquals('fake-base64-data', treeLabelIcon.iconSet!.icon32x32Url);
 
   done();
 }

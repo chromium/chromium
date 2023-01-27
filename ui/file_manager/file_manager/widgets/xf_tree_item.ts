@@ -58,6 +58,13 @@ export class XfTreeItem extends XfBase {
    * `type` to a <xf-icon> widget to render an icon element.
    */
   @property({type: String, reflect: true}) icon = '';
+  /**
+   * The icon set is an object which contains multiple base64 image data, it
+   * will be passed as `iconSet` property to `<xf-icon>` widget.
+   * Note: `icon` will be ignored if `iconSet` is provided.
+   */
+  @property({attribute: false})
+  iconSet: chrome.fileManagerPrivate.IconSet|null = null;
   /** The label text of the tree item. */
   @property({type: String, reflect: true}) label = '';
 
@@ -202,7 +209,8 @@ export class XfTreeItem extends XfBase {
           <span class="expand-icon"></span>
           <xf-icon
             class="tree-label-icon"
-            type=${this.icon}
+            type=${ifDefined(this.iconSet ? undefined : this.icon)}
+            .iconSet=${this.iconSet}
           ></xf-icon>
           ${this.renderTreeLabel()}
           <slot name="trailingIcon"></slot>
