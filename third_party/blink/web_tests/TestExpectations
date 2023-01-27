@@ -5936,9 +5936,6 @@ crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-image-color.html [
 crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-crossfade-image-gradient.html [ Failure Pass ]
 crbug.com/1314514 [ Win ] css3/blending/background-blend-mode-gradient-color.html [ Failure Pass ]
 
-# Sheriff 2022-04-12
-crbug.com/1315300 [ Linux ] http/tests/devtools/elements/styles-3/styles-disable-inherited.js [ Failure Pass ]
-
 # HighlightOverlayPainting: decoration painting hasn’t landed yet.
 
 crbug.com/1316341 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/script-focus.https.html [ Failure Pass Timeout ]
