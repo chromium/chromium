@@ -4849,8 +4849,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.SitesVisitedWeekly" units="sites"
-    expires_after="2023-02-15">
-  <owner>bewise@chromium.org</owner>
+    expires_after="2023-12-15">
+  <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Measures the count of distinct sites visited per week in WebView. This is
