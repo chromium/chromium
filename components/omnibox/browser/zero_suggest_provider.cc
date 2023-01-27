@@ -447,18 +447,26 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
     LogEvent(Event::kRequestInvalidated, result_type, /*is_prefetch=*/true);
   }
 
-  // Create a loader for the request and take ownership of it.
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.focus_type = input.focus_type();
   search_terms_args.current_page_url = result_type == ResultType::kRemoteSendURL
                                            ? input.current_url().spec()
                                            : std::string();
+
+  // AllowZeroPrefixSuggestions() ensures these are not nullptr.
+  const TemplateURLService* template_url_service =
+      client()->GetTemplateURLService();
+  const TemplateURL* template_url =
+      template_url_service->GetDefaultSearchProvider();
+
+  // Create a loader for the request and take ownership of it.
   prefetch_loader_ =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
           ->StartSuggestionsRequest(
-              search_terms_args, client()->GetTemplateURLService(),
+              template_url, search_terms_args,
+              template_url_service->search_terms_data(),
               base::BindOnce(&ZeroSuggestProvider::OnPrefetchURLLoadComplete,
                              weak_ptr_factory_.GetWeakPtr(),
                              GetZeroSuggestInput(input, client()),
@@ -497,7 +505,12 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
   done_ = false;
 
-  // Create a loader for the request and take ownership of it.
+  // AllowZeroPrefixSuggestions() ensures these are not nullptr.
+  const TemplateURLService* template_url_service =
+      client()->GetTemplateURLService();
+  const TemplateURL* template_url =
+      template_url_service->GetDefaultSearchProvider();
+
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.page_classification = input.current_page_classification();
   search_terms_args.focus_type = input.focus_type();
@@ -505,10 +518,13 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
       result_type_running_ == ResultType::kRemoteSendURL
           ? input.current_url().spec()
           : std::string();
+
+  // Create a loader for the request and take ownership of it.
   loader_ = client()
                 ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
                 ->StartSuggestionsRequest(
-                    search_terms_args, client()->GetTemplateURLService(),
+                    template_url, search_terms_args,
+                    template_url_service->search_terms_data(),
                     base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    GetZeroSuggestInput(input, client()),

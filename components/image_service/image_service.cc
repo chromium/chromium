@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -125,6 +126,18 @@ class ImageService::SuggestEntityImageURLFetcher {
 
   // `callback` is called with the result.
   void Start(base::OnceCallback<void(const GURL&)> callback) {
+    const TemplateURLService* template_url_service =
+        autocomplete_provider_client_->GetTemplateURLService();
+    if (template_url_service == nullptr) {
+      return;
+    }
+
+    const TemplateURL* template_url =
+        template_url_service->GetDefaultSearchProvider();
+    if (template_url == nullptr) {
+      return;
+    }
+
     DCHECK(!callback_);
     callback_ = std::move(callback);
 
@@ -137,8 +150,8 @@ class ImageService::SuggestEntityImageURLFetcher {
         autocomplete_provider_client_
             ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
             ->StartSuggestionsRequest(
-                search_terms_args,
-                autocomplete_provider_client_->GetTemplateURLService(),
+                template_url, search_terms_args,
+                template_url_service->search_terms_data(),
                 base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
                                weak_factory_.GetWeakPtr()));
   }

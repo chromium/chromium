@@ -41,26 +41,15 @@ RemoteSuggestionsService::~RemoteSuggestionsService() = default;
 
 // static
 GURL RemoteSuggestionsService::EndpointUrl(
+    const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
-    const TemplateURLService* template_url_service) {
-  if (template_url_service == nullptr) {
-    return GURL();
-  }
-
-  const TemplateURL* search_engine =
-      template_url_service->GetDefaultSearchProvider();
-  if (search_engine == nullptr) {
-    return GURL();
-  }
-
+    const SearchTermsData& search_terms_data) {
   const TemplateURLRef& suggestion_url_ref =
-      search_engine->suggestions_url_ref();
-  const SearchTermsData& search_terms_data =
-      template_url_service->search_terms_data();
+      template_url->suggestions_url_ref();
 
   // Append a specific suggest client in ChromeOS app_list launcher contexts.
   BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
-      search_engine, search_terms_data, search_terms_args.page_classification,
+      template_url, search_terms_data, search_terms_args.page_classification,
       &search_terms_args);
   return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
                                                     search_terms_data));
@@ -68,11 +57,17 @@ GURL RemoteSuggestionsService::EndpointUrl(
 
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartSuggestionsRequest(
-    const TemplateURLRef::SearchTermsArgs& search_terms_args,
-    const TemplateURLService* template_url_service,
+    const TemplateURL* template_url,
+    TemplateURLRef::SearchTermsArgs search_terms_args,
+    const SearchTermsData& search_terms_data,
     CompletionCallback completion_callback) {
-  const GURL suggest_url = EndpointUrl(search_terms_args, template_url_service);
-  DCHECK(suggest_url.is_valid());
+  DCHECK(template_url);
+
+  const GURL suggest_url =
+      EndpointUrl(template_url, search_terms_args, search_terms_data);
+  if (!suggest_url.is_valid()) {
+    return nullptr;
+  }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("omnibox_zerosuggest", R"(

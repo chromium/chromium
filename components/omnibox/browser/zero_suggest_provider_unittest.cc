@@ -144,8 +144,11 @@ class ZeroSuggestProviderTest : public testing::Test,
     search_terms_args.page_classification = page_classification;
     search_terms_args.focus_type = focus_type;
     search_terms_args.current_page_url = page_url;
+
+    TemplateURLService* template_url_service = client_->GetTemplateURLService();
     return RemoteSuggestionsService::EndpointUrl(
-        search_terms_args, client_->GetTemplateURLService());
+        template_url_service->GetDefaultSearchProvider(), search_terms_args,
+        template_url_service->search_terms_data());
   }
 
   AutocompleteInput OnFocusInputForNTP() {
