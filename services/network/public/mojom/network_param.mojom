@@ -37,8 +37,11 @@ struct HttpVersion {
   uint16 minor_value;
 };
 
-[Native]
-struct HostPortPair;
+// Mirror of net::HostPortPair.
+struct HostPortPair {
+  string host;
+  uint16 port;
+};
 
 [Native]
 struct ProxyServer;

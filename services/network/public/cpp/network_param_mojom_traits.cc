@@ -43,4 +43,15 @@ bool StructTraits<
   return true;
 }
 
+// static
+bool StructTraits<network::mojom::HostPortPairDataView, net::HostPortPair>::
+    Read(network::mojom::HostPortPairDataView data, net::HostPortPair* out) {
+  std::string host;
+  if (!data.ReadHost(&host)) {
+    return false;
+  }
+  *out = net::HostPortPair(std::move(host), data.port());
+  return true;
+}
+
 }  // namespace mojo

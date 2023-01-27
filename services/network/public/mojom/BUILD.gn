@@ -722,6 +722,10 @@ mojom("mojom_network_param") {
           mojom = "network.mojom.AuthChallengeInfo"
           cpp = "::net::AuthChallengeInfo"
         },
+        {
+          mojom = "network.mojom.HostPortPair"
+          cpp = "::net::HostPortPair"
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/network_param_mojom_traits.h" ]
@@ -744,10 +748,6 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.CTVerifyResult"
           cpp = "::net::ct::CTVerifyResult"
-        },
-        {
-          mojom = "network.mojom.HostPortPair"
-          cpp = "::net::HostPortPair"
         },
         {
           mojom = "network.mojom.HttpResponseHeaders"

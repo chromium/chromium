@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/auth.h"
+#include "net/base/host_port_pair.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_version.h"
 #include "services/network/public/mojom/network_param.mojom-shared.h"
@@ -79,6 +80,22 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
   static bool Read(network::mojom::ResolveErrorInfoDataView data,
                    net::ResolveErrorInfo* out);
+};
+
+template <>
+class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
+    StructTraits<network::mojom::HostPortPairDataView, net::HostPortPair> {
+ public:
+  static const std::string& host(const net::HostPortPair& host_port_pair) {
+    return host_port_pair.host();
+  }
+
+  static uint16_t port(const net::HostPortPair& host_port_pair) {
+    return host_port_pair.port();
+  }
+
+  static bool Read(network::mojom::HostPortPairDataView data,
+                   net::HostPortPair* out);
 };
 
 }  // namespace mojo
