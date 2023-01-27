@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ABORT_SIGNAL_H_
 
 #include "base/functional/callback_forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
@@ -21,7 +22,8 @@ class ExecutionContext;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
-class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
+class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
+                                public LazyActiveScriptWrappable<AbortSignal> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -86,6 +88,7 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
     virtual void RemoveAlgorithm(AlgorithmHandle*) = 0;
     virtual void Clear() = 0;
     virtual void Run() = 0;
+    virtual bool Empty() const = 0;
     virtual void Trace(Visitor*) const {}
   };
 
@@ -115,6 +118,7 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
+  bool HasPendingActivity() const override;
 
   // Internal API
 
@@ -162,6 +166,13 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData {
   // associated with their type.
   virtual AbortSignalCompositionManager* GetCompositionManager(
       AbortSignalCompositionType);
+
+  // Called by the composition manager when the signal is settled.
+  virtual void OnSignalSettled(AbortSignalCompositionType);
+
+  // Callback from `AbortController` during prefinalization, when the controller
+  // can no longer emit events.
+  virtual void DetachFromController();
 
  private:
   // Common constructor initialization separated out to make mutually exclusive

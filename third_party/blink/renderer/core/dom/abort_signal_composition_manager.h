@@ -32,11 +32,17 @@ class AbortSignal;
 // source or dependent, with composite signals being dependents and
 // non-composite signals being sources.
 //
-// Source signals are stored weakly and can be either associated with a
-// controller or timeout. Sources are removed if the signal aborts.
+// A signal is "settled" for a given event type (abort or prioritychange) when
+// it can no longer emit that event, e.g. after abort or if a signal's
+// controller is GCed. When all of a composite signal's sources are settled, it
+// can be settled as well.
 //
-// Dependent signals are stored strongly since otherwise they could be GCed
-// while they have observable effects.
+// Source signals are stored weakly and can be either associated with a
+// controller or timeout. Sources are removed when they're settled.
+//
+// Dependent signals are stored weakly, with `AbortSignalRegistry` used to store
+// strong references when needed. This, along with detecting settled signals,
+// ensures we only hold strong references to signals when necessary.
 class CORE_EXPORT AbortSignalCompositionManager
     : public GarbageCollected<AbortSignalCompositionManager> {
  public:
@@ -48,6 +54,12 @@ class CORE_EXPORT AbortSignalCompositionManager
       const AbortSignalCompositionManager&) = delete;
 
   virtual void Trace(Visitor*) const;
+
+  // Settle `signal_`. This can be called by the signal or composition manager.
+  virtual void Settle();
+
+  // Returns true if `signal_` is settled for `composition_type_`.
+  bool IsSettled() const { return is_settled_; }
 
   // Used for casting.
   virtual bool IsSourceSignalManager() const { return false; }
@@ -63,6 +75,7 @@ class CORE_EXPORT AbortSignalCompositionManager
  private:
   Member<AbortSignal> signal_;
   AbortSignalCompositionType composition_type_;
+  bool is_settled_ = false;
 };
 
 class DependentSignalCompositionManager;
@@ -80,17 +93,18 @@ class CORE_EXPORT SourceSignalCompositionManager
       const SourceSignalCompositionManager&) = delete;
 
   void Trace(Visitor*) const override;
+  void Settle() override;
 
   bool IsSourceSignalManager() const override { return true; }
 
   void AddDependentSignal(DependentSignalCompositionManager&);
 
-  const HeapLinkedHashSet<Member<AbortSignal>>& GetDependentSignals() {
+  const HeapLinkedHashSet<WeakMember<AbortSignal>>& GetDependentSignals() {
     return dependent_signals_;
   }
 
  private:
-  HeapLinkedHashSet<Member<AbortSignal>> dependent_signals_;
+  HeapLinkedHashSet<WeakMember<AbortSignal>> dependent_signals_;
 };
 
 // Manages composition for an `AbortSignal` that is dependent on zero or more
@@ -109,12 +123,16 @@ class CORE_EXPORT DependentSignalCompositionManager
       const DependentSignalCompositionManager&) = delete;
 
   void Trace(Visitor*) const override;
+  void Settle() override;
 
   bool IsDependentSignalManager() const override { return true; }
 
   const HeapLinkedHashSet<WeakMember<AbortSignal>>& GetSourceSignals() {
     return source_signals_;
   }
+
+  // Callback invoked on this signal when `source` is settled.
+  void OnSourceSettled(SourceSignalCompositionManager& source);
 
  private:
   void AddSourceSignal(AbortSignal&);
