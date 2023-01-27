@@ -1261,6 +1261,7 @@ TEST_F(RTCPeerConnectionHandlerTest,
   EXPECT_EQ(2u, resource_listener.measurement_count());
   EXPECT_EQ(webrtc::ResourceUsageState::kUnderuse,
             resource_listener.latest_measurement());
+  thermal_resource->SetResourceListener(nullptr);
 }
 
 TEST_F(RTCPeerConnectionHandlerTest,

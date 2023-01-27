@@ -90,7 +90,7 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ThermalResource::ReportMeasurement,
-                     scoped_refptr<ThermalResource>(this), measurement_id),
+                     rtc::scoped_refptr<ThermalResource>(this), measurement_id),
       base::Seconds(kReportIntervalSeconds));
 }
 
