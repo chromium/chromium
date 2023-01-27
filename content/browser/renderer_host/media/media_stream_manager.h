@@ -741,11 +741,6 @@ class CONTENT_EXPORT MediaStreamManager
       const blink::mojom::StreamDevicesSet& new_stream_devices_set,
       GlobalRenderFrameHostId capturer);
 
-  // Receive a new capture-handle from the CaptureHandleManager.
-  void OnCaptureHandleChange(const std::string& label,
-                             blink::mojom::MediaStreamType type,
-                             media::mojom::CaptureHandlePtr capture_handle);
-
   bool ShouldUseFakeUIProxy(blink::mojom::MediaStreamType stream_type) const;
 
   std::unique_ptr<MediaStreamUIProxy> MakeFakeUIProxy(
