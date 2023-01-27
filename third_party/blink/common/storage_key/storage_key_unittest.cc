@@ -242,12 +242,12 @@ TEST_F(StorageKeyTest, SerializePartitioned) {
   } kTestCases[] = {
       // 3p context cases
       {"https://example.com/", SiteTest, mojom::AncestorChainBit::kCrossSite,
-       "https://example.com/^0https://test.example^31"},
+       "https://example.com/^0https://test.example"},
       {"https://sub.test.example/", SiteExample,
        mojom::AncestorChainBit::kCrossSite,
-       "https://sub.test.example/^0https://example.com^31"},
+       "https://sub.test.example/^0https://example.com"},
       {"https://example.com/", SiteExample, mojom::AncestorChainBit::kCrossSite,
-       "https://example.com/^0https://example.com^31"},
+       "https://example.com/^31"},
   };
 
   for (const auto& test : kTestCases) {
@@ -308,15 +308,15 @@ TEST_F(StorageKeyTest, Deserialize) {
       // Empty string origin URL.
       {std::string(), false},
       // Correct usage of origin and top-level site.
-      {"https://example.com/^0https://test.example^31", true, false},
+      {"https://example.com/^0https://test.example", true, false},
       // Incorrect separator value used for top-level site.
-      {"https://example.com/^1https://test.example^31", false},
+      {"https://example.com/^1https://test.example", false},
       // Correct usage of origin and top-level site with test.example.
-      {"https://test.example/^0https://example.com^31", true, false},
+      {"https://test.example/^0https://example.com", true, false},
       // Invalid top-level site.
-      {"https://example.com/^0I'm not a valid URL.^31", false},
+      {"https://example.com/^0I'm not a valid URL.", false},
       // Invalid origin with top-level site scheme.
-      {"I'm not a valid URL.^0https://example.com^31", false},
+      {"I'm not a valid URL.^0https://example.com", false},
       // Correct usage of origin and nonce.
       {"https://example.com/^112345^267890", true, false},
       // Nonce high not followed by nonce low.
@@ -334,12 +334,15 @@ TEST_F(StorageKeyTest, Deserialize) {
       // Incorrect: Separator not followed by data.
       {"https://example.com/^1^267890", false},
       // Malformed first party serialization.
-      {"https://www.example.com/^0https://example.com^30", false},
+      {"https://www.example.com/^0https://example.com", false},
       // Malformed ancestor chain bit value - outside range.
-      {"https://example.com^0https://test.example^35", false},
+      {"https://example.com^35", false},
+      // Correct ancestor chain bit value.
+      {"https://example.com^31", true},
   };
 
   for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.serialized_string);
     absl::optional<StorageKey> key =
         StorageKey::Deserialize(test_case.serialized_string);
     ASSERT_EQ(key.has_value(), test_case.expected_has_value);
@@ -625,28 +628,32 @@ TEST_F(StorageKeyTest, DeserializeAncestorChainBits) {
       const char* serialization;
       absl::optional<blink::StorageKey> expected_key;
     } kTestCases[] = {
-        // A matching origin and top_level_site should not have a SameSite bit.
+        // An origin cannot be serialized with a SameSite bit.
         {
-            "https://example.com/^0https://example.com^30",
+            "https://example.com/^30",
             absl::nullopt,
         },
-        // A matching origin and top_level_site should have a CrossSite bit.
+        // An origin can be serialized with a CrossSite bit.
         {
-            "https://example.com/^0https://example.com^31",
+            "https://example.com/^31",
             StorageKey::CreateWithOptionalNonce(
                 url::Origin::Create(GURL("https://example.com")),
                 net::SchemefulSite(GURL("https://example.com")), nullptr,
                 mojom::AncestorChainBit::kCrossSite),
         },
-        // A mismatched origin and top_level_site should not have a SameSite
-        // bit.
+        // A mismatched origin and top_level_site cannot have a SameSite bit.
         {
             "https://example.com/^0https://notexample.com^30",
             absl::nullopt,
         },
-        // A mismatched origin and top_level_site should have a CrossSite bit.
+        // A mismatched origin and top_level_site cannot have a CrossSite bit.
         {
             "https://example.com/^0https://notexample.com^31",
+            absl::nullopt,
+        },
+        // A mismatched origin and top_level_site can have no bit.
+        {
+            "https://example.com/^0https://notexample.com",
             StorageKey::CreateWithOptionalNonce(
                 url::Origin::Create(GURL("https://example.com")),
                 net::SchemefulSite(GURL("https://notexample.com")), nullptr,
@@ -713,8 +720,7 @@ TEST_F(StorageKeyTest, AncestorChainBitGetterWithPartitioningDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       net::features::kThirdPartyStoragePartitioning);
-  std::string cross_site_string =
-      "https://example.com/^0https://test.example^31";
+  std::string cross_site_string = "https://example.com/^0https://test.example";
   absl::optional<StorageKey> key_cross_site =
       StorageKey::Deserialize(cross_site_string);
   EXPECT_TRUE(key_cross_site.has_value());
@@ -728,8 +734,7 @@ TEST_F(StorageKeyTest, AncestorChainBitGetterWithPartitioningEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       net::features::kThirdPartyStoragePartitioning);
-  std::string cross_site_string =
-      "https://example.com/^0https://test.example^31";
+  std::string cross_site_string = "https://example.com/^0https://test.example";
   absl::optional<StorageKey> key_cross_site =
       StorageKey::Deserialize(cross_site_string);
   EXPECT_TRUE(key_cross_site.has_value());
@@ -1032,7 +1037,12 @@ TEST_F(StorageKeyTest, ShouldSkipKeyDueToPartitioning) {
       },
       // Third-party keys should be skipped.
       {
-          "https://example.com/^0https://test.example^31",
+          "https://example.com/^0https://test.example",
+          true,
+      },
+      // Third-party keys should be skipped.
+      {
+          "https://example.com/^31",
           true,
       },
       // Third-party keys with opaque sites should be skipped.
