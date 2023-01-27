@@ -298,18 +298,14 @@ void WebAppFrameToolbarTestHelper::TestDraggableRegions() {
       browser_view()->GetWidget()->GetNativeView(), draggable_point));
 }
 
-BrowserView* WebAppFrameToolbarTestHelper::OpenPopup(
-    const std::string& window_open_script) {
-  content::ExecuteScriptAsync(browser_view_->GetActiveWebContents(),
-                              window_open_script);
+Browser* WebAppFrameToolbarTestHelper::OpenPopup(
+    const std::string& target_url) {
+  std::string script = "window.open('" + target_url + "', '_blank', 'popup');";
+  content::ExecuteScriptAsync(
+      app_browser_->tab_strip_model()->GetActiveWebContents(), script);
+
   Browser* popup = ui_test_utils::WaitForBrowserToOpen();
   EXPECT_NE(app_browser_, popup);
   EXPECT_TRUE(popup);
-
-  BrowserView* popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup);
-  EXPECT_TRUE(content::WaitForRenderFrameReady(
-      popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
-
-  return popup_browser_view;
+  return popup;
 }
