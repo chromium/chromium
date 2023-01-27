@@ -81,6 +81,7 @@ class SingleClientVideoCaptureHost final
 
   // media::VideoFrameReceiver implementations
   using Buffer = VideoCaptureDevice::Client::Buffer;
+  void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(

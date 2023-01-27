@@ -67,6 +67,7 @@ class PLATFORM_EXPORT MediaStreamSource final
    public:
     virtual ~Observer() = default;
     virtual void SourceChangedState() = 0;
+    virtual void SourceChangedCaptureConfiguration() = 0;
     virtual void SourceChangedCaptureHandle() = 0;
   };
 
@@ -160,6 +161,7 @@ class PLATFORM_EXPORT MediaStreamSource final
   void SetAudioConsumer(WebAudioDestinationConsumer*);
   bool RemoveAudioConsumer();
 
+  void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
 
   void Trace(Visitor*) const;

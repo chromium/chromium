@@ -126,6 +126,10 @@ class CONTENT_EXPORT MediaStreamManager
       const blink::MediaStreamDevice& device,
       const blink::mojom::MediaStreamStateChange new_state)>;
 
+  using DeviceCaptureConfigurationChangeCallback =
+      base::RepeatingCallback<void(const std::string& label,
+                                   const blink::MediaStreamDevice& device)>;
+
   using DeviceCaptureHandleChangeCallback =
       base::RepeatingCallback<void(const std::string& label,
                                    const blink::MediaStreamDevice& device)>;
@@ -217,6 +221,8 @@ class CONTENT_EXPORT MediaStreamManager
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureConfigurationChangeCallback
+          device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
 
   // Accesses an existing open device, identified by |device_session_id|,
@@ -234,6 +240,8 @@ class CONTENT_EXPORT MediaStreamManager
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureConfigurationChangeCallback
+          device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
@@ -420,6 +428,8 @@ class CONTENT_EXPORT MediaStreamManager
                                   int requester_id,
                                   const base::UnguessableToken& session_id,
                                   const base::UnguessableToken& transfer_id);
+
+  void OnCaptureConfigurationChanged(const base::UnguessableToken& session_id);
 
   void OnRegionCaptureRectChanged(
       const base::UnguessableToken& session_id,

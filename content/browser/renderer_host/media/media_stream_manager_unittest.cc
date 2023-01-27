@@ -387,6 +387,7 @@ class MediaStreamManagerTest : public ::testing::Test
         /*device_stopped_cb=*/base::DoNothing(),
         /*device_changed_cb=*/base::DoNothing(),
         /*device_request_state_change_cb=*/base::DoNothing(),
+        /*device_capture_configuration_change_cb=*/base::DoNothing(),
         /*device_capture_handle_change_cb=*/base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
@@ -427,6 +428,8 @@ class MediaStreamManagerTest : public ::testing::Test
     MediaStreamManager::DeviceChangedCallback changed_callback;
     MediaStreamManager::DeviceRequestStateChangeCallback
         request_state_change_callback;
+    MediaStreamManager::DeviceCaptureConfigurationChangeCallback
+        capture_configuration_change_callback;
     MediaStreamManager::DeviceCaptureHandleChangeCallback
         capture_handle_change_callback;
 
@@ -466,6 +469,7 @@ class MediaStreamManagerTest : public ::testing::Test
             absl::nullopt),
         std::move(generate_stream_callback), stopped_callback.Get(),
         std::move(changed_callback), std::move(request_state_change_callback),
+        std::move(capture_configuration_change_callback),
         std::move(capture_handle_change_callback));
     run_loop_.Run();
 
@@ -564,6 +568,8 @@ class MediaStreamManagerTest : public ::testing::Test
     MediaStreamManager::DeviceChangedCallback changed_callback;
     MediaStreamManager::DeviceRequestStateChangeCallback
         request_state_change_callback;
+    MediaStreamManager::DeviceCaptureConfigurationChangeCallback
+        capture_configuration_change_callback;
     MediaStreamManager::DeviceCaptureHandleChangeCallback
         capture_handle_change_callback;
 
@@ -575,6 +581,7 @@ class MediaStreamManagerTest : public ::testing::Test
         std::move(info), std::move(generate_stream_callback),
         std::move(stopped_callback), std::move(changed_callback),
         std::move(request_state_change_callback),
+        std::move(capture_configuration_change_callback),
         std::move(capture_handle_change_callback));
     run_loop.Run();
 
@@ -956,6 +963,7 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
       MediaStreamManager::DeviceStoppedCallback(),
       MediaStreamManager::DeviceChangedCallback(),
       MediaStreamManager::DeviceRequestStateChangeCallback(),
+      MediaStreamManager::DeviceCaptureConfigurationChangeCallback(),
       MediaStreamManager::DeviceCaptureHandleChangeCallback());
   run_loop_.Run();
 
@@ -999,6 +1007,8 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
       .Times(testing::AtLeast(1));
   MediaStreamManager::DeviceRequestStateChangeCallback
       request_state_change_callback;
+  MediaStreamManager::DeviceCaptureConfigurationChangeCallback
+      capture_configuration_change_callback;
   MediaStreamManager::DeviceCaptureHandleChangeCallback
       capture_handle_change_callback;
 
@@ -1010,6 +1020,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
           absl::nullopt),
       std::move(generate_stream_callback), std::move(stopped_callback),
       std::move(changed_callback), std::move(request_state_change_callback),
+      std::move(capture_configuration_change_callback),
       std::move(capture_handle_change_callback));
   run_loop_.Run();
   EXPECT_EQ(controls.video.stream_type, video_device.type);
@@ -1068,6 +1079,8 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
       .Times(testing::AtLeast(1));
   MediaStreamManager::DeviceRequestStateChangeCallback
       request_state_change_callback;
+  MediaStreamManager::DeviceCaptureConfigurationChangeCallback
+      capture_configuration_change_callback;
   MediaStreamManager::DeviceCaptureHandleChangeCallback
       capture_handle_change_callback;
 
@@ -1079,6 +1092,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
           absl::nullopt),
       std::move(generate_stream_callback), std::move(stopped_callback),
       std::move(changed_callback), std::move(request_state_change_callback),
+      std::move(capture_configuration_change_callback),
       std::move(capture_handle_change_callback));
   run_loop_.Run();
   EXPECT_EQ(controls.video.stream_type, video_device.type);
@@ -1298,6 +1312,7 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
         /*device_stopped_cb=*/base::DoNothing(),
         /*device_changed_cb=*/base::DoNothing(),
         /*device_request_state_change_cb=*/base::DoNothing(),
+        /*device_capture_configuration_change_cb=*/base::DoNothing(),
         /*device_capture_handle_change_cb=*/base::DoNothing());
     run_loop.Run();
 
@@ -1326,6 +1341,7 @@ class MediaStreamManagerTestForTransfers : public MediaStreamManagerTest {
         /*device_stopped_cb=*/base::DoNothing(),
         /*device_changed_cb=*/base::DoNothing(),
         /*device_request_state_change_cb=*/base::DoNothing(),
+        /*device_capture_configuration_change_cb=*/base::DoNothing(),
         /*device_capture_handle_change_cb=*/base::DoNothing());
     run_loop_.Run();
   }

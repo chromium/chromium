@@ -30,6 +30,11 @@ interface VideoFrameAccessHandler {
 // video_capture.mojom.Device or
 // video_capture.mojom.PushVideoStreamSubscription.
 interface VideoFrameHandler {
+  // Called to indicate that the producer has detected a change of
+  // configuration in an underlying source.
+  // This allows configurationchange events to fired as needed.
+  OnCaptureConfigurationChanged();
+
   // Indicates that the producer is going to subsequently use the provided
   // buffer as one of possibly many for frame delivery via
   // OnFrameReadyInBuffer(). Note, that a call to this method does not mean that

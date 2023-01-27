@@ -179,6 +179,8 @@ class MockFrameObserver : public VideoCaptureControllerEventHandler {
   MOCK_METHOD1(OnStartedUsingGpuDecode,
                void(const VideoCaptureControllerID& id));
 
+  void OnCaptureConfigurationChanged(
+      const VideoCaptureControllerID& id) override {}
   void OnNewBuffer(const VideoCaptureControllerID& id,
                    media::mojom::VideoBufferHandlePtr buffer_handle,
                    int buffer_id) override {}

@@ -124,6 +124,18 @@ void VideoCaptureHost::OnError(const VideoCaptureControllerID& controller_id,
                      controller_id, error));
 }
 
+void VideoCaptureHost::OnCaptureConfigurationChanged(
+    const VideoCaptureControllerID& controller_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!base::Contains(controllers_, controller_id) ||
+      !base::Contains(device_id_to_observer_map_, controller_id)) {
+    return;
+  }
+
+  media_stream_manager_->OnCaptureConfigurationChanged(controller_id);
+}
+
 void VideoCaptureHost::OnNewBuffer(
     const VideoCaptureControllerID& controller_id,
     media::mojom::VideoBufferHandlePtr buffer_handle,

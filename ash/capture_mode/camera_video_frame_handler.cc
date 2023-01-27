@@ -516,6 +516,8 @@ void CameraVideoFrameHandler::StartHandlingFrames() {
   camera_video_stream_subsciption_remote_->Activate();
 }
 
+void CameraVideoFrameHandler::OnCaptureConfigurationChanged() {}
+
 void CameraVideoFrameHandler::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

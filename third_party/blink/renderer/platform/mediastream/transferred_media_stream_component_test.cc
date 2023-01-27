@@ -18,6 +18,7 @@ class MockSourceObserver : public GarbageCollected<MockSourceObserver>,
                            public MediaStreamSource::Observer {
  public:
   MOCK_METHOD0(SourceChangedState, void());
+  MOCK_METHOD0(SourceChangedCaptureConfiguration, void());
   MOCK_METHOD0(SourceChangedCaptureHandle, void());
 };
 

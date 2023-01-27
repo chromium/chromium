@@ -290,6 +290,15 @@ void MediaStreamDispatcherHost::OnDeviceRequestStateChange(
                                                              new_state);
 }
 
+void MediaStreamDispatcherHost::OnDeviceCaptureConfigurationChange(
+    const std::string& label,
+    const blink::MediaStreamDevice& device) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetMediaStreamDeviceObserver()->OnDeviceCaptureConfigurationChange(label,
+                                                                     device);
+}
+
 void MediaStreamDispatcherHost::OnDeviceCaptureHandleChange(
     const std::string& label,
     const blink::MediaStreamDevice& device) {
@@ -317,6 +326,9 @@ void MediaStreamDispatcherHost::OnWebContentsFocused() {
                             weak_factory_.GetWeakPtr()),
         base::BindRepeating(
             &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+            weak_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &MediaStreamDispatcherHost::OnDeviceCaptureConfigurationChange,
             weak_factory_.GetWeakPtr()),
         base::BindRepeating(
             &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
@@ -507,6 +519,9 @@ void MediaStreamDispatcherHost::DoGenerateStreams(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::OnDeviceCaptureConfigurationChange,
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,
@@ -734,6 +749,9 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceRequestStateChange,
+          weak_factory_.GetWeakPtr()),
+      base::BindRepeating(
+          &MediaStreamDispatcherHost::OnDeviceCaptureConfigurationChange,
           weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &MediaStreamDispatcherHost::OnDeviceCaptureHandleChange,

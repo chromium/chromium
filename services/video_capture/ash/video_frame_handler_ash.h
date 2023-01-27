@@ -59,6 +59,7 @@ class VideoFrameHandlerAsh : public video_capture::mojom::VideoFrameHandler {
 
  private:
   // video_capture::mojom::VideoFrameHandler implementation.
+  void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameAccessHandlerReady(

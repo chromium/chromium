@@ -317,6 +317,20 @@ void MediaStreamSource::ConsumeAudio(AudioBus* bus, int number_of_frames) {
   audio_consumer_->ConsumeAudio(bus, number_of_frames);
 }
 
+void MediaStreamSource::OnDeviceCaptureConfigurationChange(
+    const MediaStreamDevice& device) {
+  if (!platform_source_) {
+    return;
+  }
+
+  // Observers may dispatch events which create and add new Observers;
+  // take a snapshot so as to safely iterate.
+  HeapVector<Member<Observer>> observers(observers_);
+  for (auto observer : observers) {
+    observer->SourceChangedCaptureConfiguration();
+  }
+}
+
 void MediaStreamSource::OnDeviceCaptureHandleChange(
     const MediaStreamDevice& device) {
   if (!platform_source_) {

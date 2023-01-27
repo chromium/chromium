@@ -146,8 +146,7 @@ class CAPTURE_EXPORT VideoCaptureDevice
     virtual ~Client() {}
 
     // The configuration of the VideoCaptureDevice has changed.
-    // TODO(crbug.com/1338665): Add VideoCaptureDevice::Client implementation.
-    virtual void OnCaptureConfigurationChanged() {}
+    virtual void OnCaptureConfigurationChanged() = 0;
 
     // Captured a new video frame, data for which is pointed to by |data|.
     //

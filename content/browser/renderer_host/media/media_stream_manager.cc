@@ -995,6 +995,10 @@ class MediaStreamManager::DeviceRequest {
       const DesktopMediaID& media_id,
       blink::mojom::MediaStreamStateChange new_state) {}
 
+  virtual void OnCaptureConfigurationChanged(
+      const std::string& label,
+      const blink::MediaStreamDevice& device) {}
+
   base::RepeatingCallback<void(const std::string&,
                                blink::mojom::MediaStreamType type,
                                media::mojom::CaptureHandlePtr)>
@@ -1194,6 +1198,8 @@ class MediaStreamManager::CreateDeviceRequest
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureConfigurationChangeCallback
+          device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb)
       : DeviceRequest(requesting_process_id,
                       requesting_frame_id,
@@ -1208,6 +1214,8 @@ class MediaStreamManager::CreateDeviceRequest
         device_changed_cb_(std::move(device_changed_cb)),
         device_request_state_change_cb_(
             std::move(device_request_state_change_cb)),
+        device_capture_configuration_change_cb_(
+            std::move(device_capture_configuration_change_cb)),
         device_capture_handle_change_cb_(
             std::move(device_capture_handle_change_cb)) {}
 
@@ -1291,6 +1299,14 @@ class MediaStreamManager::CreateDeviceRequest
     }
   }
 
+  void OnCaptureConfigurationChanged(
+      const std::string& label,
+      const blink::MediaStreamDevice& device) override {
+    if (device_capture_configuration_change_cb_) {
+      device_capture_configuration_change_cb_.Run(label, device);
+    }
+  }
+
   // Receive a new capture-handle from the CaptureHandleManager.
   void OnCaptureHandleChange(
       const std::string& label,
@@ -1330,6 +1346,8 @@ class MediaStreamManager::CreateDeviceRequest
  private:
   DeviceChangedCallback device_changed_cb_;
   DeviceRequestStateChangeCallback device_request_state_change_cb_;
+  DeviceCaptureConfigurationChangeCallback
+      device_capture_configuration_change_cb_;
   DeviceCaptureHandleChangeCallback device_capture_handle_change_cb_;
 };
 
@@ -1348,6 +1366,8 @@ class MediaStreamManager::GenerateStreamsRequest
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureConfigurationChangeCallback
+          device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
       GenerateStreamsCallback generate_streams_cb)
       : CreateDeviceRequest(requesting_process_id,
@@ -1362,6 +1382,7 @@ class MediaStreamManager::GenerateStreamsRequest
                             std::move(device_stopped_cb),
                             std::move(device_changed_cb),
                             std::move(device_request_state_change_cb),
+                            std::move(device_capture_configuration_change_cb),
                             std::move(device_capture_handle_change_cb)),
         generate_streams_cb_(std::move(generate_streams_cb)) {
     DCHECK(generate_streams_cb_);
@@ -1416,6 +1437,8 @@ class MediaStreamManager::GetOpenDeviceRequest
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureConfigurationChangeCallback
+          device_capture_configuration_change_cb,
       DeviceCaptureHandleChangeCallback device_capture_handle_change_cb,
       GetOpenDeviceCallback get_open_device_cb)
       : CreateDeviceRequest(requesting_process_id,
@@ -1430,6 +1453,7 @@ class MediaStreamManager::GetOpenDeviceRequest
                             std::move(device_stopped_cb),
                             std::move(device_changed_cb),
                             std::move(device_request_state_change_cb),
+                            std::move(device_capture_configuration_change_cb),
                             std::move(device_capture_handle_change_cb)),
         get_open_device_cb_(std::move(get_open_device_cb)) {
     DCHECK(get_open_device_cb_);
@@ -1747,6 +1771,8 @@ void MediaStreamManager::GenerateStreams(
     DeviceStoppedCallback device_stopped_cb,
     DeviceChangedCallback device_changed_cb,
     DeviceRequestStateChangeCallback device_request_state_change_cb,
+    DeviceCaptureConfigurationChangeCallback
+        device_capture_configuration_change_cb,
     DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   SendLogMessage(GetGenerateStreamsLogString(render_process_id, render_frame_id,
@@ -1758,6 +1784,7 @@ void MediaStreamManager::GenerateStreams(
           std::move(salt_and_origin), std::move(device_stopped_cb),
           std::move(device_changed_cb),
           std::move(device_request_state_change_cb),
+          std::move(device_capture_configuration_change_cb),
           std::move(device_capture_handle_change_cb),
           std::move(generate_streams_cb));
   DeviceRequests::const_iterator request_it = AddRequest(std::move(request));
@@ -1799,6 +1826,8 @@ void MediaStreamManager::GetOpenDevice(
     DeviceStoppedCallback device_stopped_cb,
     DeviceChangedCallback device_changed_cb,
     DeviceRequestStateChangeCallback device_request_state_change_cb,
+    DeviceCaptureConfigurationChangeCallback
+        device_capture_configuration_change_cb,
     DeviceCaptureHandleChangeCallback device_capture_handle_change_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer));
@@ -1809,6 +1838,7 @@ void MediaStreamManager::GetOpenDevice(
           std::move(salt_and_origin), std::move(device_stopped_cb),
           std::move(device_changed_cb),
           std::move(device_request_state_change_cb),
+          std::move(device_capture_configuration_change_cb),
           std::move(device_capture_handle_change_cb),
           std::move(get_open_device_cb));
 
@@ -4072,6 +4102,25 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
         base::BindRepeating(
             &MediaStreamManager::OnRequestStateChangeFromBrowser,
             base::Unretained(this), label));
+  }
+}
+
+void MediaStreamManager::OnCaptureConfigurationChanged(
+    const base::UnguessableToken& session_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  for (LabeledDeviceRequest& labeled_request : requests_) {
+    const std::string& label = labeled_request.first;
+    DeviceRequest* request = labeled_request.second.get();
+    for (const auto& stream_devices_ptr :
+         request->stream_devices_set.stream_devices) {
+      const blink::MediaStreamDevice* const device_ptr =
+          GetStreamDevice(*stream_devices_ptr, session_id);
+      if (!device_ptr) {
+        continue;
+      }
+      request->OnCaptureConfigurationChanged(label, *device_ptr);
+    }
   }
 }
 

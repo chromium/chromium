@@ -90,6 +90,8 @@ class CAPTURE_EXPORT VideoFrameReceiver {
   // OnNewBuffer().
   virtual void OnBufferRetired(int buffer_id) = 0;
 
+  virtual void OnCaptureConfigurationChanged() = 0;
+
   virtual void OnError(VideoCaptureError error) = 0;
   virtual void OnFrameDropped(VideoCaptureFrameDropReason reason) = 0;
   virtual void OnNewCropVersion(uint32_t crop_version) = 0;

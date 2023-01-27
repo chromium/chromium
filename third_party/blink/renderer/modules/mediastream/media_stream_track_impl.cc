@@ -830,6 +830,17 @@ void MediaStreamTrackImpl::SourceChangedState() {
   SendLogMessage(String::Format("%s()", __func__));
 }
 
+void MediaStreamTrackImpl::SourceChangedCaptureConfiguration() {
+  DCHECK(IsMainThread());
+
+  if (Ended()) {
+    return;
+  }
+
+  // TODO(crbug.com/1409011): Get the current capture capabilities and settings
+  // and dispatch a configurationchange event if they differ from the old ones.
+}
+
 void MediaStreamTrackImpl::SourceChangedCaptureHandle() {
   DCHECK(IsMainThread());
 

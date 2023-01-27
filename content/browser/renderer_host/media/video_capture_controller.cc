@@ -501,6 +501,17 @@ VideoCaptureController::GetVideoCaptureFormat() const {
   return video_capture_format_;
 }
 
+void VideoCaptureController::OnCaptureConfigurationChanged() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  EmitLogMessage(__func__, 3);
+  for (const auto& client : controller_clients_) {
+    if (client->session_closed) {
+      continue;
+    }
+    client->event_handler->OnCaptureConfigurationChanged(client->controller_id);
+  }
+}
+
 void VideoCaptureController::OnNewBuffer(
     int32_t buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

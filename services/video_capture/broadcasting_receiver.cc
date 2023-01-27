@@ -240,6 +240,13 @@ mojo::Remote<mojom::VideoFrameHandler> BroadcastingReceiver::RemoveClient(
   return std::move(client.client());
 }
 
+void BroadcastingReceiver::OnCaptureConfigurationChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : clients_) {
+    client.second.client()->OnCaptureConfigurationChanged();
+  }
+}
+
 void BroadcastingReceiver::OnNewBuffer(
     int32_t buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

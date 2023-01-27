@@ -1347,6 +1347,24 @@ void UserMediaProcessor::OnDeviceRequestStateChange(
   }
 }
 
+void UserMediaProcessor::OnDeviceCaptureConfigurationChange(
+    const MediaStreamDevice& device) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  SendLogMessage(base::StringPrintf(
+      "OnDeviceCaptureConfigurationChange({session_id=%s}, {device_id=%s})",
+      device.session_id().ToString().c_str(), device.id.c_str()));
+
+  MediaStreamSource* const source = FindLocalSource(device);
+  if (!source) {
+    // This happens if the same device is used in several guM requests or
+    // if a user happens to stop a track from JS at the same time
+    // as the underlying media device is unplugged from the system.
+    return;
+  }
+
+  source->OnDeviceCaptureConfigurationChange(device);
+}
+
 void UserMediaProcessor::OnDeviceCaptureHandleChange(
     const MediaStreamDevice& device) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -1593,6 +1611,9 @@ void UserMediaProcessor::StartTracks(const String& label) {
                            WrapWeakPersistent(this)),
         WTF::BindRepeating(&UserMediaProcessor::OnDeviceRequestStateChange,
                            WrapWeakPersistent(this)),
+        WTF::BindRepeating(
+            &UserMediaProcessor::OnDeviceCaptureConfigurationChange,
+            WrapWeakPersistent(this)),
         WTF::BindRepeating(&UserMediaProcessor::OnDeviceCaptureHandleChange,
                            WrapWeakPersistent(this)));
   }

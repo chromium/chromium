@@ -44,6 +44,9 @@ struct ReadyBuffer {
 // TODO(mcasas): https://crbug.com/654176 merge back into VideoCaptureController
 class VideoCaptureControllerEventHandler {
  public:
+  virtual void OnCaptureConfigurationChanged(
+      const VideoCaptureControllerID& id) = 0;
+
   // An Error has occurred in the VideoCaptureDevice.
   virtual void OnError(const VideoCaptureControllerID& id,
                        media::VideoCaptureError error) = 0;

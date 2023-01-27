@@ -207,6 +207,10 @@ VideoCaptureDevice::Client::Buffer VideoCaptureDeviceClient::MakeBufferStruct(
           buffer_pool, buffer_id));
 }
 
+void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
+  receiver_->OnCaptureConfigurationChanged();
+}
+
 void VideoCaptureDeviceClient::OnIncomingCapturedData(
     const uint8_t* data,
     int length,

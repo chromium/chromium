@@ -179,6 +179,11 @@ void SingleClientVideoCaptureHost::GetDeviceFormatsInUse(
   std::move(callback).Run(media::VideoCaptureFormats());
 }
 
+void SingleClientVideoCaptureHost::OnCaptureConfigurationChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Ignore this call.
+}
+
 void SingleClientVideoCaptureHost::OnFrameDropped(
     const base::UnguessableToken& device_id,
     media::VideoCaptureFrameDropReason reason) {

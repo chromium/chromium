@@ -37,6 +37,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
       std::vector<mojom::ReadyFrameInBufferPtr> scaled_buffers) override;
   void OnBufferRetired(int32_t buffer_id) override;
 
+  MOCK_METHOD0(OnCaptureConfigurationChanged, void());
   MOCK_METHOD2(DoOnNewBuffer,
                void(int32_t, media::mojom::VideoBufferHandlePtr*));
   MOCK_METHOD3(DoOnFrameReadyInBuffer,

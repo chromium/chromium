@@ -76,6 +76,7 @@ class BroadcastingReceiver : public media::VideoFrameReceiver {
   mojo::Remote<mojom::VideoFrameHandler> RemoveClient(int32_t client_id);
 
   // media::VideoFrameReceiver:
+  void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int32_t buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(

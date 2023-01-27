@@ -23,6 +23,7 @@ class ReceiverMojoToMediaAdapter : public media::VideoFrameReceiver {
   base::WeakPtr<media::VideoFrameReceiver> GetWeakPtr();
 
   // media::VideoFrameReceiver implementation.
+  void OnCaptureConfigurationChanged() override;
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override;
   void OnFrameReadyInBuffer(

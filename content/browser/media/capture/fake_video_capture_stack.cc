@@ -118,6 +118,8 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
  private:
   using Buffer = media::VideoCaptureDevice::Client::Buffer;
 
+  void OnCaptureConfigurationChanged() override {}
+
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(capture_stack_sequence_checker_);

@@ -19,6 +19,10 @@ ReceiverMojoToMediaAdapter::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void ReceiverMojoToMediaAdapter::OnCaptureConfigurationChanged() {
+  video_frame_handler_->OnCaptureConfigurationChanged();
+}
+
 void ReceiverMojoToMediaAdapter::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

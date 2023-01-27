@@ -23,6 +23,7 @@ class MockVideoFrameReceiver : public VideoFrameReceiver {
                VideoCaptureDevice::Client::Buffer::ScopedAccessPermission>*
                buffer_read_permission,
            const gfx::Size&));
+  MOCK_METHOD0(OnCaptureConfigurationChanged, void());
   MOCK_METHOD1(OnError, void(media::VideoCaptureError error));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason reason));
   MOCK_METHOD0(OnFrameWithEmptyRegionCapture, void());

@@ -99,6 +99,8 @@ class MockVideoCaptureControllerEventHandler
   MOCK_METHOD2(DoBufferReady,
                void(ControllerIDAndSize buffer,
                     std::vector<ControllerIDAndSize> scaled_buffers));
+  MOCK_METHOD1(OnCaptureConfigurationChanged,
+               void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnFrameWithEmptyRegionCapture,
                void(const VideoCaptureControllerID&));
   MOCK_METHOD1(DoEnded, void(const VideoCaptureControllerID&));

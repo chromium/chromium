@@ -66,6 +66,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       int frame_feedback_id);
 
   // VideoCaptureDevice::Client implementation.
+  void OnCaptureConfigurationChanged() override;
   // TODO(crbug.com/978143): remove |frame_feedback_id| default value.
   void OnIncomingCapturedData(const uint8_t* data,
                               int length,

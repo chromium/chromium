@@ -184,6 +184,7 @@ class MockVideoFrameReceiver : public media::VideoFrameReceiver {
     EXPECT_TRUE(frame_infos_.empty());
   }
 
+  MOCK_METHOD0(OnCaptureConfigurationChanged, void());
   void OnNewBuffer(int buffer_id,
                    media::mojom::VideoBufferHandlePtr buffer_handle) final {
     DCHECK_ON_DEVICE_THREAD();

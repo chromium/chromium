@@ -62,6 +62,8 @@ class CONTENT_EXPORT VideoCaptureHost
   FRIEND_TEST_ALL_PREFIXES(VideoCaptureTest, IncrementMatchesDecrementCalls);
 
   // VideoCaptureControllerEventHandler implementation.
+  void OnCaptureConfigurationChanged(
+      const VideoCaptureControllerID& id) override;
   void OnError(const VideoCaptureControllerID& id,
                media::VideoCaptureError error) override;
   void OnNewBuffer(const VideoCaptureControllerID& id,

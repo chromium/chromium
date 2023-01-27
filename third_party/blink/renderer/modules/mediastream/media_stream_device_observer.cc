@@ -162,6 +162,28 @@ void MediaStreamDeviceObserver::OnDeviceRequestStateChange(
   }
 }
 
+void MediaStreamDeviceObserver::OnDeviceCaptureConfigurationChange(
+    const String& label,
+    const MediaStreamDevice& device) {
+  DVLOG(1) << __func__ << " label=" << label << " device_id=" << device.id;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = label_stream_map_.find(label);
+  if (it == label_stream_map_.end()) {
+    // This can happen if a user stops a device from JS at the same
+    // time as the underlying media device is unplugged from the system.
+    return;
+  }
+
+  for (Stream& stream : it->value) {
+    if (stream.ContainsDevice(device) &&
+        stream.on_device_capture_configuration_change_cb) {
+      stream.on_device_capture_configuration_change_cb.Run(device);
+      break;
+    }
+  }
+}
+
 void MediaStreamDeviceObserver::OnDeviceCaptureHandleChange(
     const String& label,
     const MediaStreamDevice& device) {
@@ -198,6 +220,8 @@ void MediaStreamDeviceObserver::AddStreams(
     WebMediaStreamDeviceObserver::OnDeviceChangedCb on_device_changed_cb,
     WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
         on_device_request_state_change_cb,
+    WebMediaStreamDeviceObserver::OnDeviceCaptureConfigurationChangeCb
+        on_device_capture_configuration_change_cb,
     WebMediaStreamDeviceObserver::OnDeviceCaptureHandleChangeCb
         on_device_capture_handle_change_cb) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -211,6 +235,8 @@ void MediaStreamDeviceObserver::AddStreams(
     stream.on_device_changed_cb = on_device_changed_cb;
     stream.on_device_request_state_change_cb =
         on_device_request_state_change_cb;
+    stream.on_device_capture_configuration_change_cb =
+        on_device_capture_configuration_change_cb;
     stream.on_device_capture_handle_change_cb =
         on_device_capture_handle_change_cb;
     if (stream_devices.audio_device.has_value()) {

@@ -19,6 +19,7 @@ class MockVideoCaptureClient : public VideoCaptureDevice::Client {
   MOCK_METHOD0(DoReserveOutputBuffer, void(void));
   MOCK_METHOD0(DoOnIncomingCapturedBuffer, void(void));
   MOCK_METHOD0(DoOnIncomingCapturedVideoFrame, void(void));
+  MOCK_METHOD0(OnCaptureConfigurationChanged, void(void));
   MOCK_METHOD3(OnError,
                void(media::VideoCaptureError error,
                     const base::Location& from_here,

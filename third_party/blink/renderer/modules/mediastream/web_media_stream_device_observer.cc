@@ -29,11 +29,14 @@ void WebMediaStreamDeviceObserver::AddStreams(
     OnDeviceStoppedCb on_device_stopped_cb,
     OnDeviceChangedCb on_device_changed_cb,
     OnDeviceRequestStateChangeCb on_device_request_state_change_cb,
+    OnDeviceCaptureConfigurationChangeCb
+        on_device_capture_configuration_change_cb,
     OnDeviceCaptureHandleChangeCb on_device_capture_handle_change_cb) {
   observer_->AddStreams(label, stream_devices_set,
                         std::move(on_device_stopped_cb),
                         std::move(on_device_changed_cb),
                         std::move(on_device_request_state_change_cb),
+                        std::move(on_device_capture_configuration_change_cb),
                         std::move(on_device_capture_handle_change_cb));
 }
 

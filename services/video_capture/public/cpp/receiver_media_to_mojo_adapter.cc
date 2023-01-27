@@ -25,6 +25,10 @@ ReceiverMediaToMojoAdapter::ReceiverMediaToMojoAdapter(
 
 ReceiverMediaToMojoAdapter::~ReceiverMediaToMojoAdapter() = default;
 
+void ReceiverMediaToMojoAdapter::OnCaptureConfigurationChanged() {
+  receiver_->OnCaptureConfigurationChanged();
+}
+
 void ReceiverMediaToMojoAdapter::OnNewBuffer(
     int32_t buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

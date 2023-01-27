@@ -158,6 +158,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   // MediaStreamSource::Observer
   void SourceChangedState() override;
+  void SourceChangedCaptureConfiguration() override;
   void SourceChangedCaptureHandle() override;
 
   void PropagateTrackEnded();

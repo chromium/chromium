@@ -156,7 +156,10 @@ interface MediaStreamDeviceObserver {
                   MediaStreamDevice new_device);
   // Requests to pause or resume the corresponding media stream device.
   OnDeviceRequestStateChange(string label, MediaStreamDevice device, MediaStreamStateChange new_state);
-  // Informs the render-side that the device's capture handle has changed.
+  // Informs the renderer-side that a configuration change has been detected in
+  // the corresponding media stream device.
+  OnDeviceCaptureConfigurationChange(string label, MediaStreamDevice device);
+  // Informs the renderer-side that the device's capture handle has changed.
   OnDeviceCaptureHandleChange(string label,
                               MediaStreamDevice device);
 };

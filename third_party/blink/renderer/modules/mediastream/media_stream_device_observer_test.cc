@@ -62,6 +62,7 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
         streams_label, stream_devices_set, device_stopped_callback,
         /*on_device_changed_cb=*/base::DoNothing(),
         request_state_change_callback,
+        /*on_device_capture_configuration_change_cb=*/base::DoNothing(),
         /*on_device_capture_handle_change_cb=*/base::DoNothing());
     EXPECT_EQ(observer_->label_stream_map_.size(), previous_stream_size + 1);
   }

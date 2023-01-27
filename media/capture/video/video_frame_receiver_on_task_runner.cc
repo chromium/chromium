@@ -18,6 +18,13 @@ VideoFrameReceiverOnTaskRunner::VideoFrameReceiverOnTaskRunner(
 
 VideoFrameReceiverOnTaskRunner::~VideoFrameReceiverOnTaskRunner() = default;
 
+void VideoFrameReceiverOnTaskRunner::OnCaptureConfigurationChanged() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoFrameReceiver::OnCaptureConfigurationChanged,
+                     receiver_));
+}
+
 void VideoFrameReceiverOnTaskRunner::OnNewBuffer(
     int buffer_id,
     media::mojom::VideoBufferHandlePtr buffer_handle) {

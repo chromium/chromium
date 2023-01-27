@@ -194,6 +194,9 @@ class MockMediaStreamDispatcherHost
   void OnDeviceChanged(const std::string& label,
                        const blink::MediaStreamDevice& old_device,
                        const blink::MediaStreamDevice& new_device) override {}
+  void OnDeviceCaptureConfigurationChange(
+      const std::string& label,
+      const blink::MediaStreamDevice& device) override {}
   void OnDeviceCaptureHandleChange(
       const std::string& label,
       const blink::MediaStreamDevice& device) override {}

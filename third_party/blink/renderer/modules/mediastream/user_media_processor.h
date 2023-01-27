@@ -103,6 +103,7 @@ class MODULES_EXPORT UserMediaProcessor
   void OnDeviceRequestStateChange(
       const MediaStreamDevice& device,
       const mojom::blink::MediaStreamStateChange new_state);
+  void OnDeviceCaptureConfigurationChange(const MediaStreamDevice& device);
   void OnDeviceCaptureHandleChange(const MediaStreamDevice& device);
 
   void set_media_stream_dispatcher_host_for_testing(

@@ -36,6 +36,8 @@ class BLINK_MODULES_EXPORT WebMediaStreamDeviceObserver {
   using OnDeviceRequestStateChangeCb = base::RepeatingCallback<void(
       const MediaStreamDevice& device,
       const mojom::MediaStreamStateChange new_state)>;
+  using OnDeviceCaptureConfigurationChangeCb =
+      base::RepeatingCallback<void(const MediaStreamDevice& device)>;
   using OnDeviceCaptureHandleChangeCb =
       base::RepeatingCallback<void(const MediaStreamDevice& device)>;
   void AddStreams(
@@ -44,6 +46,8 @@ class BLINK_MODULES_EXPORT WebMediaStreamDeviceObserver {
       OnDeviceStoppedCb on_device_stopped_cb,
       OnDeviceChangedCb on_device_changed_cb,
       OnDeviceRequestStateChangeCb on_device_request_state_change_cb,
+      OnDeviceCaptureConfigurationChangeCb
+          on_device_capture_configuration_change_cb,
       OnDeviceCaptureHandleChangeCb on_device_capture_handle_change_cb);
   void AddStream(const WebString& label, const MediaStreamDevice& device);
   bool RemoveStreams(const WebString& label);
