@@ -27,10 +27,6 @@ using mojom::RemotingSinkVideoCapability;
 
 namespace {
 
-// The duration to delay the start of media remoting to ensure all preconditions
-// are held stable before switching to media remoting.
-constexpr base::TimeDelta kDelayedStart = base::Seconds(5);
-
 constexpr int kPixelsPerSec4k = 3840 * 2160 * 30;  // 4k 30fps.
 constexpr int kPixelsPerSec2k = 1920 * 1080 * 30;  // 1080p 30fps.
 
@@ -472,13 +468,15 @@ RemotingCompatibility RendererController::GetCompatibility() const {
   if (!has_video() && !has_audio())
     return RemotingCompatibility::kNoAudioNorVideo;
 
-  if (client_->Duration() <= kMinRemotingMediaDurationInSec)
-    return RemotingCompatibility::kDurationBelowThreshold;
-
   // When `is_media_remoting_requested_`, it is guaranteed that the sink is
-  // compatible. So there's no need to check for compatibilities.
+  // compatible and the media element meets the minimum duration requirement. So
+  // there's no need to check for compatibilities.
   if (is_media_remoting_requested_) {
     return RemotingCompatibility::kCompatible;
+  }
+
+  if (client_->Duration() <= kMinMediaDurationForSwitchingToRemotingInSec) {
+    return RemotingCompatibility::kDurationBelowThreshold;
   }
 
   if (has_video()) {
@@ -637,7 +635,7 @@ void RendererController::MaybeStartCalculatePixelRateTimer() {
   }
 
   pixel_rate_timer_.Start(
-      FROM_HERE, kDelayedStart,
+      FROM_HERE, base::Seconds(kPixelRateCalInSec),
       base::BindOnce(&RendererController::DoCalculatePixelRate,
                      base::Unretained(this), client_->DecodedFrameCount(),
                      clock_->NowTicks()));

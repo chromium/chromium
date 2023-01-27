@@ -209,7 +209,7 @@ TEST_F(RendererControllerTest, ToggleRendererOnDisableChange) {
 }
 
 TEST_F(RendererControllerTest, NotStartForShortContent) {
-  duration_in_sec_ = 30;
+  duration_in_sec_ = 20;
   InitializeControllerAndBecomeDominant(DefaultMetadata(VideoCodec::kVP8),
                                         GetDefaultSinkMetadata(true));
   ExpectInLocalRendering();
