@@ -10,22 +10,32 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
 
-#define LOG_POLICY(log_source)                           \
-  !PolicyLogger::GetInstance()->IsPolicyLoggingEnabled() \
-      ? (void)0                                          \
-      : internal::Voidify() & PolicyLogger::LogHelper(log_source, FROM_HERE)
+// TODO(b/265055305): define other kinds of logs like DLOG_POLICY and
+// VLOG_POLICY.
+#define LOG_POLICY(log_severity, log_source) \
+  LOG_POLICY_##log_severity(PolicyLogger::LogHelper::LogType::kLog, log_source)
 
-#define CBCM_ENROLLMENT PolicyLogger::Log::LogSource::kCBCMEnrollment
-#define POLICY_FETCHING PolicyLogger::Log::LogSource::kPolicyFetching
-#define PLATFORM_POLICY PolicyLogger::Log::LogSource::kPlatformPolicy
+#define POLICY_PROCESSING PolicyLogger::Log::Source::kPolicyProcessing
+#define CBCM_ENROLLMENT PolicyLogger::Log::Source::kCBCMEnrollment
+#define POLICY_FETCHING PolicyLogger::Log::Source::kPolicyFetching
+#define PLATFORM_POLICY PolicyLogger::Log::Source::kPlatformPolicy
+
+#define LOG_POLICY_INFO(log_type, log_source)                              \
+  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kInfo, \
+                          log_source, FROM_HERE)
+#define LOG_POLICY_WARNING(log_type, log_source)                              \
+  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kWarning, \
+                          log_source, FROM_HERE)
+#define LOG_POLICY_ERROR(log_type, log_source)                              \
+  PolicyLogger::LogHelper(log_type, PolicyLogger::Log::Severity::kError, \
+                          log_source, FROM_HERE)
 
 namespace internal {
 
@@ -49,9 +59,16 @@ class POLICY_EXPORT PolicyLogger {
   class POLICY_EXPORT Log {
    public:
     // The categories for policy log events.
-    enum class LogSource { kCBCMEnrollment, kPolicyFetching, kPlatformPolicy };
+    enum class Source {
+      kPolicyProcessing,
+      kCBCMEnrollment,
+      kPolicyFetching,
+      kPlatformPolicy
+    };
+    enum class Severity { kInfo, kWarning, kError };
 
-    Log(const LogSource log_source,
+    Log(const Severity log_severity,
+        const Source log_source,
         const std::string& message,
         const base::Location location);
     Log(const Log&) = delete;
@@ -60,7 +77,8 @@ class POLICY_EXPORT PolicyLogger {
     Log& operator=(Log&&) = default;
     ~Log() = default;
 
-    LogSource log_source() const { return log_source_; }
+    Severity log_severity() const { return log_severity_; }
+    Source log_source() const { return log_source_; }
     const std::string& message() const { return message_; }
     base::Location location() const { return location_; }
     base::Time timestamp() const { return timestamp_; }
@@ -68,7 +86,8 @@ class POLICY_EXPORT PolicyLogger {
     base::Value GetAsValue() const;
 
    private:
-    LogSource log_source_;
+    Severity log_severity_;
+    Source log_source_;
     std::string message_;
     base::Location location_;
     base::Time timestamp_;
@@ -78,7 +97,10 @@ class POLICY_EXPORT PolicyLogger {
   // object to the logs list when it is destroyed.
   class LogHelper {
    public:
-    LogHelper(const PolicyLogger::Log::LogSource log_source,
+    enum class LogType { kLog, kDLog, KVLog };
+    LogHelper(const LogType log_type,
+              const PolicyLogger::Log::Severity log_severity,
+              const PolicyLogger::Log::Source log_source,
               const base::Location location);
     LogHelper(const LogHelper&) = delete;
     LogHelper& operator=(const LogHelper&) = delete;
@@ -93,8 +115,13 @@ class POLICY_EXPORT PolicyLogger {
       return *this;
     }
 
+    // Calls the appropriate base/logging macro.
+    void StreamLog();
+
    private:
-    PolicyLogger::Log::LogSource log_source_;
+    LogType log_type_;
+    PolicyLogger::Log::Severity log_severity_;
+    PolicyLogger::Log::Source log_source_;
     std::ostringstream message_buffer_;
     base::Location location_;
   };

@@ -1,6 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include "components/policy/core/common/policy_logger.h"
 #include <utility>
 #include "base/no_destructor.h"
@@ -10,6 +11,8 @@
 #include "components/policy/core/common/features.h"
 #include "components/version_info/version_info.h"
 
+namespace policy {
+
 namespace {
 
 // The base format for the Chromium Code Search URLs.
@@ -18,14 +21,30 @@ constexpr char kChromiumCSUrlFormat[] =
 
 // Gets the string value for the log source.
 std::string GetLogSourceValue(
-    const policy::PolicyLogger::Log::LogSource log_source) {
+    const PolicyLogger::Log::Source log_source) {
   switch (log_source) {
-    case policy::PolicyLogger::Log::LogSource::kCBCMEnrollment:
+    case PolicyLogger::Log::Source::kPolicyProcessing:
+      return "Policy Processing";
+    case PolicyLogger::Log::Source::kCBCMEnrollment:
       return "CBCM Enrollment";
-    case policy::PolicyLogger::Log::LogSource::kPlatformPolicy:
+    case PolicyLogger::Log::Source::kPlatformPolicy:
       return "Platform Policy";
-    case policy::PolicyLogger::Log::LogSource::kPolicyFetching:
+    case PolicyLogger::Log::Source::kPolicyFetching:
       return "Policy Fetching";
+    default:
+      NOTREACHED();
+  }
+}
+
+std::string GetLogSeverity(
+    const PolicyLogger::Log::Severity log_severity) {
+  switch (log_severity) {
+    case PolicyLogger::Log::Severity::kInfo:
+      return "INFO";
+    case PolicyLogger::Log::Severity::kWarning:
+      return "WARNING";
+    case PolicyLogger::Log::Severity::kError:
+      return "ERROR";
     default:
       NOTREACHED();
   }
@@ -45,12 +64,12 @@ std::string GetLineURL(const base::Location location) {
 
 }  // namespace
 
-namespace policy {
-
-PolicyLogger::Log::Log(const LogSource log_source,
+PolicyLogger::Log::Log(const Severity log_severity,
+                       const Source log_source,
                        const std::string& message,
                        const base::Location location)
-    : log_source_(log_source),
+    : log_severity_(log_severity),
+      log_source_(log_source),
       message_(message),
       location_(location),
       timestamp_(base::Time::Now()) {}
@@ -60,19 +79,50 @@ PolicyLogger* PolicyLogger::GetInstance() {
 }
 
 PolicyLogger::LogHelper::LogHelper(
-    const PolicyLogger::Log::LogSource log_source,
+    const LogType log_type,
+    const PolicyLogger::Log::Severity log_severity,
+    const PolicyLogger::Log::Source log_source,
     const base::Location location)
-    : log_source_(log_source), location_(location) {}
+    : log_type_(log_type),
+      log_severity_(log_severity),
+      log_source_(log_source),
+      location_(location) {}
 
 PolicyLogger::LogHelper::~LogHelper() {
-  DCHECK(PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
-  policy::PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
-      this->log_source_, this->message_buffer_.str(), this->location_));
+  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    policy::PolicyLogger::GetInstance()->AddLog(
+        PolicyLogger::Log(log_severity_, log_source_,
+                          message_buffer_.str(), location_));
+  }
+  StreamLog();
+}
+
+void PolicyLogger::LogHelper::StreamLog() {
+  base::StringPiece filename(location_.file_name());
+  size_t last_slash_pos = filename.find_last_of("\\/");
+  if (last_slash_pos != base::StringPiece::npos) {
+    filename.remove_prefix(last_slash_pos + 1);
+  }
+
+  if (log_type_ == PolicyLogger::LogHelper::LogType::kLog &&
+      log_severity_ == PolicyLogger::Log::Severity::kInfo) {
+    LOG(INFO) << ":" << filename << "(" << location_.line_number() << ") "
+              << message_buffer_.str();
+  } else if (log_type_ == PolicyLogger::LogHelper::LogType::kLog &&
+             log_severity_ == PolicyLogger::Log::Severity::kWarning) {
+    LOG(WARNING) << ":" << filename << "(" << location_.line_number() << ") "
+                 << message_buffer_.str();
+  } else if (log_type_ == PolicyLogger::LogHelper::LogType::kLog &&
+             log_severity_ == PolicyLogger::Log::Severity::kError) {
+    LOG(ERROR) << ":" << filename << "(" << location_.line_number() << ") "
+               << message_buffer_.str();
+  }
 }
 
 base::Value PolicyLogger::Log::GetAsValue() const {
   base::Value log_value(base::Value::Type::DICT);
   log_value.SetStringPath("message", message_);
+  log_value.SetStringPath("log_severity", GetLogSeverity(log_severity_));
   log_value.SetStringPath("log_source", GetLogSourceValue(log_source_));
   log_value.SetStringPath("location", GetLineURL(location_));
   log_value.SetStringPath("timestamp", base::TimeFormatHTTP(timestamp_));

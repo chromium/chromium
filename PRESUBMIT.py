@@ -2899,6 +2899,7 @@ def CheckSpamLogging(input_api, output_api):
             r"^chromecast/",
             r"^components/browser_watcher/dump_stability_report_main_win\.cc$",
             r"^components/media_control/renderer/media_playback_options\.cc$",
+            r"^components/policy/core/common/policy_logger\.cc$",
             r"^components/viz/service/display/"
             r"overlay_strategy_underlay_cast\.cc$",
             r"^components/zucchini/.*",

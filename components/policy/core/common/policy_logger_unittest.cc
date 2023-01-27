@@ -18,7 +18,7 @@ namespace policy {
 namespace {
 
 void AddLogs(const std::string& message, PolicyLogger* policy_logger) {
-  LOG_POLICY(POLICY_FETCHING) << "Element added " << message;
+  LOG_POLICY(INFO,POLICY_FETCHING) << "Element added " << message;
 }
 
 }  // namespace
