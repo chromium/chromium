@@ -1091,6 +1091,9 @@
     // on their site.
     {
       name: "DisableThirdPartyStoragePartitioning",
+      origin_trial_feature_name: "DisableThirdPartyStoragePartitioning",
+      origin_trial_type: "deprecation",
+      origin_trial_allows_insecure: true,
       status: "experimental",
       browser_process_read_write_access: true,
     },
@@ -2827,13 +2830,6 @@
     {
       name: "TextFragmentTapOpensContextMenu",
       status: {"Android": "stable"},
-    },
-    // To enable the deprecation trial, use the
-    // `DisableThirdPartyStoragePartitioning` feature instead.
-    {
-      name: "ThirdPartyStoragePartitioning",
-      status: "experimental",
-      browser_process_read_write_access: true,
     },
     {
       name: "TimerThrottlingForBackgroundTabs",
