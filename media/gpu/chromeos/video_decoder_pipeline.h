@@ -143,13 +143,18 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   // Creates a VideoDecoderPipeline instance that allocates VideoFrames from
   // |frame_pool| and converts the decoded VideoFrames using |frame_converter|.
+  // |renderable_fourccs| is the list of formats that VideoDecoderPipeline may
+  // use when outputting frames, in order of preference.
   static std::unique_ptr<VideoDecoder> Create(
       const gpu::GpuDriverBugWorkarounds& workarounds,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
+      std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+
+  static std::vector<Fourcc> DefaultPreferredRenderableFourccs();
 
   static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs(
       const gpu::GpuDriverBugWorkarounds& workarounds);
@@ -198,6 +203,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner,
       std::unique_ptr<DmabufVideoFramePool> frame_pool,
       std::unique_ptr<VideoFrameConverter> frame_converter,
+      std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
       CreateDecoderFunctionCB create_decoder_function_cb);
 
@@ -292,6 +298,12 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // The frame converter passed from the client, otherwise used and destroyed on
   // |decoder_task_runner_|.
   std::unique_ptr<VideoFrameConverter> frame_converter_
+      GUARDED_BY_CONTEXT(decoder_sequence_checker_);
+
+  // The set of output formats allowed to be used in order of preference.
+  // VideoDecoderPipeline may perform copies to convert from the decoder's
+  // output to one of these formats.
+  const std::vector<Fourcc> renderable_fourccs_
       GUARDED_BY_CONTEXT(decoder_sequence_checker_);
 
   const std::unique_ptr<MediaLog> media_log_;

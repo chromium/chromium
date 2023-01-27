@@ -168,6 +168,7 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<VideoFrameConverter>(),
+          VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::make_unique<NullMediaLog>(),
           /*oop_video_decoder=*/{});
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

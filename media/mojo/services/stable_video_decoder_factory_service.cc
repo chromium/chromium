@@ -130,7 +130,9 @@ class MojoMediaClientImpl : public MojoMediaClient {
           gpu::GpuDriverBugWorkarounds(),
           /*client_task_runner=*/std::move(task_runner),
           std::make_unique<PlatformVideoFramePool>(),
-          std::make_unique<media::VideoFrameConverter>(), std::move(log),
+          std::make_unique<media::VideoFrameConverter>(),
+          VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+          std::move(log),
           /*oop_video_decoder=*/{});
     }
   }

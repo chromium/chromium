@@ -45,28 +45,20 @@ namespace {
 
 using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
 
-// Preferred output formats in order of preference.
-// TODO(mcasas): query the platform for its preferred formats and modifiers.
-constexpr Fourcc kPreferredRenderableFourccs[] = {
-    Fourcc(Fourcc::NV12),
-    Fourcc(Fourcc::P010),
-    // Only used for Hana (MT8173). Remove when that device reaches EOL.
-    Fourcc(Fourcc::YV12),
-};
-
 // Picks the preferred compositor renderable format from |candidates|, if any.
 // If |preferred_fourcc| is provided, contained in |candidates|, and considered
 // renderable, it returns that. Otherwise, it goes through
-// |kPreferredRenderableFourccs| until it finds one that's in |candidates|. If
+// |renderable_fourccs| until it finds one that's in |candidates|. If
 // it can't find a renderable format in |candidates|, it returns absl::nullopt.
 absl::optional<Fourcc> PickRenderableFourcc(
+    const std::vector<Fourcc>& renderable_fourccs,
     const std::vector<Fourcc>& candidates,
     absl::optional<Fourcc> preferred_fourcc) {
   if (preferred_fourcc && base::Contains(candidates, *preferred_fourcc) &&
-      base::Contains(kPreferredRenderableFourccs, *preferred_fourcc)) {
+      base::Contains(renderable_fourccs, *preferred_fourcc)) {
     return preferred_fourcc;
   }
-  for (const auto& value : kPreferredRenderableFourccs) {
+  for (const auto& value : renderable_fourccs) {
     if (base::Contains(candidates, value))
       return value;
   }
@@ -199,11 +191,13 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
+    std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(frame_converter);
+  DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
   if (oop_video_decoder) {
@@ -222,10 +216,22 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
 
   auto* pipeline = new VideoDecoderPipeline(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
-      std::move(frame_converter), std::move(media_log),
-      std::move(create_decoder_function_cb));
+      std::move(frame_converter), std::move(renderable_fourccs),
+      std::move(media_log), std::move(create_decoder_function_cb));
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
+}
+
+// static
+std::vector<Fourcc> VideoDecoderPipeline::DefaultPreferredRenderableFourccs() {
+  // Preferred output formats in order of preference.
+  // TODO(mcasas): query the platform for its preferred formats and modifiers.
+  return {
+      Fourcc(Fourcc::NV12),
+      Fourcc(Fourcc::P010),
+      // Only used for Hana (MT8173). Remove when that device reaches EOL
+      Fourcc(Fourcc::YV12),
+  };
 }
 
 // static
@@ -273,6 +279,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
+    std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
     CreateDecoderFunctionCB create_decoder_function_cb)
     : gpu_workarounds_(gpu_workarounds),
@@ -280,6 +287,7 @@ VideoDecoderPipeline::VideoDecoderPipeline(
       decoder_task_runner_(GetDecoderTaskRunner()),
       main_frame_pool_(std::move(frame_pool)),
       frame_converter_(std::move(frame_converter)),
+      renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
       create_decoder_function_cb_(std::move(create_decoder_function_cb)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
@@ -795,9 +803,9 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   // don't need an image processor.
   absl::optional<PixelLayoutCandidate> viable_candidate;
   if (!output_size || *output_size == decoder_visible_rect.size()) {
-    for (const auto& preferred_fourcc : kPreferredRenderableFourccs) {
+    for (const auto& fourcc : renderable_fourccs_) {
       for (const auto& candidate : candidates) {
-        if (candidate.fourcc == preferred_fourcc) {
+        if (candidate.fourcc == fourcc) {
           viable_candidate = candidate;
           break;
         }
@@ -840,12 +848,6 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
   CHECK(!allocator.has_value());
 #else
 #error "Unsupported platform"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-  // viable_candidate should always be set unless using L1 protected content,
-  // which isn't an option on linux.
-  CHECK(viable_candidate);
 #endif
 
   if (viable_candidate) {
@@ -904,7 +906,7 @@ VideoDecoderPipeline::PickDecoderOutputFormat(
         candidates, /*input_visible_rect=*/decoder_visible_rect,
         output_size ? *output_size : decoder_visible_rect.size(),
         estimated_num_buffers_for_renderer_, decoder_task_runner_,
-        base::BindRepeating(&PickRenderableFourcc),
+        base::BindRepeating(&PickRenderableFourcc, renderable_fourccs_),
         BindToCurrentLoop(base::BindRepeating(&VideoDecoderPipeline::OnError,
                                               decoder_weak_this_,
                                               "ImageProcessor error")));

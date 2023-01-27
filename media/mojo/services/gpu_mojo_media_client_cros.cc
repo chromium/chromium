@@ -27,7 +27,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 
 VideoDecoderType GetPreferredCrosDecoderImplementation(
-    gpu::GpuPreferences gpu_preferences) {
+    const gpu::GpuPreferences& gpu_preferences) {
   // TODO(b/195769334): eventually, we may turn off USE_VAAPI and USE_V4L2_CODEC
   // on LaCrOS if we delegate all video acceleration to ash-chrome. In those
   // cases, GetPreferredCrosDecoderImplementation() won't be able to determine
@@ -43,6 +43,11 @@ VideoDecoderType GetPreferredCrosDecoderImplementation(
 #endif
   }
   return VideoDecoderType::kVda;
+}
+
+std::vector<Fourcc> GetPreferredRenderableFourccs(
+    const gpu::GpuPreferences& gpu_preferences) {
+  return VideoDecoderPipeline::DefaultPreferredRenderableFourccs();
 }
 
 #else
@@ -61,10 +66,26 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation(
   return VideoDecoderType::kVaapi;
 }
 
+std::vector<Fourcc> GetPreferredRenderableFourccs(
+    const gpu::GpuPreferences& gpu_preferences) {
+  std::vector<Fourcc> renderable_fourccs;
+#if BUILDFLAG(ENABLE_VULKAN)
+  // Support for zero-copy NV12 textures preferentially.
+  if (gpu_preferences.gr_context_type == gpu::GrContextType::kVulkan) {
+    renderable_fourccs.emplace_back(Fourcc::NV12);
+  }
+#endif  // BUILDFLAG(ENABLE_VULKAN)
+
+  // Support 1-copy argb textures.
+  renderable_fourccs.emplace_back(Fourcc::AR24);
+
+  return renderable_fourccs;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 VideoDecoderType GetActualPlatformDecoderImplementation(
-    gpu::GpuPreferences gpu_preferences,
+    const gpu::GpuPreferences& gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
 #if BUILDFLAG(IS_CHROMEOS)
   return GetPreferredCrosDecoderImplementation(gpu_preferences);
@@ -145,8 +166,9 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
         traits.gpu_preferences.enable_unsafe_webgpu);
     return VideoDecoderPipeline::Create(
         *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
-        std::move(frame_converter), traits.media_log->Clone(),
-        std::move(traits.oop_video_decoder));
+        std::move(frame_converter),
+        GetPreferredRenderableFourccs(traits.gpu_preferences),
+        traits.media_log->Clone(), std::move(traits.oop_video_decoder));
   }
 
   switch (GetActualPlatformDecoderImplementation(traits.gpu_preferences,
@@ -161,8 +183,9 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           traits.gpu_preferences.enable_unsafe_webgpu);
       return VideoDecoderPipeline::Create(
           *traits.gpu_workarounds, traits.task_runner, std::move(frame_pool),
-          std::move(frame_converter), traits.media_log->Clone(),
-          /*oop_video_decoder=*/{});
+          std::move(frame_converter),
+          GetPreferredRenderableFourccs(traits.gpu_preferences),
+          traits.media_log->Clone(), /*oop_video_decoder=*/{});
     }
     case VideoDecoderType::kVda: {
       return VdaVideoDecoder::Create(

@@ -110,6 +110,7 @@ void GpuArcVideoDecoder::Initialize(
       std::make_unique<media::VdaVideoFramePool>(video_frame_pool_->WeakThis(),
                                                  client_task_runner_),
       std::make_unique<media::VideoFrameConverter>(),
+      media::VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
       std::make_unique<media::NullMediaLog>(),
       /*oop_video_decoder=*/{});
 

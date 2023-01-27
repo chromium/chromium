@@ -256,11 +256,12 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
         std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
     // TODO(b/238684141): Wire a meaningful GpuDriverBugWorkarounds or remove
     // its use.
-    vd_ = create_vd_cb_.Run(gpu::GpuDriverBugWorkarounds(), client_task_runner_,
-                            std::move(frame_pool),
-                            std::make_unique<VideoFrameConverter>(),
-                            std::make_unique<NullMediaLog>(),
-                            /*oop_video_decoder=*/{});
+    vd_ = create_vd_cb_.Run(
+        gpu::GpuDriverBugWorkarounds(), client_task_runner_,
+        std::move(frame_pool), std::make_unique<VideoFrameConverter>(),
+        VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+        std::make_unique<NullMediaLog>(),
+        /*oop_video_decoder=*/{});
     if (!vd_)
       return false;
 
