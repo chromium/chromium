@@ -115,7 +115,7 @@ class GLOzoneEGLGbm : public GLOzoneEGL {
   GLOzoneEGLGbm(const GLOzoneEGLGbm&) = delete;
   GLOzoneEGLGbm& operator=(const GLOzoneEGLGbm&) = delete;
 
-  ~GLOzoneEGLGbm() override {}
+  ~GLOzoneEGLGbm() override = default;
 
   bool CanImportNativePixmap() override {
     return gl::GLSurfaceEGL::GetGLDisplayEGL()

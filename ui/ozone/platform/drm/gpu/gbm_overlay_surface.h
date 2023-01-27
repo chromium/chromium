@@ -20,7 +20,7 @@ struct DrmOverlayPlane;
 
 class GbmOverlaySurface : public OverlaySurface {
  public:
-  GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window);
+  explicit GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window);
 
   GbmOverlaySurface(const GbmOverlaySurface&) = delete;
   GbmOverlaySurface& operator=(const GbmOverlaySurface&) = delete;

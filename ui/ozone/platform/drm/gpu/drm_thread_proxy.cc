@@ -35,12 +35,12 @@ void OnBufferCreatedOnDrmThread(
 
 class GbmDeviceGenerator : public DrmDeviceGenerator {
  public:
-  GbmDeviceGenerator() {}
+  GbmDeviceGenerator() = default;
 
   GbmDeviceGenerator(const GbmDeviceGenerator&) = delete;
   GbmDeviceGenerator& operator=(const GbmDeviceGenerator&) = delete;
 
-  ~GbmDeviceGenerator() override {}
+  ~GbmDeviceGenerator() override = default;
 
   // DrmDeviceGenerator:
   scoped_refptr<DrmDevice> CreateDevice(const base::FilePath& path,

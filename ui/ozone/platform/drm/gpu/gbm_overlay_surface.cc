@@ -21,16 +21,16 @@ namespace ui {
 GbmOverlaySurface::GbmOverlaySurface(std::unique_ptr<DrmWindowProxy> window)
     : window_(std::move(window)) {}
 
-GbmOverlaySurface::~GbmOverlaySurface() {}
+GbmOverlaySurface::~GbmOverlaySurface() = default;
 
-GbmOverlaySurface::Frame::Frame() {}
+GbmOverlaySurface::Frame::Frame() = default;
 
 GbmOverlaySurface::Frame::Frame(GbmOverlaySurface::Frame&& frame) = default;
 
 GbmOverlaySurface::Frame& GbmOverlaySurface::Frame::operator=(
     GbmOverlaySurface::Frame&& frame) = default;
 
-GbmOverlaySurface::Frame::~Frame() {}
+GbmOverlaySurface::Frame::~Frame() = default;
 
 void GbmOverlaySurface::SubmitFrame(std::vector<OverlayPlane> overlay_planes,
                                     SubmissionCallback submission_callback,

@@ -32,7 +32,7 @@ DrmWindow::DrmWindow(gfx::AcceleratedWidget widget,
       device_manager_(device_manager),
       screen_manager_(screen_manager) {}
 
-DrmWindow::~DrmWindow() {}
+DrmWindow::~DrmWindow() = default;
 
 void DrmWindow::Initialize() {
   TRACE_EVENT1("drm", "DrmWindow::Initialize", "widget", widget_);

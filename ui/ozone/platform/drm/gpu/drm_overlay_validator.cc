@@ -85,7 +85,7 @@ scoped_refptr<DrmFramebuffer> GetBufferForPageFlipTest(
 
 DrmOverlayValidator::DrmOverlayValidator(DrmWindow* window) : window_(window) {}
 
-DrmOverlayValidator::~DrmOverlayValidator() {}
+DrmOverlayValidator::~DrmOverlayValidator() = default;
 
 DrmOverlayPlane DrmOverlayValidator::MakeOverlayPlane(
     const OverlaySurfaceCandidate& param,

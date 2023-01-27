@@ -93,6 +93,6 @@ bool GbmPixmap::ScheduleOverlayPlane(
   return true;
 }
 
-GbmPixmap::~GbmPixmap() {}
+GbmPixmap::~GbmPixmap() = default;
 
 }  // namespace ui

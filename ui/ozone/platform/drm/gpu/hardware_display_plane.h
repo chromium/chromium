@@ -21,7 +21,7 @@ namespace ui {
 
 class HardwareDisplayPlane {
  public:
-  HardwareDisplayPlane(uint32_t id);
+  explicit HardwareDisplayPlane(uint32_t id);
 
   HardwareDisplayPlane(const HardwareDisplayPlane&) = delete;
   HardwareDisplayPlane& operator=(const HardwareDisplayPlane&) = delete;

@@ -6,6 +6,6 @@
 
 namespace ui {
 
-InterThreadMessagingProxy::~InterThreadMessagingProxy() {}
+InterThreadMessagingProxy::~InterThreadMessagingProxy() = default;
 
 }  // namespace ui

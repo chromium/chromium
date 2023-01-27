@@ -28,7 +28,8 @@ typedef std::vector<scoped_refptr<DrmDevice>> DrmDeviceVector;
 // buffers for the window represented by the widget.
 class DrmDeviceManager {
  public:
-  DrmDeviceManager(std::unique_ptr<DrmDeviceGenerator> drm_device_generator);
+  explicit DrmDeviceManager(
+      std::unique_ptr<DrmDeviceGenerator> drm_device_generator);
 
   DrmDeviceManager(const DrmDeviceManager&) = delete;
   DrmDeviceManager& operator=(const DrmDeviceManager&) = delete;

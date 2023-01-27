@@ -10,10 +10,8 @@
 
 namespace ui {
 
-DrmDeviceGenerator::DrmDeviceGenerator() {
-}
+DrmDeviceGenerator::DrmDeviceGenerator() = default;
 
-DrmDeviceGenerator::~DrmDeviceGenerator() {
-}
+DrmDeviceGenerator::~DrmDeviceGenerator() = default;
 
 }  // namespace ui

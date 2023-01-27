@@ -19,7 +19,7 @@ class PageFlipRequest : public base::RefCounted<PageFlipRequest> {
       base::OnceCallback<void(unsigned int /* frame */,
                               base::TimeTicks /* timestamp */)>;
 
-  PageFlipRequest(const base::TimeDelta& refresh_interval);
+  explicit PageFlipRequest(const base::TimeDelta& refresh_interval);
 
   PageFlipRequest(const PageFlipRequest&) = delete;
   PageFlipRequest& operator=(const PageFlipRequest&) = delete;

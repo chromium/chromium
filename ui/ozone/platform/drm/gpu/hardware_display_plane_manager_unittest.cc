@@ -1280,13 +1280,14 @@ void FakeFenceFD::Signal() const {
 }
 
 class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
- protected:
-  HardwareDisplayPlaneManagerPlanesReadyTest() = default;
-
+ public:
   HardwareDisplayPlaneManagerPlanesReadyTest(
       const HardwareDisplayPlaneManagerPlanesReadyTest&) = delete;
   HardwareDisplayPlaneManagerPlanesReadyTest& operator=(
       const HardwareDisplayPlaneManagerPlanesReadyTest&) = delete;
+
+ protected:
+  HardwareDisplayPlaneManagerPlanesReadyTest() = default;
 
   void SetUp() override {
     auto gbm_device = std::make_unique<MockGbmDevice>();

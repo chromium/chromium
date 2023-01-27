@@ -24,7 +24,7 @@ DrmWindowProxy::DrmWindowProxy(gfx::AcceleratedWidget widget,
                                DrmThread* drm_thread)
     : widget_(widget), drm_thread_(drm_thread) {}
 
-DrmWindowProxy::~DrmWindowProxy() {}
+DrmWindowProxy::~DrmWindowProxy() = default;
 
 void DrmWindowProxy::SchedulePageFlip(
     std::vector<DrmOverlayPlane> planes,

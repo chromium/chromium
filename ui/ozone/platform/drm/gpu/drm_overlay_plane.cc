@@ -67,7 +67,7 @@ DrmOverlayPlane::DrmOverlayPlane(DrmOverlayPlane&& other) = default;
 
 DrmOverlayPlane& DrmOverlayPlane::operator=(DrmOverlayPlane&& other) = default;
 
-DrmOverlayPlane::~DrmOverlayPlane() {}
+DrmOverlayPlane::~DrmOverlayPlane() = default;
 
 // static
 DrmOverlayPlane DrmOverlayPlane::Error() {
@@ -85,9 +85,10 @@ bool DrmOverlayPlane::operator<(const DrmOverlayPlane& plane) const {
 // static
 const DrmOverlayPlane* DrmOverlayPlane::GetPrimaryPlane(
     const DrmOverlayPlaneList& overlays) {
-  for (size_t i = 0; i < overlays.size(); ++i) {
-    if (overlays[i].z_order == 0)
-      return &overlays[i];
+  for (const auto& overlay : overlays) {
+    if (overlay.z_order == 0) {
+      return &overlay;
+    }
   }
 
   return nullptr;

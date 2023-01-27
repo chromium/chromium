@@ -147,7 +147,7 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 
 class DrmDevice::PageFlipManager {
  public:
-  PageFlipManager() : next_id_(0) {}
+  PageFlipManager() = default;
 
   PageFlipManager(const PageFlipManager&) = delete;
   PageFlipManager& operator=(const PageFlipManager&) = delete;
@@ -186,7 +186,7 @@ class DrmDevice::PageFlipManager {
     DrmDevice::PageFlipCallback callback;
   };
 
-  uint64_t next_id_;
+  uint64_t next_id_ = 0;
 
   std::vector<PageFlip> callbacks_;
 };

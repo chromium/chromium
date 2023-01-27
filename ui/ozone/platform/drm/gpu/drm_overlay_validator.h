@@ -17,7 +17,7 @@ class DrmWindow;
 
 class DrmOverlayValidator {
  public:
-  DrmOverlayValidator(DrmWindow* window);
+  explicit DrmOverlayValidator(DrmWindow* window);
 
   DrmOverlayValidator(const DrmOverlayValidator&) = delete;
   DrmOverlayValidator& operator=(const DrmOverlayValidator&) = delete;
