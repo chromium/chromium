@@ -1082,8 +1082,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests the "new search" menu item from the new tab menu after disabling the
 // feed.
-// TODO(crbug.com/1408823): This test is flaky.
-- (void)FLAKY_testNewSearchFromNewTabMenuAfterTogglingFeed {
+- (void)testNewSearchFromNewTabMenuAfterTogglingFeed {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"New Search is only available in phone layout.");
   }
