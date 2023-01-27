@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <utility>
@@ -74,6 +75,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/ssl/client_cert_identity.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -718,18 +720,36 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
 
   variations::SafeSeedManager safe_seed_manager(local_state_.get());
 
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+
+  // Overrides for content/common and lower layers' switches.
+  std::vector<base::FeatureList::FeatureOverrideInfo> feature_overrides =
+      content::GetSwitchDependentFeatureOverrides(command_line);
+
+  // Overrides for content/shell switches.
+
+  // Overrides for --run-web-tests.
+  if (switches::IsRunWebTestsSwitchPresent()) {
+    // Disable artificial timeouts for PNA-only preflights in warning-only mode
+    // for web tests. We do not exercise this behavior with web tests as it is
+    // intended to be a temporary rollout stage, and the short timeout causes
+    // flakiness when the test server takes just a tad too long to respond.
+    feature_overrides.emplace_back(
+        std::cref(
+            network::features::kPrivateNetworkAccessPreflightShortTimeout),
+        base::FeatureList::OVERRIDE_DISABLE_FEATURE);
+  }
+
   // Since this is a test-only code path, some arguments to SetUpFieldTrials are
   // null.
   // TODO(crbug/1248066): Consider passing a low entropy source.
   variations::PlatformFieldTrials platform_field_trials;
   field_trial_creator.SetUpFieldTrials(
       variation_ids,
-      command_line->GetSwitchValueASCII(
+      command_line.GetSwitchValueASCII(
           variations::switches::kForceVariationIds),
-      content::GetSwitchDependentFeatureOverrides(*command_line),
-      std::move(feature_list), metrics_state_manager.get(),
+      feature_overrides, std::move(feature_list), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false);
 }

@@ -31,9 +31,26 @@
   },
   {
     "prefix": "pna-permission",
-    "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"],
+    "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "pna-workers-disabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--disable-features=PrivateNetworkAccessForWorkers"],
+    "expires": "Jul 1, 2023"
+  },
+  {
+    "prefix": "pna-workers-enabled",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": [
+      "--enable-features=PrivateNetworkAccessForWorkers",
+      "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"
+    ],
     "expires": "Jul 1, 2023"
   },
   {
@@ -516,8 +533,7 @@
               "http/tests/workers",
               "inspector-protocol/worker"
             ],
-    "args": ["--enable-features=PlzDedicatedWorker",
-             "--disable-features=PrivateNetworkAccessForWorkersWarningOnly"],
+    "args": ["--enable-features=PlzDedicatedWorker"],
     "expires": "Jul 1, 2023"
   },
   {

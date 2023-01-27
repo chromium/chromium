@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL treat-as-public to local: failed preflight. assert_equals: worker error expected (string) "unknown error" but got (undefined) undefined
+PASS treat-as-public to local: success.
+FAIL treat-as-public to private: failed preflight. assert_equals: worker error expected (string) "unknown error" but got (undefined) undefined
+PASS treat-as-public to private: success.
+PASS public to public: success.
+Harness: the test ran to completion.
+

@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 PASS local to local: success.
-FAIL private to local: failed preflight. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
+FAIL private to local: failure. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined
 PASS private to local: success.
 PASS private to private: success.
 FAIL public to local: failed preflight. assert_equals: fetch error expected (string) "TypeError" but got (undefined) undefined

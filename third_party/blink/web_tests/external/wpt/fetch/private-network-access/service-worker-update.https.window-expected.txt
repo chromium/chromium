@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL update public to local: failed preflight. assert_equals: update error expected (string) "TypeError" but got (undefined) undefined
+PASS update public to local: success.
+FAIL update public to private: failed preflight. assert_equals: update error expected (string) "TypeError" but got (undefined) undefined
+PASS update public to private: success.
+PASS update public to public: success.
+Harness: the test ran to completion.
+
