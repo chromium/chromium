@@ -8,6 +8,7 @@
 #include <fuchsia/io/cpp/fidl.h>
 #include <fuchsia/sys/cpp/fidl.h>
 #include <fuchsia/web/cpp/fidl.h>
+#include <lib/fidl/cpp/interface_ptr_set.h>
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "base/command_line.h"
@@ -68,6 +69,10 @@ class WebInstanceHostV1 {
   // Used to manage the isolated Environment that web instances run in.
   fuchsia::sys::LauncherPtr isolated_environment_launcher_;
   fuchsia::sys::EnvironmentControllerPtr isolated_environment_controller_;
+
+  // Controllers per each subcomponent launched by this host.
+  fidl::InterfacePtrSet<fuchsia::sys::ComponentController>
+      component_controller_set_;
 
   // Implements the fuchsia.web.Debug API across all instances.
   FuchsiaWebDebugProxy debug_proxy_;

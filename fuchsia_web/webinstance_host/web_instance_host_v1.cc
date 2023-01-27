@@ -343,10 +343,21 @@ zx_status_t WebInstanceHostV1::CreateInstanceForContextWithCopiedArgs(
   launch_info.arguments = std::vector<std::string>(
       launch_args.argv().begin() + 1, launch_args.argv().end());
 
+  fuchsia::sys::ComponentControllerPtr component_controller;
+  component_controller.events().OnTerminated =
+      [](int64_t code, fuchsia::sys::TerminationReason reason) {
+        LOG_IF(ERROR,
+               code != 0 || reason != fuchsia::sys::TerminationReason::EXITED)
+            << "component terminated with code: " << code
+            << ", fuchsia::sys::TerminationReason: "
+            << static_cast<uint32_t>(reason);
+      };
+  auto controller_request = component_controller.NewRequest();
+  component_controller_set_.AddInterfacePtr(std::move(component_controller));
   // Launch the component with the accumulated settings.  The Component will
   // self-terminate when the fuchsia.web.Context client disconnects.
   IsolatedEnvironmentLauncher()->CreateComponent(std::move(launch_info),
-                                                 nullptr /* controller */);
+                                                 std::move(controller_request));
 
   return ZX_OK;
 }
