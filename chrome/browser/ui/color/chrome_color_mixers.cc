@@ -12,10 +12,12 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_mixer.h"
+#include "chrome/browser/ui/color/material_side_panel_color_mixer.h"
 #include "chrome/browser/ui/color/native_chrome_color_mixer.h"
 #include "chrome/browser/ui/color/new_tab_page_color_mixer.h"
 #include "chrome/browser/ui/color/omnibox_color_mixer.h"
 #include "chrome/browser/ui/color/tab_strip_color_mixer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider_utils.h"
 
 namespace {
@@ -58,6 +60,10 @@ void AddChromeColorMixers(ui::ColorProvider* provider,
   AddOmniboxColorMixer(provider, key);
   AddTabStripColorMixer(provider, key);
   AddNewTabPageColorMixer(provider, key);
+
+  if (features::IsChromeRefresh2023()) {
+    AddMaterialSidePanelColorMixer(provider, key);
+  }
 
   // Must be the last one in order to override other mixer colors.
   AddNativeChromeColorMixer(provider, key);
