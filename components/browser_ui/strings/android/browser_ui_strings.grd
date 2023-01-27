@@ -283,9 +283,6 @@
       <message name="IDS_COPY_LINK" desc="The label for a menu item to copy a link. [CHAR_LIMIT=30]">
         Copy link
       </message>
-      <message name="IDS_COPIED" desc="Notification telling the user that something has been copied to the clipboard.">
-        Copied
-      </message>
       <message name="IDS_TRY_AGAIN" desc="The label for a button allowing the user to try an action again. [CHAR_LIMIT=20]">
         Try again
       </message>

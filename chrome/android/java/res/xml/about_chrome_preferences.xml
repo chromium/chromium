@@ -6,13 +6,13 @@ found in the LICENSE file.
 -->
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <Preference
+    <org.chromium.chrome.browser.about_settings.LongClickCopySummaryPreference
         android:key="application_version"
         android:title="@string/application_version_title" />
     <org.chromium.chrome.browser.about_settings.AboutChromePreferenceOSVersion
         android:key="os_version"
         android:title="@string/os_version_title" />
-    <Preference
+    <org.chromium.chrome.browser.about_settings.LongClickCopySummaryPreference
         android:fragment="org.chromium.chrome.browser.about_settings.LegalInformationSettings"
         android:key="legal_information"
         android:title="@string/legal_information_title" />

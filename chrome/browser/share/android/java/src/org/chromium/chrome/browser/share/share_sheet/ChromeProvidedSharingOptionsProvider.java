@@ -408,7 +408,7 @@ public class ChromeProvidedSharingOptionsProvider {
                             Context.CLIPBOARD_SERVICE);
                     clipboard.setPrimaryClip(ClipData.newPlainText(
                             mShareParams.getTitle(), mShareParams.getTextAndUrl()));
-                    Toast.makeText(mActivity, R.string.sharing_copied, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mActivity, R.string.copied, Toast.LENGTH_SHORT).show();
                 })
                 .build();
     }

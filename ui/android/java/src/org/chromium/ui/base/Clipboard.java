@@ -242,6 +242,15 @@ public class Clipboard {
     }
 
     /**
+     * Writes text to the clipboard and shows a notification, such as a toast, to the user.
+     *
+     * @param text  will become the content of the clipboard's primary clip.
+     */
+    public void setTextAndNotify(final String text) {
+        Log.w(TAG, "setTextAndNotify is a no-op because Clipboard service isn't available");
+    }
+
+    /**
      * Writes text to the clipboard.
      *
      * @param label the label for the clip data.

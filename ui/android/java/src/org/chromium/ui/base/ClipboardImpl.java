@@ -28,6 +28,7 @@ import android.view.textclassifier.TextLinks;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -367,6 +368,13 @@ public class ClipboardImpl
     }
 
     @Override
+    public void setTextAndNotify(final String text) {
+        if (setPrimaryClipNoException(ClipData.newPlainText("text", text))) {
+            showToastIfNeeded(R.string.copied);
+        }
+    }
+
+    @Override
     public void setText(final String label, final String text) {
         setPrimaryClipNoException(ClipData.newPlainText(label, text));
     }
@@ -506,11 +514,8 @@ public class ClipboardImpl
     public void copyUrlToClipboard(GURL url) {
         ClipData clip = new ClipData("url", new String[] {URL_MIME_TYPE, PLAIN_TEXT_MIME_TYPE},
                 new ClipData.Item(url.getSpec()));
-        if (setPrimaryClipNoException(clip) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-            // According to
-            // https://developer.android.com/about/versions/13/features/copy-paste?hl=en#duplicate-notifications,
-            // the toast should not been shown on Android T and T+.
-            Toast.makeText(mContext, R.string.link_copied, Toast.LENGTH_SHORT).show();
+        if (setPrimaryClipNoException(clip)) {
+            showToastIfNeeded(R.string.link_copied);
         }
     }
 
@@ -646,5 +651,16 @@ public class ClipboardImpl
         }
 
         return false;
+    }
+
+    /**
+     * Conditionally show a toast to avoid duplicate notifications in Android 13+
+     * https://developer.android.com/develop/ui/views/touch-and-input/copy-paste#duplicate-notifications
+     *
+     * @param stringId
+     */
+    private void showToastIfNeeded(@StringRes int stringId) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) return;
+        Toast.makeText(mContext, stringId, Toast.LENGTH_SHORT).show();
     }
 }
