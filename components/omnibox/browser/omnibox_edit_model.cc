@@ -164,16 +164,22 @@ void EmitAcceptedKeywordSuggestionHistogram(
   }
 }
 
-// `executed_position` should be set to the position of the executed
-// OmniboxAction, or left as `kNoMatch` if no action was executed.
+// `executed_selection` indicates which OmniboxAction within `result`
+// was executed, and leaving this parameter as the default indicates
+// that no action was executed.
 void RecordActionShownForAllActions(
     const AutocompleteResult& result,
-    size_t executed_position = OmniboxPopupSelection::kNoMatch) {
+    OmniboxPopupSelection executed_selection =
+        OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch)) {
   // Record the presence of any actions in the result set.
   for (size_t i = 0; i < result.size(); ++i) {
     const AutocompleteMatch& match_in_result = result.match_at(i);
-    if (match_in_result.action) {
-      match_in_result.action->RecordActionShown(i, i == executed_position);
+    // TODO(crbug/1408506): Remove this DCHECK and make full use of selection
+    //  to determine executed action, once it is capable of distinguishing
+    //  between multiple actions on a single match.
+    DCHECK(match_in_result.actions.size() <= 1);
+    for (auto& action : match_in_result.actions) {
+      action->RecordActionShown(i, i == executed_selection.line);
     }
   }
 }
@@ -872,25 +878,20 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
   EmitEnteredKeywordModeHistogram(entry_method, default_search_provider);
 }
 
-void OmniboxEditModel::ExecuteAction(const AutocompleteMatch& match,
-                                     size_t match_position,
-                                     base::TimeTicks match_selection_timestamp,
-                                     WindowOpenDisposition disposition) {
-  RecordActionShownForAllActions(result(), match_position);
-  OmniboxAction::ExecutionContext context(
-      *(autocomplete_controller()->autocomplete_provider_client()),
-      base::BindOnce(&OmniboxEditModelDelegate::OnAutocompleteAccept,
-                     edit_model_delegate_->AsWeakPtr()),
-      match_selection_timestamp, disposition);
-  match.action->Execute(context);
-
-  {
-    // This block resets omnibox to unedited state and closes popup, which
-    // may not seem necessary in cases of navigation but makes sense for
-    // taking Pedal actions in general.
-    base::AutoReset<bool> tmp(&in_revert_, true);
-    view_->RevertAll();
+bool OmniboxEditModel::ExecuteTakeoverAction(
+    size_t match_index,
+    WindowOpenDisposition disposition,
+    base::TimeTicks match_selection_timestamp) {
+  DCHECK(match_selection_timestamp != base::TimeTicks());
+  const AutocompleteMatch& match = result().match_at(match_index);
+  const OmniboxAction* action = match.GetPrimaryAction();
+  if (action && action->TakesOverMatch()) {
+    OmniboxPopupSelection selection(
+        match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION);
+    ExecuteAction(selection, match_selection_timestamp, disposition);
+    return true;
   }
+  return false;
 }
 
 void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
@@ -930,7 +931,7 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  RecordActionShownForAllActions(result(), OmniboxPopupSelection::kNoMatch);
+  RecordActionShownForAllActions(result());
   HistoryFuzzyProvider::RecordOpenMatchMetrics(result(), match);
 
   std::u16string input_text(pasted_text);
@@ -2148,14 +2149,9 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
                                         !current_visibility);
       break;
     }
+
     case OmniboxPopupSelection::NORMAL:
-      if (match.action && match.action->TakesOverMatch()) {
-        DCHECK(timestamp != base::TimeTicks());
-        ExecuteAction(match, selection.line, timestamp, disposition);
-        return true;
-      } else {
-        return false;
-      }
+      return ExecuteTakeoverAction(selection.line, disposition, timestamp);
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
       DCHECK(timestamp != base::TimeTicks());
@@ -2165,8 +2161,8 @@ bool OmniboxEditModel::TriggerPopupSelectionAction(
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       DCHECK(timestamp != base::TimeTicks());
-      DCHECK(match.action);
-      ExecuteAction(match, selection.line, timestamp, disposition);
+      DCHECK(match.GetPrimaryAction());
+      ExecuteAction(selection, timestamp, disposition);
       break;
 
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
@@ -2263,7 +2259,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
                                 OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)
               .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message =
-            match.action->GetLabelStrings().accessibility_suffix;
+            match.GetPrimaryAction()->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (OmniboxPopupSelection(
@@ -2295,7 +2291,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
       // read because it's not relevant to the button's action.
-      return match.action->GetLabelStrings().accessibility_hint;
+      return match.GetPrimaryAction()->GetLabelStrings().accessibility_hint;
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
       additional_message_id = IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
       break;
@@ -2374,6 +2370,31 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
 
 PrefService* OmniboxEditModel::GetPrefService() const {
   return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+}
+
+void OmniboxEditModel::ExecuteAction(OmniboxPopupSelection selection,
+                                     base::TimeTicks match_selection_timestamp,
+                                     WindowOpenDisposition disposition) {
+  RecordActionShownForAllActions(result(), selection);
+  OmniboxAction::ExecutionContext context(
+      *(autocomplete_controller()->autocomplete_provider_client()),
+      base::BindOnce(&OmniboxEditModelDelegate::OnAutocompleteAccept,
+                     edit_model_delegate_->AsWeakPtr()),
+      match_selection_timestamp, disposition);
+  const AutocompleteMatch& match = result().match_at(selection.line);
+  // TODO(crbug/1408506): Remove this DCHECK and make full use of selection
+  //  to determine executed action, once it is capable of distinguishing
+  //  between multiple actions on a single match.
+  DCHECK_EQ(match.actions.size(), 1u);
+  match.GetPrimaryAction()->Execute(context);
+
+  {
+    // This block resets omnibox to unedited state and closes popup, which
+    // may not seem necessary in cases of navigation but makes sense for
+    // taking Pedal actions in general.
+    base::AutoReset<bool> tmp(&in_revert_, true);
+    view_->RevertAll();
+  }
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {

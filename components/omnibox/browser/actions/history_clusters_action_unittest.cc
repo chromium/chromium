@@ -46,8 +46,8 @@ ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
         match.contents = match_data.contents;
         match.destination_url = GURL(u"https://" + match_data.contents);
         if (match_data.already_has_action) {
-          match.action = base::MakeRefCounted<OmniboxAction>(
-              OmniboxAction::LabelStrings{}, GURL{});
+          match.actions.push_back(base::MakeRefCounted<OmniboxAction>(
+              OmniboxAction::LabelStrings{}, GURL{}));
         }
         return match;
       });
@@ -112,8 +112,8 @@ class HistoryClustersActionTest : public testing::Test {
 
     for (size_t i = 0; i < matches_data.size(); ++i) {
       bool has_history_clusters_action =
-          result.match_at(i)->action &&
-          result.match_at(i)->action->GetID() ==
+          result.match_at(i)->GetPrimaryAction() &&
+          result.match_at(i)->GetPrimaryAction()->GetID() ==
               static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
       EXPECT_EQ(has_history_clusters_action,
                 matches_data[i].expect_history_clusters_action);

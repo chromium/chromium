@@ -261,10 +261,10 @@ struct AutocompleteMatch {
   static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
 
   // Gets the vector icon identifier for the icon to be shown for this match. If
-  // |is_bookmark| is true, returns a bookmark icon rather than what the type
-  // would normally determine.  Note that in addition to |type|, the icon chosen
-  // may depend on match contents (e.g. Drive |document_type| or |action|).
-  // The reason |is_bookmark| is passed as a parameter and is not baked into the
+  // `is_bookmark` is true, returns a bookmark icon rather than what the type
+  // would normally determine.  Note that in addition to `type`, the icon chosen
+  // may depend on match contents (e.g. Drive `document_type` or `actions`).
+  // The reason `is_bookmark` is passed as a parameter and is not baked into the
   // AutocompleteMatch is likely that 1) this info is not used elsewhere in the
   // Autocomplete machinery except before displaying the match and 2) obtaining
   // this info is trivially done by calling BookmarkModel::IsBookmarked().
@@ -425,7 +425,7 @@ struct AutocompleteMatch {
   // set `stripped_destination_url` to avoid repeating the computation later.
   bool IsDocumentSuggestion();
 
-  // Returns true if this match may attach an `action`.
+  // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).
   bool IsActionCompatible() const;
@@ -570,6 +570,24 @@ struct AutocompleteMatch {
 
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
+
+  // Matches with actions usually have just one. Even with more, one of them
+  // is usually first and most significant; an action that takes over the
+  // whole match, for example. This method returns the foremost action, if it
+  // exists, and nullptr otherwise.
+  OmniboxAction* GetPrimaryAction() const;
+
+  // Finds first action where predicate returns true. This is a special use
+  // utility method for situations where actions with certain constraints
+  // need to be selected. If no such action is found, returns nullptr.
+  template <typename Predicate>
+  OmniboxAction* GetActionWhere(Predicate predicate) const {
+    auto it = std::find_if(actions.begin(), actions.end(), predicate);
+    if (it == actions.end()) {
+      return nullptr;
+    }
+    return it->get();
+  }
 
   // The provider of this match, used to remember which provider the user had
   // selected when the input changes. This may be NULL, in which case there is
@@ -747,8 +765,8 @@ struct AutocompleteMatch {
   // Set in matches originating from keyword results.
   bool from_keyword = false;
 
-  // Set to a matching action if appropriate.
-  scoped_refptr<OmniboxAction> action;
+  // Contains one or more actions relevant to this match.
+  std::vector<scoped_refptr<OmniboxAction>> actions;
 
   // True if this match is from a previous result.
   bool from_previous = false;

@@ -217,7 +217,9 @@ void AttachHistoryClustersActions(
   // action to avoid over-crowding.
   if (!GetConfig().omnibox_action_with_pedals &&
       base::ranges::any_of(result, [](const auto& match) {
-        return match.action && !match.action->TakesOverMatch();
+        return base::ranges::any_of(match.actions, [](const auto& action) {
+          return !action->TakesOverMatch();
+        });
       })) {
     return;
   }
@@ -240,10 +242,12 @@ void AttachHistoryClustersActions(
     //  because we're not sure if we want to show on entities or not. Once we
     //  decide, either share `IsActionCompatible()` or inline it to its
     //  remaining callsite.
-    if (match.action)
+    if (!match.actions.empty()) {
       continue;
-    if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL)
+    }
+    if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
       continue;
+    }
     if (!GetConfig().omnibox_action_on_entities &&
         match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
       continue;
@@ -254,9 +258,9 @@ void AttachHistoryClustersActions(
       absl::optional<history::ClusterKeywordData> matched_keyword_data =
           service->DoesQueryMatchAnyCluster(query);
       if (matched_keyword_data) {
-        match.action = base::MakeRefCounted<HistoryClustersAction>(
+        match.actions.push_back(base::MakeRefCounted<HistoryClustersAction>(
             query, std::move(matched_keyword_data.value()),
-            /*takes_over_match=*/false);
+            /*takes_over_match=*/false));
       }
     } else if (GetConfig().omnibox_action_on_urls) {
       // We do the URL stripping here, because we need it to both execute the
@@ -265,15 +269,15 @@ void AttachHistoryClustersActions(
       std::string url_keyword =
           history_clusters::ComputeURLKeywordForLookup(match.destination_url);
       if (service->DoesURLMatchAnyCluster(url_keyword)) {
-        match.action = base::MakeRefCounted<HistoryClustersAction>(
+        match.actions.push_back(base::MakeRefCounted<HistoryClustersAction>(
             url_keyword, history::ClusterKeywordData(),
-            /*takes_over_match=*/false);
+            /*takes_over_match=*/false));
       }
     }
 
     // Only ever attach one action (to the highest match), to not overwhelm
     // the user with multiple "Resume Journey" action buttons.
-    if (match.action) {
+    if (!match.actions.empty()) {
       return;
     }
   }

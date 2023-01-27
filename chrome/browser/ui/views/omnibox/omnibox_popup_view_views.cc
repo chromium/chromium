@@ -200,13 +200,14 @@ void OmniboxPopupViewViews::OpenMatch(
     base::TimeTicks match_selection_timestamp) {
   DCHECK(HasMatchAt(index));
 
-  // This is needed for mouse clicks and gestures to respect takeover actions.
-  auto& match = edit_model_->result().match_at(index);
-  if (match.action && match.action->TakesOverMatch()) {
-    return edit_model_->ExecuteAction(match, index, match_selection_timestamp,
-                                      disposition);
+  // If the match has an action that takes over the match,
+  // execute the action instead of opening the match.
+  if (edit_model_->ExecuteTakeoverAction(index, disposition,
+                                         match_selection_timestamp)) {
+    return;
   }
 
+  const AutocompleteMatch& match = edit_model_->result().match_at(index);
   omnibox_view_->OpenMatch(match, disposition, GURL(), std::u16string(), index,
                            match_selection_timestamp);
 }

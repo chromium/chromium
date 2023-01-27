@@ -32,7 +32,7 @@ TEST_F(OmniboxPedalAnnotatorTest, CreatesPedal) {
 
   scoped_refptr<OmniboxPedal> pedal =
       base::WrapRefCounted(new TestOmniboxPedalClearBrowsingData());
-  match.action = pedal;
+  match.actions.push_back(std::move(pedal));
 
   EXPECT_TRUE([annotator_ pedalForMatch:match incognito:NO] != nil);
 }

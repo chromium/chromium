@@ -222,12 +222,16 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
 
   SetPillButtonVisibility(pedal_button_,
                           OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
+  // TODO(orinj): Reconcile existing pedal_button_ and new action types
+  //  by using a single general set of buttons (Actions in Sugest will
+  //  have many actions on a single suggestion; are they like pedals?).
   if (pedal_button_->GetVisible()) {
-    const auto pedal_strings = match().action->GetLabelStrings();
+    const OmniboxAction* action = match().GetPrimaryAction();
+    const auto pedal_strings = action->GetLabelStrings();
     pedal_button_->SetText(pedal_strings.hint);
     pedal_button_->SetTooltipText(pedal_strings.suggestion_contents);
     pedal_button_->SetAccessibleName(pedal_strings.accessibility_hint);
-    pedal_button_->SetIcon(match().action->GetVectorIcon());
+    pedal_button_->SetIcon(action->GetVectorIcon());
   }
 
   bool is_any_button_visible = keyword_button_->GetVisible() ||

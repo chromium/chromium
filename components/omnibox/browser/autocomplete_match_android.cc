@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/actions/omnibox_pedal_jni_wrapper.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/jni_headers/AutocompleteMatch_jni.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
@@ -93,11 +94,6 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
 
   std::vector<int> temp_subtypes(subtypes.begin(), subtypes.end());
 
-  ScopedJavaLocalRef<jobject> j_action_obj;
-  if (action) {
-    j_action_obj = action->GetJavaObject();
-  }
-
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
@@ -117,7 +113,8 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           has_tab_match.value_or(false),
           ToJavaArrayOfStrings(env, suggest_titles),
           url::GURLAndroid::ToJavaArrayOfGURLs(env, suggest_urls),
-          ToJavaIntArray(env, suggest_types), j_action_obj));
+          ToJavaIntArray(env, suggest_types),
+          ToJavaOmniboxActionsList(env, actions)));
 
   return ScopedJavaLocalRef<jobject>(*java_match_);
 }

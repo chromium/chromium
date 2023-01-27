@@ -87,7 +87,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
         return false;
       }
       return match.has_tab_match.value_or(false);
-    case FOCUSED_BUTTON_ACTION:
+    case FOCUSED_BUTTON_ACTION: {
       // Actions buttons should not be shown in keyword mode.
       if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
           match.from_keyword) {
@@ -95,7 +95,9 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       }
       // If the action takes over the whole match, don't have a separate Action
       // control in the tab order (or rendered).
-      return match.action && !match.action->TakesOverMatch();
+      const OmniboxAction* action = match.GetPrimaryAction();
+      return action && !action->TakesOverMatch();
+    }
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();
     default:

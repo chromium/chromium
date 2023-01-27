@@ -607,7 +607,7 @@ void AutocompleteResult::AttachPedalsToMatches(
     AutocompleteMatch& match = matches_[i];
     // Skip matches that already have an `action` or are not suitable
     // for actions.
-    if (match.action || !match.IsActionCompatible()) {
+    if (!match.actions.empty() || !match.IsActionCompatible()) {
       continue;
     }
 
@@ -615,8 +615,9 @@ void AutocompleteResult::AttachPedalsToMatches(
         provider->FindReadyPedalMatch(input, match.contents);
     if (pedal) {
       const auto result = pedals_found.insert(pedal);
-      if (result.second)
-        match.action = pedal;
+      if (result.second) {
+        match.actions.push_back(pedal);
+      }
     }
   }
 }

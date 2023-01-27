@@ -4,9 +4,13 @@
 
 #include "components/history_clusters/core/history_clusters_service.h"
 
+#include <vector>
+
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/jni_headers/HistoryClustersAction_jni.h"
 #include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
+#include "omnibox_action.h"
 #include "url/android/gurl_android.h"
 
 base::android::ScopedJavaGlobalRef<jobject> BuildOmniboxPedal(
@@ -41,4 +45,23 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
       base::android::ConvertUTF16ToJavaString(env, accessibility_hint),
       url::GURLAndroid::FromNativeGURL(env, url),
       base::android::ConvertUTF8ToJavaString(env, query)));
+}
+
+// Convert a vector of OmniboxActions to Java counterpart.
+base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
+    JNIEnv* env,
+    const std::vector<scoped_refptr<OmniboxAction>>& actions) {
+  jclass clazz = org_chromium_components_omnibox_action_OmniboxPedal_clazz(env);
+  // Fires if OmniboxPedal is not part of this build target.
+  DCHECK(clazz);
+  base::android::ScopedJavaLocalRef<jobjectArray> jactions(
+      env, env->NewObjectArray(actions.size(), clazz, nullptr));
+  base::android::CheckException(env);
+
+  for (size_t index = 0; index < actions.size(); index++) {
+    env->SetObjectArrayElement(jactions.obj(), index,
+                               actions[index]->GetJavaObject().obj());
+  }
+
+  return jactions;
 }

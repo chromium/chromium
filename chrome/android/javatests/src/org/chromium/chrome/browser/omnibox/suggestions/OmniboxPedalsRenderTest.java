@@ -112,8 +112,8 @@ public class OmniboxPedalsRenderTest {
     private AutocompleteMatch createDummyPedalSuggestion(String name, @OmniboxPedalType int id) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(name)
-                .setOmniboxPedal(new OmniboxPedal(id, "hints", "suggestionContents",
-                        "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL()))
+                .setActions(Arrays.asList(new OmniboxPedal(id, "hints", "suggestionContents",
+                        "accessibilitySuffix", "accessibilityHint", GURL.emptyGURL())))
                 .build();
     }
 

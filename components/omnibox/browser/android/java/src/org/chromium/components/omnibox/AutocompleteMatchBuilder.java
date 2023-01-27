@@ -4,6 +4,7 @@
 
 package org.chromium.components.omnibox;
 
+import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -45,7 +46,7 @@ public class AutocompleteMatchBuilder {
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
     private List<AutocompleteMatch.SuggestTile> mSuggestTiles;
-    private OmniboxPedal mOmniboxPedal;
+    private List<OmniboxPedal> mActions;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -96,7 +97,7 @@ public class AutocompleteMatchBuilder {
         mClipboardImageData = null;
         mHasTabMatch = false;
         mSuggestTiles = null;
-        mOmniboxPedal = null;
+        mActions = null;
 
         mDisplayTextClassifications.add(
                 new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
@@ -115,7 +116,7 @@ public class AutocompleteMatchBuilder {
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
                 mImageDominantColor, mIsDeletable, mPostContentType, mPostData, mGroupId,
-                mQueryTiles, mClipboardImageData, mHasTabMatch, mSuggestTiles, mOmniboxPedal);
+                mQueryTiles, mClipboardImageData, mHasTabMatch, mSuggestTiles, mActions);
     }
 
     /**
@@ -266,8 +267,8 @@ public class AutocompleteMatchBuilder {
      * @param omniboxPedal Omnibox pedal.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setOmniboxPedal(OmniboxPedal omniboxPedal) {
-        mOmniboxPedal = omniboxPedal;
+    public AutocompleteMatchBuilder setActions(@NonNull List<OmniboxPedal> actions) {
+        mActions = actions;
         return this;
     }
 

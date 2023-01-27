@@ -50,9 +50,11 @@ void HistoryClusterProvider::CompleteHistoryClustersMatch(
   // itself checks the flag to redirect the user to either the Side Panel or
   // the traditional History/Journeys WebUI. As a side effect, it will also
   // record the action-centric metrics.
-  match->action = base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-      matching_text, std::move(matched_keyword_data),
-      /*takes_over_match=*/true);
+  DCHECK(match->actions.empty());
+  match->actions.push_back(
+      base::MakeRefCounted<history_clusters::HistoryClustersAction>(
+          matching_text, std::move(matched_keyword_data),
+          /*takes_over_match=*/true));
 }
 
 void HistoryClusterProvider::Start(const AutocompleteInput& input,

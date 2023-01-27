@@ -61,7 +61,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
 
     @Override
     public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
-        return suggestion.getOmniboxPedal() != null && position < PEDAL_MAX_SHOW_POSITION;
+        return suggestion.getActions().size() > 0 && position < PEDAL_MAX_SHOW_POSITION;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
-        setPedal(model, suggestion.getOmniboxPedal(), position);
+        setPedal(model, suggestion.getActions().get(0), position);
     }
 
     @Override

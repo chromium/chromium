@@ -91,7 +91,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA_SUFFIX,
             IDS_ACC_OMNIBOX_PEDAL_CLEAR_BROWSING_DATA),
         GURL());
-    action_match.action = action_.get();
+    action_match.actions.push_back(action_);
 
     AutocompleteMatch multiple_actions_match(
         nullptr, 500, false, AutocompleteMatchType::HISTORY_URL);

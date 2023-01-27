@@ -2456,10 +2456,20 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
 
   // Ensure the entity suggestion doesn't get a pedal even though its contents
   // form a concept match.
-  EXPECT_EQ(nullptr, std::prev(result.end())->action);
+  ASSERT_TRUE(std::prev(result.end())->actions.empty());
 
   // The same concept-matching contents on a non-entity suggestion gets a pedal.
-  EXPECT_NE(nullptr, result.begin()->action);
+  ASSERT_TRUE(!result.begin()->actions.empty());
+
+  // Also ensure pedal can be retrieved with generic predicate.
+  ASSERT_EQ(nullptr,
+            std::prev(result.end())->GetActionWhere([](const auto& action) {
+              return true;
+            }));
+  ASSERT_NE(nullptr, result.begin()->GetActionWhere([](const auto& action) {
+    return action->GetID() ==
+           static_cast<int32_t>(OmniboxPedalId::CLEAR_BROWSING_DATA);
+  }));
 }
 
 TEST_F(AutocompleteResultTest, DocumentSuggestionsCanMergeButNotToDefault) {

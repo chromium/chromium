@@ -270,7 +270,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
                              : nullptr),
       keyword(match.keyword),
       from_keyword(match.from_keyword),
-      action(match.action),
+      actions(match.actions),
       from_previous(match.from_previous),
       search_terms_args(
           match.search_terms_args
@@ -327,7 +327,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   associated_keyword = std::move(match.associated_keyword);
   keyword = std::move(match.keyword);
   from_keyword = std::move(match.from_keyword);
-  action = std::move(match.action);
+  actions = std::move(match.actions);
   from_previous = std::move(match.from_previous);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
@@ -392,7 +392,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
           : nullptr);
   keyword = match.keyword;
   from_keyword = match.from_keyword;
-  action = match.action;
+  actions = match.actions;
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
@@ -1284,10 +1284,10 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   from_previous = from_previous && duplicate_match.from_previous;
 
-  // Take the `action`, if any, so that it will be presented instead of buried.
-  if (!action && duplicate_match.action && IsActionCompatible()) {
-    action = duplicate_match.action;
-    duplicate_match.action = nullptr;
+  // Take the `actions` so that they will be presented instead of buried.
+  if (actions.empty() && !duplicate_match.actions.empty() &&
+      IsActionCompatible()) {
+    actions = std::move(duplicate_match.actions);
   }
 
   // Copy `rich_autocompletion_triggered` for counterfactual logging.
@@ -1650,6 +1650,10 @@ void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("additional_text", additional_text);
   dict.Add("destination_url", destination_url);
   dict.Add("keyword", keyword);
+}
+
+OmniboxAction* AutocompleteMatch::GetPrimaryAction() const {
+  return actions.empty() ? nullptr : actions[0].get();
 }
 
 #if DCHECK_IS_ON()

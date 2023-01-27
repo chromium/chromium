@@ -22,4 +22,8 @@ base::android::ScopedJavaGlobalRef<jobject> BuildHistoryClustersAction(
     GURL url,
     std::string query);
 
+base::android::ScopedJavaLocalRef<jobjectArray> ToJavaOmniboxActionsList(
+    JNIEnv* env,
+    const std::vector<scoped_refptr<OmniboxAction>>& actions);
+
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_JNI_WRAPPER_H_
