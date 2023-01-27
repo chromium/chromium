@@ -76,9 +76,14 @@ def _RunCompiler(args,
       f.write(' '.join(source_files))
     cmd += ['@' + source_files_rsp_path]
 
+    # Explicitly set JAVA_HOME since some bots do not have this already set.
+    env = os.environ.copy()
+    env['JAVA_HOME'] = build_utils.JAVA_HOME
+
     logging.debug('Build command %s', cmd)
     start = time.time()
     build_utils.CheckOutput(cmd,
+                            env=env,
                             print_stdout=args.chromium_code,
                             fail_on_output=args.warnings_as_errors)
     logging.info('Kotlin compilation took %ss', time.time() - start)
