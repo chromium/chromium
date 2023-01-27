@@ -18,7 +18,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
-#include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {

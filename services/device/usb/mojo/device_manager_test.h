@@ -13,8 +13,7 @@
 #include "services/device/public/mojom/usb_manager_test.mojom.h"
 #include "services/device/usb/usb_service.h"
 
-namespace device {
-namespace usb {
+namespace device::usb {
 
 class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
  public:
@@ -46,7 +45,6 @@ class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
   raw_ptr<UsbService> usb_service_;
 };
 
-}  // namespace usb
-}  // namespace device
+}  // namespace device::usb
 
 #endif  // SERVICES_DEVICE_USB_MOJO_DEVICE_MANAGER_TEST_H_

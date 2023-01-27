@@ -166,7 +166,7 @@ class MockUsbDeviceClient : public mojom::UsbDeviceClient {
 
 class USBDeviceImplTest : public testing::Test {
  public:
-  USBDeviceImplTest() : is_device_open_(false), allow_reset_(false) {}
+  USBDeviceImplTest() = default;
 
   USBDeviceImplTest(const USBDeviceImplTest&) = delete;
   USBDeviceImplTest& operator=(const USBDeviceImplTest&) = delete;
@@ -460,8 +460,8 @@ class USBDeviceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<MockUsbDevice> mock_device_;
   scoped_refptr<MockUsbDeviceHandle> mock_handle_;
-  bool is_device_open_;
-  bool allow_reset_;
+  bool is_device_open_ = false;
+  bool allow_reset_ = false;
 
   std::map<uint8_t, const mojom::UsbConfigurationInfo*> mock_configs_;
 
@@ -1056,11 +1056,11 @@ TEST_F(USBDeviceImplTest, IsochronousTransfer) {
   }
 
   std::vector<UsbIsochronousPacketPtr> fake_packets_in(4);
-  for (size_t i = 0; i < fake_packets_in.size(); ++i) {
-    fake_packets_in[i] = mojom::UsbIsochronousPacket::New();
-    fake_packets_in[i]->length = 8;
-    fake_packets_in[i]->transferred_length = 8;
-    fake_packets_in[i]->status = UsbTransferStatus::COMPLETED;
+  for (auto& packet : fake_packets_in) {
+    packet = mojom::UsbIsochronousPacket::New();
+    packet->length = 8;
+    packet->transferred_length = 8;
+    packet->status = UsbTransferStatus::COMPLETED;
   }
   std::vector<UsbIsochronousPacketPtr> fake_packets_out;
   for (const auto& packet : fake_packets_in) {

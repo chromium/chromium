@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/synchronization/lock.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"

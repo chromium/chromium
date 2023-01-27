@@ -24,7 +24,6 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace usb = extensions::api::usb;
@@ -138,7 +137,7 @@ UsbDeviceManager::UsbDeviceManager(content::BrowserContext* browser_context)
   }
 }
 
-UsbDeviceManager::~UsbDeviceManager() {}
+UsbDeviceManager::~UsbDeviceManager() = default;
 
 void UsbDeviceManager::AddObserver(Observer* observer) {
   EnsureConnectionWithDeviceManager();

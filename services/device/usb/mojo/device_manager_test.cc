@@ -9,11 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_device_handle.h"
-#include "services/device/usb/webusb_descriptors.h"
 #include "url/gurl.h"
 
-namespace device {
-namespace usb {
+namespace device::usb {
 namespace {
 
 class TestUsbDevice : public UsbDevice {
@@ -29,7 +27,7 @@ class TestUsbDevice : public UsbDevice {
   void Open(OpenCallback callback) override;
 
  private:
-  ~TestUsbDevice() override;
+  ~TestUsbDevice() override = default;
 };
 
 TestUsbDevice::TestUsbDevice(const std::string& name,
@@ -54,14 +52,12 @@ void TestUsbDevice::Open(OpenCallback callback) {
   std::move(callback).Run(nullptr);
 }
 
-TestUsbDevice::~TestUsbDevice() {}
-
 }  // namespace
 
 DeviceManagerTest::DeviceManagerTest(UsbService* usb_service)
     : usb_service_(usb_service) {}
 
-DeviceManagerTest::~DeviceManagerTest() {}
+DeviceManagerTest::~DeviceManagerTest() = default;
 
 void DeviceManagerTest::BindReceiver(
     mojo::PendingReceiver<device::mojom::UsbDeviceManagerTest> receiver) {
@@ -115,5 +111,4 @@ void DeviceManagerTest::GetTestDevices(GetTestDevicesCallback callback) {
   std::move(callback).Run(std::move(result));
 }
 
-}  // namespace usb
-}  // namespace device
+}  // namespace device::usb

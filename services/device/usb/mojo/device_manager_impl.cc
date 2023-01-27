@@ -11,10 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
@@ -30,8 +28,7 @@
 #include "services/device/usb/usb_device_linux.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-namespace device {
-namespace usb {
+namespace device::usb {
 
 DeviceManagerImpl::DeviceManagerImpl()
     : DeviceManagerImpl(UsbService::Create()) {}
@@ -236,5 +233,4 @@ void DeviceManagerImpl::GetDeviceInternal(
                      allow_security_key_requests);
 }
 
-}  // namespace usb
-}  // namespace device
+}  // namespace device::usb

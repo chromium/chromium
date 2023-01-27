@@ -6,14 +6,12 @@
 
 #include <numeric>
 
-#include "base/memory/ref_counted_memory.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "build/build_config.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
-#include "extensions/browser/api/usb/usb_api.h"
+#include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/shell/browser/shell_extensions_api_client.h"
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -99,7 +97,7 @@ class TestDevicePermissionsPrompt
 
 class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
  public:
-  TestExtensionsAPIClient() : ShellExtensionsAPIClient() {}
+  TestExtensionsAPIClient() = default;
 
   std::unique_ptr<DevicePermissionsPrompt> CreateDevicePermissionsPrompt(
       content::WebContents* web_contents) const override {
