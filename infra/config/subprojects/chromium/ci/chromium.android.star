@@ -596,6 +596,9 @@ ci.builder(
         category = "builder_tester|arm64",
         short_name = "10",
     ),
+
+    # TODO(crbug.com/1405549): verify if py3 works for this builder.
+    omit_python2 = True,
 )
 
 ci.builder(
