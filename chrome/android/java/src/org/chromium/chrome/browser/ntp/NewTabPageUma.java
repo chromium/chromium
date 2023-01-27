@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -193,8 +194,10 @@ public class NewTabPageUma {
      * Record that the user has navigated away from the NTP using the omnibox.
      * @param destinationUrl The URL to which the user navigated.
      * @param transitionType The transition type of the navigation, from PageTransition.java.
+     * @param isNtp Whether the current page is a {@link NewTabPage}.
      */
-    public static void recordOmniboxNavigation(String destinationUrl, int transitionType) {
+    public static void recordOmniboxNavigation(
+            String destinationUrl, int transitionType, boolean isNtp) {
         if ((transitionType & PageTransition.CORE_MASK) == PageTransition.GENERATED) {
             recordAction(ACTION_SEARCHED_USING_OMNIBOX);
         } else {
@@ -203,6 +206,10 @@ public class NewTabPageUma {
             } else {
                 recordAction(ACTION_NAVIGATED_USING_OMNIBOX);
             }
+        }
+        if (isNtp) {
+            BrowserUiUtils.recordModuleClickHistogram(BrowserUiUtils.HostSurface.NEW_TAB_PAGE,
+                    BrowserUiUtils.ModuleTypeOnStartAndNTP.OMNIBOX);
         }
     }
 
