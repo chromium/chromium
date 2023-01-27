@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Түзмөктү тууралоо</translation>
 <translation id="2084809735218147718">"Рахмат" деп жазып жаткан адам</translation>
 <translation id="2088690981887365033">VPN тармагы</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> нерсе өчүрүлөт жана аларды калыбына келтире албайсыз.</translation>
 <translation id="2122305276694332719">Жашырылган тармакка автоматтык түрдө туташуу түзмөгүңүздү жана тармактын айрым параметрлерин башкаларга көрсөтүп турат, андыктан аны колдонуу сунушталбайт.</translation>
 <translation id="2125607626296734455">Хмерче</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз башкарат, Туташуу</translation>
@@ -395,6 +396,7 @@
 <translation id="4398096759193130964">Бул нерселерди калыбына келтирип же таштандыда болбогон жаңы папкага сүйрөңүз</translation>
 <translation id="4401287888955153199">Баарын чыгаруу</translation>
 <translation id="4410695710508688828">Чыгаруу операциясы ишке ашкан жок. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">"<ph name="FILE_NAME" />" өчүрүлөт жана аны калыбына келтире албайсыз.</translation>
 <translation id="4418686080762064601">Файлдарга өтүү үчүн ыкчам баскычты түзүү</translation>
 <translation id="4425149324548788773">Менин Drive'ым</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Туташуу</translation>
@@ -926,6 +928,7 @@
 <translation id="8560515948038859357">Кантончо</translation>
 <translation id="8561206103590473338">Пил</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
+<translation id="8568374623837201676">Бул файлды биротоло өчүрөсүзбү?</translation>
 <translation id="8569764466147087991">Ачыла турган файлды тандаңыз</translation>
 <translation id="8577897833047451336">Хорватча</translation>
 <translation id="8578308463707544055">Индонезияча</translation>

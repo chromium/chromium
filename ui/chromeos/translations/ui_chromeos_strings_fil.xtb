@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Mga setting ng device</translation>
 <translation id="2084809735218147718">Sumesenyas ng salamat</translation>
 <translation id="2088690981887365033">VPN network</translation>
+<translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> (na) item ang ide-delete at hindi mo mare-restore ang mga ito.</translation>
 <translation id="2122305276694332719">Ang awtomatikong pagkonekta sa nakatagong network ay nagbibigay-daan sa ibang tao na makita ang iyong device at ibang setting ng network, at hindi ito inirerekomenda.</translation>
 <translation id="2125607626296734455">Khmer</translation>
 <translation id="2139545522194199494">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Pinapamahalaan ng iyong Administrator, Kumonekta</translation>
@@ -395,6 +396,7 @@
 <translation id="4398096759193130964">I-restore ang mga item o i-drag ang mga ito sa isang bagong folder sa labas ng trash</translation>
 <translation id="4401287888955153199">I-extract lahat</translation>
 <translation id="4410695710508688828">Hindi naisagawa ang operasyon sa pag-extract. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">Ide-delete ang "<ph name="FILE_NAME" />" at hindi mo ito mare-restore.</translation>
 <translation id="4418686080762064601">Gumawa ng shortcut para sa iyong mga file</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
 <translation id="4439427728133035643">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
@@ -927,6 +929,7 @@
 <translation id="8560515948038859357">Cantonese</translation>
 <translation id="8561206103590473338">Elepante</translation>
 <translation id="8566466896628108558">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Na-block ng iyong Administrator, Mga Detalye</translation>
+<translation id="8568374623837201676">Permanenteng i-delete ang file na ito?</translation>
 <translation id="8569764466147087991">Piliin ang isang file para buksan</translation>
 <translation id="8577897833047451336">Croatian</translation>
 <translation id="8578308463707544055">Indonesian</translation>

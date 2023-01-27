@@ -128,6 +128,7 @@
 <translation id="2084108471225856927">Įrenginio nustatymai</translation>
 <translation id="2084809735218147718">Rašoma „ačiū“</translation>
 <translation id="2088690981887365033">VPN tinklas</translation>
+<translation id="2114191879048183086">Elementai (iš viso: <ph name="NUMBER_OF_ITEMS" />) bus ištrinti ir nebegalėsite jų atkurti.</translation>
 <translation id="2122305276694332719">Automatiškai susiejus su paslėptu tinklu kiti gali matyti jūsų įrenginį ir kai kuriuos tinklo nustatymus (nerekomenduojama).</translation>
 <translation id="2125607626296734455">Khmerų k.</translation>
 <translation id="2139545522194199494"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, tvarko administratorius, prisijungti</translation>
@@ -395,6 +396,7 @@
 <translation id="4398096759193130964">Atkurkite elementus arba nuvilkite juos į naują aplanką, esantį už šiukšliadėžės ribų</translation>
 <translation id="4401287888955153199">Išskleisti viską</translation>
 <translation id="4410695710508688828">Išskyrimo operacijos atlikti nepavyko. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4414834425328380570">„<ph name="FILE_NAME" />“ bus ištrintas ir nebegalėsite jo atkurti.</translation>
 <translation id="4418686080762064601">Failų šaukinio kūrimas</translation>
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, prisijungti</translation>
@@ -927,6 +929,7 @@
 <translation id="8560515948038859357">Kantoniečių k.</translation>
 <translation id="8561206103590473338">Dramblys</translation>
 <translation id="8566466896628108558"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> proc., užblokavo administratorius, išsami informacija</translation>
+<translation id="8568374623837201676">Visam laikui ištrinti šį failą?</translation>
 <translation id="8569764466147087991">Pasirinkite norimą atidaryti failą</translation>
 <translation id="8577897833047451336">Kroatų k.</translation>
 <translation id="8578308463707544055">Indoneziečių k.</translation>
