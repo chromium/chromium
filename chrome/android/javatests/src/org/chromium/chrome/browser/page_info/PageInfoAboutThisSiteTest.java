@@ -45,6 +45,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -308,6 +309,28 @@ public class PageInfoAboutThisSiteTest {
 
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
         String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
+        verify(mMockEphemeralTabCoordinator)
+                .requestOpenSheetWithFullPageUrl(
+                        /*url=*/new GURL(moreAboutUrl + "?ilrm=minimal"),
+                        /*fullPageUrl=*/new GURL(moreAboutUrl), /*title=*/"About this page",
+                        /*isIncognito=*/false);
+        verify(mMockAboutThisSiteJni).onAboutThisSiteRowClicked(true);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_NON_EN,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO,
+            ChromeFeatureList.PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET})
+    public void
+    testAboutThisSiteOpensEphemeralTabWithImprovedBottomSheetEnabled() throws Exception {
+        mockResponse(createDescription());
+        openPageInfo();
+
+        onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
+        String moreAboutUrl = mTestServerRule.getServer().getURL(sAboutHtml);
+        verify(mMockEphemeralTabCoordinator).addObserver(any(EphemeralTabObserver.class));
         // %2C is used to escape the comma in the url.
         verify(mMockEphemeralTabCoordinator)
                 .requestOpenSheetWithFullPageUrl(
