@@ -272,41 +272,34 @@ class SettingsInputMethodOptionsPageElement extends
             // TODO(b/263829863): Investigate and fix this type cast.
             name as keyof typeof OPTION_DEFAULT, defaultOverrides);
       }
-      if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
-          name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
-        /// Safety: We checked that `name` is a key above.
-        value = AUTOCORRECT_OPTION_MAP_OVERRIDE[name as AutocorrectOptionMapKey]
-                    // Safety: All autocorrect prefs have values that are
-                    // numbers in `getOptionMenuItems` as well as
-                    // `OPTION_DEFAULT`.
-                    .mapValueForDisplay(value as number);
-      }
+      let needsPrefUpdate = false;
       if (!this.isSettingValueValid_(name, value)) {
         value = getDefaultValue(
             // This cast is VERY unsafe, as `OPTION_DEFAULT` only contains
             // a small subset of options as keys.
             // TODO(b/263829863): Investigate and fix this type cast.
             name as keyof typeof OPTION_DEFAULT, defaultOverrides);
-        // This function call is unsafe under these conditions:
-        // - This option is `JAPANESE_NUMBER_OF_SUGGESTIONS`, or
-        //   `allowAutocorrectToggle` is off and this option is an autocorrect
-        //   option.
-        //   In this case, `this.updatePref_` expects the value to be a string,
-        //   as the `shouldStoreAsNumber` branch is hit - but `getDefaultValue`
-        //   returns a number, not a string, in this case.
-        //   TODO(b/265557721): Fix the use of Polymer two-way native bindings
-        //   in the dropdown part of the template, and remove the
-        //   `shouldStoreAsNumber` branch.
-        //
-        // - `allowAutocorrectToggle` is on, this option is an autocorrect
-        //   option, AND `this.isSettingValueValid_` returns false.
-        //   This currently is impossible as `this.isSettingValueValid_` is true
-        //   for all toggles, but may change in the future.
-        //   In this case, `value` would be the value in the prefs store, not
-        //   the displayed value, so storing it in the prefs store may result in
-        //   errors, and may be displayed incorrectly too.
-        //   TODO(b/238031866): Map the default value to the value for display
-        //   AFTER setting it to the default value if it is invalid.
+        needsPrefUpdate = true;
+      }
+      if (loadTimeData.getBoolean('allowAutocorrectToggle') &&
+          name in AUTOCORRECT_OPTION_MAP_OVERRIDE) {
+        // Safety: We checked that `name` is a key above.
+        value = AUTOCORRECT_OPTION_MAP_OVERRIDE[name as AutocorrectOptionMapKey]
+                    // Safety: All autocorrect prefs have values that are
+                    // numbers in `getOptionMenuItems` as well as
+                    // `OPTION_DEFAULT`.
+                    .mapValueForDisplay(value as number);
+      }
+      if (needsPrefUpdate) {
+        // This function call is unsafe if this option is
+        // `JAPANESE_NUMBER_OF_SUGGESTIONS`, or `allowAutocorrectToggle` is off
+        // and this option is an autocorrect option.
+        // In this case, `this.updatePref_` expects the value to be a string, as
+        // the `shouldStoreAsNumber` branch is hit - but `getDefaultValue`
+        // returns a number, not a string, in this case.
+        // TODO(b/265557721): Fix the use of Polymer two-way native bindings in
+        // the dropdown part of the template, and remove the
+        // `shouldStoreAsNumber` branch.
         this.updatePref_(name, value);
       }
 
