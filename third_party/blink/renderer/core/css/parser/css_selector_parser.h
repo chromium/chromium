@@ -133,8 +133,10 @@ class CORE_EXPORT CSSSelectorParser {
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
       CSSParserTokenRange& range);
   base::span<CSSSelector> ConsumeRelativeSelector(CSSParserTokenRange&);
-  base::span<CSSSelector> ConsumeComplexSelector(CSSParserTokenRange& range,
-                                                 bool in_nested_style_rule);
+  base::span<CSSSelector> ConsumeComplexSelector(
+      CSSParserTokenRange& range,
+      bool in_nested_style_rule,
+      bool first_in_complex_selector_list);
 
   // ConsumePartialComplexSelector() method provides the common logic of
   // consuming a complex selector and consuming a relative selector.

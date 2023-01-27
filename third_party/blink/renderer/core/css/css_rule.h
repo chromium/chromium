@@ -155,7 +155,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
       const String& rule_string,
       unsigned index,
       size_t num_child_rules,
-      const CSSRule& parent_rule,
+      CSSRule& parent_rule,
       ExceptionState& exception_state);
 };
 

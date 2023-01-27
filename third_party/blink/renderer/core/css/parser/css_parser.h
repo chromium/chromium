@@ -38,9 +38,10 @@ class CORE_EXPORT CSSParser {
 
  public:
   // As well as regular rules, allows @import and @namespace but not @charset
-  static StyleRuleBase* ParseRule(const CSSParserContext*,
-                                  StyleSheetContents*,
-                                  const String&);
+  static StyleRuleBase* ParseRule(const CSSParserContext* context,
+                                  StyleSheetContents* style_sheet,
+                                  StyleRule* parent_rule_for_nesting,
+                                  const String& rule);
 
   static ParseSheetResult ParseSheet(
       const CSSParserContext*,

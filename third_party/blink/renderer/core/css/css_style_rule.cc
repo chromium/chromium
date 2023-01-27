@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
@@ -87,10 +88,10 @@ void CSSStyleRule::setSelectorText(const ExecutionContext* execution_context,
   StyleSheetContents* parent_contents =
       parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
   HeapVector<CSSSelector> arena;
-  base::span<CSSSelector> selector_vector =
-      CSSParser::ParseSelector(context,
-                               /*parent_rule_for_nesting=*/nullptr,
-                               parent_contents, selector_text, arena);
+  StyleRule* parent_rule_for_nesting =
+      FindClosestParentStyleRuleOrNull(parentRule());
+  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
+      context, parent_rule_for_nesting, parent_contents, selector_text, arena);
   if (selector_vector.empty()) {
     return;
   }

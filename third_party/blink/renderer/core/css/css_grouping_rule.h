@@ -33,6 +33,8 @@ namespace blink {
 class ExceptionState;
 class CSSRuleList;
 
+StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent);
+
 // Utility function also used by CSSStyleRule, which can have child rules
 // just like CSSGroupingRule can (we share insertRule() / deleteRule()
 // implementation). Returns nullptr if an exception was raised.

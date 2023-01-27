@@ -205,7 +205,8 @@ StyleRuleBase* ParseRule(Document& document, String text) {
   auto* sheet = CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return CSSParser::ParseRule(context, sheet->Contents(), text);
+  return CSSParser::ParseRule(context, sheet->Contents(),
+                              /*parent_rule_for_nesting=*/nullptr, text);
 }
 
 const CSSValue* ParseValue(Document& document, String syntax, String value) {

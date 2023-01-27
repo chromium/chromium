@@ -163,7 +163,8 @@ bool CSSSelectorParser::SupportsComplexSelector(
                            nullptr, arena);
   parser.SetInSupportsParsing();
   base::span<CSSSelector> selectors =
-      parser.ConsumeComplexSelector(range, /*in_nested_style_rule=*/false);
+      parser.ConsumeComplexSelector(range, /*in_nested_style_rule=*/false,
+                                    /*first_in_complex_selector_list=*/true);
   if (parser.failed_parsing_ || !range.AtEnd() || selectors.empty()) {
     return false;
   }
@@ -186,12 +187,16 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range,
     bool in_nested_style_rule) {
   ResetVectorAfterScope reset_vector(output_);
-  if (ConsumeComplexSelector(range, in_nested_style_rule).empty()) {
+  if (ConsumeComplexSelector(range, in_nested_style_rule,
+                             /*first_in_complex_selector_list=*/true)
+          .empty()) {
     return {};
   }
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
     range.ConsumeIncludingWhitespace();
-    if (ConsumeComplexSelector(range, in_nested_style_rule).empty()) {
+    if (ConsumeComplexSelector(range, in_nested_style_rule,
+                               /*first_in_complex_selector_list=*/false)
+            .empty()) {
       return {};
     }
   }
@@ -209,6 +214,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     bool in_nested_style_rule) {
   ResetVectorAfterScope reset_vector(output_);
 
+  bool first_in_complex_selector_list = true;
   while (true) {
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
     CSSParserTokenRange complex_selector =
@@ -222,11 +228,13 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
       return {};
     }
 
-    if (ConsumeComplexSelector(complex_selector, in_nested_style_rule)
+    if (ConsumeComplexSelector(complex_selector, in_nested_style_rule,
+                               first_in_complex_selector_list)
             .empty() ||
         failed_parsing_ || !complex_selector.AtEnd()) {
       return {};
     }
+    first_in_complex_selector_list = false;
 
     if (observer) {
       observer->ObserveSelector(selector_offset_start, selector_offset_end);
@@ -399,8 +407,11 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
     wtf_size_t subpos = output_.size();
+    // NOTE: first_in_complex_selector_list is irrelevant here,
+    // since in_nested_style_rule is false.
     base::span<CSSSelector> selector =
-        ConsumeComplexSelector(argument, /*in_nested_style_rule=*/false);
+        ConsumeComplexSelector(argument, /*in_nested_style_rule=*/false,
+                               /*first_in_complex_selector_list=*/false);
     if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
       if (in_supports_parsing_) {
         at_supports_drop_invalid_counter.Count();
@@ -676,7 +687,8 @@ static bool SelectorListIsNestContaining(const CSSSelector* selector) {
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     CSSParserTokenRange& range,
-    bool in_nested_style_rule) {
+    bool in_nested_style_rule,
+    bool first_in_complex_selector_list) {
   if (in_nested_style_rule && PeekIsCombinator(range)) {
     // Nested selectors that start with a combinator are to be
     // interpreted as relative selectors (with the anchor being
@@ -687,6 +699,20 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   ResetVectorAfterScope reset_vector(output_);
   base::span<CSSSelector> compound_selector = ConsumeCompoundSelector(range);
   if (compound_selector.empty()) {
+    return {};
+  }
+
+  // When nesting, the complex selector list cannot start with a tag,
+  // since that would cause ambiguous parsing without adding more
+  // lookahead. We normally cannot get here if so (since seeing an ident
+  // would cause us to parse it as a property declaration, not a selector),
+  // but if we tried to set the selector text via CSSOM, we could.
+  // Thus, we need the explicit test here.
+  //
+  // (This only covers the first rule in the complex selector list;
+  // see https://github.com/w3c/csswg-drafts/issues/7980.)
+  if (in_nested_style_rule && first_in_complex_selector_list &&
+      compound_selector[0].Match() == CSSSelector::MatchType::kTag) {
     return {};
   }
 

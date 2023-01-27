@@ -327,7 +327,8 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
         MakeGarbageCollected<MediaQueryEvaluator>(GetDocument().GetFrame());
     RuleSet& rules = sheet->EnsureRuleSet(*medium, kRuleHasNoSpecialState);
     auto* rule = To<StyleRule>(CSSParser::ParseRule(
-        sheet->ParserContext(), sheet, selector + " { color: green }"));
+        sheet->ParserContext(), sheet, /*parent_rule_for_nesting=*/nullptr,
+        selector + " { color: green }"));
     rules.AddStyleRule(rule, *medium, kRuleHasNoSpecialState);
 
     MatchResult result;

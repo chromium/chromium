@@ -41,11 +41,21 @@
 
 namespace blink {
 
+StyleRule* FindClosestParentStyleRuleOrNull(CSSRule* parent) {
+  if (parent == nullptr) {
+    return nullptr;
+  }
+  if (parent->type() == CSSRule::kStyleRule) {
+    return To<CSSStyleRule>(parent)->GetStyleRule();
+  }
+  return FindClosestParentStyleRuleOrNull(parent->parentRule());
+}
+
 StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
                                   const String& rule_string,
                                   unsigned index,
                                   size_t num_child_rules,
-                                  const CSSRule& parent_rule,
+                                  CSSRule& parent_rule,
                                   ExceptionState& exception_state) {
   if (index > num_child_rules) {
     exception_state.ThrowDOMException(
@@ -60,7 +70,8 @@ StyleRuleBase* ParseRuleForInsert(const ExecutionContext* execution_context,
       parent_rule.ParserContext(execution_context->GetSecureContextMode()),
       style_sheet);
   StyleRuleBase* new_rule = CSSParser::ParseRule(
-      context, style_sheet ? style_sheet->Contents() : nullptr, rule_string);
+      context, style_sheet ? style_sheet->Contents() : nullptr,
+      FindClosestParentStyleRuleOrNull(&parent_rule), rule_string);
   if (!new_rule) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

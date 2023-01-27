@@ -68,10 +68,11 @@ CSSSelectorList* CSSParser::ParsePageSelector(
 
 StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     StyleSheetContents* style_sheet,
+                                    StyleRule* parent_rule_for_nesting,
                                     const String& rule) {
-  return CSSParserImpl::ParseRule(
-      rule, context, /*parent_rule_for_nesting=*/nullptr, style_sheet,
-      CSSParserImpl::kAllowImportRules);
+  return CSSParserImpl::ParseRule(rule, context, parent_rule_for_nesting,
+                                  style_sheet,
+                                  CSSParserImpl::kAllowImportRules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(
