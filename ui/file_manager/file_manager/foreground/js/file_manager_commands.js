@@ -1255,6 +1255,7 @@ CommandHandler.deleteCommand_ = new (class extends FilesCommand {
     const deleteMessage = entries.length === 1 ?
         strf('CONFIRM_DELETE_ONE', entries[0].name) :
         strf('CONFIRM_DELETE_SOME', entries.length);
+    dialog.setOkLabel(str('DELETE_BUTTON_LABEL'));
     dialog.show(deleteMessage, deleteAction, cancelAction, null);
   }
 
