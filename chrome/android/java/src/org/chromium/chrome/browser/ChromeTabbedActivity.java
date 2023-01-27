@@ -1908,7 +1908,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean tabModelWasCreated = mTabModelOrchestrator.createTabModels(
                 this, this, mNextTabPolicySupplier, mWindowId);
         if (!tabModelWasCreated) {
-            finish();
+            finishAndRemoveTask();
             return;
         }
 
