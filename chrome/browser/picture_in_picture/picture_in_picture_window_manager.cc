@@ -5,6 +5,7 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -12,7 +13,21 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/display/display.h"
+#include "ui/gfx/geometry/resize_utils.h"
 #include "ui/gfx/geometry/size.h"
+
+namespace {
+
+// The minimum window size for Document Picture-in-Picture windows. This does
+// not apply to video Picture-in-Picture windows.
+constexpr gfx::Size kMinWindowSize(300, 300);
+
+// The maximum window size for Document Picture-in-Picture windows. This does
+// not apply to video Picture-in-Picture windows.
+constexpr double kMaxWindowSizeRatio = 0.8;
+
+}  // namespace
 
 // This web contents observer is used only for video PiP.
 class PictureInPictureWindowManager::VideoWebContentsObserver final
@@ -158,6 +173,65 @@ absl::optional<gfx::Rect>
 PictureInPictureWindowManager::GetPictureInPictureWindowBounds() const {
   return pip_window_controller_ ? pip_window_controller_->GetWindowBounds()
                                 : absl::nullopt;
+}
+
+// static
+gfx::Rect
+PictureInPictureWindowManager::CalculateInitialPictureInPictureWindowBounds(
+    const blink::mojom::PictureInPictureWindowOptions& pip_options,
+    const display::Display& display) {
+  // TODO(https://crbug.com/1327797): This copies a bunch of logic from
+  // VideoOverlayWindowViews. That class and this one should be refactored so
+  // VideoOverlayWindowViews uses PictureInPictureWindowManager to calculate
+  // window sizing.
+  gfx::Rect work_area = display.work_area();
+  gfx::Rect window_bounds;
+  if (pip_options.width > 0 && pip_options.height > 0) {
+    // Use width and height if we have them both, but ensure it's within the
+    // required bounds.
+    gfx::Size window_size(base::saturated_cast<int>(pip_options.width),
+                          base::saturated_cast<int>(pip_options.height));
+    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMax(GetMinimumWindowSize());
+    window_bounds = gfx::Rect(window_size);
+  } else {
+    // Otherwise, fall back to the aspect ratio.
+    double initial_aspect_ratio = pip_options.initial_aspect_ratio > 0.0
+                                      ? pip_options.initial_aspect_ratio
+                                      : 1.0;
+    gfx::Size window_size(work_area.width() / 5, work_area.height() / 5);
+    window_size.SetToMin(GetMaximumWindowSize(display));
+    window_size.SetToMax(GetMinimumWindowSize());
+    window_bounds = gfx::Rect(window_size);
+    gfx::SizeRectToAspectRatio(gfx::ResizeEdge::kTopLeft, initial_aspect_ratio,
+                               GetMinimumWindowSize(),
+                               GetMaximumWindowSize(display), &window_bounds);
+  }
+
+  int window_diff_width = work_area.right() - window_bounds.width();
+  int window_diff_height = work_area.bottom() - window_bounds.height();
+
+  // Keep a margin distance of 2% the average of the two window size
+  // differences, keeping the margins consistent.
+  int buffer = (window_diff_width + window_diff_height) / 2 * 0.02;
+
+  gfx::Point default_origin =
+      gfx::Point(window_diff_width - buffer, window_diff_height - buffer);
+  default_origin += work_area.OffsetFromOrigin();
+  window_bounds.set_origin(default_origin);
+
+  return window_bounds;
+}
+
+// static
+gfx::Size PictureInPictureWindowManager::GetMinimumWindowSize() {
+  return kMinWindowSize;
+}
+
+// static
+gfx::Size PictureInPictureWindowManager::GetMaximumWindowSize(
+    const display::Display& display) {
+  return gfx::ScaleToRoundedSize(display.size(), kMaxWindowSizeRatio);
 }
 
 void PictureInPictureWindowManager::CreateWindowInternal(

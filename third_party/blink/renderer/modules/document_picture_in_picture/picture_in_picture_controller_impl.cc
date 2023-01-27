@@ -365,8 +365,23 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   }
 
   WebPictureInPictureWindowOptions web_options;
+  web_options.width = options->width();
+  web_options.height = options->height();
   web_options.initial_aspect_ratio = options->initialAspectRatio();
   web_options.lock_aspect_ratio = options->lockAspectRatio();
+
+  // If either width or height is specified, then both must be specified.
+  if (web_options.width > 0 && web_options.height == 0) {
+    exception_state.ThrowRangeError(
+        "Height must be specified if width is specified");
+    resolver->Reject(exception_state);
+    return;
+  } else if (web_options.width == 0 && web_options.height > 0) {
+    exception_state.ThrowRangeError(
+        "Width must be specified if height is specified");
+    resolver->Reject(exception_state);
+    return;
+  }
 
   auto* dom_window = opener.openPictureInPictureWindow(
       script_state->GetIsolate(), web_options, exception_state);

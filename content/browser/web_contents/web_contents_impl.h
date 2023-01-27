@@ -563,8 +563,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;
-  float GetPictureInPictureInitialAspectRatio() override;
-  bool GetPictureInPictureLockAspectRatio() override;
+  const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  GetPictureInPictureOptions() const override;
   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                   cc::BrowserControlsState current,
                                   bool animate) override;
@@ -2336,14 +2336,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::android::ScopedJavaGlobalRef<jthrowable> java_creator_location_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // The initial aspect ratio (only used for WebContents associated with a
-  // PictureInPicture window). This value is either the parameter given in
-  // WebContents::CreateParams::initial_picture_in_picture_aspect_ratio, or a
-  // default value if the given value is unset or invalid.
-  float pip_initial_aspect_ratio_ = 1.0f;
-
-  // Stores WebContents::CreateParams::lock_picture_in_picture_aspect_ratio.
-  bool pip_lock_aspect_ratio_ = false;
+  // The options used for WebContents associated with a PictureInPicture window.
+  // This value is the parameter given in
+  // WebContents::CreateParams::picture_in_picture_options.
+  absl::optional<blink::mojom::PictureInPictureWindowOptions>
+      picture_in_picture_options_;
 
   // Pip might require the content window to continue rendering. This handle
   // ensures that rendering continues despite occlusion or hidden window state.

@@ -9,6 +9,7 @@
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -16,6 +17,10 @@ enum class PictureInPictureResult;
 class PictureInPictureWindowController;
 class WebContents;
 }  // namespace content
+
+namespace display {
+class Display;
+}  // namespace display
 
 // PictureInPictureWindowManager is a singleton that handles the lifetime of the
 // current Picture-in-Picture window and its PictureInPictureWindowController.
@@ -76,6 +81,17 @@ class PictureInPictureWindowManager {
   // Returns the window bounds of the video picture-in-picture or the document
   // picture-in-picture if either of them is present.
   absl::optional<gfx::Rect> GetPictureInPictureWindowBounds() const;
+
+  // Used for Document picture-in-picture windows only.
+  static gfx::Rect CalculateInitialPictureInPictureWindowBounds(
+      const blink::mojom::PictureInPictureWindowOptions& pip_options,
+      const display::Display& display);
+
+  // Used for Document picture-in-picture windows only.
+  static gfx::Size GetMinimumWindowSize();
+
+  // Used for Document picture-in-picture windows only.
+  static gfx::Size GetMaximumWindowSize(const display::Display& display);
 
  private:
   friend struct base::DefaultSingletonTraits<PictureInPictureWindowManager>;

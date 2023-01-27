@@ -1869,10 +1869,14 @@ class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
                        Disposition_PictureInPicture_Open) {
+  // Create the params for the PiP request.
+  auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
+  pip_options->initial_aspect_ratio = 0.5;
+  pip_options->lock_aspect_ratio = true;
+
   // The WebContents holds the parameters from the PiP request.
   WebContents::CreateParams web_contents_params(browser()->profile());
-  web_contents_params.initial_picture_in_picture_aspect_ratio = 0.5;
-  web_contents_params.lock_picture_in_picture_aspect_ratio = true;
+  web_contents_params.picture_in_picture_options = *pip_options;
 
   // Opening a picture in picture window should create a new browser.
   NavigateParams params(MakeNavigateParams(browser()));
@@ -1886,9 +1890,32 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
 
   // The window should have respected the initial aspect ratio.
   const gfx::Rect override_bounds = params.browser->override_bounds();
-  const float aspect_ratio = static_cast<float>(override_bounds.width()) /
-                             static_cast<float>(override_bounds.height());
-  EXPECT_FLOAT_EQ(0.5, aspect_ratio);
+  const double aspect_ratio = static_cast<double>(override_bounds.width()) /
+                              static_cast<double>(override_bounds.height());
+  EXPECT_DOUBLE_EQ(0.5, aspect_ratio);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
+                       Disposition_PictureInPicture_OpenWithWidthAndHeight) {
+  // Give both an aspect ratio and a width/height that don't match. The
+  // width/height should take precedence.
+  auto pip_options = blink::mojom::PictureInPictureWindowOptions::New();
+  pip_options->width = 600;
+  pip_options->height = 500;
+  pip_options->initial_aspect_ratio = 0.5;
+  WebContents::CreateParams web_contents_params(browser()->profile());
+  web_contents_params.picture_in_picture_options = *pip_options;
+
+  // Opening a picture in picture window should create a new browser.
+  NavigateParams params(MakeNavigateParams(browser()));
+  params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
+  params.contents_to_insert = WebContents::Create(web_contents_params);
+  Navigate(&params);
+
+  // The window should use the width and height and ignore the aspect ratio.
+  const gfx::Rect override_bounds = params.browser->override_bounds();
+  EXPECT_EQ(600, override_bounds.width());
+  EXPECT_EQ(500, override_bounds.height());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,

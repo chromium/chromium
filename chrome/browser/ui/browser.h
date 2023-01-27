@@ -312,7 +312,7 @@ class Browser : public TabStripModelObserver,
     bool can_maximize = true;
 
     // Aspect ratio parameters specific to TYPE_PICTURE_IN_PICTURE.
-    float initial_aspect_ratio = 1.0f;
+    double initial_aspect_ratio = 1.0;
     bool lock_aspect_ratio = false;
 
    private:
