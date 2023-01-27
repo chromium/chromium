@@ -569,14 +569,14 @@ DeleteResult DeleteChromeDirectoriesIfEmpty(
   return result;
 }
 
-void DeleteWerRegistryKey(const installer::InstallerState& installer_state,
-                          const base::Version& version) {
-  // Delete WER runtime exception helper module dll registry entry.
-  std::wstring wer_helper_reg_path = GetWerHelperRegistryPath();
-  base::FilePath wer_path =
-      GetWerHelperPath(installer_state.target_path(), version);
-  DeleteRegistryValue(installer_state.root_key(), wer_helper_reg_path,
-                      WorkItem::kWow64Default, wer_path.value());
+void DeleteWerRegistryKeys(const installer::InstallerState& installer_state) {
+  // Delete WER runtime exception helper module dll registry entries
+  // for currently uninstalled Chrome version and all previous versions if any.
+  std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
+  AddOldWerHelperRegistrationCleanupItems(installer_state.root_key(),
+                                          installer_state.target_path(),
+                                          work_item_list.get());
+  work_item_list->Do();
 }
 
 bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
@@ -953,7 +953,7 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
                                  &ret);
   }
 
-  DeleteWerRegistryKey(installer_state, product_state->version());
+  DeleteWerRegistryKeys(installer_state);
 
   ProcessChromeWorkItems(installer_state);
 
