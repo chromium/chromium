@@ -344742,6 +344742,34 @@
       "d2b92041b809f31419c6f5e929dfa5dd4b03bb50",
       []
      ],
+     "service-worker-fetch.https.window-expected.txt": [
+      "81f6d8aac3a8a7057b3b91cbcb1ff3b5b07eb774",
+      []
+     ],
+     "service-worker-update.https.window-expected.txt": [
+      "0aca19f20b483f0527a40e58c9aa507986c61365",
+      []
+     ],
+     "service-worker.https.window-expected.txt": [
+      "9f6d82c80281d637d51f1976ccbcc883448dbcf8",
+      []
+     ],
+     "shared-worker-fetch.https.window-expected.txt": [
+      "0dc5268932503b1922bc3e69b523c6d78d7c29b6",
+      []
+     ],
+     "shared-worker-fetch.window-expected.txt": [
+      "52b68beee5fb99fa3f008353283abec889ee2396",
+      []
+     ],
+     "shared-worker.https.window-expected.txt": [
+      "7acfd4c64f5339a5bc11a599d3d447bed545dd7f",
+      []
+     ],
+     "shared-worker.window-expected.txt": [
+      "8718ffde7bc70a2802ec04ecd5c1e3b42e0dca32",
+      []
+     ],
      "shared-worker.window.js.ini": [
       "afa6f4c187dca0da3e32d890dbc0286982f480b3",
       []
@@ -358537,7 +358565,13 @@
        "document-base-url-initiated-grand-parent.https.window.js.ini": [
         "af28c41df64b3dbe2983d474b229003bd6c9d40c",
         []
-       ]
+       ],
+       "resources": {
+        "send-back-base-url.html": [
+         "6fdf81d1db76a752283a740a45b79461aaae071a",
+         []
+        ]
+       }
       }
      }
     },
@@ -379525,7 +379559,7 @@
       []
      ],
      "nested-contexts.js": [
-      "c0822943e86a68f43d003e03166fbc987014946e",
+      "31337ae5da2e181df178fa881bb38c3f394580b1",
       []
      ],
      "nested.css": [
@@ -388290,6 +388324,24 @@
       "0ec96057ad80928be183530e66f638b47e7d4c01",
       []
      ]
+    }
+   },
+   "top-level-storage-access-api": {
+    "README.md": [
+     "31a32b8033e3e3d3b2c6f9a04230b76186fbc1c3",
+     []
+    ],
+    "tentative": {
+     "requestStorageAccessForOrigin.sub.window.js.ini": [
+      "108b503429ef94f2b40b6f5a8f3e5db51b410fec",
+      []
+     ],
+     "resources": {
+      "requestStorageAccessForOrigin-iframe.html": [
+       "3e2f6d5b6288993714f3ee56ae89631e03d563b9",
+       []
+      ]
+     }
     }
    },
    "touch-events": {
@@ -449117,7 +449169,7 @@
     },
     "css-nesting": {
      "cssom.html": [
-      "c7150cec5db459824e22d2ae445a62db6a484684",
+      "987c31103677ca662b8d2e2c2d14a542a155103a",
       [
        null,
        {}
@@ -469715,6 +469767,15 @@
      [
       null,
       {}
+     ]
+    ],
+    "requires-width-and-height-to-both-be-specified.https.html": [
+     "0c707c668e9980901a2250ccb28042eb40c86f8c",
+     [
+      null,
+      {
+       "testdriver": true
+      }
      ]
     ],
     "returns-window-with-document.https.html": [
@@ -538526,6 +538587,20 @@
          {}
         ]
        ],
+       "document-base-url-changes-after-nav-about-srcdoc.https.window.js": [
+        "897647a45e1f41a2b3d1eae16a2fa1b6631e0da1",
+        [
+         "html/infrastructure/urls/terminology-0/document-base-url-changes-after-nav-about-srcdoc.https.window.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "document-base-url-initiated-grand-parent.https.window.js": [
         "1983f02c267837a9152f94d91bdbde4b1c3add6d",
         [
@@ -568204,6 +568279,13 @@
         {}
        ]
       ],
+      "mixed-content-cors.https.sub.html": [
+       "eb7b443df39bbca15767df3ad474a4375d5ab429",
+       [
+        null,
+        {}
+       ]
+      ],
       "video-upgrade.https.sub.html": [
        "ea2d07309c06af5d56e5553ed7a3f9a9a80bca8f",
        [
@@ -593306,7 +593388,7 @@
       ]
      ],
      "scroll-timeline-shorthand.tentative.html": [
-      "b74113a52a20819f2e10d00abc8706128e072e21",
+      "24597b91e2f1d2b4b224e02b998436d4da1667a6",
       [
        null,
        {}
@@ -610747,6 +610829,32 @@
       }
      ]
     ]
+   },
+   "top-level-storage-access-api": {
+    "tentative": {
+     "requestStorageAccessForOrigin.sub.window.js": [
+      "f7dd478a7078673643d91fece6f64bf0148c7ec6",
+      [
+       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/storage-access-api/helpers.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ]
+        ]
+       }
+      ]
+     ]
+    }
    },
    "touch-events": {
     "expose-legacy-touch-event-apis.html": [

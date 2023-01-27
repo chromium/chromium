@@ -4,7 +4,7 @@
 'use strict';
 
 // Note that this file follows the pattern in:
-// third_party/blink/web_tests/external/wpt/storage-access-api/requestStorageAccess.sub.window.js
+// storage-access-api/requestStorageAccess.sub.window.js
 //
 // Some tests are run at the top-level, and an iframe is added to validate API
 // behavior in that context.
