@@ -24,7 +24,8 @@ const PasswordManagerBrowserTest = class extends PolymerTest {
   }
 };
 
-[['App', 'password_manager_app_test.js'],
+[/* TODO(crbug.com/1410777): Flaky on some builders ['App',
+    'password_manager_app_test.js'], */
  ['Checkup', 'checkup_section_test.js'],
  ['CheckupDetails', 'checkup_details_section_test.js'],
  ['PasswordCard', 'password_details_card_test.js'],
