@@ -5,6 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {BackgroundManager} from 'chrome://new-tab-page/new_tab_page.js';
+import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createBackgroundImage} from './test_support.js';
@@ -91,6 +92,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
       positionX: 'left',
       positionY: 'top',
       scrimDisplay: 'none',
+      imageSource: NtpBackgroundImageSource.kFirstPartyThemeWithoutDailyRefresh,
     });
 
     // Assert.

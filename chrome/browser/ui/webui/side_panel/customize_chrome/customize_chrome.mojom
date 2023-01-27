@@ -33,7 +33,7 @@ struct ThirdPartyThemeInfo {
 struct Theme {
   // The background image.
   BackgroundImage? background_image;
-  // Whether the user is using a third party theme.
+  // User's third party theme info.
   ThirdPartyThemeInfo? third_party_theme_info;
   // Whether the OS is in dark mode.
   bool system_dark_mode;

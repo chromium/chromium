@@ -73592,6 +73592,15 @@ Called by update_net_trust_anchors.py.-->
       label="Background customization unavailable due to search provider"/>
 </enum>
 
+<enum name="NTPBackgroundImageSource">
+  <int value="0" label="Unknown source"/>
+  <int value="1" label="No image"/>
+  <int value="2" label="First party (NTP) theme without refresh daily enabled"/>
+  <int value="3" label="First party (NTP) theme with refresh daily enabled"/>
+  <int value="4" label="Third party theme"/>
+  <int value="5" label="Uploaded image"/>
+</enum>
+
 <enum name="NTPBrokenViewHierarchyRelationship">
   <int value="0" label="ELM collection containing Content Suggestions fixed"/>
   <int value="1" label="Discover feed containing ELM collection fixed"/>

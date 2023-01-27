@@ -55,6 +55,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.BackgroundImageSource"
+    enum="NTPBackgroundImageSource" expires_after="2023-07-30">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the type of background image that is set. Only recorded once per
+    NTP.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.BackgroundService.Collections.RequestLatency"
     units="ms" expires_after="2023-06-04">
   <owner>danpeng@google.com</owner>
