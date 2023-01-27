@@ -692,10 +692,6 @@ test("headless_browsertests") {
     "//v8:external_startup_data",
   ]
   sources = [
-    "test/bitmap_utils.cc",
-    "test/bitmap_utils.h",
-    "test/capture_std_stream.cc",
-    "test/capture_std_stream.h",
     "test/headless_browser_browsertest.cc",
     "test/headless_browser_context_browsertest.cc",
     "test/headless_browser_test.cc",
@@ -714,11 +710,7 @@ test("headless_browsertests") {
   ]
 
   if (enable_printing && enable_pdf) {
-    sources += [
-      "test/headless_printtopdf_browsertest.cc",
-      "test/pdf_utils.cc",
-      "test/pdf_utils.h",
-    ]
+    sources += [ "test/headless_printtopdf_browsertest.cc" ]
   }
 
   if (headless_use_policy) {
@@ -780,6 +772,7 @@ test("headless_browsertests") {
     "//base",
     "//cc:test_support",
     "//components/devtools/simple_devtools_protocol_client",
+    "//components/headless/test",
     "//components/policy/core/browser",
     "//components/security_state/content",
     "//content/test:browsertest_support",

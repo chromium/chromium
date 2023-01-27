@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_TEST_PDF_UTILS_H_
-#define HEADLESS_TEST_PDF_UTILS_H_
+#ifndef COMPONENTS_HEADLESS_TEST_PDF_UTILS_H_
+#define COMPONENTS_HEADLESS_TEST_PDF_UTILS_H_
 
 #include <cstdint>
 #include <string>
@@ -47,4 +47,4 @@ class PDFPageBitmap {
 
 }  // namespace headless
 
-#endif  // HEADLESS_TEST_PDF_UTILS_H_
+#endif  // COMPONENTS_HEADLESS_TEST_PDF_UTILS_H_

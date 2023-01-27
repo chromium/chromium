@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/test/bitmap_utils.h"
+#include "components/headless/test/bitmap_utils.h"
 
 #include "base/logging.h"
 #include "ui/gfx/geometry/point.h"

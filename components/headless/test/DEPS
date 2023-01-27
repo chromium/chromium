@@ -1,0 +1,6 @@
+include_rules = [
+  "+pdf",
+  "+printing",
+  "+third_party/skia/include",
+  "+ui/gfx",
+]

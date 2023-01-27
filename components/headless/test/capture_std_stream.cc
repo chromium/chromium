@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/test/capture_std_stream.h"
+#include "components/headless/test/capture_std_stream.h"
 
 #include <fcntl.h>
 #include <stdio.h>

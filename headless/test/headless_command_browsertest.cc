@@ -15,6 +15,8 @@
 #include "build/build_config.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
+#include "components/headless/test/bitmap_utils.h"
+#include "components/headless/test/capture_std_stream.h"
 #include "content/public/test/browser_test.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -22,8 +24,6 @@
 #include "headless/public/headless_browser.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_web_contents.h"
-#include "headless/test/bitmap_utils.h"
-#include "headless/test/capture_std_stream.h"
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -38,7 +38,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)
-#include "headless/test/pdf_utils.h"
+#include "components/headless/test/pdf_utils.h"
 #endif
 
 namespace headless {

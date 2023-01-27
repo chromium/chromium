@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/test/pdf_utils.h"
+#include "components/headless/test/pdf_utils.h"
 
 #include "base/logging.h"
-#include "headless/test/bitmap_utils.h"
+#include "components/headless/test/bitmap_utils.h"
 #include "pdf/pdf.h"
 #include "printing/units.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
