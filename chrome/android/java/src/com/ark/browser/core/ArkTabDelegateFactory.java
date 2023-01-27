@@ -4,20 +4,21 @@
 
 package com.ark.browser.core;
 
-import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemWithIconButtonProperties.BUTTON_MENU_ID;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
 import com.ark.browser.tab.ArkExternalNavigationDelegateImpl;
 import com.ark.browser.tab.ArkTabStateBrowserControlsVisibilityDelegate;
-import com.zpj.fragmentation.dialog.ZDialog;
+import com.ark.browser.ui.fragment.dialog.ContextMenuDialogFragment;
+import com.ark.browser.ui.fragment.dialog.RecyclerAttachDialogFragment;
+import com.zpj.fragmentation.dialog.IDialog;
 import com.zpj.fragmentation.dialog.base.BaseDialogFragment;
-import com.zpj.toast.ZToast;
 import com.zpj.utils.StatusBarUtils;
 
 import org.chromium.base.Callback;
@@ -27,7 +28,10 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuHeaderCoordinator;
+import org.chromium.chrome.browser.contextmenu.ContextMenuHeaderProperties;
 import org.chromium.chrome.browser.contextmenu.ContextMenuItemDelegate;
+import org.chromium.chrome.browser.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,9 +41,11 @@ import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
+import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -104,6 +110,7 @@ public class ArkTabDelegateFactory implements TabDelegateFactory {
                             WebContents webContents,
                             ContextMenuParams params,
                             List<Pair<Integer, MVCListAdapter.ModelList>> items,
+                            ContextMenuNativeDelegate nativeDelegate,
                             Callback<Integer> onItemClicked,
                             Runnable onMenuShown,
                             Runnable onMenuClosed) {
@@ -117,76 +124,109 @@ public class ArkTabDelegateFactory implements TabDelegateFactory {
             final float touchPointYPx = params.getTriggeringTouchYDp() * density + StatusBarUtils.getStatusBarHeight();
 
             Activity activity = windowAndroid.getActivity().get();
-            List<MVCListAdapter.ListItem> listItems = getItemList(
-                    activity, items, onItemClicked);
-            mDialog = ZDialog.attach(MVCListAdapter.ListItem.class)
-                    .addItems(listItems)
-                    .onBindTitle((v, item, position) -> {
-                        v.setText(item.model.get(TEXT));
-                    })
-                    .setOnSelectListener((fragment, position, item) -> {
-                        ZToast.normal((String) item.model.get(TEXT));
-//                        if (item.getMenuId() == R.id.contextmenu_freedom_copy) {
-//                            String js = "var arr = document.getElementsByTagName('a');\n" +
-//                                    "    for(var i = 0; i < arr.length; i++){\n" +
-//                                    "        var tag = arr[i];\n" +
-//                                    "        if(tag != null && tag.tagName != null){\n" +
-//                                    "            tag = tag.tagName.toLocaleLowerCase();\n" +
-//                                    "             if(tag != null &&  tag == 'a'){\n" +
-//                                    "                 var ele = arr[i];\n" +
-//                                    "                 var aHref = ele.getAttribute('href');\n" +
-//                                    "                 if(aHref){\n" +
-//                                    "                     ele.removeAttribute('href');\n" +
-//                                    "                     ele.setAttribute('copyhref',aHref);\n" +
-//                                    "                 }\n" +
-//
-//                                    "             }\n" +
-//                                    "         }\n" +
-//                                    "    }";
-//                            webContents.evaluateJavaScript(js, new JavaScriptCallback() {
-//                                @Override
-//                                public void handleJavaScriptResult(String jsonResult) {
-//                                    ArkLogger.d(this, "jsonResult=" + jsonResult);
-//                                }
-//                            });
-//
-//                            ThreadPool.postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-////                                    controller.setSimulateLongPress(true);
-////                                    controller.setFreedomCopy(true);
-////                                    // TODO 用native实现自由复制
-////                                    ThreadPool.execute(new TouchEventRunnable(touchPointXPx, touchPointYPx, true) {
-////                                        @Override
-////                                        public void run() {
-////                                            super.run();
-////                                            controller.setSimulateLongPress(false);
-////                                        }
-////                                    });
-//                                }
-//                            }, fragment.getDismissAnimDuration() + 20);
-//                        } else {
-//
-//                            item.model.get(BUTTON_CLICK_LISTENER).onClick(null);
-////                            mPopulator.onItemSelected(ContextMenuHelper.this, params, item);
-//                        }
+            List<MVCListAdapter.ListItem> listItems = getItemList(activity, params, items,
+                    onItemClicked, !params.getOpenedFromHighlight());
 
-                        item.model.get(BUTTON_CLICK_LISTENER).onClick(null);
-                        fragment.dismiss();
-                    })
+            mDialog = new ContextMenuDialogFragment()
+                    .setOnItemClicked(onItemClicked)
+                    .setContextMenuParams(params)
+                    .setContextMenuNativeDelegate(nativeDelegate)
+                    .addItems(listItems)
                     .setTouchPoint(touchPointXPx, touchPointYPx)
+                    .setOnDismissListener(listItemRecyclerAttachDialogFragment -> {
+                        if (onMenuClosed != null) {
+                            onMenuClosed.run();
+                        }
+                    })
+                    .setOnCancelListener(listItemRecyclerAttachDialogFragment -> {
+                        if (onMenuClosed != null) {
+                            onMenuClosed.run();
+                        }
+                    })
                     .show(windowAndroid.getActivity().get());
+
+//            mDialog = ZDialog.attach(MVCListAdapter.ListItem.class)
+//                    .addItems(listItems)
+//                    .onBindTitle((v, item, position) -> {
+//                        v.setText(item.model.get(TEXT));
+//                    })
+//                    .setOnSelectListener((fragment, position, item) -> {
+//                        ZToast.normal((String) item.model.get(TEXT));
+////                        if (item.getMenuId() == R.id.contextmenu_freedom_copy) {
+////                            String js = "var arr = document.getElementsByTagName('a');\n" +
+////                                    "    for(var i = 0; i < arr.length; i++){\n" +
+////                                    "        var tag = arr[i];\n" +
+////                                    "        if(tag != null && tag.tagName != null){\n" +
+////                                    "            tag = tag.tagName.toLocaleLowerCase();\n" +
+////                                    "             if(tag != null &&  tag == 'a'){\n" +
+////                                    "                 var ele = arr[i];\n" +
+////                                    "                 var aHref = ele.getAttribute('href');\n" +
+////                                    "                 if(aHref){\n" +
+////                                    "                     ele.removeAttribute('href');\n" +
+////                                    "                     ele.setAttribute('copyhref',aHref);\n" +
+////                                    "                 }\n" +
+////
+////                                    "             }\n" +
+////                                    "         }\n" +
+////                                    "    }";
+////                            webContents.evaluateJavaScript(js, new JavaScriptCallback() {
+////                                @Override
+////                                public void handleJavaScriptResult(String jsonResult) {
+////                                    ArkLogger.d(this, "jsonResult=" + jsonResult);
+////                                }
+////                            });
+////
+////                            ThreadPool.postDelayed(new Runnable() {
+////                                @Override
+////                                public void run() {
+//////                                    controller.setSimulateLongPress(true);
+//////                                    controller.setFreedomCopy(true);
+//////                                    // TODO 用native实现自由复制
+//////                                    ThreadPool.execute(new TouchEventRunnable(touchPointXPx, touchPointYPx, true) {
+//////                                        @Override
+//////                                        public void run() {
+//////                                            super.run();
+//////                                            controller.setSimulateLongPress(false);
+//////                                        }
+//////                                    });
+////                                }
+////                            }, fragment.getDismissAnimDuration() + 20);
+////                        } else {
+////
+////                            item.model.get(BUTTON_CLICK_LISTENER).onClick(null);
+//////                            mPopulator.onItemSelected(ContextMenuHelper.this, params, item);
+////                        }
+//
+//                        item.model.get(BUTTON_CLICK_LISTENER).onClick(null);
+//                        fragment.dismiss();
+//                    })
+//                    .setTouchPoint(touchPointXPx, touchPointYPx)
+//                    .show(windowAndroid.getActivity().get());
 
 
             return true;
         }
 
         List<MVCListAdapter.ListItem> getItemList(Activity activity,
+                                                  ContextMenuParams params,
                                                   List<Pair<Integer, MVCListAdapter.ModelList>> items,
-                                                  Callback<Integer> onItemClicked) {
+                                                  Callback<Integer> onItemClicked,
+                                                  boolean hasHeader) {
             List<MVCListAdapter.ListItem> itemList = new ArrayList<>();
 
+            // Start with the header
+            if (hasHeader) {
+                PropertyModel model = ContextMenuHeaderCoordinator.buildModel(activity, params);
+                itemList.add(new MVCListAdapter.ListItem(ContextMenuCoordinator.ListItemType.HEADER,
+                        model));
+            }
+
             for (Pair<Integer, MVCListAdapter.ModelList> group : items) {
+                // Add a divider
+                if (group.second.size() > 0) {
+                    itemList.add(new MVCListAdapter.ListItem(
+                            ContextMenuCoordinator.ListItemType.DIVIDER, new PropertyModel()));
+                }
                 for (MVCListAdapter.ListItem listItem : group.second) {
                     itemList.add(listItem);
                 }

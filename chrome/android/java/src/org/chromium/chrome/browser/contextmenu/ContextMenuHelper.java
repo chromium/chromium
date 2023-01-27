@@ -142,7 +142,7 @@ public class ContextMenuHelper {
 
         List<Pair<Integer, ModelList>> items = mCurrentPopulator.buildContextMenu();
         if (mPopulatorFactory.show(mWindow, mWebContents, mCurrentContextMenuParams, items,
-                mCallback, mOnMenuShown, mOnMenuClosed)) {
+                mCurrentNativeDelegate, mCallback, mOnMenuShown, mOnMenuClosed)) {
             return;
         }
 

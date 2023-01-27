@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class ContextMenuHeaderCoordinator {
+public class ContextMenuHeaderCoordinator {
     private PropertyModel mModel;
     private ContextMenuHeaderMediator mMediator;
 
@@ -26,6 +26,10 @@ class ContextMenuHeaderCoordinator {
                 activity, ContextMenuUtils.getTitle(params), getUrl(activity, params, profile));
         mMediator = new ContextMenuHeaderMediator(
                 activity, mModel, performanceClass, params, profile, nativeDelegate);
+    }
+
+    public static PropertyModel buildModel(Context context, ContextMenuParams params) {
+        return buildModel(context, ContextMenuUtils.getTitle(params), params.getUrl().getSpec());
     }
 
     @VisibleForTesting

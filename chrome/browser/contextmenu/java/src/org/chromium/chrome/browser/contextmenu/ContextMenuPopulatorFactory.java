@@ -19,10 +19,12 @@ import java.util.List;
  * Factory interface for creating {@link ContextMenuPopulator}s.
  */
 public interface ContextMenuPopulatorFactory {
+
     /**
      * Creates a {@ContextMenuPopulator}.
-     * @param context The {@link Context} used to retrieve the strings.
-     * @param params The {@link ContextMenuParams} used to build the context menu.
+     *
+     * @param context        The {@link Context} used to retrieve the strings.
+     * @param params         The {@link ContextMenuParams} used to build the context menu.
      * @param nativeDelegate The {@link ContextMenuNativeDelegate} for the context menu.
      * @return The new {@ContextMenuPopulator}.
      */
@@ -30,9 +32,10 @@ public interface ContextMenuPopulatorFactory {
             WindowAndroid windowAndroid, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
 
     default boolean show(WindowAndroid windowAndroid, WebContents webContents,
-                      ContextMenuParams params, List<Pair<Integer, MVCListAdapter.ModelList>> items,
-                      Callback<Integer> onItemClicked, final Runnable onMenuShown,
-                      final Runnable onMenuClosed) {
+                         ContextMenuParams params, List<Pair<Integer, MVCListAdapter.ModelList>> items,
+                         ContextMenuNativeDelegate nativeDelegate,
+                         Callback<Integer> onItemClicked, final Runnable onMenuShown,
+                         final Runnable onMenuClosed) {
         return false;
     }
 

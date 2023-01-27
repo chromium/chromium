@@ -1420,12 +1420,13 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
         public boolean show(WindowAndroid windowAndroid, WebContents webContents,
                             ContextMenuParams params,
                             List<Pair<Integer, MVCListAdapter.ModelList>> items,
+                            ContextMenuNativeDelegate nativeDelegate,
                             Callback<Integer> onItemClicked,
                             Runnable onMenuShown,
                             Runnable onMenuClosed) {
             if (mPopulatorFactory != null) {
                 return mPopulatorFactory.show(windowAndroid, webContents, params, items,
-                        onItemClicked, onMenuShown, onMenuClosed);
+                        nativeDelegate, onItemClicked, onMenuShown, onMenuClosed);
             }
             return false;
         }

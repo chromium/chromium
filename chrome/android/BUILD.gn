@@ -260,6 +260,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/item_checkbox.xml",
     "//chrome/android/java/res_app/layout/item_collection.xml",
     "//chrome/android/java/res_app/layout/item_collection_bottom_bar.xml",
+    "//chrome/android/java/res_app/layout/item_context_menu_share_row.xml",
     "//chrome/android/java/res_app/layout/item_dom_rules.xml",
     "//chrome/android/java/res_app/layout/item_domain_rules.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",

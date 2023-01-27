@@ -12,9 +12,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class ContextMenuHeaderProperties {
+public class ContextMenuHeaderProperties {
     /** Invalid value for OVERRIDE_*_PIXEL resources */
-    static final int INVALID_OVERRIDE = -1;
+    public static final int INVALID_OVERRIDE = -1;
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
