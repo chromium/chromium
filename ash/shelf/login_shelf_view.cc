@@ -996,28 +996,19 @@ bool LoginShelfView::ShouldShowGuestAndAppsButtons() const {
   return dialog_state_allowed && !user_session_started;
 }
 
-// If OobeRemoveShutdownButton feature is ON: show Shutdown button only in one
-// of the cases:
+// Show Shutdown button only in one of the cases:
 //  1. On general login screen, when OOBE is completed and device is owned;
 //  2. On enrollment success step (admins/resellers may use the on screen button
 //     to shut down the device after enrollment);
 //  3. On first screen of gaia login flow (same reason as 2).
 bool LoginShelfView::ShouldShowShutdownButton() const {
-  if (features::IsOobeRemoveShutdownButtonEnabled()) {
-    return dialog_state_ == OobeDialogState::HIDDEN ||
-           dialog_state_ == OobeDialogState::EXTENSION_LOGIN_CLOSED ||
-           dialog_state_ == OobeDialogState::ENROLLMENT_SUCCESS ||
-           dialog_state_ == OobeDialogState::EXTENSION_LOGIN ||
-           dialog_state_ == OobeDialogState::BLOCKING ||
-           (dialog_state_ == OobeDialogState::GAIA_SIGNIN &&
-            is_first_signin_step_);
-  }
-  return !(dialog_state_ == OobeDialogState::MIGRATION ||
-           dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_DISABLED ||
-           dialog_state_ == OobeDialogState::ENROLLMENT_CANCEL_ENABLED ||
-           dialog_state_ == OobeDialogState::ONBOARDING ||
-           dialog_state_ == OobeDialogState::KIOSK_LAUNCH ||
-           dialog_state_ == OobeDialogState::PASSWORD_CHANGED);
+  return dialog_state_ == OobeDialogState::HIDDEN ||
+         dialog_state_ == OobeDialogState::EXTENSION_LOGIN_CLOSED ||
+         dialog_state_ == OobeDialogState::ENROLLMENT_SUCCESS ||
+         dialog_state_ == OobeDialogState::EXTENSION_LOGIN ||
+         dialog_state_ == OobeDialogState::BLOCKING ||
+         (dialog_state_ == OobeDialogState::GAIA_SIGNIN &&
+          is_first_signin_step_);
 }
 
 // Show guest button if:

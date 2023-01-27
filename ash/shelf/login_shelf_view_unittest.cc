@@ -65,19 +65,11 @@ void ExpectNotFocused(views::View* view) {
   EXPECT_FALSE(login_views_utils::HasFocusInAnyChildView(view));
 }
 
-// Parameter value represents if the OobeRemoveShutdownButton feature is
-// enabled.
-class LoginShelfViewTest : public LoginTestBase,
-                           public testing::WithParamInterface<bool> {
+class LoginShelfViewTest : public LoginTestBase {
  public:
-  LoginShelfViewTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kOobeRemoveShutdownButton, GetParam());
-  }
-
+  LoginShelfViewTest() = default;
   LoginShelfViewTest(const LoginShelfViewTest&) = delete;
   LoginShelfViewTest& operator=(const LoginShelfViewTest&) = delete;
-
   ~LoginShelfViewTest() override = default;
 
   void SetUp() override {
@@ -228,12 +220,10 @@ class LoginShelfViewTest : public LoginTestBase,
   // |CreateActionBackgroundController|.
   TestLockScreenActionBackgroundController* action_background_controller_ =
       nullptr;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Checks the login shelf updates UI after session state changes.
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterSessionStateChange) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterSessionStateChange) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
@@ -261,7 +251,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterSessionStateChange) {
 }
 
 // Checks that the login shelf is not displayed in Shimless RMA.
-TEST_P(LoginShelfViewTest, ShouldHideUiInShimlessRma) {
+TEST_F(LoginShelfViewTest, ShouldHideUiInShimlessRma) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
   NotifySessionStateChanged(SessionState::RMA);
   EXPECT_TRUE(ShowsShelfButtons({}));
@@ -269,7 +259,7 @@ TEST_P(LoginShelfViewTest, ShouldHideUiInShimlessRma) {
 
 // Checks the login shelf updates UI after shutdown policy change when the
 // screen is locked.
-TEST_P(LoginShelfViewTest,
+TEST_F(LoginShelfViewTest,
        ShouldUpdateUiAfterShutdownPolicyChangeAtLockScreen) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
@@ -293,7 +283,7 @@ TEST_P(LoginShelfViewTest,
 
 // Checks shutdown policy change during another session state (e.g. ACTIVE)
 // will be reflected when the screen becomes locked.
-TEST_P(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
   // The initial state of |reboot_on_shutdown| is false.
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
@@ -308,7 +298,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
 }
 
 // Checks that the Apps button is hidden if a session has started
-TEST_P(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
+TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
@@ -323,7 +313,7 @@ TEST_P(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
 
 // Checks that the shutdown or restart buttons shown before the Apps button when
 // kiosk mode is enabled
-TEST_P(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
+TEST_F(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
   std::vector<KioskAppMenuEntry> kiosk_apps(1);
@@ -345,7 +335,7 @@ TEST_P(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
 }
 
 // Checks the login shelf updates UI after lock screen note state changes.
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterLockScreenNoteState) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterLockScreenNoteState) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
   CreateUserSessions(1);
@@ -390,7 +380,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterLockScreenNoteState) {
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 }
 
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -411,7 +401,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
                                  LoginShelfView::kAddUser}));
 }
 
-TEST_P(LoginShelfViewTest, SetAllowLoginByGuest) {
+TEST_F(LoginShelfViewTest, SetAllowLoginByGuest) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -433,14 +423,10 @@ TEST_P(LoginShelfViewTest, SetAllowLoginByGuest) {
   // always visible.
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::SAML_PASSWORD_CONFIRM);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({}));
 }
 
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   // The conditions in this test should only hold while there are user pods on
   // the signin screen.
@@ -465,11 +451,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
                                  LoginShelfView::kBrowseAsGuest,
                                  LoginShelfView::kAddUser}));
   login_shelf_view_->SetLoginDialogState(OobeDialogState::WRONG_HWID_WARNING);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
   login_shelf_view_->SetLoginDialogState(OobeDialogState::HIDDEN);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -477,11 +459,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
                                  LoginShelfView::kAddUser}));
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::SAML_PASSWORD_CONFIRM);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
   // By default guest login during gaia is not allowed.
   login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
@@ -500,11 +478,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   // Apps button is hidden during SAML_PASSWORD_CONFIRM STATE
   login_shelf_view_->SetLoginDialogState(
       OobeDialogState::SAML_PASSWORD_CONFIRM);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
   // Kiosk apps button is visible when dialog state == OobeDialogState::HIDDEN
   login_shelf_view_->SetLoginDialogState(OobeDialogState::HIDDEN);
@@ -553,7 +527,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 }
 
-TEST_P(LoginShelfViewTest, ShouldShowGuestButtonWhenNoUserPods) {
+TEST_F(LoginShelfViewTest, ShouldShowGuestButtonWhenNoUserPods) {
   login_shelf_view_->SetAllowLoginAsGuest(/*allow_guest=*/true);
   login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/true);
   SetUserCount(0);
@@ -566,12 +540,12 @@ TEST_P(LoginShelfViewTest, ShouldShowGuestButtonWhenNoUserPods) {
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest}));
 }
 
-TEST_P(LoginShelfViewTest, ClickShutdownButton) {
+TEST_F(LoginShelfViewTest, ClickShutdownButton) {
   ShutdownAndConfirm();
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
+TEST_F(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
   ShutdownAndConfirm();
@@ -580,7 +554,7 @@ TEST_P(LoginShelfViewTest, ClickShutdownButtonOnLockScreen) {
 
 // Tests that shutdown button can be clicked on the lock screen for active
 // session that starts with side shelf. See https://crbug.com/1050192.
-TEST_P(LoginShelfViewTest,
+TEST_F(LoginShelfViewTest,
        ClickShutdownButtonOnLockScreenWithVerticalInSessionShelf) {
   CreateUserSessions(1);
   SetShelfAlignmentPref(
@@ -595,7 +569,7 @@ TEST_P(LoginShelfViewTest,
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, ClickRestartButton) {
+TEST_F(LoginShelfViewTest, ClickRestartButton) {
   // The Restart button is not available in OOBE session state.
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -608,7 +582,7 @@ TEST_P(LoginShelfViewTest, ClickRestartButton) {
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, ClickSignOutButton) {
+TEST_F(LoginShelfViewTest, ClickSignOutButton) {
   CreateUserSessions(1);
   EXPECT_EQ(session_manager::SessionState::ACTIVE,
             Shell::Get()->session_controller()->GetSessionState());
@@ -619,7 +593,7 @@ TEST_P(LoginShelfViewTest, ClickSignOutButton) {
             Shell::Get()->session_controller()->GetSessionState());
 }
 
-TEST_P(LoginShelfViewTest, ClickUnlockButton) {
+TEST_F(LoginShelfViewTest, ClickUnlockButton) {
   // The unlock button is visible only when session state is LOCKED and note
   // state is kActive or kLaunching.
   CreateUserSessions(1);
@@ -642,7 +616,7 @@ TEST_P(LoginShelfViewTest, ClickUnlockButton) {
             tray_action_client_.close_note_reasons());
 }
 
-TEST_P(LoginShelfViewTest, ClickCancelButton) {
+TEST_F(LoginShelfViewTest, ClickCancelButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client, CancelAddUser());
   CreateUserSessions(1);
@@ -650,7 +624,7 @@ TEST_P(LoginShelfViewTest, ClickCancelButton) {
   Click(LoginShelfView::kCancel);
 }
 
-TEST_P(LoginShelfViewTest, ClickBrowseAsGuestButton) {
+TEST_F(LoginShelfViewTest, ClickBrowseAsGuestButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
 
   if (features::IsOobeConsolidatedConsentEnabled())
@@ -663,7 +637,7 @@ TEST_P(LoginShelfViewTest, ClickBrowseAsGuestButton) {
   Click(LoginShelfView::kBrowseAsGuest);
 }
 
-TEST_P(LoginShelfViewTest, ClickEnterpriseEnrollmentButton) {
+TEST_F(LoginShelfViewTest, ClickEnterpriseEnrollmentButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client,
               HandleAccelerator(ash::LoginAcceleratorAction::kStartEnrollment));
@@ -672,7 +646,7 @@ TEST_P(LoginShelfViewTest, ClickEnterpriseEnrollmentButton) {
   Click(LoginShelfView::kEnterpriseEnrollment);
 }
 
-TEST_P(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
+TEST_F(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
@@ -712,7 +686,7 @@ TEST_P(LoginShelfViewTest, TabGoesFromShelfToStatusAreaAndBackToShelf) {
       login_shelf_view_->GetViewByID(LoginShelfView::kSignOut)->HasFocus());
 }
 
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterAddButtonStatusChange) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterAddButtonStatusChange) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -733,7 +707,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterAddButtonStatusChange) {
   EXPECT_TRUE(IsButtonEnabled(LoginShelfView::kAddUser));
 }
 
-TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterShutdownButtonStatusChange) {
+TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterShutdownButtonStatusChange) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown,
@@ -754,7 +728,7 @@ TEST_P(LoginShelfViewTest, ShouldUpdateUiAfterShutdownButtonStatusChange) {
   EXPECT_TRUE(IsButtonEnabled(LoginShelfView::kShutdown));
 }
 
-TEST_P(LoginShelfViewTest, ShouldNotShowNavigationAndHotseat) {
+TEST_F(LoginShelfViewTest, ShouldNotShowNavigationAndHotseat) {
   gfx::NativeWindow window = login_shelf_view_->GetWidget()->GetNativeWindow();
   ShelfWidget* shelf_widget = Shelf::ForWindow(window)->shelf_widget();
   EXPECT_FALSE(shelf_widget->navigation_widget()->IsVisible())
@@ -763,7 +737,7 @@ TEST_P(LoginShelfViewTest, ShouldNotShowNavigationAndHotseat) {
       << "The hotseat widget should not appear in the login shelf.";
 }
 
-TEST_P(LoginShelfViewTest, ShelfWidgetStackedAtBottomInActiveSession) {
+TEST_F(LoginShelfViewTest, ShelfWidgetStackedAtBottomInActiveSession) {
   gfx::NativeWindow window = login_shelf_view_->GetWidget()->GetNativeWindow();
   ShelfWidget* shelf_widget = Shelf::ForWindow(window)->shelf_widget();
 
@@ -798,7 +772,7 @@ TEST_P(LoginShelfViewTest, ShelfWidgetStackedAtBottomInActiveSession) {
             shelf_widget->GetNativeWindow()->parent()->children()[0]);
 }
 
-TEST_P(LoginShelfViewTest, ParentAccessButtonVisibility) {
+TEST_F(LoginShelfViewTest, ParentAccessButtonVisibility) {
   // Parent access button should only be visible on lock screen.
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(true);
 
@@ -826,7 +800,7 @@ TEST_P(LoginShelfViewTest, ParentAccessButtonVisibility) {
                          LoginShelfView::kParentAccess}));
 }
 
-TEST_P(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
+TEST_F(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
@@ -842,54 +816,31 @@ TEST_P(LoginShelfViewTest, ParentAccessButtonVisibilityChangeOnLockScreen) {
       ShowsShelfButtons({LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
 }
 
-TEST_P(LoginShelfViewTest, EnterpriseEnrollmentButtonVisibility) {
+TEST_F(LoginShelfViewTest, EnterpriseEnrollmentButtonVisibility) {
   // Enterprise enrollment button should only be available when user creation
   // screen is shown in OOBE.
   login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
 
-  if (GetParam()) {
-    NotifySessionStateChanged(SessionState::OOBE);
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kEnterpriseEnrollment}));
+  NotifySessionStateChanged(SessionState::OOBE);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kEnterpriseEnrollment}));
 
-    NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
-    EXPECT_TRUE(ShowsShelfButtons({}));
+  NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
-    NotifySessionStateChanged(SessionState::LOGGED_IN_NOT_ACTIVE);
-    EXPECT_TRUE(ShowsShelfButtons({}));
+  NotifySessionStateChanged(SessionState::LOGGED_IN_NOT_ACTIVE);
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
-    NotifySessionStateChanged(SessionState::ACTIVE);
-    EXPECT_TRUE(ShowsShelfButtons({}));
+  NotifySessionStateChanged(SessionState::ACTIVE);
+  EXPECT_TRUE(ShowsShelfButtons({}));
 
-    NotifySessionStateChanged(SessionState::LOCKED);
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kSignOut}));
+  NotifySessionStateChanged(SessionState::LOCKED);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kSignOut}));
 
-    NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kCancel}));
-  } else {
-    NotifySessionStateChanged(SessionState::OOBE);
-    EXPECT_TRUE(ShowsShelfButtons(
-        {LoginShelfView::kShutdown, LoginShelfView::kEnterpriseEnrollment}));
-
-    NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-
-    NotifySessionStateChanged(SessionState::LOGGED_IN_NOT_ACTIVE);
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-
-    NotifySessionStateChanged(SessionState::ACTIVE);
-    EXPECT_TRUE(ShowsShelfButtons({}));
-
-    NotifySessionStateChanged(SessionState::LOCKED);
-    EXPECT_TRUE(ShowsShelfButtons(
-        {LoginShelfView::kShutdown, LoginShelfView::kSignOut}));
-
-    NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
-    EXPECT_TRUE(ShowsShelfButtons(
-        {LoginShelfView::kShutdown, LoginShelfView::kCancel}));
-  }
+  NotifySessionStateChanged(SessionState::LOGIN_SECONDARY);
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kCancel}));
 }
 
-TEST_P(LoginShelfViewTest, OsInstallButtonHidden) {
+TEST_F(LoginShelfViewTest, OsInstallButtonHidden) {
   // OS Install Button should be hidden if the kAllowOsInstall switch is
   // not set.
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
@@ -906,7 +857,7 @@ TEST_P(LoginShelfViewTest, OsInstallButtonHidden) {
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest}));
 }
 
-TEST_P(LoginShelfViewTest, TapShutdownInTabletLoginPrimary) {
+TEST_F(LoginShelfViewTest, TapShutdownInTabletLoginPrimary) {
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   TabletModeControllerTestApi().EnterTabletMode();
 
@@ -914,13 +865,13 @@ TEST_P(LoginShelfViewTest, TapShutdownInTabletLoginPrimary) {
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, TapShutdownInTabletOobe) {
+TEST_F(LoginShelfViewTest, TapShutdownInTabletOobe) {
   TabletModeControllerTestApi().EnterTabletMode();
   ShutdownAndConfirm();
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewTest, MouseWheelOnLoginShelf) {
+TEST_F(LoginShelfViewTest, MouseWheelOnLoginShelf) {
   gfx::NativeWindow window = login_shelf_view_->GetWidget()->GetNativeWindow();
   ShelfWidget* const shelf_widget = Shelf::ForWindow(window)->shelf_widget();
   const gfx::Rect shelf_bounds = shelf_widget->GetWindowBoundsInScreen();
@@ -970,7 +921,7 @@ TEST_P(LoginShelfViewTest, MouseWheelOnLoginShelf) {
 }
 
 // When display is on Shutdown button clicks should not be blocked.
-TEST_P(LoginShelfViewTest, DisplayOn) {
+TEST_F(LoginShelfViewTest, DisplayOn) {
   display::DisplayConfigurator* configurator =
       ash::Shell::Get()->display_configurator();
   ASSERT_TRUE(configurator->IsDisplayOn());
@@ -981,7 +932,7 @@ TEST_P(LoginShelfViewTest, DisplayOn) {
 
 // When display is off Shutdown button clicks should be blocked
 // `kMaxDroppedCallsWhenDisplaysOff` times.
-TEST_P(LoginShelfViewTest, DisplayOff) {
+TEST_F(LoginShelfViewTest, DisplayOff) {
   display::DisplayConfigurator* configurator =
       ash::Shell::Get()->display_configurator();
   display::test::ActionLogger action_logger;
@@ -1027,7 +978,7 @@ class OsInstallButtonTest : public LoginShelfViewTest {
   }
 };
 
-TEST_P(OsInstallButtonTest, ClickOsInstallButton) {
+TEST_F(OsInstallButtonTest, ClickOsInstallButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client, ShowOsInstallScreen);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
@@ -1035,7 +986,7 @@ TEST_P(OsInstallButtonTest, ClickOsInstallButton) {
   Click(LoginShelfView::kOsInstall);
 }
 
-TEST_P(OsInstallButtonTest, OsInstallButtonVisibility) {
+TEST_F(OsInstallButtonTest, OsInstallButtonVisibility) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
   EXPECT_TRUE(ShowsShelfButtons(
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
@@ -1061,15 +1012,9 @@ TEST_P(OsInstallButtonTest, OsInstallButtonVisibility) {
   login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/true);
   login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
   NotifySessionStateChanged(SessionState::OOBE);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kEnterpriseEnrollment,
-                                   LoginShelfView::kBrowseAsGuest,
-                                   LoginShelfView::kOsInstall}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons(
-        {LoginShelfView::kShutdown, LoginShelfView::kEnterpriseEnrollment,
-         LoginShelfView::kBrowseAsGuest, LoginShelfView::kOsInstall}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kEnterpriseEnrollment,
+                                 LoginShelfView::kBrowseAsGuest,
+                                 LoginShelfView::kOsInstall}));
 
   // When no user pods are visible, the Gaia dialog would normally pop up. We
   // need to simulate that behavior in this test.
@@ -1084,11 +1029,7 @@ TEST_P(OsInstallButtonTest, OsInstallButtonVisibility) {
   login_shelf_view_->SetIsFirstSigninStep(/*is_first=*/false);
   login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({}));
-  } else {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
-  }
+  EXPECT_TRUE(ShowsShelfButtons({}));
 }
 
 namespace {
@@ -1180,7 +1121,7 @@ class LoginShelfViewWithShutdownConfirmationTest : public LoginShelfViewTest {
 
 // Checks that shutdown confirmation bubble appears after pressing the
 // shutdown button on the lockscreen
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldShowAfterShutdownButtonLockSession) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -1204,35 +1145,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
 
 // Checks that shutdown confirmation bubble appears after pressing the
 // shutdown button on the lockscreen
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
-       ShouldShowAfterShutdownButtonOobeSession) {
-  login_shelf_view_->SetLoginDialogState(OobeDialogState::USER_CREATION);
-  NotifySessionStateChanged(SessionState::OOBE);
-  if (GetParam()) {
-    EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kEnterpriseEnrollment}));
-    return;
-  }
-  EXPECT_TRUE(ShowsShelfButtons(
-      {LoginShelfView::kShutdown, LoginShelfView::kEnterpriseEnrollment}));
-  EXPECT_FALSE(IsShutdownConfirmationVisible());
-
-  Click(LoginShelfView::kShutdown);
-  EXPECT_TRUE(IsShutdownConfirmationVisible());
-  EXPECT_FALSE(Shell::Get()->lock_state_controller()->ShutdownRequested());
-
-  histograms().ExpectUniqueSample(
-      kShelfShutdownConfirmationActionHistogramName,
-      ShelfShutdownConfirmationBubble::BubbleAction::kOpened, 1);
-  histograms().ExpectTotalCount(kShelfShutdownConfirmationActionHistogramName,
-                                1);
-  histograms().ExpectTotalCount(kCancelActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kDismissActionDurationHistogramName, 0);
-  histograms().ExpectTotalCount(kConfirmActionDurationHistogramName, 0);
-}
-
-// Checks that shutdown confirmation bubble appears after pressing the
-// shutdown button on the lockscreen
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldShowAfterShutdownButtonLoginPrimarySession) {
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
@@ -1257,7 +1170,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
 
 // Checks that shutdown confirmation bubble disappears after pressing the
 // cancel button on the shutdown confirmation bubble and could be shown again.
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAfterCancelButton) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -1304,7 +1217,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
 // Checks that shutdown confirmation bubble disappears after pressing the
 // confirmation button on the shutdown confirmation bubble and the device shuts
 // down.
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterConfirmButton) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -1336,7 +1249,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
 }
 
 // Checks that shutdown confirmation bubble disappears after inactive.
-TEST_P(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
+TEST_F(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
@@ -1368,7 +1281,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, ShouldCloseAfterInactive) {
 }
 
 // Checks that shutdown confirmation was first cancelled, then confirmed
-TEST_P(LoginShelfViewWithShutdownConfirmationTest,
+TEST_F(LoginShelfViewWithShutdownConfirmationTest,
        ShouldCloseAndShutdownAfterCancelAndConfirmButton) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
@@ -1426,7 +1339,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest,
 }
 
 // When display is on Shutdown button clicks should not be blocked.
-TEST_P(LoginShelfViewWithShutdownConfirmationTest, DisplayOn) {
+TEST_F(LoginShelfViewWithShutdownConfirmationTest, DisplayOn) {
   display::DisplayConfigurator* configurator =
       ash::Shell::Get()->display_configurator();
   ASSERT_TRUE(configurator->IsDisplayOn());
@@ -1438,7 +1351,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, DisplayOn) {
 
 // When display is off Shutdown button clicks should be blocked
 // `kMaxDroppedCallsWhenDisplaysOff` times.
-TEST_P(LoginShelfViewWithShutdownConfirmationTest, DisplayOff) {
+TEST_F(LoginShelfViewWithShutdownConfirmationTest, DisplayOff) {
   display::DisplayConfigurator* configurator =
       ash::Shell::Get()->display_configurator();
   display::test::ActionLogger action_logger;
@@ -1474,7 +1387,7 @@ TEST_P(LoginShelfViewWithShutdownConfirmationTest, DisplayOff) {
   EXPECT_TRUE(Shell::Get()->lock_state_controller()->ShutdownRequested());
 }
 
-TEST_P(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
+TEST_F(LoginShelfViewWithShutdownConfirmationTest, ClickRestartButton) {
   CreateUserSessions(1);
   NotifySessionStateChanged(SessionState::LOCKED);
   EXPECT_TRUE(
@@ -1521,7 +1434,7 @@ class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {
 
 // Checks that kiosk app button and kiosk instruction appears if device is with
 // kiosk license.
-TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
+TEST_F(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
@@ -1535,7 +1448,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
 
 // Checks that kiosk app button appears and kiosk instruction hidden if device
 // is not with kiosk license.
-TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
+TEST_F(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
   SetKioskLicenseModeForTesting(false);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
@@ -1549,7 +1462,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
 
 // Checks that kiosk app button appears and kiosk instruction hidden if device
 // is with kiosk license and no kiosk app is set up.
-TEST_P(LoginShelfViewWithKioskLicenseTest,
+TEST_F(LoginShelfViewWithKioskLicenseTest,
        ShouldNotShowKioskInstructionBubble) {
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
@@ -1564,7 +1477,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest,
 
 // Checks that the button of guest mode is shown if allow_guest_ is set to
 // true for devices with Kiosk SKU.
-TEST_P(LoginShelfViewWithKioskLicenseTest, ShowGuestModeButton) {
+TEST_F(LoginShelfViewWithKioskLicenseTest, ShowGuestModeButton) {
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
@@ -1576,7 +1489,7 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, ShowGuestModeButton) {
 
 // Checks that the button of guest mode is hidden if allow_guest_ is set to
 // false for devices with Kiosk SKU.
-TEST_P(LoginShelfViewWithKioskLicenseTest, HideGuestModeButton) {
+TEST_F(LoginShelfViewWithKioskLicenseTest, HideGuestModeButton) {
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
@@ -1585,15 +1498,6 @@ TEST_P(LoginShelfViewWithKioskLicenseTest, HideGuestModeButton) {
   EXPECT_FALSE(login_shelf_view_->GetViewByID(LoginShelfView::kBrowseAsGuest)
                    ->GetVisible());
 }
-
-INSTANTIATE_TEST_SUITE_P(All, LoginShelfViewTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, OsInstallButtonTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         LoginShelfViewWithShutdownConfirmationTest,
-                         testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All,
-                         LoginShelfViewWithKioskLicenseTest,
-                         testing::Bool());
 
 }  // namespace
 }  // namespace ash

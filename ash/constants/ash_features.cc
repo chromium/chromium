@@ -1511,12 +1511,6 @@ BASE_FEATURE(kOobeQuickStart,
              "OobeQuickStart",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Removes "Shut down" button from OOBE, except first login screen and
-// successful enrollment step.
-BASE_FEATURE(kOobeRemoveShutdownButton,
-             "OobeRemoveShutdownButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOnlyShowNewShortcutsApp,
              "OnlyShowNewShortcutsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2892,10 +2886,6 @@ bool IsOobeConsolidatedConsentEnabled() {
 
 bool IsOobeQuickStartEnabled() {
   return base::FeatureList::IsEnabled(kOobeQuickStart);
-}
-
-bool IsOobeRemoveShutdownButtonEnabled() {
-  return base::FeatureList::IsEnabled(kOobeRemoveShutdownButton);
 }
 
 bool IsOobeTouchpadScrollEnabled() {

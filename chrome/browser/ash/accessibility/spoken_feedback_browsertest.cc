@@ -1940,25 +1940,15 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, KeyboardShortcutViewer) {
   sm_.Replay();
 }
 
-//
 // Spoken feedback tests of the out-of-box experience.
-//
-
-// Parameter value represents if the OobeRemoveShutdownButton feature is
-// enabled.
-class OobeSpokenFeedbackTest : public OobeBaseTest,
-                               public testing::WithParamInterface<bool> {
- protected:
-  OobeSpokenFeedbackTest() {
-    feature_list_.InitWithFeatureState(features::kOobeRemoveShutdownButton,
-                                       GetParam());
-  }
-
+class OobeSpokenFeedbackTest : public OobeBaseTest {
+ public:
+  OobeSpokenFeedbackTest() = default;
   OobeSpokenFeedbackTest(const OobeSpokenFeedbackTest&) = delete;
   OobeSpokenFeedbackTest& operator=(const OobeSpokenFeedbackTest&) = delete;
+  ~OobeSpokenFeedbackTest() override = default;
 
-  ~OobeSpokenFeedbackTest() override {}
-
+ protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     OobeBaseTest::SetUpCommandLine(command_line);
     // Many bots don't have keyboard/mice which triggers the HID detection
@@ -1970,13 +1960,10 @@ class OobeSpokenFeedbackTest : public OobeBaseTest,
   }
 
   test::SpeechMonitor sm_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(crbug.com/1310682) - Re-enable this test.
-IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
+IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedbackWithTutorial();
@@ -2002,18 +1989,14 @@ IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest, DISABLED_SpokenFeedbackInOobe) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, ui::VKEY_TAB, false, false, false, false));
   });
-  if (GetParam()) {
-    sm_.ExpectSpeechPattern("*Status tray*");
-  } else {
-    sm_.ExpectSpeech("Shut down");
-  }
+  sm_.ExpectSpeechPattern("*Status tray*");
   sm_.ExpectSpeech("Button");
 
   sm_.Replay();
 }
 
 // TODO(akihiroota): fix flakiness: http://crbug.com/1172390
-IN_PROC_BROWSER_TEST_P(OobeSpokenFeedbackTest,
+IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest,
                        DISABLED_SpokenFeedbackTutorialInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
@@ -2056,7 +2039,7 @@ class SigninToUserProfileSwitchTest : public OobeSpokenFeedbackTest {
 // Verifies that spoken feedback correctly handles profile switch (signin ->
 // user) and announces the sync consent screen correctly.
 // TODO(crbug.com/1184714): Fix flakiness.
-IN_PROC_BROWSER_TEST_P(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
+IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
   // Force sync screen.
   LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build = true;
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
@@ -2158,8 +2141,5 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   sm_.Replay();
 }
-
-INSTANTIATE_TEST_SUITE_P(All, OobeSpokenFeedbackTest, testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, SigninToUserProfileSwitchTest, testing::Bool());
 
 }  // namespace ash
