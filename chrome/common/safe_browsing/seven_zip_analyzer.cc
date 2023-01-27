@@ -54,6 +54,18 @@ class SevenZipDelegate : public seven_zip::Delegate {
       return false;
     }
 
+    if (entry.file_size == 0) {
+      // Empty files try to initialize the memory mapping with region {0, 0},
+      // which is confused with Region::kWholeFile. Since we can't truncate the
+      // file within the utility process sandbox, the file still has contents
+      // from a previous entry, and we end up mapping those contents. This leads
+      // to CHECK failures since `output.size()` does not match
+      // `entry.file_size`. Since the file is actually empty, we can skip the
+      // memory mapping here to avoid this.
+      output = base::span<uint8_t>();
+      return true;
+    }
+
     mapped_file_.emplace();
     bool mapped_file_ok = mapped_file_->Initialize(
         temp_file_.Duplicate(), {0, static_cast<size_t>(entry.file_size)},

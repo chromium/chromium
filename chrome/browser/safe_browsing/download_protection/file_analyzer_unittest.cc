@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
@@ -35,7 +36,9 @@ using ::testing::StrEq;
 
 class FileAnalyzerTest : public testing::Test {
  public:
-  FileAnalyzerTest() {}
+  FileAnalyzerTest() {
+    scoped_feature_list_.InitAndEnableFeature(kSevenZipEvaluationEnabled);
+  }
   void DoneCallback(base::OnceCallback<void()> quit_callback,
                     FileAnalyzer::Results result) {
     result_ = result;
@@ -57,6 +60,7 @@ class FileAnalyzerTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   content::InProcessUtilityThreadHelper in_process_utility_thread_helper_;
 };
@@ -1041,6 +1045,33 @@ TEST_F(FileAnalyzerTest, RarDirectoriesHaveZeroLength) {
   EXPECT_EQ(result_.archived_binaries[0].file_basename(), "file.exe");
   EXPECT_EQ(result_.archived_binaries[0].length(), 24);
   EXPECT_EQ(result_.archived_binaries[1].file_basename(), "folder");
+  EXPECT_EQ(result_.archived_binaries[1].length(), 0);
+}
+
+TEST_F(FileAnalyzerTest, ZeroLengthSevenZipEntriesSupported) {
+  scoped_refptr<MockBinaryFeatureExtractor> extractor =
+      new testing::StrictMock<MockBinaryFeatureExtractor>();
+  FileAnalyzer analyzer(extractor);
+  base::RunLoop run_loop;
+
+  base::FilePath target_path(FILE_PATH_LITERAL("file_and_empty.7z"));
+  base::FilePath sevenz_path;
+  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &sevenz_path));
+  sevenz_path = sevenz_path.AppendASCII("safe_browsing")
+                    .AppendASCII("seven_zip")
+                    .AppendASCII("file_and_empty.7z");
+
+  analyzer.Start(
+      target_path, sevenz_path,
+      base::BindOnce(&FileAnalyzerTest::DoneCallback, base::Unretained(this),
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  ASSERT_TRUE(has_result_);
+  ASSERT_EQ(result_.archived_binaries.size(), 2);
+  EXPECT_EQ(result_.archived_binaries[0].file_basename(), "large");
+  EXPECT_EQ(result_.archived_binaries[0].length(), 21);
+  EXPECT_EQ(result_.archived_binaries[1].file_basename(), "empty");
   EXPECT_EQ(result_.archived_binaries[1].length(), 0);
 }
 
