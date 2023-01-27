@@ -8,7 +8,9 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -30,6 +32,7 @@ public class CreatorToolbarView extends LinearLayout {
     private ButtonCompat mFollowButton;
     private ButtonCompat mFollowingButton;
     private View mToolbarBottomBorder;
+    private int mTouchSize;
 
     public CreatorToolbarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -108,5 +111,35 @@ public class CreatorToolbarView extends LinearLayout {
         mFollowButton = (ButtonCompat) findViewById(R.id.creator_follow_button_toolbar);
         mFollowingButton = (ButtonCompat) findViewById(R.id.creator_following_button_toolbar);
         mToolbarBottomBorder = (View) findViewById(R.id.creator_toolbar_bottom_border);
+
+        mTouchSize =
+                getResources().getDimensionPixelSize(R.dimen.creator_toolbar_button_touch_size);
+
+        mButtonsContainer.addOnLayoutChangeListener(
+                (View v, int left, int top, int right, int bottom, int oldLeft, int oldTop,
+                        int oldRight, int oldBottom) -> adjustButtonTouchDelegates());
+    }
+
+    private void adjustButtonTouchDelegates() {
+        if (mFollowButton.getVisibility() == View.VISIBLE) {
+            adjustButtonTouchDelegate(mFollowButton);
+        } else if (mFollowingButton.getVisibility() == View.VISIBLE) {
+            adjustButtonTouchDelegate(mFollowingButton);
+        }
+    }
+
+    private void adjustButtonTouchDelegate(ButtonCompat button) {
+        Rect rect = new Rect();
+        button.getHitRect(rect);
+
+        int halfWidthDelta = Math.max((mTouchSize - button.getWidth()) / 2, 0);
+        int halfHeightDelta = Math.max((mTouchSize - button.getHeight()) / 2, 0);
+
+        rect.left -= halfWidthDelta;
+        rect.right += halfWidthDelta;
+        rect.top -= halfHeightDelta;
+        rect.bottom += halfHeightDelta;
+
+        mButtonsContainer.setTouchDelegate(new TouchDelegate(rect, button));
     }
 }

@@ -13,6 +13,8 @@ found in the LICENSE file.
     <dimen name="creator_toolbar_bottom_border_height">1dp</dimen>
     <dimen name="creator_toolbar_inset_start">0dp</dimen>
     <dimen name="creator_toolbar_text_padding">10dp</dimen>
+    <dimen name="creator_toolbar_button_touch_size">48dp</dimen>
+    <dimen name="creator_toolbar_button_height">40dp</dimen>
 
     <!-- Profile dimensions -->
     <dimen name="creator_profile_container_width">0dp</dimen>

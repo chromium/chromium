@@ -30,14 +30,15 @@
           android:textAppearance="@style/TextAppearance.Headline.Primary" />
       <FrameLayout
           android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
+          android:layout_height="@dimen/creator_toolbar_button_touch_size"
           android:id="@+id/creator_all_buttons_toolbar"
           android:layout_gravity="end"
           android:visibility="gone" >
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/creator_follow_button_toolbar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/creator_toolbar_button_height"
+            android:layout_gravity="center_vertical"
             style="@style/CreatorFollowFilledButtonToolbar"
             android:text="@string/menu_follow"
             android:drawableStart="@drawable/follow_add"
@@ -45,7 +46,8 @@
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/creator_following_button_toolbar"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/creator_toolbar_button_height"
+            android:layout_gravity="center_vertical"
             style="@style/CreatorFollowReverseButtonToolbar"
             android:text="@string/menu_following"
             android:drawableStart="@drawable/following_checkmark"

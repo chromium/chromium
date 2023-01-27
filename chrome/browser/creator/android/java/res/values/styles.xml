@@ -46,15 +46,15 @@ found in the LICENSE file.
 
     <!-- Toolbar Follow Buttons -->
     <style name="CreatorFollowFilledButtonToolbar" parent="FollowFilledButton">
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingEnd">14dp</item>
-        <item name="android:drawablePadding">10dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
         <item name="android:layout_marginEnd">16dp</item>
     </style>
     <style name="CreatorFollowReverseButtonToolbar" parent="FollowReverseButton">
-        <item name="android:paddingStart">6dp</item>
-        <item name="android:paddingEnd">14dp</item>
-        <item name="android:drawablePadding">5dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:drawablePadding">8dp</item>
         <item name="android:layout_marginEnd">16dp</item>
     </style>
 </resources>
