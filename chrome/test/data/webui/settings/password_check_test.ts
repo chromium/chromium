@@ -18,13 +18,12 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 // <if expr="chromeos_ash">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // </if>
-
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {makeInsecureCredential, makePasswordCheckStatus} from './passwords_and_autofill_fake_data.js';
 import {getSyncAllPrefs, simulateSyncStatus} from './sync_test_util.js';
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
-import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 

@@ -413,7 +413,6 @@ non_web_component_files = [
   "focus_config.ts",
   "i18n_setup.ts",
   "lifetime_browser_proxy.ts",
-  "open_window_proxy.ts",
   "page_visibility.ts",
   "people_page/profile_info_browser_proxy.ts",
   "people_page/sync_browser_proxy.ts",

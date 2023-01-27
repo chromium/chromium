@@ -306,7 +306,6 @@ build_webui("build") {
     "metrics_browser_proxy.ts",
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
-    "open_window_proxy.ts",
     "page_visibility.ts",
     "people_page/sync_browser_proxy.ts",
     "people_page/profile_info_browser_proxy.ts",

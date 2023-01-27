@@ -140,8 +140,8 @@ export {BrowserProxy as AppManagementComponentBrowserProxy} from 'chrome://resou
 export {PageType, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 export {createBoolPermission, createTriStatePermission, getBoolPermissionValue, isBoolValue} from 'chrome://resources/cr_components/app_management/permission_util.js';
 export {convertOptionalBoolToBool, createEmptyState, createInitialState, getPermissionValueBool} from 'chrome://resources/cr_components/app_management/util.js';
+export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
-export {OpenWindowProxyImpl} from '../open_window_proxy.js';
 export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
 export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 export {CrSettingsPrefs} from '../prefs/prefs_types.js';

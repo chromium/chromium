@@ -9,9 +9,9 @@ import '../settings_shared.css.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
-import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 
 import {getTemplate} from './extension_controlled_indicator.html.js';
 
