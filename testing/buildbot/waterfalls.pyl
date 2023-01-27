@@ -6630,6 +6630,17 @@
           'isolated_scripts': 'chromeos_isolated_scripts',
         },
       },
+      'chromeos-betty-pi-arc-finch-smoke-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'mixins': [
+          'chromeos-betty-finch',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromeos_browser_finch_tests',
+        },
+      },
       'lacros-amd64-generic-chrome-fyi': {
         'additional_compile_targets': [
           'chrome',

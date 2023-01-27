@@ -13,6 +13,20 @@
       "use_remoteexec": true
     }
   },
+  "chromeos-betty-pi-arc-finch-smoke-chrome": {
+    "args_file": "//build/args/chromeos/betty-pi-arc.gni",
+    "gn_args": {
+      "also_build_lacros_chrome_for_architecture": "amd64",
+      "dcheck_always_on": true,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_real_dbus_clients": false,
+      "use_remoteexec": true
+    }
+  },
   "lacros-amd64-generic-chrome-fyi": {
     "args_file": "//build/args/chromeos/amd64-generic-crostoolchain.gni",
     "gn_args": {

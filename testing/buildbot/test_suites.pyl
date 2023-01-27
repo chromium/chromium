@@ -5633,7 +5633,6 @@
 
     'chromeos_vm_gtests': [
       'chromeos_browser_all_tast_tests',
-      'chromeos_browser_finch_tests',
       'chromeos_browser_integration_tests',
       'chromeos_system_friendly_gtests',
     ],

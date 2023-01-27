@@ -870,6 +870,7 @@
 
     'internal.chromeos.fyi': {
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
+      'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'lacros-amd64-generic-chrome-fyi': 'chromeos_amd64-generic_lacros_official_skylab_reclient',
       'lacros-arm-generic-chrome-fyi': 'chromeos_arm-generic_lacros_official_skylab_reclient',
     },
@@ -920,6 +921,7 @@
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official',
       'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks',
+      'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-eve-compile-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',

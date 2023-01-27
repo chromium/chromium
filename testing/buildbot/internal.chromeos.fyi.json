@@ -206,49 +206,6 @@
         "args": [
           "--magic-vm-cache=magic_cros_vm_cache"
         ],
-        "experiment_percentage": 100,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
-          "idempotent": false,
-          "named_caches": [
-            {
-              "name": "cros_vm",
-              "path": "magic_cros_vm_cache"
-            }
-          ],
-          "optional_dimensions": {
-            "60": [
-              {
-                "caches": "cros_vm"
-              }
-            ]
-          },
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_variations_tast_tests",
-        "test_id_prefix": "ninja://chromeos:chrome_variations_tast_tests/"
-      },
-      {
-        "args": [
-          "--magic-vm-cache=magic_cros_vm_cache"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1130,6 +1087,56 @@
           "shards": 24
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
+      }
+    ]
+  },
+  "chromeos-betty-pi-arc-finch-smoke-chrome": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ],
+    "gtest_tests": [
+      {
+        "args": [
+          "--magic-vm-cache=magic_cros_vm_cache"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "x86",
+              "gce": "1",
+              "kvm": "1",
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests.finch"
+            }
+          ],
+          "idempotent": false,
+          "named_caches": [
+            {
+              "name": "cros_vm",
+              "path": "magic_cros_vm_cache"
+            }
+          ],
+          "optional_dimensions": {
+            "60": [
+              {
+                "caches": "cros_vm"
+              }
+            ]
+          },
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_variations_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_variations_tast_tests/"
       }
     ]
   },
