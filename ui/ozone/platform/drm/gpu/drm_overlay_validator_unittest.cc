@@ -225,10 +225,9 @@ void DrmOverlayValidatorTest::AddPlane(const OverlaySurfaceCandidate& params) {
 
   scoped_refptr<DrmFramebuffer> drm_framebuffer = CreateOverlayBuffer(
       GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
-  plane_list_.push_back(DrmOverlayPlane(std::move(drm_framebuffer),
-                                        params.plane_z_order, params.transform,
-                                        gfx::ToNearestRect(params.display_rect),
-                                        params.crop_rect, true, nullptr));
+  plane_list_.emplace_back(
+      std::move(drm_framebuffer), params.plane_z_order, params.transform,
+      gfx::ToNearestRect(params.display_rect), params.crop_rect, true, nullptr);
 }
 
 void DrmOverlayValidatorTest::TearDown() {

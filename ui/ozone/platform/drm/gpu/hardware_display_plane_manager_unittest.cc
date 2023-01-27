@@ -103,7 +103,7 @@ void HardwareDisplayPlaneManagerTest::PerformPageFlip(
   ui::DrmOverlayPlaneList assigns;
   scoped_refptr<ui::DrmFramebuffer> xrgb_buffer =
       CreateBuffer(kDefaultBufferSize);
-  assigns.push_back(ui::DrmOverlayPlane(xrgb_buffer, nullptr));
+  assigns.emplace_back(xrgb_buffer, nullptr);
   fake_drm_->plane_manager()->BeginFrame(state);
   ASSERT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       state, assigns, fake_drm_->crtc_property(crtc_idx).id));
@@ -292,7 +292,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, DisableModeset) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, SinglePlaneAssignment) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -305,7 +305,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, SinglePlaneAssignment) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, AddCursor) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -323,7 +323,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, AddCursor) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, BadCrtc) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -335,8 +335,8 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, BadCrtc) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, NotEnoughPlanes) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -348,7 +348,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, NotEnoughPlanes) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, MultipleCrtcs) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -363,8 +363,8 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, MultipleCrtcs) {
 
 TEST_P(HardwareDisplayPlaneManagerLegacyTest, MultiplePlanesAndCrtcs) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/2);
@@ -381,7 +381,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, CheckFramebufferFormatMatch) {
   ui::DrmOverlayPlaneList assigns;
   scoped_refptr<ui::DrmFramebuffer> buffer =
       CreateBufferWithFormat(kDefaultBufferSize, DRM_FORMAT_NV12);
-  assigns.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  assigns.emplace_back(buffer, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -395,7 +395,7 @@ TEST_P(HardwareDisplayPlaneManagerLegacyTest, CheckFramebufferFormatMatch) {
   assigns.clear();
   scoped_refptr<ui::DrmFramebuffer> xrgb_buffer =
       CreateBuffer(kDefaultBufferSize);
-  assigns.push_back(ui::DrmOverlayPlane(xrgb_buffer, nullptr));
+  assigns.emplace_back(xrgb_buffer, nullptr);
   fake_drm_->plane_manager()->BeginFrame(&state_);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &state_, assigns, fake_drm_->crtc_property(0).id));
@@ -412,7 +412,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, Modeset) {
   ui::HardwareDisplayPlaneList state;
   ui::CommitRequest commit_request;
   ui::DrmOverlayPlaneList overlays;
-  overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  overlays.emplace_back(fake_buffer_, nullptr);
 
   commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
       fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
@@ -447,7 +447,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterModeset) {
   ui::HardwareDisplayPlaneList state;
   ui::CommitRequest commit_request;
   ui::DrmOverlayPlaneList overlays;
-  overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  overlays.emplace_back(fake_buffer_, nullptr);
   commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
       fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
       kDefaultMode, gfx::Point(), &state, std::move(overlays)));
@@ -485,7 +485,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
   {
     ui::CommitRequest commit_request;
     ui::DrmOverlayPlaneList overlays;
-    overlays.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+    overlays.emplace_back(fake_buffer_, nullptr);
     commit_request.push_back(ui::CrtcCommitRequest::EnableCrtcRequest(
         fake_drm_->crtc_property(0).id, fake_drm_->connector_property(0).id,
         kDefaultMode, gfx::Point(), &state, std::move(overlays)));
@@ -514,8 +514,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, CheckPropsAfterDisable) {
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultiplePlaneAssignment) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/2);
@@ -528,8 +528,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultiplePlaneAssignment) {
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultiplePlanesAndCrtcs) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/2);
@@ -546,8 +546,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, SharedPlanes) {
   ui::DrmOverlayPlaneList assigns;
   scoped_refptr<ui::DrmFramebuffer> buffer = CreateBuffer(gfx::Size(1, 1));
 
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
+  assigns.emplace_back(buffer, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/1);
@@ -580,8 +580,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, UnusedPlanesAreReleased) {
       CreateBuffer(kDefaultBufferSize);
   scoped_refptr<ui::DrmFramebuffer> overlay_buffer =
       CreateBuffer(gfx::Size(1, 1));
-  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  assigns.emplace_back(primary_buffer, nullptr);
+  assigns.emplace_back(overlay_buffer, nullptr);
   ui::HardwareDisplayPlaneList hdpl;
 
   scoped_refptr<ui::PageFlipRequest> page_flip_request =
@@ -592,7 +592,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, UnusedPlanesAreReleased) {
   EXPECT_TRUE(
       fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   assigns.clear();
-  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
+  assigns.emplace_back(primary_buffer, nullptr);
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
       &hdpl, assigns, fake_drm_->crtc_property(0).id));
@@ -615,8 +615,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, AssignPlanesRestoresInUse) {
       CreateBuffer(kDefaultBufferSize);
   scoped_refptr<ui::DrmFramebuffer> overlay_buffer =
       CreateBuffer(gfx::Size(1, 1));
-  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  assigns.emplace_back(primary_buffer, nullptr);
+  assigns.emplace_back(overlay_buffer, nullptr);
   ui::HardwareDisplayPlaneList hdpl;
 
   scoped_refptr<ui::PageFlipRequest> page_flip_request =
@@ -627,7 +627,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, AssignPlanesRestoresInUse) {
   EXPECT_TRUE(
       fake_drm_->plane_manager()->Commit(&hdpl, page_flip_request, nullptr));
   EXPECT_TRUE(fake_drm_->plane_manager()->planes().front()->in_use());
-  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  assigns.emplace_back(overlay_buffer, nullptr);
 
   fake_drm_->plane_manager()->BeginFrame(&hdpl);
   // Assign overlay planes will fail since there aren't enough planes.
@@ -649,8 +649,8 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, PageflipTestRestoresInUse) {
       CreateBuffer(kDefaultBufferSize);
   scoped_refptr<ui::DrmFramebuffer> overlay_buffer =
       CreateBuffer(gfx::Size(1, 1));
-  assigns.push_back(ui::DrmOverlayPlane(primary_buffer, nullptr));
-  assigns.push_back(ui::DrmOverlayPlane(overlay_buffer, nullptr));
+  assigns.emplace_back(primary_buffer, nullptr);
+  assigns.emplace_back(overlay_buffer, nullptr);
   ui::HardwareDisplayPlaneList hdpl;
 
   scoped_refptr<ui::PageFlipRequest> page_flip_request =
@@ -717,7 +717,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFrames) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/2);
@@ -739,7 +739,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFrames) {
 
 TEST_P(HardwareDisplayPlaneManagerAtomicTest, MultipleFramesDifferentPlanes) {
   ui::DrmOverlayPlaneList assigns;
-  assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns.emplace_back(fake_buffer_, nullptr);
 
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/2, /*planes_per_crtc=*/2);
@@ -1099,9 +1099,9 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest,
   fake_drm_->InitializeState(drm_state, use_atomic_);
 
   ui::DrmOverlayPlaneList assigns1;
-  assigns1.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+  assigns1.emplace_back(fake_buffer_, nullptr);
   ui::DrmOverlayPlaneList assigns2;
-  assigns2.push_back(ui::DrmOverlayPlane(fake_buffer2, nullptr));
+  assigns2.emplace_back(fake_buffer2, nullptr);
 
   fake_drm_->plane_manager()->BeginFrame(&state_);
   EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
@@ -1317,19 +1317,17 @@ class HardwareDisplayPlaneManagerPlanesReadyTest : public testing::Test {
 
   ui::DrmOverlayPlaneList CreatePlanesWithoutFences() {
     ui::DrmOverlayPlaneList planes;
-    planes.push_back(
-        ui::DrmOverlayPlane(CreateBuffer(kDefaultBufferSize), nullptr));
-    planes.push_back(
-        ui::DrmOverlayPlane(CreateBuffer(kDefaultBufferSize), nullptr));
+    planes.emplace_back(CreateBuffer(kDefaultBufferSize), nullptr);
+    planes.emplace_back(CreateBuffer(kDefaultBufferSize), nullptr);
     return planes;
   }
 
   ui::DrmOverlayPlaneList CreatePlanesWithFences() {
     ui::DrmOverlayPlaneList planes;
-    planes.push_back(ui::DrmOverlayPlane(CreateBuffer(kDefaultBufferSize),
-                                         fake_fence_fd1_.GetGpuFence()));
-    planes.push_back(ui::DrmOverlayPlane(CreateBuffer(kDefaultBufferSize),
-                                         fake_fence_fd2_.GetGpuFence()));
+    planes.emplace_back(CreateBuffer(kDefaultBufferSize),
+                        fake_fence_fd1_.GetGpuFence());
+    planes.emplace_back(CreateBuffer(kDefaultBufferSize),
+                        fake_fence_fd2_.GetGpuFence());
     return planes;
   }
 
@@ -1434,7 +1432,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
     scoped_refptr<ui::DrmFramebuffer> framebuffer_original =
         ui::DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                            kDefaultBufferSize, {}, true);
-    assigns.push_back(ui::DrmOverlayPlane(framebuffer_original, nullptr));
+    assigns.emplace_back(framebuffer_original, nullptr);
     assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
@@ -1462,7 +1460,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OriginalModifiersSupportOnly) {
     scoped_refptr<ui::DrmFramebuffer> framebuffer_non_original =
         ui::DrmFramebuffer::AddFramebuffer(fake_drm_, buffer.get(),
                                            kDefaultBufferSize, {}, false);
-    assigns.push_back(ui::DrmOverlayPlane(framebuffer_non_original, nullptr));
+    assigns.emplace_back(framebuffer_non_original, nullptr);
     assigns.back().plane_transform = gfx::OVERLAY_TRANSFORM_ROTATE_270;
     EXPECT_FALSE(fake_drm_->plane_manager()->AssignOverlayPlanes(
         &state_, assigns, fake_drm_->crtc_property(0).id));
@@ -1476,7 +1474,7 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
 
   {
     ui::DrmOverlayPlaneList assigns;
-    assigns.push_back(ui::DrmOverlayPlane(fake_buffer_, nullptr));
+    assigns.emplace_back(fake_buffer_, nullptr);
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
     EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
@@ -1494,10 +1492,9 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
 
   {
     ui::DrmOverlayPlaneList assigns;
-    assigns.push_back(ui::DrmOverlayPlane(
+    assigns.emplace_back(
         fake_buffer_, 0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-        gfx::Rect(kDefaultBufferSize), gfx::RectF(0, 0, .5, 1), false,
-        nullptr));
+        gfx::Rect(kDefaultBufferSize), gfx::RectF(0, 0, .5, 1), false, nullptr);
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
     EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(
@@ -1515,10 +1512,10 @@ TEST_P(HardwareDisplayPlaneManagerAtomicTest, OverlaySourceCrop) {
 
   {
     ui::DrmOverlayPlaneList assigns;
-    assigns.push_back(ui::DrmOverlayPlane(
-        fake_buffer_, 0, gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
-        gfx::Rect(kDefaultBufferSize), gfx::RectF(0, 0, .999, .501), false,
-        nullptr));
+    assigns.emplace_back(fake_buffer_, 0,
+                         gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE,
+                         gfx::Rect(kDefaultBufferSize),
+                         gfx::RectF(0, 0, .999, .501), false, nullptr);
 
     fake_drm_->plane_manager()->BeginFrame(&state_);
     EXPECT_TRUE(fake_drm_->plane_manager()->AssignOverlayPlanes(

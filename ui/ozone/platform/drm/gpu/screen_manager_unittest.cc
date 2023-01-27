@@ -1205,7 +1205,7 @@ TEST_F(ScreenManagerTest, EnableControllerWhenWindowHasBuffer) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  planes.emplace_back(buffer, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1238,7 +1238,7 @@ TEST_F(ScreenManagerTest, DISABLED_RejectBufferWithIncompatibleModifiers) {
   auto buffer = CreateBufferWithModifier(
       DRM_FORMAT_XRGB8888, I915_FORMAT_MOD_X_TILED, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  planes.emplace_back(buffer, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1560,7 +1560,7 @@ TEST_F(ScreenManagerTest, CloningPlanesOnModeset) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  planes.emplace_back(buffer, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1600,8 +1600,8 @@ TEST_F(ScreenManagerTest, CloningMultiplePlanesOnModeset) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  planes.emplace_back(primary, nullptr);
+  planes.emplace_back(overlay, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1640,7 +1640,7 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesNoOverlays) {
   scoped_refptr<DrmFramebuffer> buffer =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(buffer, nullptr));
+  planes.emplace_back(buffer, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1682,8 +1682,8 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlaySucceeding) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  planes.emplace_back(primary, nullptr);
+  planes.emplace_back(overlay, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1730,8 +1730,8 @@ TEST_F(ScreenManagerTest, ModesetWithClonedPlanesWithOverlayFailing) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  planes.emplace_back(primary, nullptr);
+  planes.emplace_back(overlay, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
@@ -1781,8 +1781,8 @@ TEST_F(ScreenManagerTest, ModesetWithNewBuffersOnModifiersChange) {
   scoped_refptr<DrmFramebuffer> overlay =
       CreateBuffer(DRM_FORMAT_XRGB8888, GetPrimaryBounds().size());
   ui::DrmOverlayPlaneList planes;
-  planes.push_back(ui::DrmOverlayPlane(primary, nullptr));
-  planes.push_back(ui::DrmOverlayPlane(overlay, nullptr));
+  planes.emplace_back(primary, nullptr);
+  planes.emplace_back(overlay, nullptr);
   window->SchedulePageFlip(std::move(planes), base::DoNothing(),
                            base::DoNothing());
   screen_manager_->AddWindow(1, std::move(window));
