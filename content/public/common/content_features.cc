@@ -992,11 +992,15 @@ const base::FeatureParam<ServiceWorkerBypassFetchHandlerTarget>
         ServiceWorkerBypassFetchHandlerTarget::kMainResource,
         &service_worker_bypass_fetch_handler_target_options};
 
-// Define origins to bypass ServiceWorker. Origins are expected to be passed as
-// a comma separated string. e.g. https://example1.test,https://example2.test
+// The set of ServiceWorker to bypass while making navigation request.
+// They are represented by a comma separated list of HEX encoded SHA256 hash of
+// the ServiceWorker's scripts.
+// e.g.
+// 9685C8DE399237BDA6FF3AD0F281E9D522D46BB0ECFACE05E98D2B9AAE51D1EF,
+// 20F0D78B280E40C0A17ABB568ACF4BDAFFB9649ADA75B0675F962B3F4FC78EA4
 const base::FeatureParam<std::string>
-    kServiceWorkerBypassFetchHandlerBypassedOrigins{
-        &kServiceWorkerBypassFetchHandler, "origins_to_bypass", ""};
+    kServiceWorkerBypassFetchHandlerBypassedHashStrings{
+        &kServiceWorkerBypassFetchHandler, "script_checksum_to_bypass", ""};
 
 // Enables skipping the service worker fetch handler if the fetch handler is
 // identified as ignorable.
