@@ -43,7 +43,6 @@
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/style/border_image_length_box.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -417,10 +416,9 @@ AtomicString CSSToStyleMap::MapAnimationName(StyleResolverState& state,
   return CSSAnimationData::InitialName();
 }
 
-StyleTimeline CSSToStyleMap::MapAnimationTimeline(
-    StyleResolverState& state,
-    const ScopedCSSValue& scoped_value) {
-  const CSSValue& value = scoped_value.GetCSSValue();
+StyleTimeline CSSToStyleMap::MapAnimationTimeline(StyleResolverState& state,
+                                                  const CSSValue& value) {
+  DCHECK(value.IsScopedValue());
   if (value.IsInitialValue()) {
     return CSSAnimationData::InitialTimeline();
   }
@@ -431,11 +429,7 @@ StyleTimeline CSSToStyleMap::MapAnimationTimeline(
   }
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(value)) {
     return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
-        custom_ident->Value(), scoped_value.GetTreeScope()));
-  }
-  if (auto* string_value = DynamicTo<CSSStringValue>(value)) {
-    return StyleTimeline(MakeGarbageCollected<ScopedCSSName>(
-        AtomicString(string_value->Value()), scoped_value.GetTreeScope()));
+        custom_ident->Value(), custom_ident->GetTreeScope()));
   }
   if (value.IsViewValue()) {
     const auto& view_value = To<cssvalue::CSSViewValue>(value);

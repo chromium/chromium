@@ -4047,9 +4047,6 @@ CSSValue* ConsumeAnimationTimeline(CSSParserTokenRange& range,
   if (auto* value = ConsumeCustomIdent(range, context)) {
     return value;
   }
-  if (auto* value = ConsumeString(range)) {
-    return value;
-  }
   if (auto* value = ConsumeViewFunction(range, context)) {
     return value;
   }

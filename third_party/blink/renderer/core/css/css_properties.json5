@@ -921,7 +921,6 @@
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      tree_scoped_value: true,
       separator: ",",
       valid_for_marker: true,
       runtime_flag: "CSSScrollTimeline",
