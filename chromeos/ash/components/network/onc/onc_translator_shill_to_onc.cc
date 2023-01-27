@@ -47,27 +47,27 @@ base::Value ConvertVpnStringToValue(const std::string& str,
 
 // Returns the string value of |key| from |dict| if found, or the empty string
 // otherwise.
-std::string FindStringKeyOrEmpty(const base::Value* dict,
+std::string FindStringKeyOrEmpty(const base::Value::Dict& dict,
                                  base::StringPiece key) {
-  const std::string* value = dict->FindStringKey(key);
+  const std::string* value = dict.FindString(key);
   return value ? *value : std::string();
 }
 
 // If the network is configured with an installed certificate, a PKCS11 id
 // will be set which is provided for the UI to display certificate
 // information. Returns true if the PKCS11 id is available and set.
-bool SetPKCS11Id(const base::Value* shill_dictionary,
+bool SetPKCS11Id(const base::Value::Dict& shill_dictionary,
                  const char* cert_id_property,
                  const char* cert_slot_property,
-                 base::Value* onc_object) {
+                 base::Value::Dict& onc_object) {
   const std::string* shill_cert_id =
-      shill_dictionary->FindStringKey(cert_id_property);
+      shill_dictionary.FindString(cert_id_property);
   if (!shill_cert_id || shill_cert_id->empty()) {
     return false;
   }
 
   const std::string* shill_slot =
-      shill_dictionary->FindStringKey(cert_slot_property);
+      shill_dictionary.FindString(cert_slot_property);
   std::string pkcs11_id;
   if (shill_slot && !shill_slot->empty()) {
     pkcs11_id = *shill_slot + ":" + *shill_cert_id;
@@ -75,10 +75,9 @@ bool SetPKCS11Id(const base::Value* shill_dictionary,
     pkcs11_id = *shill_cert_id;
   }
 
-  onc_object->SetKey(::onc::client_cert::kClientCertType,
-                     base::Value(::onc::client_cert::kPKCS11Id));
-  onc_object->SetKey(::onc::client_cert::kClientCertPKCS11Id,
-                     base::Value(pkcs11_id));
+  onc_object.Set(::onc::client_cert::kClientCertType,
+                 ::onc::client_cert::kPKCS11Id);
+  onc_object.Set(::onc::client_cert::kClientCertPKCS11Id, pkcs11_id);
   return true;
 }
 
@@ -88,7 +87,7 @@ bool SetPKCS11Id(const base::Value* shill_dictionary,
 // objects are translated.
 class ShillToONCTranslator {
  public:
-  ShillToONCTranslator(const base::Value& shill_dictionary,
+  ShillToONCTranslator(const base::Value::Dict& shill_dictionary,
                        ::onc::ONCSource onc_source,
                        const chromeos::onc::OncValueSignature& onc_signature,
                        const NetworkState* network_state)
@@ -99,7 +98,7 @@ class ShillToONCTranslator {
     field_translation_table_ = GetFieldTranslationTable(onc_signature);
   }
 
-  ShillToONCTranslator(const base::Value& shill_dictionary,
+  ShillToONCTranslator(const base::Value::Dict& shill_dictionary,
                        ::onc::ONCSource onc_source,
                        const chromeos::onc::OncValueSignature& onc_signature,
                        const FieldTranslationEntry* field_translation_table,
@@ -115,7 +114,7 @@ class ShillToONCTranslator {
 
   // Translates the associated Shill dictionary and creates an ONC object of
   // the given signature.
-  base::Value CreateTranslatedONCObject();
+  base::Value::Dict CreateTranslatedONCObject();
 
  private:
   void TranslateEthernet();
@@ -140,14 +139,14 @@ class ShillToONCTranslator {
   // to |onc_object_| at |onc_field_name|.
   void TranslateAndAddNestedObject(
       const std::string& onc_field_name,
-      const base::Value& dictionary,
+      const base::Value::Dict& dictionary,
       const FieldTranslationEntry* field_translation_table);
 
   // Creates an ONC object from |dictionary| according to the signature
   // associated to |onc_field_name| and adds it to |onc_object_| at
   // |onc_field_name|.
   void TranslateAndAddNestedObject(const std::string& onc_field_name,
-                                   const base::Value& dictionary);
+                                   const base::Value::Dict& dictionary);
 
   // Creates an ONC object from |shill_dictionary_| according to the signature
   // associated to |onc_field_name| and adds it to |onc_object_| at
@@ -158,14 +157,14 @@ class ShillToONCTranslator {
   // |onc_object_| to |value| if the dictionary exists.
   void SetNestedOncValue(const std::string& onc_dictionary_name,
                          const std::string& onc_field_name,
-                         const base::Value& value);
+                         base::Value value);
 
   // Translates a list of nested objects and adds the list to |onc_object_| at
   // |onc_field_name|. If there are errors while parsing individual objects or
   // if the resulting list contains no entries, the result will not be added
   // to |onc_object_|.
   void TranslateAndAddListOfObjects(const std::string& onc_field_name,
-                                    const base::Value& list);
+                                    const base::Value::List& list);
 
   // Applies function CopyProperty to each field of |value_signature| and its
   // base signatures.
@@ -199,16 +198,16 @@ class ShillToONCTranslator {
   // for debugging.
   std::string GetName();
 
-  const base::Value* shill_dictionary_;
+  const base::Value::Dict* shill_dictionary_;
   ::onc::ONCSource onc_source_;
   const chromeos::onc::OncValueSignature* onc_signature_;
   const FieldTranslationEntry* field_translation_table_;
-  base::Value onc_object_;
+  base::Value::Dict onc_object_;
   const NetworkState* network_state_;
 };
 
-base::Value ShillToONCTranslator::CreateTranslatedONCObject() {
-  onc_object_ = base::Value(base::Value::Type::DICTIONARY);
+base::Value::Dict ShillToONCTranslator::CreateTranslatedONCObject() {
+  onc_object_ = base::Value::Dict();
   if (onc_signature_ == &chromeos::onc::kNetworkWithStateSignature) {
     TranslateNetworkWithState();
   } else if (onc_signature_ == &chromeos::onc::kEthernetSignature) {
@@ -252,34 +251,33 @@ base::Value ShillToONCTranslator::CreateTranslatedONCObject() {
 
 void ShillToONCTranslator::TranslateEthernet() {
   const std::string* shill_network_type =
-      shill_dictionary_->FindStringKey(shill::kTypeProperty);
+      shill_dictionary_->FindString(shill::kTypeProperty);
   const char* onc_auth = ::onc::ethernet::kAuthenticationNone;
   if (shill_network_type && *shill_network_type == shill::kTypeEthernetEap)
     onc_auth = ::onc::ethernet::k8021X;
-  onc_object_.SetKey(::onc::ethernet::kAuthentication, base::Value(onc_auth));
+  onc_object_.Set(::onc::ethernet::kAuthentication, onc_auth);
 
   if (shill_network_type && *shill_network_type == shill::kTypeEthernetEap)
     TranslateAndAddNestedObject(::onc::ethernet::kEAP);
 }
 
 void ShillToONCTranslator::TranslateOpenVPN() {
-  if (shill_dictionary_->GetDict().contains(
-          shill::kOpenVPNVerifyX509NameProperty)) {
+  if (shill_dictionary_->contains(shill::kOpenVPNVerifyX509NameProperty)) {
     TranslateAndAddNestedObject(::onc::openvpn::kVerifyX509);
   }
 
   // Shill supports only one RemoteCertKU but ONC requires a list. If
   // existing, wraps the value into a list.
-  const std::string* certKU = shill_dictionary_->GetDict().FindString(
-      shill::kOpenVPNRemoteCertKUProperty);
+  const std::string* certKU =
+      shill_dictionary_->FindString(shill::kOpenVPNRemoteCertKUProperty);
   if (certKU) {
-    base::Value certKUs(base::Value::Type::LIST);
-    certKUs.Append(base::Value(*certKU));
-    onc_object_.SetKey(::onc::openvpn::kRemoteCertKU, std::move(certKUs));
+    base::Value::List certKUs;
+    certKUs.Append(*certKU);
+    onc_object_.Set(::onc::openvpn::kRemoteCertKU, std::move(certKUs));
   }
 
-  SetPKCS11Id(shill_dictionary_, shill::kOpenVPNClientCertIdProperty, "",
-              &onc_object_);
+  SetPKCS11Id(*shill_dictionary_, shill::kOpenVPNClientCertIdProperty, "",
+              onc_object_);
 
   TranslateWithTableAndSet(shill::kOpenVPNCompressProperty,
                            kOpenVpnCompressionAlgorithmTable,
@@ -303,7 +301,7 @@ void ShillToONCTranslator::TranslateOpenVPN() {
     }
 
     const base::Value* shill_value =
-        shill_dictionary_->GetDict().Find(shill_property_name);
+        shill_dictionary_->Find(shill_property_name);
     if (!shill_value) {
       continue;
     }
@@ -321,7 +319,7 @@ void ShillToONCTranslator::TranslateOpenVPN() {
                        << field_signature->value_signature->onc_type << ": "
                        << GetName();
       } else {
-        onc_object_.SetKey(onc_field_name, std::move(translated));
+        onc_object_.Set(onc_field_name, std::move(translated));
       }
     } else {
       NET_LOG(ERROR) << "Shill property '" << shill_property_name
@@ -339,48 +337,45 @@ void ShillToONCTranslator::TranslateIPsec() {
     TranslateWithTableAndSet(shill::kIKEv2AuthenticationTypeProperty,
                              kIKEv2AuthenticationTypeTable,
                              ::onc::ipsec::kAuthenticationType);
-    SetPKCS11Id(shill_dictionary_, shill::kIKEv2ClientCertIdProperty,
-                shill::kIKEv2ClientCertSlotProperty, &onc_object_);
+    SetPKCS11Id(*shill_dictionary_, shill::kIKEv2ClientCertIdProperty,
+                shill::kIKEv2ClientCertSlotProperty, onc_object_);
     return;
   }
 
   // This is an L2TP/IPsec VPN service.
-  if (shill_dictionary_->GetDict().contains(
-          shill::kL2TPIPsecXauthUserProperty)) {
+  if (shill_dictionary_->contains(shill::kL2TPIPsecXauthUserProperty)) {
     TranslateAndAddNestedObject(::onc::ipsec::kXAUTH);
   }
 
   std::string authentication_type;
-  if (SetPKCS11Id(shill_dictionary_, shill::kL2TPIPsecClientCertIdProperty,
-                  shill::kL2TPIPsecClientCertSlotProperty, &onc_object_)) {
+  if (SetPKCS11Id(*shill_dictionary_, shill::kL2TPIPsecClientCertIdProperty,
+                  shill::kL2TPIPsecClientCertSlotProperty, onc_object_)) {
     authentication_type = ::onc::ipsec::kCert;
   } else {
     authentication_type = ::onc::ipsec::kPSK;
   }
-  onc_object_.SetKey(::onc::ipsec::kAuthenticationType,
-                     base::Value(authentication_type));
+  onc_object_.Set(::onc::ipsec::kAuthenticationType, authentication_type);
 }
 
 void ShillToONCTranslator::TranslateL2TP() {
   CopyPropertiesAccordingToSignature();
 
   const std::string* lcp_echo_disabled =
-      shill_dictionary_->GetDict().FindString(
-          shill::kL2TPIPsecLcpEchoDisabledProperty);
+      shill_dictionary_->FindString(shill::kL2TPIPsecLcpEchoDisabledProperty);
   if (lcp_echo_disabled) {
     base::Value lcp_echo_disabled_value =
         ConvertVpnStringToValue(*lcp_echo_disabled, base::Value::Type::BOOLEAN);
-    onc_object_.SetKey(::onc::l2tp::kLcpEchoDisabled,
-                       std::move(lcp_echo_disabled_value));
+    onc_object_.Set(::onc::l2tp::kLcpEchoDisabled,
+                    std::move(lcp_echo_disabled_value));
   }
 
   // TODO(b/220249018): shill::kL2tpIpsecUseLoginPasswordProperty is a string
   // property containing "false" or "true". Migrate it to a bool to match
   // shill::kEapUseLoginPasswordProperty.
-  const std::string* use_login_password = shill_dictionary_->FindStringKey(
-      shill::kL2TPIPsecUseLoginPasswordProperty);
+  const std::string* use_login_password =
+      shill_dictionary_->FindString(shill::kL2TPIPsecUseLoginPasswordProperty);
   if (use_login_password && *use_login_password == "true") {
-    onc_object_.SetKey(
+    onc_object_.Set(
         ::onc::l2tp::kPassword,
         base::Value(::onc::substitutes::kPasswordPlaceholderVerbatim));
   }
@@ -392,10 +387,9 @@ void ShillToONCTranslator::TranslateThirdPartyVPN() {
   // For third-party VPNs, |shill::kProviderHostProperty| is used to store the
   // provider's extension ID.
   const std::string* shill_extension_id =
-      shill_dictionary_->FindStringKey(shill::kHostProperty);
-  onc_object_.SetKey(
-      ::onc::third_party_vpn::kExtensionID,
-      base::Value(shill_extension_id ? *shill_extension_id : std::string()));
+      shill_dictionary_->FindString(shill::kHostProperty);
+  onc_object_.Set(::onc::third_party_vpn::kExtensionID,
+                  shill_extension_id ? *shill_extension_id : std::string());
 }
 
 void ShillToONCTranslator::TranslateVPN() {
@@ -404,23 +398,23 @@ void ShillToONCTranslator::TranslateVPN() {
   // Parse Shill Provider dictionary. Note, this may not exist, e.g. if we are
   // just translating network state in
   // network_util::TranslateNetworkStateToONC.
-  const base::Value* provider =
-      shill_dictionary_->FindDictKey(shill::kProviderProperty);
+  const base::Value::Dict* provider =
+      shill_dictionary_->FindDict(shill::kProviderProperty);
   if (!provider) {
     return;
   }
   std::string shill_provider_type =
-      FindStringKeyOrEmpty(provider, shill::kTypeProperty);
+      FindStringKeyOrEmpty(*provider, shill::kTypeProperty);
   std::string onc_provider_type;
   if (!TranslateStringToONC(kVPNTypeTable, shill_provider_type,
                             &onc_provider_type)) {
     return;
   }
-  onc_object_.SetKey(::onc::vpn::kType, base::Value(onc_provider_type));
+  onc_object_.Set(::onc::vpn::kType, onc_provider_type);
   const std::string* shill_provider_host =
-      provider->FindStringKey(shill::kHostProperty);
+      provider->FindString(shill::kHostProperty);
   if (onc_provider_type != ::onc::vpn::kThirdPartyVpn && shill_provider_host) {
-    onc_object_.SetKey(::onc::vpn::kHost, base::Value(*shill_provider_host));
+    onc_object_.Set(::onc::vpn::kHost, *shill_provider_host);
   }
 
   // Translate the nested dictionary.
@@ -439,17 +433,19 @@ void ShillToONCTranslator::TranslateVPN() {
     // cannot be processed in the above TranslateAndAddNestedObject() call for
     // kIPsec, but the result dictionary should be nested in the `ipsec`
     // dictionary, so we have to do the translation and nesting here.
-    const std::string* auth_type = onc_object_.FindStringPath(base::JoinString(
-        {::onc::vpn::kIPsec, ::onc::ipsec::kAuthenticationType}, "."));
-    if (auth_type && *auth_type == ::onc::ipsec::kEAP) {
-      ShillToONCTranslator eap_translator(*shill_dictionary_, onc_source_,
-                                          chromeos::onc::kEAPSignature,
-                                          network_state_);
-      base::Value eap_object = eap_translator.CreateTranslatedONCObject();
-      if (!eap_object.DictEmpty()) {
-        onc_object_.SetPath(
-            base::JoinString({::onc::vpn::kIPsec, ::onc::ipsec::kEAP}, "."),
-            std::move(eap_object));
+    base::Value::Dict* ip_sec_dict = onc_object_.FindDict(::onc::vpn::kIPsec);
+    if (ip_sec_dict) {
+      const std::string* auth_type =
+          ip_sec_dict->FindString(::onc::ipsec::kAuthenticationType);
+      if (auth_type && *auth_type == ::onc::ipsec::kEAP) {
+        ShillToONCTranslator eap_translator(*shill_dictionary_, onc_source_,
+                                            chromeos::onc::kEAPSignature,
+                                            network_state_);
+        base::Value::Dict eap_object =
+            eap_translator.CreateTranslatedONCObject();
+        if (!eap_object.empty()) {
+          ip_sec_dict->Set(::onc::ipsec::kEAP, std::move(eap_object));
+        }
       }
     }
   } else {
@@ -458,7 +454,7 @@ void ShillToONCTranslator::TranslateVPN() {
   }
 
   absl::optional<bool> save_credentials =
-      shill_dictionary_->FindBoolKey(shill::kSaveCredentialsProperty);
+      shill_dictionary_->FindBool(shill::kSaveCredentialsProperty);
   if (onc_provider_type != ::onc::vpn::kThirdPartyVpn &&
       onc_provider_type != ::onc::vpn::kArcVpn && save_credentials) {
     SetNestedOncValue(provider_type_dictionary, ::onc::vpn::kSaveCredentials,
@@ -468,13 +464,12 @@ void ShillToONCTranslator::TranslateVPN() {
 
 void ShillToONCTranslator::TranslateWiFiWithState() {
   const std::string* shill_security =
-      shill_dictionary_->FindStringKey(shill::kSecurityClassProperty);
+      shill_dictionary_->FindString(shill::kSecurityClassProperty);
   const std::string* shill_key_mgmt =
-      shill_dictionary_->FindStringKey(shill::kEapKeyMgmtProperty);
+      shill_dictionary_->FindString(shill::kEapKeyMgmtProperty);
   if (shill_security && *shill_security == shill::kSecurityClassWep &&
       shill_key_mgmt && *shill_key_mgmt == shill::kKeyManagementIEEE8021X) {
-    onc_object_.SetKey(::onc::wifi::kSecurity,
-                       base::Value(::onc::wifi::kWEP_8021X));
+    onc_object_.Set(::onc::wifi::kSecurity, ::onc::wifi::kWEP_8021X);
   } else {
     TranslateWithTableAndSet(shill::kSecurityClassProperty, kWiFiSecurityTable,
                              ::onc::wifi::kSecurity);
@@ -482,16 +477,15 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
 
   bool unknown_encoding = true;
   std::string ssid = shill_property_util::GetSSIDFromProperties(
-      shill_dictionary_->GetDict(), false /* verbose_logging */,
-      &unknown_encoding);
+      *shill_dictionary_, false /* verbose_logging */, &unknown_encoding);
   if (!unknown_encoding && !ssid.empty())
-    onc_object_.SetKey(::onc::wifi::kSSID, base::Value(ssid));
+    onc_object_.Set(::onc::wifi::kSSID, ssid);
 
   absl::optional<bool> link_monitor_disable =
-      shill_dictionary_->FindBoolKey(shill::kLinkMonitorDisableProperty);
+      shill_dictionary_->FindBool(shill::kLinkMonitorDisableProperty);
   if (link_monitor_disable) {
-    onc_object_.SetKey(::onc::wifi::kAllowGatewayARPPolling,
-                       base::Value(!*link_monitor_disable));
+    onc_object_.Set(::onc::wifi::kAllowGatewayARPPolling,
+                    !*link_monitor_disable);
   }
 
   CopyPropertiesAccordingToSignature();
@@ -506,39 +500,38 @@ void ShillToONCTranslator::TranslateCellularWithState() {
   TranslateWithTableAndSet(shill::kNetworkTechnologyProperty,
                            kNetworkTechnologyTable,
                            ::onc::cellular::kNetworkTechnology);
-  const base::Value* dictionary =
-      shill_dictionary_->FindDictKey(shill::kServingOperatorProperty);
+  const base::Value::Dict* dictionary =
+      shill_dictionary_->FindDict(shill::kServingOperatorProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(::onc::cellular::kServingOperator, *dictionary);
   }
-  dictionary = shill_dictionary_->FindDictKey(shill::kCellularApnProperty);
+  dictionary = shill_dictionary_->FindDict(shill::kCellularApnProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(::onc::cellular::kAPN, *dictionary);
   }
-  dictionary = shill_dictionary_->FindDictKey(
+  dictionary = shill_dictionary_->FindDict(
       shill::kCellularLastConnectedAttachApnProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(
         ::onc::cellular::kLastConnectedAttachApnProperty, *dictionary);
   }
-  dictionary = shill_dictionary_->FindDictKey(
+  dictionary = shill_dictionary_->FindDict(
       shill::kCellularLastConnectedDefaultApnProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(
         ::onc::cellular::kLastConnectedDefaultApnProperty, *dictionary);
   }
-  dictionary =
-      shill_dictionary_->FindDictKey(shill::kCellularLastGoodApnProperty);
+  dictionary = shill_dictionary_->FindDict(shill::kCellularLastGoodApnProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(::onc::cellular::kLastGoodAPN, *dictionary);
   }
-  dictionary = shill_dictionary_->FindDictKey(shill::kPaymentPortalProperty);
+  dictionary = shill_dictionary_->FindDict(shill::kPaymentPortalProperty);
   if (dictionary) {
     TranslateAndAddNestedObject(::onc::cellular::kPaymentPortal, *dictionary);
   }
 
-  const base::Value* device_dictionary =
-      shill_dictionary_->FindDictKey(shill::kDeviceProperty);
+  const base::Value::Dict* device_dictionary =
+      shill_dictionary_->FindDict(shill::kDeviceProperty);
   bool requires_roaming = false;
   bool scanning = false;
   if (device_dictionary) {
@@ -548,58 +541,58 @@ void ShillToONCTranslator::TranslateCellularWithState() {
         *device_dictionary, onc_source_,
         chromeos::onc::kCellularWithStateSignature, kCellularDeviceTable,
         network_state_);
-    base::Value nested_object = nested_translator.CreateTranslatedONCObject();
-    onc_object_.MergeDictionary(&nested_object);
+    base::Value::Dict nested_object =
+        nested_translator.CreateTranslatedONCObject();
+    onc_object_.Merge(std::move(nested_object));
 
     // Both the Scanning property and the ProviderRequiresRoaming property are
     // retrieved from the Device dictionary, but only if this is the active
     // SIM, meaning that the service ICCID matches the device ICCID.
     const std::string* service_iccid =
-        onc_object_.FindStringKey(::onc::cellular::kICCID);
+        onc_object_.FindString(::onc::cellular::kICCID);
     if (service_iccid) {
       const std::string* device_iccid =
-          device_dictionary->FindStringKey(shill::kIccidProperty);
+          device_dictionary->FindString(shill::kIccidProperty);
       if (device_iccid && *service_iccid == *device_iccid) {
         requires_roaming =
-            device_dictionary
-                ->FindBoolKey(shill::kProviderRequiresRoamingProperty)
+            device_dictionary->FindBool(shill::kProviderRequiresRoamingProperty)
                 .value_or(false);
-        scanning = device_dictionary->FindBoolKey(shill::kScanningProperty)
+        scanning = device_dictionary->FindBool(shill::kScanningProperty)
                        .value_or(false);
       }
     }
   }
   if (requires_roaming) {
-    onc_object_.SetKey(::onc::cellular::kRoamingState,
-                       base::Value(::onc::cellular::kRoamingRequired));
+    onc_object_.Set(::onc::cellular::kRoamingState,
+                    ::onc::cellular::kRoamingRequired);
   } else {
     TranslateWithTableAndSet(shill::kRoamingStateProperty, kRoamingStateTable,
                              ::onc::cellular::kRoamingState);
   }
-  onc_object_.SetKey(::onc::cellular::kScanning, base::Value(scanning));
+  onc_object_.Set(::onc::cellular::kScanning, scanning);
 }
 
 void ShillToONCTranslator::TranslateCellularDevice() {
   CopyPropertiesAccordingToSignature();
-  const base::Value* shill_sim_lock_status =
-      shill_dictionary_->FindDictKey(shill::kSIMLockStatusProperty);
+  const base::Value::Dict* shill_sim_lock_status =
+      shill_dictionary_->FindDict(shill::kSIMLockStatusProperty);
   if (shill_sim_lock_status) {
     TranslateAndAddNestedObject(::onc::cellular::kSIMLockStatus,
                                 *shill_sim_lock_status);
   }
-  const base::Value* shill_home_provider =
-      shill_dictionary_->FindDictKey(shill::kHomeProviderProperty);
+  const base::Value::Dict* shill_home_provider =
+      shill_dictionary_->FindDict(shill::kHomeProviderProperty);
   if (shill_home_provider) {
     TranslateAndAddNestedObject(::onc::cellular::kHomeProvider,
                                 *shill_home_provider);
   }
-  const base::Value* shill_apns =
-      shill_dictionary_->FindListKey(shill::kCellularApnListProperty);
+  const base::Value::List* shill_apns =
+      shill_dictionary_->FindList(shill::kCellularApnListProperty);
   if (shill_apns) {
     TranslateAndAddListOfObjects(::onc::cellular::kAPNList, *shill_apns);
   }
-  const base::Value* shill_found_networks =
-      shill_dictionary_->FindListKey(shill::kFoundNetworksProperty);
+  const base::Value::List* shill_found_networks =
+      shill_dictionary_->FindList(shill::kFoundNetworksProperty);
   if (shill_found_networks) {
     TranslateAndAddListOfObjects(::onc::cellular::kFoundNetworks,
                                  *shill_found_networks);
@@ -612,7 +605,7 @@ void ShillToONCTranslator::TranslateApnProperties() {
   DCHECK(ash::features::IsApnRevampEnabled());
   CopyPropertiesAccordingToSignature();
   std::string shill_apn_ip_type =
-      FindStringKeyOrEmpty(shill_dictionary_, shill::kApnIpTypeProperty);
+      FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnIpTypeProperty);
   std::string ip_type;
   if (shill_apn_ip_type == shill::kApnIpTypeV4) {
     ip_type = ::onc::cellular_apn::kIpTypeIpv4;
@@ -624,14 +617,14 @@ void ShillToONCTranslator::TranslateApnProperties() {
     return;  // Ignore unhandled ApnIpType types
   }
 
-  onc_object_.SetKey(::onc::cellular_apn::kIpType, base::Value(ip_type));
+  onc_object_.Set(::onc::cellular_apn::kIpType, ip_type);
 }
 
 void ShillToONCTranslator::TranslateNetworkWithState() {
   CopyPropertiesAccordingToSignature();
 
   std::string shill_network_type =
-      FindStringKeyOrEmpty(shill_dictionary_, shill::kTypeProperty);
+      FindStringKeyOrEmpty(*shill_dictionary_, shill::kTypeProperty);
   std::string onc_network_type = ::onc::network_type::kEthernet;
   if (shill_network_type != shill::kTypeEthernet &&
       shill_network_type != shill::kTypeEthernetEap) {
@@ -640,20 +633,19 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
   }
   // Translate nested Cellular, WiFi, etc. properties.
   if (!onc_network_type.empty()) {
-    onc_object_.SetKey(::onc::network_config::kType,
-                       base::Value(onc_network_type));
+    onc_object_.Set(::onc::network_config::kType, onc_network_type);
     TranslateAndAddNestedObject(onc_network_type);
   }
 
   // Since Name is a read only field in Shill unless it's a VPN, it is copied
   // here, but not when going the other direction (if it's not a VPN).
   std::string name =
-      FindStringKeyOrEmpty(shill_dictionary_, shill::kNameProperty);
-  onc_object_.SetKey(::onc::network_config::kName, base::Value(name));
+      FindStringKeyOrEmpty(*shill_dictionary_, shill::kNameProperty);
+  onc_object_.Set(::onc::network_config::kName, name);
 
   // Limit ONC state to "NotConnected", "Connected", or "Connecting".
   const std::string* state =
-      shill_dictionary_->FindStringKey(shill::kStateProperty);
+      shill_dictionary_->FindString(shill::kStateProperty);
   if (state) {
     std::string onc_state = ::onc::connection_state::kNotConnected;
     if (NetworkState::StateIsConnected(*state)) {
@@ -661,8 +653,7 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     } else if (NetworkState::StateIsConnecting(*state)) {
       onc_state = ::onc::connection_state::kConnecting;
     }
-    onc_object_.SetKey(::onc::network_config::kConnectionState,
-                       base::Value(onc_state));
+    onc_object_.Set(::onc::network_config::kConnectionState, onc_state);
   }
 
   if (network_state_) {
@@ -671,18 +662,17 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
     if (network_state_->IsConnectedState() &&
         portal_state != NetworkState::PortalState::kUnknown &&
         portal_state != NetworkState::PortalState::kOnline) {
-      onc_object_.SetKey(::onc::network_config::kRestrictedConnectivity,
-                         base::Value(true));
+      onc_object_.Set(::onc::network_config::kRestrictedConnectivity, true);
     }
     // Only visible networks set ErrorState, and only if not empty.
     if (!network_state_->GetError().empty()) {
-      onc_object_.SetKey(::onc::network_config::kErrorState,
-                         base::Value(network_state_->GetError()));
+      onc_object_.Set(::onc::network_config::kErrorState,
+                      network_state_->GetError());
     }
   }
 
   const std::string* profile_path =
-      shill_dictionary_->FindStringKey(shill::kProfileProperty);
+      shill_dictionary_->FindString(shill::kProfileProperty);
   if (onc_source_ != ::onc::ONC_SOURCE_UNKNOWN && profile_path) {
     std::string source;
     if (onc_source_ == ::onc::ONC_SOURCE_DEVICE_POLICY)
@@ -695,64 +685,61 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
       source = ::onc::network_config::kSourceUser;
     else
       source = ::onc::network_config::kSourceNone;
-    onc_object_.SetKey(::onc::network_config::kSource, base::Value(source));
+    onc_object_.Set(::onc::network_config::kSource, source);
   }
 
   // Use a human-readable aa:bb format for any hardware MAC address. Note:
   // this property is provided by the caller but is not part of the Shill
   // Service properties (it is copied from the Device properties).
   const std::string* address =
-      shill_dictionary_->FindStringKey(shill::kAddressProperty);
+      shill_dictionary_->FindString(shill::kAddressProperty);
   if (address) {
-    onc_object_.SetKey(
-        ::onc::network_config::kMacAddress,
-        base::Value(network_util::FormattedMacAddress(*address)));
+    onc_object_.Set(::onc::network_config::kMacAddress,
+                    network_util::FormattedMacAddress(*address));
   }
 
   // Shill's Service has an IPConfig property (note the singular), not an
   // IPConfigs property. However, we require the caller of the translation to
   // patch the Shill dictionary before passing it to the translator.
-  const base::Value* shill_ipconfigs =
-      shill_dictionary_->FindListKey(shill::kIPConfigsProperty);
+  const base::Value::List* shill_ipconfigs =
+      shill_dictionary_->FindList(shill::kIPConfigsProperty);
   if (shill_ipconfigs) {
     TranslateAndAddListOfObjects(::onc::network_config::kIPConfigs,
                                  *shill_ipconfigs);
   }
 
-  const base::Value* saved_ipconfig =
-      shill_dictionary_->FindDictKey(shill::kSavedIPConfigProperty);
+  const base::Value::Dict* saved_ipconfig =
+      shill_dictionary_->FindDict(shill::kSavedIPConfigProperty);
   if (saved_ipconfig) {
     TranslateAndAddNestedObject(::onc::network_config::kSavedIPConfig,
                                 *saved_ipconfig);
   }
 
   // Translate the StaticIPConfig object and set the IP config types.
-  const base::Value* static_ipconfig =
-      shill_dictionary_->FindDictKey(shill::kStaticIPConfigProperty);
+  const base::Value::Dict* static_ipconfig =
+      shill_dictionary_->FindDict(shill::kStaticIPConfigProperty);
   if (static_ipconfig) {
     const std::string* ip_address =
-        static_ipconfig->FindStringKey(shill::kAddressProperty);
+        static_ipconfig->FindString(shill::kAddressProperty);
     if (ip_address && !ip_address->empty()) {
-      onc_object_.SetKey(
-          ::onc::network_config::kIPAddressConfigType,
-          base::Value(::onc::network_config::kIPConfigTypeStatic));
+      onc_object_.Set(::onc::network_config::kIPAddressConfigType,
+                      ::onc::network_config::kIPConfigTypeStatic);
     }
-    const base::Value* name_servers =
-        static_ipconfig->FindListKey(shill::kNameServersProperty);
-    if (name_servers && !name_servers->GetList().empty()) {
-      onc_object_.SetKey(
-          ::onc::network_config::kNameServersConfigType,
-          base::Value(::onc::network_config::kIPConfigTypeStatic));
+    const base::Value::List* name_servers =
+        static_ipconfig->FindList(shill::kNameServersProperty);
+    if (name_servers && !name_servers->empty()) {
+      onc_object_.Set(::onc::network_config::kNameServersConfigType,
+                      ::onc::network_config::kIPConfigTypeStatic);
     }
     if ((ip_address && !ip_address->empty()) ||
-        (name_servers && !name_servers->GetList().empty())) {
+        (name_servers && !name_servers->empty())) {
       TranslateAndAddNestedObject(::onc::network_config::kStaticIPConfig,
                                   *static_ipconfig);
     }
   }
 
   const std::string* proxy_config_str =
-      shill_dictionary_->FindStringKey(shill::kProxyConfigProperty);
+      shill_dictionary_->FindString(shill::kProxyConfigProperty);
   if (proxy_config_str && !proxy_config_str->empty()) {
     base::Value proxy_config_value =
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
@@ -760,24 +747,24 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
       base::Value proxy_settings =
           ConvertProxyConfigToOncProxySettings(proxy_config_value.GetDict());
       if (!proxy_settings.is_none()) {
-        onc_object_.SetKey(::onc::network_config::kProxySettings,
-                           std::move(proxy_settings));
+        onc_object_.Set(::onc::network_config::kProxySettings,
+                        std::move(proxy_settings));
       }
     }
   }
 
   absl::optional<double> traffic_counter_reset_time =
-      shill_dictionary_->FindDoubleKey(shill::kTrafficCounterResetTimeProperty);
+      shill_dictionary_->FindDouble(shill::kTrafficCounterResetTimeProperty);
   if (traffic_counter_reset_time.has_value()) {
-    onc_object_.SetKey(::onc::network_config::kTrafficCounterResetTime,
-                       base::Value(traffic_counter_reset_time.value()));
+    onc_object_.Set(::onc::network_config::kTrafficCounterResetTime,
+                    traffic_counter_reset_time.value());
   }
 }
 
 void ShillToONCTranslator::TranslateIPConfig() {
   CopyPropertiesAccordingToSignature();
   std::string shill_ip_method =
-      FindStringKeyOrEmpty(shill_dictionary_, shill::kMethodProperty);
+      FindStringKeyOrEmpty(*shill_dictionary_, shill::kMethodProperty);
   std::string type;
   if (shill_ip_method == shill::kTypeIPv4 ||
       shill_ip_method == shill::kTypeDHCP) {
@@ -789,7 +776,7 @@ void ShillToONCTranslator::TranslateIPConfig() {
     return;  // Ignore unhandled IPConfig types, e.g. bootp, zeroconf, ppp
   }
 
-  onc_object_.SetKey(::onc::ipconfig::kType, base::Value(type));
+  onc_object_.Set(::onc::ipconfig::kType, type);
 }
 
 void ShillToONCTranslator::TranslateSavedOrStaticIPConfig() {
@@ -797,9 +784,8 @@ void ShillToONCTranslator::TranslateSavedOrStaticIPConfig() {
 
   // Static and Saved IPConfig in Shill are always of type IPv4. Set this type
   // in ONC, but not if the object would be empty except the type.
-  if (!onc_object_.DictEmpty()) {
-    onc_object_.SetKey(::onc::ipconfig::kType,
-                       base::Value(::onc::ipconfig::kIPv4));
+  if (!onc_object_.empty()) {
+    onc_object_.Set(::onc::ipconfig::kType, ::onc::ipconfig::kIPv4);
   }
 }
 
@@ -816,12 +802,12 @@ void ShillToONCTranslator::TranslateEap() {
 
   // Translate EAP Outer and Inner values if EAP.EAP exists and is not empty.
   const std::string* shill_eap_method =
-      shill_dictionary_->FindStringKey(shill::kEapMethodProperty);
+      shill_dictionary_->FindString(shill::kEapMethodProperty);
   if (shill_eap_method && !shill_eap_method->empty()) {
     TranslateWithTableAndSet(shill::kEapMethodProperty, kEAPOuterTable,
                              ::onc::eap::kOuter);
     const std::string* shill_phase2_auth =
-        shill_dictionary_->FindStringKey(shill::kEapPhase2AuthProperty);
+        shill_dictionary_->FindString(shill::kEapPhase2AuthProperty);
     if (shill_phase2_auth && !shill_phase2_auth->empty()) {
       const StringTranslationEntry* table =
           GetEapInnerTranslationTableForShillOuter(*shill_eap_method);
@@ -834,43 +820,40 @@ void ShillToONCTranslator::TranslateEap() {
           (*shill_eap_method == ::onc::eap::kEAP_TTLS)) {
         // For outer tunneling protocols, translate ONC's Inner as its default
         // value if the Phase2 property has been omitted in shill.
-        onc_object_.SetKey(::onc::eap::kInner,
-                           base::Value(::onc::eap::kAutomatic));
+        onc_object_.Set(::onc::eap::kInner, ::onc::eap::kAutomatic);
       }
     }
   }
 
   const std::string* shill_cert_id =
-      shill_dictionary_->FindStringKey(shill::kEapCertIdProperty);
+      shill_dictionary_->FindString(shill::kEapCertIdProperty);
   if (shill_cert_id && !shill_cert_id->empty()) {
-    onc_object_.SetKey(::onc::client_cert::kClientCertType,
-                       base::Value(::onc::client_cert::kPKCS11Id));
+    onc_object_.Set(::onc::client_cert::kClientCertType,
+                    ::onc::client_cert::kPKCS11Id);
     // Note: shill::kEapCertIdProperty is already in the format slot:key_id.
     // Note: shill::kEapKeyIdProperty has the same value as
     //       shill::kEapCertIdProperty and is ignored.
-    onc_object_.SetKey(::onc::client_cert::kClientCertPKCS11Id,
-                       base::Value(*shill_cert_id));
+    onc_object_.Set(::onc::client_cert::kClientCertPKCS11Id, *shill_cert_id);
   }
 
   bool use_login_password =
-      shill_dictionary_->FindBoolKey(shill::kEapUseLoginPasswordProperty)
+      shill_dictionary_->FindBool(shill::kEapUseLoginPasswordProperty)
           .value_or(false);
   if (use_login_password) {
-    onc_object_.SetKey(
-        ::onc::eap::kPassword,
-        base::Value(::onc::substitutes::kPasswordPlaceholderVerbatim));
+    onc_object_.Set(::onc::eap::kPassword,
+                    ::onc::substitutes::kPasswordPlaceholderVerbatim);
   }
 
   // Set shill::kEapSubjectAlternativeNameMatchProperty to the serialized form
   // of the subject alternative name match list of dictionaries.
-  const base::Value* subject_alternative_name_match =
-      shill_dictionary_->FindListKey(
+  const base::Value::List* subject_alternative_name_match =
+      shill_dictionary_->FindList(
           shill::kEapSubjectAlternativeNameMatchProperty);
 
   if (subject_alternative_name_match) {
-    base::Value deserialized_dicts(base::Value::Type::LIST);
+    base::Value::List deserialized_dicts;
     std::string error_msg;
-    for (const base::Value& san : subject_alternative_name_match->GetList()) {
+    for (const base::Value& san : *subject_alternative_name_match) {
       JSONStringValueDeserializer deserializer(san.GetString());
       auto deserialized_dict =
           deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
@@ -881,8 +864,8 @@ void ShillToONCTranslator::TranslateEap() {
       }
       deserialized_dicts.Append(std::move(*deserialized_dict));
     }
-    onc_object_.SetKey(::onc::eap::kSubjectAlternativeNameMatch,
-                       std::move(deserialized_dicts));
+    onc_object_.Set(::onc::eap::kSubjectAlternativeNameMatch,
+                    std::move(deserialized_dicts));
   }
 }
 
@@ -893,7 +876,7 @@ void ShillToONCTranslator::TranslateAndAddNestedObject(
 
 void ShillToONCTranslator::TranslateAndAddNestedObject(
     const std::string& onc_field_name,
-    const base::Value& dictionary) {
+    const base::Value::Dict& dictionary) {
   const chromeos::onc::OncFieldSignature* field_signature =
       chromeos::onc::GetFieldSignature(*onc_signature_, onc_field_name);
   if (!field_signature) {
@@ -907,7 +890,7 @@ void ShillToONCTranslator::TranslateAndAddNestedObject(
 
 void ShillToONCTranslator::TranslateAndAddNestedObject(
     const std::string& onc_field_name,
-    const base::Value& dictionary,
+    const base::Value::Dict& dictionary,
     const FieldTranslationEntry* field_translation_table) {
   const chromeos::onc::OncFieldSignature* field_signature =
       chromeos::onc::GetFieldSignature(*onc_signature_, onc_field_name);
@@ -918,22 +901,25 @@ void ShillToONCTranslator::TranslateAndAddNestedObject(
   ShillToONCTranslator nested_translator(
       dictionary, onc_source_, *field_signature->value_signature,
       field_translation_table, network_state_);
-  base::Value nested_object = nested_translator.CreateTranslatedONCObject();
-  if (nested_object.DictEmpty())
+  base::Value::Dict nested_object =
+      nested_translator.CreateTranslatedONCObject();
+  if (nested_object.empty()) {
     return;
-  onc_object_.SetKey(onc_field_name, std::move(nested_object));
+  }
+  onc_object_.Set(onc_field_name, std::move(nested_object));
 }
 
 void ShillToONCTranslator::SetNestedOncValue(
     const std::string& onc_dictionary_name,
     const std::string& onc_field_name,
-    const base::Value& value) {
-  onc_object_.SetPath({onc_dictionary_name, onc_field_name}, value.Clone());
+    base::Value value) {
+  onc_object_.EnsureDict(onc_dictionary_name)
+      ->Set(onc_field_name, std::move(value));
 }
 
 void ShillToONCTranslator::TranslateAndAddListOfObjects(
     const std::string& onc_field_name,
-    const base::Value& list) {
+    const base::Value::List& list) {
   const chromeos::onc::OncFieldSignature* field_signature =
       chromeos::onc::GetFieldSignature(*onc_signature_, onc_field_name);
   if (field_signature->value_signature->onc_type != base::Value::Type::LIST) {
@@ -943,25 +929,28 @@ void ShillToONCTranslator::TranslateAndAddListOfObjects(
     return;
   }
   DCHECK(field_signature->value_signature->onc_array_entry_signature);
-  base::Value result(base::Value::Type::LIST);
-  for (const auto& it : list.GetList()) {
+  base::Value::List result;
+  for (const auto& it : list) {
     if (!it.is_dict())
       continue;
     ShillToONCTranslator nested_translator(
-        it, onc_source_,
+        it.GetDict(), onc_source_,
         *field_signature->value_signature->onc_array_entry_signature,
         network_state_);
-    base::Value nested_object = nested_translator.CreateTranslatedONCObject();
+    base::Value::Dict nested_object =
+        nested_translator.CreateTranslatedONCObject();
     // If the nested object couldn't be parsed, simply omit it.
-    if (nested_object.DictEmpty())
+    if (nested_object.empty()) {
       continue;
+    }
     result.Append(std::move(nested_object));
   }
   // If there are no entries in the list, there is no need to expose this
   // field.
-  if (result.GetList().empty())
+  if (result.empty()) {
     return;
-  onc_object_.SetKey(onc_field_name, std::move(result));
+  }
+  onc_object_.Set(onc_field_name, std::move(result));
 }
 
 void ShillToONCTranslator::CopyPropertiesAccordingToSignature() {
@@ -989,8 +978,7 @@ void ShillToONCTranslator::CopyProperty(
                             field_translation_table_, &shill_property_name)) {
     return;
   }
-  const base::Value* shill_value =
-      shill_dictionary_->GetDict().Find(shill_property_name);
+  const base::Value* shill_value = shill_dictionary_->Find(shill_property_name);
   if (!shill_value) {
     return;
   }
@@ -1006,7 +994,7 @@ void ShillToONCTranslator::CopyProperty(
     return;
   }
 
-  onc_object_.SetKey(field_signature->onc_field_name, shill_value->Clone());
+  onc_object_.Set(field_signature->onc_field_name, shill_value->Clone());
 }
 
 void ShillToONCTranslator::SetDefaultsAccordingToSignature() {
@@ -1025,11 +1013,11 @@ void ShillToONCTranslator::SetDefaultsAccordingToSignature(
     if (!field_signature->default_value_setter) {
       continue;
     }
-    if (onc_object_.GetDict().contains(field_signature->onc_field_name)) {
+    if (onc_object_.contains(field_signature->onc_field_name)) {
       continue;
     }
-    onc_object_.SetKey(field_signature->onc_field_name,
-                       field_signature->default_value_setter());
+    onc_object_.Set(field_signature->onc_field_name,
+                    field_signature->default_value_setter());
   }
 }
 
@@ -1038,13 +1026,13 @@ void ShillToONCTranslator::TranslateWithTableAndSet(
     const StringTranslationEntry table[],
     const std::string& onc_field_name) {
   const std::string* shill_value =
-      shill_dictionary_->FindStringKey(shill_property_name);
+      shill_dictionary_->FindString(shill_property_name);
   if (!shill_value || shill_value->empty()) {
     return;
   }
   std::string onc_value;
   if (TranslateStringToONC(table, *shill_value, &onc_value)) {
-    onc_object_.SetKey(onc_field_name, base::Value(onc_value));
+    onc_object_.Set(onc_field_name, base::Value(onc_value));
     return;
   }
   NET_LOG(ERROR) << "Shill property '" << shill_property_name << "' with value "
@@ -1054,8 +1042,7 @@ void ShillToONCTranslator::TranslateWithTableAndSet(
 
 std::string ShillToONCTranslator::GetName() {
   DCHECK(shill_dictionary_);
-  const std::string* name =
-      shill_dictionary_->FindStringKey(shill::kNameProperty);
+  const std::string* name = shill_dictionary_->FindString(shill::kNameProperty);
   return name ? *name : std::string();
 }
 
@@ -1068,9 +1055,9 @@ base::Value TranslateShillServiceToONCPart(
     const NetworkState* network_state) {
   CHECK(onc_signature != NULL);
 
-  ShillToONCTranslator translator(shill_dictionary, onc_source, *onc_signature,
-                                  network_state);
-  return translator.CreateTranslatedONCObject();
+  ShillToONCTranslator translator(shill_dictionary.GetDict(), onc_source,
+                                  *onc_signature, network_state);
+  return base::Value(translator.CreateTranslatedONCObject());
 }
 
 }  // namespace ash::onc
