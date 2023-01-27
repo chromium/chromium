@@ -2672,6 +2672,24 @@
             ]
         }
     ],
+    "ChromeOSBoostUrgentVariables": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroup60_20230127",
+                    "params": {
+                        "BoostUrgent": "60"
+                    },
+                    "enable_features": [
+                        "SchedUtilHints"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSHoldingSpaceExperiments": [
         {
             "platforms": [
