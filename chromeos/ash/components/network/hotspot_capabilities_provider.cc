@@ -234,7 +234,9 @@ void HotspotCapabilitiesProvider::OnCheckReadinessSuccess(
   using HotspotAllowStatus = hotspot_config::mojom::HotspotAllowStatus;
 
   if (result == shill::kTetheringReadinessReady) {
-    SetHotspotAllowStatus(HotspotAllowStatus::kAllowed);
+    SetHotspotAllowStatus(policy_allow_hotspot_
+                              ? HotspotAllowStatus::kAllowed
+                              : HotspotAllowStatus::kDisallowedByPolicy);
     std::move(callback).Run(CheckTetheringReadinessResult::kReady);
     return;
   }
@@ -277,6 +279,22 @@ void HotspotCapabilitiesProvider::SetHotspotAllowStatus(
 void HotspotCapabilitiesProvider::NotifyHotspotCapabilitiesChanged() {
   for (auto& observer : observer_list_) {
     observer.OnHotspotCapabilitiesChanged();
+  }
+}
+
+void HotspotCapabilitiesProvider::SetPolicyAllowed(bool allowed) {
+  policy_allow_hotspot_ = allowed;
+  if (!policy_allow_hotspot_ &&
+      hotspot_capabilities_.allow_status ==
+          hotspot_config::mojom::HotspotAllowStatus::kAllowed) {
+    SetHotspotAllowStatus(
+        hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy);
+    return;
+  }
+  if (policy_allow_hotspot_ &&
+      hotspot_capabilities_.allow_status ==
+          hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy) {
+    SetHotspotAllowStatus(hotspot_config::mojom::HotspotAllowStatus::kAllowed);
   }
 }
 

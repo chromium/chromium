@@ -24,8 +24,10 @@ HotspotController::HotspotController() = default;
 HotspotController::~HotspotController() = default;
 
 void HotspotController::Init(
-    HotspotCapabilitiesProvider* hotspot_capabilities_provider) {
+    HotspotCapabilitiesProvider* hotspot_capabilities_provider,
+    HotspotStateHandler* hotspot_state_handler) {
   hotspot_capabilities_provider_ = hotspot_capabilities_provider;
+  hotspot_state_handler_ = hotspot_state_handler;
 }
 
 void HotspotController::EnableHotspot(HotspotControlCallback callback) {
@@ -121,6 +123,18 @@ void HotspotController::CompleteCurrentRequest(
   current_request_.reset();
 
   ProcessRequestQueue();
+}
+
+void HotspotController::SetPolicyAllowHotspot(bool allow_hotspot) {
+  if (allow_hotspot_ == allow_hotspot) {
+    return;
+  }
+
+  hotspot_capabilities_provider_->SetPolicyAllowed(allow_hotspot);
+  if (!allow_hotspot && hotspot_state_handler_->GetHotspotState() !=
+                            hotspot_config::mojom::HotspotState::kDisabled) {
+    DisableHotspot(base::DoNothing());
+  }
 }
 
 }  //  namespace ash

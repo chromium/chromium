@@ -84,6 +84,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   // necessary. |callback| is called with check readiness result.
   void CheckTetheringReadiness(CheckTetheringReadinessCallback callback);
 
+  void SetPolicyAllowed(bool allowed);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
   bool HasObserver(Observer* observer) const;
@@ -122,6 +124,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
   HotspotCapabilities hotspot_capabilities_{
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream};
 
+  bool policy_allow_hotspot_ = true;
   NetworkStateHandler* network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};

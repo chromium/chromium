@@ -11,6 +11,7 @@
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/hotspot_capabilities_provider.h"
+#include "chromeos/ash/components/network/hotspot_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
@@ -35,8 +36,11 @@ class HotspotControllerTest : public ::testing::Test {
         std::make_unique<HotspotCapabilitiesProvider>();
     hotspot_capabilities_provider_->Init(
         network_state_test_helper_.network_state_handler());
+    hotspot_state_handler_ = std::make_unique<HotspotStateHandler>();
+    hotspot_state_handler_->Init();
     hotspot_controller_ = std::make_unique<HotspotController>();
-    hotspot_controller_->Init(hotspot_capabilities_provider_.get());
+    hotspot_controller_->Init(hotspot_capabilities_provider_.get(),
+                              hotspot_state_handler_.get());
     SetReadinessCheckResultReady();
   }
 
@@ -45,6 +49,7 @@ class HotspotControllerTest : public ::testing::Test {
     network_state_test_helper_.ClearServices();
     hotspot_controller_.reset();
     hotspot_capabilities_provider_.reset();
+    hotspot_state_handler_.reset();
   }
 
   void SetValidTetheringCapabilities() {
@@ -132,6 +137,7 @@ class HotspotControllerTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<HotspotController> hotspot_controller_;
   std::unique_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_;
+  std::unique_ptr<HotspotStateHandler> hotspot_state_handler_;
   NetworkStateTestHelper network_state_test_helper_{
       /*use_default_devices_and_services=*/false};
 };

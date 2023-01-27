@@ -61,8 +61,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotStateHandler
   // the success result of SetHotspotConfig operation.
   void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr config,
                         SetHotspotConfigCallback callback);
-  // Set whether Hotspot should be allowed/disallowed by policy.
-  void SetPolicyAllowHotspot(bool allow);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

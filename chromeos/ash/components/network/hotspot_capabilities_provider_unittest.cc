@@ -192,6 +192,18 @@ TEST_F(HotspotCapabilitiesProviderTest, GetHotspotCapabilities) {
       hotspot_config::mojom::HotspotAllowStatus::kAllowed,
       hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
   EXPECT_EQ(5u, observer_.hotspot_capabilities_changed_count());
+
+  hotspot_capabilities_provider_->SetPolicyAllowed(/*allowed=*/false);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kDisallowedByPolicy,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(6u, observer_.hotspot_capabilities_changed_count());
+
+  hotspot_capabilities_provider_->SetPolicyAllowed(/*allowed=*/true);
+  EXPECT_EQ(
+      hotspot_config::mojom::HotspotAllowStatus::kAllowed,
+      hotspot_capabilities_provider_->GetHotspotCapabilities().allow_status);
+  EXPECT_EQ(7u, observer_.hotspot_capabilities_changed_count());
 }
 
 TEST_F(HotspotCapabilitiesProviderTest, CheckTetheringReadiness) {

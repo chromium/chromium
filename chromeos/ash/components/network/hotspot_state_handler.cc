@@ -227,10 +227,6 @@ void HotspotStateHandler::UpdateHotspotStatus(const base::Value::Dict& status) {
   NotifyHotspotStatusChanged();
 }
 
-void HotspotStateHandler::SetPolicyAllowHotspot(bool allow) {
-  // TODO (jiajunz)
-}
-
 void HotspotStateHandler::NotifyHotspotStatusChanged() {
   for (auto& observer : observer_list_)
     observer.OnHotspotStatusChanged();
