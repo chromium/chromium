@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 
-#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -16,12 +15,15 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_photo_capabilities.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_photo_settings.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constrainbooleanparameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_boolean_constraindoublerange_double.h"
@@ -32,7 +34,6 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -254,28 +255,13 @@ ImageCapture* ImageCapture::Create(ExecutionContext* context,
 }
 
 ImageCapture::~ImageCapture() {
-  DCHECK(!HasEventListeners());
-  // There should be no more outstanding |m_serviceRequests| at this point
+  // There should be no more outstanding |service_requests_| at this point
   // since each of them holds a persistent handle to this object.
   DCHECK(service_requests_.empty());
 }
 
-const AtomicString& ImageCapture::InterfaceName() const {
-  return event_target_names::kImageCapture;
-}
-
-ExecutionContext* ImageCapture::GetExecutionContext() const {
-  return ExecutionContextLifecycleObserver::GetExecutionContext();
-}
-
-bool ImageCapture::HasPendingActivity() const {
-  return GetExecutionContext() && HasEventListeners();
-}
-
 void ImageCapture::ContextDestroyed() {
-  RemoveAllEventListeners();
   service_requests_.clear();
-  DCHECK(!HasEventListeners());
 }
 
 ScriptPromise ImageCapture::getPhotoCapabilities(ScriptState* script_state) {
@@ -1266,7 +1252,7 @@ void ImageCapture::Trace(Visitor* visitor) const {
   visitor->Trace(current_constraints_);
   visitor->Trace(photo_capabilities_);
   visitor->Trace(service_requests_);
-  EventTargetWithInlineData::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 

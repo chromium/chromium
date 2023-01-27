@@ -9,34 +9,29 @@
 
 #include "media/capture/mojom/image_capture.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_photo_settings.h"
-#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
 class ExceptionState;
 class ImageCaptureFrameGrabber;
 class MediaStreamTrack;
+class MediaTrackCapabilities;
+class MediaTrackConstraints;
+class MediaTrackConstraintSet;
+class MediaTrackSettings;
 class PhotoCapabilities;
+class PhotoSettings;
+class ScriptPromise;
 class ScriptPromiseResolver;
 
-// TODO(mcasas): Consider adding a web test checking that this class is not
-// garbage collected while it has event listeners.
 class MODULES_EXPORT ImageCapture final
-    : public EventTargetWithInlineData,
-      public ActiveScriptWrappable<ImageCapture>,
+    : public ScriptWrappable,
       public ExecutionContextLifecycleObserver,
       public mojom::blink::PermissionObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -53,13 +48,6 @@ class MODULES_EXPORT ImageCapture final
                bool pan_tilt_zoom_allowed,
                base::OnceClosure initialized_callback);
   ~ImageCapture() override;
-
-  // EventTarget implementation.
-  const AtomicString& InterfaceName() const override;
-  ExecutionContext* GetExecutionContext() const override;
-
-  // ScriptWrappable implementation.
-  bool HasPendingActivity() const final;
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;
