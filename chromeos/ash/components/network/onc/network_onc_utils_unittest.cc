@@ -41,11 +41,13 @@ TEST(ONCUtils, ProxySettingsToProxyConfig) {
 
     ASSERT_TRUE(test_case.is_dict());
 
-    const base::Value* expected_proxy_config = test_case.FindKey("ProxyConfig");
+    const base::Value::Dict& test_case_dict = test_case.GetDict();
+    const base::Value* expected_proxy_config =
+        test_case_dict.Find("ProxyConfig");
     ASSERT_TRUE(expected_proxy_config);
 
-    const base::Value* onc_proxy_settings =
-        test_case.FindKey("ONC_ProxySettings");
+    const base::Value::Dict* onc_proxy_settings =
+        test_case_dict.FindDict("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
     base::Value::Dict actual_proxy_config =
@@ -62,11 +64,13 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
   for (const base::Value& test_case : list_of_tests.GetList()) {
     SCOPED_TRACE("Test case #" + base::NumberToString(index++));
 
-    const base::Value* shill_proxy_config = test_case.FindKey("ProxyConfig");
+    const base::Value::Dict& test_case_dict = test_case.GetDict();
+    const base::Value::Dict* shill_proxy_config =
+        test_case_dict.FindDict("ProxyConfig");
     ASSERT_TRUE(shill_proxy_config);
 
     const base::Value* onc_proxy_settings =
-        test_case.FindKey("ONC_ProxySettings");
+        test_case_dict.Find("ONC_ProxySettings");
     ASSERT_TRUE(onc_proxy_settings);
 
     base::Value actual_proxy_settings =
@@ -77,57 +81,65 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
 
 TEST(ONCPasswordVariable, PasswordAvailable) {
   const auto wifi_onc = test_utils::ReadTestDictionaryValue(
-      "wifi_eap_ttls_with_password_variable.onc");
+                            "wifi_eap_ttls_with_password_variable.onc")
+                            .TakeDict();
 
   EXPECT_TRUE(HasUserPasswordSubsitutionVariable(
-      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
+      chromeos::onc::kNetworkConfigurationSignature, wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordNotAvailable) {
   const auto wifi_onc =
-      test_utils::ReadTestDictionaryValue("wifi_eap_ttls.onc");
+      test_utils::ReadTestDictionaryValue("wifi_eap_ttls.onc").TakeDict();
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
+      chromeos::onc::kNetworkConfigurationSignature, wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordHarcdoded) {
   const auto wifi_onc = test_utils::ReadTestDictionaryValue(
-      "wifi_eap_ttls_with_hardcoded_password.onc");
+                            "wifi_eap_ttls_with_hardcoded_password.onc")
+                            .TakeDict();
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      chromeos::onc::kNetworkConfigurationSignature, &wifi_onc));
+      chromeos::onc::kNetworkConfigurationSignature, wifi_onc));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailable) {
-  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
-      "managed_toplevel_with_password_variable.onc");
-  const base::Value* network_list =
-      network_dictionary.FindListKey("NetworkConfigurations");
+  const auto network_dictionary =
+      test_utils::ReadTestDictionaryValue(
+          "managed_toplevel_with_password_variable.onc")
+          .TakeDict();
+  const base::Value::List* network_list =
+      network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 
-  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list));
+  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(*network_list));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
-  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
-      "managed_toplevel_with_no_password_variable.onc");
+  const auto network_dictionary =
+      test_utils::ReadTestDictionaryValue(
+          "managed_toplevel_with_no_password_variable.onc")
+          .TakeDict();
 
-  const base::Value* network_list =
-      network_dictionary.FindListKey("NetworkConfigurations");
+  const base::Value::List* network_list =
+      network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 
-  EXPECT_FALSE(HasUserPasswordSubsitutionVariable(network_list));
+  EXPECT_FALSE(HasUserPasswordSubsitutionVariable(*network_list));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailableForL2tpVpn) {
-  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
-      "managed_toplevel_with_password_variable_in_l2tp_vpn.onc");
-  const base::Value* network_list =
-      network_dictionary.FindListKey("NetworkConfigurations");
+  const auto network_dictionary =
+      test_utils::ReadTestDictionaryValue(
+          "managed_toplevel_with_password_variable_in_l2tp_vpn.onc")
+          .TakeDict();
+  const base::Value::List* network_list =
+      network_dictionary.FindList("NetworkConfigurations");
   ASSERT_TRUE(network_list);
 
-  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list));
+  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(*network_list));
 }
 
 }  // namespace ash::onc

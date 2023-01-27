@@ -51,7 +51,7 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
 // be a list of ONC NetworkConfigurations. See ExpandStringsInOncObject above.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
-                             base::Value* network_configs);
+                             base::Value::List& network_configs);
 
 // Fills in all missing HexSSID fields that are mentioned in the ONC
 // specification. The object of |onc_object| is modified in place.

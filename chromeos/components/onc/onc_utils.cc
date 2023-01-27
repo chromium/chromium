@@ -510,8 +510,8 @@ void ExpandStringsInOncObject(const OncValueSignature& signature,
 }
 
 void ExpandStringsInNetworks(const VariableExpander& variable_expander,
-                             base::Value* network_configs) {
-  for (auto& network : network_configs->GetList()) {
+                             base::Value::List& network_configs) {
+  for (auto& network : network_configs) {
     DCHECK(network.is_dict());
     ExpandStringsInOncObject(kNetworkConfigurationSignature, variable_expander,
                              &network);

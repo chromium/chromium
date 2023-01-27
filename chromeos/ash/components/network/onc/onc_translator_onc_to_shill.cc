@@ -472,8 +472,8 @@ void LocalTranslator::TranslateNetworkConfiguration() {
                               base::Value(base::Value::Type::DICTIONARY));
   }
 
-  const base::Value* proxy_settings =
-      onc_object_->FindDictKey(::onc::network_config::kProxySettings);
+  const base::Value::Dict* proxy_settings =
+      onc_object_->GetDict().FindDict(::onc::network_config::kProxySettings);
   if (proxy_settings) {
     base::Value::Dict proxy_config =
         ConvertOncProxySettingsToProxyConfig(*proxy_settings);

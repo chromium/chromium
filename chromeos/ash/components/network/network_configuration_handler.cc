@@ -357,7 +357,7 @@ void NetworkConfigurationHandler::CreateShillConfiguration(
 
   NET_LOG(USER) << "CreateShillConfiguration: " << type << ": "
                 << shill_property_util::GetNetworkIdFromProperties(
-                       shill_properties);
+                       shill_properties.GetDict());
 
   std::string profile_path =
       GetString(properties_to_set, shill::kProfileProperty);

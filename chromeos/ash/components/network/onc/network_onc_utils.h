@@ -42,13 +42,13 @@ NetworkTypePattern NetworkTypePatternFromOncType(const std::string& type);
 // dictionary, to a ProxyConfig dictionary (see proxy_config_dictionary.h).
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value::Dict ConvertOncProxySettingsToProxyConfig(
-    const base::Value& onc_proxy_settings);
+    const base::Value::Dict& onc_proxy_settings);
 
-// Translates |proxy_config_value|, which must be a valid ProxyConfig dictionary
+// Translates |proxy_config_dict|, which must be a valid ProxyConfig dictionary
 // (see proxy_config_dictionary.h) to an ONC ProxySettings dictionary.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::Value ConvertProxyConfigToOncProxySettings(
-    const base::Value& proxy_config_value);
+    const base::Value::Dict& proxy_config_dict);
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 base::flat_map<std::string, std::string> GetVariableExpansionsForUser(
@@ -57,7 +57,7 @@ base::flat_map<std::string, std::string> GetVariableExpansionsForUser(
 // Returns the number of networks successfully imported.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 int ImportNetworksForUser(const user_manager::User* user,
-                          const base::Value& network_configs,
+                          const base::Value::List& network_configs,
                           std::string* error);
 
 // Convenvience function to retrieve the "AllowOnlyPolicyNetworksToAutoconnect"
@@ -86,12 +86,13 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool HasUserPasswordSubsitutionVariable(
     const chromeos::onc::OncValueSignature& signature,
-    const base::Value* onc_object);
+    const base::Value::Dict& onc_object);
 
 // Checks whether a list of network objects has at least one network with the
 // ${PASSWORD} substitution variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
+bool HasUserPasswordSubsitutionVariable(
+    const base::Value::List& network_configs);
 
 }  // namespace onc
 }  // namespace ash

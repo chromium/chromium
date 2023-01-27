@@ -703,7 +703,7 @@ void ManagedNetworkConfigurationHandlerImpl::
     // Profile property properly.
     NET_LOG(ERROR) << "Missing profile property: "
                    << shill_property_util::GetNetworkIdFromProperties(
-                          existing_properties);
+                          existing_properties.GetDict());
     std::move(callback).Run();
     return;
   }
@@ -713,7 +713,8 @@ void ManagedNetworkConfigurationHandlerImpl::
           existing_properties, true /* properties were read from Shill */,
           &shill_properties)) {
     NET_LOG(ERROR) << "Missing identifying properties",
-        shill_property_util::GetNetworkIdFromProperties(existing_properties);
+        shill_property_util::GetNetworkIdFromProperties(
+            existing_properties.GetDict());
   }
 
   shill_properties.MergeDictionary(&new_properties);

@@ -27,14 +27,14 @@ void SetSSID(const std::string& ssid, base::Value::Dict* properties);
 // |unknown_encoding| != nullptr, it is set to whether the SSID is of unknown
 // encoding.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::string GetSSIDFromProperties(const base::Value& properties,
+std::string GetSSIDFromProperties(const base::Value::Dict& properties,
                                   bool verbose_logging,
                                   bool* unknown_encoding);
 
 // Returns the GUID (if available), SSID, or Name from |properties|. Only used
 // for logging and debugging. |properties| must be type DICTIONARY.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-std::string GetNetworkIdFromProperties(const base::Value& properties);
+std::string GetNetworkIdFromProperties(const base::Value::Dict& properties);
 
 // Returns the name for the network represented by the Shill |properties|. For
 // WiFi it refers to the HexSSID.

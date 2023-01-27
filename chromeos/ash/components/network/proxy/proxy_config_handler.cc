@@ -50,8 +50,9 @@ std::unique_ptr<ProxyConfigDictionary> GetProxyConfigForNetwork(
   const base::Value* network_policy = onc::GetPolicyForNetwork(
       profile_prefs, local_state_prefs, network, onc_source);
   if (network_policy) {
-    const base::Value* proxy_policy =
-        network_policy->FindDictKey(::onc::network_config::kProxySettings);
+    const base::Value::Dict& network_polict_dict = network_policy->GetDict();
+    const base::Value::Dict* proxy_policy =
+        network_polict_dict.FindDict(::onc::network_config::kProxySettings);
     if (!proxy_policy) {
       // This policy doesn't set a proxy for this network. Nonetheless, this
       // disallows changes by the user.

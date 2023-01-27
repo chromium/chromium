@@ -482,7 +482,8 @@ void ShillToONCTranslator::TranslateWiFiWithState() {
 
   bool unknown_encoding = true;
   std::string ssid = shill_property_util::GetSSIDFromProperties(
-      *shill_dictionary_, false /* verbose_logging */, &unknown_encoding);
+      shill_dictionary_->GetDict(), false /* verbose_logging */,
+      &unknown_encoding);
   if (!unknown_encoding && !ssid.empty())
     onc_object_.SetKey(::onc::wifi::kSSID, base::Value(ssid));
 
@@ -757,7 +758,7 @@ void ShillToONCTranslator::TranslateNetworkWithState() {
         chromeos::onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config_value.is_none()) {
       base::Value proxy_settings =
-          ConvertProxyConfigToOncProxySettings(proxy_config_value);
+          ConvertProxyConfigToOncProxySettings(proxy_config_value.GetDict());
       if (!proxy_settings.is_none()) {
         onc_object_.SetKey(::onc::network_config::kProxySettings,
                            std::move(proxy_settings));

@@ -56,8 +56,8 @@ std::string CreateConfigurationJsonString(const std::string& guid) {
 }
 
 std::string GetSsid(const base::Value::Dict& shill_properties) {
-  return shill_property_util::GetSSIDFromProperties(
-      base::Value(shill_properties.Clone()), false, nullptr);
+  return shill_property_util::GetSSIDFromProperties(shill_properties, false,
+                                                    nullptr);
 }
 
 std::string GetSecurityClass(const base::Value::Dict& shill_properties) {

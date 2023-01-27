@@ -61,9 +61,15 @@ bool CopyStringFromDictionary(const base::Value& source,
   return true;
 }
 
-std::string GetStringFromDictionary(const base::Value* dict, const char* key) {
-  const std::string* v = dict ? dict->GetDict().FindString(key) : nullptr;
+std::string GetStringFromDictionary(const base::Value::Dict& dict,
+                                    const char* key) {
+  const std::string* v = dict.FindString(key);
   return v ? *v : std::string();
+}
+
+std::string GetStringFromDictionary(const base::Value* dict, const char* key) {
+  DCHECK(dict->is_dict());
+  return GetStringFromDictionary(dict->GetDict(), key);
 }
 
 }  // namespace
@@ -73,16 +79,16 @@ void SetSSID(const std::string& ssid, base::Value::Dict* properties) {
   properties->Set(shill::kWifiHexSsid, hex_ssid);
 }
 
-std::string GetSSIDFromProperties(const base::Value& properties,
+std::string GetSSIDFromProperties(const base::Value::Dict& properties,
                                   bool verbose_logging,
                                   bool* unknown_encoding) {
   if (unknown_encoding)
     *unknown_encoding = false;
 
   // Get name for debugging.
-  std::string name = GetStringFromDictionary(&properties, shill::kNameProperty);
+  std::string name = GetStringFromDictionary(properties, shill::kNameProperty);
   std::string hex_ssid =
-      GetStringFromDictionary(&properties, shill::kWifiHexSsid);
+      GetStringFromDictionary(properties, shill::kWifiHexSsid);
 
   if (hex_ssid.empty()) {
     if (verbose_logging)
@@ -111,7 +117,7 @@ std::string GetSSIDFromProperties(const base::Value& properties,
     // TODO(stevenjb): This is currently experimental. If we find a case where
     // base::DetectEncoding() fails, we need to figure out whether we can use
     // country_code with ConvertToUtf8(). crbug.com/233267.
-    encoding = GetStringFromDictionary(&properties, shill::kCountryProperty);
+    encoding = GetStringFromDictionary(properties, shill::kCountryProperty);
   }
   std::string utf8_ssid;
   if (!encoding.empty() &&
@@ -135,16 +141,17 @@ std::string GetSSIDFromProperties(const base::Value& properties,
   return ssid;
 }
 
-std::string GetNetworkIdFromProperties(const base::Value& properties) {
-  if (properties.DictEmpty())
+std::string GetNetworkIdFromProperties(const base::Value::Dict& properties) {
+  if (properties.empty()) {
     return "EmptyProperties";
-  std::string guid = GetStringFromDictionary(&properties, shill::kGuidProperty);
+  }
+  std::string guid = GetStringFromDictionary(properties, shill::kGuidProperty);
   if (!guid.empty())
     return NetworkGuidId(guid);
-  std::string type = GetStringFromDictionary(&properties, shill::kTypeProperty);
+  std::string type = GetStringFromDictionary(properties, shill::kTypeProperty);
   if (!type.empty()) {
     std::string security =
-        GetStringFromDictionary(&properties, shill::kSecurityClassProperty);
+        GetStringFromDictionary(properties, shill::kSecurityClassProperty);
     if (!security.empty())
       return type + "_" + security + "_unconfigured";
   }
@@ -170,7 +177,7 @@ std::string GetNameFromProperties(const std::string& service_path,
 
   bool unknown_ssid_encoding = false;
   std::string ssid = GetSSIDFromProperties(
-      properties, true /* verbose_logging */, &unknown_ssid_encoding);
+      properties.GetDict(), true /* verbose_logging */, &unknown_ssid_encoding);
   if (ssid.empty()) {
     NET_LOG(ERROR) << "GetNameFromProperties: " << service_path
                    << " No SSID set";
@@ -317,7 +324,8 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
           service_properties.FindDictKey(shill::kProviderProperty);
       if (!provider_properties) {
         NET_LOG(ERROR) << "Missing VPN provider dict: "
-                       << GetNetworkIdFromProperties(service_properties);
+                       << GetNetworkIdFromProperties(
+                              service_properties.GetDict());
         return false;
       }
       const std::string* vpn_provider_type_str =
@@ -353,7 +361,7 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
   }
   if (!success) {
     NET_LOG(ERROR) << "Missing required properties: "
-                   << GetNetworkIdFromProperties(service_properties);
+                   << GetNetworkIdFromProperties(service_properties.GetDict());
   }
   return success;
 }
