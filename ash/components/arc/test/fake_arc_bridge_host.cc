@@ -27,6 +27,7 @@
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
+#include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/kiosk.mojom.h"
 #include "ash/components/arc/mojom/lock_screen.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
@@ -145,6 +146,9 @@ void FakeArcBridgeHost::OnKeyboardShortcutInstanceReady(
 
 void FakeArcBridgeHost::OnKeymasterInstanceReady(
     mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) {}
+
+void FakeArcBridgeHost::OnKeyMintInstanceReady(
+    mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote) {}
 
 void FakeArcBridgeHost::OnKioskInstanceReady(
     mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {}

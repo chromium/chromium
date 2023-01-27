@@ -102,6 +102,9 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
           keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
       mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
+  void OnKeyMintInstanceReady(
+      mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote)
+      override;
   void OnKioskInstanceReady(
       mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) override;
   void OnLockScreenInstanceReady(mojo::PendingRemote<mojom::LockScreenInstance>

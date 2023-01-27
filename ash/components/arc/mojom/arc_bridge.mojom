@@ -28,6 +28,7 @@ import "ash/components/arc/mojom/input_method_manager.mojom";
 import "ash/components/arc/mojom/intent_helper.mojom";
 import "ash/components/arc/mojom/keyboard_shortcut.mojom";
 import "ash/components/arc/mojom/keymaster.mojom";
+import "ash/components/arc/mojom/keymint.mojom";
 import "ash/components/arc/mojom/kiosk.mojom";
 import "ash/components/arc/mojom/lock_screen.mojom";
 import "ash/components/arc/mojom/media_session.mojom";
@@ -62,9 +63,9 @@ import "ash/components/arc/mojom/wake_lock.mojom";
 import "ash/components/arc/mojom/wallpaper.mojom";
 import "ash/components/arc/mojom/webapk.mojom";
 
-// Next MinVersion: 63
+// Next MinVersion: 64
 // Deprecated method IDs: 101, 105, 121, 132, 136, 153, 154, 160
-// Next method ID: 168
+// Next method ID: 169
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -164,6 +165,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the KeymasterInstance interface is ready.
   [MinVersion=47] OnKeymasterInstanceReady@152(
       pending_remote<KeymasterInstance> instance_remote);
+
+  // Notifies Chrome that the KeyMintInstance interface is ready.
+  [MinVersion=63] OnKeyMintInstanceReady@168(
+      pending_remote<keymint.KeyMintInstance> instance_remote);
 
   // Notifies Chrome that the KioskInstance interface is ready.
   [MinVersion=20] OnKioskInstanceReady@126(

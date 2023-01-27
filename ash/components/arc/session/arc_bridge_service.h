@@ -112,6 +112,12 @@ class WakeLockInstance;
 class WallpaperHost;
 class WallpaperInstance;
 class WebApkInstance;
+
+namespace keymint {
+class KeyMintHost;
+class KeyMintInstance;
+}  // namespace keymint
+
 }  // namespace mojom
 
 // Holds Mojo channels which proxy to ARC side implementation. The actual
@@ -235,6 +241,11 @@ class ArcBridgeService {
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost>*
   keymaster() {
     return &keymaster_;
+  }
+  ConnectionHolder<mojom::keymint::KeyMintInstance,
+                   mojom::keymint::KeyMintHost>*
+  keymint() {
+    return &keymint_;
   }
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost>* kiosk() {
     return &kiosk_;
@@ -365,6 +376,8 @@ class ArcBridgeService {
   ConnectionHolder<mojom::KeyboardShortcutInstance, mojom::KeyboardShortcutHost>
       keyboard_shortcut_;
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost> keymaster_;
+  ConnectionHolder<mojom::keymint::KeyMintInstance, mojom::keymint::KeyMintHost>
+      keymint_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
   ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
   ConnectionHolder<mojom::MediaSessionInstance> media_session_;
