@@ -371,7 +371,7 @@ if (enable_java_templates && is_android) {
   #   targets: List of .build_config.json supported targets to provide java sources.
   #   manual_jni_registration: Manually do JNI registration - required for feature
   #     splits which provide their own native library. (optional)
-  #   file_exclusions: List of .java files that should be skipped. (optional)
+  #   sources_exclusions: List of .java files that should be skipped. (optional)
   #   namespace: Registration functions will be wrapped into this. (optional)
   #   require_native_mocks: Enforce that any native calls using
   #     org.chromium.base.annotations.NativeMethods must have a mock set
@@ -387,7 +387,7 @@ if (enable_java_templates && is_android) {
   #   generate_jni_registration("chrome_jni_registration") {
   #     targets = [ ":chrome_public_apk" ]
   #     manual_jni_registration = false
-  #     file_exclusions = [
+  #     sources_exclusions = [
   #       "//path/to/Exception.java",
   #     ]
   #   }
@@ -422,7 +422,7 @@ if (enable_java_templates && is_android) {
         } else {
           args += [
             # This is a list of .sources files.
-            "--sources-files=@FileArg($_rebased_build_config:deps_info:jni_all_source)",
+            "--sources-files=@FileArg($_rebased_build_config:deps_info:jni:all_source)",
           ]
         }
       }
@@ -432,19 +432,19 @@ if (enable_java_templates && is_android) {
         _include_testonly = defined(testonly) && testonly
       }
       if (_include_testonly) {
-        args += [ "--include-test-only" ]
+        args += [ "--include_test_only" ]
       }
 
       if (use_hashed_jni_names) {
-        args += [ "--use-proxy-hash" ]
+        args += [ "--use_proxy_hash" ]
       }
 
       if (defined(invoker.enable_native_mocks) && invoker.enable_native_mocks) {
-        args += [ "--enable-proxy-mocks" ]
+        args += [ "--enable_proxy_mocks" ]
 
         if (defined(invoker.require_native_mocks) &&
             invoker.require_native_mocks) {
-          args += [ "--require-mocks" ]
+          args += [ "--require_mocks" ]
         }
       }
 
@@ -455,10 +455,10 @@ if (enable_java_templates && is_android) {
         assert(current_toolchain == default_toolchain,
                "We do not need >1 toolchain copies of the same header.")
         if (_manual_jni_registration) {
-          args += [ "--manual-jni-registration" ]
+          args += [ "--manual_jni_registration" ]
         }
         if (enable_jni_multiplexing) {
-          args += [ "--enable-jni-multiplexing" ]
+          args += [ "--enable_jni_multiplexing" ]
         }
 
         _subdir = rebase_path(target_gen_dir, root_gen_dir)
@@ -474,10 +474,10 @@ if (enable_java_templates && is_android) {
         public_configs = [ "//build/config/android:jni_include_dir" ]
       }
 
-      if (defined(invoker.file_exclusions)) {
-        _rebase_file_exclusions =
-            rebase_path(invoker.file_exclusions, root_build_dir)
-        args += [ "--file-exclusions=$_rebase_file_exclusions" ]
+      if (defined(invoker.sources_exclusions)) {
+        _rebase_sources_exclusions =
+            rebase_path(invoker.sources_exclusions, root_build_dir)
+        args += [ "--sources-exclusions=$_rebase_sources_exclusions" ]
       }
 
       if (defined(invoker.namespace)) {
@@ -2141,7 +2141,7 @@ if (enable_java_templates && is_android) {
         "*/R\$*.class",
         "*/Manifest.class",
         "*/Manifest\$*.class",
-        "*/*GEN_JNI.class",
+        "*/GEN_JNI.class",
       ]
     }
   }
@@ -2200,7 +2200,7 @@ if (enable_java_templates && is_android) {
         "*/R\$*.class",
         "*/Manifest.class",
         "*/Manifest\$*.class",
-        "*/*GEN_JNI.class",
+        "*/GEN_JNI.class",
       ]
 
       if (!defined(deps)) {
@@ -2391,7 +2391,7 @@ if (enable_java_templates && is_android) {
   #     its `shared_libraries` is not empty.
   #   manual_jni_registration: If true, causes the ${target_name}__final_jni target
   #     to additionally output a header file for use with manual JNI registration.
-  #   jni_file_exclusions: List of source path to exclude from the
+  #   jni_sources_exclusions: List of source path to exclude from the
   #     final_jni step.
   #   aapt_locale_allowlist: If set, all locales not in this list will be
   #     stripped from resources.arsc.
@@ -3037,8 +3037,8 @@ if (enable_java_templates && is_android) {
         } else {
           targets = [ ":$_template_name" ]
         }
-        if (defined(invoker.jni_file_exclusions)) {
-          file_exclusions = invoker.jni_file_exclusions
+        if (defined(invoker.jni_sources_exclusions)) {
+          sources_exclusions = invoker.jni_sources_exclusions
         }
       }
       _srcjar_deps += [ ":${_template_name}__final_jni" ]
@@ -3575,7 +3575,7 @@ if (enable_java_templates && is_android) {
                                "input_jars_paths",
                                "jacoco_never_instrument",
                                "javac_args",
-                               "jni_file_exclusions",
+                               "jni_sources_exclusions",
                                "keystore_name",
                                "keystore_password",
                                "keystore_path",
@@ -3710,7 +3710,7 @@ if (enable_java_templates && is_android) {
                                "jacoco_never_instrument",
                                "jar_excluded_patterns",
                                "javac_args",
-                               "jni_file_exclusions",
+                               "jni_sources_exclusions",
                                "loadable_modules",
                                "product_config_java_packages",
                                "main_component_library",

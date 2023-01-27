@@ -39,7 +39,7 @@ public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleConte
         return StackUnwinderModuleContentsImplJni.get().getCreateLibunwindstackUnwinderFunction();
     }
 
-    @NativeMethods("stack_unwinder")
+    @NativeMethods
     interface Natives {
         long getCreateMemoryRegionsMapFunction();
         long getCreateNativeUnwinderFunction();
