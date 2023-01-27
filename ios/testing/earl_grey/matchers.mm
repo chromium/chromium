@@ -29,4 +29,23 @@ id<GREYMatcher> ElementToDismissAlert(NSString* cancel_text) {
   }
 }
 
+id<GREYMatcher> ElementWithAccessibilityLabelSubtring(NSString* substring) {
+  GREYMatchesBlock matches = ^BOOL(NSObject* element) {
+    NSString* accessibilityLabel =
+        [(UIAccessibilityElement*)element accessibilityIdentifier];
+    return [accessibilityLabel rangeOfString:substring].location != NSNotFound;
+  };
+  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
+    NSString* describeStr = [NSString
+        stringWithFormat:@"ElementWithAccessibilityLabelSubtring(\"%@\")",
+                         substring];
+    [description appendText:describeStr];
+  };
+  return grey_allOf(
+      grey_accessibilityElement(),
+      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
+                                           descriptionBlock:describe],
+      nil);
+}
+
 }  // namespace testing
