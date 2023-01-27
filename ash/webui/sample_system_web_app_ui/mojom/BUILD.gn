@@ -20,7 +20,6 @@ mojom("trusted") {
     "//mojo/public/mojom/base",
   ]
   webui_module_path = "/$cur_dir"
-  use_typescript_sources = true
 }
 
 mojom("shared") {
@@ -28,7 +27,6 @@ mojom("shared") {
 
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/$cur_dir"
-  use_typescript_sources = true
 }
 
 mojom("untrusted") {
@@ -38,6 +36,35 @@ mojom("untrusted") {
     ":shared",
     "//mojo/public/mojom/base",
   ]
-  webui_module_path = "/$cur_dir"
-  use_typescript_sources = true
+  webui_module_path = "/" + rebase_path(".", "//")
+}
+
+# Builds a TS library for generated Mojo files that can be depended on by
+# downstream TS clients. In particular, we need d.ts files to be generated from
+# the JS files so that downstream TS clients get type information.
+# TODO(crbug.com/1002798): Mojo should generate this ts_library() from actual
+# TS files rather than creating d.ts files from the generated JS files.
+ts_library("mojom_ts") {
+  mojom_gen_dir = "$root_gen_dir/mojom-webui/$cur_dir"
+  root_dir = mojom_gen_dir
+  out_dir = "$mojom_gen_dir/tsc"
+  tsconfig_base = "../tsconfig_base.json"
+  in_files = [
+    "sample_system_web_app_untrusted_ui.mojom-webui.js",
+    "sample_system_web_app_ui.mojom-webui.js",
+    "sample_system_web_app_shared_ui.mojom-webui.js",
+  ]
+
+  # Required for Mojo's bindings.js resolution.
+  deps = [ "//ui/webui/resources/mojo:library" ]
+
+  # Targets that generate the above .mojom-webui.js files.
+  extra_deps = [
+    ":shared_webui_js",
+    ":trusted_webui_js",
+    ":untrusted_webui_js",
+  ]
+
+  # Generates d.ts files which allows this library to be depended upon.
+  composite = true
 }
