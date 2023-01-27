@@ -58,6 +58,14 @@ GPUCanvasContext::GPUCanvasContext(
   texture_descriptor_.sampleCount = 1;
 }
 
+GPUCanvasContext::~GPUCanvasContext() {
+  // Perform destruction that's safe to do inside a GC (as in it doesn't touch
+  // other GC objects).
+  if (swap_buffers_) {
+    swap_buffers_->Neuter();
+  }
+}
+
 void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
   visitor->Trace(texture_);
