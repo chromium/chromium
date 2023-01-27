@@ -86,12 +86,8 @@ bool ProcessIterator::CheckForNextProcess() {
   std::string stats_data;
   std::vector<std::string> proc_stats;
 
-  // Arbitrarily guess that there will never be more than 200 non-process
-  // files in /proc.  Hardy has 53 and Lucid has 61.
-  int skipped = 0;
-  const int kSkipLimit = 200;
-  while (skipped < kSkipLimit) {
-    dirent* slot = readdir(procfs_dir_.get());
+  while (true) {
+    dirent* const slot = readdir(procfs_dir_.get());
     // all done looking through /proc?
     if (!slot)
       return false;
@@ -99,7 +95,6 @@ bool ProcessIterator::CheckForNextProcess() {
     // If not a process, keep looking for one.
     pid = internal::ProcDirSlotToPid(slot->d_name);
     if (!pid) {
-      skipped++;
       continue;
     }
 
@@ -126,10 +121,6 @@ bool ProcessIterator::CheckForNextProcess() {
     // Nope, it's a zombie; somebody isn't cleaning up after their children.
     // (e.g. WaitForProcessesToExit doesn't clean up after dead children yet.)
     // There could be a lot of zombies, can't really decrement i here.
-  }
-  if (skipped >= kSkipLimit) {
-    NOTREACHED();
-    return false;
   }
 
   entry_.pid_ = pid;
