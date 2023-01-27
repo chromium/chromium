@@ -4,8 +4,7 @@
 
 #import "ios/chrome/app/tests_hook.h"
 
-#import "base/command_line.h"
-#import "ios/chrome/browser/flags/chrome_switches.h"
+#import <Foundation/Foundation.h>
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,10 +23,13 @@ bool DisableContentSuggestions() {
   return false;
 }
 bool DisableDiscoverFeed() {
-  // Performance tests must explicitly enable the discover feed by passing the
-  // --enable-discover-feed command line switch.
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableDiscoverFeed);
+  // Performance tests may disable the discover feed by setting the
+  // DISABLE_DISCOVER_FEED environment variable. Possible values
+  // the variable may be set to are described in the apple documentation for
+  // boolValue:
+  // https://developer.apple.com/documentation/foundation/nsstring/1409420-boolvalue
+  return [[NSProcessInfo.processInfo.environment
+      objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue];
 }
 bool DisableFirstRun() {
   // Always disable FRE for perf tests.

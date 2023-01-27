@@ -139,11 +139,7 @@ source_set("tests_fake_hook") {
 source_set("perf_tests_hook") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "perf_tests_hook.mm" ]
-  deps = [
-    ":tests_hook",
-    "//base",
-    "//ios/chrome/browser/flags/:system_flags",
-  ]
+  deps = [ ":tests_hook" ]
 }
 
 if (!is_fat_secondary_toolchain) {
