@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1000 tests; 977 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandValue("forecolor") before
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandIndeterm("forecolor") after
 PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<table data-start=0 data-end=1><tbody><tr><td>foo<td>bar<td>baz</table>" queryCommandState("forecolor") after
@@ -231,7 +231,7 @@ PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=\"color: rg
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>": execCommand("forecolor", false, "#0000FF") return value
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font color=\"blue\">foobarbaz</font>" but got "<span style=\"color:rgb(0, 0, 255)\">foo</span><font style=\"color:rgb(0, 0, 255)\">bar</font><span style=\"color:rgb(0, 0, 255)\">baz</span>"
+PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" compare innerHTML
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" queryCommandIndeterm("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" queryCommandState("stylewithcss") before
 PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=blue>foo<font color=brown>[bar]</font>baz</font>" queryCommandValue("stylewithcss") before

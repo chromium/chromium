@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 300 tests; 297 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 456 tests; 441 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandState("delete") after
 PASS [["delete",""]] "<p contenteditable=false><span contenteditable=true>[abc]</span></p>" queryCommandValue("delete") after
@@ -300,5 +300,161 @@ PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul
 PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandIndeterm("delete") after
 PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandState("delete") after
 PASS [["delete",""]] "<ul><li>abc</li><li contenteditable=\"false\">def</li></ul><p>[]ghi</p>" queryCommandValue("delete") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font color=\"brown\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"color:rgb(165, 42, 42)\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font color=\"brown\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"color:rgb(165, 42, 42)\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font color=brown>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"3\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"3\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"3\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"3\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=3>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=4>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font color=blue>foo</font><p><font size=5>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("fontSize") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("fontSize") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("foreColor") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandIndeterm("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandState("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font size=5>foo</font><p><font color=blue>[]bar</font>" queryCommandValue("foreColor") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandIndeterm("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandState("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandValue("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandIndeterm("fontName") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandState("fontName") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandValue("fontName") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("styleWithCSS", false, "false") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>": execCommand("delete", false, "") return value
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" checks for modifications to non-editable content
+FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandIndeterm("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandState("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandValue("fontName") before
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandIndeterm("fontName") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandState("fontName") after
+PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["delete",""]] "<p><font face=monospace>foo</font><p><font face=sans-serif>[]bar</font>" queryCommandValue("fontName") after
 Harness: the test ran to completion.
 

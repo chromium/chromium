@@ -2988,6 +2988,13 @@ crbug.com/webrtc/10567 external/wpt/webrtc/RTCRtpParameters-encodings.html [ Fai
 crbug.com/webrtc/10567 external/wpt/webrtc/simulcast/setParameters-encodings.https.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/css-tables/whitespace-001.html [ Failure ]
+crbug.com/626703 [ Mac10.15 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
+crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
+crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
+crbug.com/626703 [ Mac12-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
+crbug.com/626703 [ Win10.20h2 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/resize-lock.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-overflow/overflow-overlay.tentative.html [ Failure ]
 crbug.com/626703 [ Win11 ] external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-rollback.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/url/IdnaTestV2.window.html [ Failure Timeout ]

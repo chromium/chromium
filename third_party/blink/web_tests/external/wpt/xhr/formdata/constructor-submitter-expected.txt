@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS FormData construction should allow a null submitter
+FAIL FormData construction should throw a TypeError if a non-null submitter is not a submit button assert_throws_js: function "() => new FormData(form, document.querySelector('[name=n1]'))" did not throw
+FAIL FormData construction should throw a 'NotFoundError' DOMException if a non-null submitter is not owned by the form assert_throws_dom: function "() => new FormData(form, document.querySelector('[name=unassociated]'))" did not throw
+FAIL The constructed FormData object should contain an in-tree-order entry for a named submit button submitter assert_array_equals: lengths differ, expected array ["n1", "named", "n3"] length 3, got ["n1", "n3"] length 2
+PASS The constructed FormData object should not contain an entry for an unnamed submit button submitter
+FAIL The constructed FormData object should contain in-tree-order entries for an activated Image Button submitter assert_array_equals: lengths differ, expected array ["n1", "namedImage.x", "namedImage.y", "n3"] length 4, got ["n1", "n3"] length 2
+FAIL The constructed FormData object should contain in-tree-order entries for an unactivated Image Button submitter assert_array_equals: lengths differ, expected array ["n1", "unactivatedImage.x", "unactivatedImage.y", "n3"] length 4, got ["n1", "n3"] length 2
+Harness: the test ran to completion.
+
