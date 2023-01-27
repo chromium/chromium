@@ -27,15 +27,13 @@ BASE_FEATURE(kTranslateSubFrames,
              "TranslateSubFrames",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The feature is disabled on iOS since iOS currently does not support TFLite
-// model execution. The feature is also explicitly disabled on Webview and
-// Weblayer.
+// The feature is explicitly disabled on Webview and Weblayer.
 // TODO(crbug.com/1292622): Enable the feature on Webview.
 // TODO(crbug.com/1247836): Enable the feature on WebLayer.
 BASE_FEATURE(kTFLiteLanguageDetectionEnabled,
              "TFLiteLanguageDetectionEnabled",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT

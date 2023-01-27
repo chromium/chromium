@@ -4,6 +4,8 @@
 
 #include "components/download/public/background_service/features.h"
 
+#include "build/build_config.h"
+
 namespace download {
 
 BASE_FEATURE(kDownloadServiceFeature,
@@ -12,6 +14,11 @@ BASE_FEATURE(kDownloadServiceFeature,
 
 BASE_FEATURE(kDownloadServiceForegroundSessionIOSFeature,
              "DownloadServiceForegroundSessionIOSFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 }  // namespace download
