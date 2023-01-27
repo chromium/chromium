@@ -56,8 +56,8 @@ BASE_FEATURE(kAccessCodeCastUI,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables displaying the submenu to open a link with a different profile
-// even if there is no other profile opened in a separate window
+// Enables displaying the submenu to open a link with a different profile if
+// there is at least one other active profile.
 BASE_FEATURE(kDisplayOpenLinkAsProfile,
              "DisplayOpenLinkAsProfile",
              base::FEATURE_DISABLED_BY_DEFAULT);
