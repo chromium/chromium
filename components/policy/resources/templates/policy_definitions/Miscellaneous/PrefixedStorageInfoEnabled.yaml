@@ -22,8 +22,8 @@ schema:
   type: boolean
 # TODO(crbug/1384153): Cleanup policiy after M111.
 supported_on:
-- chrome.*:106-111
-- chrome_os:106-111
-- android:106-111
+- chrome.*:106-112
+- chrome_os:106-112
+- android:106-112
 tags: []
 type: main
