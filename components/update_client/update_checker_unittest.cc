@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -20,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -85,6 +87,10 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<Component> MakeComponent(
       const std::string& brand,
       const std::string& install_data_index) const;
+  absl::optional<base::Value::Dict> ParseRequest(int request_number);
+  base::Value GetFirstAppAsValue(const base::Value::Dict& request);
+  base::Value::Dict GetFirstAppAsDict(const base::Value::Dict& request);
+
   scoped_refptr<TestConfigurator> config_;
   std::unique_ptr<TestActivityDataService> activity_data_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_;
@@ -227,6 +233,31 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   return component;
 }
 
+absl::optional<base::Value::Dict> UpdateCheckerTest::ParseRequest(
+    int request_number) {
+  const std::string& request =
+      post_interceptor_->GetRequestBody(request_number);
+  absl::optional<base::Value> request_val = base::JSONReader::Read(request);
+
+  if (!request_val || !request_val->is_dict()) {
+    return absl::nullopt;
+  }
+
+  return std::move(request_val.value()).TakeDict();
+}
+
+base::Value UpdateCheckerTest::GetFirstAppAsValue(
+    const base::Value::Dict& request) {
+  const base::Value::List* app_list =
+      request.FindDict("request")->FindList("app");
+  return CHECK_DEREF(app_list)[0].Clone();
+}
+
+base::Value::Dict UpdateCheckerTest::GetFirstAppAsDict(
+    const base::Value::Dict& request) {
+  return GetFirstAppAsValue(request).TakeDict();
+}
+
 // This test is parameterized for |is_foreground|.
 TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   EXPECT_TRUE(post_interceptor_->ExpectRequest(
@@ -265,11 +296,9 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
       << post_interceptor_->GetRequestsAsString();
 
   // Check the request.
-  const auto root_value =
-      base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
-  ASSERT_TRUE(root_value);
-  const base::Value::Dict* root = root_value->GetIfDict();
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
+
   const auto* request = root->FindDict("request");
   ASSERT_TRUE(request);
   EXPECT_TRUE(request->contains("@os"));
@@ -425,25 +454,28 @@ TEST_P(UpdateCheckerTest, UpdateCheckInvalidAp) {
 
   RunThreads();
 
-  const auto request = post_interceptor_->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-    EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-    EXPECT_FALSE(app.FindKey("data"));
-    if (is_foreground_)
-      EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-    EXPECT_FALSE(app.FindKey("ap"));
-    EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-    EXPECT_TRUE(app.FindKey("updatecheck"));
-    EXPECT_TRUE(app.FindKey("ping"));
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-    EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                         ->GetList()[0]
-                         .FindKey("fp")
-                         ->GetString());
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  ASSERT_TRUE(root);
+
+  const base::Value app_as_val = GetFirstAppAsValue(root.value());
+  const base::Value::Dict app = GetFirstAppAsDict(root.value());
+
+  EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("TEST", CHECK_DEREF(app.FindString("brand")));
+  EXPECT_FALSE(app.contains("data"));
+  if (is_foreground_) {
+    EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
+  }
+  EXPECT_FALSE(app.contains("ap"));
+  EXPECT_EQ(true, app.FindBool("enabled"));
+  EXPECT_TRUE(app.contains("updatecheck"));
+  EXPECT_TRUE(app.contains("ping"));
+  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+                                   ->GetList()[0]
+                                   .GetDict()
+                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
@@ -462,24 +494,25 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccessNoBrand) {
 
   RunThreads();
 
-  const auto request = post_interceptor_->GetRequestBody(0);
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  ASSERT_TRUE(root);
 
-    const auto root = base::JSONReader::Read(request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-    EXPECT_FALSE(app.FindKey("brand"));
-    if (is_foreground_)
-      EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-    EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-    EXPECT_TRUE(app.FindKey("updatecheck"));
-    EXPECT_TRUE(app.FindKey("ping"));
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-    EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                         ->GetList()[0]
-                         .FindKey("fp")
-                         ->GetString());
+  const base::Value app_as_val = GetFirstAppAsValue(root.value());
+  const base::Value::Dict app = GetFirstAppAsDict(root.value());
+  EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+  EXPECT_FALSE(app.contains("brand"));
+  if (is_foreground_) {
+    EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
+  }
+  EXPECT_EQ(true, app.FindBool("enabled"));
+  EXPECT_TRUE(app.contains("updatecheck"));
+  EXPECT_TRUE(app.contains("ping"));
+  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+                                   ->GetList()[0]
+                                   .GetDict()
+                                   .FindString("fp")));
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckFallback) {
@@ -553,11 +586,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckDownloadPreference) {
   RunThreads();
 
   // The request must contain dlpref="cacheable".
-  const auto request = post_interceptor_->GetRequestBody(0);
-  const auto root = base::JSONReader::Read(request);
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
   EXPECT_EQ("cacheable",
-            root->FindKey("request")->FindKey("dlpref")->GetString());
+            CHECK_DEREF(root->FindDict("request")->FindString("dlpref")));
 }
 
 // This test is checking that an update check signed with CUP fails, since there
@@ -586,23 +618,24 @@ TEST_P(UpdateCheckerTest, UpdateCheckCupError) {
       << post_interceptor_->GetRequestsAsString();
 
   // Check the request.
-  const auto& request = post_interceptor_->GetRequestBody(0);
-  const auto root = base::JSONReader::Read(request);
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
   ASSERT_TRUE(root);
-  const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-  EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-  EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-  EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-  if (is_foreground_)
-    EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-  EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-  EXPECT_TRUE(app.FindKey("updatecheck"));
-  EXPECT_TRUE(app.FindKey("ping"));
-  EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-  EXPECT_EQ("fp1", app.FindPath({"packages", "package"})
-                       ->GetList()[0]
-                       .FindKey("fp")
-                       ->GetString());
+  const base::Value app_as_val = GetFirstAppAsValue(root.value());
+  const base::Value::Dict app = GetFirstAppAsDict(root.value());
+  EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("TEST", CHECK_DEREF(app.FindString("brand")));
+  if (is_foreground_) {
+    EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
+  }
+  EXPECT_EQ(true, app.FindBool("enabled"));
+  EXPECT_TRUE(app.contains("updatecheck"));
+  EXPECT_TRUE(app.contains("ping"));
+  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
+  EXPECT_EQ("fp1", CHECK_DEREF(app_as_val.FindPath({"packages", "package"})
+                                   ->GetList()[0]
+                                   .GetDict()
+                                   .FindString("fp")));
 
   // Expect an error since the response is not trusted.
   EXPECT_EQ(ErrorCategory::kUpdateCheck, error_category_);
@@ -666,17 +699,15 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastRollCall) {
   ASSERT_EQ(2, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-    const auto root1 =
-        base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
-    ASSERT_TRUE(root1);
-    const auto& app1 = root1->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(5, app1.FindPath({"ping", "r"})->GetInt());
-    const auto root2 =
-        base::JSONReader::Read(post_interceptor_->GetRequestBody(1));
-    ASSERT_TRUE(root2);
-    const auto& app2 = root2->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(3383, app2.FindPath({"ping", "rd"})->GetInt());
-    EXPECT_TRUE(app2.FindPath({"ping", "ping_freshness"})->is_string());
+  absl::optional<base::Value::Dict> root1 = ParseRequest(0);
+  ASSERT_TRUE(root1);
+  const base::Value app1 = GetFirstAppAsValue(root1.value());
+  EXPECT_EQ(5, app1.FindPath({"ping", "r"})->GetInt());
+  absl::optional<base::Value::Dict> root2 = ParseRequest(1);
+  ASSERT_TRUE(root2);
+  const base::Value app2 = GetFirstAppAsValue(root2.value());
+  EXPECT_EQ(3383, app2.FindPath({"ping", "rd"})->GetInt());
+  EXPECT_TRUE(app2.FindPath({"ping", "ping_freshness"})->is_string());
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
@@ -729,29 +760,26 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
       << post_interceptor_->GetRequestsAsString();
 
     {
-      const auto root =
-          base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(10, app.FindPath({"ping", "a"})->GetInt());
-      EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
+    absl::optional<base::Value::Dict> root = ParseRequest(0);
+    ASSERT_TRUE(root);
+    const base::Value app = GetFirstAppAsValue(root.value());
+    EXPECT_EQ(10, app.FindPath({"ping", "a"})->GetInt());
+    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
     }
     {
-      const auto root =
-          base::JSONReader::Read(post_interceptor_->GetRequestBody(1));
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(3383, app.FindPath({"ping", "ad"})->GetInt());
-      EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
-      EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
+    absl::optional<base::Value::Dict> root = ParseRequest(1);
+    ASSERT_TRUE(root);
+    const base::Value app = GetFirstAppAsValue(root.value());
+    EXPECT_EQ(3383, app.FindPath({"ping", "ad"})->GetInt());
+    EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
+    EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
     }
     {
-      const auto root =
-          base::JSONReader::Read(post_interceptor_->GetRequestBody(2));
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
-      EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
+    absl::optional<base::Value::Dict> root = ParseRequest(2);
+    ASSERT_TRUE(root);
+    const base::Value app = GetFirstAppAsValue(root.value());
+    EXPECT_EQ(3383, app.FindPath({"ping", "rd"})->GetInt());
+    EXPECT_TRUE(app.FindPath({"ping", "ping_freshness"})->is_string());
     }
 }
 
@@ -776,12 +804,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-        const auto root = base::JSONReader::Read(request);
-        ASSERT_TRUE(root);
-        const auto& app =
-            root->FindKey("request")->FindKey("app")->GetList()[0];
-        EXPECT_EQ("ondemand", app.FindKey("installsource")->GetString());
-        EXPECT_FALSE(app.FindKey("installedby"));
+      const auto root = base::JSONReader::Read(request);
+      ASSERT_TRUE(root);
+      const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+      EXPECT_EQ("ondemand", CHECK_DEREF(app.FindString("installsource")));
+      EXPECT_FALSE(app.contains("installedby"));
     }
     {
       auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
@@ -798,12 +825,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                          base::Unretained(this)));
       RunThreads();
       const auto& request = post_interceptor->GetRequestBody(0);
-        const auto root = base::JSONReader::Read(request);
-        ASSERT_TRUE(root);
-        const auto& app =
-            root->FindKey("request")->FindKey("app")->GetList()[0];
-        EXPECT_EQ("sideload", app.FindKey("installsource")->GetString());
-        EXPECT_EQ("policy", app.FindKey("installedby")->GetString());
+      const auto root = base::JSONReader::Read(request);
+      ASSERT_TRUE(root);
+      const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+      EXPECT_EQ("sideload", CHECK_DEREF(app.FindString("installsource")));
+      EXPECT_EQ("policy", CHECK_DEREF(app.FindString("installedby")));
     }
     return;
   }
@@ -821,10 +847,10 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_FALSE(app.FindKey("installsource"));
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_FALSE(app.contains("installsource"));
   }
   {
     auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
@@ -841,11 +867,11 @@ TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ("webstore", app.FindKey("installsource")->GetString());
-      EXPECT_EQ("external", app.FindKey("installedby")->GetString());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ("webstore", CHECK_DEREF(app.FindString("installsource")));
+    EXPECT_EQ("external", CHECK_DEREF(app.FindString("installedby")));
   }
 }
 
@@ -869,11 +895,11 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-      EXPECT_FALSE(app.FindKey("disabled"));
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_FALSE(app.contains("disabled"));
   }
 
   {
@@ -890,11 +916,11 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-      EXPECT_FALSE(app.FindKey("disabled"));
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_FALSE(app.contains("disabled"));
   }
 
   {
@@ -911,13 +937,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(false, app.FindKey("enabled")->GetBool());
-      const auto& disabled = app.FindKey("disabled")->GetList();
-      EXPECT_EQ(1u, disabled.size());
-      EXPECT_EQ(0, disabled[0].FindKey("reason")->GetInt());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(false, app.FindBool("enabled"));
+    const base::Value::List* disabled = app.FindList("disabled");
+    EXPECT_EQ(1u, disabled->size());
+    EXPECT_EQ(0, CHECK_DEREF(disabled)[0].GetDict().FindInt("reason"));
   }
   {
     crx_component->disabled_reasons = {1};
@@ -933,13 +959,13 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(false, app.FindKey("enabled")->GetBool());
-      const auto& disabled = app.FindKey("disabled")->GetList();
-      EXPECT_EQ(1u, disabled.size());
-      EXPECT_EQ(1, disabled[0].FindKey("reason")->GetInt());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(false, app.FindBool("enabled"));
+    const base::Value::List* disabled = app.FindList("disabled");
+    EXPECT_EQ(1u, disabled->size());
+    EXPECT_EQ(1, CHECK_DEREF(disabled)[0].GetDict().FindInt("reason"));
   }
 
   {
@@ -956,15 +982,15 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(false, app.FindKey("enabled")->GetBool());
-      const auto& disabled = app.FindKey("disabled")->GetList();
-      EXPECT_EQ(3u, disabled.size());
-      EXPECT_EQ(4, disabled[0].FindKey("reason")->GetInt());
-      EXPECT_EQ(8, disabled[1].FindKey("reason")->GetInt());
-      EXPECT_EQ(16, disabled[2].FindKey("reason")->GetInt());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(false, app.FindBool("enabled"));
+    const base::Value::List& disabled = CHECK_DEREF(app.FindList("disabled"));
+    EXPECT_EQ(3u, disabled.size());
+    EXPECT_EQ(4, disabled[0].GetDict().FindInt("reason"));
+    EXPECT_EQ(8, disabled[1].GetDict().FindInt("reason"));
+    EXPECT_EQ(16, disabled[2].GetDict().FindInt("reason"));
   }
 
   {
@@ -981,16 +1007,16 @@ TEST_P(UpdateCheckerTest, ComponentDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(false, app.FindKey("enabled")->GetBool());
-      const auto& disabled = app.FindKey("disabled")->GetList();
-      EXPECT_EQ(4u, disabled.size());
-      EXPECT_EQ(0, disabled[0].FindKey("reason")->GetInt());
-      EXPECT_EQ(4, disabled[1].FindKey("reason")->GetInt());
-      EXPECT_EQ(8, disabled[2].FindKey("reason")->GetInt());
-      EXPECT_EQ(16, disabled[3].FindKey("reason")->GetInt());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(false, app.FindBool("enabled"));
+    const base::Value::List& disabled = CHECK_DEREF(app.FindList("disabled"));
+    EXPECT_EQ(4u, disabled.size());
+    EXPECT_EQ(0, disabled[0].GetDict().FindInt("reason"));
+    EXPECT_EQ(4, disabled[1].GetDict().FindInt("reason"));
+    EXPECT_EQ(8, disabled[2].GetDict().FindInt("reason"));
+    EXPECT_EQ(16, disabled[3].GetDict().FindInt("reason"));
   }
 }
 
@@ -1020,13 +1046,13 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-      EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-      EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-      EXPECT_TRUE(app.FindKey("updatecheck")->DictEmpty());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_TRUE(app.FindDict("updatecheck")->empty());
   }
   {
     // Tests the scenario where:
@@ -1045,13 +1071,15 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
                        base::Unretained(this)));
     RunThreads();
     const auto& request = post_interceptor->GetRequestBody(0);
-      const auto root = base::JSONReader::Read(request);
-      ASSERT_TRUE(root);
-      const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-      EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-      EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-      EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-      EXPECT_TRUE(app.FindPath({"updatecheck", "updatedisabled"})->GetBool());
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value app_as_val = GetFirstAppAsValue(root->GetDict());
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_TRUE(
+        app_as_val.FindPath({"updatecheck", "updatedisabled"})->GetBool());
   }
 }
 
@@ -1104,7 +1132,7 @@ TEST_P(UpdateCheckerTest, SameVersionUpdateAllowed) {
     ASSERT_TRUE(root);
     const auto& app = root->FindPath("request.app")->GetList()[0];
     EXPECT_STREQ(kUpdateItemId, app.FindStringPath("appid")->c_str());
-    EXPECT_EQ(app.FindBoolPath("updatecheck.sameversionupdate").value(), true);
+    EXPECT_EQ(app.FindBoolPath("updatecheck.sameversionupdate"), true);
   }
 }
 
@@ -1162,21 +1190,20 @@ TEST_P(UpdateCheckerTest, UpdatePauseResume) {
                      base::Unretained(this)));
   RunThreads();
 
-  const auto& request = post_interceptor_->GetRequestBody(0);
-    const auto root = base::JSONReader::Read(request);
-    ASSERT_TRUE(root);
-    const auto& app = root->FindKey("request")->FindKey("app")->GetList()[0];
-    EXPECT_EQ(kUpdateItemId, app.FindKey("appid")->GetString());
-    EXPECT_EQ("0.9", app.FindKey("version")->GetString());
-    EXPECT_EQ("TEST", app.FindKey("brand")->GetString());
-    EXPECT_EQ(true, app.FindKey("enabled")->GetBool());
-    EXPECT_TRUE(app.FindKey("updatecheck")->DictEmpty());
-    EXPECT_EQ(-2, app.FindPath({"ping", "r"})->GetInt());
-    EXPECT_EQ("fp1", app.FindKey("packages")
-                         ->FindKey("package")
-                         ->GetList()[0]
-                         .FindKey("fp")
-                         ->GetString());
+  absl::optional<base::Value::Dict> root = ParseRequest(0);
+  ASSERT_TRUE(root);
+  const base::Value app_as_val = GetFirstAppAsValue(root.value());
+  const base::Value::Dict app = GetFirstAppAsDict(root.value());
+  EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+  EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+  EXPECT_EQ("TEST", CHECK_DEREF(app.FindString("brand")));
+  EXPECT_EQ(true, app.FindBool("enabled"));
+  EXPECT_TRUE(app.FindDict("updatecheck")->empty());
+  EXPECT_EQ(-2, app_as_val.FindPath({"ping", "r"})->GetInt());
+
+  const base::Value::List& packages =
+      CHECK_DEREF(app.FindDict("packages")->FindList("package"));
+  EXPECT_EQ("fp1", CHECK_DEREF(packages[0].GetDict().FindString("fp")));
 }
 
 // Tests that an update checker object and its underlying SimpleURLLoader can
@@ -1279,14 +1306,13 @@ TEST_P(UpdateCheckerTest, DomainJoined) {
     RunThreads();
 
     ASSERT_EQ(post_interceptor_->GetCount(), 1);
-    const auto root =
-        base::JSONReader::Read(post_interceptor_->GetRequestBody(0));
+    absl::optional<base::Value::Dict> root = ParseRequest(0);
+    ASSERT_TRUE(root);
     post_interceptor_->Reset();
 
     // What is injected in the update checker by the configurator must
     // match what is sent in the update check.
-    ASSERT_TRUE(root);
-    EXPECT_EQ(is_managed, root->FindBoolPath("request.domainjoined"));
+    EXPECT_EQ(is_managed, root->FindBoolByDottedPath("request.domainjoined"));
   }
 }
 
