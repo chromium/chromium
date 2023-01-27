@@ -51,15 +51,16 @@ class StretchyOperatorShaperTest : public FontTestBase {
 // See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
 // blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
 TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
-  Font math = CreateMathFont("operators.woff");
+  Font math = CreateMathFont("stretchy.woff");
 
   StretchyOperatorShaper vertical_shaper(
-      kLeftBraceCodePoint, OpenTypeMathStretchData::StretchAxis::Vertical);
+      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
   StretchyOperatorShaper horizontal_shaper(
-      kOverBraceCodePoint, OpenTypeMathStretchData::StretchAxis::Horizontal);
+      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal);
 
-  auto left_brace = math.PrimaryFont()->GlyphForCharacter(kLeftBraceCodePoint);
-  auto over_brace = math.PrimaryFont()->GlyphForCharacter(kOverBraceCodePoint);
+  auto vertical_arrow = math.PrimaryFont()->GlyphForCharacter(kVerticalArrow);
+  auto horizontal_arrow =
+      math.PrimaryFont()->GlyphForCharacter(kHorizontalArrow);
 
   // Calculate glyph indices of stretchy operator's parts.
   Vector<UChar32> v, h;
@@ -68,9 +69,9 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   // Stretch operators to target sizes (in font units) 125, 250, 375, 500, 625,
   // 750, 875, 1000, 1125, ..., 3750, 3875, 4000.
   //
-  // Shaper tries glyphs over_brace/left_brace, h0/v0, h1/v1, h2/v2, h3/v3 of
-  // respective sizes 1000, 1000, 2000, 3000 and 4000. It returns the smallest
-  // glyph larger than the target size.
+  // Shaper tries glyphs vertical_arrow/horizontal_arrow, h0/v0, h1/v1, h2/v2,
+  // h3/v3 of respective sizes 1000, 1000, 2000, 3000 and 4000. It returns the
+  // smallest glyph larger than the target size.
   const unsigned size_count = 4;
   const unsigned subdivision = 8;
   for (unsigned i = 0; i < size_count; i++) {
@@ -106,7 +107,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
             horizontal_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
-        Glyph expected_variant = i ? h[0] + 2 * i : over_brace;
+        Glyph expected_variant = i ? h[0] + 2 * i : horizontal_arrow;
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), expected_variant);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), (i + 1) * 1000,
                     kSizeError);
@@ -118,7 +119,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
             vertical_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
-        Glyph expected_variant = i ? v[0] + 2 * i : left_brace;
+        Glyph expected_variant = i ? v[0] + 2 * i : vertical_arrow;
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), expected_variant);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), (i + 1) * 1000,
                     kSizeError);
@@ -255,6 +256,88 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
         static_cast<float>(1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750);
     horizontal_shaper.Shape(&math, target_size);
     vertical_shaper.Shape(&math, target_size);
+  }
+}
+
+// This test performs similar checks for shaping glyph assemblies to the ones of
+// StretchyOperatorShaperTest.GlyphVariants, but the glyphs involved have their
+// ink ascents equal to their ink descents. The glyphs used and their advances
+// should remain exactly the same. Horizontal assemblies now use the ink
+// ascent/descent of the glyphs but vertical assemblies should be normalized to
+// a zero ink descent (see crbug.com/1409380).
+TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
+  Font math = CreateMathFont("stretchy-centered-on-baseline.woff");
+
+  StretchyOperatorShaper vertical_shaper(
+      kVerticalArrow, OpenTypeMathStretchData::StretchAxis::Vertical);
+  StretchyOperatorShaper horizontal_shaper(
+      kHorizontalArrow, OpenTypeMathStretchData::StretchAxis::Horizontal);
+
+  // Calculate glyph indices of stretchy operator's parts.
+  Vector<UChar32> v, h;
+  retrieveGlyphForStretchyOperators(math, v, h);
+
+  unsigned repetition_count = 5;
+  float overlap = 750;
+  float target_size = 3000 + repetition_count * (2000 - overlap);
+
+  // Metrics of horizontal assembly.
+  {
+    StretchyOperatorShaper::Metrics metrics;
+    horizontal_shaper.Shape(&math, target_size, &metrics);
+    EXPECT_NEAR(metrics.advance, target_size, kSizeError);
+    EXPECT_NEAR(metrics.ascent, 500, kSizeError);
+    EXPECT_FLOAT_EQ(metrics.descent, 500);
+  }
+
+  // Metrics of vertical assembly.
+  {
+    StretchyOperatorShaper::Metrics metrics;
+    vertical_shaper.Shape(&math, target_size, &metrics);
+    EXPECT_NEAR(metrics.advance, 1000, kSizeError);
+    EXPECT_NEAR(metrics.ascent, target_size, kSizeError);
+    EXPECT_FLOAT_EQ(metrics.descent, 0);
+  }
+
+  // Shaping of horizontal assembly.
+  // From left to right: h2, h1, h1, h1, ...
+  {
+    scoped_refptr<ShapeResult> result =
+        horizontal_shaper.Shape(&math, target_size);
+
+    EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
+    EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
+              repetition_count + 1);
+    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), h[2]);
+    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), 3000 - overlap,
+                kSizeError);
+    for (unsigned i = 0; i < repetition_count - 1; i++) {
+      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i + 1), h[1]);
+      EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i + 1), 2000 - overlap,
+                  kSizeError);
+    }
+    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), h[1]);
+    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count), 2000,
+                kSizeError);
+  }
+
+  // Shaping of vertical assembly.
+  // From bottom to top: v2, v1, v1, v1, ...
+  {
+    scoped_refptr<ShapeResult> result =
+        vertical_shaper.Shape(&math, target_size);
+
+    EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
+    EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
+              repetition_count + 1);
+    for (unsigned i = 0; i < repetition_count; i++) {
+      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i), v[1]);
+      EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i), 2000 - overlap,
+                  kSizeError);
+    }
+    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), v[2]);
+    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count), 3000,
+                kSizeError);
   }
 }
 

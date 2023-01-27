@@ -1630,6 +1630,10 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
     if (!repetition_count)
       continue;
     DCHECK(part_index < assembly_parameters.glyph_count);
+    float glyph_ink_ascent;
+    if (!is_horizontal_assembly) {
+      glyph_ink_ascent = -font->PrimaryFont()->BoundsForGlyph(part.glyph).y();
+    }
     for (unsigned repetition_index = 0; repetition_index < repetition_count;
          repetition_index++) {
       unsigned glyph_index =
@@ -1644,7 +1648,7 @@ scoped_refptr<ShapeResult> ShapeResult::CreateForStretchyMathOperator(
                                        full_advance};
       if (!is_horizontal_assembly) {
         GlyphOffset glyph_offset(
-            0, -assembly_parameters.stretch_size + part.full_advance);
+            0, -assembly_parameters.stretch_size + glyph_ink_ascent);
         run->glyph_data_.SetOffsetAt(glyph_index, glyph_offset);
         result->has_vertical_offsets_ |= (glyph_offset.y() != 0);
       }

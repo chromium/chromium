@@ -4,7 +4,7 @@ from utils import mathfont
 import fontforge
 
 # Create a WOFF font with glyphs for all the operator strings.
-font = mathfont.create("stretchy", "Copyright (c) 2021 Igalia S.L.")
+font = mathfont.create("stretchy-centered-on-baseline", "Copyright (c) 2023 Igalia S.L.")
 
 # Set parameters for stretchy tests.
 font.math.MinConnectorOverlap = mathfont.em // 2
@@ -28,7 +28,7 @@ font.math.OverbarExtraAscender = 0
 horizontalArrow = 0x295A # LEFTWARDS HARPOON WITH BARB UP FROM BAR
 verticalArrow = 0x295C # UPWARDS HARPOON WITH BARB RIGHT FROM BAR
 
-mathfont.createSizeVariants(font, aUsePUA = True, aCenterOnBaseline = False)
+mathfont.createSizeVariants(font, aUsePUA = True, aCenterOnBaseline = True)
 
 # Add stretchy vertical and horizontal constructions for the horizontal arrow.
 mathfont.createSquareGlyph(font, horizontalArrow)
