@@ -69,6 +69,7 @@ async function setUpFileEntrySet(volume) {
   const driveEntries = [
     ENTRIES.hello,
     ENTRIES.pinned,
+    ENTRIES.testCSEDocument,
     ENTRIES.testCSEFile,
     ENTRIES.testDocument,
     ENTRIES.docxFile,

@@ -256,13 +256,21 @@ export class SearchV2ContentScanner extends ContentScanner {
   getTypeFilter_() {
     switch (this.options_.type) {
       case SearchFileType.AUDIO:
-        return FileType.isAudio;
+        return (entry) => {
+          return FileType.isAudio(entry);
+        };
       case SearchFileType.DOCUMENTS:
-        return FileType.isDocument;
+        return (entry) => {
+          return FileType.isDocument(entry);
+        };
       case SearchFileType.IMAGES:
-        return FileType.isImage;
+        return (entry) => {
+          return FileType.isImage(entry);
+        };
       case SearchFileType.VIDEOS:
-        return FileType.isVideo;
+        return (entry) => {
+          return FileType.isVideo(entry);
+        };
       default:
         return (entry) => true;
     }

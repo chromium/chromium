@@ -144,6 +144,17 @@ FileType.getType = (entry, opt_mimeType) => {
     return FileType.DIRECTORY;
   }
 
+  if (opt_mimeType) {
+    const cseMatch = opt_mimeType.match(
+        /^application\/vnd.google-gsuite.encrypted; content="([a-z\/.-]+)"$/);
+    if (cseMatch) {
+      const type = /** @type {FileExtensionType} */ (
+          {...FileType.getType(entry, cseMatch[1])});
+      type.encrypted = true;
+      return type;
+    }
+  }
+
   if (opt_mimeType && MIME_TO_TYPE.has(opt_mimeType)) {
     return MIME_TO_TYPE.get(opt_mimeType);
   }
@@ -239,6 +250,16 @@ FileType.isType = (types, entry, opt_mimeType) => {
  */
 FileType.isHosted = (entry, opt_mimeType) => {
   return FileType.getType(entry, opt_mimeType).type === 'hosted';
+};
+
+/**
+ * @param {Entry} entry Reference to the file.
+ * @param {string=} opt_mimeType Optional mime type for the file.
+ * @return {boolean} Returns true if the file is encrypted with CSE.
+ */
+FileType.isEncrypted = (entry, opt_mimeType) => {
+  const type = FileType.getType(entry, opt_mimeType);
+  return type.encrypted !== undefined && type.encrypted;
 };
 
 /**

@@ -883,11 +883,12 @@ export class FileTable extends Table {
    * @private
    */
   updateSize_(div, entry) {
-    const metadata =
-        this.metadataModel_.getCache([entry], ['size', 'hosted'])[0];
+    const metadata = this.metadataModel_.getCache(
+        [entry], ['size', 'hosted', 'contentMimeType'])[0];
     const size = metadata.size;
-    const hosted = metadata.hosted;
-    div.textContent = this.formatter_.formatSize(size, hosted);
+    const special = metadata.hosted ||
+        FileType.isEncrypted(entry, metadata.contentMimeType);
+    div.textContent = this.formatter_.formatSize(size, special);
   }
 
   /**

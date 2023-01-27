@@ -17,7 +17,21 @@ function makeFakeEntry(name) {
     isDirectory: false,
     rootType: VolumeManagerCommon.RootType.MY_FILES,
     name: name,
-    toURL: () => `filesyste:chrome://file-manager/root/${name}`,
+    toURL: () => `filesystem:chrome://file-manager/root/${name}`,
+  });
+}
+
+/**
+ * @param {string} name
+ * @return {!Entry}
+ */
+function makeFakeDriveEntry(name) {
+  return /** @type {!Entry} */ ({
+    isDirectory: false,
+    rootType: VolumeManagerCommon.RootType.DRIVE,
+    name: name,
+    toURL: () =>
+        `filesystem:chrome://file-manager/external/drivefs-aaaaa/root/${name}`,
   });
 }
 
@@ -137,4 +151,79 @@ export function testIsDocument() {
   assertFalse(FileType.isDocument(makeFakeEntry('foo.ogg')), '.ogg');
   assertFalse(FileType.isDocument(makeFakeEntry('foo.zip')), '.zip');
   assertFalse(FileType.isDocument(makeFakeEntry('foo.qt')), '.qt');
+}
+
+export function testIsEncrypted() {
+  assertTrue(FileType.isEncrypted(
+      makeFakeDriveEntry('foo.gdoc'),
+      'application/vnd.google-gsuite/encrypted; ' +
+          'content="application/vnd.google-apps.document"'));
+  assertTrue(FileType.isEncrypted(
+      makeFakeDriveEntry('foo.txt'),
+      'application/vnd.google-gsuite/encrypted; content="text/plain"'));
+  assertFalse(FileType.isEncrypted(
+      makeFakeDriveEntry('foo.gdoc'), 'application/vnd.google-apps.document'));
+  assertFalse(
+      FileType.isEncrypted(makeFakeDriveEntry('foo.txt'), 'text/plain'));
+}
+
+export function testEncryptedTypeDetection() {
+  const testItems = [
+    // Guess by mime type only, name won't give a hint.
+    {
+      name: 'foo',
+      mime: 'application/pdf',
+      want: {type: 'document', subtype: 'PDF'},
+    },
+    {name: 'foo', mime: 'audio/flac', want: {type: 'audio', subtype: 'FLAC'}},
+    {name: 'foo', mime: 'image/png', want: {type: 'image', subtype: 'PNG'}},
+    {name: 'foo', mime: 'text/plain', want: {type: 'text', subtype: 'TXT'}},
+    // Guess by name only.
+    {
+      name: 'foo.pdf',
+      mime: 'unknown',
+      want: {type: 'document', subtype: 'PDF'},
+    },
+    {name: 'foo.flac', mime: 'unknown', want: {type: 'audio', subtype: 'FLAC'}},
+    {name: 'foo.png', mime: 'unknown', want: {type: 'image', subtype: 'PNG'}},
+    {name: 'foo.txt', mime: 'unknown', want: {type: 'text', subtype: 'TXT'}},
+    // Guess by both factors.
+    {
+      name: 'foo.pdf',
+      mime: 'application/pdf',
+      want: {type: 'document', subtype: 'PDF'},
+    },
+    {
+      name: 'foo.flac',
+      mime: 'audio/flac',
+      want: {type: 'audio', subtype: 'FLAC'},
+    },
+    {name: 'foo.png', mime: 'image/png', want: {type: 'image', subtype: 'PNG'}},
+    {name: 'foo.txt', mime: 'text/plain', want: {type: 'text', subtype: 'TXT'}},
+    // Guess by both factors possible, but names are misleading.
+    {
+      name: 'foo.ogg',
+      mime: 'application/pdf',
+      want: {type: 'document', subtype: 'PDF'},
+    },
+    {
+      name: 'foo.docx',
+      mime: 'audio/flac',
+      want: {type: 'audio', subtype: 'FLAC'},
+    },
+    {name: 'foo.pdf', mime: 'image/png', want: {type: 'image', subtype: 'PNG'}},
+    {
+      name: 'foo.jpeg',
+      mime: 'text/plain',
+      want: {type: 'text', subtype: 'TXT'},
+    },
+  ];
+  for (const item of testItems) {
+    const entry = makeFakeDriveEntry(item.name);
+    const mimeType =
+        `application/vnd.google-gsuite/encrypted; content="${item.mime}"`;
+    const got = FileType.getType(entry, mimeType);
+    assertEquals(item.want.type, got.type);
+    assertEquals(item.want.subtype, got.subtype);
+  }
 }
