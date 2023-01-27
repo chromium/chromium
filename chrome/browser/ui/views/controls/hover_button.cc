@@ -140,10 +140,11 @@ HoverButton::HoverButton(PressedCallback callback,
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
                                    DISTANCE_CONTROL_LIST_VERTICAL) /
                                2;
-
-  icon_view_ = AddChildView(std::make_unique<IconWrapper>(std::move(icon_view),
-                                                          vertical_spacing))
-                   ->icon();
+  if (icon_view) {
+    icon_view_ = AddChildView(std::make_unique<IconWrapper>(
+                                  std::move(icon_view), vertical_spacing))
+                     ->icon();
+  }
 
   // |label_wrapper| will hold both the title and subtitle if it exists.
   auto label_wrapper = std::make_unique<views::View>();

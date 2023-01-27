@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -17,29 +19,30 @@
 #include "chrome/browser/ui/extensions/extension_site_access_combobox_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/border.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -133,39 +136,84 @@ void SiteAccessMenuItemView::OnComboboxSelectionChanged() {
 InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
     Browser* browser,
     std::unique_ptr<ToolbarActionViewController> controller,
-    bool allow_pinning)
+    bool allow_pinning,
+    views::Button::PressedCallback site_permissions_button_callback)
     : browser_(browser),
       controller_(std::move(controller)),
       model_(ToolbarActionsModel::Get(browser_->profile())) {
+  views::FlexSpecification stretch_specification =
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded);
+
+  views::View* main_row;
   auto builder =
       views::Builder<InstalledExtensionMenuItemView>(this)
-          .SetOrientation(views::LayoutOrientation::kHorizontal)
-          .SetIgnoreDefaultMainAxisMargins(true)
           // Set so the extension button receives enter/exit on children to
           // retain hover status when hovering child views.
-          .SetNotifyEnterExitOnChild(true)
-          .AddChildren(
-              views::Builder<ExtensionsMenuButton>(
-                  std::make_unique<ExtensionsMenuButton>(browser_,
-                                                         controller_.get()))
-                  .CopyAddressTo(&primary_action_button_)
-                  .SetProperty(views::kFlexBehaviorKey,
-                               views::FlexSpecification(
-                                   views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded)),
-              views::Builder<HoverButton>(
-                  std::make_unique<HoverButton>(
-                      views::Button::PressedCallback(), std::u16string()))
-                  .CopyAddressTo(&context_menu_button_)
-                  .SetID(EXTENSION_CONTEXT_MENU)
-                  .SetBorder(views::CreateEmptyBorder(
-                      ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
-                  .SetTooltipText(l10n_util::GetStringUTF16(
-                      IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP)));
+          .SetNotifyEnterExitOnChild(true);
+
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    DCHECK(site_permissions_button_callback);
+
+    ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
+    const int icon_size = provider->GetDistanceMetric(
+        DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
+    const int horizontal_inset =
+        provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN);
+    const int icon_label_spacing =
+        provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+    builder.SetOrientation(views::LayoutOrientation::kVertical)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+        .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+        .AddChildren(
+            // Main row.
+            views::Builder<views::FlexLayoutView>()
+                .CopyAddressTo(&main_row)
+                .SetOrientation(views::LayoutOrientation::kHorizontal)
+                .SetIgnoreDefaultMainAxisMargins(true),
+            // Secondary row.
+            views::Builder<views::FlexLayoutView>().AddChildren(
+                // Site permissions button.
+                // TODO(crbug.com/998298): Compute title based on the extension
+                // site access.
+                // TODO(crbug.com/998298): Add tooltip after UX provides it.
+                views::Builder<HoverButton>(
+                    std::make_unique<HoverButton>(
+                        site_permissions_button_callback,
+                        /*icon_view=*/nullptr, u"site access", std::u16string(),
+                        std::make_unique<views::ImageView>(
+                            ui::ImageModel::FromVectorIcon(
+                                vector_icons::kSubmenuArrowIcon,
+                                ui::kColorIcon))))
+                    // Margin to align the main and secondary row text. Icon
+                    // size and horizontal insets should be the values used by
+                    // the extensions menu button.
+                    .SetProperty(
+                        views::kMarginsKey,
+                        gfx::Insets::VH(0, icon_size + horizontal_inset))
+                    // Border should be the same as the icon label
+                    // spacing used by the extensions menu button.
+                    .SetBorder(views::CreateEmptyBorder(
+                        gfx::Insets::VH(0, icon_label_spacing)))));
+  } else {
+    builder.CopyAddressTo(&main_row)
+        .SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetIgnoreDefaultMainAxisMargins(true);
+  }
+
+  std::move(builder).BuildChildren();
+
+  main_row->AddChildView(
+      views::Builder<ExtensionsMenuButton>(
+          std::make_unique<ExtensionsMenuButton>(browser_, controller_.get()))
+          .CopyAddressTo(&primary_action_button_)
+          .SetProperty(views::kFlexBehaviorKey, stretch_specification)
+          .Build());
 
   if (allow_pinning) {
-    builder.AddChildAt(
+    main_row->AddChildView(
         views::Builder<HoverButton>(
             std::make_unique<HoverButton>(
                 base::BindRepeating(
@@ -176,11 +224,22 @@ InstalledExtensionMenuItemView::InstalledExtensionMenuItemView(
             .SetID(EXTENSION_PINNING)
             .SetBorder(views::CreateEmptyBorder(
                 ChromeLayoutProvider::Get()->GetDistanceMetric(
-                    DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN))),
-        1);
+                    DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+            .Build());
   }
 
-  std::move(builder).BuildChildren();
+  main_row->AddChildView(
+      views::Builder<HoverButton>(
+          std::make_unique<HoverButton>(views::Button::PressedCallback(),
+                                        std::u16string()))
+          .CopyAddressTo(&context_menu_button_)
+          .SetID(EXTENSION_CONTEXT_MENU)
+          .SetBorder(views::CreateEmptyBorder(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN)))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_EXTENSIONS_MENU_CONTEXT_MENU_TOOLTIP))
+          .Build());
 
   // Add a controller to the context menu
   context_menu_controller_ = std::make_unique<ExtensionContextMenuController>(

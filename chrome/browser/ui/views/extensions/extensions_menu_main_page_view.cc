@@ -196,13 +196,6 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
           // Request access section.
           views::Builder<RequestsAccessSection>(
               std::make_unique<RequestsAccessSection>()),
-          // TODO(crbug.com/1390952): Remove. Only for testing site permissions
-          // page behavior.
-          views::Builder<views::LabelButton>()
-              .SetText(u"Site Permissions")
-              .SetCallback(base::BindRepeating(
-                  &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
-                  base::Unretained(navigation_handler_))),
           // Menu items section.
           views::Builder<views::BoxLayoutView>()
               .CopyAddressTo(&menu_items_)
@@ -218,7 +211,10 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
     bool allow_pinning,
     int index) {
   auto item = std::make_unique<InstalledExtensionMenuItemView>(
-      browser_, std::move(action_controller), allow_pinning);
+      browser_, std::move(action_controller), allow_pinning,
+      base::BindRepeating(
+          &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
+          base::Unretained(navigation_handler_)));
   menu_items_->AddChildViewAt(std::move(item), index);
 }
 
