@@ -38,7 +38,7 @@ suite('AppListTest', () => {
                 'chrome://extension-icon/ahfgeienlihckogmohjhadlkjgocpleb/128/1',
           },
           mayShowRunOnOsLoginMode: true,
-          mayToggleRunOnOsLoginMode: false,
+          mayToggleRunOnOsLoginMode: true,
           runOnOsLoginMode: RunOnOsLoginMode.kNotRun,
           isLocallyInstalled: true,
           openInWindow: false,
@@ -136,13 +136,12 @@ suite('AppListTest', () => {
     const appItem = appListElement.shadowRoot!.querySelector('app-item');
     assertTrue(!!appItem);
 
-    const contextMenu =
-        appListElement.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    assertTrue(contextMenu.hidden);
+    assertFalse(contextMenu.open);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(contextMenu.hidden);
+    assertTrue(contextMenu.open);
 
     assertTrue(apps.appList.length >= 1);
     const appInfo = apps.appList[0]!;
@@ -188,13 +187,12 @@ suite('AppListTest', () => {
     const appItem = appList[1];
     assertTrue(!!appItem);
 
-    const contextMenu =
-        appListElement.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
-    assertTrue(contextMenu.hidden);
+    assertFalse(contextMenu.open);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(contextMenu.hidden);
+    assertTrue(contextMenu.open);
 
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#open-in-window')!.hidden);
@@ -208,71 +206,127 @@ suite('AppListTest', () => {
         contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
   });
 
-  test('toggle open in window', () => {
+  test('toggle open in window', async () => {
     const appItem = appListElement.shadowRoot!.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     assertTrue(apps.appList.length >= 1);
-    const appInfo = apps.appList[0]!;
-    const openInWindow = appListElement.shadowRoot!.querySelector<HTMLElement>(
-        '#open-in-window');
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    const openInWindow =
+        contextMenu.querySelector<HTMLElement>('#open-in-window');
     assertTrue(!!openInWindow);
     const checkbox = openInWindow.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
+    assertFalse(checkbox.checked);
+    assertFalse(apps.appList[0]!.openInWindow);
 
-    assertFalse(checkbox.checked);
-    assertFalse(appInfo.openInWindow);
+    // Clicking on the open in window context menu option to toggle
+    // on or off.
     openInWindow.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(checkbox.checked);
-    assertTrue(appInfo.openInWindow);
+    assertTrue(openInWindow.querySelector('cr-checkbox')!.checked);
+    assertTrue(apps.appList[0]!.openInWindow);
+
     openInWindow.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(checkbox.checked);
-    assertFalse(appInfo.openInWindow);
+    assertFalse(openInWindow.querySelector('cr-checkbox')!.checked);
+    assertFalse(apps.appList[0]!.openInWindow);
 
     // Clicking the checkbox should have the same effect as click the parent
     // menu item.
     checkbox.click();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(checkbox.checked);
-    assertTrue(appInfo.openInWindow);
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    assertTrue(openInWindow.querySelector('cr-checkbox')!.checked);
+    assertTrue(apps.appList[0]!.openInWindow);
   });
 
-  test('toggle launch on startup', () => {
+  test('toggle launch on startup', async () => {
     const appItem = appListElement.shadowRoot!.querySelector('app-item');
     assertTrue(!!appItem);
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
-    assertTrue(apps.appList.length > 0);
-    const appInfo = apps.appList[0]!;
+    assertTrue(apps.appList.length >= 1);
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
     const launchOnStartup =
-        appListElement.shadowRoot!.querySelector<HTMLElement>(
-            '#launch-on-startup');
+        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
     assertTrue(!!launchOnStartup);
     const checkbox = launchOnStartup.querySelector('cr-checkbox');
     assertTrue(!!checkbox);
+    assertFalse(checkbox.checked);
+    assertEquals(apps.appList[0]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
 
-    assertFalse(checkbox.checked);
-    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+    // Clicking on the launch on startup context menu option to toggle
+    // on or off.
     launchOnStartup.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(checkbox.checked);
-    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
+    assertTrue(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(apps.appList[0]!.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
+
     launchOnStartup.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertFalse(checkbox.checked);
-    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(apps.appList[0]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
 
     // Clicking the checkbox should have the same effect as click the parent
     // menu item.
     checkbox.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
-    assertTrue(checkbox.checked);
-    assertEquals(appInfo.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
+    assertTrue(launchOnStartup!.querySelector('cr-checkbox')!.checked);
+    assertEquals(apps.appList[0]!.runOnOsLoginMode, RunOnOsLoginMode.kWindowed);
+  });
+
+  test('toggle launch on startup disabled', async () => {
+    const appList = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertEquals(appList.length, 2);
+    const appItem = appList[1];
+    assertTrue(!!appItem);
+
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    const launchOnStartup =
+        contextMenu.querySelector<HTMLElement>('#launch-on-startup');
+    assertTrue(!!launchOnStartup);
+    const checkbox = launchOnStartup.querySelector('cr-checkbox');
+    assertTrue(!!checkbox);
+    assertFalse(checkbox.checked);
+    assertEquals(apps.appList[1]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+
+    // Clicking on the launch on startup context menu option should not toggle
+    // if mayToggleRunOnOsLoginMode is false.
+    launchOnStartup.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(launchOnStartup.querySelector('cr-checkbox')!.checked);
+    assertEquals(apps.appList[1]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
+
+    // Clicking the checkbox should have the same effect as clicking the parent
+    // menu item.
+    checkbox.click();
+    await callbackRouterRemote.$.flushForTesting();
+    flush();
+    appItem.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(launchOnStartup!.querySelector('cr-checkbox')!.checked);
+    assertEquals(apps.appList[1]!.runOnOsLoginMode, RunOnOsLoginMode.kNotRun);
   });
 
   test('click uninstall', async () => {
@@ -282,7 +336,7 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const uninstall =
-        appListElement.shadowRoot!.querySelector<HTMLElement>('#uninstall');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#uninstall');
     assertTrue(!!uninstall);
 
     uninstall.click();
@@ -297,7 +351,7 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const appSettings =
-        appListElement.shadowRoot!.querySelector<HTMLElement>('#app-settings');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#app-settings');
     assertTrue(!!appSettings);
 
     appSettings.click();
@@ -312,8 +366,7 @@ suite('AppListTest', () => {
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
     const createShortcut =
-        appListElement.shadowRoot!.querySelector<HTMLElement>(
-            '#create-shortcut');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#create-shortcut');
     assertTrue(!!createShortcut);
 
     createShortcut.click();
@@ -332,8 +385,7 @@ suite('AppListTest', () => {
 
     appItem.dispatchEvent(new CustomEvent('contextmenu'));
 
-    const contextMenu =
-        appListElement.shadowRoot!.querySelector('cr-action-menu');
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!contextMenu);
 
     assertTrue(
@@ -344,8 +396,7 @@ suite('AppListTest', () => {
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
 
     const installLocally =
-        appListElement.shadowRoot!.querySelector<HTMLElement>(
-            '#install-locally');
+        appItem.shadowRoot!.querySelector<HTMLElement>('#install-locally');
     assertTrue(!!installLocally);
     assertFalse(installLocally.hidden);
 
@@ -371,6 +422,54 @@ suite('AppListTest', () => {
     assertFalse(contextMenu.querySelector<HTMLElement>('#uninstall')!.hidden);
     assertTrue(
         contextMenu.querySelector<HTMLElement>('#install-locally')!.hidden);
+  });
+
+  test(
+      'context menu right click opens corresponding menu for different app',
+      () => {
+        assertTrue(!!appListElement);
+
+        const appItems =
+            appListElement.shadowRoot!.querySelectorAll('app-item');
+        assertTrue(!!appItems);
+        assertEquals(apps.appList.length, appItems.length);
+        assertTrue(!!appItems[0]);
+        assertTrue(!!appItems[1]);
+
+        appItems[0].dispatchEvent(new CustomEvent('contextmenu'));
+        const contextMenu1 =
+            appItems[0].shadowRoot!.querySelector('cr-action-menu');
+        const contextMenu2 =
+            appItems[1].shadowRoot!.querySelector('cr-action-menu');
+        assertTrue(!!contextMenu1);
+        assertTrue(!!contextMenu2);
+        assertTrue(contextMenu1.open);
+        assertFalse(contextMenu2.open);
+
+        // Simulate right click on 2nd app such that the context menu for the
+        // 2nd app shows up, and the context menu for the 1st app is hidden.
+        appItems[1].dispatchEvent(new CustomEvent('contextmenu'));
+        assertFalse(contextMenu1.open);
+        assertTrue(contextMenu2.open);
+      });
+
+  test('context menu close on right click on document', () => {
+    assertTrue(!!appListElement);
+
+    const appItems = appListElement.shadowRoot!.querySelectorAll('app-item');
+    assertTrue(!!appItems);
+    assertEquals(apps.appList.length, appItems.length);
+    assertTrue(!!appItems[0]);
+
+    appItems[0].dispatchEvent(new CustomEvent('contextmenu'));
+    const contextMenu = appItems[0].shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    assertTrue(contextMenu.open);
+
+    // Simulate right click on document such that the context menu is hidden
+    // again.
+    document.dispatchEvent(new CustomEvent('contextmenu'));
+    assertFalse(contextMenu.open);
   });
 
 });

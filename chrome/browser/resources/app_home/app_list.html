@@ -15,21 +15,6 @@
     width: auto;
   }
 
-  .dropdown-item-label {
-    flex: 1;
-    padding-inline-end: 30px;
-  }
-
-  hr {
-    border-top: var(--cr-separator-line);
-    height: 0;
-  }
-
-  cr-checkbox::part(label-container) {
-    clip: rect(0,0,0,0);
-    display: block;
-    position: fixed;
-  }
 </style>
 
 <div id="container">
@@ -37,51 +22,3 @@
     <app-item app-info="[[item]]"></app-item>
   </template>
 </div>
-
-<cr-action-menu id="menu" hidden="{{!selectedActionMenuModel_}}">
-  <div id="open-in-window" tabindex="0" class="dropdown-item"
-      on-click="onOpenInWindowItemClick_"
-      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
-    <div class="dropdown-item-label">
-      $i18n{appWindowOpenLabel}
-    </div>
-    <cr-checkbox checked="{{selectedActionMenuModel_.appInfo.openInWindow}}"
-      on-click="onOpenInWindowItemClick_">
-      $i18n{appWindowOpenCheckboxLabel}
-    </cr-checkbox>
-  </div>
-  <div id="launch-on-startup" tabindex="0" class="dropdown-item"
-      on-click="onLaunchOnStartupItemClick_"
-      hidden="[[isLaunchOnStartupHidden_(selectedActionMenuModel_)]]">
-    <div class="dropdown-item-label">
-      $i18n{appLaunchAtStartupLabel}
-    </div>
-    <cr-checkbox
-      checked="[[isLaunchOnStartUp_(selectedActionMenuModel_)]]"
-      disabled=
-        "[[isLaunchOnStartupDisabled_(selectedActionMenuModel_)]]"
-      on-click="onLaunchOnStartupItemClick_">
-      $i18n{appLaunchAtStartupCheckboxLabel}
-    </cr-checkbox>
-  </div>
-  <button id="create-shortcut" class="dropdown-item"
-      on-click="onCreateShortcutItemClick_"
-      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
-    $i18n{createShortcutForAppLabel}
-  </button>
-  <button id="install-locally" class="dropdown-item"
-      on-click="onInstallLocallyItemClick_"
-      hidden="[[isLocallyInstalled_(selectedActionMenuModel_)]]">
-    $i18n{installLocallyLabel}
-  </button>
-  <hr>
-  <button id="uninstall" class="dropdown-item"
-      on-click="onUninstallItemClick_">
-    $i18n{uninstallAppLabel}
-  </button>
-  <button id="app-settings" class="dropdown-item"
-      on-click="onAppSettingsItemClick_"
-      hidden="[[!isLocallyInstalled_(selectedActionMenuModel_)]]">
-    $i18n{appSettingsLabel}
-  </button>
-</cr-action-menu>

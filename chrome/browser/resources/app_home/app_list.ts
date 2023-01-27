@@ -10,17 +10,16 @@ import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_act
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {AppInfo, PageCallbackRouter, RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import {AppInfo, PageCallbackRouter} from './app_home.mojom-webui.js';
+import {AppItemElement} from './app_item.js';
 import {getTemplate} from './app_list.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {UserDisplayMode} from './user_display_mode.mojom-webui.js';
 
 export interface ActionMenuModel {
-  appInfo: AppInfo;
-  event: MouseEvent;
+  appItem: AppItemElement;
 }
 
-type OpenMenuEvent = CustomEvent<ActionMenuModel>;
+type MenuHandleEvent = CustomEvent<ActionMenuModel>;
 
 export interface AppListElement {
   $: {
@@ -46,15 +45,15 @@ export class AppListElement extends PolymerElement {
         },
       },
 
-      selectedActionMenuModel_: Object,
+      selectedAppItem: Object,
     };
   }
 
   private apps_: AppInfo[];
   private mojoEventTarget_: PageCallbackRouter;
   private listenerIds_: number[];
-  // The app context menu that's currently click opened by user.
-  private selectedActionMenuModel_: ActionMenuModel|null = null;
+  // The app item that has the context menu click opened by user.
+  private selectedAppItem: AppItemElement|null = null;
 
   constructor() {
     super();
@@ -68,7 +67,8 @@ export class AppListElement extends PolymerElement {
 
   override ready() {
     super.ready();
-    this.addEventListener('open-menu', this.onOpenMenu_);
+    this.addEventListener('on-menu-open-triggered', this.switchActiveMenu_);
+    this.addEventListener('on-menu-closed', this.clearActiveMenu_);
   }
 
   override connectedCallback() {
@@ -78,6 +78,8 @@ export class AppListElement extends PolymerElement {
       this.mojoEventTarget_.addApp.addListener(this.addApp_.bind(this)),
       this.mojoEventTarget_.removeApp.addListener(this.removeApp_.bind(this)),
     ];
+    document.addEventListener(
+        'contextmenu', this.closeCurrentAppMenu.bind(this));
   }
 
   override disconnectedCallback() {
@@ -86,6 +88,8 @@ export class AppListElement extends PolymerElement {
     this.listenerIds_.forEach(
         id => assert(this.mojoEventTarget_.removeListener(id)));
     this.listenerIds_ = [];
+    document.removeEventListener(
+        'contextmenu', this.closeCurrentAppMenu.bind(this));
   }
 
   private addApp_(appInfo: AppInfo) {
@@ -111,115 +115,32 @@ export class AppListElement extends PolymerElement {
     }
   }
 
-  private isLocallyInstalled_() {
-    return this.selectedActionMenuModel_ ?
-        this.selectedActionMenuModel_.appInfo.isLocallyInstalled :
-        false;
-  }
-
-  private isLaunchOnStartupHidden_() {
-    return this.selectedActionMenuModel_ ?
-        !this.selectedActionMenuModel_.appInfo.mayShowRunOnOsLoginMode :
-        true;
-  }
-
-  private isLaunchOnStartupDisabled_() {
-    return this.selectedActionMenuModel_ ?
-        !this.selectedActionMenuModel_.appInfo.mayToggleRunOnOsLoginMode :
-        true;
-  }
-
-  private isLaunchOnStartUp_() {
-    return this.selectedActionMenuModel_ ?
-        (this.selectedActionMenuModel_.appInfo.runOnOsLoginMode !==
-         RunOnOsLoginMode.kNotRun) :
-        false;
-  }
-
-  private onOpenInWindowItemClick_() {
-    if (this.selectedActionMenuModel_) {
-      const appInfo = this.selectedActionMenuModel_.appInfo;
-      if (appInfo.openInWindow) {
-        BrowserProxy.getInstance().handler.setUserDisplayMode(
-            appInfo.id, UserDisplayMode.kBrowser);
-      } else {
-        BrowserProxy.getInstance().handler.setUserDisplayMode(
-            appInfo.id, UserDisplayMode.kStandalone);
-      }
+  private closeCurrentAppMenu() {
+    if (!this.selectedAppItem) {
+      return;
     }
-    this.closeMenu_();
+    this.selectedAppItem.closeContextMenu();
   }
 
-  // Changing the app's launch mode.
-  private onLaunchOnStartupItemClick_() {
-    if (this.selectedActionMenuModel_) {
-      const appInfo = this.selectedActionMenuModel_.appInfo;
-      if (this.isLaunchOnStartUp_()) {
-        BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
-            appInfo.id, RunOnOsLoginMode.kNotRun);
-      } else {
-        BrowserProxy.getInstance().handler.setRunOnOsLoginMode(
-            appInfo.id, RunOnOsLoginMode.kWindowed);
-      }
-    }
-    this.closeMenu_();
+  private clearActiveMenu_() {
+    this.selectedAppItem = null;
   }
 
-  private onCreateShortcutItemClick_() {
-    if (this.selectedActionMenuModel_?.appInfo.id) {
-      BrowserProxy.getInstance().handler.createAppShortcut(
-          this.selectedActionMenuModel_?.appInfo.id);
-    }
-    this.closeMenu_();
-  }
-
-  private onInstallLocallyItemClick_() {
-    if (this.selectedActionMenuModel_?.appInfo.id) {
-      BrowserProxy.getInstance().handler.installAppLocally(
-          this.selectedActionMenuModel_?.appInfo.id);
-    }
-    this.closeMenu_();
-  }
-
-  private onUninstallItemClick_() {
-    if (this.selectedActionMenuModel_?.appInfo.id) {
-      BrowserProxy.getInstance().handler.uninstallApp(
-          this.selectedActionMenuModel_?.appInfo.id);
-    }
-    this.closeMenu_();
-  }
-
-  private onAppSettingsItemClick_() {
-    if (this.selectedActionMenuModel_?.appInfo.id) {
-      BrowserProxy.getInstance().handler.showAppSettings(
-          this.selectedActionMenuModel_?.appInfo.id);
-    }
-    this.closeMenu_();
-  }
-
-  private onOpenMenu_(event: OpenMenuEvent) {
-    this.selectedActionMenuModel_ = event.detail;
-    this.$.menu.showAtPosition({
-      top: event.detail.event.clientY,
-      left: event.detail.event.clientX,
-    });
-  }
-
-  private closeMenu_() {
-    this.selectedActionMenuModel_ = null;
-    this.$.menu.close();
-  }
-}
-
-declare global {
-  interface HTMLElementEventMap {
-    'open-menu': OpenMenuEvent;
+  // Close the menu on right click on a page.
+  private switchActiveMenu_(event: MenuHandleEvent) {
+    this.closeCurrentAppMenu();
+    this.selectedAppItem = event.detail.appItem;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
     'app-list': AppListElement;
+  }
+
+  interface HTMLElementEventMap {
+    'on-menu-open-triggered': MenuHandleEvent;
+    'on-menu-closed': MenuHandleEvent;
   }
 }
 
