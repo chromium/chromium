@@ -730,8 +730,8 @@ URLLoader::URLLoader(
   }
 
   if (network::cors::IsCorsEnabledRequestMode(request_mode_)) {
-    url_request_->set_cookie_setting_overrides(net::CookieSettingOverrides(
-        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible));
+    url_request_->cookie_setting_overrides().Put(
+        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
   }
 
 #if BUILDFLAG(IS_ANDROID)

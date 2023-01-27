@@ -4449,8 +4449,9 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfBlockThirdPartyCookiesOverridden) {
 
   // Now the cookie should be allowed if the request includes the override that
   // the user is forcing 3PCs.
-  request->set_cookie_setting_overrides(
-      {net::CookieSettingOverride::kForceThirdPartyByUser});
+  request->cookie_setting_overrides().Clear();
+  request->cookie_setting_overrides().Put(
+      net::CookieSettingOverride::kForceThirdPartyByUser);
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
           *request, *cookie, nullptr));
@@ -4495,8 +4496,9 @@ TEST_F(NetworkContextTest,
                        included, excluded));
 
   // Even with override, third party cookies blocked by content setting.
-  request->set_cookie_setting_overrides(
-      {net::CookieSettingOverride::kForceThirdPartyByUser});
+  request->cookie_setting_overrides().Clear();
+  request->cookie_setting_overrides().Put(
+      net::CookieSettingOverride::kForceThirdPartyByUser);
   EXPECT_FALSE(network_context->url_request_context()
                    ->network_delegate()
                    ->AnnotateAndMoveUserBlockedCookies(

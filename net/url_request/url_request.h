@@ -334,12 +334,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   }
 
   // Overrides pertaining to cookie settings for this particular request.
-  CookieSettingOverrides cookie_setting_overrides() const {
+  CookieSettingOverrides& cookie_setting_overrides() {
     return cookie_setting_overrides_;
   }
-
-  void set_cookie_setting_overrides(CookieSettingOverrides value) {
-    cookie_setting_overrides_ = value;
+  const CookieSettingOverrides& cookie_setting_overrides() const {
+    return cookie_setting_overrides_;
   }
 
   // The first-party URL policy to apply when updating the first party URL
