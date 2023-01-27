@@ -12,17 +12,19 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
+import './site_details_permission_device_entry.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {getTemplate} from './site_details_permission.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import {RawSiteException} from './site_settings_prefs_browser_proxy.js';
+import {ChooserException, RawChooserException, RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {
@@ -33,8 +35,8 @@ export interface SiteDetailsPermissionElement {
   };
 }
 
-const SiteDetailsPermissionElementBase =
-    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+const SiteDetailsPermissionElementBase = ListPropertyUpdateMixin(
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SiteDetailsPermissionElement extends
     SiteDetailsPermissionElementBase {
@@ -77,15 +79,39 @@ export class SiteDetailsPermissionElement extends
         type: Object,
         value: ContentSetting,
       },
+
+      /**
+       * Array of chooser exceptions to display in the widget.
+       */
+      chooserExceptions_: {
+        type: Array,
+        value() {
+          return [];
+        },
+      },
+
+      /**
+       * The chooser type that this element is displaying data for.
+       * See site_settings/constants.js for possible values.
+       */
+      chooserType: {
+        type: String,
+        value: ChooserType.NONE,
+      },
     };
   }
 
   static get observers() {
-    return ['siteChanged_(site)'];
+    return [
+      'siteChanged_(site)',
+      'updateChooserExceptions_(site, chooserType)',
+    ];
   }
 
   useAutomaticLabel: boolean;
   site: RawSiteException;
+  private chooserExceptions_: ChooserException[];
+  chooserType: ChooserType;
   private defaultSetting_: ContentSetting;
   label: string;
   icon: string;
@@ -97,6 +123,60 @@ export class SiteDetailsPermissionElement extends
         'contentSettingCategoryChanged',
         (category: ContentSettingsTypes) =>
             this.onDefaultSettingChanged_(category));
+
+    this.addWebUiListener(
+        'contentSettingChooserPermissionChanged',
+        (category: ContentSettingsTypes, chooserType: ChooserType) => {
+          if (category === this.category && chooserType === this.chooserType) {
+            this.updateChooserExceptions_();
+          }
+        });
+  }
+
+  /**
+   * Update the chooser exception list for display.
+   */
+  private updateChooserExceptions_() {
+    if (!this.site || this.chooserType === ChooserType.NONE) {
+      return;
+    }
+    // TODO(crbug.com/1407296): Use a backend handler to get chooser
+    // exceptions with a given origin so avoid complex logic in
+    // processChooserExceptions_.
+    this.browserProxy.getChooserExceptionList(this.chooserType)
+        .then(exceptionList => this.processChooserExceptions_(exceptionList));
+  }
+
+  /**
+   * Process the chooser exception list returned from the native layer by
+   * keeping the exception that is relevant to |this.site| and filtering out
+   * sites of exception that doesn't match |this.site|.
+   */
+  private processChooserExceptions_(exceptionList: RawChooserException[]) {
+    // TODO(crbug.com/1407296): Move this processing logic to the backend and
+    // remove this function.
+    const siteUidGetter = (x: RawSiteException) => x.origin + x.incognito;
+    const siteFilter = (site: RawSiteException) => {
+      return siteUidGetter(site) === siteUidGetter(this.site);
+    };
+
+    const exceptions =
+        exceptionList
+            .filter(exception => {
+              // Filters out exceptions that don't have any site matching
+              // |this.site|.
+              return exception.sites.some(site => siteFilter(site));
+            })
+            .map(exception => {
+              // Filters out any site of |exception.sites| that doesn't match
+              // |this.site|.
+              const sites = exception.sites.filter(site => siteFilter(site))
+                                .map(site => this.expandSiteException(site));
+              return Object.assign(exception, {sites});
+            });
+    this.updateList(
+        'chooserExceptions_', x => x.displayName, exceptions,
+        /*identityBasedUpdate=*/ true);
   }
 
   /**

@@ -64,4 +64,11 @@
           </option>
         </select>
       </div>
+
+      <div class="list-frame" role="table">
+        <template is="dom-repeat" items="[[chooserExceptions_]]">
+          <site-details-permission-device-entry exception="[[item]]">
+          </site-details-permission-device-entry>
+        </template>
+      </div>
     </div>

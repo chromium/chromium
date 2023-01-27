@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {ChooserException, ChooserType, ContentSetting, ContentSettingProvider, ContentSettingsTypes, DefaultContentSetting, OriginInfo, PaperTooltipElement, RawChooserException, RawSiteException, SiteException, SiteGroup, SiteSettingSource} from 'chrome://settings/lazy_load.js';
 import {Route, Router} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
@@ -209,6 +209,8 @@ export function getContentSettingsTypeFromChooserType(chooserType: ChooserType):
       return ContentSettingsTypes.SERIAL_PORTS;
     case ChooserType.USB_DEVICES:
       return ContentSettingsTypes.USB_DEVICES;
+    case ChooserType.BLUETOOTH_DEVICES:
+      return ContentSettingsTypes.BLUETOOTH_DEVICES;
     default:
       return null;
   }
@@ -235,4 +237,50 @@ export function assertTooltipIsHidden(tooltip: PaperTooltipElement) {
   assertEquals('1px', tooltipStyle.height);
   assertEquals('1px', tooltipStyle.width);
   assertEquals('hidden', tooltipStyle.overflow);
+}
+
+/**
+ * Helper to create a mock SiteException.
+ * @param origin The origin to use for this SiteException.
+ * @param override An object with a subset of the properties of
+ *     SiteException. Properties defined in |override| will overwrite the
+ *     defaults in this function's return value.
+ */
+export function createSiteException(
+    origin: string, override?: Partial<SiteException>): SiteException {
+  return Object.assign(
+      {
+        category: ContentSettingsTypes.USB_DEVICES,
+        embeddingOrigin: origin,
+        incognito: false,
+        origin: origin,
+        displayName: origin,
+        setting: ContentSetting.DEFAULT,
+        settingDetail: null,
+        enforcement: null,
+        controlledBy: chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
+        isEmbargoed: false,
+      },
+      override || {});
+}
+
+/**
+ * Helper to create a mock ChooserException.
+ * @param chooserType The chooser exception type.
+ * @param sites A list of SiteExceptions corresponding to the chooser exception.
+ * @param override An object with a subset of the properties of
+ *     ChooserException. Properties defined in |override| will overwrite
+ *     the defaults in this function's return value.
+ */
+export function createChooserException(
+    chooserType: ChooserType, sites: SiteException[],
+    override?: Partial<ChooserException>): ChooserException {
+  return Object.assign(
+      {
+        chooserType: chooserType,
+        displayName: '',
+        object: {},
+        sites: sites,
+      },
+      override || {});
 }

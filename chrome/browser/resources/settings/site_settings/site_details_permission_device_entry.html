@@ -1,0 +1,33 @@
+<style include="settings-shared">
+  :host {
+    align-items: center;
+    position: relative;
+    vertical-align: middle;
+  }
+
+  .policy-icon {
+    margin-inline-start: 16px;
+    padding: 8px;
+  }
+
+  .settings-row {
+    flex: 1
+  }
+</style>
+
+<div class="list-item focus-row-active">
+  <div class="settings-row middle no-min-width text-elide">
+    <span class="url-directionality">[[exception.displayName]]</span>
+  </div>
+  <template is="dom-if" if="[[shouldShowPolicyPrefIndicator_(exception)]]">
+    <cr-policy-pref-indicator class="policy-icon"
+        pref="[[getPolicyPref_(exception)]]"
+        icon-aria-label="[[label]]">
+    </cr-policy-pref-indicator>
+  </template>
+  <cr-icon-button id="resetSite" class="icon-delete-gray"
+      hidden="[[shouldShowPolicyPrefIndicator_(exception)]]"
+      on-click="onResetButtonClick_"
+      aria-label="$i18n{siteSettingsActionReset}">
+  </cr-icon-button>
+</div>

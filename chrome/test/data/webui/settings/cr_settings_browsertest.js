@@ -928,6 +928,10 @@ TEST_F('CrSettingsMenuTest', 'All', function() {
  ['SecureDns', 'secure_dns_test.js'],
  ['SiteDataTest', 'site_data_test.js'],
  ['SiteDetailsPermission', 'site_details_permission_tests.js'],
+ [
+   'SiteDetailsPermissionDeviceEntry',
+   'site_details_permission_device_entry_tests.js'
+ ],
  ['SiteEntry', 'site_entry_tests.js'],
  ['SiteFavicon', 'site_favicon_test.js'],
  ['SiteListEntry', 'site_list_entry_tests.js'],

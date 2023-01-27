@@ -36,6 +36,7 @@ import './site_settings_page/site_settings_page.js';
 import './site_settings/category_default_setting.js';
 import './site_settings/category_setting_exceptions.js';
 import './site_settings/chooser_exception_list.js';
+import './site_settings/site_details_permission_device_entry.js';
 import './site_settings/media_picker.js';
 import './site_settings/pdf_documents.js';
 import './site_settings/protocol_handlers.js';
@@ -208,6 +209,7 @@ export {SettingsCategoryDefaultRadioGroupElement} from './site_settings/settings
 export {SettingsSiteDataElement} from './site_settings/site_data.js';
 export {SiteDetailsElement} from './site_settings/site_details.js';
 export {SiteDetailsPermissionElement} from './site_settings/site_details_permission.js';
+export {SiteDetailsPermissionDeviceEntryElement} from './site_settings/site_details_permission_device_entry.js';
 export {SiteEntryElement} from './site_settings/site_entry.js';
 export {SiteListElement} from './site_settings/site_list.js';
 export {SiteListEntryElement} from './site_settings/site_list_entry.js';

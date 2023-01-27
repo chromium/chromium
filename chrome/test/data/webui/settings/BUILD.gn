@@ -102,6 +102,7 @@ build_webui_tests("build") {
     "settings_ui_tests.ts",
     "site_data_test.ts",
     "site_details_permission_tests.ts",
+    "site_details_permission_device_entry_tests.ts",
     "site_details_tests.ts",
     "site_entry_tests.ts",
     "site_favicon_test.ts",

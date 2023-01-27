@@ -190,15 +190,18 @@
           icon="settings:midi" label="$i18n{siteSettingsMidiDevices}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.USB_DEVICES]]"
-          icon="settings:usb" label="$i18n{siteSettingsUsbDevices}">
+          icon="settings:usb" label="$i18n{siteSettingsUsbDevices}"
+          chooser-type="[[chooserTypeEnum_.USB_DEVICES]]">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.SERIAL_PORTS]]"
-          icon="settings:serial-port" label="$i18n{siteSettingsSerialPorts}">
+          icon="settings:serial-port" label="$i18n{siteSettingsSerialPorts}"
+          chooser-type="[[chooserTypeEnum_.SERIAL_PORTS]]">
       </site-details-permission>
       <template is="dom-if" if="[[enableWebBluetoothNewPermissionsBackend_]]">
         <site-details-permission
             category="[[contentSettingsTypesEnum_.BLUETOOTH_DEVICES]]"
             icon="settings:bluetooth"
+            chooser-type="[[chooserTypeEnum_.BLUETOOTH_DEVICES]]"
             label="$i18n{siteSettingsBluetoothDevices}">
         </site-details-permission>
       </template>
@@ -208,6 +211,7 @@
           label="$i18n{siteSettingsFileSystemWrite}">
       </site-details-permission>
       <site-details-permission category="[[contentSettingsTypesEnum_.HID_DEVICES]]"
+          chooser-type="[[chooserTypeEnum_.HID_DEVICES]]"
           icon="settings:hid-device" label="$i18n{siteSettingsHidDevices}">
       </site-details-permission>
 <if expr="is_chromeos or is_win">

@@ -35,7 +35,7 @@ import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_br
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
-import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {ChooserType, ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './site_details.html.js';
 import {SiteDetailsPermissionElement} from './site_details_permission.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
@@ -138,6 +138,11 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       contentSettingsTypesEnum_: {
         type: Object,
         value: ContentSettingsTypes,
+      },
+
+      chooserTypeEnum_: {
+        type: Object,
+        value: ChooserType,
       },
     };
   }
