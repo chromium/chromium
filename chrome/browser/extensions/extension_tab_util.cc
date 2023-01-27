@@ -823,11 +823,12 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
   return true;
 }
 
-void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
-                                 const std::string& extension_id,
-                                 WindowOpenDisposition disposition,
-                                 const gfx::Rect& initial_rect,
-                                 bool user_gesture) {
+void ExtensionTabUtil::CreateTab(
+    std::unique_ptr<WebContents> web_contents,
+    const std::string& extension_id,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features,
+    bool user_gesture) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   Browser* browser = chrome::FindTabbedBrowser(profile, false);
@@ -848,7 +849,7 @@ void ExtensionTabUtil::CreateTab(std::unique_ptr<WebContents> web_contents,
     params.app_id = extension_id;
 
   params.disposition = disposition;
-  params.window_bounds = initial_rect;
+  params.window_features = window_features;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.user_gesture = user_gesture;
   Navigate(&params);

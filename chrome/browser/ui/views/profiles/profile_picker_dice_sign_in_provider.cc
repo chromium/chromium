@@ -166,8 +166,7 @@ void ProfilePickerDiceSignInProvider::AddNewContents(
   // Open all links as new popups.
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.contents_to_insert = std::move(new_contents);
-
-  params.window_bounds = window_features.bounds;
+  params.window_features = window_features;
   Navigate(&params);
 }
 

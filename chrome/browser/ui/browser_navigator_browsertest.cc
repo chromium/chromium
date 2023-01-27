@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
 
@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopup_ExtensionId) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.app_id = "extensionappid";
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
 
@@ -499,12 +499,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupFromPopup) {
   // Open a popup.
   NavigateParams params1(MakeNavigateParams());
   params1.disposition = WindowOpenDisposition::NEW_POPUP;
-  params1.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params1.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   Navigate(&params1);
   // Open another popup.
   NavigateParams params2(MakeNavigateParams(params1.browser));
   params2.disposition = WindowOpenDisposition::NEW_POPUP;
-  params2.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params2.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   Navigate(&params2);
 
   // Navigate() should have opened a new normal popup window.
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   Browser* app_browser = CreateEmptyBrowserForApp(browser()->profile());
   NavigateParams params(MakeNavigateParams(app_browser));
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   Navigate(&params);
 
   // Navigate() should have opened a new TYPE_APP_POPUP window with no toolbar.
@@ -551,12 +551,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupFromAppPopup) {
   // Open an app popup.
   NavigateParams params1(MakeNavigateParams(app_browser));
   params1.disposition = WindowOpenDisposition::NEW_POPUP;
-  params1.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params1.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   Navigate(&params1);
   // Now open another app popup.
   NavigateParams params2(MakeNavigateParams(params1.browser));
   params2.disposition = WindowOpenDisposition::NEW_POPUP;
-  params2.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params2.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   Navigate(&params2);
 
   // Navigate() should have opened a new popup app window.
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupUnfocused) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   params.window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
   // Wait for new popup to load (and gain focus if the test fails).
   ui_test_utils::NavigateToURL(&params);
@@ -608,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewPopupTrusted) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.trusted_source = true;
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
 
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.is_captive_portal_popup = true;
-  params.window_bounds = gfx::Rect(0, 0, 200, 200);
+  params.window_features.bounds = gfx::Rect(0, 0, 200, 200);
   // Wait for new popup to to load and gain focus.
   ui_test_utils::NavigateToURL(&params);
 
@@ -1022,7 +1022,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.contents_to_insert = CreateWebContents(false);
-  params.window_bounds = gfx::Rect(10, 10, 500, 500);
+  params.window_features.bounds = gfx::Rect(10, 10, 500, 500);
   Navigate(&params);
 
   // Navigate() should have opened a new popup window.
@@ -1031,20 +1031,20 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
   EXPECT_TRUE(params.browser->window()->IsToolbarVisible());
 
   // The web platform is weird. The window bounds specified in
-  // |params.window_bounds| are used as follows:
+  // `params.window_features.bounds` are used as follows:
   // - the origin is used to position the window
   // - the size is used to size the WebContents of the window.
   // As such the position of the resulting window will always match
-  // params.window_bounds.origin(), but its size will not. We need to match
-  // the size against the selected tab's view's container size.
+  // `params.window_features.bounds.origin()`, but its size will not. We need to
+  // match the size against the selected tab's view's container size.
   // Only Windows positions the window according to
-  // |params.window_bounds.origin()| - on Mac the window is offset from the
-  // opener and on Linux it always opens at 0,0.
-  EXPECT_EQ(params.window_bounds.origin(),
+  // `params.window_features.bounds.origin()` - on Mac the window is offset from
+  // the opener and on Linux it always opens at 0,0.
+  EXPECT_EQ(params.window_features.bounds.origin(),
             params.browser->window()->GetRestoredBounds().origin());
   // All platforms should respect size however provided width > 400 (Mac has a
   // minimum window width of 400).
-  EXPECT_EQ(params.window_bounds.size(),
+  EXPECT_EQ(params.window_features.bounds.size(),
             params.navigated_or_inserted_contents->GetContainerBounds().size());
 
   // We should have two windows, the new popup and the browser() provided by the

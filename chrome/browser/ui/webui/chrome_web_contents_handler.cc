@@ -108,7 +108,7 @@ void ChromeWebContentsHandler::AddNewContents(
   NavigateParams params(browser, std::move(new_contents));
   params.source_contents = source;
   params.disposition = disposition;
-  params.window_bounds = window_features.bounds;
+  params.window_features = window_features;
   params.window_action = NavigateParams::SHOW_WINDOW;
   params.user_gesture = user_gesture;
   Navigate(&params);

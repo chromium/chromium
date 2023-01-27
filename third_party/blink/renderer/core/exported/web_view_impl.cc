@@ -2983,9 +2983,15 @@ void WebViewImpl::Show(const LocalFrameToken& opener_frame_token,
   DCHECK(local_main_frame_host_remote_);
   DCHECK(web_widget_);
   web_widget_->SetPendingWindowRect(adjusted_rect);
+  const WebWindowFeatures& web_window_features = page_->GetWindowFeatures();
   mojom::blink::WindowFeaturesPtr window_features =
       mojom::blink::WindowFeatures::New();
   window_features->bounds = requested_rect;
+  window_features->has_x = web_window_features.x_set;
+  window_features->has_y = web_window_features.y_set;
+  window_features->has_width = web_window_features.width_set;
+  window_features->has_height = web_window_features.height_set;
+  window_features->is_popup = web_window_features.is_popup;
   local_main_frame_host_remote_->ShowCreatedWindow(
       opener_frame_token, NavigationPolicyToDisposition(policy),
       std::move(window_features), opened_by_user_gesture,

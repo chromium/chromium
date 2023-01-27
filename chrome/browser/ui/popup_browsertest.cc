@@ -117,6 +117,28 @@ class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
   base::RunLoop run_loop_;
 };
 
+// Ensure `left=0,top=0` popup window feature coordinates are respected.
+IN_PROC_BROWSER_TEST_P(PopupBrowserTest, OpenLeftAndTopZeroCoordinates) {
+  // Attempt to open a popup at (0,0). Its bounds should match the request, but
+  // be adjusted to meet minimum size and available display area constraints.
+  Browser* popup =
+      OpenPopup(browser(), "open('.', '', 'left=0,top=0,width=50,height=50')");
+  const gfx::Rect work_area = GetDisplayNearestBrowser(popup).work_area();
+  gfx::Rect expected(popup->window()->GetBounds().size());
+  expected.AdjustToFit(work_area);
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/1286870) Desktop Linux window bounds are inaccurate.
+  expected.Outset(50);
+  EXPECT_TRUE(expected.Contains(popup->window()->GetBounds()))
+      << " expected: " << expected.ToString()
+      << " popup: " << popup->window()->GetBounds().ToString()
+      << " work_area: " << work_area.ToString();
+#else
+  EXPECT_EQ(expected.ToString(), popup->window()->GetBounds().ToString())
+      << " work_area: " << work_area.ToString();
+#endif
+}
+
 // Ensure popups are opened in the available space of the opener's display.
 // TODO(crbug.com/1211516): Flaky.
 IN_PROC_BROWSER_TEST_P(PopupBrowserTest, DISABLED_OpenClampedToCurrentDisplay) {

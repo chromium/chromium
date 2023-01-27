@@ -209,6 +209,9 @@ class Browser : public TabStripModelObserver,
     kDeskTemplate,
   };
 
+  // Represents whether a value was known to be explicitly specified.
+  enum class ValueSpecified { kUnknown, kSpecified, kUnspecified };
+
   // The default value for a browser's `restore_id` param.
   static constexpr int kDefaultRestoreId = 0;
 
@@ -260,6 +263,11 @@ class Browser : public TabStripModelObserver,
 
     // The bounds of the window to open.
     gfx::Rect initial_bounds;
+    // Whether `initial_bounds.origin()` was explicitly specified, if known.
+    // Used to disambiguate coordinate (0,0) from an unspecified location when
+    // parameters originate from the JS Window.open() window features string,
+    // e.g. window.open(... 'left=0,top=0,...') vs window.open(... 'popup,...').
+    ValueSpecified initial_origin_specified = ValueSpecified::kUnknown;
 
     // The workspace the window should open in, if the platform supports it.
     std::string initial_workspace;

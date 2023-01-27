@@ -75,7 +75,7 @@ void AddWebContents(Browser* browser,
   params.source_contents = source_contents;
   params.url = target_url;
   params.disposition = disposition;
-  params.window_bounds = window_features.bounds;
+  params.window_features = window_features;
   params.window_action = window_action;
   // At this point, we're already beyond the popup blocker. Even if the popup
   // was created without a user gesture, we have to set |user_gesture| to true,

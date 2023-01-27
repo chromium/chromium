@@ -403,7 +403,7 @@ void ExtensionHost::AddNewContents(
   }
 
   delegate_->CreateTab(std::move(new_contents), extension_id_, disposition,
-                       window_features.bounds, user_gesture);
+                       window_features, user_gesture);
 }
 
 void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {

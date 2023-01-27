@@ -54,16 +54,7 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
   nav_params.user_gesture = user_gesture_;
   nav_params.opened_by_another_window = !opener_suppressed_;
-  nav_params.window_bounds = web_contents->GetContainerBounds();
-  if (features_.has_x)
-    nav_params.window_bounds.set_x(features_.bounds.x());
-  if (features_.has_y)
-    nav_params.window_bounds.set_y(features_.bounds.y());
-  if (features_.has_width)
-    nav_params.window_bounds.set_width(features_.bounds.width());
-  if (features_.has_height)
-    nav_params.window_bounds.set_height(features_.bounds.height());
-
+  nav_params.window_features = features_;
   nav_params.disposition = disposition_;
 
   return nav_params;

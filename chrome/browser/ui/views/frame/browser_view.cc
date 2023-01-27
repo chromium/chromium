@@ -3402,10 +3402,13 @@ bool BrowserView::GetSavedWindowPlacement(
         frame_->non_client_view()->GetWindowBoundsForClientBounds(*bounds);
     rect.set_origin(bounds->origin());
 
-    // When we are given x/y coordinates of 0 on a created popup window,
-    // assume none were given by the window.open() command.
-    if (rect.origin().IsOrigin())
+    // Set a default popup origin if the x/y coordinates are 0 and the original
+    // values were not known to be explicitly specified via window.open() in JS.
+    if (rect.origin().IsOrigin() &&
+        browser_->create_params().initial_origin_specified !=
+            Browser::ValueSpecified::kSpecified) {
       rect.set_origin(WindowSizer::GetDefaultPopupOrigin(rect.size()));
+    }
 
     // Constrain the final bounds to the target screen's available area. Bounds
     // enforcement applied earlier does not know the specific frame dimensions,
