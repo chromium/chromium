@@ -369,6 +369,47 @@ void AddRefPalette(ui::ColorMixer& mixer,
       ui::kColorRefNeutralVariant100};
 }
 
+// Overrides some cros.sys colors in `mixer` with values that are appropriate
+// for pre-Jelly features.
+void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
+  mixer[cros_tokens::kCrosSysPrimary] = {dark_mode ? gfx::kGoogleBlue200
+                                                   : gfx::kGoogleBlue600};
+  mixer[cros_tokens::kCrosSysOnPrimary] = {dark_mode ? gfx::kGoogleGrey900
+                                                     : gfx::kGoogleGrey200};
+  mixer[cros_tokens::kCrosSysSecondary] = {dark_mode ? gfx::kGoogleGrey400
+                                                     : gfx::kGoogleGrey200};
+  mixer[cros_tokens::kCrosSysOnSecondary] = {dark_mode ? gfx::kGoogleGrey800
+                                                       : gfx::kGoogleGrey600};
+
+  if (dark_mode) {
+    // LightInkRipple in dark mode
+    mixer[cros_tokens::kCrosSysDisabledContainer] = ui::SetAlpha(
+        SK_ColorBLACK, StyleUtil::kLightInkDropOpacity * SK_AlphaOPAQUE);
+  } else {
+    // DarkInkRipple in dark mode
+    mixer[cros_tokens::kCrosSysDisabledContainer] = ui::SetAlpha(
+        SK_ColorWHITE, StyleUtil::kDarkInkDropOpacity * SK_AlphaOPAQUE);
+  }
+
+  mixer[cros_tokens::kCrosSysHighlightShape] =
+      ui::SetAlpha(gfx::kGoogleBlue600, 31);  // 12%
+                                              // opacity
+  mixer[cros_tokens::kCrosSysHoverOnSubtle] = {SK_ColorTRANSPARENT};
+  mixer[cros_tokens::kCrosSysSystemBaseElevated] = {kColorAshShieldAndBase80};
+  mixer[cros_tokens::kCrosSysSystemOnBase] = {
+      kColorAshControlBackgroundColorInactive};
+  mixer[cros_tokens::kCrosSysSystemOnNegativeContainer] = {
+      kColorAshTextColorPrimary};
+  mixer[cros_tokens::kCrosSysSystemOnPrimaryContainer] = {
+      kColorAshTextColorPrimary};
+
+  mixer[cros_tokens::kCrosSysSystemNegativeContainer] = {gfx::kGoogleRed300};
+  mixer[cros_tokens::kCrosSysPositive] = {cros_tokens::kColorPositive};
+
+  mixer[cros_tokens::kCrosSysSystemPrimaryContainer] = {
+      dark_mode ? gfx::kGoogleBlue200 : gfx::kGoogleBlue300};
+}
+
 }  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
@@ -383,6 +424,11 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
   // Add after ref colors since it needs to override them.
   AddHarmonizedColors(mixer, key);
   cros_tokens::AddCrosSysColorsToMixer(mixer, dark_mode);
+  if (!ash::features::IsJellyEnabled()) {
+    // Overrides some cros.sys colors with pre-Jelly values so they can used in
+    // UI with the Jelly flag off.
+    ReverseMapSysColors(mixer, dark_mode);
+  }
 
   // TODO(b/234400002): Remove legacy colors once all usages are cleaned up.
   cros_tokens::AddLegacySemanticColorsToMixer(mixer, dark_mode);
