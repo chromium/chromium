@@ -53,7 +53,7 @@ import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'c
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {PrefsMixin, PrefsMixinInterface} from '../../prefs/prefs_mixin.js';
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
@@ -98,14 +98,13 @@ const SettingsInternetPageElementBase =
     mixinBehaviors(
         [
           NetworkListenerBehavior,
-          DeepLinkingBehavior,
         ],
-        PrefsMixin(RouteObserverMixin(
-            WebUiListenerMixin(I18nMixin(PolymerElement))))) as {
+        DeepLinkingMixin(PrefsMixin(RouteObserverMixin(
+            WebUiListenerMixin(I18nMixin(PolymerElement)))))) as {
       new (): PolymerElement & I18nMixinInterface &
           WebUiListenerMixinInterface & RouteObserverMixinInterface &
-          PrefsMixinInterface & NetworkListenerBehaviorInterface &
-          DeepLinkingBehaviorInterface,
+          PrefsMixinInterface & DeepLinkingMixinInterface &
+          NetworkListenerBehaviorInterface,
     };
 
 class SettingsInternetPageElement extends SettingsInternetPageElementBase {
@@ -284,11 +283,11 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([
+        value: () => new Set<Setting>([
           Setting.kWifiOnOff,
           Setting.kMobileOnOff,
         ]),
@@ -413,7 +412,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   }
 
   /**
-   * Overridden from DeepLinkingBehavior.
+   * Overridden from DeepLinkingMixin.
    */
   override beforeDeepLinkAttempt(settingId: Setting): boolean {
     // Manually show the deep links for settings nested within elements.

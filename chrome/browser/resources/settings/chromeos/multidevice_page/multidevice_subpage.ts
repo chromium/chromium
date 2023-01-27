@@ -67,7 +67,7 @@ class SettingsMultideviceSubpageElement extends
       },
 
       /**
-       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * Used by DeepLinkingMixin to focus this page's deep links.
        */
       supportedSettingIds: {
         type: Object,

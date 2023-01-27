@@ -108,7 +108,7 @@ export const DeepLinkingMixin = dedupingMixin(
          * Focuses the deep linked element |elem|. Returns whether the deep link
          * was shown or not.
          */
-        showDeepLinkElement(elToFocus: HTMLElement): void {
+        showDeepLinkElement(elToFocus: HTMLOrSVGElement): void {
           elToFocus.focus();
         }
 
