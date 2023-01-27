@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
@@ -28,8 +29,9 @@
 #endif
 
 LocationBarModelDelegateIOS::LocationBarModelDelegateIOS(
-    WebStateList* web_state_list)
-    : web_state_list_(web_state_list) {}
+    WebStateList* web_state_list,
+    ChromeBrowserState* browser_state)
+    : web_state_list_(web_state_list), browser_state_(browser_state) {}
 
 LocationBarModelDelegateIOS::~LocationBarModelDelegateIOS() {}
 
@@ -144,4 +146,10 @@ bool LocationBarModelDelegateIOS::IsNewTabPageURL(const GURL& url) const {
 bool LocationBarModelDelegateIOS::IsHomePage(const GURL& url) const {
   // iOS does not have a notion of home page.
   return false;
+}
+
+TemplateURLService* LocationBarModelDelegateIOS::GetTemplateURLService()
+
+{
+  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
 }

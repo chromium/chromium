@@ -220,8 +220,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.mediator.consumer = self;
   self.mediator.webStateList = self.webStateList;
 
-  _locationBarModelDelegate.reset(
-      new LocationBarModelDelegateIOS(self.browser->GetWebStateList()));
+  _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
+      self.browser->GetWebStateList(), self.browserState));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
       _locationBarModelDelegate.get(), kMaxURLDisplayChars);
 

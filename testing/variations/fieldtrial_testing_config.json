@@ -7726,7 +7726,20 @@
                     "name": "AndroidExperiments",
                     "params": {},
                     "enable_features": [
-                        "OmniboxFocusTriggersSRPZeroSuggest"
+                        "AndroidAuxiliarySearch",
+                        "NewTabPageTilesTitleWrapAround",
+                        "OmniboxDynamicMaxAutocomplete",
+                        "OmniboxFocusTriggersSRPZeroSuggest",
+                        "OmniboxHeaderPaddingUpdate",
+                        "OmniboxMaxURLMatches",
+                        "OmniboxMostVisitedTilesDynamicSpacing",
+                        "OmniboxMostVisitedTilesFadingOnTablet",
+                        "OmniboxMostVisitedTilesOnSrp",
+                        "OmniboxMostVisitedTilesTitleWrapAround",
+                        "OmniboxRemoveSuggestionHeaderChevron",
+                        "OmniboxRetainSuggestionsWithHeaders",
+                        "OmniboxUIExperimentMaxAutocompleteMatches",
+                        "OrganicRepeatableQueries"
                     ]
                 }
             ]

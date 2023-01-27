@@ -548,6 +548,10 @@ extern const char kOmniboxMultilineSearchSuggestDescription[];
 extern const char kOmniboxNewImplementationName[];
 extern const char kOmniboxNewImplementationDescription[];
 
+// Title and description for the flag to show most visited on SRP.
+extern const char kOmniboxMostVisitedTilesOnSrpName[];
+extern const char kOmniboxMostVisitedTilesOnSrpDescription[];
+
 // Title and description for the flag to enable Omnibox On Device Head
 // suggestions (incognito).
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
