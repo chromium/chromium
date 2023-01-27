@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting();
+  coordinator->SetNoDelaysForTesting(true);
 
   // Open two tabs with the side panel open.
   NavigateToMatchingSearchPageAndOpenSidePanel(browser());
@@ -622,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SidePanelCrashesCloseSidePanel) {
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting();
+  coordinator->SetNoDelaysForTesting(true);
 
   // Tab 0 with side search available and open.
   AppendTab(browser(), GetMatchingSearchUrl());
@@ -649,7 +649,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchSidePanelInSingleTab) {
 IN_PROC_BROWSER_TEST_F(SideSearchV2Test, SwitchTabsWithGlobalSidePanel) {
   auto* browser_view = BrowserViewFor(browser());
   auto* coordinator = browser_view->side_panel_coordinator();
-  coordinator->SetNoDelaysForTesting();
+  coordinator->SetNoDelaysForTesting(true);
 
   // Tab 0 without side search available and open with reading list.
   NavigateActiveTab(browser(), GetNonMatchingUrl());
