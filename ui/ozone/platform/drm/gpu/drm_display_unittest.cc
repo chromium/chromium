@@ -19,6 +19,10 @@ using ::testing::_;
 using ::testing::Return;
 using ::testing::SizeIs;
 
+namespace ui {
+
+namespace {
+
 // Verifies that the argument goes from 0 to the maximum uint16_t times |scale|
 // following a power function with |exponent|.
 MATCHER_P2(MatchesPowerFunction, scale, exponent, "") {
@@ -37,10 +41,6 @@ MATCHER_P2(MatchesPowerFunction, scale, exponent, "") {
 
   return true;
 }
-
-namespace ui {
-
-namespace {
 
 class MockHardwareDisplayPlaneManager : public HardwareDisplayPlaneManager {
  public:

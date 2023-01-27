@@ -11,6 +11,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_overlay_manager.h"
 
 namespace ui {
+
 class DrmThreadProxy;
 
 // DrmOverlayManager implementation that runs in the GPU process. PostTasks

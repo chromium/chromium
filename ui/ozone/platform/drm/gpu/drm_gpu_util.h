@@ -45,6 +45,7 @@ HardwareDisplayControllerInfoList GetDisplayInfosAndUpdateCrtcs(int fd);
 
 void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
                              perfetto::TracedValue context);
+
 }  // namespace ui
 
 #endif  // UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_

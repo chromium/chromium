@@ -14,6 +14,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
 namespace ui {
+
 namespace {
 
 uint32_t OverlayTransformToDrmRotationPropertyValue(

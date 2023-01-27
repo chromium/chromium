@@ -29,6 +29,7 @@
 namespace ui {
 
 namespace {
+
 constexpr char kMultipleDisplayIdsCollisionDetected[] =
     "Display.MultipleDisplays.GenerateId.CollisionDetection";
 

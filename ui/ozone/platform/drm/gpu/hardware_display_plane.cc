@@ -50,6 +50,7 @@ std::string IdSetToString(const base::flat_set<uint32_t>& ids) {
 }
 
 }  // namespace
+
 HardwareDisplayPlane::Properties::Properties() = default;
 HardwareDisplayPlane::Properties::~Properties() = default;
 

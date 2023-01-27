@@ -15,7 +15,10 @@
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
+namespace ui {
+
 namespace {
+
 // Some Display Controllers (e.g. Intel Gen 9.5) don't support AR/B30
 // framebuffers, only XR/B30; this function indicates if an opaque format should
 // be used instead of the non-opaque |buffer_format| for AddFramebuffer2().
@@ -36,8 +39,6 @@ bool ForceUsingOpaqueFormatWorkaround(
 }
 
 }  // namespace
-
-namespace ui {
 
 DrmFramebuffer::AddFramebufferParams::AddFramebufferParams() = default;
 DrmFramebuffer::AddFramebufferParams::AddFramebufferParams(

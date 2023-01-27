@@ -24,7 +24,7 @@ struct GammaRampRGBEntry;
 
 namespace gfx {
 class ColorSpace;
-}
+}  // namespace gfx
 
 namespace ui {
 

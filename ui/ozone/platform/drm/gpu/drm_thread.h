@@ -31,7 +31,7 @@
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace display {
 struct GammaRampRGBEntry;

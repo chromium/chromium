@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
+
 namespace {
 
 constexpr drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {

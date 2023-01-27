@@ -160,4 +160,5 @@ TEST_F(ProxyHelpersTest, PostTask) {
   EXPECT_TRUE(original_string_ == "This is a string");
   EXPECT_TRUE(derived_string_ == "This is a stringer");
 }
+
 }  // namespace ui

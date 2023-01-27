@@ -17,6 +17,7 @@
 #include "ui/ozone/public/overlay_manager_ozone.h"
 
 namespace ui {
+
 class OverlaySurfaceCandidate;
 
 // Ozone DRM extension of the OverlayManagerOzone interface. It queries the

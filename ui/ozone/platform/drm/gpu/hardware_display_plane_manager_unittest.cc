@@ -34,11 +34,14 @@
 #include "ui/ozone/platform/drm/gpu/page_flip_request.h"
 
 namespace ui {
+
 namespace {
 
 const gfx::Size kDefaultBufferSize(2, 2);
 // Create a basic mode for a 6x4 screen.
 drmModeModeInfo kDefaultMode = {.hdisplay = 6, .vdisplay = 4};
+
+}  // namespace
 
 class HardwareDisplayPlaneManagerTest
     : public testing::Test,
@@ -1578,5 +1581,4 @@ TEST(HardwareDisplayPlaneManagerAtomic, EnableBlend) {
   EXPECT_EQ(hw_plane.framebuffer(), framebuffer->opaque_framebuffer_id());
 }
 
-}  // namespace
 }  // namespace ui

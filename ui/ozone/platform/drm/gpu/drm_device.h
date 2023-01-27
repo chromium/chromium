@@ -31,7 +31,7 @@ struct SkImageInfo;
 
 namespace display {
 struct GammaRampRGBEntry;
-}
+}  // namespace display
 
 namespace ui {
 

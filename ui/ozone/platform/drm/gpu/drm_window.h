@@ -23,7 +23,7 @@ class SkBitmap;
 
 namespace base {
 class TimeDelta;
-}
+}  // namespace base
 
 namespace gfx {
 class Point;

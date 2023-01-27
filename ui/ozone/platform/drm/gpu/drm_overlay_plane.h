@@ -18,7 +18,7 @@
 
 namespace gfx {
 class GpuFence;
-}
+}  // namespace gfx
 
 namespace ui {
 

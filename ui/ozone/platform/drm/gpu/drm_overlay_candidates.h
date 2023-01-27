@@ -12,6 +12,7 @@
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 
 namespace ui {
+
 class DrmOverlayManager;
 class OverlaySurfaceCandidate;
 

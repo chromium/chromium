@@ -144,4 +144,5 @@ void DrmWriteIntoTraceHelper(const drmModeModeInfo& mode_info,
   dict.Add("hdisplay", mode_info.hdisplay);
   dict.Add("vdisplay", mode_info.vdisplay);
 }
+
 }  // namespace ui

@@ -24,6 +24,7 @@ struct GammaRampRGBEntry;
 }  // namespace display
 
 namespace ui {
+
 class DrmDevice;
 class HardwareDisplayControllerInfo;
 

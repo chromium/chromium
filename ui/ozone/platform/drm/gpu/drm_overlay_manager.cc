@@ -16,6 +16,7 @@
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
+
 namespace {
 
 // Maximum number of overlay configurations to keep in MRU cache.

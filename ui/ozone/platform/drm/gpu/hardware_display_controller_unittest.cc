@@ -32,6 +32,7 @@
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
 
 namespace ui {
+
 namespace {
 
 // Create a basic mode for a 6x4 screen.
@@ -48,8 +49,6 @@ const std::string kGpuCrashLogTimeout =
     base::NumberToString(kWaitForModesetTimeout.InSeconds()) +
     " s of the first page flip failure. Crashing GPU process.";
 
-}  // namespace
-
 class FakeFenceFD {
  public:
   FakeFenceFD();
@@ -61,6 +60,8 @@ class FakeFenceFD {
   base::ScopedFD read_fd;
   base::ScopedFD write_fd;
 };
+
+}  // namespace
 
 FakeFenceFD::FakeFenceFD() {
   int fds[2];
@@ -1192,4 +1193,5 @@ TEST_F(HardwareDisplayControllerTest, MultiplePlanesModeset) {
                                plane.buffer));
   }
 }
+
 }  // namespace ui

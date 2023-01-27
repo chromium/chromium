@@ -11,6 +11,7 @@
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
+
 namespace {
 
 constexpr gfx::AcceleratedWidget kPrimaryWidget = 1;

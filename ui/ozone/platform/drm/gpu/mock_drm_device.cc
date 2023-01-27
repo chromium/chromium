@@ -40,6 +40,7 @@ struct _drmModeAtomicReq {
 };
 
 namespace ui {
+
 namespace {
 
 constexpr uint32_t kTestModesetFlags =
