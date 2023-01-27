@@ -13,7 +13,9 @@
       <include name="IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_HTML" file="webui/mojo/mojo_file_system_access_test.html" type="BINDATA" />
       <include name="IDR_MOJO_FILE_SYSTEM_ACCESS_TEST_JS" file="webui/mojo/mojo_file_system_access_test.js" type="BINDATA" />
       <include name="IDR_MOJO_WEB_UI_CONTROLLER_TEST_HTML" file="webui/mojo/mojo_web_ui_controller_test.html" type="BINDATA" />
-      <include name="IDR_WEB_UI_TEST_MOJO_LITE_JS" file="${root_gen_dir}/chrome/test/data/webui/web_ui_test.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
+      <if expr="chromeos_ash">
+        <include name="IDR_WEB_UI_TEST_MOJO_LITE_JS" file="${root_gen_dir}/chrome/test/data/webui/web_ui_test.mojom-lite.js" use_base_dir="false" type="BINDATA"/>
+      </if>
       <include name="IDR_MOJO_JS_INTERFACE_BROKER_TEST_FOO_HTML" file="webui/mojo/mojo_js_interface_broker_test_foo.html" type="BINDATA" />
       <include name="IDR_MOJO_JS_INTERFACE_BROKER_TEST_BAR_HTML" file="webui/mojo/mojo_js_interface_broker_test_bar.html" type="BINDATA" />
       <include name="IDR_MOJO_JS_INTERFACE_BROKER_TEST_BUZ_HTML" file="webui/mojo/mojo_js_interface_broker_test_buz.html" type="BINDATA" />
