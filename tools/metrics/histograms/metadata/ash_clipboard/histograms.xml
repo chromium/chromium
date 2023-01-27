@@ -120,16 +120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString"
-    enum="ClipboardHistoryPlaceholderStringType" expires_after="2023-06-25">
-  <owner>ckincaid@chromium.org</owner>
-  <owner>multipaste@google.com</owner>
-  <summary>
-    The type of placeholder string shown in a clipboard history item in lieu of
-    actual data. Recorded on menu item creation when necessary.
-  </summary>
-</histogram>
-
 <histogram name="Ash.ClipboardHistory.ContextMenu.UserJourneyTime" units="ms"
     expires_after="2023-06-25">
   <owner>ckincaid@chromium.org</owner>
