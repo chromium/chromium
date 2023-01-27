@@ -184,7 +184,7 @@ class ReadAnythingAppController
 
   // State:
 
-  // AXTrees of all of the web contents in the browser’s tab strip.
+  // AXTrees of web contents in the browser’s tab strip.
   std::map<ui::AXTreeID, std::unique_ptr<ui::AXSerializableTree>> trees_;
 
   // The AXTreeID of the currently active web contents.

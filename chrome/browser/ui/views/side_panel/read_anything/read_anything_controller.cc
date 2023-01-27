@@ -174,25 +174,6 @@ ReadAnythingMenuModel* ReadAnythingController::GetLetterSpacingModel() {
 
 void ReadAnythingController::OnUIReady() {
   ui_ready_ = true;
-
-  // Create web contents observers on all tabs and enable web contents-only
-  // accessibility on each tab. This causes AXTreeSerializer to reset and send
-  // accessibility events of the AXTree when it is re-serialized. The WebUI
-  // receives these events and stores a copy of each web contents' AXTree. If
-  // the UI was destroyed, it stops receiving events. OnUIReady is called when
-  // it is re-created, indicating that it needs to restore its copy of each
-  // web contents' AXTree.
-  for (int i = 0; i < browser_->tab_strip_model()->count(); i++) {
-    content::WebContents* web_contents =
-        browser_->tab_strip_model()->GetWebContentsAt(i);
-    // CreateForWebContents is no-op if an observer already exists.
-    ReadAnythingWebContentsObserver::CreateForWebContents(web_contents);
-    ReadAnythingWebContentsObserver* observer =
-        ReadAnythingWebContentsObserver::FromWebContents(web_contents);
-    observer->SetController(this);
-    observer->EnableAccessibility();
-  }
-
   NotifyActiveAXTreeIDChanged();
 }
 
@@ -246,20 +227,6 @@ void ReadAnythingController::OnTabStripModelChanged(
   if (!ui_ready_) {
     return;
   }
-  // Create a new ReadAnythingWebContentsObserver for inserted web contentses.
-  if (change.type() == TabStripModelChange::kInserted) {
-    for (auto contents_with_index : change.GetInsert()->contents) {
-      content::WebContents* web_contents = contents_with_index.contents;
-      if (!web_contents) {
-        continue;
-      }
-      ReadAnythingWebContentsObserver::CreateForWebContents(web_contents);
-      ReadAnythingWebContentsObserver* observer =
-          ReadAnythingWebContentsObserver::FromWebContents(web_contents);
-      observer->SetController(this);
-      observer->EnableAccessibility();
-    }
-  }
   if (selection.active_tab_changed()) {
     NotifyActiveAXTreeIDChanged();
   }
@@ -305,6 +272,30 @@ void ReadAnythingController::NotifyActiveAXTreeIDChanged() {
       return;
     }
     tree_id = render_frame_host->GetAXTreeID();
+    ObserveAccessibilityEventsOnActiveTab();
   }
   model_->OnActiveAXTreeIDChanged(tree_id);
+}
+
+void ReadAnythingController::ObserveAccessibilityEventsOnActiveTab() {
+  content::WebContents* web_contents =
+      browser_->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+  // CreateForWebContents is no-op if an observer already exists.
+  ReadAnythingWebContentsObserver::CreateForWebContents(web_contents);
+  ReadAnythingWebContentsObserver* observer =
+      ReadAnythingWebContentsObserver::FromWebContents(web_contents);
+  observer->SetController(this);
+  observer->EnableAccessibility();
+
+  // TODO(crbug.com/1266555): Disable accessibility.and stop observing events
+  // on the now inactive tab. But make sure that we don't disable it for
+  // assistive technology users. Some options here are:
+  // 1. Cache the current AXMode of the active web contents before enabling
+  //    accessibility, and reset the mode to that mode when the tab becomes
+  //    inactive.
+  // 2. Set an AXContext on the web contents with web contents only mode
+  //    enabled.
 }
