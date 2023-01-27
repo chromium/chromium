@@ -12178,7 +12178,8 @@
     "UseSimplifiedMessagePumpKqueueLoop": [
         {
             "platforms": [
-                "mac"
+                "mac",
+                "ios"
             ],
             "experiments": [
                 {
