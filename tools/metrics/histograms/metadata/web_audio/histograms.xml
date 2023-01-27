@@ -124,6 +124,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioContext.Operation"
+    enum="WebAudioContextOperation" expires_after="2023-07-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <summary>
+    Tracks occurences of AudioContext operations, to allow assessing what
+    proportion of AudioContexts are explicitly closed.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioContextOptions.sampleRate" units="Hz"
     expires_after="2023-06-11">
   <owner>hongchan@chromium.org</owner>

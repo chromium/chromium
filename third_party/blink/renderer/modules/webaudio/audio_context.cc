@@ -72,6 +72,18 @@ constexpr double kOutputLatencyQuatizingFactor = 0.008;
 // 1ms precision.
 constexpr double kOutputLatencyMaxPrecisionFactor = 0.001;
 
+// Operations tracked in the WebAudio.AudioContext.Operation histogram.
+enum class AudioContextOperation {
+  kCreate,
+  kClose,
+  kDelete,
+  kMaxValue = kDelete
+};
+
+void RecordAudioContextOperation(AudioContextOperation operation) {
+  base::UmaHistogramEnumeration("WebAudio.AudioContext.Operation", operation);
+}
+
 const char* LatencyCategoryToString(
     WebAudioLatencyHint::AudioContextLatencyCategory category) {
   switch (category) {
@@ -240,6 +252,7 @@ AudioContext::AudioContext(Document& document,
           MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(String(""))),
       media_device_service_(document.GetExecutionContext()),
       media_device_service_receiver_(this, document.GetExecutionContext()) {
+  RecordAudioContextOperation(AudioContextOperation::kCreate);
   SendLogMessage(GetAudioContextLogString(latency_hint, sample_rate));
 
   // TODO(http://crbug.com/1410553) update the echo cancellation reference
@@ -322,6 +335,8 @@ void AudioContext::Uninitialize() {
 }
 
 AudioContext::~AudioContext() {
+  RecordAudioContextOperation(AudioContextOperation::kDelete);
+
   // TODO(crbug.com/945379) Disable this DCHECK for now.  It's not terrible if
   // the autoplay metrics aren't recorded in some odd situations.  haraken@ said
   // that we shouldn't get here without also calling `Uninitialize()`, but it
@@ -490,6 +505,7 @@ ScriptPromise AudioContext::closeContext(ScriptState* script_state,
   DidClose();
 
   probe::DidCloseAudioContext(GetDocument());
+  RecordAudioContextOperation(AudioContextOperation::kClose);
 
   return promise;
 }

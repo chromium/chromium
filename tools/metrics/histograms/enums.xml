@@ -106824,6 +106824,12 @@ others/histograms.xml -->
   <int value="2" label="Source Node start()"/>
 </enum>
 
+<enum name="WebAudioContextOperation">
+  <int value="0" label="AudioContext created"/>
+  <int value="1" label="AudioContext closed via the close() method"/>
+  <int value="2" label="AudioContext deleted"/>
+</enum>
+
 <enum name="WebAuthenticationAOADiscoveryEvent">
   <int value="0" label="Started"/>
   <int value="1" label="An AOA USB device appeared during a WebAuthn request"/>
