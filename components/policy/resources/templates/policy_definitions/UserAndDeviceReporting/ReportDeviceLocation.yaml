@@ -1,7 +1,8 @@
 arc_support: This policy has no effect on the logging done by Android.
 caption: Report device location
+deprecated: true
 desc: |-
-  Report the geographic location of the device.
+  This policy is deprecated.
 
         Setting the policy to Enabled has enrolled devices periodically report their location.
 

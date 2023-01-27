@@ -746,11 +746,6 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_boot_mode()), nullptr);
     }
-    if (container.has_report_location()) {
-      policies->Set(key::kReportDeviceLocation, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.report_location()), nullptr);
-    }
     if (container.has_report_network_configuration()) {
       policies->Set(key::kReportDeviceNetworkConfiguration,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,

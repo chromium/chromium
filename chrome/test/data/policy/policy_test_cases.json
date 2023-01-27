@@ -13402,7 +13402,7 @@
     "reason_for_missing_test": "Chrome OS device policy used by update_engine only, not used in Chrome."
   },
   "ReportDeviceLocation": {
-    "reason_for_missing_test": "Maps into CrosSettings"
+    "reason_for_missing_test": "Policy Removed"
   },
   "SystemTimezone": {
     "reason_for_missing_test": "Maps into CrosSettings"
