@@ -1,0 +1,35 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "cc/slim/solid_color_layer.h"
+
+#include <utility>
+
+#include "cc/layers/solid_color_layer.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/solid_color_draw_quad.h"
+
+namespace cc::slim {
+
+// static
+scoped_refptr<SolidColorLayer> SolidColorLayer::Create() {
+  scoped_refptr<cc::SolidColorLayer> cc_layer;
+  cc_layer = cc::SolidColorLayer::Create();
+  return base::AdoptRef(new SolidColorLayer(std::move(cc_layer)));
+}
+
+SolidColorLayer::SolidColorLayer(scoped_refptr<cc::SolidColorLayer> cc_layer)
+    : Layer(std::move(cc_layer)) {}
+
+SolidColorLayer::~SolidColorLayer() = default;
+
+cc::SolidColorLayer* SolidColorLayer::cc_layer() const {
+  return static_cast<cc::SolidColorLayer*>(cc_layer_.get());
+}
+
+void SolidColorLayer::SetBackgroundColor(SkColor4f color) {
+  cc_layer()->SetBackgroundColor(color);
+}
+
+}  // namespace cc::slim

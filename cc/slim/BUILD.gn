@@ -1,0 +1,53 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("slim") {
+  sources = [
+    "filter.cc",
+    "filter.h",
+    "frame_sink.cc",
+    "frame_sink.h",
+    "frame_sink_cc_wrapper.cc",
+    "frame_sink_cc_wrapper.h",
+    "frame_sink_client.h",
+    "layer.cc",
+    "layer.h",
+    "layer_tree.cc",
+    "layer_tree.h",
+    "layer_tree_cc_wrapper.cc",
+    "layer_tree_cc_wrapper.h",
+    "layer_tree_client.h",
+    "nine_patch_layer.cc",
+    "nine_patch_layer.h",
+    "solid_color_layer.cc",
+    "solid_color_layer.h",
+    "surface_layer.cc",
+    "surface_layer.h",
+    "ui_resource_layer.cc",
+    "ui_resource_layer.h",
+  ]
+
+  defines = [ "IS_CC_SLIM_IMPL" ]
+
+  public_deps = [
+    "//base",
+    "//components/viz/common",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom",
+    "//skia",
+    "//ui/gfx/geometry",
+  ]
+  deps = [
+    "//components/viz/client",
+    "//gpu/command_buffer/client",
+    "//gpu/command_buffer/common",
+  ]
+
+  # Remove when no longer supports wrapping cc.
+  public_deps += [ "//cc:cc" ]
+  deps += [
+    "//cc/animation",
+    "//cc/mojo_embedder",
+  ]
+}
