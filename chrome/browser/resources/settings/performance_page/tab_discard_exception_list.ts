@@ -15,17 +15,18 @@ import './tab_discard_exception_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
-import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
+import {CrScrollableMixin, CrScrollableMixinInterface} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsMixin} from '../prefs/prefs_mixin.js';
-import {TooltipMixin} from '../tooltip_mixin.js';
+import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
+import {TooltipMixin, TooltipMixinInterface} from '../tooltip_mixin.js';
 
 import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
+import {TAB_DISCARD_EXCEPTIONS_PREF, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF} from './tab_discard_exception_dialog.js';
 import {TabDiscardExceptionEntry} from './tab_discard_exception_entry.js';
 import {getTemplate} from './tab_discard_exception_list.html.js';
 
@@ -39,13 +40,13 @@ export interface TabDiscardExceptionListElement {
   };
 }
 
-const TabDiscardExceptionListElementBase = TooltipMixin(
-    CrScrollableMixin(ListPropertyUpdateMixin(PrefsMixin(PolymerElement))));
-
-export const TAB_DISCARD_EXCEPTIONS_PREF =
-    'performance_tuning.tab_discarding.exceptions';
-export const TAB_DISCARD_EXCEPTIONS_MANAGED_PREF =
-    'performance_tuning.tab_discarding.exceptions_managed';
+type Constructor<T> = new (...args: any[]) => T;
+const TabDiscardExceptionListElementBase =
+    TooltipMixin(CrScrollableMixin(
+        ListPropertyUpdateMixin(PrefsMixin(PolymerElement)))) as
+    Constructor<TooltipMixinInterface&CrScrollableMixinInterface&
+                ListPropertyUpdateMixinInterface&PrefsMixinInterface&
+                PolymerElement>;
 
 export class TabDiscardExceptionListElement extends
     TabDiscardExceptionListElementBase {
@@ -129,31 +130,6 @@ export class TabDiscardExceptionListElement extends
     this.showDialog_ = false;
   }
 
-  private onDialogSubmit_(e: CustomEvent<string>) {
-    const newRule = e.detail;
-    if (this.selectedRule_) {
-      // edit dialog
-      if (newRule !== this.selectedRule_) {
-        if (this.getPref<string[]>(TAB_DISCARD_EXCEPTIONS_PREF)
-                .value.includes(newRule)) {
-          // delete instead of update, otherwise there would be a duplicate
-          this.deletePrefListItem(
-              TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
-        } else {
-          this.updatePrefListItem(
-              TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_, newRule);
-        }
-      }
-      this.metricsProxy_.recordExceptionListAction(
-          HighEfficiencyModeExceptionListAction.EDIT);
-      return;
-    }
-    // add dialog
-    this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, newRule);
-    this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD);
-  }
-
   private onDeleteClick_() {
     this.deletePrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
     this.metricsProxy_.recordExceptionListAction(
@@ -168,7 +144,7 @@ export class TabDiscardExceptionListElement extends
                  TAB_DISCARD_EXCEPTIONS_PREF]) {
       // Annotate sites with their managed status and append them to newSites
       // with managed sites first.
-      const {value: sites, enforcement} = this.getPref<string[]>(pref);
+      const {value: sites, enforcement} = this.getPref(pref);
       const siteToExceptionEntry = (site: string) => ({
         site,
         managed: enforcement === chrome.settingsPrivate.Enforcement.ENFORCED,

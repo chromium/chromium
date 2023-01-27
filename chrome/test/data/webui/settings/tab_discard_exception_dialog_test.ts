@@ -5,15 +5,17 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, SUBMIT_EVENT, TabDiscardExceptionDialogElement} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from 'chrome://settings/settings.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
+import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('TabDiscardExceptionsDialog', function() {
   let dialog: TabDiscardExceptionDialogElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
+  let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
   const EXISTING_RULE = 'foo';
   const INVALID_RULE = 'bar';
@@ -24,21 +26,35 @@ suite('TabDiscardExceptionsDialog', function() {
     performanceBrowserProxy.setValidationResult(true);
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
 
+    performanceMetricsProxy = new TestPerformanceMetricsProxy();
+    PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupAddDialog() {
+  function setupDialog(rule: string) {
     dialog = document.createElement('tab-discard-exception-dialog');
-    dialog.rule = '';
+    dialog.ruleToEdit = rule;
+    dialog.set('prefs', {
+      performance_tuning: {
+        tab_discarding: {
+          exceptions: {
+            type: chrome.settingsPrivate.PrefType.LIST,
+            value: [EXISTING_RULE],
+          },
+        },
+      },
+    });
     document.body.appendChild(dialog);
     flush();
   }
 
+  function setupAddDialog() {
+    setupDialog('');
+  }
+
   function setupEditDialog() {
-    dialog = document.createElement('tab-discard-exception-dialog');
-    dialog.rule = EXISTING_RULE;
-    document.body.appendChild(dialog);
-    flush();
+    setupDialog(EXISTING_RULE);
   }
 
   async function assertUserInputValidated(rule: string) {
@@ -115,17 +131,13 @@ suite('TabDiscardExceptionsDialog', function() {
   });
 
   async function assertCancel() {
-    const listener = () => {
-      assertNotReached('cancel button should not fire a submit event');
-    };
-    dialog.addEventListener(
-        SUBMIT_EVENT, listener);
-
     dialog.$.cancelButton.click();
     await flushTasks();
 
     assertFalse(
-        dialog.$.dialog.open, 'dialog should be closed after submitting input');
+        dialog.$.dialog.open, 'dialog should be closed after cancelling');
+    assertDeepEquals(
+        dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, [EXISTING_RULE]);
   }
 
   test('testTabDiscardExceptionsAddDialogCancel', async function() {
@@ -140,32 +152,31 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertCancel();
   });
 
-  async function assertSubmit(rule: string) {
-    let submitCount = 0;
-    const listener = (e: any) => {
-      assertEquals(rule, e.detail);
-      submitCount++;
-    };
-    dialog.addEventListener(
-        SUBMIT_EVENT, listener);
-
+  async function assertSubmit(expectedRules: string[]) {
     dialog.$.actionButton.click();
     await flushTasks();
 
     assertFalse(
         dialog.$.dialog.open, 'dialog should be closed after submitting input');
-    assertEquals(1, submitCount);
+    assertDeepEquals(
+        dialog.getPref(TAB_DISCARD_EXCEPTIONS_PREF).value, expectedRules);
   }
 
   test('testTabDiscardExceptionsAddDialogSubmit', async function() {
     setupAddDialog();
     await assertUserInputValidated(VALID_RULE);
-    await assertSubmit(VALID_RULE);
+    await assertSubmit([EXISTING_RULE, VALID_RULE]);
+    const action =
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
   });
 
   test('testTabDiscardExceptionsEditDialogSubmit', async function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
-    await assertSubmit(VALID_RULE);
+    await assertSubmit([VALID_RULE]);
+    const action =
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
+    assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
   });
 });

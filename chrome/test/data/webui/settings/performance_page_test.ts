@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, OpenWindowProxyImpl, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, SUBMIT_EVENT, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, OpenWindowProxyImpl, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
@@ -255,7 +255,8 @@ suite('PerformancePage', function() {
         'tab-discard-exception-dialog');
   }
 
-  function openAddDialog(): TabDiscardExceptionDialogElement {
+  test('testTabDiscardExceptionsListAdd', async function() {
+    setupExceptionListEntries(['foo']);
     let addDialog = getDialog();
     assertFalse(!!addDialog, 'dialog should not exist by default');
 
@@ -271,11 +272,11 @@ suite('PerformancePage', function() {
     assertEquals(
         '', addDialog.$.input.value,
         'add dialog input should be empty initially');
-    return addDialog;
-  }
+  });
 
-  function openEditDialog(entry: TabDiscardExceptionEntryElement):
-      TabDiscardExceptionDialogElement {
+  test('testTabDiscardExceptionsListEdit', async function() {
+    setupExceptionListEntries(['foo', 'bar']);
+    const entry = getExceptionListEntry(1);
     let editDialog = getDialog();
     assertFalse(!!editDialog, 'dialog should not exist by default');
 
@@ -292,20 +293,6 @@ suite('PerformancePage', function() {
     assertEquals(
         entry.entry.site, editDialog.$.input.value,
         'edit dialog input should be populated initially');
-    return editDialog;
-  }
-
-  test('testTabDiscardExceptionsListAdd', async function() {
-    setupExceptionListEntries(['foo']);
-    const dialog = openAddDialog();
-    dialog.fire(SUBMIT_EVENT, 'bar');
-
-    const action =
-        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
-    assertExceptionListEquals(
-        ['foo', 'bar'],
-        'expected valid rule to be added to the end of the list');
   });
 
   test('testTabDiscardExceptionsListAddAfterMenuClick', function() {
@@ -319,18 +306,5 @@ suite('PerformancePage', function() {
     assertEquals(
         '', dialog.$.input.value,
         'add dialog should be opened instead of edit dialog');
-  });
-
-  test('testTabDiscardExceptionsListEdit', async function() {
-    setupExceptionListEntries(['foo', 'bar']);
-    const dialog = openEditDialog(getExceptionListEntry(1));
-    dialog.fire(SUBMIT_EVENT, 'baz');
-
-    const action =
-        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
-    assertExceptionListEquals(
-        ['foo', 'baz'],
-        'expected valid rule to be added to the end of the list');
   });
 });
