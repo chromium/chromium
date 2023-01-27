@@ -135,8 +135,6 @@ uint32_t TagnameHash(const String& s) {
 // - Only a few named "&" character references are supported.
 // - No '\0'. The handling of '\0' varies depending upon where it is found
 //   and in general the correct handling complicates things.
-// - Fails if Document::IsDirAttributeDirty. This relies on
-//   BeginParsingChildren() and FinishParsingChildren() being called.
 // - Fails if an attribute name starts with 'on'. Such attributes are generally
 //   events that may be fired. Allowing this could be problematic if the fast
 //   path fails. For example, the 'onload' event of an <img> would be called
@@ -149,6 +147,9 @@ uint32_t TagnameHash(const String& s) {
 // - Fails if an <img> is encountered. Image elements request the image early
 //   on, resulting in network connections. Additionally, loading the image
 //   may consume preloaded resources.
+// - Fails if Document::IsDirAttributeDirty() is true and CSSPseudoDirEnabled is
+//   enabled. This is necessary as state needed to support css-pseudo dir is set
+//   in HTMLElement::BeginParsingChildren(), which this does not call.
 template <class Char>
 class HTMLFastPathParser {
   STACK_ALLOCATED();
@@ -1109,13 +1110,53 @@ bool CanUseFastPath(Document& document,
     return false;
   }
 
-  // State used for this is updated in BeginParsingChildren() and
-  // FinishParsingChildren(), which this does not call.
-  if (document.IsDirAttributeDirty()) {
-    LogFastPathResult(HtmlFastPathResult::kFailedDirAttributeDirty);
+  if (document.IsDirAttributeDirty() &&
+      RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    LogFastPathResult(
+        HtmlFastPathResult::kFailedCssPseudoDirEnabledAndDirAttributeDirty);
     return false;
   }
   return true;
+}
+
+template <class Char>
+bool TryParsingHTMLFragmentImpl(const base::span<const Char>& source,
+                                Document& document,
+                                DocumentFragment& fragment,
+                                Element& context_element) {
+  base::ElapsedTimer parse_timer;
+  bool success;
+  int number_of_bytes_parsed;
+  HTMLFastPathParser<Char> parser{source, document, fragment};
+  success = parser.Run(context_element);
+  // The direction attribute may change as a result of parsing. Check again.
+  if (document.IsDirAttributeDirty() &&
+      RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+    LogFastPathResult(
+        HtmlFastPathResult::kFailedCssPseudoDirEnabledAndDirAttributeDirty);
+    success = false;
+  } else {
+    LogFastPathResult(parser.parse_result());
+  }
+  number_of_bytes_parsed = parser.NumberOfBytesParsed();
+  // The time needed to parse is typically < 1ms (even at the 99%).
+  if (base::TimeTicks::IsHighResolution()) {
+    if (success) {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "Blink.HTMLFastPathParser.SuccessfulParseTime2",
+          parse_timer.Elapsed(), base::Microseconds(1), base::Milliseconds(10),
+          100);
+    } else {
+      base::UmaHistogramCustomMicrosecondsTimes(
+          "Blink.HTMLFastPathParser.AbortedParseTime2", parse_timer.Elapsed(),
+          base::Microseconds(1), base::Milliseconds(10), 100);
+    }
+  }
+  base::UmaHistogramCounts10M(
+      success ? "Blink.HTMLFastPathParser.SuccessfulParseSize"
+              : "Blink.HTMLFastPathParser.AbortedParseSize",
+      number_of_bytes_parsed);
+  return success;
 }
 
 }  // namespace
@@ -1130,32 +1171,11 @@ bool TryParsingHTMLFragment(const String& source,
                       include_shadow_roots)) {
     return false;
   }
-  base::ElapsedTimer parse_timer;
-  bool success;
-  int number_of_bytes_parsed;
-  if (source.Is8Bit()) {
-    HTMLFastPathParser<LChar> parser{source.Span8(), document, fragment};
-    success = parser.Run(context_element);
-    number_of_bytes_parsed = parser.NumberOfBytesParsed();
-    LogFastPathResult(parser.parse_result());
-  } else {
-    HTMLFastPathParser<UChar> parser{source.Span16(), document, fragment};
-    success = parser.Run(context_element);
-    number_of_bytes_parsed = parser.NumberOfBytesParsed();
-    LogFastPathResult(parser.parse_result());
-  }
-  if (success) {
-    base::UmaHistogramTimes("Blink.HTMLFastPathParser.SuccessfulParseTime",
-                            parse_timer.Elapsed());
-  } else {
-    base::UmaHistogramTimes("Blink.HTMLFastPathParser.AbortedParseTime",
-                            parse_timer.Elapsed());
-  }
-  base::UmaHistogramCounts10M(
-      success ? "Blink.HTMLFastPathParser.SuccessfulParseSize"
-              : "Blink.HTMLFastPathParser.AbortedParseSize",
-      number_of_bytes_parsed);
-  return success;
+  return source.Is8Bit()
+             ? TryParsingHTMLFragmentImpl<LChar>(source.Span8(), document,
+                                                 fragment, context_element)
+             : TryParsingHTMLFragmentImpl<UChar>(source.Span16(), document,
+                                                 fragment, context_element);
 }
 
 #undef SUPPORTED_TAGS

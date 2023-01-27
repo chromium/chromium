@@ -50,11 +50,13 @@ enum class HtmlFastPathResult {
   kFailedUnexpectedTagNameCloseState = 20,
   kFailedEndTagNameMismatch = 21,
   kFailedShadowRoots = 22,
-  kFailedDirAttributeDirty = 23,
+  // This value is no longer used.
+  // kFailedDirAttributeDirty = 23,
   kFailedOnAttribute = 24,
   kFailedMaxDepth = 25,
   kFailedBigText = 25,
-  kMaxValue = kFailedBigText
+  kFailedCssPseudoDirEnabledAndDirAttributeDirty = 26,
+  kMaxValue = kFailedCssPseudoDirEnabledAndDirAttributeDirty,
 };
 
 }  // namespace blink

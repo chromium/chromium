@@ -51997,11 +51997,14 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
       label="Failed because end tag name did not not muatch start start name"/>
   <int value="22" label="Could not use fast path because of shadow roots"/>
   <int value="23"
-      label="Could not use fast path because Document::IsDirAttributeDirty()
-             is true"/>
+      label="(Obsolete) Could not use fast path because
+             Document::IsDirAttributeDirty() is true"/>
   <int value="24" label="Failed because an attribute name starts with 'on'."/>
   <int value="25" label="Failed because a deep hierarchy was encountered."/>
   <int value="26" label="Failed because a long text string was encountered."/>
+  <int value="27"
+      label="Could not use fast path because Document::IsDirAttributeDirty()
+             is true and css-pseudo-dir is enabled."/>
 </enum>
 
 <enum name="InProductHelpDismissalReason">
