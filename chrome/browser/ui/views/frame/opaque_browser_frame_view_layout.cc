@@ -137,7 +137,8 @@ gfx::Rect OpaqueBrowserFrameViewLayout::GetWindowBoundsForClientBounds(
 
 gfx::Insets OpaqueBrowserFrameViewLayout::FrameBorderInsets(
     bool restored) const {
-  return !restored && delegate_->IsFrameCondensed()
+  return (!restored && delegate_->IsFrameCondensed()) ||
+                 delegate_->GetBorderlessModeEnabled()
              ? gfx::Insets()
              : RestoredFrameBorderInsets();
 }

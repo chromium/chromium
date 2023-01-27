@@ -2153,18 +2153,19 @@ void BrowserView::UpdateBorderlessModeEnabled() {
 
   if (auto* web_contents = GetActiveWebContents()) {
     // Last committed URL is null when PWA is opened from chrome://apps.
-    url::Origin url = url::Origin::Create(web_contents->GetVisibleURL());
+    url::Origin origin = url::Origin::Create(web_contents->GetVisibleURL());
+    if (!origin.opaque()) {
+      blink::mojom::PermissionStatus status =
+          web_contents->GetPrimaryMainFrame()
+              ->GetBrowserContext()
+              ->GetPermissionController()
+              ->GetPermissionResultForOriginWithoutContext(
+                  blink::PermissionType::WINDOW_MANAGEMENT, origin)
+              .status;
 
-    blink::mojom::PermissionStatus status =
-        web_contents->GetPrimaryMainFrame()
-            ->GetBrowserContext()
-            ->GetPermissionController()
-            ->GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::WINDOW_MANAGEMENT, url)
-            .status;
-
-    window_management_permission_granted_ =
-        status == blink::mojom::PermissionStatus::GRANTED;
+      window_management_permission_granted_ =
+          status == blink::mojom::PermissionStatus::GRANTED;
+    }
   } else {
     // Defaults to the value of borderless_mode_enabled if web contents are
     // null. These get overridden when the app is launched and its web contents

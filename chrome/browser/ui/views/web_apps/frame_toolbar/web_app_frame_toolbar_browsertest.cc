@@ -586,15 +586,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
 
   // Popup to itself.
-  Browser* popup = helper()->OpenPopup(
-      EvalJs(helper()->browser_view()->GetActiveWebContents(),
-             "window.location.href")
-          .ExtractString());
-
+  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
+                    "window.location.href")
+                 .ExtractString();
   BrowserView* popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup);
-  EXPECT_TRUE(content::WaitForRenderFrameReady(
-      popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+      helper()->OpenPopup("window.open('" + url + "', '_blank', 'popup');");
   popup_browser_view->set_isolated_web_app_true_for_testing();
   EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
 }
@@ -606,12 +602,84 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
 
   // Popup to any other website outside of the same origin.
-  Browser* popup = helper()->OpenPopup("https://google.com");
-  BrowserView* popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup);
-  EXPECT_TRUE(content::WaitForRenderFrameReady(
-      popup_browser_view->GetActiveWebContents()->GetPrimaryMainFrame()));
+  BrowserView* popup_browser_view = helper()->OpenPopup(
+      "window.open('https://google.com', '_blank', 'popup');");
   EXPECT_FALSE(popup_browser_view->IsBorderlessModeEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupSize) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
+                    "window.location.href")
+                 .ExtractString();
+
+  BrowserView* popup_browser_view =
+      helper()->OpenPopup("window.open('" + url +
+                          "', '', 'location=0, status=0, scrollbars=0, "
+                          "left=0, top=0, width=400, height=300');");
+
+  popup_browser_view->set_isolated_web_app_true_for_testing();
+  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
+  auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
+
+  constexpr int kExpectedWidth = 400, kExpectedHeight = 300;
+  const auto& client_view_size =
+      popup_browser_view->frame()->client_view()->size();
+  EXPECT_EQ(client_view_size.height(), kExpectedHeight);
+  EXPECT_EQ(client_view_size.width(), kExpectedWidth);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),
+            kExpectedHeight);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
+            kExpectedHeight);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerWidth").ExtractInt(),
+            kExpectedWidth);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
+            kExpectedWidth);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless, PopupResize) {
+  InstallAndLaunchWebApp(/*uses_borderless=*/true);
+  GrantWindowManagementPermission();
+  ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
+
+  auto url = EvalJs(helper()->browser_view()->GetActiveWebContents(),
+                    "window.location.href")
+                 .ExtractString();
+
+  BrowserView* popup_browser_view =
+      helper()->OpenPopup("window.open('" + url +
+                          "', '', 'location=0, status=0, scrollbars=0, "
+                          "left=0, top=0, width=400, height=300');");
+  popup_browser_view->set_isolated_web_app_true_for_testing();
+  EXPECT_TRUE(popup_browser_view->IsBorderlessModeEnabled());
+  auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
+
+  content::TitleWatcher title_watcher(popup_web_contents, u"resized");
+  EXPECT_TRUE(ExecJs(popup_web_contents,
+                     "document.title = 'beforeevent';"
+                     "window.onresize = (e) => {"
+                     "  document.title = 'resized';"
+                     "}"));
+  EXPECT_TRUE(ExecJs(popup_web_contents, "window.resizeTo(600,500);"));
+  std::ignore = title_watcher.WaitAndGetTitle();
+  EXPECT_EQ(popup_web_contents->GetTitle(), u"resized");
+
+  constexpr int kExpectedWidth = 600, kExpectedHeight = 500;
+  const auto& client_view_size =
+      popup_browser_view->frame()->client_view()->size();
+  EXPECT_EQ(client_view_size.height(), kExpectedHeight);
+  EXPECT_EQ(client_view_size.width(), kExpectedWidth);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerHeight").ExtractInt(),
+            kExpectedHeight);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerHeight").ExtractInt(),
+            kExpectedHeight);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.innerWidth").ExtractInt(),
+            kExpectedWidth);
+  EXPECT_EQ(EvalJs(popup_web_contents, "window.outerWidth").ExtractInt(),
+            kExpectedWidth);
 }
 
 // TODO(https://crbug.com/1277860): Flaky.
@@ -884,16 +952,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   InstallAndLaunchWebApp();
   auto* wco_web_contents = helper()->browser_view()->GetActiveWebContents();
 
-  Browser* popup = helper()->OpenPopup(
-      EvalJs(wco_web_contents, "window.location.href").ExtractString());
-
+  // Popup to itself.
+  auto url = EvalJs(wco_web_contents, "window.location.href").ExtractString();
   BrowserView* popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup);
+      helper()->OpenPopup("window.open('" + url + "', '_blank', 'popup');");
   content::WebContents* popup_web_contents =
       popup_browser_view->GetActiveWebContents();
-
-  EXPECT_TRUE(content::WaitForRenderFrameReady(
-      popup_web_contents->GetPrimaryMainFrame()));
   EXPECT_FALSE(popup_browser_view->IsWindowControlsOverlayEnabled());
   EXPECT_FALSE(EvalJs(popup_web_contents,
                       "window.navigator.windowControlsOverlay.visible")
@@ -918,18 +982,14 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   ToggleWindowControlsOverlayAndWait();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
 
-  Browser* popup = helper()->OpenPopup("https://google.com");
-  BrowserView* popup_browser_view =
-      BrowserView::GetBrowserViewForBrowser(popup);
-  content::WebContents* popup_web_contents =
-      popup_browser_view->GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForRenderFrameReady(
-      popup_web_contents->GetPrimaryMainFrame()));
+  // Popup to any other website outside of the same origin.
+  BrowserView* popup_browser_view = helper()->OpenPopup(
+      "window.open('https://google.com', '_blank', 'popup');");
 
   // When popup is opened pointing to any other site, it will not know whether
   // the popup app uses WCO or not. This test also ensures it does not crash.
   EXPECT_FALSE(popup_browser_view->IsWindowControlsOverlayEnabled());
-  EXPECT_FALSE(EvalJs(popup_web_contents,
+  EXPECT_FALSE(EvalJs(popup_browser_view->GetActiveWebContents(),
                       "window.navigator.windowControlsOverlay.visible")
                    .ExtractBool());
 }
