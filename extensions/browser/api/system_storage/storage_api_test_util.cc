@@ -6,8 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 
-namespace extensions {
-namespace test {
+namespace extensions::test {
 
 const struct TestStorageUnitInfo kRemovableStorageData = {"dcim:device:001",
                                                           "/media/usb1",
@@ -24,5 +23,4 @@ storage_monitor::StorageInfo BuildStorageInfoFromTestStorageUnitInfo(
       unit.capacity);
 }
 
-}  // namespace test
-}  // namespace extensions
+}  // namespace extensions::test

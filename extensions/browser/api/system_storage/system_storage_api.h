@@ -7,7 +7,6 @@
 
 #include "base/task/sequenced_task_runner.h"
 #include "components/storage_monitor/storage_monitor.h"
-#include "extensions/browser/api/system_storage/storage_info_provider.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -17,10 +16,10 @@ namespace extensions {
 class SystemStorageGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.storage.getInfo", SYSTEM_STORAGE_GETINFO)
-  SystemStorageGetInfoFunction();
+  SystemStorageGetInfoFunction() = default;
 
  private:
-  ~SystemStorageGetInfoFunction() override;
+  ~SystemStorageGetInfoFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -34,7 +33,7 @@ class SystemStorageEjectDeviceFunction : public ExtensionFunction {
                              SYSTEM_STORAGE_EJECTDEVICE)
 
  protected:
-  ~SystemStorageEjectDeviceFunction() override;
+  ~SystemStorageEjectDeviceFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

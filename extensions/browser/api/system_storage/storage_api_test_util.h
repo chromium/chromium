@@ -6,10 +6,8 @@
 #define EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_
 
 #include "components/storage_monitor/storage_info.h"
-#include "extensions/browser/api/system_storage/storage_info_provider.h"
 
-namespace extensions {
-namespace test {
+namespace extensions::test {
 
 struct TestStorageUnitInfo {
   const char* device_id;
@@ -25,7 +23,6 @@ extern const struct TestStorageUnitInfo kRemovableStorageData;
 storage_monitor::StorageInfo BuildStorageInfoFromTestStorageUnitInfo(
     const TestStorageUnitInfo& unit);
 
-}  // namespace test
-}  // namespace extensions
+}  // namespace extensions::test
 
 #endif  // EXTENSIONS_BROWSER_API_SYSTEM_STORAGE_STORAGE_API_TEST_UTIL_H_

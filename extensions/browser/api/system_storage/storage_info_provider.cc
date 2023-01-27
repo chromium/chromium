@@ -21,11 +21,9 @@ using api::system_storage::StorageUnitInfo;
 base::LazyInstance<scoped_refptr<StorageInfoProvider>>::DestructorAtExit
     StorageInfoProvider::provider_ = LAZY_INSTANCE_INITIALIZER;
 
-StorageInfoProvider::StorageInfoProvider() {
-}
+StorageInfoProvider::StorageInfoProvider() = default;
 
-StorageInfoProvider::~StorageInfoProvider() {
-}
+StorageInfoProvider::~StorageInfoProvider() = default;
 
 void StorageInfoProvider::InitializeForTesting(
     scoped_refptr<StorageInfoProvider> provider) {

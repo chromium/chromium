@@ -19,7 +19,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"

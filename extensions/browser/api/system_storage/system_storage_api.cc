@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/system_storage/storage_info_provider.h"
 
 using storage_monitor::StorageMonitor;
 
@@ -15,12 +16,6 @@ namespace extensions {
 using api::system_storage::StorageUnitInfo;
 namespace EjectDevice = api::system_storage::EjectDevice;
 namespace GetAvailableCapacity = api::system_storage::GetAvailableCapacity;
-
-SystemStorageGetInfoFunction::SystemStorageGetInfoFunction() {
-}
-
-SystemStorageGetInfoFunction::~SystemStorageGetInfoFunction() {
-}
 
 ExtensionFunction::ResponseAction SystemStorageGetInfoFunction::Run() {
   StorageInfoProvider::Get()->StartQueryInfo(base::BindOnce(
@@ -35,9 +30,6 @@ void SystemStorageGetInfoFunction::OnGetStorageInfoCompleted(bool success) {
   } else {
     Respond(Error("Error occurred when querying storage information."));
   }
-}
-
-SystemStorageEjectDeviceFunction::~SystemStorageEjectDeviceFunction() {
 }
 
 ExtensionFunction::ResponseAction SystemStorageEjectDeviceFunction::Run() {

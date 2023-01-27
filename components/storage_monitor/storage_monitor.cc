@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "components/storage_monitor/transient_device_ids.h"
 
@@ -22,15 +21,14 @@ StorageMonitor* g_storage_monitor = nullptr;
 
 }  // namespace
 
-StorageMonitor::Receiver::~Receiver() {
-}
+StorageMonitor::Receiver::~Receiver() = default;
 
 class StorageMonitor::ReceiverImpl : public StorageMonitor::Receiver {
  public:
   explicit ReceiverImpl(StorageMonitor* notifications)
       : notifications_(notifications) {}
 
-  ~ReceiverImpl() override {}
+  ~ReceiverImpl() override = default;
 
   void ProcessAttach(const StorageInfo& info) override;
 
@@ -80,8 +78,8 @@ std::vector<StorageInfo> StorageMonitor::GetAllAvailableStorages() const {
   std::vector<StorageInfo> results;
 
   base::AutoLock lock(storage_lock_);
-  for (auto it = storage_map_.begin(); it != storage_map_.end(); ++it) {
-    results.push_back(it->second);
+  for (const auto& item : storage_map_) {
+    results.push_back(item.second);
   }
   return results;
 }
@@ -145,8 +143,7 @@ StorageMonitor::StorageMonitor()
   receiver_ = std::make_unique<ReceiverImpl>(this);
 }
 
-StorageMonitor::~StorageMonitor() {
-}
+StorageMonitor::~StorageMonitor() = default;
 
 StorageMonitor::Receiver* StorageMonitor::receiver() const {
   return receiver_.get();

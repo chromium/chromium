@@ -4,7 +4,6 @@
 //
 // SystemStorage eject API browser tests.
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -15,7 +14,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/system_storage/storage_api_test_util.h"
-#include "extensions/browser/api/system_storage/storage_info_provider.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/extension.h"
@@ -39,7 +37,7 @@ class SystemStorageEjectApiTest : public extensions::ShellApiTest {
   SystemStorageEjectApiTest& operator=(const SystemStorageEjectApiTest&) =
       delete;
 
-  ~SystemStorageEjectApiTest() override {}
+  ~SystemStorageEjectApiTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
