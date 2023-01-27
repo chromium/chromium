@@ -476,6 +476,19 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
                                 base::Unretained(primary_page_node())));
 }
 
+void PerformanceManagerTabHelper::AboutToBeDiscarded(
+    content::WebContents* new_contents) {
+  DCHECK(primary_page_);
+
+  base::WeakPtr<PageNode> new_page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(new_contents);
+
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(&PageNodeImpl::OnAboutToBeDiscarded,
+                     base::Unretained(primary_page_node()), new_page_node));
+}
+
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver) {
