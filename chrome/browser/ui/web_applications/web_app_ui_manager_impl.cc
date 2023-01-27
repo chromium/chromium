@@ -76,7 +76,6 @@ namespace {
 // during uninstall, it also ensures the process will terminate when it
 // is destroyed if there is no active browser window.
 void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
-                                                Profile* profile,
                                                 WebAppProvider* provider) {
   // ScopedKeepAlive does not only keeps the process from early termination,
   // but ensure the process termination when there is no active browser window.
@@ -350,7 +349,7 @@ void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
   provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&UninstallWebAppWithDialogFromStartupSwitch,
-                                app_id, profile_, provider));
+                                app_id, provider));
 }
 #endif  //  BUILDFLAG(IS_WIN)
 
