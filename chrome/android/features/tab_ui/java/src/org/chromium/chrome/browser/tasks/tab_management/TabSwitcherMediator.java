@@ -108,6 +108,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final ViewGroup mContainerView;
     private final TabContentManager mTabContentManager;
+    private final boolean mIsStartSurfaceEnabled;
+    private final boolean mIsStartSurfaceRefactorEnabled;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final MultiWindowModeStateDispatcher.MultiWindowModeObserver mMultiWindowModeObserver;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
@@ -292,6 +294,8 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
         mMode = mode;
         mContainerViewModel.set(MODE, mode);
         mContext = context;
+        mIsStartSurfaceEnabled = ReturnToChromeUtil.isStartSurfaceEnabled(context);
+        mIsStartSurfaceRefactorEnabled = ReturnToChromeUtil.isStartSurfaceRefactorEnabled(context);
 
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();
@@ -495,6 +499,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
             mContainerViewModel.set(BOTTOM_PADDING,
                     (int) context.getResources().getDimension(R.dimen.tab_grid_bottom_padding));
             if (backPressManager != null && BackPressManager.isEnabled()) {
+                assert !mIsStartSurfaceEnabled || mIsStartSurfaceRefactorEnabled;
                 backPressManager.addHandler(this, BackPressHandler.Type.TAB_SWITCHER);
                 notifyBackPressStateChangedInternal();
             }
@@ -831,7 +836,9 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     @Override
     public boolean onBackPressed() {
         boolean ret = onBackPressedInternal();
-        if (ret) {
+        if (ret && (!mIsStartSurfaceEnabled || mIsStartSurfaceRefactorEnabled)) {
+            // When SS is enabled or refactor is disabled, StartSurfaceMediator will consume back
+            // press and call this method if necessary.
             BackPressManager.record(BackPressHandler.Type.TAB_SWITCHER);
         }
         return ret;

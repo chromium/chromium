@@ -34,6 +34,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -587,6 +588,15 @@ public class NavigateTest {
             navigateAndObserve(url);
         }
 
+        String histogram = BackPressManager.getHistogramForTesting();
+
+        HistogramDelta tabHistoryDelta = new HistogramDelta(histogram,
+                BackPressManager.getHistogramValueForTesting(BackPressHandler.Type.TAB_HISTORY));
+        HistogramDelta startSurfaceDelta = new HistogramDelta(histogram,
+                BackPressManager.getHistogramValueForTesting(BackPressHandler.Type.START_SURFACE));
+        HistogramDelta tabSwitcherDelta = new HistogramDelta(histogram,
+                BackPressManager.getHistogramValueForTesting(BackPressHandler.Type.TAB_SWITCHER));
+
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabUiTestHelper.enterTabSwitcher(cta);
         Assert.assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
@@ -597,6 +607,10 @@ public class NavigateTest {
             int type = mActivityTestRule.getActivity().getLayoutManager().getActiveLayoutType();
             Assert.assertEquals(LayoutType.BROWSING, type);
         });
+        Assert.assertEquals(
+                "No page navigation when exiting tab switcher.", 0, tabHistoryDelta.getDelta());
+        Assert.assertEquals("Either start surface or tab switcher handles back press.", 1,
+                startSurfaceDelta.getDelta() + tabSwitcherDelta.getDelta());
     }
 
     /**
