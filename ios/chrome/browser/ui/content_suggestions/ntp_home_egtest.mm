@@ -1224,6 +1224,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that content suggestions are hidden for supervised users on sign-in.
 // When the supervised user signs out the active policy should apply to the NTP.
 - (void)testFeedHiddenForSupervisedUser {
+// TODO(crbug.com/1410819): Re-enable once test is fixed on iphone-device.
+#if !TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPhone device.");
+  }
+#endif
   // Disable trending queries experiment to ensure that the Discover feed is
   // visible when first opening the NTP.
   // TODO(crbug.com/1350826): Adapt the test with launch of trending queries.
