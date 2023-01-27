@@ -965,11 +965,11 @@ static String MakeReplayEventType(const String& eventTypeRaw,
 void ReplayNotifyBeforeEvent(const String& eventName, 
                       EventTarget* eventTarget,
                       bool isCallback) {
-  String qualifiedEventName = 
+  String qualifiedEventName =
       MakeReplayEventType(eventName, eventTarget, isCallback);
-  recordreplay::Print("DDBG ReplayNotifyBeforeEvent %s",
-                      qualifiedEventName.Ascii().c_str());
-  recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), true);
+  // Disabled, see https://linear.app/replay/issue/RUN-1206
+  //recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), true);
+  (void)qualifiedEventName;
 }
 
 void ReplayNotifyAfterEvent(const String& eventName,
@@ -977,9 +977,9 @@ void ReplayNotifyAfterEvent(const String& eventName,
                      bool isCallback) {
   String qualifiedEventName =
       MakeReplayEventType(eventName, eventTarget, isCallback);
-  recordreplay::Print("DDBG ReplayNotifyAfterEvent %s",
-                      qualifiedEventName.Ascii().c_str());
-  recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), false);
+  // Disabled, see https://linear.app/replay/issue/RUN-1206
+  //recordreplay::OnEvent(qualifiedEventName.Ascii().c_str(), false);
+  (void)qualifiedEventName;
 }
 
 }  // namespace blink
