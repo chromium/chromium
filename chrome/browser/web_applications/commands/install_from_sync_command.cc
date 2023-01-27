@@ -332,9 +332,11 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // a sync install is not a recordable install source.
   DCHECK(!webapps::InstallableMetrics::IsReportableInstallSource(
       webapps::WebappInstallSource::SYNC));
+  // TODO(https://crbug.com/1303949): migrate LogToInstallManager to take a
+  // base::Value::Dict
   if (install_error_log_entry_.HasErrorDict()) {
     command_manager()->LogToInstallManager(
-        install_error_log_entry_.TakeErrorDict());
+        base::Value(install_error_log_entry_.TakeErrorDict()));
   }
 
   base::UmaHistogramEnumeration("WebApp.InstallResult.Sync", code);

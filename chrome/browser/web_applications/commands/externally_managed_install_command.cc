@@ -292,9 +292,12 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
   }
 
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    base::Value task_error_dict = install_error_log_entry_.TakeErrorDict();
-    if (!task_error_dict.DictEmpty())
-      command_manager()->LogToInstallManager(std::move(task_error_dict));
+    // TODO(https://crbug.com/1303949): migrate LogToInstallManager to take a
+    // base::Value::Dict
+    if (install_error_log_entry_.HasErrorDict()) {
+      command_manager()->LogToInstallManager(
+          base::Value(install_error_log_entry_.TakeErrorDict()));
+    }
   }
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));

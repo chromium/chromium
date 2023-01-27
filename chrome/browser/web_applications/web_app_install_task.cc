@@ -323,7 +323,7 @@ void WebAppInstallTask::WebContentsDestroyed() {
                       webapps::InstallResultCode::kWebContentsDestroyed);
 }
 
-base::Value WebAppInstallTask::TakeErrorDict() {
+base::Value::Dict WebAppInstallTask::TakeErrorDict() {
   DCHECK(log_entry_.HasErrorDict());
   return log_entry_.TakeErrorDict();
 }

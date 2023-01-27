@@ -34,7 +34,7 @@ class InstallErrorLogEntry {
 
   // Collects install errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals
-  base::Value TakeErrorDict();
+  base::Value::Dict TakeErrorDict();
 
   void LogUrlLoaderError(const char* stage,
                          const std::string& url,

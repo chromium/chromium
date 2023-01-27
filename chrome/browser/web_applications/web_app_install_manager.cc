@@ -181,9 +181,12 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
 
 void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
   if (error_log_) {
-    base::Value task_error_dict = task->TakeErrorDict();
-    if (!task_error_dict.DictEmpty())
-      LogErrorObject(std::move(task_error_dict));
+    base::Value::Dict task_error_dict = task->TakeErrorDict();
+    if (!task_error_dict.empty()) {
+      // TODO(https://crbug.com/1303949): migrate LogErrorObject to take a
+      // base::Value::Dict
+      LogErrorObject(base::Value(std::move(task_error_dict)));
+    }
   }
 }
 

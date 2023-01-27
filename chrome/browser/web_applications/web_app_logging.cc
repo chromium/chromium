@@ -49,9 +49,9 @@ InstallErrorLogEntry::InstallErrorLogEntry(
 
 InstallErrorLogEntry::~InstallErrorLogEntry() = default;
 
-base::Value InstallErrorLogEntry::TakeErrorDict() {
+base::Value::Dict InstallErrorLogEntry::TakeErrorDict() {
   DCHECK(error_dict_);
-  base::Value error_dict = base::Value(std::move(*error_dict_));
+  base::Value::Dict error_dict = std::move(*error_dict_);
   *error_dict_ = base::Value::Dict();
   return error_dict;
 }
