@@ -18,6 +18,7 @@ const FIRST_PARTY_INPUT_METHOD_ID_PREFIX =
 const PREFS_KEY = 'settings.language.input_method_specific_settings';
 
 class FakeLanguageHelper {
+  async whenReady() {}
   getInputMethodDisplayName(_) {
     return 'fake display name';
   }
