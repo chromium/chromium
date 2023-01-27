@@ -5,12 +5,28 @@
 #include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
 
+// Default parameters.
+constexpr bool kUseWeightedRatio = false;
+constexpr double kRelevancyScoreThreshold = 0.75;
+
+KeywordInfo::KeywordInfo(const std::u16string& query_token,
+                         double relevance_score,
+                         const std::vector<ProviderType>& search_providers)
+    : query_token(query_token),
+      relevance_score(relevance_score),
+      search_providers(search_providers) {}
+
+KeywordInfo::~KeywordInfo() = default;
+KeywordInfo::KeywordInfo(const KeywordInfo& other) = default;
+
 namespace {
 
+using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
 
 // Return a dictionary of keywords and their associated search providers.
@@ -40,22 +56,41 @@ KeywordToProvidersMap MakeMap() {
   return keyword_map;
 }
 
+// Used for fuzzy string matching, calculates and returns the relevance score
+// of a query relative to a keyword.
+// Ranges from [0, 1] with 0 representing no match and 1 representing best
+// match.
+double CalculateRelevance(const std::u16string& query_token,
+                          const std::u16string& canonical_keyword) {
+  FuzzyTokenizedStringMatch match;
+  return match.Relevance(TokenizedString(query_token),
+                         TokenizedString(canonical_keyword), kUseWeightedRatio);
+}
+
 }  // namespace
 
-KeywordToProvidersPairs ExtractKeyword(const std::u16string& query) {
+KeywordExtractedInfoList ExtractKeywords(const std::u16string& query) {
   // Given the user query, process into a tokenized string and
   // check if keyword exists as one of the tokens.
 
   TokenizedString tokenized_string(query, TokenizedString::Mode::kWords);
   KeywordToProvidersMap keyword_map = MakeMap();
-  KeywordToProvidersPairs extracted_keywords_to_providers = {};
+  KeywordExtractedInfoList extracted_keywords_to_providers = {};
 
+  // TODO(b/262623111): We will need to revisit the O(n^2) implementation if the
+  // keyword dictionary grows significantly.
+  // Current implementation is iterating through map for each token and using
+  // pair-wise comparison to calculate relevancy score which may need to be
+  // optimised.
   for (const std::u16string& token : tokenized_string.tokens()) {
-    const auto& keyword_to_providers_pair = keyword_map.find(token);
-
-    if (keyword_to_providers_pair != keyword_map.end()) {
-      extracted_keywords_to_providers.emplace_back(
-          keyword_to_providers_pair->first, keyword_to_providers_pair->second);
+    for (KeywordToProvidersPair& keyword_to_providers_pair : keyword_map) {
+      const double relevance =
+          CalculateRelevance(token, keyword_to_providers_pair.first);
+      if (relevance > kRelevancyScoreThreshold) {
+        // TODO(b/262623111): Check if relevance threshold is suitable.
+        extracted_keywords_to_providers.emplace_back(
+            token, relevance, keyword_to_providers_pair.second);
+      }
     }
   }
 
