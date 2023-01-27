@@ -799,6 +799,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Scoring.ScoreAboveBestMatchThreshold{Type}"
+    units="BooleanHit" expires_after="2023-06-25">
+  <owner>wrong@chromium.org</owner>
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>celiahe@google.com</owner>
+  <summary>
+    The number of the results above the BestMatch threshold with {Type} case.
+    Recorded once per result's score above the BestMatch threshold.
+  </summary>
+  <token key="Type">
+    <variant name="WithKeywordRanking"
+        summary="Count of results above BestMatch threshold with Keyword
+                 Ranking"/>
+    <variant name="WithoutKeywordRanking"
+        summary="Count of results above BestMatch threshold without Keyword
+                 Ranking"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppList.Search.ContinueResultCount.{Type}" units="count"
     expires_after="2023-02-14">
   <owner>amandadeacon@chromium.org</owner>

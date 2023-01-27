@@ -245,6 +245,11 @@ void SearchController::SetResults(const SearchProvider* provider,
 
 void SearchController::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
+
+  for (auto& result : provider->results()) {
+    metrics_manager_->OnSearchResultsUpdated(result->scoring());
+  }
+
   burn_in_controller_->UpdateResults(results_, categories_,
                                      provider->ResultType());
   // If the burn-in period has not yet elapsed, don't call Publish here (this

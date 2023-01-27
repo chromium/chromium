@@ -5,10 +5,13 @@
 #include "chrome/browser/ash/app_list/search/search_metrics_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/search/common/string_util.h"
+#include "chrome/browser/ash/app_list/search/ranking/constants.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/search/search_metrics_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_pref_names.h"
@@ -224,6 +227,20 @@ void SearchMetricsManager::OnTrain(LaunchData& launch_data,
   } else if (launch_data.result_type ==
              ash::AppListSearchResultType::kArcAppShortcut) {
     last_launched_app_id_ = RemoveAppShortcutLabel(NormalizeId(launch_data.id));
+  }
+}
+
+void SearchMetricsManager::OnSearchResultsUpdated(const Scoring& scoring) {
+  double score = scoring.BestMatchScore();
+  if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Apps.AppList.Scoring.ScoreAboveBestMatchThresholdWithKeywordRanking",
+        score > kBestMatchThresholdWithKeywordRanking);
+  } else {
+    UMA_HISTOGRAM_BOOLEAN(
+        "Apps.AppList.Scoring."
+        "ScoreAboveBestMatchThresholdWithoutKeywordRanking",
+        score > kBestMatchThreshold);
   }
 }
 

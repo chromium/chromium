@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ash/app_list/search/ranking/constants.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 
 namespace app_list {
@@ -26,7 +28,9 @@ double Scoring::FinalScore() const {
     return -1.0;
   }
   if (search_features::IsLauncherKeywordExtractionScoringEnabled()) {
-    return tanh(kKeywordScale * ftrl_result_score_ * keyword_multiplier_);
+    double ftrl_score_after_ranking =
+        tanh(kKeywordScale * ftrl_result_score_ * keyword_multiplier_);
+    return ftrl_score_after_ranking;
   }
   return ftrl_result_score_;
 }
