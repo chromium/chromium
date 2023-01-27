@@ -205,12 +205,6 @@ class PersonalDataManager : public KeyedService,
   // profile with the specified |guid|.
   virtual AutofillProfile* GetProfileByGUID(const std::string& guid) const;
 
-  // Returns the profile with the specified |guid| from the given |profiles|, or
-  // nullptr if there is no profile with the specified |guid|.
-  static AutofillProfile* GetProfileFromProfilesByGUID(
-      const std::string& guid,
-      const std::vector<AutofillProfile*>& profiles);
-
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:

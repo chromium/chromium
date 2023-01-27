@@ -788,13 +788,7 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
 AutofillProfile* PersonalDataManager::GetProfileByGUID(
     const std::string& guid) const {
   // GUIDs are unique among profile sources.
-  return GetProfileFromProfilesByGUID(guid, GetProfiles());
-}
-
-// static
-AutofillProfile* PersonalDataManager::GetProfileFromProfilesByGUID(
-    const std::string& guid,
-    const std::vector<AutofillProfile*>& profiles) {
+  std::vector<AutofillProfile*> profiles = GetProfiles();
   auto iter = FindElementByGUID(profiles, guid);
   return iter != profiles.end() ? *iter : nullptr;
 }
