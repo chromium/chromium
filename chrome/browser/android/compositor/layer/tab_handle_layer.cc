@@ -171,8 +171,16 @@ void TabHandleLayer::SetProperties(
     divider_->SetIsDrawable(true);
     divider_->SetUIResourceId(divider_resource->ui_resource()->id());
     divider_->SetBounds(divider_resource->size());
-    int divider_y = (tab_handle_resource->padding().y() + height) / 2 -
-                    divider_->bounds().height() / 2;
+
+    int divider_y;
+    float divider_y_offset_mid =
+        (tab_handle_resource->padding().y() + height) / 2 -
+        divider_->bounds().height() / 2;
+    if (is_tab_strip_redesign_enabled) {
+      divider_y = content_offset_y;
+    } else {
+      divider_y = divider_y_offset_mid;
+    }
     int divider_x = is_rtl ? width - divider_offset_x : divider_offset_x;
     divider_->SetPosition(gfx::PointF(divider_x, divider_y));
     divider_->SetOpacity(divider_alpha);
@@ -180,12 +188,13 @@ void TabHandleLayer::SetProperties(
 
   if (title_layer) {
     int title_y;
+    float title_y_offset_mid = tab_handle_resource->padding().y() / 2 +
+                               height / 2 - title_layer->size().height() / 2;
     if (is_tab_strip_redesign_enabled) {
-      // 8dp top padding for folio and 10 dp for detached.
-      title_y = content_offset_y;
+      // 8dp top padding for folio and 10 dp for detached at default text size.
+      title_y = std::min(content_offset_y, title_y_offset_mid);
     } else {
-      title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
-                title_layer->size().height() / 2;
+      title_y = title_y_offset_mid;
     }
 
     int title_x = is_rtl ? padding_left + close_width : padding_left;
@@ -212,11 +221,13 @@ void TabHandleLayer::SetProperties(
     close_button_->SetIsDrawable(true);
     const float close_max_width = close_button_->bounds().width();
     int close_y;
+    float close_y_offset_mid =
+        (tab_handle_resource->padding().y() + height) / 2 -
+        close_button_->bounds().height() / 2;
     if (is_tab_strip_redesign_enabled) {
       close_y = content_offset_y;
     } else {
-      close_y = (tab_handle_resource->padding().y() + height) / 2 -
-                close_button_->bounds().height() / 2;
+      close_y = close_y_offset_mid;
     }
     int close_x =
         is_rtl ? padding_left - close_max_width + close_width -
