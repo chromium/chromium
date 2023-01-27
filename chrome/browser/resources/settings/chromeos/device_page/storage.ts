@@ -60,6 +60,12 @@ class SettingsStorageElement extends SettingsStorageElementBase {
         value: false,
       },
 
+      showOfflineStorage_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableDriveFsBulkPinning'),
+        readonly: true,
+      },
+
       showCrostini: Boolean,
 
       isGuest_: {
@@ -90,6 +96,7 @@ class SettingsStorageElement extends SettingsStorageElementBase {
   private isGuest_: boolean;
   private route_: Route;
   private showCrostiniStorage_: boolean;
+  private showOfflineStorage_: boolean;
   private showOtherUsers_: boolean;
   private sizeStat_: StorageSizeStat;
   private updateTimerId_: number;
@@ -186,6 +193,14 @@ class SettingsStorageElement extends SettingsStorageElementBase {
     Router.getInstance().navigateTo(
         routes.APP_MANAGEMENT,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
+  }
+
+  /**
+   * Handler for tapping the "Offline files" item.
+   */
+  private onOfflineTap_(): void {
+    // TODO(b/266631636): Offline files row should redirect users to Files
+    // settings > Drive settings.
   }
 
   /**

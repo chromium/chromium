@@ -4542,6 +4542,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_STORAGE_ITEM_APPS" desc="In Device Settings > Storage, label for the total size of Android apps and web store apps and extensions.">
     Apps and extensions
   </message>
+  <message name="IDS_SETTINGS_STORAGE_ITEM_OFFLINE" desc="In Device Settings > Storage, label for the total size of pinned files in Google Drive.">
+    Offline files
+  </message>
   <message name="IDS_SETTINGS_STORAGE_ITEM_CROSTINI" desc="In Device Settings > Storage, label for the total size of Crostini VMs, apps and cache.">
     Linux storage
   </message>

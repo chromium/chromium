@@ -567,6 +567,10 @@ bool IsTouchCalibrationAvailable() {
          display::HasExternalTouchscreenDevice();
 }
 
+bool IsDriveFsBulkPinningEnabled() {
+  return ash::features::IsDriveFsBulkPinningEnabled();
+}
+
 bool IsListAllDisplayModesEnabled() {
   return display::features::IsListAllDisplayModesEnabled();
 }
@@ -740,6 +744,9 @@ void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("enableTouchCalibrationSetting",
                           IsTouchCalibrationAvailable());
 
+  html_source->AddBoolean("enableDriveFsBulkPinning",
+                          IsDriveFsBulkPinningEnabled());
+
   html_source->AddString("invalidDisplayId",
                          base::NumberToString(display::kInvalidDisplayId));
 
@@ -757,6 +764,7 @@ void AddDeviceStorageStrings(content::WebUIDataSource* html_source,
       {"storageExternalStorageListHeader",
        IDS_SETTINGS_STORAGE_EXTERNAL_STORAGE_LIST_HEADER},
       {"storageItemApps", IDS_SETTINGS_STORAGE_ITEM_APPS},
+      {"storageItemOffline", IDS_SETTINGS_STORAGE_ITEM_OFFLINE},
       {"storageItemAvailable", IDS_SETTINGS_STORAGE_ITEM_AVAILABLE},
       {"storageItemBrowsingData", IDS_SETTINGS_STORAGE_ITEM_BROWSING_DATA},
       {"storageItemCrostini", IDS_SETTINGS_STORAGE_ITEM_CROSTINI},
