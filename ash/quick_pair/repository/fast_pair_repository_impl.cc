@@ -329,20 +329,21 @@ void FastPairRepositoryImpl::UpdateUserDevicesCache(
   }
 }
 
-void FastPairRepositoryImpl::AssociateAccountKey(
+void FastPairRepositoryImpl::WriteAccountAssociationToFootprints(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
   QP_LOG(INFO) << __func__;
   DCHECK(device->classic_address());
   GetDeviceMetadata(
       device->metadata_id(),
-      base::BindOnce(&FastPairRepositoryImpl::WriteDeviceToFootprints,
+      base::BindOnce(&FastPairRepositoryImpl::
+                         WriteAccountAssociationToFootprintsWithMetadata,
                      weak_ptr_factory_.GetWeakPtr(), device->metadata_id(),
                      device->classic_address().value(), account_key,
                      device->protocol()));
 }
 
-bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
+bool FastPairRepositoryImpl::WriteAccountAssociationToLocalRegistry(
     scoped_refptr<Device> device) {
   QP_LOG(VERBOSE) << __func__;
 
@@ -367,7 +368,7 @@ bool FastPairRepositoryImpl::AssociateAccountKeyLocally(
   return false;
 }
 
-void FastPairRepositoryImpl::WriteDeviceToFootprints(
+void FastPairRepositoryImpl::WriteAccountAssociationToFootprintsWithMetadata(
     const std::string& hex_model_id,
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
@@ -385,12 +386,13 @@ void FastPairRepositoryImpl::WriteDeviceToFootprints(
   pending_write_store_->WritePairedDevice(mac_address, fast_pair_info);
   footprints_fetcher_->AddUserFastPairInfo(
       fast_pair_info,
-      base::BindOnce(&FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete,
+      base::BindOnce(&FastPairRepositoryImpl::
+                         OnWriteAccountAssociationToFootprintsComplete,
                      weak_ptr_factory_.GetWeakPtr(), mac_address, account_key,
                      device_protocol));
 }
 
-void FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete(
+void FastPairRepositoryImpl::OnWriteAccountAssociationToFootprintsComplete(
     const std::string& mac_address,
     const std::vector<uint8_t>& account_key,
     absl::optional<Protocol> device_protocol,
@@ -628,10 +630,11 @@ void FastPairRepositoryImpl::RetryPendingWrites() {
 
     footprints_fetcher_->AddUserFastPairInfo(
         pending_write.fast_pair_info,
-        base::BindOnce(
-            &FastPairRepositoryImpl::OnWriteDeviceToFootprintsComplete,
-            weak_ptr_factory_.GetWeakPtr(), pending_write.mac_address,
-            account_key, /*device_protocol=*/absl::nullopt));
+        base::BindOnce(&FastPairRepositoryImpl::
+                           OnWriteAccountAssociationToFootprintsComplete,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       pending_write.mac_address, account_key,
+                       /*device_protocol=*/absl::nullopt));
   }
 }
 

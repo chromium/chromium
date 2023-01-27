@@ -75,15 +75,17 @@ class FastPairRepository {
   virtual bool IsAccountKeyPairedLocally(
       const std::vector<uint8_t>& account_key) = 0;
 
-  // Stores the given |account_key| for a |device| on the server.
-  virtual void AssociateAccountKey(scoped_refptr<Device> device,
-                                   const std::vector<uint8_t>& account_key) = 0;
+  // Stores the given |account_key| for a |device| on the Footprints server.
+  virtual void WriteAccountAssociationToFootprints(
+      scoped_refptr<Device> device,
+      const std::vector<uint8_t>& account_key) = 0;
 
   // Stores the account_key for a |device| locally in the SavedDeviceRegistry,
   // skipping the step where we send a request to the server. The account key
   // should be stored in the additional data field of the device, fails
   // otherwise.
-  virtual bool AssociateAccountKeyLocally(scoped_refptr<Device> device) = 0;
+  virtual bool WriteAccountAssociationToLocalRegistry(
+      scoped_refptr<Device> device) = 0;
 
   // Deletes the associated data for device with a given |mac_address|.
   // Returns true if a delete will be processed for this device, false

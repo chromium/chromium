@@ -65,9 +65,11 @@ class FakeFastPairRepository : public FastPairRepository {
                          DeviceMetadataCallback callback) override;
   void CheckAccountKeys(const AccountKeyFilter& account_key_filter,
                         CheckAccountKeysCallback callback) override;
-  void AssociateAccountKey(scoped_refptr<Device> device,
-                           const std::vector<uint8_t>& account_key) override;
-  bool AssociateAccountKeyLocally(scoped_refptr<Device> device) override;
+  void WriteAccountAssociationToFootprints(
+      scoped_refptr<Device> device,
+      const std::vector<uint8_t>& account_key) override;
+  bool WriteAccountAssociationToLocalRegistry(
+      scoped_refptr<Device> device) override;
   void DeleteAssociatedDevice(const std::string& mac_address,
                               DeleteAssociatedDeviceCallback callback) override;
   void FetchDeviceImages(scoped_refptr<Device> device) override;

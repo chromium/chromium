@@ -69,9 +69,11 @@ class FastPairRepositoryImpl : public FastPairRepository,
                         CheckAccountKeysCallback callback) override;
   bool IsAccountKeyPairedLocally(
       const std::vector<uint8_t>& account_key) override;
-  void AssociateAccountKey(scoped_refptr<Device> device,
-                           const std::vector<uint8_t>& account_key) override;
-  bool AssociateAccountKeyLocally(scoped_refptr<Device> device) override;
+  void WriteAccountAssociationToFootprints(
+      scoped_refptr<Device> device,
+      const std::vector<uint8_t>& account_key) override;
+  bool WriteAccountAssociationToLocalRegistry(
+      scoped_refptr<Device> device) override;
   void DeleteAssociatedDevice(const std::string& mac_address,
                               DeleteAssociatedDeviceCallback callback) override;
   void DeleteAssociatedDeviceByAccountKey(
@@ -121,13 +123,14 @@ class FastPairRepositoryImpl : public FastPairRepository,
                                 const std::vector<uint8_t> account_key,
                                 DeviceMetadata* device_metadata,
                                 bool has_retryable_error);
-  void WriteDeviceToFootprints(const std::string& hex_model_id,
-                               const std::string& mac_address,
-                               const std::vector<uint8_t>& account_key,
-                               absl::optional<Protocol> device_protocol,
-                               DeviceMetadata* metadata,
-                               bool has_retryable_error);
-  void OnWriteDeviceToFootprintsComplete(
+  void WriteAccountAssociationToFootprintsWithMetadata(
+      const std::string& hex_model_id,
+      const std::string& mac_address,
+      const std::vector<uint8_t>& account_key,
+      absl::optional<Protocol> device_protocol,
+      DeviceMetadata* metadata,
+      bool has_retryable_error);
+  void OnWriteAccountAssociationToFootprintsComplete(
       const std::string& mac_address,
       const std::vector<uint8_t>& account_key,
       absl::optional<Protocol> device_protocol,

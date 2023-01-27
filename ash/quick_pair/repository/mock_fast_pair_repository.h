@@ -31,12 +31,12 @@ class MockFastPairRepository : public FastPairRepository {
                CheckAccountKeysCallback callback),
               (override));
   MOCK_METHOD(void,
-              AssociateAccountKey,
+              WriteAccountAssociationToFootprints,
               (scoped_refptr<Device> device,
                const std::vector<uint8_t>& account_key),
               (override));
   MOCK_METHOD(bool,
-              AssociateAccountKeyLocally,
+              WriteAccountAssociationToLocalRegistry,
               (scoped_refptr<Device> device),
               (override));
   MOCK_METHOD(void,

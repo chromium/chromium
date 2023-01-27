@@ -68,13 +68,13 @@ void FakeFastPairRepository::CheckAccountKeys(
   std::move(callback).Run(check_account_keys_result_);
 }
 
-void FakeFastPairRepository::AssociateAccountKey(
+void FakeFastPairRepository::WriteAccountAssociationToFootprints(
     scoped_refptr<Device> device,
     const std::vector<uint8_t>& account_key) {
   saved_account_keys_[device->ble_address()] = account_key;
 }
 
-bool FakeFastPairRepository::AssociateAccountKeyLocally(
+bool FakeFastPairRepository::WriteAccountAssociationToLocalRegistry(
     scoped_refptr<Device> device) {
   std::vector<uint8_t> fake_account_key;
   saved_account_keys_[device->ble_address()] = fake_account_key;
