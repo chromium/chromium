@@ -157,7 +157,7 @@ public class AdaptiveToolbarPreferenceFragmentTest {
     }
 
     private boolean isRestUnchecked(@AdaptiveToolbarButtonVariant int selectedType) {
-        for (int i = 0; i < AdaptiveToolbarButtonVariant.NUM_ENTRIES; i++) {
+        for (int i = 0; i <= AdaptiveToolbarButtonVariant.MAX_VALUE; i++) {
             RadioButtonWithDescription button = getButton(i);
             if (i != selectedType && button != null && button.isChecked()) {
                 return false;

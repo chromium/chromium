@@ -837,6 +837,7 @@ static_library("ui") {
       "android/tab_model/tab_model_observer.h",
       "android/tab_model/tab_model_observer_jni_bridge.cc",
       "android/tab_model/tab_model_observer_jni_bridge.h",
+      "android/toolbar/adaptive_toolbar_enums.h",
       "android/toolbar/location_bar_model_android.cc",
       "android/toolbar/location_bar_model_android.h",
       "android/webid/account_selection_view_android.cc",

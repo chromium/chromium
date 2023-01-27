@@ -84,6 +84,7 @@ public class ContextualPageActionController {
             // Ignore the subsequent calls since we are only interested in initializing tab
             // observers once.
             if (mCurrentTabObserver != null) return;
+            mAdaptiveToolbarButtonController.initializePageLoadMetricsRecorder(tabSupplier);
 
             if (!AdaptiveToolbarFeatures.isContextualPageActionsEnabled()) return;
 

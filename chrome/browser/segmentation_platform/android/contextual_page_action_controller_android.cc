@@ -25,13 +25,13 @@ namespace {
 
 AdaptiveToolbarButtonVariant ActionLabelToAdaptiveToolbarButtonVariant(
     const std::string& label) {
-  AdaptiveToolbarButtonVariant action = AdaptiveToolbarButtonVariant::UNKNOWN;
+  AdaptiveToolbarButtonVariant action = AdaptiveToolbarButtonVariant::kUnknown;
   if (label ==
       segmentation_platform::kContextualPageActionModelLabelPriceTracking) {
-    action = AdaptiveToolbarButtonVariant::PRICE_TRACKING;
+    action = AdaptiveToolbarButtonVariant::kPriceTracking;
   } else if (label ==
              segmentation_platform::kContextualPageActionModelLabelReaderMode) {
-    action = AdaptiveToolbarButtonVariant::READER_MODE;
+    action = AdaptiveToolbarButtonVariant::kReaderMode;
   }
   return action;
 }

@@ -19,10 +19,13 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
@@ -32,6 +35,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarPreferenceFragment;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.HashMap;
@@ -74,6 +78,7 @@ public class AdaptiveToolbarButtonController
 
     @AdaptiveToolbarButtonVariant
     private int mSessionButtonVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+    private CurrentTabObserver mPageLoadMetricsRecorder;
 
     /**
      * Constructs the {@link AdaptiveToolbarButtonController}.
@@ -118,7 +123,7 @@ public class AdaptiveToolbarButtonController
     public void addButtonVariant(
             @AdaptiveToolbarButtonVariant int variant, ButtonDataProvider buttonProvider) {
         assert variant >= 0
-                && variant < AdaptiveToolbarButtonVariant.NUM_ENTRIES
+                && variant <= AdaptiveToolbarButtonVariant.MAX_VALUE
             : "invalid adaptive button variant: "
                                 + variant;
         assert variant
@@ -184,7 +189,7 @@ public class AdaptiveToolbarButtonController
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.AdaptiveToolbarButton.SessionVariant",
                     receivedButtonData.getButtonSpec().getButtonVariant(),
-                    AdaptiveToolbarButtonVariant.NUM_ENTRIES);
+                    AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         }
 
         mButtonData.setCanShow(receivedButtonData.canShow() && isScreenWideEnoughForButton());
@@ -215,7 +220,7 @@ public class AdaptiveToolbarButtonController
             @AdaptiveToolbarButtonVariant int buttonVariant) {
         return view -> {
             RecordHistogram.recordEnumeratedHistogram("Android.AdaptiveToolbarButton.Clicked",
-                    buttonVariant, AdaptiveToolbarButtonVariant.NUM_ENTRIES);
+                    buttonVariant, AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
             receivedListener.onClick(view);
         };
     }
@@ -290,11 +295,41 @@ public class AdaptiveToolbarButtonController
     public void showDynamicAction(@AdaptiveToolbarButtonVariant int action) {
         int actionToShow =
                 action != AdaptiveToolbarButtonVariant.UNKNOWN ? action : mSessionButtonVariant;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.AdaptiveToolbarButton.Variant.OnPageLoad", actionToShow,
+                AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
         if (mOriginalButtonSpec != null && mOriginalButtonSpec.getButtonVariant() == actionToShow) {
             return;
         }
         setSingleProvider(actionToShow);
         notifyObservers(true);
+    }
+
+    /**
+     * Creates a metrics recorder that records the button variant shown for every page load. The
+     * metrics is recorded at the start of a new navigation for the old page being shown.
+     *
+     * @param tabSupplier Supplier of current tab.
+     */
+    public void initializePageLoadMetricsRecorder(ObservableSupplier<Tab> tabSupplier) {
+        if (mPageLoadMetricsRecorder != null) return;
+        mPageLoadMetricsRecorder = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigationHandle) {
+                Integer currentVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+                for (Integer variant : mButtonDataProviderMap.keySet()) {
+                    if (mSingleProvider == mButtonDataProviderMap.get(variant)) {
+                        currentVariant = variant;
+                        break;
+                    }
+                }
+
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.AdaptiveToolbarButton.Variant.OnStartNavigation", currentVariant,
+                        AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
+            }
+        }, null);
     }
 
     @Override
