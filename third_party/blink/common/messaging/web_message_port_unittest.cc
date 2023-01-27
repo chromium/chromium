@@ -158,14 +158,16 @@ TEST(WebMessagePortTest, EndToEnd) {
 TEST(WebMessagePortTest, MoveAssignToConnectedPort) {
   base::test::SingleThreadTaskEnvironment task_env;
 
+  // Must outlive WebMessagePorts.
+  MockReceiver receiver0;
+  MockReceiver receiver1;
+
   // Create a pipe.
   auto pipe = WebMessagePort::CreatePair();
   WebMessagePort port0 = std::move(pipe.first);
   WebMessagePort port1 = std::move(pipe.second);
 
   // And bind both endpoints to distinct receivers.
-  MockReceiver receiver0;
-  MockReceiver receiver1;
   port0.SetReceiver(&receiver0, task_env.GetMainThreadTaskRunner());
   port1.SetReceiver(&receiver1, task_env.GetMainThreadTaskRunner());
 
