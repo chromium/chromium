@@ -85,6 +85,8 @@ public class BottomContainer
     @CallSuper
     @Override
     public void destroy() {
+        // Class may never have been initialized in the case of an early finish() call.
+        if (mBrowserControlsStateProvider == null) return;
         mBrowserControlsStateProvider.removeObserver(this);
         mViewportInsetSupplier.removeObserver(mInsetObserver);
         mAutofillUiBottomInsetSupplier.removeObserver(mInsetObserver);

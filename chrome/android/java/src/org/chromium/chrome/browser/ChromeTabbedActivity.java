@@ -1763,16 +1763,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     public void performPostInflationStartup() {
         super.performPostInflationStartup();
 
+        if (isFinishing()) return;
+
         FontPreloader.getInstance().onPostInflationStartupTabbedActivity();
 
         TabModelSelector tabModelSelector = getTabModelSelector();
         IncognitoProfileDestroyer.observeTabModelSelector(tabModelSelector);
         IncognitoNotificationPresenceController.observeTabModelSelector(tabModelSelector);
-
-        // Critical path for startup. Create the minimum objects needed
-        // to allow a blank screen draw (without depending on any native code)
-        // and then yield ASAP.
-        if (isFinishing()) return;
 
         // Don't show the keyboard until user clicks in.
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN

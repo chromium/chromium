@@ -155,6 +155,7 @@ public class ActivityLifecycleDispatcherImpl implements ActivityLifecycleDispatc
     }
 
     void dispatchPostInflationStartup() {
+        if (isActivityFinishingOrDestroyed()) return;
         for (InflationObserver observer : mInflationObservers) {
             observer.onPostInflationStartup();
         }

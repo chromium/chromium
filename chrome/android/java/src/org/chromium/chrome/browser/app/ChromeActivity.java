@@ -633,17 +633,17 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mCompositorViewHolderSupplier.get().getCompositorView());
 
             initializeTabModels();
+            if (isFinishing()) return;
+
             TabModelSelector tabModelSelector = mTabModelOrchestrator.getTabModelSelector();
             setTabContentManager(new TabContentManager(this, getContentOffsetProvider(),
                     !SysUtils.isLowEndDevice(),
                     tabModelSelector != null ? tabModelSelector::getTabById : null));
 
-            if (!isFinishing()) {
-                getBrowserControlsManager().initialize(
-                        (ControlContainer) findViewById(R.id.control_container),
-                        getActivityTabProvider(), getTabModelSelector(),
-                        getControlContainerHeightResource());
-            }
+            getBrowserControlsManager().initialize(
+                    (ControlContainer) findViewById(R.id.control_container),
+                    getActivityTabProvider(), getTabModelSelector(),
+                    getControlContainerHeightResource());
 
             mBottomContainer.initialize(getBrowserControlsManager(),
                     getWindowAndroid().getApplicationBottomInsetProvider(),
