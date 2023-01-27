@@ -53810,6 +53810,27 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Janky"/>
 </enum>
 
+<enum name="JapaneseStartupAction">
+  <int value="0" label="Still legacy">
+    Indicates no settings migration was performed on startup, since the user is
+    still using legacy settings.
+  </int>
+  <int value="1" label="Already migrated">
+    Indicates no settings migration was performed since the user is already
+    using JP SYS PK and already migrated previously.
+  </int>
+  <int value="2" label="Perform migration">
+    Indicates migration was performed since the user has just switched to using
+    the JP SYS PK or the migration was marked as undone and was just redone.
+  </int>
+  <int value="3" label="Undo migration">
+    Indicates migration is being marked as to be undone. This could be because
+    the migration flag was enabled previously, but now the flag has been
+    disabled, so we mark the migration as incomplete, so it retriggers on
+    turning the flag back on.
+  </int>
+</enum>
+
 <enum name="JavaJsBridgeMethodInvocationError">
   <int value="0" label="MethodInvocationAsConstructorDisallowed"/>
   <int value="1" label="MethodInvocationNonexistentMethod"/>

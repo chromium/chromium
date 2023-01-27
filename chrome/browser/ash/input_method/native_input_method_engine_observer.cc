@@ -194,6 +194,20 @@ void LogEvent(ImeServiceEvent event) {
   UMA_HISTOGRAM_ENUMERATION("InputMethod.Mojo.Extension.Event", event);
 }
 
+enum class JapaneseStartupAction {
+  kStillLegacy = 0,
+  kAlreadyMigrated = 1,
+  kPerformMigration = 2,
+  kUndoMigration = 3,
+  kMaxValue = kUndoMigration
+};
+
+void LogJapaneseStartupAction(JapaneseStartupAction japanese_startup_action) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "InputMethod.PhysicalKeyboard.Japanese.StartupAction",
+      japanese_startup_action);
+}
+
 // Not using a EnumTraits here because the mapping is not 1:1.
 mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
   switch (code) {
@@ -625,9 +639,14 @@ void NativeInputMethodEngineObserver::OnJapaneseDecoderConnected(bool bound) {
   if (!bound) {
     return;
   }
-  if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
+  if (!base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping)) {
     return;
   }
+  if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
+    LogJapaneseStartupAction(JapaneseStartupAction::kAlreadyMigrated);
+    return;
+  }
+  LogJapaneseStartupAction(JapaneseStartupAction::kPerformMigration);
   japanese_decoder_->FetchJapaneseConfig(base::BindOnce(
       &NativeInputMethodEngineObserver::OnJapaneseSettingsReceived,
       weak_ptr_factory_.GetWeakPtr()));
@@ -665,10 +684,6 @@ void NativeInputMethodEngineObserver::ConnectToImeService(
         base::BindOnce(
             &NativeInputMethodEngineObserver::OnJapaneseDecoderConnected,
             weak_ptr_factory_.GetWeakPtr()));
-  } else {
-    if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
-      SetJapaneseSettingsMigrationComplete(*prefs_, false);
-    }
   }
   // If this is fast enough, maybe this code can block the ConnectToInputMethod
   // function on waiting for the migration if and only if the input_method
@@ -699,6 +714,15 @@ void NativeInputMethodEngineObserver::ActivateTextClient(
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
+  if (!base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping) &&
+      base::StartsWith(engine_id, "nacl_mozc_")) {
+    if (IsJapaneseSettingsMigrationComplete(*prefs_)) {
+      LogJapaneseStartupAction(JapaneseStartupAction::kUndoMigration);
+      SetJapaneseSettingsMigrationComplete(*prefs_, false);
+    } else {
+      LogJapaneseStartupAction(JapaneseStartupAction::kStillLegacy);
+    }
+  }
   // Always hide the candidates window and clear the quick settings menu when
   // switching input methods.
   UpdateCandidatesWindowSync(nullptr);

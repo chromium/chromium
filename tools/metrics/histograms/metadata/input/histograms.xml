@@ -1176,6 +1176,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.PhysicalKeyboard.Japanese.StartupAction"
+    enum="JapaneseStartupAction" expires_after="2023-12-31">
+  <owner>keithlee@chromium.org</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    Action performed on IME startup with respect to Japanese data. This will
+    primarily be used to indicate if a user has migrated their data for JP SYS
+    PK or not.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.PhysicalKeyboard.Korean.Action"
     enum="KoreanAction" expires_after="2023-06-25">
   <owner>shend@chromium.org</owner>
