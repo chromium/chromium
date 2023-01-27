@@ -22,12 +22,10 @@ ts_library("untrusted_ts") {
   composite = true
   tsconfig_base = "../../tsconfig_base.json"
 
-  # Allows TSC to check the generated mojom-webui/ directory when it encounters
-  # imports.
-  path_mappings =
-      [ "/*|" + rebase_path("$root_gen_dir/mojom-webui/*", target_gen_dir) ]
+  # Allows TSC to check "$root_gen_dir/" it encounters imports.
+  path_mappings = [ "/*|" + rebase_path("$root_gen_dir/*", target_gen_dir) ]
 
-  deps = [ "../../mojom:mojom_ts" ]
+  deps = [ "../../mojom:untrusted_ash_ts" ]
 }
 
 generate_grd("untrusted_grd") {

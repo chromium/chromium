@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ash/webui/tools/ash_ts_library.gni")
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
@@ -347,6 +348,11 @@ if (enable_scrambled_message_ids) {
 #       content_resources.grd and registered with
 #       content::SharedResourcesDataSource with a corresponding path, at which
 #       point they will be made available to all WebUI pages at the given URL.
+#
+#       For Ash WebUIs, webui_module_path should be equal to the full path
+#       of the target e.g. for "//foo/bar/mojom/" webui_module_path should be
+#       "/foo/bar/mojom/". This will cause the _ash_ts target
+#       to be generated, which WebUIs can depend on to get Typescript bindings.
 #
 # The following parameters are used to support the component build. They are
 # needed so that bindings which are linked with a component can use the same
@@ -1923,14 +1929,14 @@ template("mojom") {
   }
 
   # Closure libraries are needed for mojom_closure_compile, and when
-  # js_type_check is enabled on Ash.
-  generate_closure_libraries =
+  # js_type_check is enabled on Ash. ash_ts_libraries are needed in ash.
+  generate_extra_libraries =
       enable_mojom_closure_compile || (is_chromeos_ash && enable_js_type_check)
 
   # js_library() closure compiler targets, primarily used on ChromeOS. Only
   # generate these targets if the mojom target is not C++ only and is not using
   # TypeScript.
-  if (generate_closure_libraries &&
+  if (generate_extra_libraries &&
       (!defined(invoker.cpp_only) || !invoker.cpp_only) &&
       !use_typescript_for_target) {
     js_library_target_name = "${target_name}_js_library"
@@ -2029,8 +2035,65 @@ template("mojom") {
         input_files_base_dir =
             rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
       }
+
+      # Only generate ash_ts_library targets for targets that set
+      # `webui_module_path` to the target's full path or have chrome:// paths.
+      #
+      # This restriction exists because import paths are relative to
+      # webui_module_path and setting it to something other than the target's
+      # path would cause imports to fail. For example, if targets A and B,
+      # both in different directories, set webui_module_path to "/", A will
+      # try to import B's files from "./" even though the targets' generated
+      # bindings are in different directories.
+      cur_dir = "/" + rebase_path(".", "//")
+      generate_ash_ts_library = filter_include([ invoker.webui_module_path ],
+                                               [
+                                                 cur_dir,
+                                                 "chrome://*",
+                                               ]) != []
+
+      # Targets that migrated to Typescript depend on the ash_ts_library
+      # target of each dependency. Generate an ash_ts_library target that
+      # the targets that migrated to Typescript can depend on.
+      if (generate_ash_ts_library) {
+        ash_ts_target_name = "${target_name}_ash_ts"
+        ash_ts_library(ash_ts_target_name) {
+          root_dir = "$root_gen_dir/mojom-webui"
+          mojom_webui_dir = rebase_path(target_gen_dir, root_gen_dir)
+          out_dir = "$root_gen_dir/mojom-webui/$mojom_webui_dir"
+
+          relative_src_dir = rebase_path("//.", ".")
+
+          # Use a tsconfig.json that allows JavaScript.
+          tsconfig_base = "$relative_src_dir/mojo/public/tools/bindings/tsconfig_base_js.json"
+
+          in_files = []
+          foreach(base_path, output_file_base_paths) {
+            in_files += [ "${base_path}-webui.js" ]
+          }
+
+          deps = []
+          foreach(d, all_deps) {
+            full_name = get_label_info(d, "label_no_toolchain")
+
+            # It's possible that a dependency doesn't have an ash_ts target if
+            # it doesn't set webui_module_path to the right value. There are two
+            # ways to solve this: (1) if the dependency is only used as a
+            # dependency for this target, then set webui_module_path to the
+            # target's full path. (2) if the dependency is shared with another
+            # WebUI, then it should be moved to chrome://.
+            deps += [ "${full_name}_ash_ts" ]
+          }
+
+          extra_deps = [ ":$webui_js_target_name" ]
+
+          # Generates d.ts files which allows this library to be depended upon.
+          composite = true
+        }
+      }
     }
   }
+
   if ((generate_fuzzing || !defined(invoker.cpp_only) || !invoker.cpp_only) &&
       use_typescript_for_target) {
     if (sources_list != []) {
@@ -2073,6 +2136,80 @@ template("mojom") {
         # TODO(crbug.com/1007587): Support scramble_message_ids if above is
         # insufficient.
         # TODO(crbug.com/1007591): Support generate_fuzzing.
+      }
+    }
+
+    # Use the same logic as js extra libraries since they can depend on each
+    # other.
+    generate_extra_libraries = enable_mojom_closure_compile ||
+                               (is_chromeos_ash && enable_js_type_check)
+    if (generate_extra_libraries) {
+      # Only generate ash_ts_library targets for targets that set
+      # `webui_module_path` to the target's full path or have chrome:// paths.
+      #
+      # This restriction exists because import paths are relative to
+      # webui_module_path and setting it to something other than the target's
+      # path would cause imports to fail. For example, if targets A and B,
+      # both in different directories, set webui_module_path to "/", A will
+      # try to import B's files from "./" even though the targets' generated
+      # bindings are in different directories.
+      cur_dir = "/" + rebase_path(".", "//")
+      generate_ash_ts_library = filter_include([ invoker.webui_module_path ],
+                                               [
+                                                 cur_dir,
+                                                 "chrome://*",
+                                               ]) != []
+      if (generate_ash_ts_library) {
+        ash_ts_target_name = "${target_name}_ash_ts"
+        ash_ts_library(ash_ts_target_name) {
+          root_dir = root_gen_dir
+          out_dir = root_gen_dir
+
+          relative_src_dir = rebase_path("//.", ".")
+
+          # Use a tsconfig.json that allows unused imports, which the generated
+          # bindings have.
+          tsconfig_base =
+              "$relative_src_dir/mojo/public/tools/bindings/tsconfig_base.json"
+
+          in_files = []
+          foreach(base_path, output_file_base_paths) {
+            in_files += [ "${base_path}-webui.ts" ]
+          }
+
+          deps = []
+          foreach(d, all_deps) {
+            full_name = get_label_info(d, "label_no_toolchain")
+
+            # It's possible that a dependency doesn't have an ash_ts target if
+            # it doesn't set webui_module_path to the right value. There are two
+            # ways to solve this: (1) if the dependency is only used as a
+            # dependency for this target, then set webui_module_path to the
+            # target's full path. (2) if the dependency is shared with another
+            # WebUI, then it should be moved to chrome://.
+            deps += [ "${full_name}_ash_ts" ]
+          }
+
+          extra_deps = [ ":$generator_ts_target_name" ]
+          composite = true
+        }
+
+        webui_grdp_target_name = "${target_name}_webui_grdp"
+        out_grd = "$target_gen_dir/${target_name}_webui_resources.grdp"
+        grd_prefix = "${target_name}_webui"
+        generate_grd(webui_grdp_target_name) {
+          grd_prefix = grd_prefix
+          out_grd = out_grd
+
+          deps = [ ":$ash_ts_target_name" ]
+
+          input_files = []
+          foreach(base_path, output_file_base_paths) {
+            input_files += [ "${base_path}-webui.js" ]
+          }
+
+          input_files_base_dir = rebase_path("$root_gen_dir", "//")
+        }
       }
     }
   }
