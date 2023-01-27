@@ -119,6 +119,12 @@ export interface PasswordManagerProxy {
   getInsecureCredentials(): Promise<chrome.passwordsPrivate.PasswordUiEntry[]>;
 
   /**
+   * Requests the latest information about insecure credentials.
+   */
+  getCredentialsWithReusedPassword():
+      Promise<chrome.passwordsPrivate.PasswordUiEntryList[]>;
+
+  /**
    * Requests the start of the bulk password check.
    */
   startBulkPasswordCheck(): Promise<void>;
@@ -261,6 +267,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   getInsecureCredentials() {
     return chrome.passwordsPrivate.getInsecureCredentials();
+  }
+
+  getCredentialsWithReusedPassword() {
+    return chrome.passwordsPrivate.getCredentialsWithReusedPassword();
   }
 
   startBulkPasswordCheck() {

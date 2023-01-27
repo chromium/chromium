@@ -204,6 +204,9 @@ void AddPluralStrings(content::WebUI* web_ui) {
   plural_string_handler->AddLocalizedString(
       "numberOfAccounts", IDS_PASSWORD_MANAGER_UI_NUMBER_OF_ACCOUNTS);
   plural_string_handler->AddLocalizedString(
+      "numberOfPasswordReuse",
+      IDS_PASSWORD_MANAGER_UI_NUMBER_OF_CREDENTIALS_WITH_REUSED_PASSWORD);
+  plural_string_handler->AddLocalizedString(
       "reusedPasswords", IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_COUNT);
   plural_string_handler->AddLocalizedString(
       "weakPasswords", IDS_PASSWORD_MANAGER_UI_WEAK_PASSWORDS_COUNT);

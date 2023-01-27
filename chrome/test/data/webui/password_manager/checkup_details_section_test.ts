@@ -236,10 +236,10 @@ suite('CheckupDetailsSectionTest', function() {
         isMuted: true,
       }),
     ];
-
     const section = document.createElement('checkup-details-section');
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
+
     const params = await pluralString.whenCalled('getPluralString');
     await flushTasks();
 
@@ -265,6 +265,60 @@ suite('CheckupDetailsSectionTest', function() {
     dismissedButton.click();
 
     assertTrue(isVisible(listItemElements[0]));
+  });
+
+  test('Reused issues shown correctly', async function() {
+    Router.getInstance().navigateTo(
+        Page.CHECKUP_DETAILS, CheckupSubpage.REUSED);
+    const insecurePasswords = [
+      makeInsecureCredential({url: 'test.com', username: 'viking', id: 0}),
+      makeInsecureCredential({url: 'example.com', username: 'user', id: 1}),
+      makeInsecureCredential({url: 'Some app', username: 'Lalala', id: 2}),
+      makeInsecureCredential(
+          {url: 'accounts.google.com', username: 'corporateEmail', id: 3}),
+      makeInsecureCredential(
+          {url: 'super.secure.com', username: 'admin', id: 4}),
+    ];
+    passwordManager.data.groups = insecurePasswords.map(
+        entry => createCredentialGroup(
+            {name: entry.urls.shown, credentials: [entry]}));
+    passwordManager.data.credentialWithReusedPassword = [
+      {entries: insecurePasswords.slice(0, 3)},
+      {entries: insecurePasswords.slice(3, 5)},
+    ];
+
+    const section = document.createElement('checkup-details-section');
+    document.body.appendChild(section);
+    await passwordManager.whenCalled('getInsecureCredentials');
+    await passwordManager.whenCalled('getCredentialsWithReusedPassword');
+    await pluralString.whenCalled('getPluralString');
+    // getPluralString() should be called 3 times: 1 for title, and 2 more for
+    // each reused password.
+    assertEquals(3, pluralString.getCallCount('getPluralString'));
+    await flushTasks();
+
+    const listItemElements =
+        section.shadowRoot!.querySelectorAll('checkup-list-item');
+    assertEquals(insecurePasswords.length, listItemElements.length);
+
+    for (let index = 0; index < listItemElements.length; ++index) {
+      const expectedCredential = insecurePasswords[index]!;
+      const listItemElement = listItemElements[index];
+
+      assertTrue(!!listItemElement);
+      assertEquals(
+          expectedCredential.urls.shown,
+          listItemElement.$.shownUrl.textContent!.trim());
+      assertEquals(
+          expectedCredential.username,
+          listItemElement.$.username.textContent!.trim());
+      const leakType = listItemElement.shadowRoot!.querySelector('#leakType');
+      assertFalse(!!leakType);
+
+      const elapsedTime =
+          listItemElement.shadowRoot!.querySelector('#elapsedTime');
+      assertFalse(!!elapsedTime);
+    }
   });
 
   test('Show/Hide action button works', async function() {
