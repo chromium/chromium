@@ -1833,6 +1833,10 @@ interface Functions {
   // each I/O task's progress status.
   static void cancelIOTask(long taskId);
 
+  // Resumes an I/O task by id. Task ids are communicated to the Files App in
+  // each I/O task's progress status.
+  static void resumeIOTask(long taskId, ResumeParams params);
+
   // Lists mountable Guest OSs.
   static void listMountableGuests(ListMountableGuestsCallback callback);
 

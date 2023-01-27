@@ -1567,6 +1567,14 @@ chrome.fileManagerPrivate.startIOTask = function(
 chrome.fileManagerPrivate.cancelIOTask = function (taskId) { };
 
 /**
+ * Resumes an I/O task by id. Task ids are communicated to the Files App in
+ * each I/O task's progress status.
+ * @param {number} taskId
+ * @param {!chrome.fileManagerPrivate.ResumeParams} params
+ */
+chrome.fileManagerPrivate.resumeIOTask = function (taskId, params) {};
+
+/**
  * Tells DriveFS to update its cached pin states of hosted files (once).
  */
 chrome.fileManagerPrivate.pollDriveHostedFilePinStates = function() {};

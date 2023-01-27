@@ -525,6 +525,19 @@ class FileManagerPrivateCancelIOTaskFunction : public LoggedExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.resumeIOTask method.
+class FileManagerPrivateResumeIOTaskFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.resumeIOTask",
+                             FILEMANAGERPRIVATE_RESUMEIOTASK)
+
+ protected:
+  ~FileManagerPrivateResumeIOTaskFunction() override = default;
+
+  // ExtensionFunction overrides
+  ResponseAction Run() override;
+};
+
 class FileManagerPrivateInternalParseTrashInfoFilesFunction
     : public LoggedExtensionFunction {
  public:

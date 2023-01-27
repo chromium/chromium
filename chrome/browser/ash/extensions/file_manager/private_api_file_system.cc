@@ -1642,6 +1642,36 @@ FileManagerPrivateCancelIOTaskFunction::Run() {
   return RespondNow(WithArguments());
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivateResumeIOTaskFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private::ResumeIOTask::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  VolumeManager* const volume_manager =
+      VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
+  if (!volume_manager || !volume_manager->io_task_controller()) {
+    return RespondNow(Error("Cannot find VolumeManager"));
+  }
+
+  if (params->task_id <= 0) {
+    return RespondNow(Error("Invalid task id"));
+  }
+
+  file_manager::io_task::ResumeParams io_task_resume_params;
+  io_task_resume_params.conflict_resolve =
+      params->params.conflict_resolve.value_or("");
+  io_task_resume_params.conflict_apply_to_all =
+      params->params.conflict_apply_to_all.value_or(false);
+
+  volume_manager->io_task_controller()->Resume(
+      params->task_id, std::move(io_task_resume_params));
+
+  return RespondNow(WithArguments());
+}
+
 FileManagerPrivateInternalParseTrashInfoFilesFunction::
     FileManagerPrivateInternalParseTrashInfoFilesFunction() = default;
 
