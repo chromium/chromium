@@ -17,6 +17,10 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/view_targeter_delegate.h"
 
+namespace {
+class WebAppNonClientFrameViewAshTest;
+}
+
 namespace views {
 class View;
 class ViewTargeterDelegate;
@@ -104,9 +108,9 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
 
  private:
-  friend class WebAppNonClientFrameViewAshTest;
   friend class ImmersiveModeControllerChromeosWebAppBrowserTest;
   friend class WebAppAshInteractiveUITest;
+  friend class WebAppNonClientFrameViewAshTest;
 
   views::View* GetContentSettingContainerForTesting();
 

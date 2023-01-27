@@ -23,10 +23,6 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/tablet_state.h"
 
-namespace {
-class WebAppNonClientFrameViewAshTest;
-}
-
 class ProfileIndicatorIcon;
 class TabIconView;
 
@@ -130,47 +126,9 @@ class BrowserNonClientFrameViewChromeOS
   void AddedToWidget() override;
 
  private:
-  // TODO(pkasting): Test the public API or create a test helper class, don't
-  // add this many friends
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
-                           NonImmersiveFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
-                           CaptionButtonsHiddenNonImmersiveFullscreen);
+  friend class BrowserNonClientFrameViewChromeOSTestApi;
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
                            ImmersiveFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           ToggleTabletModeRelayout);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
-                           AvatarDisplayOnTeleportedWindow);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           BrowserHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           ImmersiveModeTopViewInset);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           ToggleTabletModeOnMinimizedWindow);
-  FRIEND_TEST_ALL_PREFIXES(WebAppNonClientFrameViewAshTest,
-                           ActiveStateOfButtonMatchesWidget);
-  FRIEND_TEST_ALL_PREFIXES(BrowserNonClientFrameViewChromeOSTest,
-                           RestoreMinimizedBrowserUpdatesCaption);
-  FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
-                           BrowserHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(FloatBrowserNonClientFrameViewChromeOSTest,
-                           BrowserAppHeaderVisibilityInTabletModeTest);
-  FRIEND_TEST_ALL_PREFIXES(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                           FrameLayoutToggleTabletMode);
-  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
-                           TabletModeBrowserCaptionButtonVisibility);
-  FRIEND_TEST_ALL_PREFIXES(
-      HomeLauncherBrowserNonClientFrameViewChromeOSTest,
-      CaptionButtonVisibilityForBrowserLaunchedInTabletMode);
-  FRIEND_TEST_ALL_PREFIXES(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
-                           TabletModeAppCaptionButtonVisibility);
-  FRIEND_TEST_ALL_PREFIXES(NonHomeLauncherBrowserNonClientFrameViewChromeOSTest,
-                           HeaderHeightForSnappedBrowserInSplitView);
-  FRIEND_TEST_ALL_PREFIXES(TabSearchFrameCaptionButtonTest,
-                           TabSearchBubbleHostTest);
-
-  friend class WebAppNonClientFrameViewAshTest;
 
   bool AppIsBorderlessPwa();
 

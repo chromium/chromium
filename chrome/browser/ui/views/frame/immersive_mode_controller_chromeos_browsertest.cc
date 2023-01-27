@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
       static_cast<BrowserNonClientFrameViewChromeOS*>(
           browser_view->GetWidget()->non_client_view()->frame_view());
   chromeos::FrameCaptionButtonContainerView* caption_button_container =
-      frame_view->caption_button_container_;
+      frame_view->caption_button_container();
   chromeos::FrameCaptionButtonContainerView::TestApi frame_test_api(
       caption_button_container);
 
