@@ -19,7 +19,7 @@ namespace {
 // prevents obsolete-system warnings from appearing when Chrome is run in
 // compatibility mode on modern versions of Windows.
 base::win::Version GetRealOSVersion() {
-  return base::win::OSInfo::GetInstance()->Kernel32Version();
+  return base::win::OSInfo::Kernel32Version();
 }
 
 bool IsObsoleteOsVersion() {

@@ -140,8 +140,7 @@ void CGaiaCredentialProviderModule::LogProcessDetails() {
 
   LOGFN(INFO) << "GCPW Initialized in " << process_name
               << " GCPW Version: " << (CHROME_VERSION_STRING)
-              << " Windows Build: "
-              << base::win::OSInfo::GetInstance()->Kernel32BaseVersion()
+              << " Windows Build: " << base::win::OSInfo::Kernel32BaseVersion()
               << " Version:" << GetWindowsVersion();
 }
 

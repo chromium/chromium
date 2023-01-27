@@ -17,9 +17,9 @@ TEST(WindowsVersion, GetVersionExAndKernelOsVersionMatch) {
   // Note: not all versions of Windows return identical build numbers e.g.
   // 1909/19H2 kernel32.dll has build number 18362 but OS version build number
   // 18363.
-  EXPECT_EQ(OSInfo::GetInstance()->Kernel32VersionNumber().major,
+  EXPECT_EQ(OSInfo::Kernel32VersionNumber().major,
             OSInfo::GetInstance()->version_number().major);
-  EXPECT_EQ(OSInfo::GetInstance()->Kernel32VersionNumber().minor,
+  EXPECT_EQ(OSInfo::Kernel32VersionNumber().minor,
             OSInfo::GetInstance()->version_number().minor);
 }
 

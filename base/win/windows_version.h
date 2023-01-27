@@ -123,9 +123,9 @@ class BASE_EXPORT OSInfo {
   // The Kernel32* set of functions return the OS version as determined by a
   // call to VerQueryValue() on kernel32.dll. This avoids any running App Compat
   // shims from manipulating the version reported.
-  Version Kernel32Version() const;
-  VersionNumber Kernel32VersionNumber() const;
-  base::Version Kernel32BaseVersion() const;
+  static Version Kernel32Version();
+  static VersionNumber Kernel32VersionNumber();
+  static base::Version Kernel32BaseVersion();
 
   // These helper functions return information about common scenarios of
   // interest in regards to WOW emulation.
