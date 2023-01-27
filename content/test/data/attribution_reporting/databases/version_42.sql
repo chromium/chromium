@@ -6,7 +6,7 @@ CREATE TABLE sources(source_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source
 
 CREATE TABLE event_level_reports(report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,source_id INTEGER NOT NULL,trigger_data INTEGER NOT NULL,trigger_time INTEGER NOT NULL,report_time INTEGER NOT NULL,priority INTEGER NOT NULL,failed_send_attempts INTEGER NOT NULL,external_report_id TEXT NOT NULL,debug_key INTEGER);
 
-CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,source_origin TEXT NOT NULL,destination_site TEXT NOT NULL,destination_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,time INTEGER NOT NULL,expiry_time INTEGER NOT NULL);
+CREATE TABLE rate_limits(id INTEGER PRIMARY KEY NOT NULL,scope INTEGER NOT NULL,source_id INTEGER NOT NULL,source_site TEXT NOT NULL,destination_site TEXT NOT NULL,context_origin TEXT NOT NULL,reporting_origin TEXT NOT NULL,time INTEGER NOT NULL,expiry_time INTEGER NOT NULL);
 
 CREATE TABLE dedup_keys(source_id INTEGER NOT NULL,report_type INTEGER NOT NULL,dedup_key INTEGER NOT NULL,PRIMARY KEY(source_id,report_type,dedup_key))WITHOUT ROWID;
 
@@ -17,8 +17,8 @@ CREATE TABLE aggregatable_contributions(aggregation_id INTEGER NOT NULL,contribu
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','41');
-INSERT INTO meta VALUES('last_compatible_version','41');
+INSERT INTO meta VALUES('version','42');
+INSERT INTO meta VALUES('last_compatible_version','42');
 
 CREATE INDEX sources_by_active_destination_site_reporting_origin ON sources(event_level_active,aggregatable_active,destination_site,reporting_origin);
 
@@ -45,8 +45,5 @@ CREATE INDEX aggregate_source_id_idx ON aggregatable_report_metadata(source_id);
 CREATE INDEX aggregate_trigger_time_idx ON aggregatable_report_metadata(trigger_time);
 
 CREATE INDEX aggregate_report_time_idx ON aggregatable_report_metadata(report_time);
-
-INSERT INTO rate_limits VALUES(3,0,5,'a','b','c','d','e',6,7);
-INSERT INTO rate_limits VALUES(4,1,8,'f','g','h','i','j',9,10);
 
 COMMIT;

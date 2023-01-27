@@ -68,11 +68,11 @@ namespace content {
 // Version number of the database.
 // TODO: remove the active_unattributed_sources_by_site_reporting_origin index
 // during the next DB migration.
-const int AttributionStorageSql::kCurrentVersionNumber = 41;
+const int AttributionStorageSql::kCurrentVersionNumber = 42;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 41;
+const int AttributionStorageSql::kCompatibleVersionNumber = 42;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
