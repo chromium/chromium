@@ -586,4 +586,56 @@ suite('SiteDetailsPermission', function() {
 
         assertEquals(deviceEntries.length, 0);
       });
+
+  test(
+      'Chooser exception origin with slash ending should still match',
+      async function() {
+        const origin = 'https://www.example.com';
+        const originWithSlashEnding = 'https://www.example.com/';
+
+        const prefsUsb = createSiteSettingsPrefs(
+            /*defaultsList=*/[], /*exceptionsList=*/[],
+            /*chooserExceptionsList=*/[
+              createContentSettingTypeToValuePair(
+                  ContentSettingsTypes.USB_DEVICES,
+                  [
+                    createRawChooserException(
+                        ChooserType.USB_DEVICES,
+                        [createRawSiteException(originWithSlashEnding)],
+                        {displayName: 'Gadget'}),
+                  ]),
+            ]);
+        browserProxy.setPrefs(prefsUsb);
+
+        testElement.category = ContentSettingsTypes.USB_DEVICES;
+        testElement.chooserType = ChooserType.USB_DEVICES;
+        testElement.label = 'USB';
+        testElement.site = createRawSiteException(origin, {
+          origin: origin,
+          embeddingOrigin: origin,
+          setting: ContentSetting.ASK,
+          source: SiteSettingSource.PREFERENCE,
+        });
+
+        const chooserType =
+            await browserProxy.whenCalled('getChooserExceptionList');
+        assertEquals(ChooserType.USB_DEVICES, chooserType);
+
+        // Flush the container to ensure that the container is populated.
+        flush();
+
+        // Ensure that the chooser exception site origin with slash ending
+        // still shows up.
+        const deviceEntries = testElement.shadowRoot!.querySelectorAll(
+            'site-details-permission-device-entry');
+        assertEquals(deviceEntries.length, 1);
+        assertTrue(!!deviceEntries[0]);
+        const deviceDisplayName =
+            deviceEntries[0].shadowRoot!.querySelector('.url-directionality');
+        assertTrue(!!deviceDisplayName);
+        assertEquals(deviceDisplayName.textContent!.trim(), 'Gadget');
+        assertFalse(!!deviceEntries[0].shadowRoot!.querySelector(
+            'cr-policy-pref-indicator'));
+        assertFalse(deviceEntries[0].$.resetSite.hidden);
+      });
 });

@@ -155,9 +155,17 @@ export class SiteDetailsPermissionElement extends
   private processChooserExceptions_(exceptionList: RawChooserException[]) {
     // TODO(crbug.com/1407296): Move this processing logic to the backend and
     // remove this function.
-    const siteUidGetter = (x: RawSiteException) => x.origin + x.incognito;
     const siteFilter = (site: RawSiteException) => {
-      return siteUidGetter(site) === siteUidGetter(this.site);
+      // Site's origin from backend will have forward slash ending,
+      // hence converting it to URL and using URL.origin for
+      // comparison to avoid mismatch due to the slash ending.
+      const url = this.toUrl(site.origin);
+      const targetUrl = this.toUrl(this.site.origin);
+      if (!url || !targetUrl) {
+        return false;
+      }
+      return site.incognito === this.site.incognito &&
+          url.origin === targetUrl.origin;
     };
 
     const exceptions =
