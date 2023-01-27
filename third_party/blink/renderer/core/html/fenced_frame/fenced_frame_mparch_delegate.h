@@ -27,7 +27,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void Dispose() override;
   void AttachLayoutTree() override;
   bool SupportsFocus() override;
-  void MarkFrozenFrameSizeStale() override;
+  void FreezeFrameSize() override;
   void DidChangeFramePolicy(const FramePolicy&) override;
 
  private:

@@ -4418,10 +4418,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
 
     // Navigate the fenced frame, which should force its inner size to the
     // nearest allowed one.
-    FencedFrameURLMapping& url_mapping =
-        nodeA->current_frame_host()->GetPage().fenced_frame_urls_map();
-    auto urn_uuid = AddAndVerifyFencedFrameURL(&url_mapping, kUrl);
-    NavigateNestedFencedFrame(nodeB, urn_uuid);
+    NavigateNestedFencedFrame(nodeB, kUrl);
 
     // Check that the outer container size hasn't changed.
     EXPECT_EQ(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")
@@ -4447,6 +4444,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
     EXPECT_TRUE(ExecJs(nodeA, JsReplace("nested_fenced_frame.width = $1;"
                                         "nested_fenced_frame.height = $2;",
                                         new_width, new_height)));
+    NavigateNestedFencedFrame(nodeB, kUrl);
 
     // Force a style recomputation.
     ASSERT_TRUE(EvalJs(nodeA, "getComputedStyle(nested_fenced_frame).width")

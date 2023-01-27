@@ -149,8 +149,6 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
   config.urn_uuid_.emplace(urn_uuid);
   config.mapped_url_.emplace(url, VisibilityToEmbedder::kOpaque,
                              VisibilityToContent::kTransparent);
-  config.deprecated_should_freeze_initial_size_.emplace(
-      true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
   config.ad_auction_data_.emplace(std::move(ad_auction_data),
                                   VisibilityToEmbedder::kOpaque,
                                   VisibilityToContent::kOpaque);
