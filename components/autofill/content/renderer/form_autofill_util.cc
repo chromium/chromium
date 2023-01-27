@@ -2692,6 +2692,19 @@ std::vector<WebFormControlElement> FindFormControlElementsByUniqueRendererId(
 
 namespace {
 
+std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
+                                                 const WebString& id_list) {
+  std::vector<WebElement> web_elements;
+  std::u16string id_list_utf16 = id_list.Utf16();
+  for (const auto& id : base::SplitStringPiece(
+           id_list_utf16, base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    web_elements.push_back(
+        document.GetElementById(WebString(id.data(), id.length())));
+  }
+  return web_elements;
+}
+
 // Returns the coalesced child of the elements who's ids are found in
 // |id_list|.
 //
@@ -2715,11 +2728,7 @@ std::u16string CoalesceTextByIdList(const WebDocument& document,
   const std::u16string kSpace = u" ";
 
   std::u16string text;
-  std::u16string id_list_utf16 = id_list.Utf16();
-  for (const auto& id : base::SplitStringPiece(
-           id_list_utf16, base::kWhitespaceUTF16, base::KEEP_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
-    auto node = document.GetElementById(WebString(id.data(), id.length()));
+  for (const auto& node : GetWebElementsFromIdList(document, id_list)) {
     if (!node.IsNull()) {
       std::u16string child_text = FindChildText(node);
       if (!child_text.empty()) {
@@ -2733,14 +2742,29 @@ std::u16string CoalesceTextByIdList(const WebDocument& document,
   return text;
 }
 
+void MaybeEmitAriaLabelledByDevtoolsIssue(const WebElement& element,
+                                          const WebString& id_list) {
+  if (base::ranges::any_of(
+          GetWebElementsFromIdList(element.GetDocument(), id_list),
+          [](const WebElement& node) { return node.IsNull(); })) {
+    element.GetDocument().GetFrame()->AddGenericIssue(
+        blink::mojom::GenericIssueErrorType::kFormAriaLabelledByToNonExistingId,
+        element.GetDevToolsNodeId());
+  }
+}
+
 }  // namespace
 
 std::u16string GetAriaLabel(const blink::WebDocument& document,
                             const WebElement& element) {
   static const base::NoDestructor<WebString> kAriaLabelledBy("aria-labelledby");
   if (element.HasAttribute(*kAriaLabelledBy)) {
-    std::u16string text =
-        CoalesceTextByIdList(document, element.GetAttribute(*kAriaLabelledBy));
+    blink::WebString arial_label_attribute =
+        element.GetAttribute(*kAriaLabelledBy);
+    if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+      MaybeEmitAriaLabelledByDevtoolsIssue(element, arial_label_attribute);
+    }
+    std::u16string text = CoalesceTextByIdList(document, arial_label_attribute);
     if (!text.empty())
       return text;
   }

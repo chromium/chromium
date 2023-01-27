@@ -1733,6 +1733,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
         kFormEmptyIdAndNameAttributesForInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormEmptyIdAndNameAttributesForInputError;
+    case blink::mojom::GenericIssueErrorType::
+        kFormAriaLabelledByToNonExistingId:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormAriaLabelledByToNonExistingId;
   }
 }
 
