@@ -89,6 +89,8 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
 
   void Trace(Visitor*) const override;
 
+  void ResetFrozenSize() { frozen_size_ = absl::nullopt; }
+
  protected:
   bool NeedsViewportOffset() const override { return true; }
   // This is used to service IntersectionObservers in an OOPIF child document.

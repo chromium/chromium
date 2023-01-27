@@ -485,7 +485,10 @@ void HTMLFencedFrameElement::CollectStyleForPresentationAttribute(
   }
 }
 
-void HTMLFencedFrameElement::Navigate(const KURL& url) {
+void HTMLFencedFrameElement::Navigate(
+    const KURL& url,
+    absl::optional<bool> deprecated_should_freeze_initial_size,
+    absl::optional<gfx::Size> content_size) {
   TRACE_EVENT0("navigation", "HTMLFencedFrameElement::Navigate");
   if (!isConnected())
     return;
@@ -544,12 +547,40 @@ void HTMLFencedFrameElement::Navigate(const KURL& url) {
 
   frame_delegate_->Navigate(url);
 
-  if (!frozen_frame_size_) {
-    FreezeFrameSize();
-    RecordFencedFrameCreationOutcome(
-        mode_ == mojom::blink::FencedFrameMode::kDefault
-            ? FencedFrameCreationOutcome::kSuccessDefault
-            : FencedFrameCreationOutcome::kSuccessOpaque);
+  RecordFencedFrameCreationOutcome(
+      mode_ == mojom::blink::FencedFrameMode::kDefault
+          ? FencedFrameCreationOutcome::kSuccessDefault
+          : FencedFrameCreationOutcome::kSuccessOpaque);
+
+  // Handle size freezing.
+  // This isn't strictly correct, because the size is frozen on navigation
+  // start rather than navigation commit (i.e. if the navigation fails, the
+  // size will still be frozen). This is unavoidable in our current
+  // implementation, where the embedder freezes the size (because the embedder
+  // doesn't/shouldn't know when/if the config navigation commits). This
+  // inconsistency should be resolved when we make the browser responsible for
+  // size freezing, rather than the embedder.
+  if (content_size.has_value()) {
+    // Check if the config has a content size specified inside it. If so, we
+    // should freeze to that size rather than check the current size.
+    // It is nonsensical to ask for the old size freezing behavior (freeze the
+    // initial size) while also specifying a content size.
+    CHECK(!deprecated_should_freeze_initial_size);
+    PhysicalSize converted_size(LayoutUnit(content_size->width()),
+                                LayoutUnit(content_size->height()));
+    FreezeFrameSize(converted_size, /*should_coerce_size=*/false);
+  } else {
+    if ((!deprecated_should_freeze_initial_size.has_value() &&
+         IsValidUrnUuidURL(GURL(url))) ||
+        (deprecated_should_freeze_initial_size.has_value() &&
+         *deprecated_should_freeze_initial_size)) {
+      // If we are using a urn, or if the config is still using the deprecated
+      // API, freeze the current size at navigation start (or soon after).
+      FreezeCurrentFrameSize();
+    } else {
+      // Otherwise, make sure the frame size isn't frozen.
+      UnfreezeFrameSize();
+    }
   }
 }
 
@@ -561,16 +592,18 @@ void HTMLFencedFrameElement::NavigateToConfig() {
   // is stored in the `FencedFrameURLMapping`. Otherwise, `config_` was
   // constructed from script and has a user-supplied URL that `this` will
   // navigate to instead.
+  KURL url;
   if (config_->urn_uuid(PassKey())) {
-    KURL url = config_->urn_uuid(PassKey()).value();
+    url = config_->urn_uuid(PassKey()).value();
     CHECK(IsValidUrnUuidURL(GURL(url)));
-    Navigate(url);
   } else {
     CHECK(config_->url());
-    Navigate(
+    url =
         config_
-            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>());
+            ->GetValueIgnoringVisibility<FencedFrameConfig::Attribute::kURL>();
   }
+  Navigate(url, config_->deprecated_should_freeze_initial_size(PassKey()),
+           config_->content_size(PassKey()));
 }
 
 void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
@@ -754,29 +787,50 @@ const absl::optional<PhysicalSize> HTMLFencedFrameElement::FrozenFrameSize()
       LayoutUnit::FromFloatRound(frozen_frame_size_->height * ratio));
 }
 
-void HTMLFencedFrameElement::FreezeFrameSize() {
-  DCHECK(!frozen_frame_size_);
+void HTMLFencedFrameElement::UnfreezeFrameSize() {
+  should_freeze_frame_size_on_next_layout_ = false;
 
-  // When the parser finds `<fencedframe>` with the `src` attribute, the
-  // |Navigate| occurs after |LayoutObject| tree is created and its initial
-  // layout was done (|NeedsLayout| is cleared,) but the size of the `<iframe>`
-  // is still (0, 0). Wait until a lifecycle completes and the resize observer
-  // runs.
-  if (!content_rect_) {
-    should_freeze_frame_size_on_next_layout_ = true;
+  // If the frame was already unfrozen, we don't need to do anything.
+  if (!frozen_frame_size_.has_value()) {
     return;
   }
 
-  FreezeFrameSize(content_rect_->size);
+  // Otherwise, the frame previously had a frozen size. Unfreeze it.
+  frozen_frame_size_ = absl::nullopt;
+  frame_delegate_->MarkFrozenFrameSizeStale();
 }
 
-void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
-  DCHECK(!frozen_frame_size_);
-  // TODO(crbug.com/1123606): This will change when we move frame size coercion
-  // from here to during FLEDGE/SharedStorage.
-  frozen_frame_size_ = CoerceFrameSize(size);
+void HTMLFencedFrameElement::FreezeCurrentFrameSize() {
+  should_freeze_frame_size_on_next_layout_ = false;
 
-  frame_delegate_->FreezeFrameSize();
+  // If the inner frame size is already frozen to the current outer frame size,
+  // we don't need to do anything.
+  if (frozen_frame_size_.has_value() && content_rect_.has_value() &&
+      content_rect_->size == *frozen_frame_size_) {
+    return;
+  }
+
+  // Otherwise, we need to change the frozen size of the frame.
+  frozen_frame_size_ = absl::nullopt;
+
+  // If we know the current outer frame size, freeze the inner frame to it.
+  if (content_rect_) {
+    FreezeFrameSize(content_rect_->size, /*should_coerce_size=*/true);
+    return;
+  }
+
+  // Otherwise, we need to wait for the next layout.
+  should_freeze_frame_size_on_next_layout_ = true;
+}
+
+void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size,
+                                             bool should_coerce_size) {
+  frozen_frame_size_ = size;
+  if (should_coerce_size) {
+    frozen_frame_size_ = CoerceFrameSize(size);
+  }
+
+  frame_delegate_->MarkFrozenFrameSizeStale();
 }
 
 void HTMLFencedFrameElement::StartResizeObserver() {
@@ -785,13 +839,6 @@ void HTMLFencedFrameElement::StartResizeObserver() {
       ResizeObserver::Create(GetDocument().domWindow(),
                              MakeGarbageCollected<ResizeObserverDelegate>());
   resize_observer_->observe(this);
-}
-
-void HTMLFencedFrameElement::StopResizeObserver() {
-  if (!resize_observer_)
-    return;
-  resize_observer_->disconnect();
-  resize_observer_ = nullptr;
 }
 
 void HTMLFencedFrameElement::ResizeObserverDelegate::OnResize(
@@ -815,49 +862,14 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     size_set_after_freeze_ = true;
   }
   content_rect_ = content_rect;
-  // If the size information at |FreezeFrameSize| is not complete and we
-  // needed to postpone freezing until the next resize, do it now. See
-  // |FreezeFrameSize| for more.
+
+  // If we postponed freezing the frame size until the next layout (in
+  // `FreezeCurrentFrameSize`), do it now.
   if (should_freeze_frame_size_on_next_layout_) {
     should_freeze_frame_size_on_next_layout_ = false;
     DCHECK(!frozen_frame_size_);
-    FreezeFrameSize(content_rect_->size);
-    return;
+    FreezeFrameSize(content_rect_->size, /*should_coerce_size=*/true);
   }
-}
-
-// TODO(domfarolino): Remove this.
-void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {
-  DCHECK(content_rect_);
-  const absl::optional<PhysicalSize> frozen_size = frozen_frame_size_;
-  DCHECK(frozen_size);
-  const double child_width = frozen_size->width.ToDouble();
-  const double child_height = frozen_size->height.ToDouble();
-  // TODO(kojii): Theoretically this `transform` is the same as `object-fit:
-  // contain`, but `<iframe>` does not support the `object-fit` property today.
-  // We can change to use the `object-fit` property and stop the resize-observer
-  // once it is supported.
-  String css;
-  if (child_width <= std::numeric_limits<double>::epsilon() ||
-      child_height <= std::numeric_limits<double>::epsilon()) {
-    // If the child's width or height is zero, the scale will be infinite. Do
-    // not scale in such cases.
-    css =
-        String::Format("width: %fpx; height: %fpx", child_width, child_height);
-  } else {
-    const double parent_width = content_rect_->Width().ToDouble();
-    const double parent_height = content_rect_->Height().ToDouble();
-    const double scale_x = parent_width / child_width;
-    const double scale_y = parent_height / child_height;
-    const double scale = std::min(scale_x, scale_y);
-    const double tx = (parent_width - child_width * scale) / 2;
-    const double ty = (parent_height - child_height * scale) / 2;
-    css = String::Format(
-        "width: %fpx; height: %fpx; transform: translate(%fpx, %fpx) scale(%f)",
-        child_width, child_height, tx, ty, scale);
-  }
-  InnerIFrameElement()->setAttribute(html_names::kStyleAttr, css,
-                                     ASSERT_NO_EXCEPTION);
 }
 
 }  // namespace blink

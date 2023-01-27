@@ -1,40 +1,104 @@
 <!DOCTYPE html>
-  <title>Test FencedFrames Resize Lock</title>
-  <script src="/resources/testharness.js"></script>
-  <script src="/resources/testharnessreport.js"></script>
-  <script src="resources/utils.js"></script>
-  <script src="/common/utils.js"></script>
+<title>Test cases when fenced frame size shouldn't be restricted..</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+<meta name="timeout" content="long">
 
-  <body>
+<body>
+<script>
+async function runTest(mode, api1,
+                       expected_initial_size,
+                       expected_size_after_resize,
+                       api2,
+                       expected_size_after_renavigation,
+                       expected_size_after_reresize) {
+  const initial_width = 321;
+  const initial_height = 51;
 
-    <script>
-      promise_test(async () => {
-        const resize_lock_inner_page_is_ready_key = token();
-        const resize_lock_resize_is_done_key = token();
-        const resize_lock_report_inner_dimensions_key = token();
+  const resized_width = 729;
+  const resized_height = 91;
 
-        const frame = attachFencedFrame(generateURL(
-            "resources/resize-lock-inner.html",
-            [resize_lock_inner_page_is_ready_key,
-             resize_lock_resize_is_done_key,
-             resize_lock_report_inner_dimensions_key]));
+  const reresized_width = 971;
+  const reresized_height = 251;
 
-        await nextValueFromServer(resize_lock_inner_page_is_ready_key);
+  var frame = await attachFencedFrameContext({
+      generator_api: api1, attributes: [['mode', mode],
+      ['width', initial_width], ['height', initial_height]]});
 
-        frame.width = "444";
-        frame.height = "444";
+  const assert_dimensions =
+      (expected_width, expected_height) => {
+    getComputedStyle(document.documentElement).width; // Force layout.
+    assert_equals(window.innerWidth, expected_width, "width");
+    assert_equals(window.innerHeight, expected_height, "height");
+  }
 
-        writeValueToServer(resize_lock_resize_is_done_key,
-                           "outer_page_attempted_resize");
+  // Check that the initial size of the fenced frame is what we expect.
+  await frame.execute(assert_dimensions, expected_initial_size);
 
-        let result =
-          await nextValueFromServer(resize_lock_report_inner_dimensions_key);
-        assert_equals(result, "300x150",
-                      "fenced frame dimensions should not be updated by " +
-                      "parent page");
+  // Resize the frame, and check that the size is now what we expect.
+  frame.element.width = resized_width;
+  frame.element.height = resized_height;
+  await frame.execute(assert_dimensions, expected_size_after_resize);
 
-      }, "Test Resize Lock");
-    </script>
+  // Perform an embedder-initiated navigation, and check that the size is now
+  // what we expect (it should be based on the new context, rather than the old
+  // context).
+  frame = await replaceFrameContext(frame, {generator_api: api2});
+  await frame.execute(assert_dimensions, expected_size_after_renavigation);
 
-  </body>
-</html>
+  // Resize the newly navigated frame, and check the size.
+  frame.element.width = reresized_width;
+  frame.element.height = reresized_height;
+  await frame.execute(assert_dimensions, expected_size_after_reresize);
+}
+
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'fledge', [320, 50], [320, 50],
+                   'fledge', [728, 90], [728, 90]); },
+                   "FLEDGE->FLEDGE");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'sharedstorage', [320, 50], [320, 50],
+                   'sharedstorage', [728, 90], [728, 90]); },
+                   "sharedStorage->sharedStorage");
+promise_test(async () => {
+    return runTest('default',
+                   'default', [321, 51], [729, 91],
+                   'default', [729, 91], [971, 251]); },
+                   "default->default");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'default', [321, 51], [729, 91],
+                   'fledge', [728, 90], [728, 90]); },
+                   "default->FLEDGE");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'default', [321, 51], [729, 91],
+                   'sharedStorage', [728, 90], [728, 90]); },
+                   "default->sharedStorage");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'fledge', [320, 50], [320, 50],
+                   'default', [729, 91], [971, 251]); },
+                   "FLEDGE->default");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'sharedstorage', [320, 50], [320, 50],
+                   'default', [729, 91], [971, 251]); },
+                   "sharedStorage->default");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'sharedstorage', [320, 50], [320, 50],
+                   'fledge', [728, 90], [728, 90]); },
+                   "sharedStorage->FLEDGE");
+promise_test(async () => {
+    return runTest('opaque-ads',
+                   'fledge', [320, 50], [320, 50],
+                   'sharedstorage', [728, 90], [728, 90]); },
+                   "FLEDGE->sharedStorage");
+</script>
+</body>

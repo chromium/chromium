@@ -114,14 +114,8 @@ function getRemoteOriginURL(url, https=true) {
   return new URL(url.toString().replace(same_origin, cross_origin));
 }
 
-// Attaches an object that waits for scripts to execute from RemoteContext.
-// (In practice, this is either a frame or a window.)
-// Returns a proxy for the object that first resolves to the object itself,
-// then resolves to the RemoteContext if the property isn't found.
-// The proxy also has an extra attribute `execute`, which is an alias for the
-// remote context's `execute_script(fn, args=[])`.
-function attachContext(object_constructor, html, headers, origin) {
-
+// Builds a URL to be used as a remote context executor.
+function generateRemoteContextURL(headers, origin) {
   // Generate the unique id for the parent/child channel.
   const uuid = token();
 
@@ -143,8 +137,10 @@ function attachContext(object_constructor, html, headers, origin) {
   });
   url.searchParams.append('pipe', formatted_headers.join('|'));
 
-  const object = object_constructor(url);
+  return [uuid, url];
+}
 
+function buildRemoteContextForObject(object, uuid, html) {
   // https://github.com/web-platform-tests/wpt/blob/master/common/dispatcher/README.md
   const context = new RemoteContext(uuid);
   if (html) {
@@ -180,7 +176,35 @@ function attachContext(object_constructor, html, headers, origin) {
   return proxy;
 }
 
-function attachFrameContext(element_name, html, headers, attributes, origin) {
+// Attaches an object that waits for scripts to execute from RemoteContext.
+// (In practice, this is either a frame or a window.)
+// Returns a proxy for the object that first resolves to the object itself,
+// then resolves to the RemoteContext if the property isn't found.
+// The proxy also has an extra attribute `execute`, which is an alias for the
+// remote context's `execute_script(fn, args=[])`.
+function attachContext(object_constructor, html, headers, origin) {
+  const [uuid, url] = generateRemoteContextURL(headers, origin);
+  const object = object_constructor(url);
+  return buildRemoteContextForObject(object, uuid, html);
+}
+
+async function attachOpaqueContext(generator_api, object_constructor, html, headers, origin) {
+  const [uuid, url] = generateRemoteContextURL(headers, origin);
+  const urn = await (generator_api == 'fledge' ? generateURNFromFledge(url, []) : generateURN(url));
+  const object = object_constructor(urn);
+  return buildRemoteContextForObject(object, uuid, html);
+}
+
+function attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin) {
+  generator_api = generator_api.toLowerCase();
+  if (generator_api == 'fledge' || generator_api == 'sharedstorage') {
+    return attachOpaqueContext(generator_api, frame_constructor, html, headers, origin);
+  } else {
+    return attachContext(frame_constructor, html, headers, origin);
+  }
+}
+
+function attachFrameContext(element_name, generator_api, html, headers, attributes, origin) {
   frame_constructor = (url) => {
     frame = document.createElement(element_name);
     attributes.forEach(attribute => {
@@ -190,32 +214,43 @@ function attachFrameContext(element_name, html, headers, attributes, origin) {
     document.body.append(frame);
     return frame;
   };
+  return attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin);
+}
 
-  return attachContext(frame_constructor, html, headers, origin);
+function replaceFrameContext(frame_proxy, {generator_api="", html="", headers=[], origin=""}={}) {
+  frame_constructor = (url) => {
+    frame_proxy.element.src = url;
+    return frame_proxy.element;
+  };
+  return attachPotentiallyOpaqueContext(generator_api, frame_constructor, html, headers, origin);
 }
 
 // Attach a fenced frame that waits for scripts to execute.
 // Takes as input a(n optional) dictionary of configs:
+// - generator_api: the name of the API that should generate the urn/config.
+//    Supports (case-insensitive) "fledge" and "sharedstorage", or any other
+//    value as a default.
+//    If you generate a urn, then you need to await the result of this function.
 // - html: extra HTML source code to inject into the loaded frame
 // - headers: an array of header pairs [[key, value], ...]
 // - attributes: an array of attribute pairs to set on the frame [[key, value], ...]
 // - origin: origin of the url, default to location.origin if not set
 // Returns a proxy that acts like the frame HTML element, but with an extra
 // function `execute`. See `attachFrameContext` or the README for more details.
-function attachFencedFrameContext({html = "", headers=[], attributes=[], origin=""} = {}) {
-  return attachFrameContext('fencedframe', html, headers, attributes, origin);
+function attachFencedFrameContext({generator_api="", html = "", headers=[], attributes=[], origin=""}={}) {
+  return attachFrameContext('fencedframe', generator_api, html, headers, attributes, origin);
 }
 
 // Attach an iframe that waits for scripts to execute.
 // See `attachFencedFrameContext` for more details.
-function attachIFrameContext({html = "", headers=[], attributes=[], origin=""} = {}) {
-  return attachFrameContext('iframe', html, headers, attributes, origin);
+function attachIFrameContext({generator_api="", html="", headers=[], attributes=[], origin=""}={}) {
+  return attachFrameContext('iframe', generator_api, html, headers, attributes, origin);
 }
 
 // Open a window that waits for scripts to execute.
 // Returns a proxy that acts like the window object, but with an extra
 // function `execute`. See `attachContext` for more details.
-function attachWindowContext({target="_blank", html = "", headers=[], origin=""} = {}) {
+function attachWindowContext({target="_blank", html="", headers=[], origin=""}={}) {
   window_constructor = (url) => {
     return window.open(url, target);
   }
