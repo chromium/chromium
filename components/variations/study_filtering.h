@@ -88,6 +88,12 @@ COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyEnterprise(const Study::Filter& filter,
                           const ClientFilterableState& client_state);
 
+// Checks whether a study is applicable for the given Google group memberships
+// per |filter|.
+COMPONENT_EXPORT(VARIATIONS)
+bool CheckStudyGoogleGroup(const Study::Filter& filter,
+                           const std::set<uint64_t>& client_groups);
+
 // Returns the country that should be used for filtering this study, depending
 // on whether the study has session or permanent consistency.
 COMPONENT_EXPORT(VARIATIONS)

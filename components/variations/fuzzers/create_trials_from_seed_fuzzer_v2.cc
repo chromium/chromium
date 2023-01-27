@@ -91,6 +91,10 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
         break;
     }
   }
+  if (!spec.google_groups().empty()) {
+    client_state->google_groups = std::set<uint64_t>(
+        spec.google_groups().begin(), spec.google_groups().end());
+  }
   return client_state;
 }
 

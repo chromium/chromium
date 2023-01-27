@@ -288,7 +288,7 @@ message Study {
   // Filtering criteria specifying whether this study is applicable to a given
   // Chrome instance.
   //
-  // Next tag: 20
+  // Next tag: 24
   message Filter {
     // The start date of the study in Unix time format. (Seconds since midnight
     // January 1, 1970 UTC). See: http://en.wikipedia.org/wiki/Unix_time
@@ -442,6 +442,19 @@ message Study {
     // is specified. Mutually exclusive with |cpu_architecture|. Takes the same
     // range of values as cpu_architecture, e.g. [X86_32, ARM64].
     repeated CpuArchitecture exclude_cpu_architecture = 21;
+
+    // Specifies that the config should apply only to clients where at least
+    // one of the signed in users is a member of at least one of the specified
+    // groups.
+    // The values are the gaia ID of the google group.
+    // Mutually exclusive with |exclude_google_group|.
+    repeated int64 google_group = 22 [packed = true];
+
+    // Specifies that the config should apply only to clients where none
+    // of the signed in users are a member of any of the specified groups.
+    // The values are the gaia ID of the google group.
+    // Mutually exclusive with |google_group|.
+    repeated int64 exclude_google_group = 23 [packed = true];
   }
 
   // Filtering criteria for this study. A study that is filtered out for a given
