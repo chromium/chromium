@@ -73,9 +73,10 @@ cr-menu[hidden].files-menu.animating {
 }
 
 cr-menu.files-menu > cr-menu-item {
-  display: flex;
   align-items: center;
+  display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 /* Icon on the left of the item label for cr.ui.FilesMenuItem.
