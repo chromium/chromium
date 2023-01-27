@@ -74,6 +74,10 @@ void ApplyStyle(views::Label* label,
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 12,
                                        gfx::Font::Weight::NORMAL));
       break;
+    case TypographyStyle::kAnnotation2:
+      label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 11,
+                                       gfx::Font::Weight::NORMAL));
+      break;
     case TypographyStyle::kBody1:
       label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
                                        gfx::Font::Weight::NORMAL));

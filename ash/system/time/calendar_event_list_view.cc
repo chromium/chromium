@@ -236,7 +236,8 @@ std::unique_ptr<views::View> CalendarEventListView::CreateChildEventListView(
             calendar_view_controller_->selected_date_midnight_utc()}, /*event=*/
         *it,
         /*round_top_corners=*/it == events.begin(),
-        /*round_bottom_corners=*/it->id() == events.rbegin()->id()));
+        /*round_bottom_corners=*/it->id() == events.rbegin()->id(),
+        /*show_event_list_dot=*/true));
   }
 
   return container;

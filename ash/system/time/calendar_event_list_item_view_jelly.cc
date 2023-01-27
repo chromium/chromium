@@ -36,10 +36,10 @@ namespace ash {
 namespace {
 
 // The paddings for `CalendarEventListViewItemJelly`.
-constexpr auto kEventListItemDotOffset = 12;
 constexpr auto kEventListItemInsets =
-    gfx::Insets::TLBR(6, kEventListItemDotOffset, 6, 12);
+    gfx::Insets::VH(6, calendar_utils::kEventListItemViewStartEndMargin);
 constexpr auto kEventListItemHorizontalChildSpacing = 8;
+constexpr int kEventListItemCornerRadius = 16;
 
 // Radius of the event color dot.
 constexpr int kColorDotRadius = 4;
@@ -64,8 +64,9 @@ class CalendarEventListItemDot : public views::View {
     std::string hex_code =
         kEventHexColorCodes[color_id.empty() ? kDefaultColorId : color_id];
     base::HexStringToInt(hex_code, &color_);
-    SetPreferredSize(gfx::Size(kColorDotViewSize,
-                               kColorDotViewSize + kEventListItemDotOffset));
+    SetPreferredSize(gfx::Size(
+        kColorDotViewSize,
+        kColorDotViewSize + calendar_utils::kEventListItemViewStartEndMargin));
   }
   CalendarEventListItemDot(const CalendarEventListItemDot& other) = delete;
   CalendarEventListItemDot& operator=(const CalendarEventListItemDot& other) =
@@ -91,10 +92,10 @@ class CalendarEventListItemDot : public views::View {
 views::Builder<views::Label> CreateSummaryLabel(
     const std::string& event_summary,
     const std::u16string& tooltip_text,
-    const int& max_width) {
+    const int& fixed_width) {
   return views::Builder<views::Label>(
              bubble_utils::CreateLabel(
-                 bubble_utils::TypographyStyle::kButton1,
+                 bubble_utils::TypographyStyle::kAnnotation1,
                  event_summary.empty()
                      ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                      : base::UTF8ToUTF16(event_summary)))
@@ -103,7 +104,7 @@ views::Builder<views::Label> CreateSummaryLabel(
       .SetAutoColorReadabilityEnabled(false)
       .SetMultiLine(true)
       .SetMaxLines(1)
-      .SetMaximumWidth(max_width)
+      .SizeToFit(fixed_width)
       .SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL)
       .SetSubpixelRenderingEnabled(false)
       .SetTextContext(CONTEXT_CALENDAR_DATE)
@@ -115,8 +116,9 @@ views::Builder<views::Label> CreateTimeLabel(
     const std::u16string& title,
     const std::u16string& tooltip_text) {
   return views::Builder<views::Label>(
-             bubble_utils::CreateLabel(bubble_utils::TypographyStyle::kBody1,
-                                       title))
+             bubble_utils::CreateLabel(
+                 bubble_utils::TypographyStyle::kAnnotation2, title,
+                 cros_tokens::kColorSecondary))
       .SetID(kTimeLabelID)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetAutoColorReadabilityEnabled(false)
@@ -134,7 +136,8 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
     google_apis::calendar::CalendarEvent event,
     const bool round_top_corners,
     const bool round_bottom_corners,
-    const int max_width)
+    const bool show_event_list_dot,
+    const int fixed_width)
     : ActionableView(TrayPopupInkDropStyle::FILL_BOUNDS),
       calendar_view_controller_(calendar_view_controller),
       selected_date_params_(selected_date_params),
@@ -158,19 +161,14 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
 
   // Conditionally round the items corners depending upon where it sits in the
   // list.
-  const int top_radius = round_top_corners ? 12 : 0;
-  const int bottom_radius = round_bottom_corners ? 12 : 0;
+  const int top_radius = round_top_corners ? kEventListItemCornerRadius : 0;
+  const int bottom_radius =
+      round_bottom_corners ? kEventListItemCornerRadius : 0;
   const gfx::RoundedCornersF item_corner_radius = gfx::RoundedCornersF(
       top_radius, top_radius, bottom_radius, bottom_radius);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(item_corner_radius);
-
-  auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
-      kEventListItemHorizontalChildSpacing);
-  horizontal_layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
 
   std::u16string formatted_time_text;
   if (calendar_utils::IsMultiDayEvent(&event) || event.all_day_event()) {
@@ -185,19 +183,28 @@ CalendarEventListItemViewJelly::CalendarEventListItemViewJelly(
       IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, base::UTF8ToUTF16(event.summary()),
       formatted_time_text);
 
-  AddChildView(
-      views::Builder<views::View>()
-          .SetLayoutManager(std::move(horizontal_layout_manager))
-          .AddChild(views::Builder<views::View>(
-              std::make_unique<CalendarEventListItemDot>(event.color_id())))
-          .AddChild(
-              views::Builder<views::View>()
-                  .SetLayoutManager(std::make_unique<views::BoxLayout>(
-                      views::BoxLayout::Orientation::kVertical))
-                  .AddChild(CreateSummaryLabel(event.summary(), tooltip_text,
-                                               max_width))
-                  .AddChild(CreateTimeLabel(formatted_time_text, tooltip_text)))
-          .Build());
+  auto horizontal_layout_manager = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, kEventListItemInsets,
+      kEventListItemHorizontalChildSpacing);
+  horizontal_layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  views::View* horizontal_container =
+      AddChildView(std::make_unique<views::View>());
+  horizontal_container->SetLayoutManager(std::move(horizontal_layout_manager));
+  if (show_event_list_dot) {
+    horizontal_container
+        ->AddChildView(
+            std::make_unique<CalendarEventListItemDot>(event.color_id()))
+        ->SetID(kEventListItemDotID);
+  }
+  views::View* vertical_container =
+      horizontal_container->AddChildView(std::make_unique<views::View>());
+  vertical_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
+  vertical_container->AddChildView(
+      CreateSummaryLabel(event.summary(), tooltip_text, fixed_width).Build());
+  vertical_container->AddChildView(
+      CreateTimeLabel(formatted_time_text, tooltip_text).Build());
 }
 
 CalendarEventListItemViewJelly::~CalendarEventListItemViewJelly() = default;

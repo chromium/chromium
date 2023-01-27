@@ -35,6 +35,9 @@ constexpr int kDateVerticalPadding = 13;
 constexpr int kDateHorizontalPadding = 14;
 constexpr int kColumnSetPadding = 5;
 
+// The insets for the event list item view.
+constexpr int kEventListItemViewStartEndMargin = 12;
+
 // The insets within a Date cell.
 constexpr auto kDateCellInsets =
     gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPadding);

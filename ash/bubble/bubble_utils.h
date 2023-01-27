@@ -34,6 +34,7 @@ ASH_EXPORT bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event);
 // See "Typography" tab in go/cros-tokens.
 enum class TypographyStyle {
   kAnnotation1,
+  kAnnotation2,
   kBody1,
   kBody2,
   kButton1,

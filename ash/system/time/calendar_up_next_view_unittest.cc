@@ -350,23 +350,27 @@ TEST_F(
   EXPECT_EQ(GetContentsView()->children().size(), size_t(5));
   EXPECT_EQ(ScrollPosition(), 0);
 
-  // Scroll right so the second event is partially visible on the left of the
-  // scrollview.
-  ScrollHorizontalPositionTo(200);
-  ASSERT_EQ(ScrollPosition(), 200);
+  // Scroll right past the first event and so that the second event is partially
+  // visible on the left of the scrollview.
+  const int first_event_width =
+      GetContentsView()->children()[0]->GetContentsBounds().width() +
+      calendar_utils::kUpNextBetweenChildSpacing;
+  const int scroll_position_partially_over_second_event =
+      first_event_width + 50;
+  ScrollHorizontalPositionTo(scroll_position_partially_over_second_event);
+  ASSERT_EQ(scroll_position_partially_over_second_event, ScrollPosition());
+  const views::View* first_event = GetContentsView()->children()[0];
   const views::View* second_event = GetContentsView()->children()[1];
-  // Assert second view is partially visible.
-  EXPECT_TRUE(second_event->GetVisibleBounds().width() <
-              second_event->GetContentsBounds().width());
+  // Assert first view is not visible and second view is partially visible.
+  ASSERT_EQ(0, first_event->GetVisibleBounds().width());
+  EXPECT_LT(second_event->GetVisibleBounds().width(),
+            second_event->GetContentsBounds().width());
 
   // Press scroll left. We should scroll so that the second event is aligned to
   // the start of the scroll view and fully visible. This is the equivalent
   // position of being scrolled to the right of the width of the first event.
-  const int first_event_width =
-      GetContentsView()->children()[0]->GetContentsBounds().width() +
-      calendar_utils::kUpNextBetweenChildSpacing;
   PressScrollLeftButton();
-  EXPECT_EQ(ScrollPosition(), first_event_width);
+  EXPECT_EQ(first_event_width, ScrollPosition());
 }
 
 // If we have a partially visible event and the scroll right button is pressed,

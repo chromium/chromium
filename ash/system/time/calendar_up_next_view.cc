@@ -15,6 +15,7 @@
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 #include "ash/system/time/calendar_utils.h"
+#include "ash/system/tray/tray_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -29,12 +30,35 @@
 namespace ash {
 namespace {
 
-constexpr gfx::Insets kContainerInsets = gfx::Insets::TLBR(4, 14, 12, 14);
-constexpr int kFullWidth = 0;
-constexpr int kMaxItemWidth = 160;
-constexpr gfx::Insets kHeaderInsets = gfx::Insets::TLBR(0, 0, 8, 0);
+// The insets for the calendar up next and event list item views.
+constexpr int kCalendarUpNextViewStartEndMargin = 14;
+constexpr gfx::Insets kContainerInsets =
+    gfx::Insets::TLBR(4,
+                      kCalendarUpNextViewStartEndMargin,
+                      12,
+                      kCalendarUpNextViewStartEndMargin);
+// Combined total margin to the left and right (start and end) of the up next
+// and event list item views added together. Used in subtracting to calculate
+// the label width below.
+constexpr int kCombinedViewMargin =
+    kCalendarUpNextViewStartEndMargin * 2 +
+    calendar_utils::kEventListItemViewStartEndMargin * 2;
+// At full width (displaying a single event) the label should be the tray width
+// minus `kCombinedViewMargin`, otherwise it'll become scrollable.
+// TODO(b/266537227): When adding the join button, also reduce this off the
+// size.
+constexpr int kLabelFullWidth = kTrayMenuWidth - kCombinedViewMargin;
+// UI spec is a fixed 240 width for the whole up next event list item view, if
+// there's more than 1 being shown. Given we're achieving this using
+// `SizeToFit()` on a label, the label will need to account for the
+// `kCombinedViewMargin` so we reduce those off the size.
+// TODO (b/266537227): When adding the join button, also reduce this off the
+// size.
+constexpr int kLabelCappedWidth = 240 - kCombinedViewMargin;
+constexpr gfx::Insets kHeaderInsets = gfx::Insets::TLBR(0, 0, 6, 0);
 constexpr int kHeaderBetweenChildSpacing = 14;
 constexpr int kHeaderButtonsBetweenChildSpacing = 28;
+constexpr gfx::Insets kButtonContainerInsets = gfx::Insets::TLBR(0, 0, 0, 12);
 
 // Helper class for managing scrolling animations.
 class ScrollingAnimation : public gfx::LinearAnimation,
@@ -163,6 +187,8 @@ CalendarUpNextView::CalendarUpNextView(
       header_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, kHeaderInsets,
           kHeaderBetweenChildSpacing));
+  header_layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   // Header label.
   auto* header_label = header_view_->AddChildView(CreateHeaderLabel());
   header_layout_manager->SetFlexForView(header_label, 1);
@@ -170,8 +196,8 @@ CalendarUpNextView::CalendarUpNextView(
   auto button_container =
       views::Builder<views::View>()
           .SetLayoutManager(std::make_unique<views::BoxLayout>(
-              views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-              kHeaderButtonsBetweenChildSpacing))
+              views::BoxLayout::Orientation::kHorizontal,
+              kButtonContainerInsets, kHeaderButtonsBetweenChildSpacing))
           .Build();
   left_scroll_button_ =
       button_container->AddChildView(std::make_unique<IconButton>(
@@ -253,7 +279,8 @@ void CalendarUpNextView::UpdateEvents(
                                selected_date_midnight_utc},
             /*event=*/event, /*round_top_corners=*/true,
             /*round_bottom_corners=*/true,
-            /*max_width=*/kFullWidth));
+            /*show_event_list_dot=*/false,
+            /*fixed_width=*/kLabelFullWidth));
 
     content_layout_manager->SetFlexForView(child_view, 1);
 
@@ -274,7 +301,8 @@ void CalendarUpNextView::UpdateEvents(
                                selected_date_midnight_utc},
             /*event=*/event, /*round_top_corners=*/true,
             /*round_bottom_corners=*/true,
-            /*max_width=*/kMaxItemWidth));
+            /*show_event_list_dot=*/false,
+            /*fixed_width=*/kLabelCappedWidth));
   }
 
   // Show scroll buttons if we have multiple events.
