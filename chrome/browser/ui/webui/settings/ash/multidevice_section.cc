@@ -178,20 +178,20 @@ const std::vector<SearchConcept>& GetMultiDeviceOptedOutSearchConcepts() {
           IDS_OS_SETTINGS_TAG_MULTIDEVICE_PHONE_HUB;
       alt_tag_index++;
     }
+
     if (base::FeatureList::IsEnabled(features::kInstantTethering)) {
       set_up_concept.alt_tag_ids[alt_tag_index] =
           IDS_OS_SETTINGS_TAG_INSTANT_TETHERING;
       alt_tag_index++;
     }
 
-    // TODO(b/234730982): Update 5 alt tag limit to 6 and remove condition
-    if (alt_tag_index < 5 && features::IsWifiSyncAndroidEnabled()) {
+    if (features::IsWifiSyncAndroidEnabled()) {
       set_up_concept.alt_tag_ids[alt_tag_index] =
           IDS_OS_SETTINGS_TAG_MULTIDEVICE_WIFI_SYNC;
       alt_tag_index++;
     }
 
-    if (alt_tag_index < 5) {
+    if (alt_tag_index < 6) {
       set_up_concept.alt_tag_ids[alt_tag_index] = SearchConcept::kAltTagEnd;
     }
 
