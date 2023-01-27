@@ -142,7 +142,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   // with a version of 0, both here and in Viz.
   uint32_t current_crop_version_ = 0;
 
-  base::WeakPtrFactory<MediaStreamVideoSource> weak_factory_{this};
+  base::WeakPtrFactory<MediaStreamVideoCapturerSource> weak_factory_{this};
 };
 
 }  // namespace blink

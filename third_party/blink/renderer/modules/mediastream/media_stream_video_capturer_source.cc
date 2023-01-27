@@ -118,7 +118,7 @@ void MediaStreamVideoCapturerSource::StartSourceImpl(
   source_->StartCapture(
       capture_params_, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         WTF::Unretained(this), capture_params_));
+                         weak_factory_.GetWeakPtr(), capture_params_));
 }
 
 media::VideoCaptureFeedbackCB
@@ -155,7 +155,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
   source_->StartCapture(
       new_capture_params, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         WTF::Unretained(this), new_capture_params));
+                         weak_factory_.GetWeakPtr(), new_capture_params));
 }
 
 absl::optional<media::VideoCaptureFormat>
@@ -191,7 +191,7 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   source_->StartCapture(
       capture_params_, frame_callback_, crop_version_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
-                         WTF::Unretained(this), capture_params_));
+                         weak_factory_.GetWeakPtr(), capture_params_));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
