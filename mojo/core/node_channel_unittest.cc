@@ -20,9 +20,14 @@ namespace mojo {
 namespace core {
 namespace {
 
-using NodeChannelTest = testing::Test;
 using ports::NodeName;
 using testing::_;
+
+class NodeChannelTest : public testing::Test {
+ public:
+  MockNodeChannelDelegate local_delegate_;
+  MockNodeChannelDelegate remote_delegate_;
+};
 
 scoped_refptr<NodeChannel> CreateNodeChannel(NodeChannel::Delegate* delegate,
                                              PlatformChannelEndpoint endpoint) {
@@ -36,20 +41,18 @@ TEST_F(NodeChannelTest, DestructionIsSafe) {
   base::test::TaskEnvironment task_environment;
 
   PlatformChannel channel;
-  MockNodeChannelDelegate local_delegate;
   auto local_channel =
-      CreateNodeChannel(&local_delegate, channel.TakeLocalEndpoint());
+      CreateNodeChannel(&local_delegate_, channel.TakeLocalEndpoint());
   local_channel->Start();
-  MockNodeChannelDelegate remote_delegate;
   auto remote_channel =
-      CreateNodeChannel(&remote_delegate, channel.TakeRemoteEndpoint());
+      CreateNodeChannel(&remote_delegate_, channel.TakeRemoteEndpoint());
   remote_channel->Start();
 
   // Verify end-to-end operation
   const NodeName kRemoteNodeName{123, 456};
   const NodeName kToken{987, 654};
   base::RunLoop loop;
-  EXPECT_CALL(local_delegate,
+  EXPECT_CALL(local_delegate_,
               OnAcceptInvitee(ports::kInvalidNodeName, kRemoteNodeName, kToken))
       .WillRepeatedly([&] { loop.Quit(); });
   remote_channel->AcceptInvitee(kRemoteNodeName, kToken);
@@ -62,7 +65,7 @@ TEST_F(NodeChannelTest, DestructionIsSafe) {
   remote_channel->AcceptInvitee(kRemoteNodeName, kToken);
 
   base::RunLoop error_loop;
-  EXPECT_CALL(remote_delegate, OnChannelError).WillOnce([&] {
+  EXPECT_CALL(remote_delegate_, OnChannelError).WillOnce([&] {
     error_loop.Quit();
   });
   local_channel.reset();
@@ -73,27 +76,24 @@ TEST_F(NodeChannelTest, MessagesCannotBeSmallerThanOldestVersion) {
   base::test::TaskEnvironment task_environment;
 
   PlatformChannel channel;
-  MockNodeChannelDelegate local_delegate;
   auto local_channel =
-      CreateNodeChannel(&local_delegate, channel.TakeLocalEndpoint());
+      CreateNodeChannel(&local_delegate_, channel.TakeLocalEndpoint());
   local_channel->Start();
-  MockNodeChannelDelegate remote_delegate;
   auto remote_channel =
-      CreateNodeChannel(&remote_delegate, channel.TakeRemoteEndpoint());
+      CreateNodeChannel(&remote_delegate_, channel.TakeRemoteEndpoint());
   remote_channel->Start();
 
   base::RunLoop loop;
 
   // It's a bad message and shouldn't be passed to the delegate.
-  EXPECT_CALL(local_delegate, OnRequestPortMerge(_, _, _)).Times(0);
+  EXPECT_CALL(local_delegate_, OnRequestPortMerge(_, _, _)).Times(0);
 
   // This good message should go through after.
   const NodeName kRemoteNodeName{123, 456};
   const NodeName kToken{987, 654};
-  EXPECT_CALL(local_delegate,
+  EXPECT_CALL(local_delegate_,
               OnAcceptInvitee(ports::kInvalidNodeName, kRemoteNodeName, kToken))
-      .WillRepeatedly([&] {
-    loop.Quit(); });
+      .WillRepeatedly([&] { loop.Quit(); });
 
   // 1 byte is not enough to contain the oldest version of the request port
   // merge payload, it should be discarded.
