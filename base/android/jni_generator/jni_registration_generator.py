@@ -98,7 +98,7 @@ def _Generate(options, java_file_paths):
     combined_dict = combined_dicts[module_name]
 
     combined_dict['HEADER_GUARD'] = \
-        os.path.splitext(options.header_path)[0].replace('/', '_').upper() + '_'
+        os.path.splitext(options.header_path)[0].replace('/', '_').replace('.', '_').upper() + '_'
     combined_dict['NAMESPACE'] = options.namespace
     header_content = CreateFromDict(options, module_name, combined_dict)
     with build_utils.AtomicOutput(options.header_path, mode='w') as f:
