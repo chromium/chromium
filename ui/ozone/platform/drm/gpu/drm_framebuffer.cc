@@ -23,7 +23,7 @@ namespace {
 // framebuffers, only XR/B30; this function indicates if an opaque format should
 // be used instead of the non-opaque |buffer_format| for AddFramebuffer2().
 bool ForceUsingOpaqueFormatWorkaround(
-    const scoped_refptr<ui::DrmDevice>& drm_device,
+    const scoped_refptr<DrmDevice>& drm_device,
     uint32_t drm_fourcc) {
   constexpr uint32_t kHighBitDepthARGBFormats[] = {
       DRM_FORMAT_ARGB2101010, DRM_FORMAT_ABGR2101010, DRM_FORMAT_RGBA1010102,

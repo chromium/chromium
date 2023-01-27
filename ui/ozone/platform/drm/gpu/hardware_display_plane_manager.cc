@@ -526,13 +526,13 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
   crtc_state.modeset_framebuffers.clear();
 }
 
-ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
+HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
   absl::optional<std::string> driver = drm_->GetDriverName();
   if (!driver.has_value())
     return {.is_valid = false};
 
-  ui::HardwareCapabilities hc;
+  HardwareCapabilities hc;
   hc.is_valid = true;
   hc.num_overlay_capable_planes = base::ranges::count_if(
       planes_, [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {

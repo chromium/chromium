@@ -403,7 +403,7 @@ bool ScreenManager::TestAndSetPreferredModifiers(
     HardwareDisplayController* controller = it->get();
 
     if (params.mode) {
-      uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+      uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
           display::DisplaySnapshot::PrimaryFormat());
       std::vector<uint64_t> modifiers =
           controller->GetFormatModifiersForTestModeset(fourcc_format);
@@ -453,7 +453,7 @@ bool ScreenManager::TestAndSetLinearModifier(
     DCHECK(controllers_.end() != it);
     HardwareDisplayController* controller = it->get();
 
-    uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+    uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
         display::DisplaySnapshot::PrimaryFormat());
     std::vector<uint64_t> modifiers =
         controller->GetFormatModifiersForTestModeset(fourcc_format);
@@ -813,7 +813,7 @@ void ScreenManager::UpdateControllerToWindowMapping() {
     // otherwise the controller may be waiting for a page flip while the window
     // tries to schedule another buffer.
     if (should_enable) {
-      uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+      uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
           display::DisplaySnapshot::PrimaryFormat());
       std::vector<uint64_t> modifiers =
           controller->GetSupportedModifiers(fourcc_format);
@@ -858,7 +858,7 @@ DrmOverlayPlaneList ScreenManager::GetModesetPlanes(
     bool include_overlays,
     bool is_testing) {
   scoped_refptr<DrmDevice> drm = controller->GetDrmDevice();
-  uint32_t fourcc_format = ui::GetFourCCFormatForOpaqueFramebuffer(
+  uint32_t fourcc_format = GetFourCCFormatForOpaqueFramebuffer(
       display::DisplaySnapshot::PrimaryFormat());
   // Get the buffer that best reflects what the next Page Flip will look like,
   // which is using the preferred modifiers from the controllers.

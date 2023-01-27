@@ -215,7 +215,7 @@ class HardwareDisplayPlaneManager {
   // Gets `HardwareCapabilities` based on planes available to the specified
   // CRTC. num_overlay_capable_planes counts both `DRM_PLANE_TYPE_PRIMARY` and
   // `DRM_PLANE_TYPE_OVERLAY` planes.
-  ui::HardwareCapabilities GetHardwareCapabilities(uint32_t crtc_id);
+  HardwareCapabilities GetHardwareCapabilities(uint32_t crtc_id);
 
  protected:
   struct ConnectorProperties {

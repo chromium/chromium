@@ -131,9 +131,8 @@ class DrmThread : public base::Thread,
       std::vector<OverlayStatus>* result);
   // Calls `receive_callback` with a `HardwareCapabilities` containing
   // information about overlay support on the current hardware.
-  void GetHardwareCapabilities(
-      gfx::AcceleratedWidget widget,
-      ui::HardwareCapabilitiesCallback receive_callback);
+  void GetHardwareCapabilities(gfx::AcceleratedWidget widget,
+                               HardwareCapabilitiesCallback receive_callback);
 
   // DrmWindowProxy (on GPU thread) is the client for these methods.
   void SchedulePageFlip(gfx::AcceleratedWidget widget,

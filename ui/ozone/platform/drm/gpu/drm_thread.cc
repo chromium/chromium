@@ -143,8 +143,8 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   CHECK(drm) << "No devices available for buffer allocation.";
 
   DrmWindow* window = screen_manager_->GetWindow(widget);
-  uint32_t flags = ui::BufferUsageToGbmFlags(usage);
-  uint32_t fourcc_format = ui::GetFourCCFormatFromBufferFormat(format);
+  uint32_t flags = BufferUsageToGbmFlags(usage);
+  uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
 
   // Some modifiers are incompatible with some gbm_bo_flags.  If we give
   // modifiers to the GBM allocator, then GBM ignores the flags, and therefore
@@ -205,7 +205,7 @@ void DrmThread::CreateBufferFromHandle(
   DCHECK(drm);
 
   std::unique_ptr<GbmBuffer> buffer = drm->gbm_device()->CreateBufferFromHandle(
-      ui::GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
+      GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
   if (!buffer)
     return;
 
@@ -346,7 +346,7 @@ void DrmThread::CheckOverlayCapabilitiesSync(
 
 void DrmThread::GetHardwareCapabilities(
     gfx::AcceleratedWidget widget,
-    ui::HardwareCapabilitiesCallback receive_callback) {
+    HardwareCapabilitiesCallback receive_callback) {
   TRACE_EVENT0("drm,hwoverlays", "DrmThread::GetHardwareCapabilities");
   DCHECK(screen_manager_->GetWindow(widget));
   DCHECK(device_manager_->GetDrmDevice(widget));
@@ -356,7 +356,7 @@ void DrmThread::GetHardwareCapabilities(
       device_manager_->GetDrmDevice(widget)->plane_manager();
 
   if (!hdc || !plane_manager) {
-    ui::HardwareCapabilities hardware_capabilities{.is_valid = false};
+    HardwareCapabilities hardware_capabilities{.is_valid = false};
     std::move(receive_callback).Run(hardware_capabilities);
     return;
   }
@@ -371,7 +371,7 @@ void DrmThread::GetHardwareCapabilities(
   } else {
     // If there are multiple CRTCs for this widget we shouldn't rely on overlays
     // working.
-    ui::HardwareCapabilities hardware_capabilities{.is_valid = false};
+    HardwareCapabilities hardware_capabilities{.is_valid = false};
     std::move(receive_callback).Run(hardware_capabilities);
   }
 }
