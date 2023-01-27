@@ -62,12 +62,6 @@ class SideSearchBrowserTest : public InProcessBrowserTest {
   // Simulates a click on the reading list entrypoint.
   void NotifyReadLaterButtonClick(Browser* browser);
 
-  // Sets the side panel availability bit which is used to indicate service
-  // availability. This is typically set to true when testing.
-  void SetIsSidePanelSRPAvailableAt(Browser* browser,
-                                    int index,
-                                    bool is_available);
-
   // Helper for retrieving the BrowserView associated with `browser`.
   BrowserView* BrowserViewFor(Browser* browser);
 

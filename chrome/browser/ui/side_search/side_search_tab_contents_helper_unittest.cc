@@ -52,7 +52,6 @@ class SideSearchTabContentsHelperTest : public ::testing::Test {
         [](const GURL& url) { return !IsSearchURLMatch(url); }));
     config->SetGenerateSideSearchURLCallback(
         base::BindRepeating([](const GURL& url) { return url; }));
-    config->set_is_side_panel_srp_available(true);
     Test::SetUp();
   }
 

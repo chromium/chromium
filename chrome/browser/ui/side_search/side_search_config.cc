@@ -171,8 +171,7 @@ void SideSearchConfig::SetShouldNavigateInSidePanelCallback(
 }
 
 bool SideSearchConfig::CanShowSidePanelForURL(const GURL& url) {
-  return is_side_panel_srp_available_ &&
-         can_show_side_panel_for_url_callback_.Run(url);
+  return can_show_side_panel_for_url_callback_.Run(url);
 }
 
 void SideSearchConfig::SetCanShowSidePanelForURLCallback(
@@ -198,9 +197,6 @@ void SideSearchConfig::RemoveObserver(Observer* observer) {
 }
 
 void SideSearchConfig::ResetStateAndNotifyConfigChanged() {
-  // Reset the availabiliy bit before propagating notifications.
-  is_side_panel_srp_available_ = false;
-
   for (auto& observer : observers_)
     observer.OnSideSearchConfigChanged();
 }

@@ -442,26 +442,6 @@ IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
             GetActiveSidePanelWebContents(browser())->GetVisibleURL());
 }
 
-IN_PROC_BROWSER_TEST_F(SideSearchV2Test,
-                       SidePanelButtonIsNotShownWhenSRPIsUnavailable) {
-  // Set the side panel SRP be unavailable.
-  SetIsSidePanelSRPAvailableAt(browser(), 0, false);
-
-  // If no previous matched search page has been navigated to the button should
-  // not be visible.
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // The side panel button should never be visible on the matched search page.
-  NavigateActiveTab(browser(), GetMatchingSearchUrl());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-
-  // The side panel button should not be visible if the side panel SRP is not
-  // available.
-  NavigateActiveTab(browser(), GetNonMatchingUrl());
-  EXPECT_FALSE(GetSidePanelFor(browser())->GetVisible());
-}
-
 IN_PROC_BROWSER_TEST_F(
     SideSearchV2Test,
     SidePanelStatePreservedWhenMovingTabsAcrossBrowserWindows) {

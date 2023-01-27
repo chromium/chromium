@@ -80,7 +80,6 @@ class SideSearchSideContentsHelperBrowsertest : public InteractiveBrowserTest {
         base::BindRepeating([](const GURL& url) { return true; }));
     config->SetGenerateSideSearchURLCallback(
         base::BindRepeating([](const GURL& url) { return url; }));
-    config->set_is_side_panel_srp_available(true);
 
     // Create the side panel contents.
     GetTabContentsHelper()->GetSidePanelContents();

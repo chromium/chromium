@@ -18,10 +18,6 @@ class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-namespace network {
-class SimpleURLLoader;
-}  // namespace network
-
 class GURL;
 class SideSearchConfig;
 
@@ -43,11 +39,9 @@ class SideSearchTabContentsHelper
         const content::OpenURLParams& params) = 0;
 
     // Notifies the delegate that the side panel's availability has changed.
-    // This is called in response to validating that the side panel SRP is
-    // available in `TestSRPAvailability()`. `should_close` determines whether
-    // the side panel should be closed. This allows the helper to signal
-    // delegates that they should close the feature when something exceptional
-    // has happened.
+    // `should_close` determines whether the side panel should be closed. This
+    // allows the helper to signal delegates that they should close the feature
+    // when something exceptional has happened.
     virtual void SidePanelAvailabilityChanged(bool should_close) = 0;
 
     virtual void OpenSidePanel() = 0;
@@ -166,11 +160,6 @@ class SideSearchTabContentsHelper
   // Closes the side panel and resets all helper state.
   void ClearHelperState();
 
-  // Makes a HEAD request for the side search Google SRP to test for the page's
-  // availability and sets `is_side_panel_srp_available_` accordingly.
-  void TestSRPAvailability();
-  void OnResponseLoaded(scoped_refptr<net::HttpResponseHeaders> headers);
-
   SideSearchConfig* GetConfig();
 
   // Use a weak ptr for the delegate to avoid issues whereby the tab contents
@@ -201,10 +190,6 @@ class SideSearchTabContentsHelper
   // TODO(tluk): Update the way we manage the `side_panel_contents_` to avoid
   // keeping the object around when not needed by the feature.
   std::unique_ptr<content::WebContents> side_panel_contents_;
-
-  // Used to test if the side panel SRP for `last_search_url_` is currently
-  // available. Reset every time `TestSRPAvailability()` is called.
-  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
   // Time since the side panel became available for the `last_search_url_`.
   absl::optional<base::ElapsedTimer> available_timer_;

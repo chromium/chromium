@@ -76,7 +76,6 @@ after discussions on the right group.
       <annotation id="quick_answers_spellchecker"/>
       <annotation id="remote_apps_image_downloader"/>
       <annotation id="remote_command_screenshot"/>
-      <annotation id="side_search_availability_test"/>
       <annotation id="smb_netbios_name_query"/>
       <annotation id="supervised_users_denylist"/>
       <annotation id="tachyon_ice_config_fetcher"/>
