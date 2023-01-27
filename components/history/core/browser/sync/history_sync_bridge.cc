@@ -1070,8 +1070,6 @@ bool HistorySyncBridge::AddEntityInBackend(
       history::ClusterVisit cluster_visit;
       cluster_visit.annotated_visit.visit_row = visit_row;
       cluster_visit.annotated_visit.visit_row.visit_id = added_visit_id;
-      // TODO(b/264457591): Refactor some of the cluster visit details to
-      //   History so it can be appropriately populated here.
       history_backend_->AddVisitToSyncedCluster(
           cluster_visit, specifics.originator_cache_guid(),
           specifics.originator_cluster_id());

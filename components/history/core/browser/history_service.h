@@ -617,6 +617,12 @@ class HistoryService : public KeyedService {
       base::OnceClosure callback,
       base::CancelableTaskTracker* tracker);
 
+  // Updates the details of the existing cluster visit that has the same visit
+  // ID as `new_cluster_visit`.
+  virtual base::CancelableTaskTracker::TaskId UpdateClusterVisit(
+      const history::ClusterVisit& new_cluster_visit,
+      base::CancelableTaskTracker* tracker);
+
   // Get the most recent `Cluster`s within the constraints. The most recent
   // visit of a cluster represents the cluster's time. `max_clusters` is a hard
   // cap. `max_visits_soft_cap` is a soft cap; `GetMostRecentClusters()` will

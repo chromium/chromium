@@ -99,6 +99,11 @@ class VisitAnnotationsDatabase {
   void UpdateClusterTriggerability(
       const std::vector<history::Cluster>& clusters);
 
+  // Updates the cluster visit with the same visit ID as `cluster_visit` that
+  // belongs to `cluster_id`.
+  void UpdateClusterVisit(int64_t cluster_id,
+                          const history::ClusterVisit& cluster_visit);
+
   // Get a `Cluster`. Does not include the cluster's `visits` or
   // `keyword_to_data_map`.
   Cluster GetCluster(int64_t cluster_id);

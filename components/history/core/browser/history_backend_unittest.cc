@@ -4142,7 +4142,8 @@ TEST_F(
   EXPECT_TRUE(out_cluster.keyword_to_data_map.contains(u"keyword1"));
 }
 
-TEST_F(HistoryBackendTest, AddVisitToSyncedCluster_GetCluster) {
+TEST_F(HistoryBackendTest,
+       AddVisitToSyncedCluster_GetCluster_UpdateClusterVisit) {
   std::string originator_cache_guid = "originator";
   int64_t originator_cluster_id = 123;
 
@@ -4169,6 +4170,18 @@ TEST_F(HistoryBackendTest, AddVisitToSyncedCluster_GetCluster) {
       backend_->db_->GetClusterIdContainingVisit(added_id1);
   EXPECT_GT(local_cluster_id, 0);
 
+  // Update the cluster visit.
+  history::ClusterVisit updated_cluster_visit = cluster_visit;
+  updated_cluster_visit.url_for_display = u"displayurl";
+  updated_cluster_visit.engagement_score = 10;
+  backend_->UpdateClusterVisit(updated_cluster_visit);
+
+  Cluster updated_out_cluster = backend_->GetCluster(
+      local_cluster_id, /*include_keywords_and_duplicates=*/false);
+  VerifyCluster(updated_out_cluster, {local_cluster_id, {added_id1}});
+  EXPECT_EQ(u"displayurl", updated_out_cluster.visits.front().url_for_display);
+  EXPECT_EQ(10, updated_out_cluster.visits.front().engagement_score);
+
   // Add another synced visit to same cluster.
   task_environment_.FastForwardBy(base::Seconds(1));
 
@@ -4192,6 +4205,34 @@ TEST_F(HistoryBackendTest, AddVisitToSyncedCluster_GetCluster) {
   Cluster out_cluster = backend_->GetCluster(
       local_cluster_id, /*include_keywords_and_duplicates=*/false);
   VerifyCluster(out_cluster, {local_cluster_id, {added_id2, added_id1}});
+}
+
+TEST_F(HistoryBackendTest, UpdateClusterVisit_NoClusterAssigned) {
+  const ui::PageTransition kLink = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_CHAIN_START |
+      ui::PAGE_TRANSITION_CHAIN_END);
+
+  VisitRow foreign_visit;
+  foreign_visit.visit_time = base::Time::Now();
+  foreign_visit.transition = kLink;
+  foreign_visit.originator_cache_guid = "originator";
+  foreign_visit.is_known_to_sync = true;
+  VisitID added_id1 = backend_->AddSyncedVisit(
+      GURL("https://some.url"), u"Title", /*hidden=*/false, foreign_visit,
+      absl::nullopt, absl::nullopt);
+
+  // Attempt to update cluster visit.
+  history::ClusterVisit cluster_visit;
+  cluster_visit.annotated_visit.visit_row = foreign_visit;
+  cluster_visit.annotated_visit.visit_row.visit_id = added_id1;
+  cluster_visit.url_for_display = u"displayurl";
+  cluster_visit.engagement_score = 10;
+  backend_->UpdateClusterVisit(cluster_visit);
+
+  // Cluster visit should not belong to any cluster if no cluster contains the
+  // visit to be updated.
+  int64_t local_cluster_id = backend_->db_->GetClusterIdContainingVisit(10);
+  EXPECT_EQ(local_cluster_id, 0);
 }
 
 TEST_F(HistoryBackendTest, GetRedirectChainStart) {

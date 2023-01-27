@@ -98,6 +98,10 @@ class ContextClustererHistoryServiceObserver
   void OnPersistedClusterIdReceived(int64_t cluster_id,
                                     int64_t persisted_cluster_id);
 
+  // Creates a cluster visit from `normalized_url` and `visit_row`.
+  history::ClusterVisit CreateClusterVisit(const std::string& normalized_url,
+                                           const history::VisitRow& visit_row);
+
   // Overrides `clock_` for testing.
   void OverrideClockForTesting(const base::Clock* clock);
 

@@ -2205,6 +2205,23 @@ void HistoryBackend::HideVisits(const std::vector<VisitID>& visit_ids) {
   db_->HideVisits(visit_ids);
 }
 
+void HistoryBackend::UpdateClusterVisit(
+    const history::ClusterVisit& cluster_visit) {
+  TRACE_EVENT0("browser", "HistoryBackend::UpdateClusterVisit");
+  if (!db_) {
+    return;
+  }
+
+  int64_t cluster_id = db_->GetClusterIdContainingVisit(
+      cluster_visit.annotated_visit.visit_row.visit_id);
+  if (cluster_id == 0) {
+    // No cluster visit persisted, just return.
+    return;
+  }
+
+  db_->UpdateClusterVisit(cluster_id, cluster_visit);
+}
+
 std::vector<Cluster> HistoryBackend::GetMostRecentClusters(
     base::Time inclusive_min_time,
     base::Time exclusive_max_time,
