@@ -47,117 +47,6 @@ using base::android::ToJavaIntArray;
 
 namespace {
 
-namespace protobuf {
-
-// WireType enumerates the protobuf wire types. See
-// https://developers.google.com/protocol-buffers/docs/encoding#structure
-enum class WireType {
-  kVarint = 0,
-  kLengthPrefixed = 2,
-};
-
-// EncodeTag encodes a protobuf tag and type into the identifier value used on
-// the wire. See
-// https://developers.google.com/protocol-buffers/docs/encoding#structure
-constexpr uint64_t EncodeTag(uint64_t tag_number, WireType type) {
-  return tag_number << 3 | static_cast<uint8_t>(type);
-}
-
-// Some tag numbers used in a protobuf that cannot be included here but which
-// we wish to generate messages for.
-constexpr uint64_t kTagRequestId = 1;
-constexpr uint64_t kTagEventType = 2;
-constexpr uint64_t kTagTunnelId = 11;
-constexpr uint64_t kTagChromeLog = 501;
-constexpr uint64_t kTagEvent = 1;
-constexpr uint64_t kTagResult = 2;
-
-// cbb_add_varint encodes |v| as a base128 varint as described at
-// https://developers.google.com/protocol-buffers/docs/encoding#varints.
-bool cbb_add_varint(CBB* cbb, uint64_t v) {
-  for (;;) {
-    const uint64_t next_v = v >> 7;
-    const bool is_last_byte = (next_v == 0);
-    const uint8_t b = (v & 0x7f) | (is_last_byte ? 0 : 0x80);
-
-    if (!CBB_add_u8(cbb, b)) {
-      return false;
-    }
-
-    if (is_last_byte) {
-      return true;
-    }
-    v = next_v;
-  }
-}
-
-enum class Type {
-  kEvent,
-  kResult,
-};
-
-// LogEvent logs an event on a server-linked transaction with the given
-// |tunnel_id|. The semantics of |value| are specific to the |type| of the
-// logged event.
-void LogEvent(
-    JNIEnv* env,
-    base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
-    Type type,
-    unsigned value) {
-  uint64_t tag;
-  switch (type) {
-    case Type::kEvent:
-      tag = kTagEvent;
-      break;
-    case Type::kResult:
-      tag = kTagResult;
-      break;
-  }
-
-  // An inner protobuf is serialised first in order to get its length for the
-  // outer message.
-  bssl::ScopedCBB inner_cbb;
-  uint8_t* inner_bytes;
-  size_t inner_length;
-  if (!CBB_init(inner_cbb.get(), 16) ||
-      !cbb_add_varint(inner_cbb.get(), EncodeTag(tag, WireType::kVarint)) ||
-      !cbb_add_varint(inner_cbb.get(), value) ||
-      !CBB_finish(inner_cbb.get(), &inner_bytes, &inner_length)) {
-    return;
-  }
-  bssl::UniquePtr<uint8_t> inner_bytes_storage(inner_bytes);
-
-  bssl::ScopedCBB cbb;
-  uint8_t* bytes;
-  size_t length;
-  if (!CBB_init(cbb.get(), 32) ||
-      // Protobuf entries are (tag, value) pairs.
-      !cbb_add_varint(cbb.get(), EncodeTag(kTagRequestId, WireType::kVarint)) ||
-      !cbb_add_varint(cbb.get(), 0) ||
-
-      !cbb_add_varint(cbb.get(), EncodeTag(kTagEventType, WireType::kVarint)) ||
-      !cbb_add_varint(cbb.get(), kTagChromeLog) ||
-
-      !cbb_add_varint(cbb.get(),
-                      EncodeTag(kTagTunnelId, WireType::kLengthPrefixed)) ||
-      !cbb_add_varint(cbb.get(), tunnel_id.size()) ||
-      !CBB_add_bytes(cbb.get(), tunnel_id.data(), tunnel_id.size()) ||
-
-      !cbb_add_varint(cbb.get(),
-                      EncodeTag(kTagChromeLog, WireType::kLengthPrefixed)) ||
-      !cbb_add_varint(cbb.get(), inner_length) ||
-      !CBB_add_bytes(cbb.get(), inner_bytes, inner_length) ||
-
-      !CBB_finish(cbb.get(), &bytes, &length)) {
-    return;
-  }
-  bssl::UniquePtr<uint8_t> bytes_storage(bytes);
-
-  Java_CableAuthenticator_logEvent(env, ToJavaByteArray(env, bytes, length));
-}
-
-}  // namespace protobuf
-
 // CableV2MobileEvent enumerates several steps that occur during a caBLEv2
 // transaction. Do not change the assigned value since they are used in
 // histograms, only append new values. Keep synced with enums.xml.
@@ -237,11 +126,6 @@ struct GlobalData {
   // reserved so that functions can still return that to indicate an error.
   jlong instance_num = 1;
 
-  // metrics_enabled records whether the user opted into metrics and crash
-  // reporting. If so then logging of events related to server-link
-  // transactions is permitted.
-  bool metrics_enabled = false;
-
   absl::optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
       root_secret;
   raw_ptr<network::mojom::NetworkContext> network_context = nullptr;
@@ -290,33 +174,19 @@ GlobalData& GetGlobalData() {
 
 void ResetGlobalData() {
   GlobalData& global_data = GetGlobalData();
-  global_data.metrics_enabled = false;
   global_data.current_transaction.reset();
   global_data.pending_make_credential_callback.reset();
   global_data.pending_get_assertion_callback.reset();
   global_data.usb_callback.reset();
-  global_data.server_link_tunnel_id.reset();
 }
 
 void RecordEvent(const GlobalData* global_data, CableV2MobileEvent event) {
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent", event);
-
-  if (global_data && global_data->metrics_enabled &&
-      global_data->server_link_tunnel_id.has_value()) {
-    protobuf::LogEvent(global_data->env, *global_data->server_link_tunnel_id,
-                       protobuf::Type::kEvent, static_cast<unsigned>(event));
-  }
 }
 
 void RecordResult(const GlobalData* global_data, CableV2MobileResult result) {
   base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileResult",
                                 result);
-
-  if (global_data && global_data->metrics_enabled &&
-      global_data->server_link_tunnel_id.has_value()) {
-    protobuf::LogEvent(global_data->env, *global_data->server_link_tunnel_id,
-                       protobuf::Type::kResult, static_cast<unsigned>(result));
-  }
 }
 
 // AndroidBLEAdvert wraps a Java |BLEAdvert| object so that
@@ -593,13 +463,12 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 // These functions are the entry points for CableAuthenticator.java and
 // BLEHandler.java calling into C++.
 
-static void JNI_CableAuthenticator_Setup(JNIEnv* env,
-                                         jlong registration_long,
-                                         jlong network_context_long,
-                                         const JavaParamRef<jbyteArray>& secret,
-                                         jboolean metrics_enabled) {
+static void JNI_CableAuthenticator_Setup(
+    JNIEnv* env,
+    jlong registration_long,
+    jlong network_context_long,
+    const JavaParamRef<jbyteArray>& secret) {
   GlobalData& global_data = GetGlobalData();
-  global_data.metrics_enabled = metrics_enabled;
 
   // The root_secret may not be provided when triggered for server-link. It
   // won't be used in that case either, but we need to be able to grab it if
@@ -903,20 +772,6 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   }
 
   std::move(callback).Run(ctap_status, nullptr);
-}
-
-static void JNI_CableAuthenticator_RecordEvent(
-    JNIEnv* env,
-    jint event,
-    const JavaParamRef<jbyteArray>& server_link_data_java) {
-  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
-  base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent",
-                                static_cast<CableV2MobileEvent>(event));
-
-  if (GetGlobalData().metrics_enabled) {
-    protobuf::LogEvent(env, /*tunnel_id=*/std::get<2>(server_link_values),
-                       protobuf::Type::kEvent, event);
-  }
 }
 
 static void JNI_USBHandler_OnUSBData(JNIEnv* env,

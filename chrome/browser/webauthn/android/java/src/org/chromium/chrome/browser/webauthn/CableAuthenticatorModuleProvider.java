@@ -72,8 +72,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
             "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity";
     private static final String SECRET_KEY =
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
-    private static final String METRICS_KEY =
-            "org.chromium.chrome.modules.cablev2_authenticator.MetricsEnabled";
 
     private View mErrorView;
 
@@ -154,8 +152,6 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         arguments.putLong(
                 REGISTRATION_KEY, CableAuthenticatorModuleProviderJni.get().getRegistration());
         arguments.putByteArray(SECRET_KEY, CableAuthenticatorModuleProviderJni.get().getSecret());
-        arguments.putBoolean(METRICS_KEY,
-                CableAuthenticatorModuleProviderJni.get().isMetricsAndCrashReportingEnabled());
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
         // This fragment is deliberately not added to the back-stack here so
@@ -265,8 +261,5 @@ public class CableAuthenticatorModuleProvider extends Fragment implements OnClic
         byte[] getSecret();
         // freeEvent releases resources used by the given event.
         void freeEvent(long event);
-        // isMetricsCollectionEnabled returns true if the user has opted into
-        // metrics collection. This enables logging for server-linked sign-ins.
-        boolean isMetricsAndCrashReportingEnabled();
     }
 }

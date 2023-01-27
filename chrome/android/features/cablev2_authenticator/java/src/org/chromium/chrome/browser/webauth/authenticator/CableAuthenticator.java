@@ -95,7 +95,7 @@ class CableAuthenticator {
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, byte[] secret, boolean isFcmNotification, UsbAccessory accessory,
-            byte[] serverLink, byte[] fcmEvent, String qrURI, boolean metricsEnabled) {
+            byte[] serverLink, byte[] fcmEvent, String qrURI) {
         mContext = context;
         mUi = ui;
         mFCMEvent = fcmEvent;
@@ -108,7 +108,7 @@ class CableAuthenticator {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        CableAuthenticatorJni.get().setup(registration, networkContext, secret, metricsEnabled);
+        CableAuthenticatorJni.get().setup(registration, networkContext, secret);
 
         // Wait for |onTransportReady|.
     }
@@ -120,12 +120,6 @@ class CableAuthenticator {
     @CalledByNative
     public void onStatus(int code) {
         mUi.onStatus(code);
-    }
-
-    // Called when the native code wishes to log a protobuf event.
-    @CalledByNative
-    public static void logEvent(byte[] event) {
-        CableEventLogger.log(event);
     }
 
     @CalledByNative
@@ -345,17 +339,6 @@ class CableAuthenticator {
     }
 
     /**
-     * Records an event if this is a server-link transaction and if UMA has been opted into.
-     *
-     * @param event a value from `CableV2MobileEvent`
-     */
-    void maybeRecordEvent(int event) {
-        if (mServerLinkData != null) {
-            CableAuthenticatorJni.get().recordEvent(event, mServerLinkData);
-        }
-    }
-
-    /**
      * Called to indicate that either USB or Bluetooth transports are ready for processing.
      */
     void onTransportReady() {
@@ -410,7 +393,7 @@ class CableAuthenticator {
          * one-time setup operations. It may be called several times, but subsequent calls are
          * ignored.
          */
-        void setup(long registration, long networkContext, byte[] secret, boolean metricsEnabled);
+        void setup(long registration, long networkContext, byte[] secret);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
@@ -476,11 +459,5 @@ class CableAuthenticator {
          * Called to alert native code of a response to a getAssertion request.
          */
         void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes);
-
-        /**
-         * Called to perhaps record an event. The event must be a value from `CableV2MobileEvent`.
-         * It is recorded only if UMA has been opted into.
-         */
-        void recordEvent(int event, byte[] serverLinkData);
     }
 }

@@ -15,7 +15,6 @@ android_library("java") {
 
   deps = [
     ":java_resources",
-    ":logging_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
@@ -34,10 +33,6 @@ android_library("java") {
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.webauth.authenticator"
-}
-
-android_library("logging_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/webauth/authenticator/CableEventLogger.java" ]
 }
 
 generate_jni("jni_headers") {

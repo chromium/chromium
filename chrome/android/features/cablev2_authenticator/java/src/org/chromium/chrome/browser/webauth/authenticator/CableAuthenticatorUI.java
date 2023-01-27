@@ -70,8 +70,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
             "org.chromium.chrome.modules.cablev2_authenticator.Registration";
     private static final String SECRET_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.Secret";
-    private static final String METRICS_EXTRA =
-            "org.chromium.chrome.modules.cablev2_authenticator.MetricsEnabled";
     private static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
     private static final String QR_EXTRA = "org.chromium.chrome.browser.webauth.authenticator.QR";
@@ -207,12 +205,11 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
         final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
         final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
-        final boolean metricsEnabled = arguments.getBoolean(METRICS_EXTRA);
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                secret, mMode == Mode.FCM, accessory, serverLink, fcmEvent, qrURI, metricsEnabled);
+                secret, mMode == Mode.FCM, accessory, serverLink, fcmEvent, qrURI);
 
         mState = State.START;
         onEvent(Event.NONE);
@@ -354,8 +351,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                             && requestBluetoothPermissions()) {
                         mState = State.BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED;
-                        mAuthenticator.maybeRecordEvent(
-                                EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED);
                         return;
                     }
 
@@ -366,7 +361,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     if (event != Event.PERMISSIONS_GRANTED) {
                         return;
                     }
-                    mAuthenticator.maybeRecordEvent(EVENT_BLUETOOTH_ADVERTISE_PERMISSION_GRANTED);
                     mState = State.BLUETOOTH_READY;
                     break;
 
@@ -627,9 +621,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
             return;
         }
 
-        if (mState == State.BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED) {
-            mAuthenticator.maybeRecordEvent(EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REJECTED);
-        }
         mState = State.ERROR;
         mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
         updateUiForState();

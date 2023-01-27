@@ -145,7 +145,6 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class browser_sync::DeviceInfoSyncClientImpl;
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
-  friend class webauthn::authenticator::IsMetricsAndCrashReportingEnabled;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;
