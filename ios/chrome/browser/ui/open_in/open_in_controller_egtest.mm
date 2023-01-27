@@ -34,10 +34,10 @@ namespace {
 // Path which leads to a PDF file.
 const char kPDFPath[] = "/testpage.pdf";
 
-// Path wich leads to a PNG file.
+// Path which leads to a PNG file.
 const char kPNGPath[] = "/chromium_logo.png";
 
-// Path wich leads to a MOV file.
+// Path which leads to a MOV file.
 const char kMOVPath[] = "/video_sample.mov";
 
 // Accessibility ID of the Activity menu.
