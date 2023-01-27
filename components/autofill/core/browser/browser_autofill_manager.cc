@@ -3237,24 +3237,13 @@ bool BrowserAutofillManager::ShouldShowVirtualCardOption(
 
 FormEventLoggerBase* BrowserAutofillManager::GetEventFormLogger(
     FieldTypeGroup field_type_group) const {
-  switch (field_type_group) {
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kNameBilling:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddressHome:
-    case FieldTypeGroup::kAddressBilling:
-    case FieldTypeGroup::kPhoneHome:
-    case FieldTypeGroup::kPhoneBilling:
-    case FieldTypeGroup::kBirthdateField:
+  switch (FieldTypeGroupToFormType(field_type_group)) {
+    case FormType::kAddressForm:
       return address_form_event_logger_.get();
-    case FieldTypeGroup::kCreditCard:
+    case FormType::kCreditCardForm:
       return credit_card_form_event_logger_.get();
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kUsernameField:
-    case FieldTypeGroup::kNoGroup:
-    case FieldTypeGroup::kUnfillable:
+    case FormType::kPasswordForm:
+    case FormType::kUnknownFormType:
       return nullptr;
   }
   NOTREACHED();
