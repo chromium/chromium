@@ -662,10 +662,11 @@ const newTreeElement = (() => {
     _metadataContent.textContent = metadataStr;
   }
 
-  async function performInitialLoad() {
+  /** @param {!Array<!URL>} urlsToLoad */
+  async function performInitialLoad(urlsToLoad) {
     let accessToken = null;
     _progress.setValue(0.1);
-    if (requiresAuthentication()) {
+    if (requiresAuthentication(urlsToLoad)) {
       accessToken = await fetchAccessToken();
       _progress.setValue(0.2);
     }
@@ -718,7 +719,13 @@ const newTreeElement = (() => {
     _metadataContent.classList.toggle('active');
   });
 
-  if (new URLSearchParams(location.search).has('load_url')) {
-    performInitialLoad();
+  const searchParams = new URLSearchParams(location.search);
+  const urlsToLoad = [];
+  for (const key of ['before_url', 'load_url']) {
+    if (searchParams.has(key))
+      urlsToLoad.push(new URL(searchParams.get(key), document.baseURI));
+  }
+  if (urlsToLoad.length > 0) {
+    performInitialLoad(urlsToLoad);
   }
 }
