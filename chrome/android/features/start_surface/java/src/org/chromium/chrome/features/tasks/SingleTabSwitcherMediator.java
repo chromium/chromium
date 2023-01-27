@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.Ta
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.TabSwitcherViewObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -78,6 +79,8 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                     && mTabModelSelector.getCurrentTabId() != TabList.INVALID_TAB_INDEX) {
                 StartSurfaceUserData.setOpenedFromStart(mTabModelSelector.getCurrentTab());
                 selectTheCurrentTab();
+                BrowserUiUtils.recordModuleClickHistogram(BrowserUiUtils.HostSurface.START_SURFACE,
+                        BrowserUiUtils.ModuleTypeOnStartAndNTP.SINGLE_TAB_CARD);
             }
         });
 
