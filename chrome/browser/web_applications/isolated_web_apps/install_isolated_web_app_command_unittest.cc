@@ -196,6 +196,8 @@ class FakeResponseReaderFactory : public IsolatedWebAppResponseReaderFactory {
                             const web_package::SignedWebBundleId& web_bundle_id,
                             bool skip_signature_verification,
                             Callback callback) override {
+    // Signatures _must_ be verified during installation.
+    CHECK(!skip_signature_verification);
     if (bundle_error_) {
       std::move(callback).Run(base::unexpected(std::move(*bundle_error_)));
     } else {

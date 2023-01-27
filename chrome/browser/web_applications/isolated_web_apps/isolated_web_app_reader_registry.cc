@@ -106,14 +106,17 @@ void IsolatedWebAppReaderRegistry::ReadResponse(
   cache_entry_it->second.pending_requests.emplace_back(resource_request,
                                                        std::move(callback));
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, signatures are only verified at install-time. The location of
+  // the installed bundles inside of cryptohome is deemed secure enough to not
+  // necessitate re-verification of signatures once per session.
+  bool skip_signature_verification = true;
+#else
   // If we already verified the signatures of this Signed Web Bundle during
   // the current browser session, we trust that the Signed Web Bundle has not
   // been tampered with and don't re-verify signatures.
-  //
-  // TODO(crbug.com/1366309): On ChromeOS, we should only verify signatures at
-  // install-time. Until this is implemented, we will verify signatures on
-  // ChromeOS once per session.
   bool skip_signature_verification = verified_files_.contains(web_bundle_path);
+#endif
 
   reader_factory_->CreateResponseReader(
       web_bundle_path, web_bundle_id, skip_signature_verification,

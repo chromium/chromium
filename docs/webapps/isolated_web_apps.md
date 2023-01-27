@@ -45,9 +45,9 @@ content from an Isolated Web App:
 7. If the Integrity Block is valid, then:
    - On non-ChromeOS: The signatures contained in the Isolated Web App are
      verified using `web_package::SignedWebBundleSignatureVerifier`.
-   - On ChromeOS: The signatures are only verified during installation
-     (TODO(crbug.com/1366309)), because the cryptohome is deemed secure enough
-     to prevent tampering with an already installed Isolated Web App.
+   - On ChromeOS: The signatures are only verified during installation, because
+     the cryptohome is deemed secure enough to prevent tampering with an already
+     installed Isolated Web App.
 7. If the signatures are valid, the metadata of the Signed Web Bundle is read
    and validated using `IsolatedWebAppValidator::ValidateMetadata`. This
    includes a check that validates that URLs contained in the Signed Web Bundle

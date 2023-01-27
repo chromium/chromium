@@ -373,7 +373,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     EXPECT_EQ(result->head()->response_code, 200);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
   EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
 
   // Verify that the cache cleanup timer has started.
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
@@ -394,7 +398,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     EXPECT_EQ(result->head()->response_code, 200);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
   EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
 
   // Verify that the cache cleanup timer is still running.
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
@@ -427,9 +435,13 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     EXPECT_EQ(result->head()->response_code, 200);
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(num_signature_verifications, 0ul);
+#else
   // Signatures should not have been verified again, since we only verify them
   // once per session per file path.
   EXPECT_EQ(num_signature_verifications, 1ul);
+#endif
 
   // Verify that the cache cleanup timer has started again.
   EXPECT_EQ(task_environment_.GetPendingMainThreadTaskCount(), 1ul)
@@ -550,6 +562,21 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
 
   FulfillIntegrityBlock();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, signatures are only verified at installation-time, thus the
+  // `FakeSignatureVerifier` set up above will never be called.
+  FulfillMetadata();
+  FulfillResponse(resource_request);
+
+  ReadResult result = read_response_future.Take();
+  ASSERT_TRUE(result.has_value()) << result.error().message;
+
+  histogram_tester.ExpectBucketCount(
+      "WebApp.Isolated.ReadIntegrityBlockAndMetadataStatus",
+      IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
+          kSuccess,
+      1);
+#else
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type,
@@ -563,6 +590,7 @@ TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
       IsolatedWebAppResponseReaderFactory::ReadIntegrityBlockAndMetadataStatus::
           kSignatureVerificationError,
       1);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 INSTANTIATE_TEST_SUITE_P(
