@@ -49,9 +49,6 @@ class GL_EXPORT GLImageNativePixmap : public GLImage {
   // It is aligned with glTexImage{2|3}D's parameter |internalformat|.
   unsigned GetInternalFormat();
 
-  // Returns the NativePixmap backing this instance.
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap();
-
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   bool BindTexImage(unsigned target) override;

@@ -432,8 +432,4 @@ unsigned GLImageNativePixmap::GetInternalFormat() {
   return GLInternalFormat(format_);
 }
 
-scoped_refptr<gfx::NativePixmap> GLImageNativePixmap::GetNativePixmap() {
-  return pixmap_;
-}
-
 }  // namespace gl

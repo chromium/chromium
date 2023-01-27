@@ -52,8 +52,6 @@ class VTVideoDecodeAccelerator;
 
 namespace ui {
 class NativePixmapGLBinding;
-class SurfacelessGlRenderer;
-class SurfacelessSkiaGlRenderer;
 }  // namespace ui
 
 namespace viz {
@@ -122,8 +120,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   friend class media::V4L2SliceVideoDecodeAccelerator;
   friend class media::VTVideoDecodeAccelerator;
   friend class ui::NativePixmapGLBinding;
-  friend class ui::SurfacelessGlRenderer;
-  friend class ui::SurfacelessSkiaGlRenderer;
   friend class viz::ImageContextImpl;
   FRIEND_TEST_ALL_PREFIXES(gpu::GpuOESEGLImageTest, EGLImageToTexture);
   FRIEND_TEST_ALL_PREFIXES(gpu::CALayerTreeTest, HDRTrigger);
