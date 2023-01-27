@@ -220,6 +220,14 @@ bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
   return browser_state_->IsOffTheRecord();
 }
 
+bool AutocompleteProviderClientImpl::IsIncognitoProfile() const {
+  return browser_state_->IsOffTheRecord();
+}
+
+bool AutocompleteProviderClientImpl::IsGuestSession() const {
+  return false;
+}
+
 bool AutocompleteProviderClientImpl::SearchSuggestEnabled() const {
   return browser_state_->GetPrefs()->GetBoolean(prefs::kSearchSuggestEnabled);
 }

@@ -119,7 +119,9 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
       omnibox_triggered_feature_service_(
           std::make_unique<OmniboxTriggeredFeatureService>()) {
   pedal_provider_ = std::make_unique<OmniboxPedalProvider>(
-      *this, GetPedalImplementations(IsOffTheRecord(), false));
+      *this,
+      GetPedalImplementations(profile_->IsIncognitoProfile(),
+                              profile_->IsGuestSession(), /*testing=*/false));
 }
 
 ChromeAutocompleteProviderClient::~ChromeAutocompleteProviderClient() = default;
@@ -315,6 +317,14 @@ signin::IdentityManager* ChromeAutocompleteProviderClient::GetIdentityManager()
 
 bool ChromeAutocompleteProviderClient::IsOffTheRecord() const {
   return profile_->IsOffTheRecord();
+}
+
+bool ChromeAutocompleteProviderClient::IsIncognitoProfile() const {
+  return profile_->IsIncognitoProfile();
+}
+
+bool ChromeAutocompleteProviderClient::IsGuestSession() const {
+  return profile_->IsGuestSession();
 }
 
 bool ChromeAutocompleteProviderClient::SearchSuggestEnabled() const {

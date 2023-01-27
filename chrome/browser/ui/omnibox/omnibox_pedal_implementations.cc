@@ -1979,7 +1979,7 @@ const gfx::VectorIcon& GetSharingHubVectorIcon() {
 // instantiated so that realbox icon checks can detect missing icons for
 // pedals that may or may not be instantiated according to flag states.
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
-GetPedalImplementations(bool incognito, bool testing) {
+GetPedalImplementations(bool incognito, bool guest, bool testing) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedal* pedal) {
     const bool inserted =
@@ -1989,8 +1989,8 @@ GetPedalImplementations(bool incognito, bool testing) {
   };
 
 #if BUILDFLAG(IS_ANDROID)
-  if (!incognito) {
-    add(new OmniboxPedalClearBrowsingData(incognito));
+  if (!incognito && !guest) {
+    add(new OmniboxPedalClearBrowsingData(/*incognito=*/false));
   }
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
@@ -2002,8 +2002,11 @@ GetPedalImplementations(bool incognito, bool testing) {
   add(new OmniboxPedalViewChromeHistory());
   add(new OmniboxPedalManageChromeAccessibility());
 #else  // BUILDFLAG(IS_ANDROID)
-
-  add(new OmniboxPedalClearBrowsingData(incognito));
+  // Clear Browsing Data functionality is disabled in guest mode, so
+  // the pedal for accessing it should not be included.
+  if (!guest) {
+    add(new OmniboxPedalClearBrowsingData(incognito));
+  }
   add(new OmniboxPedalManagePasswords());
   add(new OmniboxPedalUpdateCreditCard());
   add(new OmniboxPedalLaunchIncognito());

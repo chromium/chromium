@@ -106,7 +106,8 @@ using RealboxHandlerPedalIconTest = InProcessBrowserTest;
 // the NTP Realbox.
 IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals =
-      GetPedalImplementations(/*incognito=*/true, /*testing=*/true);
+      GetPedalImplementations(/*incognito=*/true, /*guest=*/false,
+                              /*testing=*/true);
   for (auto const& it : pedals) {
     const scoped_refptr<OmniboxPedal> pedal = it.second;
     const gfx::VectorIcon& vector_icon = pedal->GetVectorIcon();

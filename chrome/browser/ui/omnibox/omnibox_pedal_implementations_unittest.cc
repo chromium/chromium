@@ -40,16 +40,25 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         std::make_unique<OmniboxPedalProvider>(
             autocomplete_provider_client_,
             GetPedalImplementations(
-                autocomplete_provider_client_.IsOffTheRecord(), true)));
+                autocomplete_provider_client_.IsIncognitoProfile(),
+                autocomplete_provider_client_.IsGuestSession(),
+                /*testing=*/true)));
   }
 
   OmniboxPedalProvider* provider() {
     return autocomplete_provider_client_.GetPedalProvider();
   }
 
-  void SetOffTheRecord() {
+  void SetIncognitoProfile() {
     // This macro mutates the client state to go off the record.
-    EXPECT_CALL(autocomplete_provider_client_, IsOffTheRecord())
+    EXPECT_CALL(autocomplete_provider_client_, IsIncognitoProfile())
+        .WillOnce(testing::Return(true));
+    InitPedals();
+  }
+
+  void SetGuestSession() {
+    // This macro mutates the client state to go off the record.
+    EXPECT_CALL(autocomplete_provider_client_, IsGuestSession())
         .WillOnce(testing::Return(true));
     InitPedals();
   }
@@ -17967,13 +17976,20 @@ TEST_F(OmniboxPedalImplementationsTest, PedalClearBrowsingDataExecutes) {
 
 TEST_F(OmniboxPedalImplementationsTest,
        PedalIncognitoClearBrowsingDataExecutes) {
-  SetOffTheRecord();
+  SetIncognitoProfile();
   const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
   // Note, there is only one Pedal for clearing browser data but it behaves
   // differently depending on incognito status. The incognito behavior does
   // not navigate but the non-incognito behavior does navigate.
   EXPECT_EQ(OmniboxPedalId::CLEAR_BROWSING_DATA, pedal->id());
   EXPECT_EQ(GURL(""), ExecuteContextAndReturnResult(pedal));
+}
+
+TEST_F(OmniboxPedalImplementationsTest,
+       PedalGuestClearBrowsingDataDoesNotExecute) {
+  SetGuestSession();
+  const OmniboxPedal* pedal = provider()->FindPedalMatch(u"clear browser data");
+  EXPECT_FALSE(pedal);
 }
 
 TEST_F(OmniboxPedalImplementationsTest,

@@ -46,7 +46,9 @@ TEST(OmniboxPedals, DataLoadsForAllLocales) {
     // because the `OmniboxPedalProvider` ctor loads, parses, transforms, and
     // checks all trigger grit strings.
     client.set_pedal_provider(std::make_unique<OmniboxPedalProvider>(
-        client, GetPedalImplementations(client.IsOffTheRecord(), true)));
+        client,
+        GetPedalImplementations(client.IsIncognitoProfile(),
+                                client.IsGuestSession(), /*testing=*/true)));
     EXPECT_EQ(client.GetPedalProvider()->FindPedalMatch(u""), nullptr);
   }
 }

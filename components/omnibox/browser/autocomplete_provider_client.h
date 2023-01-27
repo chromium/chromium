@@ -126,8 +126,13 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
 
   // Returns the signin::IdentityManager associated with the current profile.
   virtual signin::IdentityManager* GetIdentityManager() const = 0;
-
+  // In desktop platforms, this returns true for both guest and Incognito mode.
+  // In mobile platforms, we don't have a guest mode and therefore, it returns
+  // true only for Incognito mode.
   virtual bool IsOffTheRecord() const = 0;
+  virtual bool IsIncognitoProfile() const = 0;
+  virtual bool IsGuestSession() const = 0;
+
   virtual bool SearchSuggestEnabled() const = 0;
 
   // True for almost all users except ones with a specific enterprise policy.

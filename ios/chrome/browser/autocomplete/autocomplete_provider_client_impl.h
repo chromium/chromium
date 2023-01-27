@@ -69,6 +69,8 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       override;
   signin::IdentityManager* GetIdentityManager() const override;
   bool IsOffTheRecord() const override;
+  bool IsIncognitoProfile() const override;
+  bool IsGuestSession() const override;
   bool SearchSuggestEnabled() const override;
   bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;

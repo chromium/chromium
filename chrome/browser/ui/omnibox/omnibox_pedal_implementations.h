@@ -17,7 +17,7 @@ struct VectorIcon;
 
 // Returns the full set of encapsulated OmniboxPedal implementations.
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
-GetPedalImplementations(bool incognito, bool testing);
+GetPedalImplementations(bool incognito, bool guest, bool testing);
 
 // This utility method is used by `SharingHubIconView` and its related Pedal
 // (Chrome Action button) in the omnibox. It returns the sharing hub icon,
