@@ -292,11 +292,9 @@ void ExternallyManagedInstallCommand::OnInstallFinalized(
   }
 
   if (base::FeatureList::IsEnabled(features::kRecordWebAppDebugInfo)) {
-    // TODO(https://crbug.com/1303949): migrate LogToInstallManager to take a
-    // base::Value::Dict
     if (install_error_log_entry_.HasErrorDict()) {
       command_manager()->LogToInstallManager(
-          base::Value(install_error_log_entry_.TakeErrorDict()));
+          install_error_log_entry_.TakeErrorDict());
     }
   }
 

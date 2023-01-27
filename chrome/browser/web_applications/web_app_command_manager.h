@@ -68,7 +68,7 @@ class WebAppCommandManager {
   // running and queued commands.
   base::Value ToDebugValue();
 
-  void LogToInstallManager(base::Value);
+  void LogToInstallManager(base::Value::Dict);
 
   // Returns whether an installation is already scheduled with the same web
   // contents.

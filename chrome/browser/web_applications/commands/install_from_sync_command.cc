@@ -336,7 +336,7 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // base::Value::Dict
   if (install_error_log_entry_.HasErrorDict()) {
     command_manager()->LogToInstallManager(
-        base::Value(install_error_log_entry_.TakeErrorDict()));
+        install_error_log_entry_.TakeErrorDict());
   }
 
   base::UmaHistogramEnumeration("WebApp.InstallResult.Sync", code);

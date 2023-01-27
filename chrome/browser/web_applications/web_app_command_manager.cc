@@ -243,15 +243,14 @@ base::Value WebAppCommandManager::ToDebugValue() {
   return base::Value(std::move(state));
 }
 
-void WebAppCommandManager::LogToInstallManager(base::Value log) {
-  if (log.is_none())
-    return;
+void WebAppCommandManager::LogToInstallManager(base::Value::Dict log) {
 #if DCHECK_IS_ON()
   // This is wrapped with DCHECK_IS_ON() to prevent calling DebugString() in
   // production builds.
   DVLOG(1) << log.DebugString();
 #endif
-  provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
+  provider_->install_manager().TakeCommandErrorLog(PassKey(),
+                                                   base::Value(std::move(log)));
 }
 
 bool WebAppCommandManager::IsInstallingForWebContents(
