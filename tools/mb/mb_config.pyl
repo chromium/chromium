@@ -239,7 +239,7 @@
       'ios-simulator-code-coverage': 'clang_code_coverage_ios_xctest_reclient',
       'linux-chromeos-code-coverage': 'chromeos_with_codecs_release_bot_coverage_reclient',
       'linux-code-coverage': 'clang_code_coverage_reclient',
-      'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage',
+      'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
       'mac-code-coverage': 'clang_code_coverage_reclient',
       'win10-code-coverage': 'clang_code_coverage_reclient',
@@ -1188,7 +1188,7 @@
       'linux-gcc-rel': 'release_bot_minimal_symbols_no_clang',
       'linux-headless-shell-rel': 'headless_shell_release_bot_reclient',
       'linux-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials',
-      'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage',
+      'linux-js-code-coverage': 'clang_code_coverage_with_js_coverage_reclient',
       'linux-lacros-asan-lsan-rel': 'asan_lsan_lacros_release_bot_dcheck_always_on_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage_reclient',
       'linux-lacros-fyi-rel': 'lacros_on_linux_release_trybot_reclient',
@@ -2332,8 +2332,8 @@
       'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols', 'chrome_with_codecs',
     ],
 
-    'clang_code_coverage_with_js_coverage': [
-      'release_bot', 'clang', 'use_clang_coverage', 'no_symbols', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
+    'clang_code_coverage_with_js_coverage_reclient': [
+      'release_bot_reclient', 'clang', 'use_clang_coverage', 'no_symbols', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
     ],
 
     'clang_tot_asan_lsan_static_release': [

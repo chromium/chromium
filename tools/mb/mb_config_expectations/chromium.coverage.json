@@ -99,8 +99,8 @@
       "optimize_webui": false,
       "symbol_level": 0,
       "use_clang_coverage": true,
-      "use_goma": true,
-      "use_javascript_coverage": true
+      "use_javascript_coverage": true,
+      "use_remoteexec": true
     }
   },
   "linux-lacros-code-coverage": {
