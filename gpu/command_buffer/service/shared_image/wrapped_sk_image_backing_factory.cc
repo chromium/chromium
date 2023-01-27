@@ -133,11 +133,17 @@ bool WrappedSkImageBackingFactory::IsSupported(
     return false;
   }
 
-  // Currently, WrappedSkImage does not support LUMINANCE_8 format and this
-  // format is used for single channel planes. See https://crbug.com/1252502 for
-  // more details.
   if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+    // WrappedSkImage does not support LUMINANCE_8. See
+    // https://crbug.com/1252502 for details.
     return false;
+  } else if (format == viz::SinglePlaneFormat::kBGRX_8888 ||
+             format == viz::SinglePlaneFormat::kBGR_565) {
+    // For BGRX_8888/BGR_565 there is no equivalent SkColorType. Skia will use
+    // the RGBX_8888/RGB_565 color type on upload so R/B channels are reversed.
+    if (usage & SHARED_IMAGE_USAGE_CPU_UPLOAD || !pixel_data.empty()) {
+      return false;
+    }
   }
 
   if (!CanUseWrappedSkImage(usage, gr_context_type)) {
