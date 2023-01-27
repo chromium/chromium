@@ -55,9 +55,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "url/url_constants.h"
@@ -274,11 +272,6 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
 #if !BUILDFLAG(IS_ANDROID)
-      if (!base::FeatureList::IsEnabled(
-              blink::features::kDocumentPictureInPictureAPI)) {
-        return {nullptr, -1};
-      }
-
       // Picture in picture windows may not be opened by other picture in
       // picture windows.
       if (params.browser->is_type_picture_in_picture())
