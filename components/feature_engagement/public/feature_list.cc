@@ -80,6 +80,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRequestDesktopSiteAppMenuFeature,
     &kIPHRequestDesktopSiteDefaultOnFeature,
     &kIPHRequestDesktopSiteOptInFeature,
+    &kIPHRequestDesktopSiteExceptionsGenericFeature,
     &kIPHShoppingListMenuItemFeature,
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
