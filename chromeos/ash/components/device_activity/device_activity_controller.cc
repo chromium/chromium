@@ -116,9 +116,9 @@ base::TimeDelta DeviceActivityController::DetermineStartUpDelay(
   // on device start up, gets the wrong check membership response.
   base::TimeDelta delay_on_first_chrome_run;
   base::Time current_ts = base::Time::Now();
-  if (current_ts < (chrome_first_run_ts + base::Minutes(1))) {
+  if (current_ts < (chrome_first_run_ts + base::Minutes(10))) {
     delay_on_first_chrome_run =
-        chrome_first_run_ts + base::Minutes(1) - current_ts;
+        chrome_first_run_ts + base::Minutes(10) - current_ts;
   }
 
   return delay_on_first_chrome_run;
