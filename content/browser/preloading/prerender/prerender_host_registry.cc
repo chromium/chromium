@@ -133,12 +133,16 @@ int PrerenderHostRegistry::CreateAndStartHost(
         reason != PreloadingEligibility::kEligible) {
       switch (reason) {
         case PreloadingEligibility::kPreloadingDisabled:
-          // TODO(crbug.com/1382315): add
-          // PrerenderFinalStatus::kPreloadingDisabled
+          RecordFailedPrerenderFinalStatus(
+              PrerenderCancellationReason(
+                  PrerenderFinalStatus::kPreloadingDisabled),
+              attributes);
           break;
         case PreloadingEligibility::kBatterySaverEnabled:
-          // TODO(crbug.com/1382315): add
-          // PrerenderFinalStatus::kBatterySaverEnabled
+          RecordFailedPrerenderFinalStatus(
+              PrerenderCancellationReason(
+                  PrerenderFinalStatus::kBatterySaverEnabled),
+              attributes);
           break;
         case PreloadingEligibility::kDataSaverEnabled:
           RecordFailedPrerenderFinalStatus(

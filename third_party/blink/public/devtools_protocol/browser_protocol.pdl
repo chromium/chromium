@@ -8580,6 +8580,8 @@ domain Page
       PrimaryMainFrameRendererProcessCrashed
       PrimaryMainFrameRendererProcessKilled
       ActivationFramePolicyNotCompatible
+      PreloadingDisabled
+      BatterySaverEnabled
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted
