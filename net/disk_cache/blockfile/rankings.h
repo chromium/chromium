@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 
+#include <array>
 #include "base/memory/raw_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
@@ -96,13 +97,17 @@ class Rankings {
 
   // If we have multiple lists, we have to iterate through all at the same time.
   // This structure keeps track of where we are on the iteration.
+  // TODO(https://crbug.com/1409814) refactor this struct to make it clearer
+  // this owns the `nodes`.
   struct Iterator {
     Iterator();
     void Reset();
 
-    List list;                     // Which entry was returned to the user.
-    CacheRankingsBlock* nodes[3];  // Nodes on the first three lists.
-    raw_ptr<Rankings> my_rankings;
+    // Which entry was returned to the user.
+    List list = List::NO_USE;
+    // Nodes on the first three lists.
+    std::array<CacheRankingsBlock*, 3> nodes = {nullptr, nullptr, nullptr};
+    raw_ptr<Rankings> my_rankings = nullptr;
   };
 
   Rankings();
