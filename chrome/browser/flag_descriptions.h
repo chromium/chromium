@@ -3278,9 +3278,6 @@ extern const char kMultiZoneRgbKeyboardDescription[];
 extern const char kMultilingualTypingName[];
 extern const char kMultilingualTypingDescription[];
 
-extern const char kNearbySharingOnePageOnboardingName[];
-extern const char kNearbySharingOnePageOnboardingDescription[];
-
 extern const char kNearbySharingSelfShareAutoAcceptName[];
 extern const char kNearbySharingSelfShareAutoAcceptDescription[];
 

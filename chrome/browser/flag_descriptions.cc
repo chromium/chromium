@@ -5712,11 +5712,6 @@ const char kMultilingualTypingName[] = "Multilingual typing on CrOS";
 const char kMultilingualTypingDescription[] =
     "Enables support for multilingual assistive typing on ChromeOS.";
 
-const char kNearbySharingOnePageOnboardingName[] =
-    "Nearby Sharing one-page Onboarding.";
-const char kNearbySharingOnePageOnboardingDescription[] =
-    "Enable new One-page onboarding workflow for Nearby Share.";
-
 const char kNearbySharingSelfShareAutoAcceptName[] =
     "Nearby Sharing Self Share Auto-Accept";
 const char kNearbySharingSelfShareAutoAcceptDescription[] =

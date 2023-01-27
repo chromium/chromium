@@ -4871,11 +4871,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "nearby-sharing-one-page-onboarding",
-    "owners": [ "pushi@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "nearby-sharing-self-share-auto-accept",
     "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 115
