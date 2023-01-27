@@ -313,7 +313,7 @@
       Applications authorized by your administrator can capture all screens attached to your device. This information can be processed locally or uploaded to your organization’s servers.
     </message>
     <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
-      When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to web based applications, your device and Chrome.
+      When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, browser or tab crashes, and the username that you use to sign in to web based applications, your device and Chrome.
     </message>
     <message name="IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA" desc="Description of the visible data for the real time URL check feature.">
       URLs of pages you visit are sent to Google Cloud or third parties for analysis. For example, they might be scanned to detect unsafe websites or filter websites based on rules set by the administrator.
