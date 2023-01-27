@@ -40,16 +40,6 @@ class FakeDataUseTracker : public DataUseTracker {
   FakeDataUseTracker(const FakeDataUseTracker&) = delete;
   FakeDataUseTracker& operator=(const FakeDataUseTracker&) = delete;
 
-  bool GetUmaWeeklyQuota(int* uma_weekly_quota_bytes) const override {
-    *uma_weekly_quota_bytes = 200;
-    return true;
-  }
-
-  bool GetUmaRatio(double* ratio) const override {
-    *ratio = 0.05;
-    return true;
-  }
-
   base::Time GetCurrentMeasurementDate() const override {
     base::Time today_for_test;
     EXPECT_TRUE(base::Time::FromUTCString(kTodayStr, &today_for_test));
@@ -65,35 +55,35 @@ class FakeDataUseTracker : public DataUseTracker {
 // allowed ratio.
 void SetPrefTestValuesOverRatio(PrefService* local_state) {
   base::Value::Dict user_pref_dict;
-  user_pref_dict.Set(kTodayStr, 2 * 100);
-  user_pref_dict.Set(kYesterdayStr, 2 * 100);
-  user_pref_dict.Set(kExpiredDateStr1, 2 * 100);
-  user_pref_dict.Set(kExpiredDateStr2, 2 * 100);
+  user_pref_dict.Set(kTodayStr, 2 * 100 * 1024);
+  user_pref_dict.Set(kYesterdayStr, 2 * 100 * 1024);
+  user_pref_dict.Set(kExpiredDateStr1, 2 * 100 * 1024);
+  user_pref_dict.Set(kExpiredDateStr2, 2 * 100 * 1024);
   local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
   base::Value::Dict uma_pref_dict;
-  uma_pref_dict.Set(kTodayStr, 50);
-  uma_pref_dict.Set(kYesterdayStr, 50);
-  uma_pref_dict.Set(kExpiredDateStr1, 50);
-  uma_pref_dict.Set(kExpiredDateStr2, 50);
+  uma_pref_dict.Set(kTodayStr, 50 * 1024);
+  uma_pref_dict.Set(kYesterdayStr, 50 * 1024);
+  uma_pref_dict.Set(kExpiredDateStr1, 50 * 1024);
+  uma_pref_dict.Set(kExpiredDateStr2, 50 * 1024);
   local_state->SetDict(prefs::kUmaCellDataUse, std::move(uma_pref_dict));
 }
 
 // Sets up data usage prefs with mock values which can be valid.
 void SetPrefTestValuesValidRatio(PrefService* local_state) {
   base::Value::Dict user_pref_dict;
-  user_pref_dict.Set(kTodayStr, 100 * 100);
-  user_pref_dict.Set(kYesterdayStr, 100 * 100);
-  user_pref_dict.Set(kExpiredDateStr1, 100 * 100);
-  user_pref_dict.Set(kExpiredDateStr2, 100 * 100);
+  user_pref_dict.Set(kTodayStr, 100 * 100 * 1024);
+  user_pref_dict.Set(kYesterdayStr, 100 * 100 * 1024);
+  user_pref_dict.Set(kExpiredDateStr1, 100 * 100 * 1024);
+  user_pref_dict.Set(kExpiredDateStr2, 100 * 100 * 1024);
   local_state->SetDict(prefs::kUserCellDataUse, std::move(user_pref_dict));
 
   // Should be 4% of user traffic
   base::Value::Dict uma_pref_dict;
-  uma_pref_dict.Set(kTodayStr, 4 * 100);
-  uma_pref_dict.Set(kYesterdayStr, 4 * 100);
-  uma_pref_dict.Set(kExpiredDateStr1, 4 * 100);
-  uma_pref_dict.Set(kExpiredDateStr2, 4 * 100);
+  uma_pref_dict.Set(kTodayStr, 4 * 100 * 1024);
+  uma_pref_dict.Set(kYesterdayStr, 4 * 100 * 1024);
+  uma_pref_dict.Set(kExpiredDateStr1, 4 * 100 * 1024);
+  uma_pref_dict.Set(kExpiredDateStr2, 4 * 100 * 1024);
   local_state->SetDict(prefs::kUmaCellDataUse, std::move(uma_pref_dict));
 }
 
@@ -104,15 +94,15 @@ TEST(DataUseTrackerTest, CheckUpdateUsagePref) {
   FakeDataUseTracker data_use_tracker(&local_state);
   local_state.ClearDataUsePrefs();
 
-  data_use_tracker.UpdateMetricsUsagePrefsInternal(2 * 100, true, false);
-  EXPECT_EQ(2 * 100,
+  data_use_tracker.UpdateMetricsUsagePrefsInternal(2 * 100 * 1024, true, false);
+  EXPECT_EQ(2 * 100 * 1024,
             local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
   EXPECT_FALSE(local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 
-  data_use_tracker.UpdateMetricsUsagePrefsInternal(100, true, true);
-  EXPECT_EQ(3 * 100,
+  data_use_tracker.UpdateMetricsUsagePrefsInternal(100 * 1024, true, true);
+  EXPECT_EQ(3 * 100 * 1024,
             local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
-  EXPECT_EQ(100,
+  EXPECT_EQ(100 * 1024,
             local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 }
 
@@ -133,14 +123,15 @@ TEST(DataUseTrackerTest, CheckRemoveExpiredEntries) {
   EXPECT_FALSE(
       local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kExpiredDateStr2));
 
-  EXPECT_EQ(2 * 100,
+  EXPECT_EQ(2 * 100 * 1024,
             local_state.GetDict(prefs::kUserCellDataUse).FindInt(kTodayStr));
-  EXPECT_EQ(50, local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
+  EXPECT_EQ(50 * 1024,
+            local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kTodayStr));
 
   EXPECT_EQ(
-      2 * 100,
+      2 * 100 * 1024,
       local_state.GetDict(prefs::kUserCellDataUse).FindInt(kYesterdayStr));
-  EXPECT_EQ(50,
+  EXPECT_EQ(50 * 1024,
             local_state.GetDict(prefs::kUmaCellDataUse).FindInt(kYesterdayStr));
 }
 
@@ -152,10 +143,10 @@ TEST(DataUseTrackerTest, CheckComputeTotalDataUse) {
 
   int user_data_use =
       data_use_tracker.ComputeTotalDataUse(prefs::kUserCellDataUse);
-  EXPECT_EQ(8 * 100, user_data_use);
+  EXPECT_EQ(8 * 100 * 1024, user_data_use);
   int uma_data_use =
       data_use_tracker.ComputeTotalDataUse(prefs::kUmaCellDataUse);
-  EXPECT_EQ(4 * 50, uma_data_use);
+  EXPECT_EQ(4 * 50 * 1024, uma_data_use);
 }
 
 TEST(DataUseTrackerTest, CheckShouldUploadLogOnCellular) {
@@ -164,21 +155,21 @@ TEST(DataUseTrackerTest, CheckShouldUploadLogOnCellular) {
   local_state.ClearDataUsePrefs();
   SetPrefTestValuesOverRatio(&local_state);
 
-  bool can_upload = data_use_tracker.ShouldUploadLogOnCellular(50);
+  bool can_upload = data_use_tracker.ShouldUploadLogOnCellular(50 * 1024);
   EXPECT_TRUE(can_upload);
-  can_upload = data_use_tracker.ShouldUploadLogOnCellular(100);
+  can_upload = data_use_tracker.ShouldUploadLogOnCellular(100 * 1024);
   EXPECT_TRUE(can_upload);
-  can_upload = data_use_tracker.ShouldUploadLogOnCellular(150);
+  can_upload = data_use_tracker.ShouldUploadLogOnCellular(150 * 1024);
   EXPECT_FALSE(can_upload);
 
   local_state.ClearDataUsePrefs();
   SetPrefTestValuesValidRatio(&local_state);
-  can_upload = data_use_tracker.ShouldUploadLogOnCellular(100);
+  can_upload = data_use_tracker.ShouldUploadLogOnCellular(100 * 1024);
   EXPECT_TRUE(can_upload);
   // this is about 0.49%
-  can_upload = data_use_tracker.ShouldUploadLogOnCellular(200);
+  can_upload = data_use_tracker.ShouldUploadLogOnCellular(200 * 1024);
   EXPECT_TRUE(can_upload);
-  can_upload = data_use_tracker.ShouldUploadLogOnCellular(300);
+  can_upload = data_use_tracker.ShouldUploadLogOnCellular(300 * 1024);
   EXPECT_FALSE(can_upload);
 }
 

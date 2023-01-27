@@ -72,12 +72,6 @@ class DataUseTracker {
   // pref.
   int ComputeTotalDataUse(const std::string& pref_name);
 
-  // Returns the weekly allowed quota for UMA data use.
-  virtual bool GetUmaWeeklyQuota(int* uma_weekly_quota_bytes) const;
-
-  // Returns the allowed ratio for UMA data use over overall data use.
-  virtual bool GetUmaRatio(double* ratio) const;
-
   // Returns the current date for measurement.
   virtual base::Time GetCurrentMeasurementDate() const;
 
