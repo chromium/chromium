@@ -770,6 +770,7 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
       handler.CheckAndGetValueForTest(policy_map, &error_map, &output_value));
   ASSERT_TRUE(output_value);
   ASSERT_TRUE(output_value->is_dict());
+  const base::Value::Dict& output = output_value->GetDict();
 
   // Test that CheckAndGetValue outputs warnings about unknown properties.
   EXPECT_THAT(error_map.GetErrors(kPolicyName),
@@ -777,11 +778,11 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
                   testing::_, PolicyMap::MessageType::kWarning)));
 
   // Test that CheckAndGetValue() actually dropped unknown properties.
-  absl::optional<int> one_two_three = output_value->FindIntKey("OneToThree");
+  const absl::optional<int> one_two_three = output.FindInt("OneToThree");
   ASSERT_TRUE(one_two_three);
   int int_value = one_two_three.value();
   EXPECT_EQ(2, int_value);
-  EXPECT_FALSE(output_value->FindKey("Apples"));
+  EXPECT_FALSE(output.contains("Apples"));
 }
 
 TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
