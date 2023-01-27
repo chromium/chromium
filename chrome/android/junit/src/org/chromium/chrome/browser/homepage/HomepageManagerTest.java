@@ -10,7 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -87,15 +87,15 @@ public class HomepageManagerTest {
     @SmallTest
     public void testIsHomepageNonNtp() {
         ShadowHomepagePolicyManager.sHomepageUrl = GURL.emptyGURL();
-        Assert.assertFalse(
-                "Empty string should fall back to NTP", HomepageManager.isHomepageNonNtp());
+        Assert.assertTrue(
+                "Empty string should fall back to NTP.", HomepageManager.isHomepageNonNtp());
 
         ShadowHomepagePolicyManager.sHomepageUrl =
                 JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
-        Assert.assertTrue("Random web page is not the NTP", HomepageManager.isHomepageNonNtp());
+        Assert.assertTrue("Random web page is not the NTP.", HomepageManager.isHomepageNonNtp());
 
         ShadowHomepagePolicyManager.sHomepageUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);
-        Assert.assertFalse("NTP should be considered the NTP", HomepageManager.isHomepageNonNtp());
+        Assert.assertFalse("NTP should be considered the NTP.", HomepageManager.isHomepageNonNtp());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class HomepageManagerTest {
     public void testGetDefaultHomepageUri() {
         Mockito.doNothing()
                 .when(mPartnerBrowserCustomizations)
-                .setPartnerHomepageListener(Matchers.anyObject());
+                .setPartnerHomepageListener(ArgumentMatchers.any());
         Mockito.doReturn(false)
                 .when(mPartnerBrowserCustomizations)
                 .isHomepageProviderAvailableAndEnabled();

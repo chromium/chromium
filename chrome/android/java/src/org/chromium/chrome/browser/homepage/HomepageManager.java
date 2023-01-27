@@ -8,6 +8,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
@@ -122,24 +123,27 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     }
 
     /**
-     * Get the current homepage URI string, if it's enabled. Null otherwise or uninitialized.
+     * Get the current homepage URI string. If the homepage is disabled, return null; otherwise it
+     * will always return a non-empty string. In cases when the homepage is specifically set as
+     * empty, this function will fallback to return {@link UrlConstants.NTP_URL}.
      *
      * This function checks different source to get the current homepage, which listed below
      * according to their priority:
      *
      * <b>isManagedByPolicy > useChromeNTP > useDefaultUri > useCustomUri</b>
      *
-     * @return Homepage URI string, if it's enabled. Null otherwise or uninitialized.
+     * @return A non-empty homepage URI string, if homepage is enabled. Null otherwise.
      *
      * @see HomepagePolicyManager#isHomepageManagedByPolicy()
      * @see #getPrefHomepageUseChromeNTP()
      * @see #getPrefHomepageUseDefaultUri()
      */
+    @Nullable
     public static String getHomepageUri() {
         if (!isHomepageEnabled()) return null;
 
         String homepageUri = getInstance().getHomepageUriIgnoringEnabledState();
-        return TextUtils.isEmpty(homepageUri) ? null : homepageUri;
+        return TextUtils.isEmpty(homepageUri) ? UrlConstants.NTP_URL : homepageUri;
     }
 
     /**
