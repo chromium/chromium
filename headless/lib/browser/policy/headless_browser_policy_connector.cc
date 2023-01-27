@@ -18,9 +18,9 @@
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
-#include "headless/lib/browser/headless_pref_names.h"
 #include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/lib/browser/policy/headless_policies.h"
+#include "headless/lib/browser/policy/headless_pref_names.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"

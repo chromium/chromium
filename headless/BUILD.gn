@@ -480,14 +480,14 @@ component("headless_non_renderer") {
 
   if (headless_use_policy) {
     sources += [
-      "lib/browser/headless_pref_names.cc",
-      "lib/browser/headless_pref_names.h",
       "lib/browser/policy/headless_browser_policy_connector.cc",
       "lib/browser/policy/headless_browser_policy_connector.h",
       "lib/browser/policy/headless_mode_policy.cc",
       "lib/browser/policy/headless_mode_policy.h",
       "lib/browser/policy/headless_policies.cc",
       "lib/browser/policy/headless_policies.h",
+      "lib/browser/policy/headless_pref_names.cc",
+      "lib/browser/policy/headless_pref_names.h",
     ]
     deps += [
       "//components/policy/content",

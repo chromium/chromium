@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef HEADLESS_LIB_BROWSER_HEADLESS_PREF_NAMES_H_
-#define HEADLESS_LIB_BROWSER_HEADLESS_PREF_NAMES_H_
+#ifndef HEADLESS_LIB_BROWSER_POLICY_HEADLESS_PREF_NAMES_H_
+#define HEADLESS_LIB_BROWSER_POLICY_HEADLESS_PREF_NAMES_H_
 
 namespace headless {
 
@@ -16,4 +16,4 @@ extern const char kHeadlessMode[];
 
 }  // namespace headless
 
-#endif  // HEADLESS_LIB_BROWSER_HEADLESS_PREF_NAMES_H_
+#endif  // HEADLESS_LIB_BROWSER_POLICY_HEADLESS_PREF_NAMES_H_

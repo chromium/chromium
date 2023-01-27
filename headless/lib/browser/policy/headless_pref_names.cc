@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "headless/lib/browser/headless_pref_names.h"
+#include "headless/lib/browser/policy/headless_pref_names.h"
 
 namespace headless {
 

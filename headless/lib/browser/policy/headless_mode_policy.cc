@@ -7,7 +7,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "headless/lib/browser/headless_pref_names.h"
+#include "headless/lib/browser/policy/headless_pref_names.h"
 
 namespace policy {
 
