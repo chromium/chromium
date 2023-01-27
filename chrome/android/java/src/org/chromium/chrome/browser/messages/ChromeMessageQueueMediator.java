@@ -164,6 +164,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
             mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
                     mBrowserControlsToken);
         }
+        mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
         mBrowserControlsManager = null;
         mUrlFocusToken = TokenHolder.INVALID_TOKEN;
         mQueueHandler.removeCallbacksAndMessages(null);
@@ -171,14 +172,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     }
 
     @Override
-    public void onStartShowing(Runnable runnable) {
+    public void onRequestShowing(Runnable runnable) {
         if (mBrowserControlsManager == null) return;
+        assert mBrowserControlsToken == TokenHolder.INVALID_TOKEN : "Already requested.";
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
+
         mContainerCoordinator.showMessageContainer();
-        final Tab tab = mActivityTabProvider.get();
-        if (TabBrowserControlsConstraintsHelper.getConstraints(tab) == BrowserControlsState.HIDDEN
-                || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager)) {
+        if (areBrowserControlsReady()) {
             mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
             runnable.run();
         } else {
@@ -187,10 +188,21 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
     }
 
     @Override
+    public boolean isReadyForShowing() {
+        return mBrowserControlsToken != TokenHolder.INVALID_TOKEN && areBrowserControlsReady();
+    }
+
+    @Override
+    public boolean isPendingShow() {
+        return mBrowserControlsObserver.isRequesting();
+    }
+
+    @Override
     public void onFinishHiding() {
         if (mBrowserControlsManager == null) return;
         mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
                 mBrowserControlsToken);
+        mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
         mContainerCoordinator.hideMessageContainer();
         mBrowserControlsObserver.setOneTimeRunnableOnControlsFullyVisible(null);
     }
@@ -223,6 +235,13 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
      */
     void resumeQueue(int token) {
         mQueueController.resume(token);
+    }
+
+    private boolean areBrowserControlsReady() {
+        final Tab tab = mActivityTabProvider.get();
+        return TabBrowserControlsConstraintsHelper.getConstraints(tab)
+                == BrowserControlsState.HIDDEN
+                || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager);
     }
 
     /**
@@ -288,6 +307,10 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         @VisibleForTesting
         Runnable getRunnableForTesting() {
             return mRunOnControlsFullyVisible;
+        }
+
+        boolean isRequesting() {
+            return mRunOnControlsFullyVisible != null;
         }
     }
 
