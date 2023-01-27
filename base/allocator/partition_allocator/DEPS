@@ -158,5 +158,9 @@ specific_include_rules = {
     "+base",
     "+third_party/abseil-cpp/absl/types/optional.h",
     "+third_party/abseil-cpp/absl/types/variant.h",
+  ],
+  "raw_ptr_test_support\.h$": [
+    "+testing/gmock/include/gmock/gmock.h",
+    "+third_party/abseil-cpp/absl/types/optional.h",
   ]
 }

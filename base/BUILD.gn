@@ -3081,6 +3081,7 @@ test("base_unittests") {
     "allocator/dispatcher/testing/observer_mock.h",
     "allocator/dispatcher/testing/tools.h",
     "allocator/dispatcher/tls_unittest.cc",
+    "allocator/partition_allocator/pointers/raw_ptr_test_support.h",
     "allocator/partition_allocator/pointers/raw_ptr_unittest.cc",
     "allocator/partition_allocator/pointers/raw_ref_unittest.cc",
     "at_exit_unittest.cc",
