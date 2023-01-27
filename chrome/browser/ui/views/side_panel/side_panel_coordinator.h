@@ -64,9 +64,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
 
   // Prevent content swapping delays from happening for testing.
   // This should be called before the side panel is first shown.
-  void SetNoDelaysForTesting(bool no_delays_for_testing) {
-    no_delays_for_testing_ = no_delays_for_testing;
-  }
+  void SetNoDelaysForTesting();
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting() {
     return current_entry_.get();

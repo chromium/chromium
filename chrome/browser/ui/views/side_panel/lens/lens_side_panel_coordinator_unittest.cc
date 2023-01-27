@@ -47,7 +47,7 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
         {});
     TestWithBrowserView::SetUp();
 
-    GetSidePanelCoordinator()->SetNoDelaysForTesting(true);
+    GetSidePanelCoordinator()->SetNoDelaysForTesting();
     auto* browser = browser_view()->browser();
     auto* global_registry =
         SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);

@@ -298,6 +298,10 @@ void SidePanelCoordinator::OpenInNewTab() {
   Close();
 }
 
+void SidePanelCoordinator::SetNoDelaysForTesting() {
+  no_delays_for_testing_ = true;
+}
+
 absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetCurrentEntryId()
     const {
   return current_entry_
@@ -669,14 +673,15 @@ void SidePanelCoordinator::OnActiveExtensionEntryWillDeregister(
 }
 
 SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
-  // This function should only be called when the side panel view is shown.
-  DCHECK(GetContentView());
+  // This function should only be called when there is an active entry being
+  // shown.
+  DCHECK(GetContentView() && current_entry_);
 
   // If the current entry is an extension entry, attempt to return an entry in
   // the following fallback order: extension's contextual entry for the new tab
   // > extension's global entry. If neither exist, continue with the default
   // fallback order.
-  if (current_entry_ && IsExtensionEntry(current_entry_.get())) {
+  if (IsExtensionEntry(current_entry_.get())) {
     if (auto* new_contextual_or_global_extension_entry =
             GetEntryForKey(current_entry_->key())) {
       return new_contextual_or_global_extension_entry;
