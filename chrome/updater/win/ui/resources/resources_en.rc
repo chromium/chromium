@@ -14,7 +14,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDI_APP   ICON    "chrome/updater/win/ui/resources/google_update.ico"
 
 IDB_ERROR_ILLUSTRATION BITMAP  "chrome/updater/win/ui/resources/error.bmp"
-IDB_CHROME             BITMAP  "chrome/updater/win/ui/resources/chrome.bmp"
 
 IDD_PROGRESS DIALOGEX 0, 0, 433, 187
 STYLE DS_SETFONT | WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX

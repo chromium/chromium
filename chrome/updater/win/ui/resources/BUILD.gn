@@ -6,7 +6,6 @@ import("//base/win/embedded_i18n/generate_embedded_i18n.gni")
 
 source_set("resources") {
   inputs = [
-    "chrome.bmp",
     "error.bmp",
     "google_update_ico",
     "resources.grh",
