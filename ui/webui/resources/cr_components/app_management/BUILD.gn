@@ -105,7 +105,8 @@ build_cr_component("build") {
   tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/app_management"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]

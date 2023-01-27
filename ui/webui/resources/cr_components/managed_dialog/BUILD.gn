@@ -16,7 +16,8 @@ build_cr_component("build") {
   tsc_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/managed_dialog"
   ts_deps = [
     "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 
   optimize = optimize_webui
