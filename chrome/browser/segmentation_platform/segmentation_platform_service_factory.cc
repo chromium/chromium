@@ -19,7 +19,6 @@
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
@@ -36,8 +35,6 @@ namespace segmentation_platform {
 namespace {
 const char kSegmentationPlatformProfileObserverKey[] =
     "segmentation_platform_profile_observer";
-const char kSegmentationDeviceSwitcherUserDataKey[] =
-    "segmentation_device_switcher_data";
 
 std::unique_ptr<processing::InputDelegateHolder> SetUpInputDelegates(
     std::vector<std::unique_ptr<Config>>& configs) {
@@ -106,8 +103,6 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   params->configs = GetSegmentationPlatformConfig(context);
   params->input_delegate_holder = SetUpInputDelegates(params->configs);
   params->field_trial_register = std::make_unique<FieldTrialRegisterImpl>();
-  raw_ptr<FieldTrialRegister> field_trial_register =
-      params->field_trial_register.get();
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, params->configs, params->task_runner);
   // Guaranteed to outlive the SegmentationPlatformService, which depends on the
@@ -123,9 +118,6 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
                          std::make_unique<SegmentationPlatformProfileObserver>(
                              service, g_browser_process->profile_manager()));
   }
-  service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
-                       std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service, profile->GetPrefs(), field_trial_register));
 
   return service;
 }

@@ -292,7 +292,6 @@ include_rules = [
   "+components/security_state/content",
   "+components/security_state/core",
   "+components/segmentation_platform/public",
-  "+components/segmentation_platform/embedder",
   "+components/send_tab_to_self",
   "+components/services/app_service/public",
   "+components/services/filesystem/public/mojom",

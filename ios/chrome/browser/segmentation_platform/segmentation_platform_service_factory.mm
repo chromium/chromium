@@ -13,7 +13,6 @@
 #import "base/time/default_clock.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/embedder/model_provider_factory_impl.h"
 #import "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #import "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
@@ -43,8 +42,6 @@ const base::FilePath::CharType kSegmentationPlatformStorageDirName[] =
 
 const char kSegmentationPlatformProfileObserverKey[] =
     "segmentation_platform_profile_observer";
-const char kSegmentationDeviceSwitcherUserDataKey[] =
-    "segmentation_device_switcher_data";
 
 UkmDataManager* GetUkmDataManager() {
   static base::NoDestructor<DummyUkmDataManager> instance;
@@ -129,7 +126,6 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
       optimization_guide, params->configs, params->task_runner);
   params->field_trial_register = std::make_unique<IOSFieldTrialRegisterImpl>();
-  auto* field_trial_register = params->field_trial_register.get();
   // Guaranteed to outlive the SegmentationPlatformService, which depends on the
   // DeviceInfoSynceService.
   params->device_info_tracker =
@@ -147,10 +143,6 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
         kSegmentationPlatformProfileObserverKey,
         std::make_unique<IncognitoObserver>(service.get(), otr_observer));
   }
-  service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
-                       std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service.get(), chrome_browser_state->GetPrefs(),
-                           field_trial_register));
   return service;
 }
 

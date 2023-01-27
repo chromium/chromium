@@ -84,7 +84,7 @@ void DeviceSwitcherModel::InitAndFetchModel(
       .fill_policy = proto::CustomInput::FILL_SYNC_DEVICE_INFO,
       .name = "SyncDeviceInfo"});
   (*sync_input->mutable_additional_args())["wait_for_device_info_in_seconds"] =
-      "300";
+      "5";
   (*sync_input->mutable_additional_args())["active_days_limit"] = "14";
 
   writer.AddOutputConfigForMultiClassClassifier(

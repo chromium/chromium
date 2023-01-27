@@ -10,8 +10,6 @@ static_library("default_model") {
     "cross_device_user_segment.h",
     "device_switcher_model.cc",
     "device_switcher_model.h",
-    "device_switcher_result_dispatcher.cc",
-    "device_switcher_result_dispatcher.h",
     "feed_user_segment.cc",
     "feed_user_segment.h",
     "low_user_engagement_model.cc",
@@ -25,7 +23,6 @@ static_library("default_model") {
   ]
   deps = [
     "//base",
-    "//components/prefs:prefs",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
@@ -55,7 +52,6 @@ source_set("unit_tests") {
     "contextual_page_actions_model_unittest.cc",
     "cross_device_user_segment_unittest.cc",
     "device_switcher_model_unittest.cc",
-    "device_switcher_result_dispatcher_unittest.cc",
     "feed_user_segment_unittest.cc",
     "low_user_engagement_model_unittest.cc",
     "resume_heavy_user_model_unittest.cc",
@@ -77,11 +73,8 @@ source_set("unit_tests") {
     ":default_model_test_base",
     "//base",
     "//base/test:test_support",
-    "//components/prefs:test_support",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
-    "//components/segmentation_platform/public:public",
-    "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
     "//testing/gtest",
   ]
