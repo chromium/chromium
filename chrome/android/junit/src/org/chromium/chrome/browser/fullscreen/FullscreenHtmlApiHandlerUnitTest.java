@@ -98,7 +98,7 @@ public class FullscreenHtmlApiHandlerUnitTest {
     }
 
     @Test
-    public void testFullscreenRequestCanceledAtPendingState() {
+    public void testFullscreenRequestCanceledAtPendingStateBeforeControlsDisappear() {
         // avoid calling GestureListenerManager/SelectionPopupController
         doReturn(null).when(mTab).getWebContents();
         doReturn(true).when(mTab).isUserInteractable();
@@ -106,21 +106,45 @@ public class FullscreenHtmlApiHandlerUnitTest {
         // Fullscreen process stops at pending state since controls are not hidden.
         mAreControlsHidden.set(false);
         mFullscreenHtmlApiHandler.setTabForTesting(mTab);
-        FullscreenOptions fullscreenOptions = new FullscreenOptions(false, false);
-        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, fullscreenOptions);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, new FullscreenOptions(false, false));
+
+        TabBrowserControlsConstraintsHelper.setForTesting(
+                mTab, mTabBrowserControlsConstraintsHelper);
 
         // Exit is invoked unexpectedly before the controls get hidden. Fullscreen process should be
         // marked as canceled.
         mFullscreenHtmlApiHandler.exitPersistentFullscreenMode();
-        assertTrue("Fullscreen request should have been canceled", fullscreenOptions.canceled());
+        assertTrue("Fullscreen request should have been canceled",
+                mFullscreenHtmlApiHandler.getPendingFullscreenOptionsForTesting().canceled());
 
-        // Controls are hidden afterwards. Since the fullscreen request was canceled, we should
-        // restore the controls.
+        // Controls are hidden afterwards.
+        mAreControlsHidden.set(true);
+
+        // The fullscreen request was canceled. Verify the controls are restored.
+        verify(mTabBrowserControlsConstraintsHelper).update(BrowserControlsState.SHOWN, true);
+        assertEquals(null, mFullscreenHtmlApiHandler.getPendingFullscreenOptionsForTesting());
+    }
+
+    @Test
+    public void testFullscreenRequestCanceledAtPendingStateAfterControlsDisappear() {
+        // Avoid calling GestureListenerManager/SelectionPopupController
+        doReturn(null).when(mTab).getWebContents();
+        doReturn(true).when(mTab).isUserInteractable();
+
+        mAreControlsHidden.set(false);
+        mFullscreenHtmlApiHandler.setTabForTesting(mTab);
+        mFullscreenHtmlApiHandler.onEnterFullscreen(mTab, new FullscreenOptions(false, false));
+
+        mAreControlsHidden.set(true);
         TabBrowserControlsConstraintsHelper.setForTesting(
                 mTab, mTabBrowserControlsConstraintsHelper);
-        mAreControlsHidden.set(true);
-        verify(mTabBrowserControlsConstraintsHelper, times(1))
-                .update(BrowserControlsState.SHOWN, true);
+
+        // Exit is invoked unexpectedly _after_ the controls get hidden.
+        mFullscreenHtmlApiHandler.exitPersistentFullscreenMode();
+
+        // Verify the browser controls are restored.
+        verify(mTabBrowserControlsConstraintsHelper).update(BrowserControlsState.SHOWN, true);
+        assertEquals(null, mFullscreenHtmlApiHandler.getPendingFullscreenOptionsForTesting());
     }
 
     @Test
