@@ -380,14 +380,18 @@ std::unique_ptr<views::View> ManagePasswordsView::CreateFooterView() {
 }
 
 void ManagePasswordsView::RecreateLayout() {
-  DCHECK(GetBubbleFrameView());
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  DCHECK(frame_view);
+
   if (currently_selected_password_.has_value()) {
     // TODO(crbug.com/1382017): implement authentication before navigating to
     // the details page.
-    GetBubbleFrameView()->SetTitleView(CreatePasswordDetailsTitleView());
+    frame_view->SetTitleView(CreatePasswordDetailsTitleView());
+    frame_view->SetFootnoteView(nullptr);
     page_container_->SwitchToPage(CreatePasswordDetailsView());
   } else {
-    GetBubbleFrameView()->SetTitleView(CreatePasswordListTitleView());
+    frame_view->SetTitleView(CreatePasswordListTitleView());
+    frame_view->SetFootnoteView(CreateFooterView());
     page_container_->SwitchToPage(CreatePasswordListView());
   }
   PreferredSizeChanged();
