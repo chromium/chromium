@@ -47,10 +47,12 @@ void ShelfLockingManager::OnLockStateEvent(EventType event) {
 void ShelfLockingManager::UpdateLockedState() {
   const ShelfAlignment alignment = shelf_->alignment();
   if (is_locked() && alignment != ShelfAlignment::kBottomLocked) {
-    stored_alignment_ = alignment;
+    in_session_auto_hide_behavior_ = shelf_->auto_hide_behavior();
+    in_session_alignment_ = alignment;
     shelf_->SetAlignment(ShelfAlignment::kBottomLocked);
   } else if (!is_locked() && alignment == ShelfAlignment::kBottomLocked) {
-    shelf_->SetAlignment(stored_alignment_);
+    in_session_auto_hide_behavior_ = ShelfAutoHideBehavior::kNever;
+    shelf_->SetAlignment(in_session_alignment_);
   }
 }
 

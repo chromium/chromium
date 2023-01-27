@@ -490,7 +490,7 @@ void Shelf::SetAlignment(ShelfAlignment alignment) {
 
   if (shelf_locking_manager_.is_locked() &&
       alignment != ShelfAlignment::kBottomLocked) {
-    shelf_locking_manager_.set_stored_alignment(alignment);
+    shelf_locking_manager_.set_in_session_alignment(alignment);
     return;
   }
 

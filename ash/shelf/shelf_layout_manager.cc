@@ -1882,11 +1882,13 @@ void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {
   if (shelf_->alignment() == ShelfAlignment::kBottomLocked) {
     // If shelf is set to auto-hide, use empty insets so that application window
     // could use the right work area.
-    if (shelf_->auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
+    if (shelf_->auto_hide_behavior() == ShelfAutoHideBehavior::kAlways ||
+        shelf_->in_session_auto_hide_behavior() ==
+            ShelfAutoHideBehavior::kAlways) {
       in_session_shelf_insets = gfx::Insets();
     } else {
       in_session_shelf_insets = CalculateShelfInsets(
-          shelf_->stored_alignment(), state_.in_session_visibility_state);
+          shelf_->in_session_alignment(), state_.in_session_visibility_state);
     }
   }
 

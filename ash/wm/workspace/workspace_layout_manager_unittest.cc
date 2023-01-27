@@ -20,6 +20,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -137,6 +138,14 @@ class TestShellObserver : public ShellObserver {
 
 display::Display GetDisplayNearestWindow(aura::Window* window) {
   return display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+}
+
+display::ManagedDisplayInfo CreateDisplayInfo(int64_t id, gfx::Rect bounds) {
+  display::ManagedDisplayInfo info(id, "", false);
+  info.SetBounds(bounds);
+  info.SetRotation(display::Display::ROTATE_0,
+                   display::Display::RotationSource::ACTIVE);
+  return info;
 }
 
 class ScopedStickyKeyboardEnabler {
@@ -837,6 +846,169 @@ TEST_F(WorkspaceLayoutManagerTest, WindowBoundsWithMultiDisplays) {
       }
     }
   }
+}
+
+// Make sure maximized window bounds is correct with external display
+// disconnected in docked mode.
+// Please see b/252557955.
+TEST_F(WorkspaceLayoutManagerTest,
+       WindowBoundsWithExternalDisplayDisconnected) {
+  // Set up two displays.
+  const display::ManagedDisplayInfo internal_display_info =
+      CreateDisplayInfo(1, gfx::Rect(800, 600));
+  const display::ManagedDisplayInfo external_display_info =
+      CreateDisplayInfo(2, gfx::Rect(1, 1, 900, 700));
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  int64_t internal_display_id = GetPrimaryDisplay().id();
+  int64_t external_display_id = GetSecondaryDisplay().id();
+  EXPECT_EQ(1, GetPrimaryDisplay().id());
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+
+  // Set up two shelves.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  Shelf* primary_shelf = GetPrimaryShelf();
+  Shelf* secondary_shelf = Shell::GetAllRootWindowControllers().back()->shelf();
+  SetShelfAlignmentPref(prefs, internal_display_id, ShelfAlignment::kLeft);
+  SetShelfAutoHideBehaviorPref(prefs, internal_display_id,
+                               ShelfAutoHideBehavior::kAlways);
+  SetShelfAlignmentPref(prefs, external_display_id, ShelfAlignment::kBottom);
+  SetShelfAutoHideBehaviorPref(prefs, external_display_id,
+                               ShelfAutoHideBehavior::kNever);
+  ASSERT_EQ(ShelfAlignment::kLeft, primary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            primary_shelf->auto_hide_behavior());
+  ASSERT_EQ(ShelfAlignment::kBottom, secondary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kNever,
+            secondary_shelf->auto_hide_behavior());
+
+  // Maximized test window on external display.
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  window_util::MoveWindowToDisplay(window.get(), external_display_id);
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(gfx::Rect(800, 0, 900, 652), window->GetBoundsInScreen());
+
+  // Lock the session.
+  TestSessionControllerClient* client = GetSessionControllerClient();
+  client->SetSessionState(session_manager::SessionState::LOCKED);
+
+  // Emulate the docked mode, which turns off the internal display only.
+  display_info_list.clear();
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2, GetPrimaryDisplay().id());
+  EXPECT_EQ(1U, display_manager()->num_connected_displays());
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  // Disconnect external display.
+  display_info_list.clear();
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2, GetPrimaryDisplay().id());
+  EXPECT_EQ(1U, display_manager()->num_connected_displays());
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  // Emulate resuming from sleep state that was in docked mode.
+  display_info_list.push_back(internal_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(1, GetPrimaryDisplay().id());
+  EXPECT_EQ(1U, display_manager()->num_connected_displays());
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  // Unlock the session.
+  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  ASSERT_EQ(ShelfAlignment::kLeft, primary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            primary_shelf->auto_hide_behavior());
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(gfx::Rect(800, 600), window->GetBoundsInScreen());
+}
+
+// Make sure maximized window bounds is correct with external display
+// disconnected and reconnected in lock session.
+// Please see b/252557955.
+TEST_F(WorkspaceLayoutManagerTest,
+       WindowBoundsWithExternalDisplayDisconnectedAndReconnected) {
+  // Set up two displays.
+  const display::ManagedDisplayInfo internal_display_info =
+      CreateDisplayInfo(1, gfx::Rect(800, 600));
+  const display::ManagedDisplayInfo external_display_info =
+      CreateDisplayInfo(2, gfx::Rect(1, 1, 900, 700));
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  int64_t internal_display_id = GetPrimaryDisplay().id();
+  int64_t external_display_id = GetSecondaryDisplay().id();
+  EXPECT_EQ(1, GetPrimaryDisplay().id());
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+
+  // Set up two shelves.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  Shelf* primary_shelf = GetPrimaryShelf();
+  Shelf* secondary_shelf = Shell::GetAllRootWindowControllers().back()->shelf();
+  SetShelfAlignmentPref(prefs, internal_display_id, ShelfAlignment::kLeft);
+  SetShelfAutoHideBehaviorPref(prefs, internal_display_id,
+                               ShelfAutoHideBehavior::kAlways);
+  SetShelfAlignmentPref(prefs, external_display_id, ShelfAlignment::kBottom);
+  SetShelfAutoHideBehaviorPref(prefs, external_display_id,
+                               ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(ShelfAlignment::kLeft, primary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            primary_shelf->auto_hide_behavior());
+  ASSERT_EQ(ShelfAlignment::kBottom, secondary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            secondary_shelf->auto_hide_behavior());
+
+  // Maximized test window on external display.
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  window_util::MoveWindowToDisplay(window.get(), external_display_id);
+  WindowState* window_state = WindowState::Get(window.get());
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(gfx::Rect(800, 0, 900, 700), window->GetBoundsInScreen());
+
+  // Lock the session.
+  TestSessionControllerClient* client = GetSessionControllerClient();
+  client->SetSessionState(session_manager::SessionState::LOCKED);
+
+  // Disconnect external display.
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(1, GetPrimaryDisplay().id());
+  EXPECT_EQ(1U, display_manager()->num_connected_displays());
+  EXPECT_EQ(1U, display_manager()->GetNumDisplays());
+
+  // Reconnect external display.
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(1, GetPrimaryDisplay().id());
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+
+  // Unlock the session.
+  client->SetSessionState(session_manager::SessionState::ACTIVE);
+  ASSERT_EQ(ShelfAlignment::kLeft, primary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            primary_shelf->auto_hide_behavior());
+  secondary_shelf = Shell::GetAllRootWindowControllers().back()->shelf();
+  ASSERT_EQ(ShelfAlignment::kBottom, secondary_shelf->alignment());
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways,
+            secondary_shelf->auto_hide_behavior());
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(gfx::Rect(800, 0, 900, 700), window->GetBoundsInScreen());
 }
 
 // Following "Solo" tests were originally written for BaseLayoutManager.

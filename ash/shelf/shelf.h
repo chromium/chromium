@@ -249,8 +249,12 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     return auto_hide_behavior_;
   }
 
-  ShelfAlignment stored_alignment() const {
-    return shelf_locking_manager_.stored_alignment();
+  ShelfAlignment in_session_alignment() const {
+    return shelf_locking_manager_.in_session_alignment();
+  }
+
+  ShelfAutoHideBehavior in_session_auto_hide_behavior() const {
+    return shelf_locking_manager_.in_session_auto_hide_behavior();
   }
 
   ShelfFocusCycler* shelf_focus_cycler() { return shelf_focus_cycler_.get(); }
