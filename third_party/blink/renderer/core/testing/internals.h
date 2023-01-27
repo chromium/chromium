@@ -241,7 +241,6 @@ class Internals final : public ScriptWrappable {
   String suggestedValue(Element*, ExceptionState&);
   void setSuggestedValue(Element*, const String&, ExceptionState&);
   void setAutofilledValue(Element*, const String&, ExceptionState&);
-  void setEditingValue(Element* input_element, const String&, ExceptionState&);
   void setAutofilled(Element*, bool enabled, ExceptionState&);
   void setSelectionRangeForNumberType(Element* input_element,
                                       uint32_t start,

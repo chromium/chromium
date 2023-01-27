@@ -75,12 +75,6 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   void SetChecked(bool,
                   bool send_events = false,
                   WebAutofillState = WebAutofillState::kNotFilled);
-  // Sets the value inside the text field without being sanitized. Can't be
-  // used if a renderer doesn't exist or on a non text field type. Caret will
-  // be moved to the end.
-  // TODO(crbug.com/777850): Remove all references to SetEditingValue, as it's
-  // not used anymore.
-  void SetEditingValue(const WebString&);
   bool IsValidValue(const WebString&) const;
   bool IsChecked() const;
   bool IsMultiple() const;

@@ -1205,17 +1205,6 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   input_type_view_->UpdateView();
 }
 
-void HTMLInputElement::SetEditingValue(const String& value) {
-  if (!GetLayoutObject() || !IsTextField())
-    return;
-  SetInnerEditorValue(value);
-  SubtreeHasChanged();
-
-  unsigned max = value.length();
-  SetSelectionRange(max, max);
-  DispatchInputEvent();
-}
-
 void HTMLInputElement::SetInnerEditorValue(const String& value) {
   TextControlElement::SetInnerEditorValue(value);
   needs_to_update_view_value_ = false;

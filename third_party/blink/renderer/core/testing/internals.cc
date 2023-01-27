@@ -1808,20 +1808,6 @@ void Internals::setAutofilledValue(Element* element,
   }
 }
 
-void Internals::setEditingValue(Element* element,
-                                const String& value,
-                                ExceptionState& exception_state) {
-  DCHECK(element);
-  auto* html_input_element = DynamicTo<HTMLInputElement>(element);
-  if (!html_input_element) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidNodeTypeError,
-                                      "The element provided is not an INPUT.");
-    return;
-  }
-
-  html_input_element->SetEditingValue(value);
-}
-
 void Internals::setAutofilled(Element* element,
                               bool enabled,
                               ExceptionState& exception_state) {

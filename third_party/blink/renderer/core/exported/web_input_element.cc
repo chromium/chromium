@@ -100,10 +100,6 @@ int WebInputElement::size() const {
   return ConstUnwrap<HTMLInputElement>()->size();
 }
 
-void WebInputElement::SetEditingValue(const WebString& value) {
-  Unwrap<HTMLInputElement>()->SetEditingValue(value);
-}
-
 bool WebInputElement::IsValidValue(const WebString& value) const {
   return ConstUnwrap<HTMLInputElement>()->IsValidValue(value);
 }

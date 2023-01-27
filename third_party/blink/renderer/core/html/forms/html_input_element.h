@@ -172,8 +172,6 @@ class CORE_EXPORT HTMLInputElement
   // WebAutofillState::kNotFilled otherwise.
   void SetSuggestedValue(const String& value) override;
 
-  void SetEditingValue(const String&);
-
   ScriptValue valueAsDate(ScriptState* script_state) const;
   void setValueAsDate(ScriptState* script_state,
                       const ScriptValue& value,
