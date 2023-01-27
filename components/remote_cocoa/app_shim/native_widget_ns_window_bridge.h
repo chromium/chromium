@@ -438,6 +438,11 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindow>
       bridge_mojo_receiver_{this};
 
+  // Keep track of ImmersiveFullscreenRevealLock() and
+  // ImmersiveFullscreenRevealUnlock() calls so locks can persist across
+  // immersive_mode_controller_ resets.
+  int immersive_fullscreen_reveal_lock_count_ = 0;
+
   ui::WeakPtrNSObjectFactory<NativeWidgetNSWindowBridge> ns_weak_factory_;
 };
 

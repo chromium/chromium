@@ -913,6 +913,12 @@ void NativeWidgetNSWindowBridge::EnableImmersiveFullscreen(
       ns_window(), GetFromId(fullscreen_overlay_widget_id)->ns_window(),
       std::move(callback));
   immersive_mode_controller_->Enable();
+
+  // Reveal locks can outlive immersive_mode_controller_, re-establish any
+  // outstanding locks.
+  for (int i = 0; i < immersive_fullscreen_reveal_lock_count_; ++i) {
+    immersive_mode_controller_->RevealLock();
+  }
 }
 
 void NativeWidgetNSWindowBridge::DisableImmersiveFullscreen() {
@@ -934,12 +940,15 @@ void NativeWidgetNSWindowBridge::OnTopContainerViewBoundsChanged(
 }
 
 void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealLock() {
+  ++immersive_fullscreen_reveal_lock_count_;
   if (immersive_mode_controller_) {
     immersive_mode_controller_->RevealLock();
   }
 }
 
 void NativeWidgetNSWindowBridge::ImmersiveFullscreenRevealUnlock() {
+  --immersive_fullscreen_reveal_lock_count_;
+  DCHECK(immersive_fullscreen_reveal_lock_count_ >= 0);
   if (immersive_mode_controller_) {
     immersive_mode_controller_->RevealUnlock();
   }

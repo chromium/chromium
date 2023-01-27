@@ -170,6 +170,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     top_container_observation_.Reset();
     browser_frame_observation_.Reset();
     overlay_widget_observation_.Reset();
+    focus_lock_.reset();
 
     // Notify BrowserView about the fullscreen exit so that the top container
     // can be reparented, otherwise it might be destroyed along with the
