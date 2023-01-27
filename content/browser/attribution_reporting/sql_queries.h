@@ -231,7 +231,7 @@ inline constexpr const char kRateLimitSourceAllowedSql[] =
     "WHERE scope=0 "
     "AND source_site=? "
     "AND reporting_origin=? "
-    "AND expiry_time>?";
+    "AND source_expiry_or_attribution_time>?";
 
 inline constexpr const char kRateLimitSelectReportingOriginsSql[] =
     "SELECT reporting_origin FROM rate_limits "
@@ -241,17 +241,19 @@ inline constexpr const char kRateLimitSelectReportingOriginsSql[] =
     "AND time>?";
 
 inline constexpr const char kDeleteRateLimitRangeSql[] =
-    "DELETE FROM rate_limits "
-    "WHERE time BETWEEN ? AND ?";
+    "DELETE FROM rate_limits WHERE"
+    "(time BETWEEN ?1 AND ?2)OR"
+    "(scope=1 AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
 
 inline constexpr const char kSelectRateLimitsForDeletionSql[] =
     "SELECT id,reporting_origin "
-    "FROM rate_limits "
-    "WHERE time BETWEEN ? AND ?";
+    "FROM rate_limits WHERE"
+    "(time BETWEEN ?1 AND ?2)OR"
+    "(scope=1 AND source_expiry_or_attribution_time BETWEEN ?1 AND ?2)";
 
 inline constexpr const char kDeleteExpiredRateLimitsSql[] =
     "DELETE FROM rate_limits "
-    "WHERE time<=? AND(scope=1 OR expiry_time<=?)";
+    "WHERE time<=? AND(scope=1 OR source_expiry_or_attribution_time<=?)";
 
 inline constexpr const char kDeleteRateLimitsBySourceIdSql[] =
     "DELETE FROM rate_limits WHERE source_id=?";

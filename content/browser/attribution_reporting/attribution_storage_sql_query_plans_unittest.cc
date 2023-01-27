@@ -213,12 +213,14 @@ TEST_F(AttributionSqlQueryPlanTest, kRateLimitSelectReportingOriginsSql) {
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitRangeSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitRangeSql),
-              UsesIndex("rate_limit_time_idx"));
+              AllOf(UsesIndex("rate_limit_time_idx"),
+                    UsesIndex("rate_limit_reporting_origin_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kSelectRateLimitsForDeletionSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kSelectRateLimitsForDeletionSql),
-              UsesIndex("rate_limit_time_idx"));
+              AllOf(UsesIndex("rate_limit_time_idx"),
+                    UsesIndex("rate_limit_reporting_origin_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredRateLimitsSql) {
