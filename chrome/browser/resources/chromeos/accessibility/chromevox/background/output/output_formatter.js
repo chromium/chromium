@@ -10,10 +10,10 @@ import {AutomationUtil} from '../../../common/automation_util.js';
 import {constants} from '../../../common/constants.js';
 import {Cursor, CURSOR_NODE_INDEX} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
-import {LocalStorage} from '../../../common/local_storage.js';
 import {AutomationTreeWalker} from '../../../common/tree_walker.js';
 import {EarconId} from '../../common/earcon_id.js';
 import {Msgs} from '../../common/msgs.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 import {PhoneticData} from '../phonetic_data.js';
 
 import {OutputFormatParser, OutputFormatParserObserver} from './output_format_parser.js';
@@ -104,7 +104,7 @@ export class OutputFormatter {
     } else if (token === 'restriction') {
       this.formatRestriction_(this.params_, token);
     } else if (token === 'role') {
-      if (LocalStorage.get('useVerboseMode') === false) {
+      if (!SettingsManager.get('useVerboseMode')) {
         return true;
       }
       if (this.output_.useAuralStyle) {
@@ -697,7 +697,7 @@ export class OutputFormatter {
       options.annotation.push(new outputTypes.OutputSelectionSpan(0, 0));
     }
 
-    if (LocalStorage.get('languageSwitching')) {
+    if (SettingsManager.get('languageSwitching')) {
       this.output_.assignLocaleAndAppend(node.name || '', node, buff, options);
     } else {
       this.output_.append(buff, node.name || '', options);

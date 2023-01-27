@@ -20,6 +20,8 @@ ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
         'BrailleTranslatorManager',
         '/chromevox/background/braille/braille_translator_manager.js');
     await importModule('LocalStorage', '/common/local_storage.js');
+    await importModule(
+        'SettingsManager', '/chromevox/common/settings_manager.js');
 
     this.liblouis = new FakeLibLouis();
     this.manager = new BrailleTranslatorManager(this.liblouis);
@@ -95,7 +97,7 @@ TEST_F(
         this.manager.addChangeListener(function() {
           assertNotReached('Refresh should not be called without a change.');
         });
-        this.manager.refresh(LocalStorage.get('brailleTable'));
+        this.manager.refresh(SettingsManager.getString('brailleTable'));
       });
     });
 

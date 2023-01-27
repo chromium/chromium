@@ -12,6 +12,7 @@ import {BrailleDisplayState} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 import {QueueMode} from '../../common/tts_types.js';
 import {ChromeVox} from '../chromevox.js';
 import {ChromeVoxPrefs} from '../prefs.js';
@@ -41,7 +42,7 @@ export class BrailleCaptionsBackground {
    * @return {boolean}
    */
   static isEnabled() {
-    return LocalStorage.getBoolean(BrailleCaptionsBackground.PREF_KEY);
+    return Boolean(LocalStorage.get(BrailleCaptionsBackground.PREF_KEY));
   }
 
   /**
@@ -153,8 +154,8 @@ export class BrailleCaptionsBackground {
    */
   static getVirtualDisplayState() {
     if (BrailleCaptionsBackground.isEnabled()) {
-      const rows = Number(LocalStorage.get('virtualBrailleRows', 1));
-      const columns = Number(LocalStorage.get('virtualBrailleColumns', 40));
+      const rows = Number(SettingsManager.get('virtualBrailleRows'));
+      const columns = Number(SettingsManager.get('virtualBrailleColumns'));
       return {available: true, textRowCount: rows, textColumnCount: columns};
     } else {
       return {available: false, textRowCount: 0, textColumnCount: 0};

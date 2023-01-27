@@ -119,7 +119,8 @@ ChromeVoxOutputE2ETest = class extends ChromeVoxE2ETest {
     await importModule('Cursor', '/common/cursors/cursor.js');
     await importModule('CursorRange', '/common/cursors/range.js');
 
-    await importModule('LocalStorage', '/common/local_storage.js');
+    await importModule(
+        'SettingsManager', '/chromevox/common/settings_manager.js');
 
     globalThis.Dir = AutomationUtil.Dir;
     globalThis.RoleType = chrome.automation.RoleType;
@@ -720,7 +721,7 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'Brief', async function() {
   const node = root.children[0].firstChild;
   const range = CursorRange.fromNode(node);
 
-  LocalStorage.set('useVerboseMode', false);
+  SettingsManager.set('useVerboseMode', false);
   const oWithoutPrev = new Output().withSpeech(range, null, 'navigate');
   assertEquals('inside', oWithoutPrev.speechOutputForTest.string_);
 });

@@ -5,8 +5,8 @@
 /**
  * @fileoverview Keeps track of the current braille translators.
  */
-import {LocalStorage} from '../../../common/local_storage.js';
 import {BrailleTable} from '../../common/braille/braille_table.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';
 import {LibLouis} from './liblouis.js';
@@ -174,7 +174,7 @@ export class BrailleTranslatorManager {
         this.tables_ = tables;
 
         // Initial refresh; set options from user preferences.
-        this.refresh(LocalStorage.getString('brailleTable', ''), undefined, r);
+        this.refresh(SettingsManager.getString('brailleTable'), undefined, r);
       });
     });
   }

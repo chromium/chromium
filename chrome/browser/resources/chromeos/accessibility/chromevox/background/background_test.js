@@ -66,6 +66,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
     await importModule('CursorRange', '/common/cursors/range.js');
     await importModule('EventGenerator', '/common/event_generator.js');
     await importModule('KeyCode', '/common/key_code.js');
+    await importModule(
+        'SettingsManager', '/chromevox/common/settings_manager.js');
     await importModule('LocalStorage', '/common/local_storage.js');
 
     globalThis.simulateHitTestResult = this.simulateHitTestResult;
@@ -3637,7 +3639,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'DetailsChanged', async function() {
 
   // Make sure we're not testing reading of the hint from the button's output
   // below.
-  LocalStorage.set('useVerboseMode', false);
+  SettingsManager.set('useVerboseMode', false);
   const site = `
     <button id="click">ok</button>
     <p id="details">hello</p>

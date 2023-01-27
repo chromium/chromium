@@ -19,6 +19,17 @@ const char kSwitchAccessUnknownDevice[] = "unknown";
 
 const char kFakeNowTimeStringInPixelTest[] = "Sun, 6 May 2018 14:30:00 CDT";
 
+const char kDefaultAccessibilityChromeVoxAudioStrategy[] = "audioNormal";
+const char kDefaultAccessibilityChromeVoxBrailleTable[] = "";
+const char kDefaultAccessibilityChromeVoxBrailleTable6[] = "en-ueb-g2";
+const char kDefaultAccessibilityChromeVoxBrailleTable8[] = "en-nabcc";
+const char kDefaultAccessibilityChromeVoxBrailleTableType[] = "brailleTable8";
+const char kDefaultAccessibilityChromeVoxCapitalStrategy[] = "increasePitch";
+const char kDefaultAccessibilityChromeVoxCapitalStrategyBackup[] = "";
+const char kDefaultAccessibilityChromeVoxNumberReadingStyle[] = "asWords";
+const char kDefaultAccessibilityChromeVoxPreferredBrailleDisplayAddress[] = "";
+const char kDefaultAccessibilityChromeVoxVoiceName[] = "chromeos_system_voice";
+
 const char kDefaultAccessibilitySelectToSpeakVoiceName[] =
     "select_to_speak_system_voice";
 const char kDefaultAccessibilitySelectToSpeakHighlightColor[] = "#5e9bff";

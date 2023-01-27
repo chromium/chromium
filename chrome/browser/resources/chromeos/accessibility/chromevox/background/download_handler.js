@@ -8,6 +8,7 @@
  */
 import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
+import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {Output} from './output/output.js';
@@ -259,7 +260,7 @@ export class DownloadHandler {
    * @private
    */
   speechAndBrailleOutput_(msgId, queueMode, optSubs) {
-    if (LocalStorage.get('announceDownloadNotifications')) {
+    if (SettingsManager.get('announceDownloadNotifications')) {
       const msg = Msgs.getMsg(msgId, optSubs);
       new Output().withString(msg).withQueueMode(queueMode).go();
     }

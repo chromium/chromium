@@ -104,6 +104,52 @@ extern const char kAccessibilitySpokenFeedbackEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxAutoRead[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxAnnounceDownloadNotifications[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxAnnounceRichTextAttributes[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxAudioStrategy[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleSideBySide[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleTable[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleTable6[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleTable8[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleTableType[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxBrailleWordWrap[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxCapitalStrategy[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxCapitalStrategyBackup[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxLanguageSwitching[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxMenuBrailleCommands[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxNumberReadingStyle[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxPreferredBrailleDisplayAddress[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxPunctuationEcho[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxSmartStickyMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxSpeakTextUnderMouse[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxUsePitchChanges[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxUseVerboseMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxVirtualBrailleColumns[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxVirtualBrailleRows[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxVoiceName[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityHighContrastEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityScreenMagnifierCenterFocus[];

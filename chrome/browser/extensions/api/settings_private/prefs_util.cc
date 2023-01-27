@@ -554,6 +554,55 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxAutoRead] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityChromeVoxAnnounceDownloadNotifications] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityChromeVoxAnnounceRichTextAttributes] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxAudioStrategy] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleSideBySide] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleTable] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleTable6] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleTable8] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleTableType] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxBrailleWordWrap] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxCapitalStrategy] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxCapitalStrategyBackup] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxLanguageSwitching] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxMenuBrailleCommands] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxNumberReadingStyle] =
+      settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)
+      [ash::prefs::kAccessibilityChromeVoxPreferredBrailleDisplayAddress] =
+          settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxPunctuationEcho] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxSmartStickyMode] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxSpeakTextUnderMouse] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxUsePitchChanges] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxUseVerboseMode] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxVirtualBrailleColumns] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxVirtualBrailleRows] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxVoiceName] =
+      settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes] =
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes] =

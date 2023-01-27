@@ -566,7 +566,7 @@ export class Panel extends PanelInterface {
     const groups = data.groups;
     const cols = data.cols;
     const rows = data.rows;
-    const sideBySide = LocalStorage.get('brailleSideBySide');
+    const sideBySide = SettingsManager.get('brailleSideBySide');
 
     const addBorders = event => {
       const cell = event.target;

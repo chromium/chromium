@@ -8,6 +8,7 @@
 import {LocalStorage} from '../../common/local_storage.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {EventSourceType} from '../common/event_source_type.js';
+import {SettingsManager} from '../common/settings_manager.js';
 
 export class PanelMenuItem {
   /**
@@ -80,7 +81,7 @@ export class PanelMenuItem {
     this.element.appendChild(shortcut);
 
     if (LocalStorage.get('brailleCaptions') ||
-        LocalStorage.get('menuBrailleCommands')) {
+        SettingsManager.get('menuBrailleCommands')) {
       const braille = document.createElement('td');
       braille.className = 'menu-item-shortcut';
       braille.textContent = this.menuItemBraille;

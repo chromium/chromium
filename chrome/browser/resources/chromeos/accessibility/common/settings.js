@@ -19,8 +19,6 @@ export class Settings {
     this.prefs_ = null;
 
     keys.forEach(key => this.listeners_[key] = []);
-    chrome.settingsPrivate.onPrefsChanged.addListener(
-        updates => this.update_(updates));
   }
 
   /**
@@ -35,6 +33,11 @@ export class Settings {
 
     Settings.instance = new Settings(keys);
     await Settings.instance.initialFetch_();
+
+    // Add prefs changed listener after initialFetch_() so we don't get updates
+    // before we've fetched initially.
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        updates => Settings.instance.update_(updates));
   }
 
   /**
@@ -88,7 +91,7 @@ export class Settings {
     this.listeners_[key].push(listener);
 
     if (this.prefs_[key] !== null) {
-      listener(this.prefs_[key]);
+      listener(this.prefs_[key].value);
     }
   }
 
@@ -123,6 +126,7 @@ export class Settings {
       }
 
       const oldValue = this.prefs_[pref.key].value;
+
       if (oldValue === pref.value) {
         continue;
       }
@@ -144,7 +148,7 @@ export class Settings {
       throw new Error('Prefs key "' + key + '" is not being tracked.');
     }
     if (!this.prefs_[key]) {
-      throw new Error('Settings missing pref with key:', key);
+      throw new Error('Settings missing pref with key: ' + key);
     }
   }
 }

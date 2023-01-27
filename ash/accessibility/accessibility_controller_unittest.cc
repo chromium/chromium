@@ -114,6 +114,51 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilitySpokenFeedbackEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityChromeVoxAutoRead));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxAnnounceDownloadNotifications));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxAnnounceRichTextAttributes));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxAudioStrategy));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleSideBySide));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleTable));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleTable6));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleTable8));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleTableType));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxBrailleWordWrap));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxCapitalStrategy));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxCapitalStrategyBackup));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxLanguageSwitching));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxMenuBrailleCommands));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxNumberReadingStyle));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxPreferredBrailleDisplayAddress));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxPunctuationEcho));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxSmartStickyMode));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxSpeakTextUnderMouse));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxUsePitchChanges));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxUseVerboseMode));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxVirtualBrailleColumns));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxVirtualBrailleRows));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityChromeVoxVoiceName));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityStickyKeysEnabled));
   EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityShortcutsEnabled));
   EXPECT_TRUE(

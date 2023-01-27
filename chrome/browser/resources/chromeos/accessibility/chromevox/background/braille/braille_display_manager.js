@@ -8,6 +8,7 @@
 import {LocalStorage} from '../../../common/local_storage.js';
 import {BrailleDisplayState, BrailleKeyCommand, BrailleKeyEvent} from '../../common/braille/braille_key_types.js';
 import {NavBraille} from '../../common/braille/nav_braille.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 
 import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
@@ -67,14 +68,14 @@ export class BrailleDisplayManager {
     this.translatorManager_.addChangeListener(
         () => this.translateContent_(this.content_, this.expansionType_));
 
-    LocalStorage.addListenerForKey(
+    SettingsManager.addListenerForKey(
         'brailleWordWrap', wrap => this.updatePanStrategy_(wrap));
-    LocalStorage.addListenerForKey(
+    SettingsManager.addListenerForKey(
         'virtualBrailleRows', () => this.onCaptionsStateChanged_());
-    LocalStorage.addListenerForKey(
+    SettingsManager.addListenerForKey(
         'virtualBrailleColumns', () => this.onCaptionsStateChanged_());
 
-    this.updatePanStrategy_(LocalStorage.getBoolean('brailleWordWrap', true));
+    this.updatePanStrategy_(SettingsManager.getBoolean('brailleWordWrap'));
 
     BrailleCaptionsBackground.init(() => this.onCaptionsStateChanged_());
     if (goog.isDef(chrome.brailleDisplayPrivate)) {
@@ -237,10 +238,10 @@ export class BrailleDisplayManager {
       // Update the dimensions of the virtual braille captions display to those
       // of a real physical display when one is plugged in.
       processDisplayState(newState);
-      LocalStorage.set('menuBrailleCommands', true);
+      SettingsManager.set('menuBrailleCommands', true);
     } else {
       processDisplayState(BrailleCaptionsBackground.getVirtualDisplayState());
-      LocalStorage.set('menuBrailleCommands', false);
+      SettingsManager.set('menuBrailleCommands', false);
     }
   }
 

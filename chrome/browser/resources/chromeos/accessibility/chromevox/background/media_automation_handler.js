@@ -7,6 +7,7 @@
  */
 import {AsyncUtil} from '../../common/async_util.js';
 import {LocalStorage} from '../../common/local_storage.js';
+import {SettingsManager} from '../common/settings_manager.js';
 import {TtsCapturingEventListener} from '../common/tts_interface.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
@@ -78,7 +79,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
    */
   onMediaStartedPlaying(evt) {
     this.mediaRoots_.add(evt.target);
-    const audioStrategy = LocalStorage.get('audioStrategy');
+    const audioStrategy = SettingsManager.get('audioStrategy');
     if (ChromeVox.tts.isSpeaking() && audioStrategy === 'audioDuck') {
       this.update_({start: true});
     }
@@ -100,7 +101,7 @@ export class MediaAutomationHandler extends BaseAutomationHandler {
   update_(options) {
     const it = this.mediaRoots_.values();
     let item = it.next();
-    const audioStrategy = LocalStorage.get('audioStrategy');
+    const audioStrategy = SettingsManager.get('audioStrategy');
     while (!item.done) {
       const root = item.value;
       if (options.start) {

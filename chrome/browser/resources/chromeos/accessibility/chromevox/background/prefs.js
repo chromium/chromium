@@ -169,15 +169,7 @@ export class ChromeVoxPrefs {
  * @type {Object<Object>}
  */
 ChromeVoxPrefs.DEFAULT_PREFS = {
-  'announceDownloadNotifications': true,
-  'announceRichTextAttributes': true,
-  'audioStrategy': 'audioNormal',
   'brailleCaptions': false,
-  'brailleSideBySide': true,
-  'brailleTableType': 'brailleTable8',
-  'brailleTable6': 'en-UEB-g2',
-  'brailleTable8': 'en-nabcc',
-  'capitalStrategy': 'increasePitch',
   'cvoxKey': '',
   'enableBrailleLogging': false,
   'enableEarconLogging': false,
@@ -186,16 +178,9 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'enableEventStreamLogging': false,
   'focusFollowsMouse': false,
   'granularity': undefined,
-  'languageSwitching': false,
-  'menuBrailleCommands': false,
-  'numberReadingStyle': 'asWords',
   'position': {},
-  'smartStickyMode': true,
-  'speakTextUnderMouse': false,
   'sticky': false,
   'typingEcho': 0,
-  'usePitchChanges': true,
-  'useVerboseMode': true,
 
   // eventStreamFilters
   'activedescendantchanged': true,

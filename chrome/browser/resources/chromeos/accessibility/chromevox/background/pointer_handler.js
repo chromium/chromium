@@ -8,9 +8,9 @@
  */
 import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {EventGenerator} from '../../common/event_generator.js';
-import {LocalStorage} from '../../common/local_storage.js';
 import {CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EarconId} from '../common/earcon_id.js';
+import {SettingsManager} from '../common/settings_manager.js';
 import {QueueMode} from '../common/tts_types.js';
 
 import {BaseAutomationHandler} from './base_automation_handler.js';
@@ -66,7 +66,7 @@ export class PointerHandler extends BaseAutomationHandler {
       this.mouseY_ = 0;
     });
 
-    if (LocalStorage.get('speakTextUnderMouse')) {
+    if (SettingsManager.get('speakTextUnderMouse')) {
       chrome.accessibilityPrivate.enableMouseEvents(true);
     }
 

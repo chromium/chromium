@@ -57,9 +57,13 @@ export class SettingsManager {
    */
   static migrateFromChromeStorage_() {
     for (const key of SettingsManager.PREFS) {
-      const value = LocalStorage.get(key);
+      let value = LocalStorage.get(key);
       if (value === undefined) {
         continue;
+      }
+      // Convert virtualBrailleColumns and virtualBrailleRows to numbers.
+      if (['virtualBrailleColumns', 'virtualBrailleRows'].includes(key)) {
+        value = parseInt(value, 10);
       }
       const prefName = SettingsManager.getPrefName_(key);
       try {
@@ -94,12 +98,67 @@ export class SettingsManager {
 
   /**
    * @param {string} key
-   * @return {?PrefObject}
+   * @param {Function} callback
+   */
+  static addListenerForKey(key, callback) {
+    const pref = SettingsManager.getPrefName_(key);
+    Settings.addListener(pref, callback);
+  }
+
+  /**
+   * @param {string} key
+   * @return {*}
    */
   static get(key) {
     const pref = SettingsManager.getPrefName_(key);
     return Settings.get(pref);
   }
+
+  /**
+   * @param {string} key
+   * @param {string|Function} type A string (for primitives) or type constructor
+   *     (for classes) corresponding to the expected type
+   * @return {*}
+   */
+  static getTypeChecked(key, type) {
+    const value = SettingsManager.get(key);
+    if ((typeof type === 'string') && (typeof value === type)) {
+      return value;
+    }
+    throw new Error(
+        'Value in SettingsManager for key "' + key + '" is not a ' + type);
+  }
+
+  /**
+   * @param {string} key
+   * @return {boolean}
+   */
+  static getBoolean(key) {
+    const value = SettingsManager.getTypeChecked(key, 'boolean');
+    return Boolean(value);
+  }
+
+  /**
+   * @param {string} key
+   * @return {number}
+   */
+  static getNumber(key) {
+    const value = SettingsManager.getTypeChecked(key, 'number');
+    if (isNaN(value)) {
+      throw new Error('Value in SettingsManager for key "' + key + '" is NaN');
+    }
+    return Number(value);
+  }
+
+  /**
+   * @param {string} key
+   * @return {string}
+   */
+  static getString(key) {
+    const value = SettingsManager.getTypeChecked(key, 'string');
+    return String(value);
+  }
+
 
   /**
    * @param {string} key
@@ -119,33 +178,34 @@ SettingsManager.instance;
  * @const {!Array<string>}
  */
 SettingsManager.PREFS = [
-  // 'announceDownloadNotifications',
-  // 'announceRichTextAttributes',
-  // 'audioStrategy',
+  'announceDownloadNotifications',
+  'announceRichTextAttributes',
+  'audioStrategy',
   'autoRead',
-  // 'brailleSideBySide',
-  // 'brailleTable',
-  // 'brailleTable6',
-  // 'brailleTable8',
-  // 'brailleTableType',
-  // 'brailleWordWrap',
-  // 'capitalStrategy',
+  'brailleSideBySide',
+  'brailleTable',
+  'brailleTable6',
+  'brailleTable8',
+  'brailleTableType',
+  'brailleWordWrap',
+  'capitalStrategy',
+  'capitalStrategyBackup',
   // 'enableBrailleLogging',
   // 'enableEarconLogging',
   // 'enableEventStreamLogging',
   // 'enableSpeechLogging',
-  // 'languageSwitching',
-  // 'menuBrailleCommands',
-  // 'numberReadingStyle',
-  // 'preferredBrailleDisplayAddress',
-  // 'punctuationEcho',
-  // 'smartStickyMode',
-  // 'speakTextUnderMouse',
-  // 'usePitchChanges',
-  // 'useVerboseMode',
-  // 'virtualBrailleColumns',
-  // 'virtualBrailleRows',
-  // 'voiceName',
+  'languageSwitching',
+  'menuBrailleCommands',
+  'numberReadingStyle',
+  'preferredBrailleDisplayAddress',
+  'punctuationEcho',
+  'smartStickyMode',
+  'speakTextUnderMouse',
+  'usePitchChanges',
+  'useVerboseMode',
+  'virtualBrailleColumns',
+  'virtualBrailleRows',
+  'voiceName',
 ];
 
 // List of event stream filters used on the ChromeVox options page to indicate

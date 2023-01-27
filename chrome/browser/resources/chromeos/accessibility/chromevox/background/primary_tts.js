@@ -9,6 +9,7 @@ import {constants} from '../../common/constants.js';
 import {LocalStorage} from '../../common/local_storage.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
+import {SettingsManager} from '../common/settings_manager.js';
 import {TtsCapturingEventListener, TtsInterface} from '../common/tts_interface.js';
 import * as ttsTypes from '../common/tts_types.js';
 
@@ -47,7 +48,7 @@ export class PrimaryTts extends AbstractTts {
 
     /** @private {number} */
     this.currentPunctuationEcho_ =
-        LocalStorage.getNumber(ttsTypes.TtsSettings.PUNCTUATION_ECHO, 1);
+        SettingsManager.getNumber(ttsTypes.TtsSettings.PUNCTUATION_ECHO);
 
     /**
      * A list of punctuation characters that should always be spliced into
@@ -98,7 +99,7 @@ export class PrimaryTts extends AbstractTts {
 
     if (window.speechSynthesis) {
       window.speechSynthesis.onvoiceschanged = () =>
-          this.updateVoice(LocalStorage.getString('voiceName', ''));
+          this.updateVoice(SettingsManager.getString('voiceName'));
     } else {
       // SpeechSynthesis API is not available on chromecast. Call
       // updateVoice to set the one and only voice as the current
@@ -106,7 +107,7 @@ export class PrimaryTts extends AbstractTts {
       this.updateVoice('');
     }
 
-    LocalStorage.addListenerForKey(
+    SettingsManager.addListenerForKey(
         'voiceName', voiceName => this.updateVoice(voiceName));
 
     // Migration: local LocalStorage tts properties -> Chrome pref settings.
@@ -167,8 +168,8 @@ export class PrimaryTts extends AbstractTts {
 
     textString = this.preprocess(textString, properties);
 
-    // This pref on LocalStorage gets set by the options page.
-    if (LocalStorage.get('numberReadingStyle') === 'asDigits') {
+    // This pref on SettingsManager gets set by the options page.
+    if (SettingsManager.get('numberReadingStyle') === 'asDigits') {
       textString = this.getNumberAsDigits_(textString);
     }
 
@@ -661,13 +662,13 @@ export class PrimaryTts extends AbstractTts {
 
   /**
    * Method that updates the punctuation echo level, and also persists setting
-   * to local storage.
+   * to settings prefs.
    * @param {number} punctuationEcho The index of the desired punctuation echo
    * level in ttsTypes.PunctuationEchoes.
    */
   updatePunctuationEcho(punctuationEcho) {
     this.currentPunctuationEcho_ = punctuationEcho;
-    LocalStorage.set(ttsTypes.TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
+    SettingsManager.set(ttsTypes.TtsSettings.PUNCTUATION_ECHO, punctuationEcho);
   }
 
   /**
