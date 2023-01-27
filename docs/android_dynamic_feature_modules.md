@@ -427,12 +427,13 @@ reading this section.
 There are some subtleties to how JNI registration works with DFMs:
 
 * Generated wrapper `ClassNameJni` classes are packaged into the DFM's dex file
-* The class containing the actual native definitions, `GEN_JNI.java`, is always
-  stored in the base module
-* If the DFM is only included in bundles that use [implicit JNI
-  registration](android_native_libraries.md#JNI-Native-Methods-Resolution) (i.e.
-  Monochrome and newer), then no extra consideration is necessary
-* Otherwise, the DFM will need to provide a `generate_jni_registration` target
+* The class containing the actual native definitions,
+  `<module_name>_GEN_JNI.java`, is currently stored in the base module, but
+  could be moved out
+* The `Natives` interface you provide will need to be annotated with your module
+  name as an argument to `NativeMethods`, eg. `@NativeMethods("foo")`, resulting
+  in a uniquely named `foo_GEN_JNI.java`
+* The DFM will need to provide a `generate_jni_registration` target
   that will generate all of the native registration functions
 
 #### Calling DFM native code via JNI
@@ -507,9 +508,9 @@ component("foo") {
 # the base module).
 generate_jni_registration("jni_registration") {
   targets = [ "//chrome/browser/foo/internal:java" ]
-  header_output = "$target_gen_dir/jni_registration.h"
   namespace = "foo"
   no_transitive_deps = true
+  manual_jni_registration = true
 }
 
 # This group is a convenience alias representing the module's native code,
@@ -569,7 +570,7 @@ With a declaration of the native method on the Java side:
 public class FooImpl implements Foo {
     ...
 
-    @NativeMethods
+    @NativeMethods("foo")
     interface Natives {
         int execute();
     }

@@ -35,25 +35,6 @@ inline jclass org_chromium_foo_Foo_clazz(JNIEnv* env) {
 
 
 // Step 3: Method stubs.
-JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeInstanceMethod(
-    JNIEnv* env,
-    jobject jcaller,
-    jlong nativeInstance) {
-  TRACE_EVENT0("jni", "Instance::InstanceMethod");
-  Instance* native = reinterpret_cast<Instance*>(nativeInstance);
-  CHECK_NATIVE_PTR(env, jcaller, native, "InstanceMethod");
-  return native->InstanceMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
-}
-
-static void JNI_Foo_StaticMethod(JNIEnv* env);
-
-JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeStaticMethod(
-    JNIEnv* env,
-    jclass jcaller) {
-  TRACE_EVENT0("jni", "JNI_Foo_StaticMethod");
-  return JNI_Foo_StaticMethod(env);
-}
-
 static void JNI_Foo_Foo(JNIEnv* env);
 
 JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_1foo_1Foo_1foo(
@@ -111,6 +92,25 @@ JNI_GENERATOR_EXPORT void Java_org_chromium_base_natives_GEN_1JNI_org_1chromium_
   Ptr* native = reinterpret_cast<Ptr*>(nativePtr);
   CHECK_NATIVE_PTR(env, jcaller, native, "FooBar");
   return native->FooBar(env);
+}
+
+JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeInstanceMethod(
+    JNIEnv* env,
+    jobject jcaller,
+    jlong nativeInstance) {
+  TRACE_EVENT0("jni", "Instance::InstanceMethod");
+  Instance* native = reinterpret_cast<Instance*>(nativeInstance);
+  CHECK_NATIVE_PTR(env, jcaller, native, "InstanceMethod");
+  return native->InstanceMethod(env, base::android::JavaParamRef<jobject>(env, jcaller));
+}
+
+static void JNI_Foo_StaticMethod(JNIEnv* env);
+
+JNI_GENERATOR_EXPORT void Java_org_chromium_foo_Foo_nativeStaticMethod(
+    JNIEnv* env,
+    jclass jcaller) {
+  TRACE_EVENT0("jni", "JNI_Foo_StaticMethod");
+  return JNI_Foo_StaticMethod(env);
 }
 
 

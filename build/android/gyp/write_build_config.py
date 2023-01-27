@@ -431,7 +431,7 @@ into the final APK as-is.
 
 NOTE: This has nothing to do with *Android* resources.
 
-* `jni['all_source']`
+* `deps_info['jni_all_source']`
 The list of all `deps_info['target_sources_file']` entries for all library
 dependencies for this APK. Note: this is a list of files, where each file
 contains a list of Java and Kotlin source files. This is used for JNI
@@ -1457,7 +1457,6 @@ def main(argv):
   if is_apk_or_module_target or options.type in ('group', 'java_library',
                                                  'robolectric_binary',
                                                  'dist_aar'):
-    deps_info['jni'] = {}
     all_target_sources = [
         c['target_sources_file'] for c in all_library_deps
         if 'target_sources_file' in c
@@ -1808,7 +1807,7 @@ def main(argv):
     config['modules'] = {}
     modules = config['modules']
     for n, c in module_configs_by_name.items():
-      if c['module_name'] == 'base':
+      if n == 'base':
         assert 'base_module_config' not in deps_info, (
             'Must have exactly 1 base module!')
         deps_info['package_name'] = c['package_name']
@@ -1819,7 +1818,7 @@ def main(argv):
         deps_info['lint_android_manifest'] = c['android_manifest']
       else:
         lint_extra_android_manifests.add(c['android_manifest'])
-      jni_all_source.update(c['jni']['all_source'])
+      jni_all_source.update(c['jni_all_source'])
       lint_aars.update(c['lint_aars'])
       lint_srcjars.update(c['lint_srcjars'])
       lint_sources.update(c['lint_sources'])
@@ -1829,7 +1828,7 @@ def main(argv):
       for f in per_module_fields:
         if f in c:
           module[f] = c[f]
-    deps_info['jni'] = {'all_source': sorted(jni_all_source)}
+    deps_info['jni_all_source'] = sorted(jni_all_source)
     deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
     deps_info['lint_sources'] = sorted(lint_sources)
@@ -1844,7 +1843,7 @@ def main(argv):
   if is_apk_or_module_target or options.type in ('group', 'java_library',
                                                  'robolectric_binary',
                                                  'dist_aar'):
-    deps_info['jni']['all_source'] = sorted(set(all_target_sources))
+    deps_info['jni_all_source'] = sorted(set(all_target_sources))
 
   system_jars = [c['unprocessed_jar_path'] for c in system_library_deps]
   system_interface_jars = [c['interface_jar_path'] for c in system_library_deps]
@@ -2136,7 +2135,7 @@ def main(argv):
     RemoveObjDups(config, base, 'deps_info', 'extra_package_names')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_classpath')
     RemoveObjDups(config, base, 'deps_info', 'javac_full_interface_classpath')
-    RemoveObjDups(config, base, 'deps_info', 'jni', 'all_source')
+    RemoveObjDups(config, base, 'deps_info', 'jni_all_source')
     RemoveObjDups(config, base, 'extra_android_manifests')
 
   if is_java_target:

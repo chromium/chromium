@@ -175,6 +175,16 @@ public class AnimationFrameTimeHistogramTest {
 If a native method is called without setting a mock in a unit test, an
 `UnsupportedOperationException` will be thrown.
 
+#### Special case: DFMs
+DFMs have their own generated `GEN_JNI`s, which are `<module_name>_GEN_JNI`. In
+order to get your DFM's JNI to use the `<module_name>` prefix, you must add your
+module name into the argument of the `@NativeMethods` annotation.
+
+So, for example, say your module was named `test_module`. You would annotate
+your `Natives` interface with `@NativeMethods("test_module")`, and this would
+result in `test_module_GEN_JNI`.
+
+
 ### Testing for readiness: use `get()`
 
 JNI Generator automatically produces checks that verify that the Natives interface can be safely

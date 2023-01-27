@@ -55,7 +55,7 @@ public class TestDummyImpl implements TestDummy {
         }
     }
 
-    @NativeMethods
+    @NativeMethods("test_dummy")
     interface Natives {
         int execute();
         String loadResource();
