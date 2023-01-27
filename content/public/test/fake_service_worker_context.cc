@@ -71,7 +71,7 @@ bool FakeServiceWorkerContext::MaybeHasRegistrationForStorageKey(
     const blink::StorageKey& key) {
   return registered_storage_keys_.find(key) != registered_storage_keys_.end();
 }
-void FakeServiceWorkerContext::GetAllOriginsInfo(
+void FakeServiceWorkerContext::GetAllStorageKeysInfo(
     GetUsageInfoCallback callback) {
   NOTREACHED();
 }

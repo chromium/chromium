@@ -184,7 +184,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
       int64_t service_worker_version_id,
       ServiceWorkerScriptExecutionCallback callback) override;
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
-  void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
+  void GetAllStorageKeysInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,
                            ResultCallback callback) override;
   void CheckHasServiceWorker(const GURL& url,
@@ -444,7 +444,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
 
   void DidDeleteAndStartOver(blink::ServiceWorkerStatusCode status);
 
-  void DidGetAllRegistrationsForGetAllOrigins(
+  void DidGetAllRegistrationsForGetAllStorageKeys(
       GetUsageInfoCallback callback,
       blink::ServiceWorkerStatusCode status,
       const std::vector<ServiceWorkerRegistrationInfo>& registrations);

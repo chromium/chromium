@@ -157,7 +157,7 @@ bool ServiceWorkerContextAdapter::MaybeHasRegistrationForStorageKey(
   return false;
 }
 
-void ServiceWorkerContextAdapter::GetAllOriginsInfo(
+void ServiceWorkerContextAdapter::GetAllStorageKeysInfo(
     GetUsageInfoCallback callback) {
   NOTIMPLEMENTED();
 }

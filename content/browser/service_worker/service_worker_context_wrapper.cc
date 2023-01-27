@@ -66,6 +66,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -598,7 +599,7 @@ bool ServiceWorkerContextWrapper::MaybeHasRegistrationForStorageKey(
   return context() ? context()->MaybeHasRegistrationForStorageKey(key) : true;
 }
 
-void ServiceWorkerContextWrapper::GetAllOriginsInfo(
+void ServiceWorkerContextWrapper::GetAllStorageKeysInfo(
     GetUsageInfoCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context_core_) {
@@ -608,7 +609,7 @@ void ServiceWorkerContextWrapper::GetAllOriginsInfo(
     return;
   }
   context()->registry()->GetAllRegistrationsInfos(base::BindOnce(
-      &ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins,
+      &ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllStorageKeys,
       this, std::move(callback)));
 }
 
@@ -1406,30 +1407,30 @@ void ServiceWorkerContextWrapper::DidDeleteAndStartOver(
   context_core_->OnStorageWiped();
 }
 
-void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllOrigins(
+void ServiceWorkerContextWrapper::DidGetAllRegistrationsForGetAllStorageKeys(
     GetUsageInfoCallback callback,
     blink::ServiceWorkerStatusCode status,
     const std::vector<ServiceWorkerRegistrationInfo>& registrations) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<StorageUsageInfo> usage_infos;
 
-  std::map<GURL, StorageUsageInfo> origins;
+  std::map<blink::StorageKey, StorageUsageInfo> storage_keys;
   for (const auto& registration_info : registrations) {
-    GURL origin = registration_info.scope.DeprecatedGetOriginAsURL();
+    blink::StorageKey storage_key = registration_info.key;
 
-    auto it = origins.find(origin);
-    if (it == origins.end()) {
-      origins[origin] = StorageUsageInfo(
-          blink::StorageKey(url::Origin::Create(origin)),
-          registration_info.stored_version_size_bytes, base::Time());
+    auto it = storage_keys.find(storage_key);
+    if (it == storage_keys.end()) {
+      storage_keys[storage_key] = StorageUsageInfo(
+          storage_key, registration_info.stored_version_size_bytes,
+          base::Time());
     } else {
       it->second.total_size_bytes +=
           registration_info.stored_version_size_bytes;
     }
   }
 
-  for (const auto& origin_info_pair : origins) {
-    usage_infos.push_back(origin_info_pair.second);
+  for (const auto& storage_key_info_pair : storage_keys) {
+    usage_infos.push_back(storage_key_info_pair.second);
   }
 
   std::move(callback).Run(usage_infos);

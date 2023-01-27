@@ -54,7 +54,7 @@ ServiceWorkerHelper::~ServiceWorkerHelper() {}
 void ServiceWorkerHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  service_worker_context_->GetAllOriginsInfo(base::BindOnce(
+  service_worker_context_->GetAllStorageKeysInfo(base::BindOnce(
       &GetAllOriginsInfoForServiceWorkerCallback, std::move(callback)));
 }
 

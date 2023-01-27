@@ -129,7 +129,7 @@ std::vector<StorageUsageInfo> GetServiceWorkers(
   std::vector<StorageUsageInfo> service_workers;
   base::RunLoop run_loop;
 
-  service_worker_context->GetAllOriginsInfo(
+  service_worker_context->GetAllStorageKeysInfo(
       base::BindOnce(&GetServiceWorkersCallback, run_loop.QuitClosure(),
                      base::Unretained(&service_workers)));
   run_loop.Run();

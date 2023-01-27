@@ -71,7 +71,7 @@ class ServiceWorkerContextAdapter
       int64_t service_worker_version_id,
       content::ServiceWorkerScriptExecutionCallback callback) override;
   bool MaybeHasRegistrationForStorageKey(const blink::StorageKey& key) override;
-  void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
+  void GetAllStorageKeysInfo(GetUsageInfoCallback callback) override;
   void DeleteForStorageKey(const blink::StorageKey& key,
                            ResultCallback callback) override;
   void CheckHasServiceWorker(const GURL& url,
