@@ -376,6 +376,9 @@ CAGradientLayer* CarouselGradientLayer() {
   CGFloat nbFullTiles = floor(nearestHalfTile);
   CGFloat percentageOfTileToFill = nearestHalfTile - nbFullTiles;
   CGFloat extraSpaceToFill = percentageOfTileToFill * tileWidth;
+  if (nbFullTiles < FLT_EPSILON) {
+    return;
+  }
   CGFloat extraSpacingPerTile = extraSpaceToFill / nbFullTiles;
 
   self.dynamicSpacing = extraSpacingPerTile + kMinStackSpacing;
