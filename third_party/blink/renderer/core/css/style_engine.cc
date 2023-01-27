@@ -802,6 +802,13 @@ CSSStyleSheet* StyleEngine::CreateSheet(
 
   auto result = text_to_sheet_cache_.insert(text_content, nullptr);
   StyleSheetContents* contents = result.stored_value->value;
+
+  // Divergence is between a call to ParseSheet and a call to
+  // CreateInline within this method. Assert the values that
+  // introduce the codepath divergence.
+  recordreplay::Assert("[RUN-1065] StyleEngine::CreateSheet is_new_entry=%d contents=%d isCacheable=%d",
+    result.is_new_entry, !!contents, contents && contents->IsCacheableForStyleElement());
+
   if (result.is_new_entry || !contents ||
       !contents->IsCacheableForStyleElement()) {
     result.stored_value->value = nullptr;
