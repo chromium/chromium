@@ -25,6 +25,9 @@ void MockIMEInputContextHandler::CommitText(
     ui::TextInputClient::InsertTextCursorBehavior cursor_behavior) {
   ++commit_text_call_count_;
   last_commit_text_ = text;
+  for (Observer& observer : observers_) {
+    observer.OnCommitText(text);
+  }
 }
 
 void MockIMEInputContextHandler::UpdateCompositionText(
@@ -162,6 +165,14 @@ std::u16string MockIMEInputContextHandler::GetCompositionText() {
 
 ukm::SourceId MockIMEInputContextHandler::GetClientSourceForMetrics() {
   return ukm::kInvalidSourceId;
+}
+
+void MockIMEInputContextHandler::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MockIMEInputContextHandler::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 }  // namespace ash

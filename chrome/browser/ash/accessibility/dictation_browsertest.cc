@@ -77,8 +77,6 @@ namespace ash {
 
 namespace {
 
-constexpr int kPrintErrorMessageDelayMs = 3500;
-
 const char kFirstSpeechResult[] = "Help";
 const char16_t kFirstSpeechResult16[] = u"Help";
 const char kFinalSpeechResult[] = "Hello world";
@@ -221,52 +219,6 @@ class HistogramWaiter {
   base::RunLoop run_loop_;
 };
 
-// A class that repeatedly runs a function, which is supplied at construction,
-// until it evaluates to true.
-class SuccessWaiter {
- public:
-  SuccessWaiter(const base::RepeatingCallback<bool()>& is_success,
-                const std::string& error_message)
-      : is_success_(is_success), error_message_(error_message) {}
-  ~SuccessWaiter() = default;
-  SuccessWaiter(const SuccessWaiter&) = delete;
-  SuccessWaiter& operator=(const SuccessWaiter&) = delete;
-
-  void Wait() {
-    timer_.Start(FROM_HERE, base::Milliseconds(200), this,
-                 &SuccessWaiter::OnTimer);
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&SuccessWaiter::MaybePrintErrorMessage,
-                       weak_factory_.GetWeakPtr()),
-        base::Milliseconds(kPrintErrorMessageDelayMs));
-    run_loop_.Run();
-    ASSERT_TRUE(is_success_.Run());
-  }
-
-  void OnTimer() {
-    if (is_success_.Run()) {
-      timer_.Stop();
-      run_loop_.Quit();
-    }
-  }
-
-  void MaybePrintErrorMessage() {
-    if (!timer_.IsRunning() || run_loop_.AnyQuitCalled() || is_success_.Run())
-      return;
-
-    LOG(ERROR) << "Still waiting for SuccessWaiter\n"
-               << "SuccessWaiter error message: " << error_message_ << "\n";
-  }
-
- private:
-  base::RepeatingCallback<bool()> is_success_;
-  std::string error_message_;
-  base::RepeatingTimer timer_;
-  base::RunLoop run_loop_;
-  base::WeakPtrFactory<SuccessWaiter> weak_factory_{this};
-};
-
 // Listens for changes to the clipboard. This class only allows `Wait()` to be
 // called once. If you need to call `Wait()` multiple times, create multiple
 // instances of this class.
@@ -287,6 +239,33 @@ class ClipboardChangedWaiter : public ui::ClipboardObserver {
   // ui::ClipboardObserver:
   void OnClipboardDataChanged() override { run_loop_.Quit(); }
 
+  base::RunLoop run_loop_;
+};
+
+// Listens to when the IME commits text. This class only allows `Wait()` to be
+// called once. If you need to call `Wait()` multiple times, create multiple
+// instances of this class.
+class CommitTextWaiter : public MockIMEInputContextHandler::Observer {
+ public:
+  CommitTextWaiter() = default;
+  CommitTextWaiter(const CommitTextWaiter&) = delete;
+  CommitTextWaiter& operator=(const CommitTextWaiter&) = delete;
+  ~CommitTextWaiter() override = default;
+
+  void Wait(const std::u16string& expected_commit_text) {
+    expected_commit_text_ = expected_commit_text;
+    run_loop_.Run();
+  }
+
+ private:
+  // MockIMEInputContextHandler::Observer
+  void OnCommitText(const std::u16string& text) override {
+    if (text == expected_commit_text_) {
+      run_loop_.Quit();
+    }
+  }
+
+  std::u16string expected_commit_text_;
   base::RunLoop run_loop_;
 };
 
@@ -539,14 +518,14 @@ class DictationTestBase : public InProcessBrowserTest,
   }
 
   void WaitForCommitText(const std::u16string& value) {
-    std::string error_message =
-        base::UTF16ToUTF8(u"Still waiting for commit text: " + value);
-    EXPECT_TRUE(input_context_handler_);
-    SuccessWaiter(base::BindLambdaForTesting([&]() {
-                    return value == input_context_handler_->last_commit_text();
-                  }),
-                  error_message)
-        .Wait();
+    if (value == input_context_handler_->last_commit_text()) {
+      return;
+    }
+
+    CommitTextWaiter waiter;
+    input_context_handler_->AddObserver(&waiter);
+    waiter.Wait(value);
+    input_context_handler_->RemoveObserver(&waiter);
   }
 
   void WaitForSelection(int start, int end) {

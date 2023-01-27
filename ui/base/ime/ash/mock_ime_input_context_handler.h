@@ -10,6 +10,8 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/events/event.h"
@@ -34,6 +36,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
     uint32_t num_char16s_before_cursor;
     uint32_t num_char16s_after_cursor;
   };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever the commit text is updated.
+    virtual void OnCommitText(const std::u16string& text) = 0;
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   MockIMEInputContextHandler();
   virtual ~MockIMEInputContextHandler();
@@ -124,6 +135,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockIMEInputContextHandler
   bool autocorrect_enabled_ = true;
   std::vector<ui::GrammarFragment> grammar_fragments_;
   gfx::Range cursor_range_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash
