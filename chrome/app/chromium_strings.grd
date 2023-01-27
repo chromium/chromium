@@ -398,11 +398,11 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
         Not used in Chromium. Placeholder to keep resource maps in sync.
       </message>
       <if expr="is_macosx">
-        <message name="IDS_MAC_10_11_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using OS X 10.11.
+        <message name="IDS_MAC_10_13_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
+          To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.13.
         </message>
-        <message name="IDS_MAC_10_12_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
-          To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using macOS 10.12.
+        <message name="IDS_MAC_10_14_OBSOLETE" desc="A message displayed on an at-launch infobar and About (Help) page warning the user that the OS version they are using will soon be or is already unsupported.">
+          To get future Chromium updates, you'll need macOS 10.15 or later. This computer is using macOS 10.14.
         </message>
       </if>
       <if expr="is_win">
