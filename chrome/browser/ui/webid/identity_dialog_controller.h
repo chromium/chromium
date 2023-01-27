@@ -58,8 +58,6 @@ class IdentityDialogController
   content::WebContents* GetWebContents() override;
 
  private:
-  void OnViewClosed();
-
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
