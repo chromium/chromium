@@ -423,7 +423,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      */
     private int getToolbarDefaultColor() {
         if (mShouldShowModernizeVisualUpdate && mLocationBar.getPhoneCoordinator().hasFocus()) {
-            if (mDropdownListScrolled && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+            if (mDropdownListScrolled) {
                 return isIncognito()
                         ? getContext().getColor(R.color.default_bg_color_dark_elev_2_baseline)
                         : ChromeColors.getSurfaceColor(
@@ -2717,7 +2717,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void onSuggestionDropdownScroll() {
-        if (!mShouldShowModernizeVisualUpdate || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+        if (!mShouldShowModernizeVisualUpdate) {
             return;
         }
         mDropdownListScrolled = true;
@@ -2727,7 +2727,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void onSuggestionDropdownOverscrolledToTop() {
-        if (!mShouldShowModernizeVisualUpdate || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+        if (!mShouldShowModernizeVisualUpdate) {
             return;
         }
         mDropdownListScrolled = false;
