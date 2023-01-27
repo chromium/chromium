@@ -282,7 +282,8 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       stripped_url_, storage_key_,
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+          weak_factory_.GetWeakPtr(), /*is_for_navigation=*/true,
+          base::TimeTicks::Now()));
 }
 
 void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
@@ -308,12 +309,18 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
+    bool is_for_navigation,
     base::TimeTicks start_time,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  if (!start_time.is_null()) {
+  if (is_for_navigation) {
+    DCHECK(!start_time.is_null());
     ServiceWorkerMetrics::RecordFindRegistrationForClientUrlTime(
         base::TimeTicks::Now() - start_time);
+
+    base::UmaHistogramBoolean(
+        "ServiceWorker.FoundServiceWorkerRegistrationOnNavigation",
+        status == blink::ServiceWorkerStatusCode::kOk);
   }
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
@@ -639,7 +646,8 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
         stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr(), base::TimeTicks()));
+            weak_factory_.GetWeakPtr(), /*is_for_navigation=*/false,
+            base::TimeTicks()));
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
@@ -695,7 +703,8 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
         stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr(), base::TimeTicks()));
+            weak_factory_.GetWeakPtr(), /*is_for_navigation=*/false,
+            base::TimeTicks()));
     return;
   }
   version->RegisterStatusChangeCallback(base::BindOnce(
