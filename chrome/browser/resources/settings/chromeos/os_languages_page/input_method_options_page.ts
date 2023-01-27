@@ -14,11 +14,12 @@ import './os_japanese_clear_ime_data_dialog.js';
 import './os_japanese_manage_user_dictionary_page.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
+import {assertExhaustive} from '../assert_extras.js';
 import {routes} from '../os_route.js';
 import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -491,9 +492,7 @@ class SettingsInputMethodOptionsPageElement extends
         return this.i18n('inputMethodOptionsPrivacySectionTitle');
 
       default:
-        // Safety: `section` has type `never` here.
-        // TODO(b/265559342): Use a compile-time exhaustive check here.
-        assertNotReached();
+        assertExhaustive(section);
     }
   }
 

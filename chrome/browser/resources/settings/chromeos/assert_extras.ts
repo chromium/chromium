@@ -7,7 +7,7 @@
  * type narrowing, etc.
  */
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  * @param arg An argument to check for existence.
@@ -17,6 +17,44 @@ export function assertExists<T>(
     arg: T, message: string = `Expected ${arg} to be defined.`):
     asserts arg is NonNullable<T> {
   assert(arg !== undefined && arg !== null, message);
+}
+
+/**
+ * Ensures that `value` can't exist at both compile time and run time.
+ *
+ * This is useful for checking that all cases of a type are checked, such as
+ * enums in switch statements:
+ *
+ * ```
+ * declare const val: Enum.A|Enum.B;
+ * switch (val) {
+ *   case Enum.A:
+ *   case Enum.B:
+ *     break;
+ *   default:
+ *     assertExhaustive(val);
+ * }
+ * ```
+ *
+ * or with manual type checks:
+ *
+ * ```
+ * declare const val: string|number;
+ * if (typeof val === 'string') {
+ *   // ...
+ * } else if (typeof val === 'number') {
+ *   // ...
+ * } else {
+ *   assertExhaustive(val);
+ * }
+ * ```
+ *
+ * @param value The value to be checked.
+ * @param message An optional message to throw with the error.
+ */
+export function assertExhaustive(
+    value: never, message: string = `Unexpected value ${value}.`): never {
+  assertNotReached(message);
 }
 
 /**
