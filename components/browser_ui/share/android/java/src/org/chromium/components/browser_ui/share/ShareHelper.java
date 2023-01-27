@@ -10,11 +10,8 @@ import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
@@ -23,49 +20,24 @@ import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * A helper class that helps to start an intent to share titles and URLs.
  */
 public class ShareHelper {
-    /** Interface that receives intents for testing (to fake out actually sending them). */
-    public interface FakeIntentReceiver {
-        /** Sets the intent to send back in the broadcast. */
-        public void setIntentToSendBack(Intent intent);
-
-        /** Called when a custom chooser dialog is shown. */
-        public void onCustomChooserShown(AlertDialog dialog);
-
-        /**
-         * Simulates firing the given intent, without actually doing so.
-         *
-         * @param context The context that will receive broadcasts from the simulated activity.
-         * @param intent The intent to send to the system.
-         */
-        public void fireIntent(Context context, Intent intent);
-    }
-
     /** The task ID of the activity that triggered the share action. */
     public static final String EXTRA_TASK_ID = "org.chromium.chrome.extra.TASK_ID";
 
@@ -73,12 +45,6 @@ public class ShareHelper {
 
     /** The string identifier used as a key to set the extra stream's alt text */
     private static final String EXTRA_STREAM_ALT_TEXT = "android.intent.extra.STREAM_ALT_TEXT";
-
-    /** Force the use of a Chrome-specific intent chooser, not the system chooser. */
-    private static boolean sForceCustomChooserForTesting;
-
-    /** If non-null, will be used instead of the real activity. */
-    private static FakeIntentReceiver sFakeIntentReceiverForTesting;
 
     private static final String ANY_SHARE_HISTOGRAM_NAME = "Sharing.AnyShareStarted";
 
@@ -111,35 +77,13 @@ public class ShareHelper {
      */
     protected static void fireIntent(
             WindowAndroid window, Intent intent, @Nullable IntentCallback callback) {
-        if (sFakeIntentReceiverForTesting != null) {
-            sFakeIntentReceiverForTesting.fireIntent(ContextUtils.getApplicationContext(), intent);
-        } else if (callback != null) {
+        if (callback != null) {
             window.showIntent(intent, callback, null);
         } else {
             // TODO(tedchoc): Allow startActivity w/o intent via Window.
             Activity activity = window.getActivity().get();
             activity.startActivity(intent);
         }
-    }
-
-    /**
-     * Force the use of a Chrome-specific intent chooser, not the system chooser.
-     *
-     * This emulates the behavior on pre Lollipop-MR1 systems, where the system chooser is not
-     * available.
-     */
-    public static void setForceCustomChooserForTesting(boolean enabled) {
-        sForceCustomChooserForTesting = enabled;
-    }
-
-    /**
-     * Uses a FakeIntentReceiver instead of actually sending intents to the system.
-     *
-     * @param receiver The object to send intents to. If null, resets back to the default behavior
-     *                 (really send intents).
-     */
-    public static void setFakeIntentReceiverForTesting(FakeIntentReceiver receiver) {
-        sFakeIntentReceiverForTesting = receiver;
     }
 
     /**
@@ -156,10 +100,6 @@ public class ShareHelper {
 
         private TargetChosenReceiver(@Nullable TargetChosenCallback callback) {
             mCallback = callback;
-        }
-
-        public static boolean isSupported() {
-            return !sForceCustomChooserForTesting;
         }
 
         public static void sendChooserIntent(WindowAndroid window, Intent sharingIntent,
@@ -192,9 +132,6 @@ public class ShareHelper {
             Intent chooserIntent = Intent.createChooser(sharingIntent,
                     context.getString(R.string.share_link_chooser_title),
                     pendingIntent.getIntentSender());
-            if (sFakeIntentReceiverForTesting != null) {
-                sFakeIntentReceiverForTesting.setIntentToSendBack(intent);
-            }
             fireIntent(window, chooserIntent, sLastRegisteredReceiver);
         }
 
@@ -243,90 +180,17 @@ public class ShareHelper {
     }
 
     /**
-     * Creates and shows a custom share intent picker dialog.
-     *
-     * @param params The container holding the share parameters.
-     */
-    static void showCompatShareDialog(final ShareParams params) {
-        Intent intent = getShareLinkAppCompatibilityIntent();
-        List<ResolveInfo> resolveInfoList = PackageManagerUtils.queryIntentActivities(intent, 0);
-        assert resolveInfoList.size() > 0;
-        if (resolveInfoList.size() == 0) return;
-
-        final Context context = params.getWindow().getContext().get();
-        final PackageManager manager = context.getPackageManager();
-        Collections.sort(resolveInfoList, new ResolveInfo.DisplayNameComparator(manager));
-
-        final ShareDialogAdapter adapter =
-                new ShareDialogAdapter(context, manager, resolveInfoList);
-        AlertDialog.Builder builder =
-                new AlertDialog.Builder(context, R.style.ThemeOverlay_BrowserUI_AlertDialog);
-        builder.setTitle(context.getString(R.string.share_link_chooser_title));
-        builder.setAdapter(adapter, null);
-
-        final TargetChosenCallback callback = params.getCallback();
-        // Need a mutable object to record whether the callback has been fired.
-        final boolean[] callbackCalled = new boolean[1];
-
-        final AlertDialog dialog = builder.create();
-        dialog.show();
-        dialog.getListView().setOnItemClickListener(new OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ResolveInfo info = adapter.getItem(position);
-                ActivityInfo ai = info.activityInfo;
-                ComponentName component =
-                        new ComponentName(ai.applicationInfo.packageName, ai.name);
-
-                if (callback != null && !callbackCalled[0]) {
-                    callback.onTargetChosen(component);
-                    callbackCalled[0] = true;
-                }
-                shareDirectly(params, component);
-                dialog.dismiss();
-            }
-        });
-
-        dialog.setOnDismissListener(new OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (callback != null && !callbackCalled[0]) {
-                    callback.onCancel();
-                    callbackCalled[0] = true;
-                }
-            }
-        });
-
-        if (sFakeIntentReceiverForTesting != null) {
-            sFakeIntentReceiverForTesting.onCustomChooserShown(dialog);
-        }
-    }
-
-    /**
-     * Shares the params using the system share sheet, or skipping the sheet and sharing directl if
-     * the target component is specified.
-     */
-    static void shareWithSystemSheet(ShareParams params) {
-        assert TargetChosenReceiver.isSupported();
-        TargetChosenReceiver.sendChooserIntent(
-                params.getWindow(), getShareLinkIntent(params), params.getCallback());
-    }
-
-    /**
      * Shows a picker and allows the user to choose a share target.
+     *
+     * Shares the params using the system share sheet, or skipping the sheet and sharing directly if
+     * the target component is specified.
      *
      * @param params The container holding the share parameters.
      */
     public static void shareWithUi(ShareParams params) {
-        if (TargetChosenReceiver.isSupported()) {
-            // On LMR1+ open system share sheet.
-            recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
-            shareWithSystemSheet(params);
-        } else {
-            // On L and below open custom share dialog.
-            recordShareSource(ShareSourceAndroid.CHROME_SHARE_SHEET);
-            showCompatShareDialog(params);
-        }
+        recordShareSource(ShareSourceAndroid.ANDROID_SHARE_SHEET);
+        TargetChosenReceiver.sendChooserIntent(
+                params.getWindow(), getShareLinkIntent(params), params.getCallback());
     }
 
     /**

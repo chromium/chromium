@@ -109,14 +109,8 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             final ComponentName name, Uri imageUri) {
         Intent shareIntent = getShareImageIntent(imageUri);
         if (name == null) {
-            if (TargetChosenReceiver.isSupported()) {
-                TargetChosenReceiver.sendChooserIntent(
-                        window, shareIntent, new SaveComponentCallback(profile, null));
-            } else {
-                Intent chooserIntent = Intent.createChooser(shareIntent,
-                        window.getActivity().get().getString(R.string.share_link_chooser_title));
-                fireIntent(window, chooserIntent, null);
-            }
+            TargetChosenReceiver.sendChooserIntent(
+                    window, shareIntent, new SaveComponentCallback(profile, null));
         } else {
             shareIntent.setComponent(name);
             fireIntent(window, shareIntent, null);

@@ -23,7 +23,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -112,10 +111,6 @@ public class WebShareTest {
             TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
         }
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
-
-        // Clean up some state that might have been changed by tests.
-        ShareHelper.setForceCustomChooserForTesting(false);
-        ShareHelper.setFakeIntentReceiverForTesting(null);
     }
 
     /**
