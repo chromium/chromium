@@ -140,6 +140,7 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceArcApp:
     case kFeedbackSourceAsh:
     case kFeedbackSourceAssistant:
+    case kFeedbackSourceAutofillContextMenu:
     case kFeedbackSourceBrowserCommand:
     case kFeedbackSourceConnectivityDiagnostics:
     case kFeedbackSourceDesktopTabGroups:

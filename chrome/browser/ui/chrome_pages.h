@@ -99,6 +99,7 @@ enum FeedbackSource {
   kFeedbackSourceSettingsPerformancePage,
   kFeedbackSourceQuickOffice,
   kFeedbackSourceOsSettingsSearch,
+  kFeedbackSourceAutofillContextMenu,
 
   // Must be last.
   kFeedbackSourceCount,

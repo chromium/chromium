@@ -182,8 +182,12 @@ void AutofillContextMenuManager::ExecuteCommand(CommandId command_id) {
 }
 
 void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand() {
-  // TODO(crbug.com/1407646) Implement.
-  NOTIMPLEMENTED();
+  // TODO(crbug.com/1407646) Include autofill metadata in the feedback dialog.
+  chrome::ShowFeedbackPage(browser_, chrome::kFeedbackSourceAutofillContextMenu,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/std::string(),
+                           /*category_tag=*/std::string(),
+                           /*extra_diagnostics=*/std::string());
 }
 
 void AutofillContextMenuManager::ExecuteMenuManagerCommand(
