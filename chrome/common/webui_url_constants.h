@@ -261,6 +261,8 @@ extern const char kChromeUIWebUITestHost[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIGpuURL[];
 extern const char kChromeUIHistogramsURL[];
+extern const char kChromeUIKerberosInBrowserHost[];
+extern const char kChromeUIKerberosInBrowserURL[];
 extern const char kChromeUINotifGeneratorURL[];
 extern const char kChromeUINotifGeneratorHost[];
 #endif
