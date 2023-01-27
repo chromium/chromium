@@ -1133,7 +1133,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public @Px int getInitialActivityHeight() {
         boolean enabledDueToThirdParty = ChromeFeatureList.sCctResizableForThirdParties.isEnabled()
                 && isAllowedThirdParty(getClientPackageName());
-        return enabledDueToThirdParty ? mInitialActivityHeight : 0;
+        return (mIsTrustedIntent || enabledDueToThirdParty) ? mInitialActivityHeight : 0;
     }
 
     boolean isAllowedThirdParty(String packageName) {

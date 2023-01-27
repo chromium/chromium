@@ -303,6 +303,16 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
+    public void testInitialActivityHeight_1stParty() {
+        var intent = new Intent().putExtra(CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX, 50);
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.isFirstParty(any())).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(50, dataProvider.getInitialActivityHeight());
+    }
+
+    @Test
     public void partialCustomTabHeightResizeBehavior_Default() {
         Intent intent = new Intent().putExtra(
                 CustomTabIntentDataProvider.EXTRA_ACTIVITY_HEIGHT_RESIZE_BEHAVIOR,
