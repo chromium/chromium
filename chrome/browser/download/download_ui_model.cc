@@ -937,7 +937,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
     switch (GetDangerType()) {
       case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
         return DownloadUIModel::BubbleUIInfo(/*has_progress_bar=*/false)
-            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+            .AddIconAndColor(vector_icons::kDangerousIcon,
                              ui::kColorAlertHighSeverity)
             .AddPrimaryButton(DownloadCommands::Command::REVIEW);
       case download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED:
@@ -967,7 +967,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNKNOWN_SOURCE,
                        l10n_util::GetStringUTF16(
                            IDS_EXTENSION_WEB_STORE_TITLE)))
-            .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertMediumSeverity)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
                 DownloadCommands::Command::DISCARD,
@@ -980,7 +981,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
         return DownloadUIModel::BubbleUIInfo(
                    l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_DANGEROUS_FILE))
-            .AddIconAndColor(views::kInfoIcon, ui::kColorSecondaryForeground)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorSecondaryForeground)
             .AddPrimaryButton(DownloadCommands::Command::KEEP)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
@@ -997,7 +999,7 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
       ui_info = DownloadUIModel::BubbleUIInfo(
                     l10n_util::GetStringUTF16(
                         IDS_DOWNLOAD_BUBBLE_MALICIOUS_URL_BLOCKED))
-                    .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                    .AddIconAndColor(vector_icons::kDangerousIcon,
                                      ui::kColorAlertHighSeverity)
                     .AddPrimaryButton(DownloadCommands::Command::DISCARD)
                     .AddSubpageButton(
@@ -1084,7 +1086,8 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
         return DownloadUIModel::BubbleUIInfo(
                    l10n_util::GetStringUTF16(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_UNCOMMON_FILE))
-            .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                             ui::kColorAlertMediumSeverity)
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
             .AddSubpageButton(
                 l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),

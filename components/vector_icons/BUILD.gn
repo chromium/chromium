@@ -37,6 +37,7 @@ aggregate_vector_icons("components_vector_icons") {
     "content_paste.icon",
     "content_paste_off.icon",
     "cookie.icon",
+    "dangerous.icon",
     "description.icon",
     "devices.icon",
     "devices_off.icon",

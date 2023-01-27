@@ -931,7 +931,8 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
     return DownloadUIModel::BubbleUIInfo(
                l10n_util::GetStringUTF16(
                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_SUSPICIOUS_ARCHIVE))
-        .AddIconAndColor(views::kInfoIcon, ui::kColorAlertMediumSeverity)
+        .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+                         ui::kColorAlertMediumSeverity)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
         .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
                           DownloadCommands::Command::DISCARD,
@@ -964,7 +965,7 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
                    l10n_util::GetStringFUTF16(
                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT_AND_ACCOUNT,
                        base::ASCIIToUTF16(email)))
-            .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+            .AddIconAndColor(vector_icons::kDangerousIcon,
                              ui::kColorAlertHighSeverity)
             .AddPrimaryButton(DownloadCommands::Command::DISCARD)
             .AddSubpageButton(
@@ -976,7 +977,7 @@ DownloadItemModel::GetBubbleUIInfoForTailoredWarning() const {
     return DownloadUIModel::BubbleUIInfo(
                l10n_util::GetStringUTF16(
                    IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_COOKIE_THEFT))
-        .AddIconAndColor(vector_icons::kNotSecureWarningIcon,
+        .AddIconAndColor(vector_icons::kDangerousIcon,
                          ui::kColorAlertHighSeverity)
         .AddPrimaryButton(DownloadCommands::Command::DISCARD)
         .AddSubpageButton(l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE),
