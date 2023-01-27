@@ -2485,7 +2485,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     return;
   }
 
-  // Set the fields with autofill information according to Autofill FieldInfo
+  // Set the fields with autofill information according to Autofill2.FieldInfo
   // UKM schema:
   // https://docs.google.com/document/d/1ZH0JbL6bES3cD4KqZWsGR6n8I-rhnkx6no6nQOgYq5w/
   OptionalBoolean was_focused = OptionalBoolean::kFalse;
@@ -2643,7 +2643,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
                           has_value_after_typing == OptionalBoolean::kTrue);
   }
 
-  ukm::builders::Autofill_FieldInfo builder(source_id_);
+  ukm::builders::Autofill2_FieldInfo builder(source_id_);
   builder
       .SetFormSessionIdentifier(
           AutofillMetrics::FormGlobalIdToHash64Bit(form.global_id()))

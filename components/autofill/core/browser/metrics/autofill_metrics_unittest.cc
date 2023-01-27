@@ -130,7 +130,7 @@ using UkmFormEventType = ukm::builders::Autofill_FormEvent;
 using UkmEditedAutofilledFieldAtSubmission =
     ukm::builders::Autofill_EditedAutofilledFieldAtSubmission;
 using UkmAutofillKeyMetricsType = ukm::builders::Autofill_KeyMetrics;
-using UkmFieldInfoType = ukm::builders::Autofill_FieldInfo;
+using UkmFieldInfoType = ukm::builders::Autofill2_FieldInfo;
 
 struct ExpectedUkmMetricsPair : public std::pair<const char*, int64_t> {
   using std::pair<const char*, int64_t>::pair;
@@ -10561,7 +10561,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     SimulateUserChangedTextField(form, form.fields[0]);
     SubmitForm(form);
 
-    // Record Autofill.FieldInfo UKM event at autofill manager reset.
+    // Record Autofill2.FieldInfo UKM event at autofill manager reset.
     autofill_manager().Reset();
 
     entries =
@@ -10650,7 +10650,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetrics_FieldType) {
       response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
   SubmitForm(form);
-  // Record Autofill.FieldInfo UKM event at autofill manager reset.
+  // Record Autofill2.FieldInfo UKM event at autofill manager reset.
   autofill_manager().Reset();
 
   auto entries =

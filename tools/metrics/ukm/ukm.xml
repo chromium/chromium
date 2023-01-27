@@ -2083,203 +2083,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="Autofill.FieldInfo">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-team@google.com</owner>
-  <summary>
-    All information about a specific field, recorded at form submission or form
-    destruction time (whatever comes first).
-  </summary>
-  <metric name="AutofillSkippedStatus">
-    <summary>
-      Whether filling the field was skipped during autofill, and if it was
-      skipped, what the skipping reasons were. Recorded as a DenseSet of
-      |SkipStatus|.
-    </summary>
-  </metric>
-  <metric name="FieldSessionIdentifier">
-    <summary>
-      A random variable assigned to a specific instance of a form control (e.g.
-      a HTML input element). This should be globally unique and suitable for
-      distinguishing fields. Two different users would have different values.
-      For the same user, the same field in the same form in two different tabs
-      would have two different values.
-    </summary>
-  </metric>
-  <metric name="FieldSignature">
-    <summary>
-      The signature of the field, a 10 bit hash value (0-1021) of the field name
-      and field type used to denote this field for query and voting purposes.
-    </summary>
-  </metric>
-  <metric name="FilledValueWasModified" enum="Boolean">
-    <summary>
-      Whether the user modified a field after autofilling/autocompleting it.
-    </summary>
-  </metric>
-  <metric name="FormSessionIdentifier">
-    <summary>
-      A random variable assigned to a specific instance of a HTML form in a
-      specific renderer. This should be globally unique and suitable for
-      counting distinct forms. Two different users would have different values.
-      A single user loading the same form in two different tabs would have two
-      different values. This is used to link the fields to a form in
-      Autofill.FormSummary.
-    </summary>
-  </metric>
-  <metric name="HadTypedOrFilledValueAtSubmission" enum="Boolean">
-    <summary>
-      Whether there was a value after user typed or autofilled in the field at
-      form submission or form destruction time.
-    </summary>
-  </metric>
-  <metric name="HadValueBeforeFilling" enum="Boolean">
-    <summary>
-      Whether there was a value before autofill in the field.
-    </summary>
-  </metric>
-  <metric name="HeuristicType" enum="AutofillServerFieldType">
-    <summary>
-      There are multiple heuristic classification strategies working in
-      parallel. This type is predicted from the active pattern source.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeDefault" enum="AutofillServerFieldType">
-    <summary>
-      The type of the field predicted from the source of local heuristics on the
-      client, which uses patterns applied for most users, the types are from
-      |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeExperimental" enum="AutofillServerFieldType">
-    <summary>
-      The type of the field predicted from the heuristics that uses experimental
-      patterns, the types are from |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeLegacy" enum="AutofillServerFieldType">
-    <summary>
-      The type of the field predicted from patterns whose stability is above
-      suspicion, the types are from |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="HeuristicTypeNextGen" enum="AutofillServerFieldType">
-    <summary>
-      The type of the field predicted from the heuristics that uses patterns
-      only for non-user-visible metrics, one step before experimental, the types
-      are from |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="HtmlFieldMode" enum="AutocompleteHtmlFieldMode">
-    <summary>
-      The mode according to the autocomplete attribute of a field. Only set if a
-      field has a valid autocomplete attribute. Currently this is used to
-      specify if the field is part of the billing or shipping address. See
-      autofill::mojom::HtmlFieldMode.
-    </summary>
-  </metric>
-  <metric name="HtmlFieldType" enum="AutocompleteHtmlFieldType">
-    <summary>
-      The field type specified in the autocomplete attribute of the field. Only
-      set if a field has a valid autocomplete attribute. See
-      autofill::mojom::HtmlFieldType.
-    </summary>
-  </metric>
-  <metric name="IsFocusable" enum="Boolean">
-    <summary>
-      Whether the field is focusable to the user. This is an approximation of
-      visibility with false positives.
-    </summary>
-  </metric>
-  <metric name="RankInFieldSignatureGroup">
-    <summary>
-      If multiple fields have the same signature, this indicates the position
-      within this set of fields. This allows us to understand problems related
-      to duplicated field signatures.
-    </summary>
-  </metric>
-  <metric name="ServerPredictionSource1" enum="AutofillServerPredictionSource">
-    <summary>
-      The major source of predictions from the Autofill crowdsourced server, see
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
-    </summary>
-  </metric>
-  <metric name="ServerPredictionSource2" enum="AutofillServerPredictionSource">
-    <summary>
-      The additional source of predictions from the Autofill crowdsourced server
-      if there is an additional prediction, see
-      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
-    </summary>
-  </metric>
-  <metric name="ServerType1" enum="AutofillServerFieldType">
-    <summary>
-      The type of the field predicted from the Autofill crowdsourced server from
-      majority voting (and some more complex stuff). The types are from
-      |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="ServerType2" enum="AutofillServerFieldType">
-    <summary>
-      The additional type of the field predicted from the Autofill crowdsourced
-      server if there is an additional prediction. The types are from
-      |autofill::ServerFieldType|.
-    </summary>
-  </metric>
-  <metric name="ServerTypeIsOverride" enum="Boolean">
-    <summary>
-      This is an annotation for server predicted field types which indicates
-      that a manual override defines the server type. This allows us to assess
-      the impact of server overrides and detect possible problems with it.
-    </summary>
-  </metric>
-  <metric name="SuggestionWasAccepted" enum="Boolean">
-    <summary>
-      Whether the suggestion was accepted. This is only set for a field where a
-      suggestion was shown and accepted by the user. It is not the same as
-      autofilled, which is true for all the fields that were filled. More than
-      one field can have an accepted suggestion because the form can be split
-      into multiple sections (e.g. shipping and billing address) or because the
-      user triggers autofill multiple times.
-    </summary>
-  </metric>
-  <metric name="SuggestionWasAvailable" enum="Boolean">
-    <summary>
-      Whether there was a suggestion available for the field from user data.
-      This is only set for a field that was focused by the user.
-    </summary>
-  </metric>
-  <metric name="SuggestionWasShown" enum="Boolean">
-    <summary>
-      Whether a suggestion popup was ever shown on this field (i.e. the field
-      had focus and user had data on file).
-    </summary>
-  </metric>
-  <metric name="UserTypedIntoField" enum="Boolean">
-    <summary>
-      Whether the user ever typed into the field (regardless of autofill).
-    </summary>
-  </metric>
-  <metric name="WasAutofilled" enum="Boolean">
-    <summary>
-      Whether the field was ever filled by autofill. This applies to all the
-      fields that were autofilled, not just the field that was clicked. If a
-      fill operation did not change the value of a field because the old value
-      matches the filled value, this is still recorded as a WasAutofilled =
-      true.
-    </summary>
-  </metric>
-  <metric name="WasFocused" enum="Boolean">
-    <summary>
-      Whether the user ever focused on the field.
-    </summary>
-  </metric>
-  <metric name="WasRefill" enum="Boolean">
-    <summary>
-      Whether the form was refilled by autofill.
-    </summary>
-  </metric>
-</event>
-
 <event name="Autofill.FieldTypeValidation">
   <owner>rogerm@chromium.org</owner>
   <summary>
@@ -2826,6 +2629,203 @@ be describing additional metrics about the same event.
     <summary>
       Field's |ServerFieldType| returned by server. See
       |AutofillField.server_type()|.
+    </summary>
+  </metric>
+</event>
+
+<event name="Autofill2.FieldInfo">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-team@google.com</owner>
+  <summary>
+    All information about a specific field, recorded at form submission or form
+    destruction time (whatever comes first).
+  </summary>
+  <metric name="AutofillSkippedStatus">
+    <summary>
+      Whether filling the field was skipped during autofill, and if it was
+      skipped, what the skipping reasons were. Recorded as a DenseSet of
+      |SkipStatus|.
+    </summary>
+  </metric>
+  <metric name="FieldSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a form control (e.g.
+      a HTML input element). This should be globally unique and suitable for
+      distinguishing fields. Two different users would have different values.
+      For the same user, the same field in the same form in two different tabs
+      would have two different values.
+    </summary>
+  </metric>
+  <metric name="FieldSignature">
+    <summary>
+      The signature of the field, a 10 bit hash value (0-1021) of the field name
+      and field type used to denote this field for query and voting purposes.
+    </summary>
+  </metric>
+  <metric name="FilledValueWasModified" enum="Boolean">
+    <summary>
+      Whether the user modified a field after autofilling/autocompleting it.
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      Autofill.FormSummary.
+    </summary>
+  </metric>
+  <metric name="HadTypedOrFilledValueAtSubmission" enum="Boolean">
+    <summary>
+      Whether there was a value after user typed or autofilled in the field at
+      form submission or form destruction time.
+    </summary>
+  </metric>
+  <metric name="HadValueBeforeFilling" enum="Boolean">
+    <summary>
+      Whether there was a value before autofill in the field.
+    </summary>
+  </metric>
+  <metric name="HeuristicType" enum="AutofillServerFieldType">
+    <summary>
+      There are multiple heuristic classification strategies working in
+      parallel. This type is predicted from the active pattern source.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeDefault" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the source of local heuristics on the
+      client, which uses patterns applied for most users, the types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeExperimental" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the heuristics that uses experimental
+      patterns, the types are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeLegacy" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from patterns whose stability is above
+      suspicion, the types are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HeuristicTypeNextGen" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the heuristics that uses patterns
+      only for non-user-visible metrics, one step before experimental, the types
+      are from |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="HtmlFieldMode" enum="AutocompleteHtmlFieldMode">
+    <summary>
+      The mode according to the autocomplete attribute of a field. Only set if a
+      field has a valid autocomplete attribute. Currently this is used to
+      specify if the field is part of the billing or shipping address. See
+      autofill::mojom::HtmlFieldMode.
+    </summary>
+  </metric>
+  <metric name="HtmlFieldType" enum="AutocompleteHtmlFieldType">
+    <summary>
+      The field type specified in the autocomplete attribute of the field. Only
+      set if a field has a valid autocomplete attribute. See
+      autofill::mojom::HtmlFieldType.
+    </summary>
+  </metric>
+  <metric name="IsFocusable" enum="Boolean">
+    <summary>
+      Whether the field is focusable to the user. This is an approximation of
+      visibility with false positives.
+    </summary>
+  </metric>
+  <metric name="RankInFieldSignatureGroup">
+    <summary>
+      If multiple fields have the same signature, this indicates the position
+      within this set of fields. This allows us to understand problems related
+      to duplicated field signatures.
+    </summary>
+  </metric>
+  <metric name="ServerPredictionSource1" enum="AutofillServerPredictionSource">
+    <summary>
+      The major source of predictions from the Autofill crowdsourced server, see
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
+    </summary>
+  </metric>
+  <metric name="ServerPredictionSource2" enum="AutofillServerPredictionSource">
+    <summary>
+      The additional source of predictions from the Autofill crowdsourced server
+      if there is an additional prediction, see
+      AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction::Source.
+    </summary>
+  </metric>
+  <metric name="ServerType1" enum="AutofillServerFieldType">
+    <summary>
+      The type of the field predicted from the Autofill crowdsourced server from
+      majority voting (and some more complex stuff). The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="ServerType2" enum="AutofillServerFieldType">
+    <summary>
+      The additional type of the field predicted from the Autofill crowdsourced
+      server if there is an additional prediction. The types are from
+      |autofill::ServerFieldType|.
+    </summary>
+  </metric>
+  <metric name="ServerTypeIsOverride" enum="Boolean">
+    <summary>
+      This is an annotation for server predicted field types which indicates
+      that a manual override defines the server type. This allows us to assess
+      the impact of server overrides and detect possible problems with it.
+    </summary>
+  </metric>
+  <metric name="SuggestionWasAccepted" enum="Boolean">
+    <summary>
+      Whether the suggestion was accepted. This is only set for a field where a
+      suggestion was shown and accepted by the user. It is not the same as
+      autofilled, which is true for all the fields that were filled. More than
+      one field can have an accepted suggestion because the form can be split
+      into multiple sections (e.g. shipping and billing address) or because the
+      user triggers autofill multiple times.
+    </summary>
+  </metric>
+  <metric name="SuggestionWasAvailable" enum="Boolean">
+    <summary>
+      Whether there was a suggestion available for the field from user data.
+      This is only set for a field that was focused by the user.
+    </summary>
+  </metric>
+  <metric name="SuggestionWasShown" enum="Boolean">
+    <summary>
+      Whether a suggestion popup was ever shown on this field (i.e. the field
+      had focus and user had data on file).
+    </summary>
+  </metric>
+  <metric name="UserTypedIntoField" enum="Boolean">
+    <summary>
+      Whether the user ever typed into the field (regardless of autofill).
+    </summary>
+  </metric>
+  <metric name="WasAutofilled" enum="Boolean">
+    <summary>
+      Whether the field was ever filled by autofill. This applies to all the
+      fields that were autofilled, not just the field that was clicked. If a
+      fill operation did not change the value of a field because the old value
+      matches the filled value, this is still recorded as a WasAutofilled =
+      true.
+    </summary>
+  </metric>
+  <metric name="WasFocused" enum="Boolean">
+    <summary>
+      Whether the user ever focused on the field.
+    </summary>
+  </metric>
+  <metric name="WasRefill" enum="Boolean">
+    <summary>
+      Whether the form was refilled by autofill.
     </summary>
   </metric>
 </event>
