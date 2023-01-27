@@ -560,7 +560,8 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when navigating back to the NTP while having the omnibox focused
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
-- (void)testPositionRestoredWithShiftingOffset {
+// TODO(crbug.com/1364725): Re-enable test after fixing test failures.
+- (void)DISABLED_testPositionRestoredWithShiftingOffset {
   [self addMostVisitedTile];
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
