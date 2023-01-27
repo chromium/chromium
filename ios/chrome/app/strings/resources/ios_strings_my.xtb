@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">ထွက်ထားပါသည်</translation>
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
-<translation id="1434356225517321998">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်။ <ph name="BEGIN_LINK" />အသေးစိတ်<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">စကားဝှက် ဖျောက်ထားရန်</translation>
 <translation id="1450170672351507823">ပုံမှန်ကာကွယ်မှုကို ဖွင့်ထားသည်။ ပိုမိုလုံခြုံစေရန် ‘အဆင့်မြင့်ကာကွယ်မှု’ သုံးပါ။</translation>
 <translation id="149095475893949513">ဤဝဘ်ဆိုက်သည် စီစဉ်သတ်မှတ်ချက် ပရိုဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန် ကြိုးစားနေသည်။</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">လိပ်စာများ</translation>
 <translation id="3943492037546055397">စကားဝှက်များ</translation>
 <translation id="3959736869653157332">မီနူး → ရုပ်ဖျက်တဘ်အသစ်</translation>
-<translation id="3964173450954943920">စင့်ခ်လုပ်မည့်အရာကို <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> တွင် အချိန်မရွေးရွေးနိုင်သည်။ Google သည် Search နှင့် အခြား Google ဝန်ဆောင်မှုများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သင်၏မှတ်တမ်းကို သုံးနိုင်သည်။</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3968505803272650567">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="3989635538409502728">ထွက်ရန်</translation>
@@ -1034,6 +1032,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8680787084697685621">အကောင့် ဝင်ရောက်မှု အသေးစိတ်များ အသစ်မဖြစ်တော့ပါ။</translation>
 <translation id="8693663554456874301">{count,plural, =1{တဘ် ပိတ်ရန်}other{တဘ်များ ပိတ်ရန်}}</translation>
 <translation id="8706588385081740091">စကားဝှက်များ</translation>
+<translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="8717864919010420084">လင့်ခ်မိတ္တူကူးရန်</translation>
 <translation id="8721297211384281569">ကိရိယာမီနျူး</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>

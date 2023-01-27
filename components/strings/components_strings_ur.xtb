@@ -315,6 +315,7 @@
 <translation id="1682696192498422849">چھوٹا کنارہ پہلے</translation>
 <translation id="168693727862418163">اس پالیسی کی قدر اس کے سکیما کو توثیق کرنے میں ناکام ہو گئی اور اسے نظر انداز کر دیا جائے گا۔</translation>
 <translation id="168841957122794586">سرور سرٹیفکیٹ میں ایک ہفتے کی کرپٹوگرافک کلید شامل ہے۔</translation>
+<translation id="1689333818294560261">عرفی نام</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />آپ کس طرح اپنے ڈیٹا کا نظم کر سکتے ہیں:<ph name="END_BOLD" /> Chrome ‏4 ہفتوں سے زیادہ پرانے موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ آپ ان موضوعات کو بھی مسدود کر سکتے ہیں جن کا آپ چاہتے ہیں کہ Chrome سائٹس کے ساتھ اشتراک نہ کرے اور Chrome کی ترتیبات میں کسی بھی وقت اشتہار کے موضوعات کو بند کر سکتے ہیں۔</translation>
 <translation id="1697532407822776718">آپ بالکل ٹھیک ہیں!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -602,6 +603,7 @@
 <translation id="2430968933669123598">‏Google اکاؤنٹ کا نظم کریں، اپنے Google اکاؤنٹ میں اپنی معلومات، رازداری اور سیکیورٹی کا نظم کرنے کیلئے Enter دبائیں</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> کو سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2438874542388153331">دائیں طرف مستطیل سوراخ</translation>
+<translation id="2441854154602066476">ٹچ پر پُر کیے جانے والے دستیاب ادائیگی کے طریقے۔ کی بورڈ پوشیدہ ہے۔</translation>
 <translation id="2448295565072560657">آپ کے لاگ ان ہونے کے دوران اس آلے سے منسلک کردہ پیریفیرلز</translation>
 <translation id="2450021089947420533">صارف کے تجربے</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
@@ -777,6 +779,7 @@
 <translation id="2916038427272391327">دیگر پروگرامز بند کریں</translation>
 <translation id="2918922650248459053">غوطہ خوری اور زیر آب سرگرمیاں</translation>
 <translation id="2922350208395188000">سرور سرٹیفکیٹ کو چیک نہیں کیا جا سکتا ہے۔</translation>
+<translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
 <translation id="2925673989565098301">ڈیلیوری کا طریقہ</translation>
 <translation id="2928905813689894207">بلنگ پتہ</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> مزید}}</translation>
@@ -1147,6 +1150,7 @@
 <translation id="3810973564298564668">نظم کریں</translation>
 <translation id="3815434930383843058">‏‎8 x 12 انچ</translation>
 <translation id="3816482573645936981">قدر (اس کی جگہ نافذ کردہ)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">آپ کا براؤزر <ph name="BROWSER_DOMAIN" /> کے زیر انتظام ہے اور آپ کی پروفائل <ph name="PROFILE_DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="382518646247711829">اگر آپ ایک پراکسی سرور استعمال کرتے ہیں تو…</translation>
 <translation id="3826050100957962900">فریق ثالث سائن ان</translation>
@@ -1200,6 +1204,7 @@
 <translation id="398470910934384994">پرندے</translation>
 <translation id="3985750352229496475">پتے کا نظم کریں...</translation>
 <translation id="3986705137476756801">ابھی کیلئے لائیو کیپشن آف کریں</translation>
+<translation id="3987460020348247775">‎<ph name="EXPRESSION" /> = <ph name="ANSWER" />‎</translation>
 <translation id="3987940399970879459">‏‎1 MB‎ سے کم</translation>
 <translation id="3990250421422698716">جاگ آفسیٹ</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
@@ -1576,6 +1581,7 @@
 <translation id="4880827082731008257">تلاش کی سرگزشت</translation>
 <translation id="4881695831933465202">کھولیں</translation>
 <translation id="4881808915112408168">‏‎24 x 31.5 انچ</translation>
+<translation id="4882314601499260499">صارف کی کوئی پالیسی لاگو نہیں ہوئی ہے۔ صارف کی پالیسیاں شامل کرنے کے لیے، آپ کی تنظیم کا <ph name="LINK_BEGIN" />آپ کے ڈومین کی توثیق<ph name="LINK_END" /> کرنا ضروری ہے۔</translation>
 <translation id="4885256590493466218">چیک آؤٹ کرنے پر <ph name="CARD_DETAIL" /> سے ادائیگی کریں۔</translation>
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
 <translation id="4888600795924685526">غیر ملکی زبان کا مطالعہ</translation>
@@ -2051,6 +2057,7 @@
 <translation id="6059925163896151826">‏USB آلات</translation>
 <translation id="6060009363608157444">‏DnsOverHttps وضع غلط ہے۔</translation>
 <translation id="6061154937977953833">کُشتی</translation>
+<translation id="6062937464449575061">قیمت کو ٹریک کرنا بند کریں</translation>
 <translation id="6064217302520318294">اسکرین لاک</translation>
 <translation id="6064602040258638498">کوپنز اور رعایت کی پیشکشیں</translation>
 <translation id="6080696365213338172">آپ نے ایک منتظم کا فراہم کردہ سرٹیفکیٹ استعمال کرکے مواد تک رسائی حاصل کی ہے۔ <ph name="DOMAIN" /> کو آپ جو ڈیٹا فراہم کرتے ہیں اسے منتظم کے ذریعے روکا جا سکتا ہے۔</translation>
@@ -2409,6 +2416,7 @@
 <translation id="7014741021609395734">زوم کی سطح</translation>
 <translation id="7016992613359344582">یہ چارجز ایک بار یا بار بار عائد ہوسکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔</translation>
 <translation id="702146556168549005">‏آپ کے ملاحظہ کردہ صفحات کے URLs کو تجزیہ کے لئے Google کلاؤڈ یا فریقین ثالث کو بھیجا جاتا ہے۔ مثال کے طور پر، انہیں غیر محفوظ ویب سائٹس کا پتہ لگانے کے لیے اسکین کیا جا سکتا ہے یا منتظم کے مقرر کردہ اصولوں کی بنیاد پر ویب سائٹس کو فلٹر کیا جا سکتا ہے۔</translation>
+<translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="7023162328967545559">منتظم کی وارننگ</translation>
 <translation id="7029809446516969842">پاس ورڈز</translation>
 <translation id="7030436163253143341">سرٹیفیکیٹ درست نہیں ہے</translation>
@@ -2459,6 +2467,7 @@
 <translation id="7136009930065337683">پوشیدگی وضع کے بارے میں مزید جانیں</translation>
 <translation id="7138472120740807366">ڈیلیوری کا طریقہ</translation>
 <translation id="7139892792842608322">بنیادی ٹرے</translation>
+<translation id="7140087718106278457">ادائیگی کے طریقوں کی فہرست بند ہے۔</translation>
 <translation id="714064300541049402">‏سائیڈ 2 تصویر X شفٹ</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}other{<ph name="PAYMENT_METHOD_PREVIEW" /> اور <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> مزید}}</translation>
@@ -2981,6 +2990,7 @@
 <translation id="8381674639488873545">یہ چارجز ایک بار یا بار بار عائد ہو سکتے ہیں اور ہو سکتا ہے کہ واضح نہ ہوں۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">منتظم کی پالیسی کے ذریعے <ph name="ORIGIN_NAME" /> سے <ph name="VM_NAME" /> پر اشتراک کرنے کو مسدود کر دیا گیا ہے</translation>
 <translation id="8396522675989118466">یہ <ph name="SIDE_OF_CARD" /> پر <ph name="NUMBER_OF_DIGITS" /> ہندسوں کا کوڈ ہے</translation>
+<translation id="8398335999901363925">ٹچ پر پُر کیے جانے والے دستیاب ادائیگی کے طریقے پوری اونچائی پر کھلے ہوئے ہیں۔</translation>
 <translation id="8398790343843005537">اپنا فون تلاش کریں</translation>
 <translation id="8405579342203358118">‏آپ Chrome ترتیبات میں کن معلومات کو مطابقت پذیر بناتے ہیں ان کا نظم کریں</translation>
 <translation id="8406071103346257942">پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کرنا بند کریں</translation>
@@ -3141,6 +3151,7 @@
 <translation id="8830320733681313421">‏Hagaki پوسٹ کارڈ</translation>
 <translation id="8834380158646307944">پوشیدگی ونڈوز کا بٹن بند کریں، فی الحال کھلی ہوئی تمام پوشیدگی ونڈوز کو بند کرنے کیلئے اینٹر دبائیں</translation>
 <translation id="883848425547221593">دیگر بُک مارکس</translation>
+<translation id="8842351563145134519">ٹچ پر پُر کیے جانے والے دستیاب ادائیگی کے طریقے نصف اونچائی پر کھلے ہوئے ہیں۔</translation>
 <translation id="884264119367021077">ترسیل کا پتہ</translation>
 <translation id="8849231003559822746">‏‎130 x 180 ملی میٹر</translation>
 <translation id="884923133447025588">کوئی منسوخی کا میکانزم نہیں ملا۔</translation>

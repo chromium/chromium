@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">Qısa kənar əvvəldə</translation>
 <translation id="168693727862418163">Bu siyasət dəyəri sxem əsasında doğrulanmadı və nəzərə alınmayacaq.</translation>
 <translation id="168841957122794586">Server sertifikatının kriptoqrafik açarı zəifdir.</translation>
+<translation id="1689333818294560261">Ləqəb</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Chrome 4 həftədən köhnə mövzuları avtomatik silir. Baxmağa davam etdikcə mövzu siyahıda yenidən görünə bilər. Həmçinin Chrome-un saytlarla paylaşmasını istəmədiyiniz mövzuları bloklaya və istənilən vaxt Chrome ayarlarında reklam mövzularını deaktiv edə bilərsiniz.</translation>
 <translation id="1697532407822776718">Hər şey hazırdır!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">"Google Hesabını idarə edin" düyməsi, Enter düyməsinə basaraq Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> hostuna bütün <ph name="PROTOCOL" /> linklərini açmaq icazəsi verirsiniz?</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
+<translation id="2441854154602066476">Toxunaraq doldurulmaq üçün əlçatan ödəniş metodları. Gizlədilmiş klaviatura.</translation>
 <translation id="2448295565072560657">Daxil olduğunuz zaman bu cihaza əlavə edilmiş köməkçi cihazlar</translation>
 <translation id="2450021089947420533">Baxışlar</translation>
 <translation id="2463739503403862330">Doldurun</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">Digər proqramları bağlayın</translation>
 <translation id="2918922650248459053">Dalğıclıq və sualtı fəaliyyət</translation>
 <translation id="2922350208395188000">Server sertifikatı yoxlana bilmədi.</translation>
+<translation id="292371311537977079">Chrome ayarları</translation>
 <translation id="2925673989565098301">Çatdırılma Üsulu</translation>
 <translation id="2928905813689894207">Faktura Ünvanı</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1141,6 +1144,7 @@
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="3815434930383843058">8 x 12 düym</translation>
 <translation id="3816482573645936981">Dəyər (əvəz edilib)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Brauzeriniz <ph name="BROWSER_DOMAIN" /> tərəfindən, profiliniz isə <ph name="PROFILE_DOMAIN" /> tərəfindən idarə olunur</translation>
 <translation id="382518646247711829">Əgər proksi server istifadə edirsinizsə...</translation>
 <translation id="3826050100957962900">Üçüncü tərəfin girişi</translation>
@@ -1571,6 +1575,7 @@
 <translation id="4880827082731008257">Axtarış tarixçəsi</translation>
 <translation id="4881695831933465202">Açın</translation>
 <translation id="4881808915112408168">24 x 31,5 düym</translation>
+<translation id="4882314601499260499">Heç bir istifadəçi siyasəti tətbiq edilməyib. İstifadəçi siyasətləri əlavə etmək üçün təşkilatınız <ph name="LINK_BEGIN" />domeninizi doğrulamalıdır<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Ödəniş zamanı <ph name="CARD_DETAIL" /> ilə ödəyin</translation>
 <translation id="4887406273302438710">Parolları Windows Hello ilə qoruyun</translation>
 <translation id="4888600795924685526">Xarici dil təhsili</translation>
@@ -2455,6 +2460,7 @@
 <translation id="7136009930065337683">Anonim haqqında [ətraflı məlumat]</translation>
 <translation id="7138472120740807366">Çatdırılma üsulu</translation>
 <translation id="7139892792842608322">Əsas Qab</translation>
+<translation id="7140087718106278457">Ödəniş metodlarının siyahısı bağlanıb.</translation>
 <translation id="714064300541049402">Şəklin 2-ci tərəfinin X oxu üzrə yerdəyişməsi</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> və daha <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -2977,6 +2983,7 @@
 <translation id="8381674639488873545">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Eyni zamanda görünməyə bilər. <ph name="BEGIN_LINK" />Hər bir halda göstərin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> mənbəyindən <ph name="VM_NAME" /> məkanına paylaşım etmək administrator siyasətinə əsasən bloklanıb</translation>
 <translation id="8396522675989118466">Bu, <ph name="SIDE_OF_CARD" /> hissəsindəki <ph name="NUMBER_OF_DIGITS" /> rəqəmli koddur</translation>
+<translation id="8398335999901363925">Toxunaraq doldurulacaq ödəniş metodlarının siyahısı tam hündürlükdə açılıb.</translation>
 <translation id="8398790343843005537">Telefonunuzu tapın</translation>
 <translation id="8405579342203358118">Chrome ayarlarında sinxronlaşdırdığınız məlumatları idarə edin</translation>
 <translation id="8406071103346257942">parolları daxil etmək üçün ekran kilidindən istifadə etməyi dayandırın</translation>
@@ -3137,6 +3144,7 @@
 <translation id="8830320733681313421">Haqaki Açıqcası</translation>
 <translation id="8834380158646307944">"Anonim pəncərələri bağlayın" düyməsi, Enter düyməsinə basaraq hazırda açıq olan bütün Anonim pəncərələri bağlayın</translation>
 <translation id="883848425547221593">Digər Əlfəcinlər</translation>
+<translation id="8842351563145134519">Toxunaraq doldurulmaq üçün əlçatan ödəniş metodlarının siyahısı yarı hündürlükdə açılıb.</translation>
 <translation id="884264119367021077">Göndərmə ünvanı</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Ləğv etmə mexanizmi tapılmadı.</translation>

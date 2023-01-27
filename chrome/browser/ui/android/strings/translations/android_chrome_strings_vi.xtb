@@ -563,6 +563,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4108314971463891922">Theo dõi</translation>
 <translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
 <translation id="4116038641877404294">Tải trang xuống để sử dụng ngoại tuyến</translation>
+<translation id="4124152339699379357">Quy trình cấp quyền gửi thông báo đã mở trên toàn màn hình</translation>
 <translation id="4135200667068010335">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã đóng.</translation>
 <translation id="4137746084635924146">Ngôn ngữ hiện tại của thiết bị</translation>
 <translation id="414128724510021958">Yêu cầu trang web dành cho máy tính (theo mặc định)</translation>
@@ -1401,6 +1402,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8516012719330875537">Trình chỉnh sửa ảnh</translation>
 <translation id="8516431725144212809">Mối quan tâm của bạn theo ước đoán của Chrome</translation>
 <translation id="8523928698583292556">Xóa mật khẩu đã lưu trữ</translation>
+<translation id="8526855376374973824">Quy trình cấp quyền gửi thông báo</translation>
 <translation id="8540136935098276800">Nhập URL có định dạng chính xác</translation>
 <translation id="854522910157234410">Mở trang này</translation>
 <translation id="8551513938758868521">Khóa các thẻ Ẩn danh khi bạn đóng Chrome</translation>
@@ -1460,6 +1462,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8853345339104747198">Thẻ <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Xem tệp khi không có mạng</translation>
 <translation id="8856607253650333758">Tải nội dung mô tả</translation>
+<translation id="8856931513242997049">Quy trình cấp quyền gửi thông báo đã đóng</translation>
 <translation id="8873817150012960745">Nhấn vào đây để bắt đầu</translation>
 <translation id="8881973373982641723">Xóa nhật ký, kể cả dữ liệu trong hộp tìm kiếm.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá khỏi danh sách các trang web không được làm mới sau 4 tuần. Trang web bạn truy cập lại có thể sẽ xuất hiện lại trong danh sách. Bạn cũng có thể xoá một trang web nếu không muốn hệ thống dựa vào trang web đó để ước đoán mối quan tâm của bạn.</translation>

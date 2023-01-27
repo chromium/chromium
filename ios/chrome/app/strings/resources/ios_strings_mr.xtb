@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">तुम्ही साइन आउट केले आहे</translation>
 <translation id="1407135791313364759">सर्व उघडा</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
-<translation id="1434356225517321998">तुमचा ब्राउझर व्यवस्थापित केला आहे. <ph name="BEGIN_LINK" />तपशील<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">पासवर्ड लपवा</translation>
 <translation id="1450170672351507823">साधारण संरक्षण सुरू आहे. याहून अधिक सुरक्षेसाठी, वर्धित संरक्षण वापरा.</translation>
 <translation id="149095475893949513">ही वेबसाइट प्रोफाइल कॉंफिगरेशन डाउनलोड करण्याचा प्रयत्न करत आहे.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">पत्ते</translation>
 <translation id="3943492037546055397">पासवर्ड</translation>
 <translation id="3959736869653157332">मेनू → नवीन गुप्त टॅब</translation>
-<translation id="3964173450954943920">तुम्ही काय सिंक करायचे हे <ph name="BEGIN_LINK" />सेटिंग्ज<ph name="END_LINK" /> मध्ये कधीही निवडू शकता. Search आणि इतर Google सेवा पर्सनलाइझ करण्यासाठी Google तुमचा इतिहास वापरू शकते.</translation>
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3968505803272650567">स्वारस्ये व्यवस्थापित करा</translation>
 <translation id="3989635538409502728">साइन आउट</translation>
@@ -1036,6 +1034,7 @@
 <translation id="8680787084697685621">खाते साइन-इन तपशील कालबाह्य झाला.</translation>
 <translation id="8693663554456874301">{count,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>
 <translation id="8706588385081740091">पासवर्ड</translation>
+<translation id="8712637175834984815">समजले</translation>
 <translation id="8717864919010420084">लिंक कॉपी करा</translation>
 <translation id="8721297211384281569">साधने मेनू</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>

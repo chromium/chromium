@@ -579,6 +579,7 @@
 <translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4136724716305260864">Вклучено до изгрејсонце</translation>
 <translation id="4146833061457621061">Пушти музика</translation>
+<translation id="4150201353443180367">Екран</translation>
 <translation id="4165275524535002941">Кабелот не поддржува екрани</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте го уредот во рок од еден ден}one{Ажурирајте го уредот во рок од # ден}other{Ажурирајте го уредот во рок од # дена}}</translation>
 <translation id="4181841719683918333">Јазици</translation>
@@ -734,6 +735,7 @@
 <translation id="492453977506755176">Копче за режим на снимање</translation>
 <translation id="4925542575807923399">Администраторот на оваа сметка бара таа да биде првата пријавена сметка во сесија со повеќе пријавувања.</translation>
 <translation id="4929163402621253029">Дали зборувате? Исклучен ви е звукот. Дознајте повеќе</translation>
+<translation id="4936329710968938986">Сите, исклучено</translation>
 <translation id="4938176435186993759">Сокриј ги сите предлози</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
@@ -1388,6 +1390,7 @@
 <translation id="8477270416194247200">Притиснете Alt+„Пребарување“ или Shift за да откажете.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддржува <ph name="SPECIFIED_RESOLUTION" />. Резолуцијата се смени во <ph name="FALLBACK_RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Прикажете ги поставките за „Споделување во близина“</translation>
+<translation id="8507563469658346379">Сите, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth на вашиот Chromebook е исклучен. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>
 <translation id="8513108775083588393">Авт. ротирање</translation>
 <translation id="851458219935658693">Прикажувај прозорци од тековната работна површина, избрано е тркалезно копче</translation>

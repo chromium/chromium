@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1045899828449635435">Të pastrohen edhe të dhënat nga këto sajte?</translation>
 <translation id="1049743911850919806">I fshehtë</translation>
+<translation id="1058669287135776095">Je jashtë linje. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="10614374240317010">Nuk u ruaj asnjëherë</translation>
 <translation id="1062628064301375934">Na ndihmo të krijojmë një ueb më privat</translation>
 <translation id="107147699690128016">Nëse e ndryshon prapashtesën e skedarit, skedari mund të hapet në një aplikacion tjetër dhe mund të jetë një rrezik për pajisjen tënde.</translation>
@@ -868,6 +869,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5780792035410621042">Për të kopjuar fjalëkalimet, në fillim cakto një kyçje ekrani në pajisjen tënde</translation>
 <translation id="5793665092639000975">Po përdoret <ph name="SPACE_USED" /> nga <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Kërko dhe shfleto</translation>
+<translation id="5797949256525811424">Tema u bllokua</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# orë më parë}other{# orë më parë}}</translation>
 <translation id="5810288467834065221">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="5813552293717797987">Ky shfletues menaxhohet nga <ph name="PARENT_NAME_1" /> dhe <ph name="PARENT_NAME_2" />.</translation>
@@ -1195,6 +1197,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7485033510383818941">Për të rifreskuar përmbajtjen e furnizimit, tërhiqe faqen poshtë</translation>
 <translation id="749294055653435199">"Lentja e Google" nuk ofrohet në këtë pajisje</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (u përditësua <ph name="TIME_SINCE_UPDATE" />)</translation>
+<translation id="7497755084107113646">Tema u shtua përsëri te temat e mundshme</translation>
 <translation id="7498271377022651285">Qëndro në pritje...</translation>
 <translation id="7502234197872745058">Për të dalë nga "Llogaria jote e Google" në të gjitha sajtet e uebit, <ph name="BEGIN_LINK1" />dil nga Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Përditësimet nuk ofrohen</translation>
@@ -1489,6 +1492,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# video}other{# video}}</translation>
 <translation id="9042893549633094279">Privatësia dhe siguria</translation>
 <translation id="9050666287014529139">Shprehje kalimi</translation>
+<translation id="9055497320631373736">Sajti u shtua përsëri te sajtet e mundshme</translation>
 <translation id="9063523880881406963">Çaktivizo "Kërko faqen për desktop"</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9065383040763568503">Të dhënat e ruajtura që Chrome nuk i konsideron të rëndësishme (p.sh. sajtet pa cilësime të ruajtura ose që ti nuk i viziton shpesh)</translation>

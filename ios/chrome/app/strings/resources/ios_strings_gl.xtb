@@ -18,6 +18,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. En caso aplicable, consulta as s
 <translation id="1066060668811609597">Xestionar sincronización</translation>
 <translation id="1076421457278169141">Escaneouse o código</translation>
 <translation id="1076785341346483463">Sincronizar cunha conta xestionada</translation>
+<translation id="1080365971383768617">Contrasinais en todos os teus dispositivos</translation>
 <translation id="1084365883616172403">Completouse a publicación de Facebook.</translation>
 <translation id="1085696779717592361">Utilizar Chrome de forma predeterminada</translation>
 <translation id="1103523840287552314">Traducir sempre o <ph name="LANGUAGE" /></translation>
@@ -74,7 +75,6 @@ Só pode ler os datos encriptados alguén que coñeza a túa frase de acceso. A 
 <translation id="1404330357948037222">Non tes a sesión iniciada</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
-<translation id="1434356225517321998">O teu navegador está xestionado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ocultar contrasinal</translation>
 <translation id="1450170672351507823">A protección estándar está activada. Se queres unha seguranza aínda maior, utiliza a protección mellorada.</translation>
 <translation id="149095475893949513">Este sitio web está tentando descargar un perfil de configuración.</translation>
@@ -398,7 +398,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3929457972718048006">Enderezos</translation>
 <translation id="3943492037546055397">Contrasinais</translation>
 <translation id="3959736869653157332">Menú → Nova pestana do modo de incógnito</translation>
-<translation id="3964173450954943920">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar. Google pode usar o teu historial para personalizar a Busca e outros servizos seus.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Xestionar intereses</translation>
 <translation id="3989635538409502728">Pechar sesión</translation>
@@ -547,6 +546,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5056446788882570708">Atopáronse problemas <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
+<translation id="50641035439563602">Agora, os contrasinais gárdanse na túa Conta de Google (<ph name="ACCOUNT" />). Podes usalos en calquera dispositivo onde teñas iniciada a sesión. Para desactivar esta opción, vai a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Completouse o chío.</translation>
@@ -597,6 +597,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5520466080178053306">Toca Xestor de contrasinais e despois Engadir</translation>
 <translation id="5525095647255982834">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nel.</translation>
 <translation id="5525269841082836315">Crear contrasinal</translation>
+<translation id="5530084793407600786">Buscar na imaxe con Google</translation>
 <translation id="5542540507657872337">Pestanas atopadas (<ph name="COUNT" />)</translation>
 <translation id="5548760955356983418">Handoff permíteche comezar a navegar nun sitio web neste dispositivo e despois continuar facilmente no teu Mac. O sitio web aberto actualmente aparecerá no Dock do teu Mac.
 
@@ -1035,6 +1036,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Pechar pestana}other{Pechar pestanas}}</translation>
 <translation id="8706588385081740091">Contrasinais</translation>
+<translation id="8712637175834984815">De acordo</translation>
 <translation id="8717864919010420084">Copiar ligazón</translation>
 <translation id="8721297211384281569">Menú Ferramentas</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>

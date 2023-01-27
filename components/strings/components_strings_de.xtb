@@ -314,6 +314,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1682696192498422849">Kurze Seite zuerst</translation>
 <translation id="168693727862418163">Die Richtlinienwertprüfung des Schemas ist fehlgeschlagen. Der Richtlinienwert wird ignoriert.</translation>
 <translation id="168841957122794586">Das Serverzertifikat weist einen schwachen kryptografischen Schlüssel auf.</translation>
+<translation id="1689333818294560261">Alias</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Chrome löscht Themen automatisch, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Themen wieder in der Liste erscheinen. Du kannst auch jederzeit in den Einstellungen von Chrome Themen blockieren, die Chrome nicht mit Websites teilen soll, und Werbethemen deaktivieren.</translation>
 <translation id="1697532407822776718">Fertig!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2430968933669123598">Google-Konto verwalten – drücke die Eingabetaste, um Daten sowie Datenschutz- und Sicherheitseinstellungen in deinem Google-Konto zu verwalten</translation>
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
 <translation id="2438874542388153331">Vierfache Lochung rechts</translation>
+<translation id="2441854154602066476">Zahlungsmethoden, die bei Berührung ausgefüllt werden. Tastatur ausgeblendet.</translation>
 <translation id="2448295565072560657">An dieses Gerät angeschlossene Peripheriegeräte, während du angemeldet bist</translation>
 <translation id="2450021089947420533">Recherchen</translation>
 <translation id="2463739503403862330">Ausfüllen</translation>
@@ -776,6 +778,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2916038427272391327">Andere Programme schließen</translation>
 <translation id="2918922650248459053">Tauchen und Unterwasseraktivitäten</translation>
 <translation id="2922350208395188000">Das Serverzertifikat kann nicht überprüft werden.</translation>
+<translation id="292371311537977079">Chrome-Einstellungen</translation>
 <translation id="2925673989565098301">Lieferoption</translation>
 <translation id="2928905813689894207">Rechnungsadresse</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> weitere}}</translation>
@@ -1143,6 +1146,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="3815434930383843058">8 × 12 Zoll</translation>
 <translation id="3816482573645936981">Wert (ersetzt)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Dein Browser wird von <ph name="BROWSER_DOMAIN" /> verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Falls du einen Proxyserver verwendest...</translation>
 <translation id="3826050100957962900">Drittanbieter-Anmeldung</translation>
@@ -1196,6 +1200,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="398470910934384994">Vögel</translation>
 <translation id="3985750352229496475">Adressen verwalten…</translation>
 <translation id="3986705137476756801">Automatische Untertitel vorerst deaktivieren</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Weniger als 1 MB</translation>
 <translation id="3990250421422698716">Jog-Versatz</translation>
 <translation id="3992684624889376114">Über diese Seite</translation>
@@ -1572,6 +1577,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4880827082731008257">Im Verlauf suchen</translation>
 <translation id="4881695831933465202">Öffnen</translation>
 <translation id="4881808915112408168">24 × 31,5 Zoll</translation>
+<translation id="4882314601499260499">Keine Nutzerrichtlinien angewendet. Wenn du Nutzerrichtlinien hinzufügen möchtest, muss deine Organisation <ph name="LINK_BEGIN" />deine Domain bestätigen<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">An der Kasse mit <ph name="CARD_DETAIL" /> zahlen</translation>
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
 <translation id="4888600795924685526">Fremdsprachenunterricht</translation>
@@ -1749,6 +1755,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5306593769196050043">Beide Auftragsblätter</translation>
 <translation id="5307166000025436103">Gültig</translation>
 <translation id="5308380583665731573">Verbinden</translation>
+<translation id="5308406951783863385">Du kannst Änderungen in den Einstellungen von Chrome vornehmen</translation>
 <translation id="5308689395849655368">Die Absturzberichtsfunktion ist deaktiviert.</translation>
 <translation id="5310178588836736698">Geländegängige Fahrzeuge</translation>
 <translation id="5314967030527622926">Falzmaschine</translation>
@@ -2046,6 +2053,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6059925163896151826">USB-Geräte</translation>
 <translation id="6060009363608157444">Ungültiger DnsOverHttps-Modus.</translation>
 <translation id="6061154937977953833">Ringen</translation>
+<translation id="6062937464449575061">Preis nicht mehr beobachten</translation>
 <translation id="6064217302520318294">Displaysperre</translation>
 <translation id="6064602040258638498">Gutscheine und Rabatte</translation>
 <translation id="6080696365213338172">Du hast über ein vom Administrator bereitgestelltes Zertifikat auf Inhalte zugegriffen. Die Daten, die du innerhalb von <ph name="DOMAIN" /> bereitstellst, können von deinem Administrator abgefangen werden.</translation>
@@ -2402,6 +2410,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7012363358306927923">China UnionPay</translation>
 <translation id="7014741021609395734">Zoomstufe</translation>
 <translation id="7016992613359344582">Diese Belastungen können einmalig oder wiederkehrend sein und sind vielleicht nicht offensichtlich.</translation>
+<translation id="702146556168549005">URLs von Seiten, die du besuchst, werden zur Analyse an Google Cloud oder Dritte gesendet. Sie werden beispielsweise gescannt, um unsichere Websites zu identifizieren oder Websites auf Grundlage von Regeln zu filtern, die vom Administrator eingerichtet wurden.</translation>
+<translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="7023162328967545559">Warnung vom Administrator</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7030436163253143341">Zertifikat ist ungültig</translation>
@@ -2452,6 +2462,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7136009930065337683">Weitere Informationen zum Inkognitomodus</translation>
 <translation id="7138472120740807366">Lieferoption</translation>
 <translation id="7139892792842608322">Hauptfach</translation>
+<translation id="7140087718106278457">Die Liste mit Zahlungsmethoden ist geschlossen.</translation>
 <translation id="714064300541049402">Seite 2 – X-Verschiebung des Bilds</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
@@ -2715,6 +2726,7 @@ Weitere Details:
 <translation id="7716147886133743102">Von deinem Administrator blockiert</translation>
 <translation id="7716375162095500223">Ignoriert oder noch nicht hochgeladen</translation>
 <translation id="7716424297397655342">Diese Website kann nicht aus dem Cache geladen werden</translation>
+<translation id="772128550427553158">Der CVC befindet sich auf der Vorderseite deiner Karte.</translation>
 <translation id="7723047071702270851">Karte bearbeiten</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7734285854693414638">Schnell ein neues Formular in Google Formulare erstellen</translation>
@@ -2728,6 +2740,7 @@ Weitere Details:
 <translation id="7755287808199759310">Deine Eltern können die Blockierung aufheben</translation>
 <translation id="7755624218968747854">Erste Rolle</translation>
 <translation id="7758069387465995638">Möglicherweise wurde die Verbindung von einer Firewall oder Antivirensoftware blockiert.</translation>
+<translation id="7759809451544302770">Optional</translation>
 <translation id="7760497246331667482">Reggae und karibische Musik</translation>
 <translation id="776110834126722255">Veraltet</translation>
 <translation id="7761159795823346334">Kamera zulassen?</translation>
@@ -2973,6 +2986,7 @@ Weitere Details:
 <translation id="8381674639488873545">Diese Kosten können einmalig oder wiederkehrend sein und sind vielleicht nicht klar zu erkennen. <ph name="BEGIN_LINK" />Trotzdem anzeigen<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Die Administratorrichtlinie blockiert das Teilen von <ph name="ORIGIN_NAME" /> mit <ph name="VM_NAME" /></translation>
 <translation id="8396522675989118466">Dies ist der <ph name="NUMBER_OF_DIGITS" />-stellige Code auf der <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Die Liste mit den Zahlungsmethoden, deren Daten bei Berührung ausgefüllt werden, ist vollständig geöffnet.</translation>
 <translation id="8398790343843005537">Mein Telefon finden</translation>
 <translation id="8405579342203358118">In den Chrome-Einstellungen verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="8406071103346257942">die Displaysperre nicht mehr zum Ausfüllen von Passwörtern zu verwenden</translation>
@@ -3134,6 +3148,7 @@ Weitere Details:
 <translation id="8830320733681313421">Hagaki (Postkarte)</translation>
 <translation id="8834380158646307944">Schaltfläche „Inkognitofenster schließen“ – drücke die Eingabetaste, um alle geöffneten Inkognitofenster zu schließen</translation>
 <translation id="883848425547221593">Andere Lesezeichen</translation>
+<translation id="8842351563145134519">Die Liste mit den Zahlungsmethoden, deren Daten bei Berührung ausgefüllt werden, ist halb geöffnet.</translation>
 <translation id="884264119367021077">Versandadresse</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Kein Sperrmechanismus gefunden.</translation>
@@ -3300,6 +3315,7 @@ Weitere Details:
 <translation id="935608979562296692">Formular leeren</translation>
 <translation id="936602727769022409">Du könntest den Zugriff auf dein Google-Konto verlieren. Chromium empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
 <translation id="937457230470581909">Zoos, Aquarien und Parks</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Folgende Daten werden verwendet<ph name="END_BOLD" />: Deine Werbethemen basieren auf deinem aktuellen Browserverlauf, also einer Liste der Websites, die du auf diesem Gerät in Chrome besucht hast.</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940053046584497293">Reisen und Transport</translation>
 <translation id="945855313015696284">Lies dir die unten stehenden Informationen durch und lösche ungültige Karten</translation>

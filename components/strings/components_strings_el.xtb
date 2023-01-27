@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">Πρώτα η μικρή πλευρά</translation>
 <translation id="168693727862418163">Αυτή η τιμή πολιτικής δεν επικυρώθηκε με επιτυχία έναντι του σχήματός της και θα παραβλεφθεί.</translation>
 <translation id="168841957122794586">Το πιστοποιητικό διακομιστή περιέχει ένα αδύναμο κρυπτογραφικό κλειδί.</translation>
+<translation id="1689333818294560261">Ψευδώνυμο</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Πώς μπορείτε να διαχειριστείτε τα δεδομένα σας:<ph name="END_BOLD" /> Το Chrome διαγράφει αυτόματα τα θέματα που είναι παλαιότερα των 4 εβδομάδων. Καθώς συνεχίζετε την περιήγηση, ένα θέμα μπορεί να εμφανιστεί ξανά στη λίστα. Μπορείτε επίσης να αποκλείσετε θέματα που δεν θέλετε να κοινοποιούνται από το Chrome σε ιστοτόπους, καθώς και να απενεργοποιήσετε τα θέματα διαφημίσεων ανά πάσα στιγμή από τις ρυθμίσεις του Chrome.</translation>
 <translation id="1697532407822776718">Είστε έτοιμοι!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Διαχείριση Λογαριασμού Google, πατήστε το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες, το απόρρητο και την ασφάλειά σας στον Λογαριασμό σας Google</translation>
 <translation id="2436186046335138073">Να επιτρέπεται στο <ph name="HANDLER_HOSTNAME" /> το άνοιγμα όλων των συνδέσμων <ph name="PROTOCOL" />;</translation>
 <translation id="2438874542388153331">Τετραπλό τρύπημα στα δεξιά</translation>
+<translation id="2441854154602066476">Τρόποι πληρωμής που είναι διαθέσιμοι για συμπλήρωση μέσω αφής. Έχει γίνει απόκρυψη του πληκτρολογίου.</translation>
 <translation id="2448295565072560657">Περιφερειακά που έχουν συνδεθεί σε αυτήν τη συσκευή ενώ είστε συνδεδεμένοι</translation>
 <translation id="2450021089947420533">Διαδρομές</translation>
 <translation id="2463739503403862330">Συμπλήρωση</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">Κλείστε τα άλλα προγράμματα</translation>
 <translation id="2918922650248459053">Καταδύσεις και υποβρύχιες δραστηριότητες</translation>
 <translation id="2922350208395188000">Δεν είναι δυνατός ο έλεγχος του πιστοποιητικού του διακομιστή.</translation>
+<translation id="292371311537977079">Ρυθμίσεις του Chrome</translation>
 <translation id="2925673989565098301">Τρόπος προβολής</translation>
 <translation id="2928905813689894207">Διεύθυνση χρέωσης</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ακόμη}}</translation>
@@ -1146,6 +1149,7 @@
 <translation id="3810973564298564668">Διαχείριση</translation>
 <translation id="3815434930383843058">8 x 12 ίντσες</translation>
 <translation id="3816482573645936981">Τιμή (αντικαταστάθηκε)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Η διαχείριση του προγράμματος περιήγησης γίνεται από τον τομέα <ph name="BROWSER_DOMAIN" /> και του προφίλ σας από τον τομέα <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Εάν χρησιμοποιείτε διακομιστή μεσολάβησης…</translation>
 <translation id="3826050100957962900">Σύνδεση τρίτων μερών</translation>
@@ -1578,6 +1582,7 @@
 <translation id="4880827082731008257">Αναζήτηση ιστορικού</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
 <translation id="4881808915112408168">24 x 31,5 ίντσες</translation>
+<translation id="4882314601499260499">Δεν έχουν εφαρμοστεί πολιτικές χρήστη. Για να προσθέσετε πολιτικές χρήστη, ο οργανισμός σας πρέπει να <ph name="LINK_BEGIN" />επαληθεύσει τον τομέα σας<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Πληρωμή με την κάρτα <ph name="CARD_DETAIL" /> κατά την ολοκλήρωση της αγοράς</translation>
 <translation id="4887406273302438710">Προστασία κωδικών πρόσβασης με το Windows Hello</translation>
 <translation id="4888600795924685526">Σπουδές ξένων γλωσσών</translation>
@@ -2463,6 +2468,7 @@
 <translation id="7136009930065337683">Μάθετε περισσότερα σχετικά με την Ανώνυμη περιήγηση</translation>
 <translation id="7138472120740807366">Μέθοδος προβολής</translation>
 <translation id="7139892792842608322">Κύριος τροφοδότης χαρτιού</translation>
+<translation id="7140087718106278457">Η λίστα τρόπων πληρωμής είναι κλειστή.</translation>
 <translation id="714064300541049402">Πλευρά 2 μετατόπιση εικόνας στον άξονα X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}other{<ph name="PAYMENT_METHOD_PREVIEW" /> και <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ακόμη}}</translation>
@@ -2740,6 +2746,7 @@
 <translation id="7755287808199759310">Ο γονέας σας μπορεί να καταργήσει τον αποκλεισμό του για εσάς</translation>
 <translation id="7755624218968747854">Κύριο ρολό</translation>
 <translation id="7758069387465995638">Το τείχος προστασίας ή το λογισμικό προστασίας από ιούς ενδέχεται να έχει αποκλείσει τη σύνδεση.</translation>
+<translation id="7759809451544302770">Προαιρετικά</translation>
 <translation id="7760497246331667482">Ρέγκε και μουσική της Καραϊβικής</translation>
 <translation id="776110834126722255">Καταργήθηκε</translation>
 <translation id="7761159795823346334">Να επιτρέπεται η κάμερα;</translation>
@@ -2986,6 +2993,7 @@
 <translation id="8381674639488873545">Αυτές οι χρεώσεις μπορεί να είναι εφάπαξ ή επαναλαμβανόμενες και ίσως να μην είναι εμφανείς.<ph name="BEGIN_LINK" />Εμφάνιση ούτως ή άλλως<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Η κοινοποίηση από το <ph name="ORIGIN_NAME" /> στο <ph name="VM_NAME" /> έχει αποκλειστεί από την πολιτική του διαχειριστή.</translation>
 <translation id="8396522675989118466">Αυτός είναι ο <ph name="NUMBER_OF_DIGITS" />-ψήφιος κωδικός στην <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Η λίστα των τρόπων πληρωμής που είναι διαθέσιμοι για συμπλήρωση μέσω αφής είναι ανοιχτή σε πλήρες ύψος.</translation>
 <translation id="8398790343843005537">Εύρεση του τηλεφώνου σας</translation>
 <translation id="8405579342203358118">Διαχειριστείτε τις πληροφορίες που συγχρονίζετε από τις ρυθμίσεις του Chrome</translation>
 <translation id="8406071103346257942">διακοπή χρήσης του κλειδώματος οθόνης για συμπλήρωση κωδικών πρόσβασης</translation>
@@ -3148,6 +3156,7 @@
 <translation id="8830320733681313421">Καρτ ποστάλ Hagaki</translation>
 <translation id="8834380158646307944">Κουμπί Κλείσιμο παραθύρων για ανώνυμη περιήγηση, πατήστε το πλήκτρο Enter για να κλείσετε όλα τα παράθυρα για ανώνυμη περιήγηση που είναι αυτήν τη στιγμή ανοικτά</translation>
 <translation id="883848425547221593">Άλλοι σελιδοδείκτες</translation>
+<translation id="8842351563145134519">Η λίστα των τρόπων πληρωμής που είναι διαθέσιμοι για συμπλήρωση μέσω αφής είναι ανοιχτή στο μισό ύψος.</translation>
 <translation id="884264119367021077">Διεύθυνση αποστολής</translation>
 <translation id="8849231003559822746">130 x 180 χιλ.</translation>
 <translation id="884923133447025588">Δεν εντοπίστηκε μηχανισμός ακύρωσης.</translation>

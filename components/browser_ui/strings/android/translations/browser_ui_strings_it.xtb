@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedisci ai siti di usare i dati e dispositivi della realtà virtuale</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6453641458248223456">Aumenta o diminuisci lo zoom in una pagina dal menu principale</translation>
 <translation id="6467852467360539617">Cancella i dati e reimposta le autorizzazioni</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7667547420449112975">Il meraviglioso mago di Oz</translation>
 <translation id="7684642910516280563">Non consentire a un sito di utilizzare i cookie di terze parti</translation>
-<translation id="7690549345586282764">Mostra zoom</translation>
 <translation id="7719367874908701697">Zoom delle pagine</translation>
 <translation id="7781829728241885113">Ieri</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">Navigazione inaccessibile: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Elimina</translation>
 <translation id="8990043154272859344">Uscirai da tutti i siti</translation>
-<translation id="900095568014372589">Ingrandisci o diminuisci le dimensioni di testo e immagini predefiniti sui siti</translation>
 <translation id="9019902583201351841">Gestito dai genitori</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Questo sito fa parte di un gruppo che può vedere le tue attività. Il gruppo è definito da <ph name="FPS_OWNER" /></translation>

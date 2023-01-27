@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">ชีตการตรวจสอบสิทธิ์ข้อมูลเข้าสู่ระบบการชำระเงินที่ปลอดภัย</translation>
 <translation id="1386623374109090026">คำอธิบายประกอบ</translation>
 <translation id="1391289752476847787">หุ้นและตราสารหนี้</translation>
+<translation id="1391625539203220400">บันทึก IBAN ไว้ในอุปกรณ์นี้ไหม</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
 <translation id="1396259464226642517">ผลลัพธ์นี้ต่างจากที่คาดไว้ไหม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
@@ -314,6 +315,7 @@
 <translation id="1682696192498422849">ด้านขอบสั้นก่อน</translation>
 <translation id="168693727862418163">ตรวจสอบค่านโยบายนี้กับสคีมาไม่ได้ ระบบจะเพิกเฉยต่อค่านี้</translation>
 <translation id="168841957122794586">ใบรับรองของเซิร์ฟเวอร์มีคีย์การเข้ารหัสที่ไม่รัดกุม</translation>
+<translation id="1689333818294560261">ชื่อเล่น</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />วิธีที่คุณจัดการข้อมูลของตัวเองได้:<ph name="END_BOLD" /> Chrome จะลบหัวข้อที่เก่ากว่า 4 สัปดาห์ออกโดยอัตโนมัติ เมื่อคุณท่องเว็บไปเรื่อยๆ บางหัวข้อก็อาจกลับมาอยู่ในรายการอีกครั้ง นอกจากนี้ คุณยังบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ต่างๆ และปิดหัวข้อโฆษณาได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="1697532407822776718">คุณพร้อมแล้ว!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -777,6 +779,7 @@
 <translation id="2916038427272391327">ปิดโปรแกรมอื่นๆ</translation>
 <translation id="2918922650248459053">กิจกรรมดำน้ำและกิจกรรมใต้น้ำ</translation>
 <translation id="2922350208395188000">ไม่สามารถตรวจสอบใบรับรองของเซิร์ฟเวอร์</translation>
+<translation id="292371311537977079">การตั้งค่า Chrome</translation>
 <translation id="2925673989565098301">วิธีการนำส่งสินค้า</translation>
 <translation id="2928905813689894207">ที่อยู่สำหรับการเรียกเก็บเงิน</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> และอีก <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> รายการ}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="3815434930383843058">8 x 12 นิ้ว</translation>
 <translation id="3816482573645936981">ค่า (ถูกแทนที่)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">เบราว์เซอร์ของคุณจัดการโดย <ph name="BROWSER_DOMAIN" /> และโปรไฟล์ของคุณจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">หากคุณใช้พร็อกซีเซิร์ฟเวอร์...</translation>
 <translation id="3826050100957962900">การลงชื่อเข้าใช้ของบุคคลที่สาม</translation>
@@ -2738,6 +2742,7 @@
 <translation id="7755287808199759310">ผู้ปกครองสามารถเลิกบล็อกเว็บไซต์ให้คุณ</translation>
 <translation id="7755624218968747854">ม้วนกระดาษหลัก</translation>
 <translation id="7758069387465995638">ไฟร์วอลล์หรือซอฟต์แวร์ป้องกันไวรัสอาจบล็อกการเชื่อมต่อนี้</translation>
+<translation id="7759809451544302770">ไม่บังคับ</translation>
 <translation id="7760497246331667482">เพลงเรกเก้และแคริบเบียน</translation>
 <translation id="776110834126722255">เลิกใช้งาน</translation>
 <translation id="7761159795823346334">อนุญาตให้เข้าถึงกล้องไหม</translation>

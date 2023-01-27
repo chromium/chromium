@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">Անջատել</translation>
 <translation id="1045899828449635435">Մաքրե՞լ այս տվյալները</translation>
 <translation id="1049743911850919806">Ինկոգնիտո</translation>
+<translation id="1058669287135776095">Դուք անցանց ռեժիմում եք։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="10614374240317010">Կայքեր, որոնց համար գաղտնաբառերը երբեք չեն պահվում</translation>
 <translation id="1062628064301375934">Օգնեք մեզ բարձրացնել գաղտնիության մակարդակը ցանցում</translation>
 <translation id="107147699690128016">Եթե փոխեք ընդլայնումը, ֆայլը կարող է բացվել այլ հավելվածով և վնասել ձեր սարքը:</translation>
@@ -562,6 +563,7 @@
 <translation id="4108314971463891922">Հետևել</translation>
 <translation id="4108998448622696017">Հայտնաբերում է վտանգավոր իրադարձություններն ու զգուշացնում դրանց մասին։</translation>
 <translation id="4116038641877404294">Ներբեռնեք էջերը՝ անցանց ռեժիմում օգտագործելու համար</translation>
+<translation id="4124152339699379357">Ծանուցումների թույլտվության պատուհանը բացված է ամբողջությամբ</translation>
 <translation id="4135200667068010335">Սարքերը, որոնց հետ կիսվելու եք ներդիրով, ցուցադրված չեն էկրանին:</translation>
 <translation id="4137746084635924146">Սարքի ընթացիկ լեզուն</translation>
 <translation id="414128724510021958">Կայքերի համակարգչային տարբերակները պահանջվում են ըստ կանխադրման</translation>
@@ -868,6 +870,7 @@
 <translation id="5780792035410621042">Գաղտնաբառերը պատճենելու համար նախ ձեր սարքում կարգավորեք էկրանի կողպումը</translation>
 <translation id="5793665092639000975">Օգտագործվում է՝ <ph name="SPACE_USED" />/<ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Որոնում և դիտարկում</translation>
+<translation id="5797949256525811424">Թեման արգելափակված է</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />։ Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="5813552293717797987">Այս դիտարկիչը կառավարվում է <ph name="PARENT_NAME_1" /> և <ph name="PARENT_NAME_2" /> հաշիվների կողմից։</translation>
@@ -1195,6 +1198,7 @@
 <translation id="7485033510383818941">Ֆիդի բովանդակությունը թարմացնելու համար էջը ներքև քաշեք</translation>
 <translation id="749294055653435199">Google Տեսապակին հասանելի չէ այս սարքում</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Թարմացվել է <ph name="TIME_SINCE_UPDATE" />-ին)</translation>
+<translation id="7497755084107113646">Թեման նորից ավելացվեց հավանական թեմաների ցանկում</translation>
 <translation id="7498271377022651285">Սպասեք…</translation>
 <translation id="7502234197872745058">Բոլոր կայքերում ձեր Google հաշվից դուրս գալու համար <ph name="BEGIN_LINK1" />դուրս եկեք Chrome-ից<ph name="END_LINK1" />։</translation>
 <translation id="750228856503700085">Թարմացումներն անհասանելի են</translation>
@@ -1398,6 +1402,7 @@
 <translation id="8516012719330875537">Պատկերների խմբագրիչ</translation>
 <translation id="8516431725144212809">Ձեր հետաքրքրությունները (ըստ Chrome-ի)</translation>
 <translation id="8523928698583292556">Ջնջել պահված գաղտնաբառը</translation>
+<translation id="8526855376374973824">Ծանուցումների թույլտվության պատուհան</translation>
 <translation id="8540136935098276800">Մուտքագրեք ճիշտ ձևաչափի URL</translation>
 <translation id="854522910157234410">Բացել այս էջը</translation>
 <translation id="8551513938758868521">Կողպել ինկոգնիտո ներդիրները Chrome-ը փակելուց հետո</translation>
@@ -1457,6 +1462,7 @@
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ներդիր</translation>
 <translation id="8854223127042600341">Դիտեք անցանց ֆայլերը</translation>
 <translation id="8856607253650333758">Ստանալ նկարագրություններ</translation>
+<translation id="8856931513242997049">Ծանուցումների թույլտվության պատուհանը փակված է</translation>
 <translation id="8873817150012960745">Սկսելու համար հպեք այստեղ</translation>
 <translation id="8881973373982641723">Մաքրում է պատմությունը, այդ թվում որոնման դաշտում։</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Ինչպես կարող եք կառավարել ձեր տվյալները.<ph name="END_BOLD" /> ձեր գաղտնիությունը պաշտպանելու նպատակով մենք 4 շաբաթից կայքերն ավտոմատ ջնջում ենք ցանկից։ Եթե դուք նորից այցելեք որոշակի կայք, այն կրկին կարող է հայտնվել ցանկում։ Դուք նաև կարող եք հեռացնել կայքը, եթե չեք ցանկանում, որ ըստ դրա որոշվեն ձեր հետաքրքրությունները։</translation>
@@ -1489,6 +1495,7 @@
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# տեսանյութ}one{# տեսանյութ}other{# տեսանյութ}}</translation>
 <translation id="9042893549633094279">Գաղտնիություն և անվտանգություն</translation>
 <translation id="9050666287014529139">Անցաբառ</translation>
+<translation id="9055497320631373736">Կայքը նորից ավելացվեց հավանական կայքերի ցանկում</translation>
 <translation id="9063523880881406963">Անջատել կայքի ամբողջական տարբերակը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9065383040763568503">Պահված տվյալները, որոնք ըստ Chrome-ի կարևոր չեն (օր.՝ առանց պահված կարգավորումների կայքերը կամ այն կայքերը, որոնք վաղուց չեք այցելել)</translation>

@@ -95,6 +95,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="1082214733466244292">系統管理員已封鎖這部裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求將您的 Chrome 設定還原成原始預設值。這會重設您的首頁、新分頁和搜尋引擎，停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 也會一併遭到清除。</translation>
+<translation id="1082725763867769612">離線檔案</translation>
 <translation id="1084096383128641877">移除這組密碼並不會刪除你的 <ph name="DOMAIN" /> 帳戶。請變更密碼或刪除你的 <ph name="DOMAIN_LINK" /> 帳戶，以避免遭到他人盜用。</translation>
 <translation id="1084288067399862432">已成功變更遭外洩的密碼。
 
@@ -1361,6 +1362,7 @@
 <translation id="2195331105963583686">你仍然可以在該時間點之後使用這部 <ph name="DEVICE_TYPE" />，但屆時這部裝置將無法自動取得軟體和安全性更新</translation>
 <translation id="2195729137168608510">電子郵件保護</translation>
 <translation id="2198625180564913276">正在新增設定檔。請稍候片刻。</translation>
+<translation id="2198712775285959645">編輯</translation>
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2200094388063410062">電子郵件</translation>
 <translation id="2200356397587687044">Chrome 需要權限才能繼續執行</translation>
@@ -3165,6 +3167,7 @@
 <translation id="3823310065043511710">建議你至少為 Linux 保留 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請與裝置擁有者或系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">在應用程式圖示上顯示代表快訊的圓點</translation>
 <translation id="3826071569074535339">可以使用動作感應器</translation>
 <translation id="3826440694796503677">你的系統管理員已停用新增 Google 帳戶的功能</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
@@ -3318,6 +3321,7 @@
 <translation id="3957844511978444971">輕觸 [接受] 即表示您確認所選的這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3961005895395968120">可對<ph name="IBAN_DESCRIPTION" /> 執行的其他動作</translation>
 <translation id="3962119236270174787">針對已知不安全的網站、下載內容和擴充功能提供標準防護機制</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
 <translation id="3965811923470826124">包含</translation>
@@ -4482,6 +4486,7 @@
 <translation id="5063480226653192405">用量</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
+<translation id="5066160542186949327">移至其他資料夾</translation>
 <translation id="5067399438976153555">一律啟用</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
@@ -5863,6 +5868,7 @@
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> 要求你提供使用者名稱和密碼，以便管理員為你設定網路</translation>
 <translation id="6345878117466430440">標示為已讀取</translation>
 <translation id="6347010704471250799">顯示通知</translation>
+<translation id="634887995541211148">在你的裝置上執行 Bruschetta。</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">請讓裝置保持開啟</translation>
@@ -6268,6 +6274,7 @@
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看新功能</translation>
 <translation id="67269783048918309">傳送使用狀況與診斷資料。這個裝置目前會自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google。這些資料將有助於系統和應用程式提高穩定性及做出其他改善，並不會用於識別貴子女的身分。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。這項<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />是由裝置擁有者執行。如果貴子女的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到他們的 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
+<translation id="6728528977475057549">末四碼為 <ph name="LAST_FOUR_DIGITS" /> 的 IBAN</translation>
 <translation id="6729192290958770680">請輸入你的使用者名稱</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6733620523445262364">已建立「<ph name="BOOKMARK_TITLE" />」。</translation>
@@ -6884,6 +6891,7 @@
 <translation id="7298195798382681320">建議採用</translation>
 <translation id="7299337219131431707">啟用訪客瀏覽</translation>
 <translation id="7299515639584427954">是否變更開啟支援連結的預設應用程式？</translation>
+<translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">你可以詢問「Ok Google，這是什麼歌？」或「Ok Google，螢幕上顯示的是什麼？」</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{這個應用程式可能會造成 Chrome 無法正常運作。}other{這些應用程式可能會造成 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時出了點狀況。</translation>
@@ -7685,6 +7693,7 @@
 <translation id="8013993649590906847">如果圖片缺少有用的說明，Chrome 會嘗試為你提供說明。系統會將圖片傳送給 Google，以便產生說明。</translation>
 <translation id="8014154204619229810">正在執行更新程式。請稍後片刻，重新整理之後再試一次。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> 無法還原至先前安裝的版本，請嘗試再次為你的裝置執行 Powerwash。</translation>
+<translation id="8015812716978143">在新分頁中顯示所有下載內容</translation>
 <translation id="8016266267177410919">暫時儲存空間</translation>
 <translation id="8017176852978888182">Linux 共用目錄</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8793,6 +8802,7 @@
 <translation id="9026731007018893674">下載</translation>
 <translation id="9026852570893462412">正在下載虛擬機器，過程可能需要幾分鐘。</translation>
 <translation id="9027459031423301635">在新分頁中開啟連結(&amp;T)</translation>
+<translation id="9027707169256972235">移除</translation>
 <translation id="9029667986262585240">你已關閉帳戶的安全瀏覽強化防護功能。</translation>
 <translation id="9030515284705930323">貴機構尚未為您的帳戶啟用 Google Play 商店。如需瞭解詳情，請與您的管理員聯絡。</translation>
 <translation id="9030754204056345429">較快</translation>

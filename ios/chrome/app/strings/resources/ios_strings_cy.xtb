@@ -74,7 +74,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="1404330357948037222">Rydych wedi'ch Allgofnodi</translation>
 <translation id="1407135791313364759">Agor pob un</translation>
 <translation id="1430915738399379752">Argraffu</translation>
-<translation id="1434356225517321998">Rheolir eich porwr. <ph name="BEGIN_LINK" />Manylion<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Cuddio'r Cyfrinair</translation>
 <translation id="1450170672351507823">Mae amddiffyniad safonol wedi'i droi ymlaen. Am fwy fyth o ddiogelwch, defnyddiwch Gwell amddiffyniad.</translation>
 <translation id="149095475893949513">Mae'r wefan hon yn ceisio lawrlwytho proffil ffurfweddiad.</translation>
@@ -398,7 +397,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="3929457972718048006">Cyfeiriadau</translation>
 <translation id="3943492037546055397">Cyfrineiriau</translation>
 <translation id="3959736869653157332">Dewislen → Tab Anhysbys Newydd</translation>
-<translation id="3964173450954943920">Gallwch bob amser ddewis beth i'w gysoni yn y <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />. Mae'n bosib y bydd Google yn defnyddio'ch hanes i bersonoleiddio Search a gwasanaethau Google eraill.</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3968505803272650567">Rheoli Diddordebau</translation>
 <translation id="3989635538409502728">Allgofnodi</translation>
@@ -1035,6 +1033,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8680787084697685621">Mae manylion mewngofnodi'r cyfrif yn hen.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Cau'r Tab}zero{Cau'r Tabiau}two{Cau'r Tabiau}few{Cau'r Tabiau}many{Cau'r Tabiau}other{Cau'r Tabiau}}</translation>
 <translation id="8706588385081740091">Cyfrineiriau</translation>
+<translation id="8712637175834984815">Iawn</translation>
 <translation id="8717864919010420084">Copïo'r Ddolen</translation>
 <translation id="8721297211384281569">Dewislen Offer</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>

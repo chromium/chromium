@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">ପ୍ରଥମେ ଛୋଟ ଏଡଜ୍</translation>
 <translation id="168693727862418163">ଏହି ନୀତିର ମୂଲ୍ୟ ଏହାର ସ୍କିମା ଅନୁଯାୟୀ ବୈଧ ହେବାରେ ବିଫଳ ହୋଇଛି ଏବଂ ଏହାକୁ ଅଣଦେଖା କରାଯିବ।</translation>
 <translation id="168841957122794586">ସର୍ଭର୍ ସାର୍ଟିଫିକେଟ୍‍‍ରେ ଗୋଟିଏ ଦୁର୍ବଳ କ୍ରିପ୍ଟୋଗ୍ରାଫିକ୍ କୀ ଅଛି।</translation>
+<translation id="1689333818294560261">ଡାକନାମ</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />ଆପଣ ଆପଣଙ୍କ ଡାଟାକୁ କିପରି ପରିଚାଳନା କରିପାରିବେ:<ph name="END_BOLD" /> 4 ସପ୍ତାହରୁ ଅଧିକ ପୁରୁଣା ବିଷୟଗୁଡ଼ିକୁ Chrome ସ୍ୱତଃ-ଡିଲିଟ କରେ। ଆପଣ ବ୍ରାଉଜ କରିବା ଜାରି ରଖିବା ସମୟରେ, ତାଲିକାରେ କୌଣସି ବିଷୟ ପୁଣି ଦେଖାଯାଇପାରେ। Chrome ଯେଉଁ ବିଷୟଗୁଡ଼ିକୁ ସାଇଟଗୁଡ଼ିକ ସହ ସେୟାର କରୁ ବୋଲି ଆପଣ ଚାହୁଁନାହାଁନ୍ତି, ଯେ କୌଣସି ସମୟରେ Chrome ସେଟିଂସରେ, ଆପଣ ସେଗୁଡ଼ିକୁ ମଧ୍ୟ ବ୍ଲକ କରିପାରିବେ ଏବଂ ବିଜ୍ଞାପନ ବିଷୟଗୁଡ଼ିକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="1697532407822776718">ଆପଣ ପୂରା ପ୍ରସ୍ତୁତ ଅଛନ୍ତି!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Google ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ସୂଚନା, ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷାକୁ ପରିଚାଳନା କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="2436186046335138073">ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="2438874542388153331">ଡାହାଣ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
+<translation id="2441854154602066476">ସ୍ପର୍ଶ ମାଧ୍ୟମରେ ପୂରଣ ହେବାକୁ ଥିବା ଉପଲବ୍ଧ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକ। କୀବୋର୍ଡ ଲୁଚାଯାଇଛି।</translation>
 <translation id="2448295565072560657">ଆପଣ ଲଗ ଇନ କରିଥିବା ସମୟରେ ଏହି ଡିଭାଇସରେ ଆଟାଚ ହୋଇଥିବା ପେରିଫେରାଲଗୁଡ଼ିକ</translation>
 <translation id="2450021089947420533">ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="2463739503403862330">ପୂରଣ କରନ୍ତୁ</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">ଅନ୍ୟ ପ୍ରୋଗ୍ରାମ୍‌ଗୁଡ଼ିକ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="2918922650248459053">ଡାଇଭିଂ ଏବଂ ଅଣ୍ଡରୱାଟର କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="2922350208395188000">ସର୍ଭରର ସାର୍ଟିଫିକେଟ୍‌ ଯାଞ୍ଚ କରିହେବ ନାହିଁ</translation>
+<translation id="292371311537977079">Chrome ସେଟିଂସ</translation>
 <translation id="2925673989565098301">ବିତରଣ ପଦ୍ଧତି</translation>
 <translation id="2928905813689894207">ବିଲିଂ ଠିକଣା</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ<ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />ଟି}}</translation>
@@ -1142,6 +1145,7 @@
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
 <translation id="3815434930383843058">8 x 12 ଇଞ୍ଚ</translation>
 <translation id="3816482573645936981">ମୂଲ୍ୟ (ଏହାର ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">ଆପଣଙ୍କ ବ୍ରାଉଜର <ph name="BROWSER_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="382518646247711829">ଯଦି ଆପଣ ଏକ ପ୍ରକ୍ସି ସର୍ଭର ବ୍ୟବହାର କରନ୍ତି...</translation>
 <translation id="3826050100957962900">ତୃତୀୟ-ପକ୍ଷ ସାଇନ-ଇନ</translation>
@@ -1573,6 +1577,7 @@
 <translation id="4880827082731008257">ସନ୍ଧାନ ଇତିହାସ</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
 <translation id="4881808915112408168">24 x 31.5 ଇଞ୍ଚ</translation>
+<translation id="4882314601499260499">କୌଣସି ୟୁଜର ନୀତି ଲାଗୁ କରାଯାଇନାହିଁ। ୟୁଜର ନୀତିଗୁଡ଼ିକ ଯୋଗ କରିବା ପାଇଁ, ଆପଣଙ୍କ ସଂସ୍ଥା <ph name="LINK_BEGIN" />ଆପଣଙ୍କ ଡୋମେନକୁ ଯାଞ୍ଚ କରିବା<ph name="LINK_END" /> ଆବଶ୍ୟକ।</translation>
 <translation id="4885256590493466218">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4887406273302438710">Windows Hello ମାଧ୍ୟମରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
 <translation id="4888600795924685526">ବିଦେଶୀ ଭାଷା ଅଧ୍ୟୟନ</translation>
@@ -2456,6 +2461,7 @@
 <translation id="7136009930065337683">ଇନକଗ୍ନିଟୋ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="7138472120740807366">ଡେଲିଭରୀ ପଦ୍ଧତି</translation>
 <translation id="7139892792842608322">ପ୍ରାଥମିକ ଟ୍ରେ</translation>
+<translation id="7140087718106278457">ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକର ତାଲିକା ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="714064300541049402">ସାଇଡ୍ 2 ଇମେଜ୍ X ସିଫ୍ଟ</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}other{<ph name="PAYMENT_METHOD_PREVIEW" /> ଏବଂ ଅଧିକ <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />ଟି}}</translation>
@@ -2978,6 +2984,7 @@
 <translation id="8381674639488873545">ଏହି ଶୁଳ୍କଗୁଡ଼ିକ ଗୋଟିଏ ଥର କିମ୍ବା ବାରମ୍ବାର ଲାଗୁ ହୋ‍ଇପାରେ ଏବଂ ସ୍ପଷ୍ଟ ହୋ‍ଇନପାରେ। <ph name="BEGIN_LINK" />ଯେକୌଣସି ଉପାୟରେ ଦେଖାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା <ph name="ORIGIN_NAME" />ରୁ <ph name="VM_NAME" />କୁ ସେୟାର୍ କରିବା ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="8396522675989118466">ଏହା <ph name="SIDE_OF_CARD" />ରେ ଥିବା <ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଷିଷ୍ଟ କୋଡ ଅଟେ</translation>
+<translation id="8398335999901363925">ସ୍ପର୍ଶ ମାଧ୍ୟମରେ ପୂରଣ ହେବାକୁ ଥିବା ଉପଲବ୍ଧ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକର ତାଲିକା ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲେ।</translation>
 <translation id="8398790343843005537">ଆପଣଙ୍କ ଫୋନ ଖୋଜନ୍ତୁ</translation>
 <translation id="8405579342203358118">Chrome ସେଟିଂସରେ ଆପଣ କେଉଁ ସୂଚନା ସିଙ୍କ୍ କରନ୍ତି ତାହା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8406071103346257942">ପାସୱାର୍ଡଗୁଡ଼ିକ ପୂରଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସ୍କ୍ରିନ ଲକ ବ୍ୟବହାର କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -3138,6 +3145,7 @@
 <translation id="8830320733681313421">ହାଗାକି ପୋଷ୍ଟକାର୍ଡ</translation>
 <translation id="8834380158646307944">"ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ" ବଟନ, ବର୍ତ୍ତମାନ ଖୋଲା ଥିବା ସମସ୍ତ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ବନ୍ଦ କରିବାକୁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="883848425547221593">ଅନ୍ୟ ବୁକ୍‍ମାର୍କ</translation>
+<translation id="8842351563145134519">ସ୍ପର୍ଶ ମାଧ୍ୟମରେ ପୂରଣ ହେବାକୁ ଥିବା ଉପଲବ୍ଧ ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକର ତାଲିକା ଅଧା ସ୍କ୍ରିନରେ ଖୋଲେ।</translation>
 <translation id="884264119367021077">ସିପିଂ ଠିକଣା</translation>
 <translation id="8849231003559822746">130 x 180 ମିମି</translation>
 <translation id="884923133447025588">କୌଣସି ନାକଚକରଣ ଯନ୍ତ୍ରକୌଶଳ ଖୋଜି ପାଇଲା ନାହିଁ ।</translation>

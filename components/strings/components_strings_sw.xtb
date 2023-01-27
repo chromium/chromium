@@ -314,6 +314,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1682696192498422849">Pembe fupi kwanza</translation>
 <translation id="168693727862418163">Thamani ya sera hii imeshindwa kuthibitishwa kwenye taratibu yake na itapuuzwa.</translation>
 <translation id="168841957122794586">Cheti cha seva kina kitufe dhaifu cha kifichua msimbo.</translation>
+<translation id="1689333818294560261">Jina la kuwakilisha</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Jinsi unavyoweza kudhibiti data yako:<ph name="END_BOLD" /> Chrome hufuta kiotomatiki mada zilizohifadhiwa kwenye orodha kwa zaidi ya wiki 4. Kadiri unavyoendelea kuvinjari, mada inaweza kuonekana tena kwenye orodha. Unaweza pia kuzuia mada ambazo usingependa Chrome ishiriki na tovuti na kuzima mada za matangazo wakati wowote kwenye mipangilio ya Chrome.</translation>
 <translation id="1697532407822776718">Mko tayari nyote!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2430968933669123598">Dhibiti Akaunti ya Google, bonyeza 'Enter' ili udhibiti maelezo, faragha na usalama wako katika Akaunti yako ya Google</translation>
 <translation id="2436186046335138073">Ungependa kuruhusu <ph name="HANDLER_HOSTNAME" /> kufungua viungo vyote vya <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Toboa mara nne kulia</translation>
+<translation id="2441854154602066476">Njia za kulipa zinazopatikana, za kujaza kwa kugusa. Kibodi imefichwa.</translation>
 <translation id="2448295565072560657">Vifaa vinavyoambatishwa kwenye kifaa hiki unapokuwa umeingia katika akaunti</translation>
 <translation id="2450021089947420533">Ziara</translation>
 <translation id="2463739503403862330">Jaza</translation>
@@ -776,6 +778,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2916038427272391327">Funga programu nyingine</translation>
 <translation id="2918922650248459053">Shughuli za uzamiaji na upigaji mbizi</translation>
 <translation id="2922350208395188000">Cheti cha seva hakiwezi kukaguliwa.</translation>
+<translation id="292371311537977079">Mipangilio ya Chrome</translation>
 <translation id="2925673989565098301">Njia ya Kusafirisha</translation>
 <translation id="2928905813689894207">Anwani ya kutuma Bili</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1145,6 +1148,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="3815434930383843058">Inchi 8 x 12</translation>
 <translation id="3816482573645936981">Thamani (nafasi yake imechukuliwa)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Kivinjari chako kinadhibitiwa na <ph name="BROWSER_DOMAIN" /> na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ukitumia seva mbadala...</translation>
 <translation id="3826050100957962900">Kuingia katika akaunti kwenye huduma nyingine</translation>
@@ -1575,6 +1579,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4880827082731008257">Tafuta katika historia</translation>
 <translation id="4881695831933465202">Fungua</translation>
 <translation id="4881808915112408168">Inchi 24 x 31.5</translation>
+<translation id="4882314601499260499">Hakuna sera za mtumiaji zinazotumika. Ili uweke sera za mtumiaji, shirika lako lazima <ph name="LINK_BEGIN" />lithibitishe kikoa chako<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Tumia <ph name="CARD_DETAIL" /> wakati wa kulipa</translation>
 <translation id="4887406273302438710">Linda manenosiri ukitumia Windows Hello</translation>
 <translation id="4888600795924685526">Mafunzo ya lugha za kigeni</translation>
@@ -2459,6 +2464,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7136009930065337683">Pata maelezo zaidi kuhusu hali fiche</translation>
 <translation id="7138472120740807366">Njia ya kusafirisha</translation>
 <translation id="7139892792842608322">Trei ya Msingi</translation>
+<translation id="7140087718106278457">Orodha ya njia za kulipa imefungwa.</translation>
 <translation id="714064300541049402">Ugeuzaji wa upande wa pili wa picha ya X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> na nyingine <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -2734,6 +2740,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7755287808199759310">Mzazi wako anaweza kukuondolea kizuizi</translation>
 <translation id="7755624218968747854">Gombo la Msingi</translation>
 <translation id="7758069387465995638">Huenda muunganisho huu umezuiwa na kinga mtandao au kingavirusi.</translation>
+<translation id="7759809451544302770">Ya hiari</translation>
 <translation id="7760497246331667482">Muziki wa rege na wa kikaribi</translation>
 <translation id="776110834126722255">Haitumiki</translation>
 <translation id="7761159795823346334">Ungependa kuruhusu kamera ifikiwe?</translation>
@@ -2979,6 +2986,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8381674639488873545">Gharama hizi zinaweza kuwa za mara moja au za kujirudia na huenda zisiwe za moja kwa moja. <ph name="BEGIN_LINK" />Onyesha tu<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Sera ya msimamizi imezuia kushiriki kwenye <ph name="VM_NAME" /> kutoka <ph name="ORIGIN_NAME" /></translation>
 <translation id="8396522675989118466">Huu ni msimbo wenye tarakimu <ph name="NUMBER_OF_DIGITS" />kwenye <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Njia za kulipa zinazopatikana za kujaza kwa kugusa zimefunguliwa kwenye hali ya skrini nzima.</translation>
 <translation id="8398790343843005537">Tafuta simu yako</translation>
 <translation id="8405579342203358118">Dhibiti maelezo unayosawazisha katika mipangilio ya Chrome</translation>
 <translation id="8406071103346257942">acha kutumia mbinu ya kufunga skrini yako ili kujaza manenosiri</translation>
@@ -3138,6 +3146,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8830320733681313421">Hagaki (Postikadi)</translation>
 <translation id="8834380158646307944">Kitufe cha 'Funga madirisha fiche', bonyeza 'Enter' ili ufunge madirisha yote fiche yaliyofunguliwa kwa sasa</translation>
 <translation id="883848425547221593">Alamisho Zingine</translation>
+<translation id="8842351563145134519">Njia za kulipa zinazopatikana za kujaza kwa kugusa zimefunguliwa kwenye hali ya nusu skrini.</translation>
 <translation id="884264119367021077">Anwani ya kusafirisha</translation>
 <translation id="8849231003559822746">Milimita 130 x 180</translation>
 <translation id="884923133447025588">Mbinu ya ubatilishaji haikupatikana.</translation>

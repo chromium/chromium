@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">آپ سائن آؤٹ ہیں</translation>
 <translation id="1407135791313364759">سبھی کو کھولیں</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
-<translation id="1434356225517321998">آپ کا براؤزر نظم کردہ ہے۔ <ph name="BEGIN_LINK" />تفصیلات<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">پاس ورڈ چھپائیں</translation>
 <translation id="1450170672351507823">معیاری تحفظ آن ہے۔ اور بھی مزید سیکیورٹی کے لیے، بہتر تحفظ کا استعمال کریں۔</translation>
 <translation id="149095475893949513">یہ ویب سائٹ کنفیگریشن پروفائل کو ڈاؤن لوڈ کرنے کی کوشش کر رہی ہے۔</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">پتے</translation>
 <translation id="3943492037546055397">پاس ورڈز</translation>
 <translation id="3959736869653157332">مینو ← نیا پوشیدگی ٹیب</translation>
-<translation id="3964173450954943920">‏آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔ تلاش اور Google کی دیگر سروسز کو ذاتی نوعیت کا بنانے کیلئے Google آپ کی سرگزشت کا استعمال کر سکتا ہے۔</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
@@ -1035,6 +1033,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8680787084697685621">اکاؤنٹ سائن ان کی تفصیلات پرانی ہیں۔</translation>
 <translation id="8693663554456874301">{count,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="8706588385081740091">پاس ورڈز</translation>
+<translation id="8712637175834984815">سمجھ آ گئی</translation>
 <translation id="8717864919010420084">لنک کاپی کریں</translation>
 <translation id="8721297211384281569">ٹولز مینو</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>

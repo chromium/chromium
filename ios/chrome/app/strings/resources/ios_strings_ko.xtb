@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">로그아웃한 상태입니다.</translation>
 <translation id="1407135791313364759">모두 열기</translation>
 <translation id="1430915738399379752">인쇄</translation>
-<translation id="1434356225517321998">관리 대상 브라우저입니다 <ph name="BEGIN_LINK" />세부정보<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">비밀번호 숨기기</translation>
 <translation id="1450170672351507823">표준 보호 모드가 사용 설정되어 있습니다. 보안을 더욱 강화하려면 향상된 보호 모드를 사용하세요.</translation>
 <translation id="149095475893949513">웹사이트에서 구성 프로필을 다운로드하려고 합니다.</translation>
@@ -398,7 +397,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3929457972718048006">주소</translation>
 <translation id="3943492037546055397">비밀번호</translation>
 <translation id="3959736869653157332">메뉴 → 새 시크릿 탭</translation>
-<translation id="3964173450954943920">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다. Google 검색 및 다른 Google 서비스를 맞춤설정하기 위하여 Google에서 사용자의 방문 기록을 이용할 수 있습니다.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3968505803272650567">관심분야 관리</translation>
 <translation id="3989635538409502728">로그아웃</translation>
@@ -1035,6 +1033,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8680787084697685621">계정 로그인 세부정보의 유효기간이 만료되었습니다.</translation>
 <translation id="8693663554456874301">{count,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="8706588385081740091">비밀번호</translation>
+<translation id="8712637175834984815">확인</translation>
 <translation id="8717864919010420084">링크 복사</translation>
 <translation id="8721297211384281569">도구 메뉴</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>

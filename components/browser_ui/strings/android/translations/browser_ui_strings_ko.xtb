@@ -172,7 +172,7 @@
 <translation id="4200726100658658164">위치 설정 열기</translation>
 <translation id="4226663524361240545">알림이 있으면 진동이 울릴 수도 있습니다.</translation>
 <translation id="4259722352634471385">탐색이 차단됨: <ph name="URL" /></translation>
-<translation id="4278390842282768270">허용</translation>
+<translation id="4278390842282768270">허용됨</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">사이트에서 내 가상 현실 기기 및 데이터를 사용하지 못하도록 차단</translation>
 <translation id="6447842834002726250">쿠키</translation>
-<translation id="6453641458248223456">기본 메뉴에서 페이지 확대 또는 축소하기</translation>
 <translation id="6467852467360539617">데이터 삭제 및 권한 재설정</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6545864417968258051">블루투스 검색</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">취소</translation>
 <translation id="7667547420449112975">오즈의 마법사</translation>
 <translation id="7684642910516280563">사이트에서 서드 파티 쿠키를 사용하도록 허용하지 않습니다</translation>
-<translation id="7690549345586282764">확대/축소 표시</translation>
 <translation id="7719367874908701697">페이지 확대/축소</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7791543448312431591">추가</translation>
@@ -380,7 +378,7 @@
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> 허용됨</translation>
 <translation id="8200772114523450471">다시 시작</translation>
 <translation id="8206354486702514201">이 설정은 관리자가 강제로 설정해 놓았습니다.</translation>
-<translation id="8211406090763984747">이 사이트는 보안 연결(HTTPS)이 사용되었습니다.</translation>
+<translation id="8211406090763984747">이 연결은 안전합니다.</translation>
 <translation id="8249310407154411074">맨 위로 이동</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8284326494547611709">자막</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">탐색할 수 없음: <ph name="URL" /></translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8990043154272859344">모든 사이트에서 로그아웃됩니다.</translation>
-<translation id="900095568014372589">사이트의 기본 텍스트 및 이미지를 더 작게 또는 더 크게 만들기</translation>
 <translation id="9019902583201351841">부모님이 관리합니다.</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9090268041676521955">이 사이트는 내 활동을 볼 수 있는 그룹에 있습니다. 그룹 정의 기준: <ph name="FPS_OWNER" /></translation>

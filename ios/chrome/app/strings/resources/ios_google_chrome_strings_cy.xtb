@@ -50,7 +50,6 @@
 <translation id="3984746313391923992">Mae eich sefydliad yn gofyn i chi barhau i fod wedi'ch allgofnodi o Chrome.</translation>
 <translation id="3988789688219830639">Nid oes gan Google Chrome fynediad at eich lluniau na fideos. Galluogwch fynediad yn Gosodiadau iOS &gt; Preifatrwydd &gt; Lluniau.</translation>
 <translation id="417201473131094001">Ni chefnogir ar Chrome Canary</translation>
-<translation id="4192781968753717021">Canfuwyd y cyfrinair hwn mewn toriad data. Mae Rheolwr Cyfrineiriau Google yn argymell newid eich cyfrinair ar unwaith.</translation>
 <translation id="4233521129555661685">Roedd <ph name="USER_EMAIL1" /> yn defnyddio Chrome a gadawodd nodau tudalen, cyfrineiriau, a gosodiadau eraill ar y ddyfais hon.</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4249068189593983585">Awgrym Chrome. Am ragor o opsiynau tabiau, cyffyrddwch a daliwch y botwm Dangos Tabiau yn y bar offer, sydd ar waelod neu ar frig eich sgrîn.</translation>
@@ -85,6 +84,7 @@
 <translation id="6634107063912726160">Pan fyddwch yn allgofnodi, ni fydd Chrome yn cysoni unrhyw ddata newydd i'ch Cyfrif Google. Mae data sydd wedi'u cysoni yn flaenorol yn aros yn y cyfrif.</translation>
 <translation id="6648150602980899529">Rydych yn mewngofnodi gyda chyfrif a reolir gan <ph name="DOMAIN" /> ac yn rhoi rheolaeth dros eich data Chrome i'w weinyddwr. Bydd eich data yn cael eu cysylltu'n barhaol i'r cyfrif hwn. Bydd allgofnodi o Chrome yn dileu eich data o'r ddyfais hon, ond bydd yn parhau i gael ei storio yn eich Cyfrif Google.</translation>
 <translation id="6676840375528380067">Clirio'ch data Chrome o'r ddyfais hon?</translation>
+<translation id="6709398533399187136">Datgelwyd eich cyfrinair mewn achos o dor data. Mae Rheolwr Cyfrineiriau Google yn argymell ei newid ar unwaith.</translation>
 <translation id="6822673484890854830">Ni allai Chrome wirio'r holl gyfrineiriau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6964931465519938134">Gallwch bellach ddefnyddio Chrome unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
 <translation id="701356708427365932">Dewch i adnabod y ddewislen Chrome newydd</translation>

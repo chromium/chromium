@@ -314,6 +314,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1682696192498422849">Borde corto primero</translation>
 <translation id="168693727862418163">No se ha podido validar el valor de esta política con su esquema y se ignorará.</translation>
 <translation id="168841957122794586">El certificado del servidor contiene una clave criptográfica no segura.</translation>
+<translation id="1689333818294560261">Apodo</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los temas que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un tema vuelva a aparecer en la lista. Además, puedes bloquear los temas que no quieras que Chrome comparta con los sitios. También puedes desactivar los temas de anuncios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="1697532407822776718">¡Listo!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -776,6 +777,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2916038427272391327">Cierra otros programas</translation>
 <translation id="2918922650248459053">Actividades de submarinismo y subacuáticas</translation>
 <translation id="2922350208395188000">No es posible comprobar el certificado del servidor.</translation>
+<translation id="292371311537977079">Configuración de Chrome</translation>
 <translation id="2925673989565098301">Método de entrega</translation>
 <translation id="2928905813689894207">Dirección de facturación</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> más}}</translation>
@@ -1145,6 +1147,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="3815434930383843058">8x12 pulgadas</translation>
 <translation id="3816482573645936981">Valor (sustituido)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552"><ph name="BROWSER_DOMAIN" /> gestiona tu navegador y <ph name="PROFILE_DOMAIN" /> gestiona tu perfil</translation>
 <translation id="382518646247711829">Si utilizas un servidor proxy...</translation>
 <translation id="3826050100957962900">Inicio de sesión de terceros</translation>
@@ -2736,6 +2739,7 @@ Más información:
 <translation id="7755287808199759310">Uno de tus padres puede desbloquearlo</translation>
 <translation id="7755624218968747854">Rollo principal</translation>
 <translation id="7758069387465995638">Puede que el cortafuegos o el software antivirus hayan bloqueado la conexión.</translation>
+<translation id="7759809451544302770">Opcionales</translation>
 <translation id="7760497246331667482">Música reggae y caribeña</translation>
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7761159795823346334">¿Permitir cámara?</translation>

@@ -314,6 +314,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1682696192498422849">Tepi pendek lebih dulu</translation>
 <translation id="168693727862418163">Nilai kebijakan ini gagal memvalidasi skemanya dan akan diabaikan.</translation>
 <translation id="168841957122794586">Sertifikat server berisi kunci kriptografis yang lemah.</translation>
+<translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cara Anda dapat mengelola data Anda:<ph name="END_BOLD" /> Chrome otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Anda juga dapat memblokir topik dari Chrome yang tidak ingin Anda bagikan ke situs dan menonaktifkan topik iklan kapan saja di setelan Chrome.</translation>
 <translation id="1697532407822776718">Anda sudah siap!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2430968933669123598">Kelola Akun Google, tekan Enter untuk mengelola info, privasi, dan keamanan di Akun Google Anda</translation>
 <translation id="2436186046335138073">Izinkan <ph name="HANDLER_HOSTNAME" /> membuka semua link <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Empat lubang di kanan</translation>
+<translation id="2441854154602066476">Metode pembayaran yang tersedia untuk diisi dengan gestur sentuh. Keyboard disembunyikan.</translation>
 <translation id="2448295565072560657">Periferal yang terpasang ke perangkat ini saat Anda login</translation>
 <translation id="2450021089947420533">Perjalanan</translation>
 <translation id="2463739503403862330">Isi</translation>
@@ -776,6 +778,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2916038427272391327">Tutup program lain</translation>
 <translation id="2918922650248459053">Kegiatan menyelam &amp; bawah air</translation>
 <translation id="2922350208395188000">Sertifikat server tidak dapat diperiksa.</translation>
+<translation id="292371311537977079">Setelan Chrome</translation>
 <translation id="2925673989565098301">Metode Pengiriman</translation>
 <translation id="2928905813689894207">Alamat Penagihan</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> lainnya}}</translation>
@@ -1144,6 +1147,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3815434930383843058">8 x 12 inci (20 x 30 cm)</translation>
 <translation id="3816482573645936981">Nilai (digantikan)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Browser Anda dikelola oleh <ph name="BROWSER_DOMAIN" /> dan profil Anda dikelola oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Jika Anda menggunakan server proxy...</translation>
 <translation id="3826050100957962900">Login pihak ketiga</translation>
@@ -1574,6 +1578,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4880827082731008257">Telusuri histori</translation>
 <translation id="4881695831933465202">Buka</translation>
 <translation id="4881808915112408168">24 x 31,5 inci (60 x 80 cm)</translation>
+<translation id="4882314601499260499">Tidak ada kebijakan pengguna yang berlaku. Untuk menambahkan kebijakan pengguna, organisasi Anda harus <ph name="LINK_BEGIN" />memverifikasi domain<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Bayar dengan <ph name="CARD_DETAIL" /> saat checkout</translation>
 <translation id="4887406273302438710">Lindungi sandi dengan Windows Hello</translation>
 <translation id="4888600795924685526">Studi bahasa asing</translation>
@@ -2458,6 +2463,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7136009930065337683">Pelajari mode Samaran lebih lanjut</translation>
 <translation id="7138472120740807366">Metode pengiriman</translation>
 <translation id="7139892792842608322">Baki Utama</translation>
+<translation id="7140087718106278457">Daftar metode pembayaran ditutup.</translation>
 <translation id="714064300541049402">Perpindahan image X sisi 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dan <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> lainnya}}</translation>
@@ -2733,6 +2739,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7755287808199759310">Orang tua dapat berhenti memblokirnya untukmu</translation>
 <translation id="7755624218968747854">Rol Utama</translation>
 <translation id="7758069387465995638">Software antivirus atau firewall mungkin memblokir sambungan.</translation>
+<translation id="7759809451544302770">Opsional</translation>
 <translation id="7760497246331667482">Musik reggae &amp; karibia</translation>
 <translation id="776110834126722255">Tidak digunakan lagi</translation>
 <translation id="7761159795823346334">Izinkan kamera?</translation>
@@ -2978,6 +2985,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8381674639488873545">Tagihan ini dapat hanya satu kali atau berulang, dan mungkin tidak ditampilkan dengan jelas. <ph name="BEGIN_LINK" />Tetap tampilkan<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Berbagi dari <ph name="ORIGIN_NAME" /> ke <ph name="VM_NAME" /> telah diblokir oleh kebijakan administrator</translation>
 <translation id="8396522675989118466">Ini adalah kode <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Metode pembayaran yang tersedia untuk diisi dengan gestur sentuh terbuka sepenuhnya.</translation>
 <translation id="8398790343843005537">Temukan ponsel Anda</translation>
 <translation id="8405579342203358118">Kelola info apa saja yang Anda sinkronkan di setelan Chrome</translation>
 <translation id="8406071103346257942">berhenti menggunakan kunci layar untuk mengisi sandi</translation>
@@ -3136,6 +3144,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8830320733681313421">Kartu Pos Hagaki</translation>
 <translation id="8834380158646307944">Tombol Tutup jendela Samaran, tekan Enter untuk menutup semua jendela Samaran yang saat ini terbuka</translation>
 <translation id="883848425547221593">Bookmark Lain</translation>
+<translation id="8842351563145134519">Metode pembayaran yang tersedia untuk diisi dengan gestur sentuh terbuka setengah.</translation>
 <translation id="884264119367021077">Alamat pengiriman</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Tidak ditemukan mekanisme pembatalan.</translation>

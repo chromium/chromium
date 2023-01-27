@@ -50,7 +50,6 @@
 <translation id="3984746313391923992">Your organisation requires you to stay signed out of Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome does not have access to your photos or videos. Enable access in iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="417201473131094001">Not supported on Chrome Canary</translation>
-<translation id="4192781968753717021">This password was found in a data breach. Google Password Manager recommends changing your password now.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> was using Chrome and left bookmarks, passwords and other settings on this device.</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="4249068189593983585">Chrome tip. For more tab options, touch and hold the Show Tabs button in the toolbar, which is at the bottom or top of your screen.</translation>
@@ -85,6 +84,7 @@
 <translation id="6634107063912726160">When you sign out, Chrome won't sync any new data to your Google Account. Data previously synced stays in the account.</translation>
 <translation id="6648150602980899529">You are signing in with an account managed by <ph name="DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
+<translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
 <translation id="6822673484890854830">Chrome couldn't check all passwords. Try again later.</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="701356708427365932">Get to know the new Chrome menu</translation>

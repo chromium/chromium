@@ -95,6 +95,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> – 1 karta}few{<ph name="GROUP_TITLE" /> – # karty}many{<ph name="GROUP_TITLE" /> – # kart}other{<ph name="GROUP_TITLE" /> – # karty}}</translation>
 <translation id="1082214733466244292">Administrator zablokował niektóre funkcje tego urządzenia</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> chce przywrócić ustawienia Chrome do wartości domyślnych. Spowoduje to zresetowanie strony głównej, strony nowej karty i wyszukiwarki oraz wyłączenie rozszerzeń i odpięcie wszystkich kart. Zostaną też wyczyszczone dane tymczasowe i znajdujące się w pamięci podręcznej – w tym pliki cookie oraz treści i dane stron.</translation>
+<translation id="1082725763867769612">Pliki offline</translation>
 <translation id="1084096383128641877">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="DOMAIN" />. Aby uniemożliwić innym osobom dostęp do konta w serwisie <ph name="DOMAIN_LINK" />, usuń je lub zmień do niego hasło.</translation>
 <translation id="1084288067399862432">Zmieniono przejęte hasło.
 
@@ -1888,6 +1889,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2672142220933875349">Nieprawidłowy plik CRX. Nie udało się go rozpakować.</translation>
 <translation id="2673135533890720193">Odczytywanie historii przeglądania</translation>
 <translation id="2674764818721168631">Wyłączono</translation>
+<translation id="2676492189600898281">Prześlij opinię o autouzupełnianiu</translation>
 <translation id="2678063897982469759">Włącz ponownie</translation>
 <translation id="2678100101831051676">Nie udało się przesłać treści.</translation>
 <translation id="268053382412112343">Hi&amp;storia</translation>
@@ -3152,6 +3154,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3823310065043511710">Do korzystania z Linuksa zalecane jest co najmniej <ph name="INSTALL_SIZE" /> wolnego miejsca.</translation>
 <translation id="3824621460022590830">Token rejestrowania urządzenia jest nieprawidłowy. Skontaktuj się z właścicielem lub administratorem urządzenia. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamiętaj mój wybór w przypadku tego typu plików: <ph name="FILE_TYPES" />}few{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}many{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}other{Zapamiętaj mój wybór w przypadku tych typów plików: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Sygnalizuj alerty aplikacji, pokazując kropkę na ich ikonach</translation>
 <translation id="3826071569074535339">Zezwolono na używanie czujników ruchu</translation>
 <translation id="3826440694796503677">Administrator wyłączył możliwość dodania większej liczby kont Google</translation>
 <translation id="3827774300009121996">&amp;Pełny ekran</translation>
@@ -3407,6 +3410,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Wróć do ekranu głównego</translation>
 <translation id="4048384495227695211">Pokaż plik <ph name="FILE_NAME" /> w folderze</translation>
+<translation id="404894744863342743">Gdy skończysz korzystać z pobranego pliku, usuń go, aby Twoje hasła nie były widoczne dla innych osób używających tego urządzenia.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt jest niedostępny. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adres e-mail powiązany z kontem Google tej osoby.}few{# kontakty są niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}many{# kontaktów jest niedostępnych. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}other{# kontaktu jest niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}}</translation>
 <translation id="4050225813016893843">Metoda uwierzytelniania</translation>
 <translation id="4050534976465737778">Dopilnuj, by obydwa urządzenia były odblokowane, znajdowały się blisko siebie i miały włączony Bluetooth. Jeśli chcesz coś udostępnić Chromebookowi, którego nie masz w kontaktach, upewnij się, że ma włączoną Widoczność w pobliżu (tę opcję włącza się na pasku stanu). <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -4470,6 +4474,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5063480226653192405">Wykorzystanie</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Zarządzaj bezpiecznym serwerem DNS w ustawieniach Chrome OS</translation>
+<translation id="5066160542186949327">Przenieś do innego folderu</translation>
 <translation id="5067399438976153555">Zawsze włączony</translation>
 <translation id="5067867186035333991">Pytaj, gdy witryna <ph name="HOST" /> chce mieć dostęp do mikrofonu</translation>
 <translation id="5068553687099139861">pokazać hasła</translation>
@@ -5582,6 +5587,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6087746524533454243">Szukasz strony z informacjami o przeglądarce? Wejdź na</translation>
 <translation id="6087960857463881712">Niesamowita twarz</translation>
 <translation id="608912389580139775">Aby dodać tę stronę do listy Do przeczytania, kliknij ikonę Zakładka</translation>
+<translation id="6090760257419195752">Zamknięte ostrzeżenia</translation>
 <translation id="6091761513005122595">Udział został podłączony.</translation>
 <translation id="6093803049406781019">Usuń profil</translation>
 <translation id="6093888419484831006">Anulowanie aktualizacji...</translation>
@@ -7148,6 +7154,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432">Nie udało się pobrać pliku <ph name="FILE_NAME" /></translation>
 <translation id="7551643184018910560">Przypnij do półki</translation>
+<translation id="7552658769580484674">Prześlij opinię o autouzupełnianiu</translation>
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
 <translation id="7553012839257224005">Sprawdzam kontener Linuksa</translation>
 <translation id="7553242001898162573">Wpisz hasło</translation>

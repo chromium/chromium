@@ -314,6 +314,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1682696192498422849">La vora curta primer</translation>
 <translation id="168693727862418163">No s'ha pogut validar el valor d'aquesta política comparant-lo amb l'esquema i, per tant, s'ignorarà.</translation>
 <translation id="168841957122794586">El certificat de servidor conté una clau criptogràfica dèbil.</translation>
+<translation id="1689333818294560261">Àlies</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Com pots gestionar les teves dades<ph name="END_BOLD" />: Chrome suprimeix automàticament els temes que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que reaparegui un tema a la llista. També pots bloquejar els temes que no vulguis que Chrome comparteixi amb els llocs web i desactivar els temes d'anuncis en qualsevol moment a la configuració de Chrome.</translation>
 <translation id="1697532407822776718">Ja estàs a punt!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2430968933669123598">Gestiona el Compte de Google: prem Retorn per gestionar la teva informació, privadesa i seguretat al Compte de Google</translation>
 <translation id="2436186046335138073">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Encunyació quàdruple a la dreta</translation>
+<translation id="2441854154602066476">Formes de pagament que es poden emplenar amb un toc. El teclat està amagat.</translation>
 <translation id="2448295565072560657">Perifèrics connectats a aquest dispositiu mentre tens la sessió iniciada</translation>
 <translation id="2450021089947420533">Recorreguts</translation>
 <translation id="2463739503403862330">Emplena</translation>
@@ -776,6 +778,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2916038427272391327">Tanca altres programes</translation>
 <translation id="2918922650248459053">Activitats subaquàtiques i busseig</translation>
 <translation id="2922350208395188000">No es pot comprovar el certificat del servidor.</translation>
+<translation id="292371311537977079">Configuració de Chrome</translation>
 <translation id="2925673989565098301">Mètode d'entrega</translation>
 <translation id="2928905813689894207">Adreça de facturació</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> més}}</translation>
@@ -1145,6 +1148,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3815434930383843058">8 x 12 polzades</translation>
 <translation id="3816482573645936981">Valor (substituït)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">El teu navegador està gestionat per <ph name="BROWSER_DOMAIN" /> i el teu perfil està gestionat per <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Si feu servir un servidor intermediari...</translation>
 <translation id="3826050100957962900">Inici de sessió de tercers</translation>
@@ -1575,6 +1579,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4880827082731008257">Cerca a l'historial</translation>
 <translation id="4881695831933465202">Obre</translation>
 <translation id="4881808915112408168">24 x 31,5 polzades</translation>
+<translation id="4882314601499260499">No hi ha cap política de l'usuari aplicada. Per afegir polítiques de l'usuari, la teva organització ha de <ph name="LINK_BEGIN" />verificar el teu domini<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Paga amb <ph name="CARD_DETAIL" /> en tramitar la compra.</translation>
 <translation id="4887406273302438710">Protegeix les contrasenyes amb Windows Hello</translation>
 <translation id="4888600795924685526">Estudi d'idiomes estrangers</translation>
@@ -2459,6 +2464,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="7136009930065337683">Més informació sobre el mode d'incògnit</translation>
 <translation id="7138472120740807366">Mètode d'entrega</translation>
 <translation id="7139892792842608322">Safata principal</translation>
+<translation id="7140087718106278457">La llista de formes de pagament està tancada.</translation>
 <translation id="714064300541049402">Desplaçament a l'eix X del costat 2 de la imatge</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}other{<ph name="PAYMENT_METHOD_PREVIEW" /> i <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> més}}</translation>
@@ -2736,6 +2742,7 @@ Detalls addicionals:
 <translation id="7755287808199759310">El teu pare o mare et poden desbloquejar el lloc</translation>
 <translation id="7755624218968747854">Corró principal</translation>
 <translation id="7758069387465995638">És possible que l'antivirus o el tallafoc hagi bloquejat la connexió.</translation>
+<translation id="7759809451544302770">Opcional</translation>
 <translation id="7760497246331667482">Música reggae i del Carib</translation>
 <translation id="776110834126722255">Obsoleta</translation>
 <translation id="7761159795823346334">Vols permetre l'accés a la càmera?</translation>
@@ -2981,6 +2988,7 @@ Detalls addicionals:
 <translation id="8381674639488873545">Aquests càrrecs poden ser únics o recurrents i és possible que no s'indiquin d'una manera evident. <ph name="BEGIN_LINK" />Mostra igualment<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">La política de l'administrador no permet compartir contingut de <ph name="ORIGIN_NAME" /> a <ph name="VM_NAME" /></translation>
 <translation id="8396522675989118466">És el codi de <ph name="NUMBER_OF_DIGITS" /> dígits que hi ha a la <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Les formes de pagament que es poden emplenar amb un toc s'han obert a alçada completa.</translation>
 <translation id="8398790343843005537">Troba el teu telèfon</translation>
 <translation id="8405579342203358118">Gestiona la informació que sincronitzes a la configuració de Chrome</translation>
 <translation id="8406071103346257942">deixar d'utilitzar el bloqueig de pantalla per emplenar les contrasenyes</translation>
@@ -3141,6 +3149,7 @@ Detalls addicionals:
 <translation id="8830320733681313421">Postal Hagaki</translation>
 <translation id="8834380158646307944">Botó Tanca les finestres d'incògnit: prem Retorn per tancar totes les finestres d'incògnit que estan obertes en aquests moments</translation>
 <translation id="883848425547221593">Altres adreces d'interès</translation>
+<translation id="8842351563145134519">Les formes de pagament disponibles, que es poden emplenar amb un toc, s'han obert a mitja alçada.</translation>
 <translation id="884264119367021077">Adreça d’enviament</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">No s'ha trobat cap mecanisme de revocació.</translation>

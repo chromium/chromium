@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">Аккаунттан чыгып кеттиңиз</translation>
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
-<translation id="1434356225517321998">Серепчиңиз башкарылып жатат. <ph name="BEGIN_LINK" />Чоо-жайы<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
 <translation id="1450170672351507823">Стандарттуу коргоо күйүк. Анын ордуна Жакшыртылган коргоону колдонуңуз.</translation>
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">Даректер</translation>
 <translation id="3943492037546055397">Сырсөздөр</translation>
 <translation id="3959736869653157332">Меню → Жаңы жашыруун өтмөк</translation>
-<translation id="3964173450954943920">Эмнени шайкештирүү керек экенин <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> ар дайым тандай аласыз. Издөө жана башка Google кызматтарын жекелештирүү үчүн Google таржымалыңызды колдонушу мүмкүн.</translation>
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3968505803272650567">Кызыккан нерселерди башкаруу</translation>
 <translation id="3989635538409502728">Чыгуу</translation>
@@ -1035,6 +1033,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8680787084697685621">Аккаунтка кирүү чоо-жайлары эскирип калды.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Өтмөктү жабуу}other{Өтмөктөрдү жабуу}}</translation>
 <translation id="8706588385081740091">Сырсөздөр</translation>
+<translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8717864919010420084">Шилтемени көчүрүү</translation>
 <translation id="8721297211384281569">Куралдар менюсу</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>

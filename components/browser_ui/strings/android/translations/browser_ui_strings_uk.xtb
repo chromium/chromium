@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2717722538473713889">Електронні адреси</translation>
 <translation id="2750481671343847896">Сайти можуть показувати підказки щодо входу від сервісів ідентифікації</translation>
+<translation id="2779966372261694284">Ви вийдете з облікового запису на цьому сайті</translation>
 <translation id="2822354292072154809">Скинути всі дозволи сайту <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Попередня композиція</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Заборонити сайтам доступ до даних і пристрою віртуальної реальності</translation>
 <translation id="6447842834002726250">Файли cookie</translation>
-<translation id="6453641458248223456">Змінюйте масштаб на сторінці з головного меню</translation>
 <translation id="6467852467360539617">Очистити дані та скинути дозволи</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Запитувати, перш ніж дозволити сайтам використовувати мікрофон (рекомендується)</translation>
 <translation id="7000754031042624318">Вимкнено в налаштуваннях Android</translation>
 <translation id="7016516562562142042">Дозволено для поточної пошукової системи</translation>
+<translation id="702275896380648118">Цей сайт визначає теми, які вас цікавлять, а потім пропонує свою рекламу на інших сайтах. Він також використовує ваші теми оголошень із Chrome, щоб показувати вам релевантнішу рекламу.</translation>
 <translation id="702463548815491781">Рекомендується, коли ввімкнено TalkBack або кнопковий доступ</translation>
 <translation id="7053983685419859001">Блокувати</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Вибрано 1}one{Вибрано #}few{Вибрано #}many{Вибрано #}other{Вибрано #}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7667547420449112975">Чарівник країни Оз</translation>
 <translation id="7684642910516280563">Заборонити сайту використовувати сторонні файли cookie</translation>
-<translation id="7690549345586282764">Показувати масштаб</translation>
 <translation id="7719367874908701697">Масштабування сторінки</translation>
 <translation id="7781829728241885113">Учора</translation>
 <translation id="7791543448312431591">Додати</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Блокувати файли cookie з конкретного сайту.</translation>
 <translation id="8959122750345127698">Веб-сторінка <ph name="URL" /> недоступна</translation>
 <translation id="8986362086234534611">Забути</translation>
-<translation id="900095568014372589">Зменшуйте або збільшуйте стандартний розмір тексту й зображень на сайтах</translation>
+<translation id="8990043154272859344">Ви вийдете з облікового запису на всіх сайтах</translation>
 <translation id="9019902583201351841">Керується батьками</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Цей сайт належить до групи, учасники якої можуть бачити ваші дії. Групу визначив сайт-власник <ph name="FPS_OWNER" />.</translation>

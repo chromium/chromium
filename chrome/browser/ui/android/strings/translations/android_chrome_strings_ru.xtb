@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">Отключить</translation>
 <translation id="1045899828449635435">Удалить эти данные?</translation>
 <translation id="1049743911850919806">Инкогнито</translation>
+<translation id="1058669287135776095">Действие выполнено в офлайн-режиме. Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="10614374240317010">Сайты, пароли для которых не сохраняются</translation>
 <translation id="1062628064301375934">Помогите нам обеспечивать конфиденциальность в интернете</translation>
 <translation id="107147699690128016">Если вы сделаете это, файл может открыться в другом приложении и нанести вред устройству.</translation>
@@ -868,6 +869,7 @@
 <translation id="5780792035410621042">Чтобы копировать пароли, включите на устройстве блокировку экрана.</translation>
 <translation id="5793665092639000975">Использовано: <ph name="SPACE_USED" /> из <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Просмотр страниц и поиск</translation>
+<translation id="5797949256525811424">Тема заблокирована</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# час назад}one{# час назад}few{# часа назад}many{# часов назад}other{# часа назад}}</translation>
 <translation id="5810288467834065221">© Google LLC, <ph name="YEAR" />. Все права защищены.</translation>
 <translation id="5813552293717797987">Этим браузером управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
@@ -1195,6 +1197,7 @@
 <translation id="7485033510383818941">Чтобы обновить ленту, потяните страницу вниз</translation>
 <translation id="749294055653435199">Google Объектив недоступен на этом устройстве.</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (последнее обновление: <ph name="TIME_SINCE_UPDATE" />)</translation>
+<translation id="7497755084107113646">Эта тема снова может быть рекомендована</translation>
 <translation id="7498271377022651285">Подождите…</translation>
 <translation id="7502234197872745058">Чтобы выйти из аккаунта Google на всех сайтах, <ph name="BEGIN_LINK1" />выйдите из Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Обновления недоступны</translation>
@@ -1489,6 +1492,7 @@
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# видеофайл}one{# видеофайл}few{# видеофайла}many{# видеофайлов}other{# видеофайла}}</translation>
 <translation id="9042893549633094279">Конфиденциальность и безопасность</translation>
 <translation id="9050666287014529139">Кодовая фраза</translation>
+<translation id="9055497320631373736">Этот сайт снова может рекомендовать рекламу</translation>
 <translation id="9063523880881406963">Выключить полную версию сайта</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9065383040763568503">Маловажные данные, например относящиеся к сайтам, которые вы редко посещаете или на которых не сохранили настройки.</translation>

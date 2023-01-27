@@ -11,6 +11,7 @@
 <translation id="1002439864875515590">Si cette règle est définie sur une chaîne vide ou n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> n'affiche pas d'option de saisie semi-automatique lors de la procédure de connexion de l'utilisateur.
       Si cette règle est définie sur une chaîne représentant un nom de domaine, <ph name="PRODUCT_OS_NAME" /> affiche une option de saisie semi-automatique lors de la procédure de connexion. Ceci permettra à l'utilisateur de ne saisir que son nom d'utilisateur sans préciser l'extension du nom de domaine.  L'utilisateur est autorisé à écraser cette extension du nom de domaine.
       Si la valeur de la règle n'est pas un domaine valide, la règle n'est pas appliquée.</translation>
+<translation id="1002829167638728809">Autoriser la création de rapports sur les données liées à la fiabilité du domaine</translation>
 <translation id="1004590217607585595">Paramètres de gestion de l'application Web</translation>
 <translation id="1006218396155867129">Désactiver le transfert de fichiers vers et depuis l'hôte à distance pour les utilisateurs connectés à distance</translation>
 <translation id="1007149936182752368">Désactiver la modification des favoris</translation>
@@ -2163,6 +2164,7 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélec
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="305106159605171619">La réduction user-agent est désactivée et ne peut pas être activée par les tests en conditions réelles ni la phase d'évaluation.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3060177910182947411">Délai d'inactivité de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
 <translation id="3066446511111537292">Permet aux utilisateurs affiliés de cet appareil d'utiliser le téléchargement indépendant adb</translation>
@@ -2205,6 +2207,7 @@ Ce comportement est identique à celui de <ph name="POLICY_VALUE_PRIMARY_ACCOUNT
 <translation id="309416443108680956">Indique ce qu'il se passe lorsqu'un utilisateur qui s'authentifie au moyen d'un jeton de sécurité (carte à puce, par exemple) retire ce jeton alors qu'il est connecté. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> : rien ne se passe. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> : l'écran se verrouille jusqu'à ce que l'utilisateur s'authentifie à nouveau. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> : la session prend fin, et l'utilisateur est déconnecté. Si cette règle n'est pas configurée, elle est définie par défaut sur <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Liste des plug-ins activés</translation>
 <translation id="309885424548342662">Activer l'authentification cloud Microsoft®</translation>
+<translation id="310020160141550490">Intervalle d'affichage des images de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="3101035417394748390">La taille maximale, en octets, qui peut être transférée entre le client et l'hôte via la synchronisation du presse-papiers</translation>
 <translation id="3101501961102569744">Sélectionner le mode de spécification des paramètres de serveur proxy</translation>
 <translation id="3101709781009526431">Date et heure</translation>
@@ -2787,6 +2790,13 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
+<translation id="359203136434560942">Configure la liste des images que l'économiseur d'écran doit afficher pour l'écran de verrouillage.
+
+Chaque élément de la liste renvoie à une image que l'économiseur d'écran doit afficher. L'élément doit inclure une URL vers l'image et la valeur de hachage SHA-256 du fichier image à des fins de vérification. L'image doit être au format JPEG. L'appareil <ph name="PRODUCT_OS_NAME" /> téléchargera ces images et conservera un cache local de ces références.
+
+Cette règle n'aura aucune incidence si la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".
+
+Si cette règle n'est pas configurée ou si la liste ne contient aucune référence d'image valide, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage, quelle que soit la valeur définie dans la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
 <translation id="3596112486106491038">Activer l'accès par ligne de commande aux machines virtuelles</translation>
 <translation id="3603469950773500315">Permet d'atténuer les contrôles <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" />. Les extensions peuvent ainsi conserver un comportement compatible, et <ph name="PRODUCT_NAME" /> peut envoyer les en-têtes spécifiés sans contrôles <ph name="CORS" />.
@@ -3085,6 +3095,16 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3891175633496805812">Désactiver le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
 <translation id="3891357445869647828">Activer JavaScript</translation>
 <translation id="3891769546914233112">Possibilité d'imprimer le PDF en tant qu'image</translation>
+<translation id="389527805641080362">Cette règle contrôle la valeur de l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> (<ph name="IPP_PROTOCOL" />) dans les tâches d'impression.
+
+ Définir cette règle permet de transmettre une valeur <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> supplémentaire aux tâches d'impression envoyées aux imprimantes <ph name="IPP_PROTOCOL" />. Le membre <ph name="CLIENT_TYPE_IPP_ATTRIBUTE" /> de la valeur <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ajoutée sera défini sur <ph name="CLIENT_TYPE_OTHER" />. Le membre <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> de la valeur <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> ajoutée sera défini sur la valeur de la règle après le remplacement des variables d'espaces réservés. Les variables d'espaces réservés acceptées sont <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" /> et <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. Les variables d'espaces réservés non acceptées ne seront pas remplacées.
+
+ La valeur obtenue après le remplacement des variables d'espaces réservés est considérée comme valide si elle ne comporte pas plus de 127 caractères et ne contient que les caractères suivants : lettres minuscules et majuscules de l'alphabet anglais, chiffres, tirets ("-"), points (".") et traits de soulignement ("_").
+
+ Notez que, pour des raisons de confidentialité, cette règle ne s'applique que lorsque la connexion à l'imprimante est sécurisée (schéma d'URI <ph name="IPPS_SCHEME" />) et que l'utilisateur qui envoie la tâche d'impression est affilié. Notez également que cette règle ne s'applique qu'aux imprimantes compatibles avec <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />.
+
+ Si la règle n'est pas configurée, ou si elle est définie sur une valeur vide ou non valide, aucune valeur <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> supplémentaire ne sera ajoutée aux requêtes de tâches d'impression.
+</translation>
 <translation id="3897218615484393758">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion sur l'écran de verrouillage</translation>
 <translation id="3897860452756794695">Le nouveau comportement offsetParent sera utilisé.</translation>
 <translation id="3898345958122666461">Désactiver NTLMv2</translation>
@@ -3325,12 +3345,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Tous les ensembles fournis par cette règle doivent être des ensembles internes valides. Si ce n'est pas le cas, une erreur est renvoyée.
 
       Cette règle n'est disponible que sur les instances Windows qui sont associées à un domaine <ph name="MS_AD_NAME" />, les instances Windows 10 Pro ou Windows Enterprise pour lesquelles la gestion des appareils est activée, ou les instances macOS qui sont gérées via MDM ou associées à un domaine via MCX.</translation>
-<translation id="4135805680586226327">Cette règle contrôle la refactorisation récente des API graphiques 3D dans le plug-in PPAPI.
-
-La migration n'affecte que les détails de l'implémentation interne et ne devrait modifier aucun comportement. Toutefois, cette règle peut être utilisée si des applications PPAPI ne fonctionnent pas comme prévu.
-
-Si cette règle n'est pas configurée ou si elle est activée, le navigateur décide quelle implémentation est utilisée.
-Si cette règle est désactivée, le navigateur utilise l'ancienne implémentation jusqu'à ce que la règle expire.</translation>
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
@@ -3360,14 +3374,6 @@ Si cette règle est désactivée, le navigateur utilise l'ancienne implémentati
       Si elle est désactivée, aucune règle n'est ignorée en raison de sa source. Les règles ne sont ignorées que s'il existe un conflit et que celles-ci n'ont pas la plus haute priorité.
 
       Si cette règle est définie à partir d'une source cloud, elle ne peut pas cibler un utilisateur en particulier.</translation>
-<translation id="4166865262840412074">Par défaut, cette règle autorise le clustering d'agents selon l'origine.
-
-      L'en-tête HTTP Origin-Agent-Cluster permet de spécifier si un document est isolé dans un cluster d'agents selon l'origine ou selon le site. Ce choix a des implications sur la sécurité, car le clustering d'agents selon l'origine permet d'isoler des documents en fonction de l'origine. Du point de vue du développeur, cela se traduit par l'impossibilité de configurer l'accesseur document.domain.
-
-      Le comportement par défaut (aucune configuration de l'en-tête Origin-Agent-Cluster) dans M106 n'est plus une isolation selon le site, mais selon l'origine. Si cette règle est activée ou qu'elle n'est pas configurée, le navigateur applique ce nouveau comportement par défaut à partir de cette version. Si elle est désactivée, ce changement est annulé et les documents sans en-têtes Origin-Agent-Cluster sont affectés aux clusters d'agents selon le site. L'accesseur document.domain reste donc configurable par défaut. Cela correspond à l'ancien comportement.
-
-      Pour en savoir plus, consultez la page https://developer.chrome.com/blog/immutable-document-domain/.
-      </translation>
 <translation id="416817811987180750">Les utilisateurs auront accès à la fonctionnalité Liste d'achats.</translation>
 <translation id="4169094969938998854">Ne pas autoriser le verrouillage de l'écran</translation>
 <translation id="4169692397912242417">Permet d'activer la fonctionnalité d'accessibilité de commentaires audio sur l'écran de connexion.
@@ -3787,6 +3793,11 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si cette règle n'est pas configurée, aucune sélection automatique n'est effectuée pour aucun site.</translation>
 <translation id="4611983465824842867">Ne pas afficher d'avertissements ni désactiver la saisie automatique sur les formulaires non sécurisés</translation>
 <translation id="4615003180013429835">Mode d'analyse de la liste des sites</translation>
+<translation id="4616586760991368127">Configure l'intervalle d'affichage des images, en secondes, lorsque l'économiseur d'écran de l'écran de verrouillage doit afficher plusieurs images.
+
+Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la valeur par défaut (60 secondes).
+
+Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="4617338332148204752">Ignorer la vérification des balises Meta dans <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Fonctionnalité NewBaseUrlInheritanceBehavior disponible</translation>
 <translation id="4624006912948309924">Permet de définir quels identifiants d'appli <ph name="PRODUCT_OS_NAME" /> affiche en tant qu'applis épinglées dans la barre du Lanceur d'applis. Notez que les utilisateurs ne peuvent pas les modifier.
@@ -3922,6 +3933,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
           Si cette règle n'est pas définie, l'audio mono est désactivé au départ, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="4768446404233019970">Activer les suites de chiffrement 3DES dans TLS</translation>
 <translation id="4770334626033858263">Configuration utilisée pour générer et valider le code d'accès parental.</translation>
+<translation id="4772431363738215349">URL depuis laquelle l'image de l'économiseur d'écran peut être téléchargée.</translation>
 <translation id="4773997835955617342">Modifie la configuration suggérée de <ph name="KRB5_CONFIG" /> pour les nouvelles demandes créées manuellement.
 
       Si cette règle est activée, la valeur de la règle "KerberosCustomPrefilledConfig" est appliquée en tant que configuration suggérée et figure dans la section "Paramètres avancés" de la boîte de dialogue d'authentification Kerberos.
@@ -4207,8 +4219,11 @@ Si cette règle est désactivée ou n'est pas configurée, l'API window.webkitSt
 <translation id="5082296146261894974">Permet aux utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5082572440690475059">Autoriser l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
+<translation id="5087932158260897375">Si cette règle est définie sur "False", les rapports sur les données de diagnostic de fiabilité du domaine sont désactivés et aucune donnée n'est envoyée à Google.
+Si cette règle est définie sur "True" ou si elle n'est pas définie, les rapports sur les données de diagnostic de fiabilité du domaine suivront le comportement de MetricsReportingEnabled pour <ph name="PRODUCT_NAME" /> ou de DeviceMetricsReportingEnabled pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
 <translation id="5091315650312105069">Autoriser l'authentification <ph name="BASIC_AUTH" /> pour HTTP</translation>
+<translation id="5093603777978346818">Ne pas activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
 <translation id="5099239365323299669">À partir de M106, le quota persistant ne sera plus accepté. Cette règle réactivera la fonctionnalité de quota persistant jusqu'à M107.
 
       Si cette règle est configurée sur activée, webkitRequestFileSystem de type persistant fonctionnera avec un quota persistant.
@@ -4393,6 +4408,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle n'est pas configurée, aucune restriction n'est appliquée, et l'utilisateur peut se connecter quelle que soit la version de <ph name="PRODUCT_NAME" />.
 
       Dans le cas présent, le terme "version" peut désigner une version exacte telle que "61.0.3163.120" ou le préfixe d'une version tel que "61.0".  </translation>
+<translation id="5247584184349816217">Activer l'économiseur d'écran pour l'écran de verrouillage.</translation>
 <translation id="5247973380763021389">Empêcher les règles cloud utilisateur d'ignorer les règles cloud machine.</translation>
 <translation id="5249453807420671499">Les utilisateurs peuvent ajouter des comptes Kerberos</translation>
 <translation id="5249555581286638799">Active le mode Haute efficacité</translation>
@@ -4496,6 +4512,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si cette règle est définie sur "False", le transfert de port dans les conteneurs Crostini sera désactivé.</translation>
 <translation id="538108065117008131">Autoriser <ph name="PRODUCT_FRAME_NAME" /> à gérer les types de contenus suivants.</translation>
+<translation id="5382211603538487131">Hachage SHA-256 de l'image.</translation>
 <translation id="538768040137709073">Permet d'activer la fonctionnalité de presse-papiers partagé, qui donne la possibilité aux utilisateurs d'envoyer du texte entre un ordinateur de bureau Chrome et un appareil Android lorsque la synchronisation est activée et que l'utilisateur est connecté.
 
           Si cette règle est définie sur "True", la possibilité d'envoyer du texte entre deux appareils est activée pour les utilisateurs de Chrome.
@@ -4807,6 +4824,15 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
       Pour les formats d'URL spécifiques, cette règle peut être remplacée par les règles <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> et <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Cette règle affecte uniquement les opérations contrôlées par l'autorisation accordée à un site d'utiliser le presse-papiers. Elle n'affecte pas les écritures nettoyées dans le presse-papiers ni les opérations copier et coller sécurisées.</translation>
+<translation id="565149060065571736">Permet de configurer l'économiseur d'écran de l'utilisateur pour l'écran de verrouillage.
+
+Si cette règle est définie sur "True", l'appareil <ph name="PRODUCT_OS_NAME" /> affiche un économiseur d'écran lorsque l'écran de verrouillage est actif.
+
+Si cette règle est définie sur "False" ou n'est pas configurée, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage.
+
+L'économiseur d'écran de l'utilisateur affiche les images référencées par la règle <ph name="SCREENSAVER_IMAGES_POLICY_NAME" />. Si la règle <ph name="SCREENSAVER_IMAGES_POLICY_NAME" /> n'est pas définie, ou si elle est définie sur une liste vide ou sans images valides, l'économiseur d'écran ne s'affiche pas pour l'écran de verrouillage.
+
+Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur d'écran et l'intervalle d'affichage des images avec les règles <ph name="SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> et <ph name="SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivement. Si l'une de ces règles n'est pas définie, les valeurs par défaut sont utilisées à la place.</translation>
 <translation id="5652250453612826983">Permet de contrôler les règles de supervision parentale qui ne sont appliquées qu'aux comptes utilisateur d'enfants.
       Ces règles ne sont pas définies dans la console d'administration, mais configurées directement par le serveur d'API pour enfants.</translation>
 <translation id="5654682237531873653">Si cette règle est activée, le correcteur orthographique l'est également, et les utilisateurs ne peuvent pas le désactiver. Sur <ph name="MS_WIN_NAME" />, <ph name="PRODUCT_OS_NAME" /> et <ph name="LINUX_OS_NAME" />, il est possible d'ajouter et de supprimer des langues au cas par cas pour le correcteur orthographique. Les utilisateurs peuvent ainsi désactiver le correcteur en supprimant toutes les langues. Afin d'éviter ce cas de figure, utilisez <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> pour forcer l'ajout de langues spécifiques au correcteur orthographique.
@@ -5505,6 +5531,7 @@ Si elle est désactivée, le navigateur utilisera l'ancienne implémentation jus
         Ajoutez des expressions régulières d'URL à |url_list| pour autoriser les URL correspondant à une des expressions régulières de la liste.
         Pour autoriser une application, ajoutez-la à |app_list| en indiquant son |app_id| et son |app_type|.
        </translation>
+<translation id="6334522128949184555">Économiseur d'écran de l'utilisateur activé.</translation>
 <translation id="6337782882143073193">Cette règle est obsolète (veuillez utiliser à la place la règle <ph name="URL_BLOCKLIST_POLICY_NAME" />).
 
       Elle permet de désactiver les schémas de protocoles répertoriés dans <ph name="PRODUCT_NAME" />.
@@ -6302,6 +6329,7 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="7046997898355294677">Afficher les notifications de confidentialité jusqu'à leur suppression par l'utilisateur</translation>
 <translation id="7047495632846973438">Indique si la règle display-capture permissions-policy est sélectionnée ou ignorée.</translation>
 <translation id="7055022222176591388">Interdire le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
+<translation id="7056040036973126753">Les données sur la fiabilité du domaine peuvent être envoyées à Google, en fonction des règles sur les métriques utilisateur de Chrome (UMA, User Metrics Analysis)</translation>
 <translation id="7062803946218028349">Autoriser l'activation de Phone Hub</translation>
 <translation id="7066292150801784098">Désactiver les interactions des utilisateurs distants avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="706669471845501145">Autoriser les sites à afficher des notifications sur le bureau</translation>
@@ -7174,6 +7202,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
 <translation id="7919665519909231619">Autoriser l'activation de la fonctionnalité Liste d'achats</translation>
 <translation id="7922358664346625612">Laisser le dernier onglet ouvert dans Chrome.</translation>
+<translation id="7923734850959347297">Paramètres de l'économiseur d'écran</translation>
 <translation id="7924321157669251966">Pourcentage de luminosité de l'écran lorsque l'appareil fonctionne sur batterie.</translation>
 <translation id="7925224837072026018">Si cette règle est activée, les extensions ou applications Android sont autorisées à accéder aux clés d'entreprise. Ces clés sont destinées à une utilisation en entreprise uniquement si elles sont générées à l'aide de l'API chrome.enterprise.platformKeys sur un compte géré. Les accès réciproques entre clés d'entreprise et extensions ou applications Android ne peuvent pas être accordés ni supprimés par les utilisateurs.
 
@@ -7262,6 +7291,11 @@ Si ce paramètre est désactivé et que les connexions UDP sortantes sont filtr�
 <translation id="7992613144342460685">Accorder l'autorisation de positionnement des fenêtres sur ces sites</translation>
 <translation id="7994034037344330969">Spécifie la liste des domaines d'applis Web tiers autorisés à utiliser l'API Desk pour contrôler les bureaux ChromeOS. Ces formats d'URL doivent respecter le format défini pour la propriété "matches" dans https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Numérisation (compatible depuis la version 87)</translation>
+<translation id="799688680472213098">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
+
+Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la valeur par défaut (7 secondes).
+
+Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
 <translation id="7999023147219236247">Cette règle permet d'accorder ou non aux applis les autorisations demandées. PERMISSION_POLICY_UNSPECIFIED : la règle n'est pas configurée. Si aucune règle n'est configurée pour une autorisation à quelque niveau que ce soit, l'utilisateur peut, par défaut, accorder ou non l'autorisation demandée. PROMPT : l'utilisateur est invité à accorder ou non l'autorisation demandée. GRANT : l'autorisation demandée est accordée automatiquement. DENY : l'autorisation demandée est refusée.</translation>
 <translation id="7999336306414770162">Désactiver les rapports sur les données VPD de l'appareil</translation>
 <translation id="7999818120028621358">Activer la création de rapports sur les événements de prévention des fuites de données</translation>
@@ -8174,6 +8208,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux favoris sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
+<translation id="8855929790177853633">Source de l'image de l'économiseur d'écran de l'utilisateur.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Les utilisateurs peuvent configurer la version disponible de <ph name="PRODUCT_OS_NAME" /></translation>
@@ -8259,6 +8294,7 @@ Cette règle est un mappage des ID de configuration avec des configurations de V
 
       Cette règle sera supprimée après Chrome 84.</translation>
 <translation id="8940173892071872775">Contrôle les actions exécutées lorsque le navigateur est inactif.</translation>
+<translation id="8941673774841510404">Contrôle les paramètres de l'économiseur d'écran pour l'écran de connexion de l'appareil et l'écran de verrouillage de l'utilisateur.</translation>
 <translation id="8942616385591203339">Permet d'activer l'affichage de l'autorisation de synchronisation lors de la première connexion de l'utilisateur. Si cette autorisation n'a jamais besoin d'être montrée à l'utilisateur, cette règle doit être définie sur False.
       Si cette règle est définie sur False, l'autorisation de synchronisation n'est pas affichée.
       Si cette règle est définie sur True ou si elle n'est pas configurée, l'autorisation de synchronisation peut être affichée.</translation>
@@ -8468,6 +8504,7 @@ Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tou
 
       Dans certains cas, les possibilités de rollback réelles dépendent également du modèle d'appareil et des correctifs de vulnérabilité essentiels.</translation>
 <translation id="9123464369663964441">Autoriser les utilisateurs à ajouter des exceptions afin de permettre l'affichage de contenu mixte</translation>
+<translation id="9124770007620653639">Ne jamais envoyer de données sur la fiabilité du domaine à Google</translation>
 <translation id="9129169595075460149">Si cette règle est activée, SafeSearch est toujours activé dans la recherche Google, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, SafeSearch n'est pas appliqué d'office dans la recherche Google.</translation>

@@ -188,6 +188,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1384725838384960382">Xavfsiz toʻlovlar uchun hisob maʼlumotlarini autentifikatsiya qilish ekrani</translation>
 <translation id="1386623374109090026">Izohlar</translation>
 <translation id="1391289752476847787">Aksiya va obligatsiyalar</translation>
+<translation id="1391625539203220400">IBAN raqami shu qurilmada saqlansinmi?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hech qanday ma’lumot yubormadi.</translation>
 <translation id="1396259464226642517">Xatolik yuz berdimi? <ph name="BEGIN_LINK" />Bizga xabar qiling<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Och yashil</translation>
@@ -313,6 +314,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1682696192498422849">Avval eniga</translation>
 <translation id="168693727862418163">Bu parametr oʻz andozasiga mos tushmagani uchun inkor etiladi.</translation>
 <translation id="168841957122794586">Server sertifikati ishonchsiz kriptografik kalitga ega.</translation>
+<translation id="1689333818294560261">Nik</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Maʼlumotlar qanday boshqariladi:<ph name="END_BOLD" /> Chrome 4 haftadan eskirgan mavzularni avtomatik oʻchiradi. Takroriy tashriflar asosida mavzu roʻyxatga qayta kiritilishi mumkin. Chrome boshqa saytlarga ulashmasligi va tegishli reklama chiqmasligi uchun istalgan mavzularni Chrome sozlamalari orqali taqiqlash mumkin.</translation>
 <translation id="1697532407822776718">Tayyor!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -600,6 +602,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2430968933669123598">Google hisobini boshqarish, Google hisobingizdagi axborot, maxfiylik va xavfsizlik sozlamalarini boshqarish uchun Enter tugmasini bosing</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> saytiga “<ph name="PROTOCOL" />” kabi havolalarga ishlov berishga ruxsat berilsinmi?</translation>
 <translation id="2438874542388153331">Oʻngdan 4 ta teshik ochish</translation>
+<translation id="2441854154602066476">Toʻlov usullari roʻyxati teginganda avtomatik kiritiladi. Klaviatura yashirildi.</translation>
 <translation id="2448295565072560657">Tizimga kirganingizda bu qurilmaga tashqi qurilmalar taʼminoti biriktirilgan</translation>
 <translation id="2450021089947420533">Tarixlar</translation>
 <translation id="2463739503403862330">To‘ldirish</translation>
@@ -775,6 +778,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2916038427272391327">Boshqa dasturlarni yoping</translation>
 <translation id="2918922650248459053">Dayving va suv osti faolliklari</translation>
 <translation id="2922350208395188000">Server sertifikatini tekshirib bo‘lmadi.</translation>
+<translation id="292371311537977079">Chrome sozlamalari</translation>
 <translation id="2925673989565098301">Yetkazib berish usuli</translation>
 <translation id="2928905813689894207">To‘lov manzili</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ta}}</translation>
@@ -1140,6 +1144,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3810973564298564668">Sozlash</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Qiymat (almashtirildi)</translation>
+<translation id="3823019343150397277">IBAN (Xalqaro bank hisob raqami)</translation>
 <translation id="3823402221513322552">Brauzeringiz <ph name="BROWSER_DOMAIN" /> domenida va profilingiz <ph name="PROFILE_DOMAIN" /> domenida boshqariladi</translation>
 <translation id="382518646247711829">Agar proksi-server ishlatsangiz...</translation>
 <translation id="3826050100957962900">Tashqi xizmatga kirish</translation>
@@ -1570,6 +1575,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4880827082731008257">Qidiruv tarixi</translation>
 <translation id="4881695831933465202">Ochish</translation>
 <translation id="4881808915112408168">24 x 31.5 in</translation>
+<translation id="4882314601499260499">Hech qanday foydalanuvchi siyosati qoʻllanmadi. Foydalanuvchi siyosatini qoʻshish uchun tashkilotingiz <ph name="LINK_BEGIN" />domenni tasdiqlashi<ph name="LINK_END" /> kerak.</translation>
 <translation id="4885256590493466218">Hisob-kitob vaqtida <ph name="CARD_DETAIL" /> bilan toʻlang</translation>
 <translation id="4887406273302438710">Parollarni Windows Hello yordamida himoyalash</translation>
 <translation id="4888600795924685526">Chet tillarini oʻrganish</translation>
@@ -2453,6 +2459,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="7136009930065337683">Inkognito haqida batafsil</translation>
 <translation id="7138472120740807366">Yetkazib berish usuli</translation>
 <translation id="7139892792842608322">Asosiy tarnov</translation>
+<translation id="7140087718106278457">Toʻlov usullari roʻyxati yopiq.</translation>
 <translation id="714064300541049402">Tasvirning orqa tomondagi X oʻqidagi siljish</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}other{<ph name="PAYMENT_METHOD_PREVIEW" /> va yana <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ta}}</translation>
@@ -2730,6 +2737,7 @@ Batafsil axborot:
 <translation id="7755287808199759310">Ota-onangiz tasdiqlashi mumkin</translation>
 <translation id="7755624218968747854">Asosiy oʻram</translation>
 <translation id="7758069387465995638">Himoya devori yoki antivirus dasturi tarmoqqa ulanishni taqiqlab qo‘ygan bo‘lishi mumkin.</translation>
+<translation id="7759809451544302770">Ixtiyoriy</translation>
 <translation id="7760497246331667482">Reggi va karib musiqasi</translation>
 <translation id="776110834126722255">Eskirgan</translation>
 <translation id="7761159795823346334">Kameraga ruxsat berilsinmi?</translation>
@@ -2975,6 +2983,7 @@ Batafsil axborot:
 <translation id="8381674639488873545">To‘lov bir martalik, davomiy yoki umuman bo‘lmasligi ham mumkin. <ph name="BEGIN_LINK" />Ogohlantirish baribir chiqaversin<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> saytidan <ph name="VM_NAME" /> tizimiga ulashishni administrator taqiqlagan</translation>
 <translation id="8396522675989118466">Bu <ph name="SIDE_OF_CARD" /> tomondagi <ph name="NUMBER_OF_DIGITS" /> xonali kod</translation>
+<translation id="8398335999901363925">Teginib kiritiladigan toʻlov usullari roʻyxati toʻliq hajmda ochildi.</translation>
 <translation id="8398790343843005537">Telefonni topish</translation>
 <translation id="8405579342203358118">Chrome sozlamalari orqali sinxronlanadigan maʼlumotlarni boshqarish</translation>
 <translation id="8406071103346257942">parollarni kiritish uchun ekran qulfidan foydalanishni toʻxtatmoqchi</translation>
@@ -3135,6 +3144,7 @@ Batafsil axborot:
 <translation id="8830320733681313421">Hagaki (Ochiq xat)</translation>
 <translation id="8834380158646307944">Inkognito oynalarni yopish tugmasi, hozir ochilgan barcha Inkognito oynalarni yopish uchun Enter tugmasini bosing</translation>
 <translation id="883848425547221593">Boshqa xatcho‘plar</translation>
+<translation id="8842351563145134519">Teginib kiritiladigan toʻlov usullari roʻyxati yarim hajmda ochildi.</translation>
 <translation id="884264119367021077">Yetkazib berish manzili</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Javob mexanizmi topilmadi.</translation>

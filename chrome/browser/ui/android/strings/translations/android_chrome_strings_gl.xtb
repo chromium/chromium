@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1045899828449635435">Queres borrar tamén os datos destes sitios?</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
+<translation id="1058669287135776095">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="10614374240317010">Contrasinais que non se gardan nunca</translation>
 <translation id="1062628064301375934">Axúdanos a facer que a Web sexa máis privada</translation>
 <translation id="107147699690128016">Se cambias a extensión do ficheiro, é posible que este se abra nunha aplicación diferente e supoña un perigo para o teu dispositivo.</translation>
@@ -181,6 +182,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1995884366040846621">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá o teu nome, enderezo de correo electrónico e imaxe do perfil con este sitio. Consulta a <ph name="BEGIN_LINK1" />política de privacidade<ph name="END_LINK1" /> deste sitio.</translation>
 <translation id="2000419248597011803">Envía buscas e cookies da barra de enderezos e da caixa de busca ao motor de busca predeterminado</translation>
 <translation id="200114059308480249">Queres incluír o texto circundante nas buscas de Google?</translation>
+<translation id="2009341475524975924">Para medir o rendemento dos anuncios, compártense tipos limitados de datos entre sitios, como a hora do día en que se che mostrou un anuncio.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ficheiro}other{# ficheiros}}</translation>
 <translation id="2021896219286479412">Controis de pantalla completa</translation>
 <translation id="2038563949887743358">Activa a opción Ver como ordenador</translation>
@@ -235,6 +237,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2321086116217818302">Preparando contrasinais…</translation>
 <translation id="2323763861024343754">Almacenamento do sitio</translation>
 <translation id="2328985652426384049">Non se puido iniciar sesión</translation>
+<translation id="2341410551640223969">Non se puido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Non se puido abrir a cámara. Produciuse un erro.</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
@@ -343,6 +346,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="2909615210195135082">Plataforma de notificacións de Google</translation>
 <translation id="2912296070571964914">Xestiona os temas que che interesan</translation>
 <translation id="2912345083818861431">Utiliza o bloqueo de pantalla para acceder ás pestanas do modo de incógnito que estean abertas</translation>
+<translation id="2922568440285376746">Buscar na imaxe con Google <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">O nome non é válido</translation>
 <translation id="2932150158123903946">Almacenamento de Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">O teclado non cambiará</translation>
@@ -650,6 +654,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
+<translation id="4637420359569396807">Coa medición de anuncios, as aplicacións e os sitios comparten tipos limitados de datos para medir o rendemento publicitario, como a hora do día en que se che mostrou un anuncio.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
 <translation id="4650364565596261010">Opción predeterminada do sistema</translation>
 <translation id="465657074423018424">A función Navegación segura protéxete contra os sitios web enganosos. Se a desactivas, ten moito coidado ao navegar, sobre todo antes de escribir contrasinais.</translation>
@@ -662,6 +667,7 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4684427112815847243">Sincronizar todo</translation>
 <translation id="4685741273709472646">Seleccionar elemento da lista despregable</translation>
 <translation id="4687718960473379118">Anuncios suxeridos polos sitios</translation>
+<translation id="4689792375321623175">Buscar na imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> máis}}</translation>
 <translation id="4699172675775169585">Imaxes e ficheiros almacenados na memoria caché</translation>
 <translation id="4719927025381752090">Ofrecer a tradución</translation>
@@ -808,6 +814,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5438292632479953702">Descargar de novo</translation>
 <translation id="5441466871879044658">Traducir texto a este idioma</translation>
 <translation id="5441522332038954058">Saltar á barra de enderezos</translation>
+<translation id="5444999712122199445">Volver ao sitio</translation>
 <translation id="544776284582297024">Para abrir pestanas e visitar distintas páxinas ao mesmo tempo, toca o botón de pestanas abertas</translation>
 <translation id="5454166040603940656">con <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Descargar páxina</translation>
@@ -868,6 +875,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5780792035410621042">Para poder copiar os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Busca e navegación</translation>
+<translation id="5797949256525811424">Tema bloqueado</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Hai # hora}other{Hai # horas}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="5813552293717797987"><ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" /> xestionan este navegador.</translation>
@@ -1195,6 +1203,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7485033510383818941">Para actualizar o contido do feed, arrastra a páxina cara abaixo</translation>
 <translation id="749294055653435199">Google Lens non está dispoñible neste dispositivo</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (actualizouse <ph name="TIME_SINCE_UPDATE" />)</translation>
+<translation id="7497755084107113646">Tema engadido de novo aos temas potenciais</translation>
 <translation id="7498271377022651285">Agarda…</translation>
 <translation id="7502234197872745058">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK1" />pecha sesión en Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Non hai actualizacións dispoñibles</translation>
@@ -1489,6 +1498,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vídeo}other{# vídeos}}</translation>
 <translation id="9042893549633094279">Privacidade e seguranza</translation>
 <translation id="9050666287014529139">Frase de acceso</translation>
+<translation id="9055497320631373736">Sitio engadido de novo aos sitios potenciais</translation>
 <translation id="9063523880881406963">Desactiva a opción Ver como ordenador</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9065383040763568503">Datos almacenados que Chrome non considera importantes (por exemplo, de sitios sen configuración gardada ou que non visitas a miúdo)</translation>

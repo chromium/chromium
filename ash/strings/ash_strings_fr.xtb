@@ -290,6 +290,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2501920221385095727">Touches persistantes</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">Déverrouiller les fenêtres</translation>
 <translation id="2542089167727451762">Appuyez sur votre image de profil</translation>
 <translation id="255671100581129685">L'Assistant Google n'est pas disponible dans une session publique.</translation>
 <translation id="256712445991462162">la loupe ancrée</translation>
@@ -319,6 +320,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2704781753052663061">Rejoindre d'autres réseaux Wi-Fi</translation>
 <translation id="2705001408393684014"><ph name="STATE_TEXT" /> Déplacez le curseur vers la droite pour activer le son.</translation>
 <translation id="2706462751667573066">Haut</translation>
+<translation id="2710984741481549981">Verrouiller les fenêtres</translation>
 <translation id="2718395828230677721">Écl. nocturne</translation>
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
@@ -575,6 +577,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4136724716305260864">Activé jusqu'au lever du soleil</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
+<translation id="4150201353443180367">Écran</translation>
 <translation id="4165275524535002941">Le câble n'est peut-être pas compatible avec les écrans</translation>
 <translation id="4177913004758410636">{0,plural, =1{Mettre à jour l'appareil d'ici 1 jour}one{Mettre à jour l'appareil d'ici # jour}other{Mettre à jour l'appareil d'ici # jours}}</translation>
 <translation id="4181841719683918333">Langues</translation>

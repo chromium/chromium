@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">ابتدا لبه کوتاه</translation>
 <translation id="168693727862418163">این مقدار خط‌مشی در رابطه با طرح آن تأیید نشده است و نادیده گرفته می‌شود.</translation>
 <translation id="168841957122794586">گواهی‌نامه سرور دارای یک کلید رمزنگاری ضعیف است.</translation>
+<translation id="1689333818294560261">نام مستعار</translation>
 <translation id="1697430960030447570">‏<ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. همچنین می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید و هرزمان بخواهید موضوعات آگهی را در تنظیمات Chrome خاموش کنید.</translation>
 <translation id="1697532407822776718">همه چیز مرتب است.</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">‏مدیریت «حساب Google»؛ برای مدیریت اطلاعات، حریم خصوصی، و امنیت در «حساب Google»، کلید «ورود» را فشار دهید</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
+<translation id="2441854154602066476">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود. صفحه‌کلید پنهان است.</translation>
 <translation id="2448295565072560657">لوازم جانبی متصل به این دستگاه در مدت ورود به سیستم</translation>
 <translation id="2450021089947420533">سفرها</translation>
 <translation id="2463739503403862330">تکمیل</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">برنامه‌های دیگر را ببندید</translation>
 <translation id="2918922650248459053">فعالیت‌های غواصی و زیرآب</translation>
 <translation id="2922350208395188000">گواهی سرور بررسی نمی‌شود.</translation>
+<translation id="292371311537977079">‏تنظیمات Chrome</translation>
 <translation id="2925673989565098301">روش ارسال</translation>
 <translation id="2928905813689894207">نشانی صورت‌حساب</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> نشانی دیگر}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3815434930383843058">۱۲ × ۸ اینچ</translation>
 <translation id="3816482573645936981">مقدار (جایگزین‌شده)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">مرورگرتان تحت‌مدیریت <ph name="BROWSER_DOMAIN" /> و نمایه‌تان تحت‌مدیریت <ph name="PROFILE_DOMAIN" /> است</translation>
 <translation id="382518646247711829">اگر از سرور پراکسی استفاده می‌کنید...</translation>
 <translation id="3826050100957962900">ورود به سیستم شخص ثالث</translation>
@@ -1575,6 +1579,7 @@
 <translation id="4880827082731008257">سابقه جستجو</translation>
 <translation id="4881695831933465202">باز کردن</translation>
 <translation id="4881808915112408168">۳۱٫۵ × ۲۴ اینچ</translation>
+<translation id="4882314601499260499">هیچ خط‌مشی کاربری اعمال نشده است. برای افزودن خط‌مشی‌های کاربر، سازمان شما باید <ph name="LINK_BEGIN" />دامنه شما را تأیید کند<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">هنگام تصفیه حساب، با <ph name="CARD_DETAIL" /> پرداخت کنید</translation>
 <translation id="4887406273302438710">‏محافظت از گذرواژه‌ها با Windows Hello</translation>
 <translation id="4888600795924685526">مطالعه زبان خارجی</translation>
@@ -2459,6 +2464,7 @@
 <translation id="7136009930065337683">درباره «حالت ناشناس» بیشتر بدانید</translation>
 <translation id="7138472120740807366">روش تحویل</translation>
 <translation id="7139892792842608322">سینی اصلی</translation>
+<translation id="7140087718106278457">فهرست روش‌های پرداخت بسته است.</translation>
 <translation id="714064300541049402">‏روی ۲، تغییر جهت تصویر حول محور X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}one{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}}</translation>
@@ -2736,6 +2742,7 @@
 <translation id="7755287808199759310">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
 <translation id="7755624218968747854">رول اصلی</translation>
 <translation id="7758069387465995638">دیوار آتش یا نرم‌افزار ضدویروس ممکن است مانع اتصال شده باشد.</translation>
+<translation id="7759809451544302770">اختیاری</translation>
 <translation id="7760497246331667482">موسیقی رگی و کارائیبی</translation>
 <translation id="776110834126722255">منسوخ</translation>
 <translation id="7761159795823346334">دوربین مجاز شود؟</translation>
@@ -2981,6 +2988,7 @@
 <translation id="8381674639488873545">ممکن است این هزینه‌ها یک‌باره یا تکرارشونده باشند و واضح نباشند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">براساس خط‌مشی سرپرست، هم‌رسانی از <ph name="ORIGIN_NAME" /> به <ph name="VM_NAME" /> مسدود شده است</translation>
 <translation id="8396522675989118466">این کد <ph name="NUMBER_OF_DIGITS" /> رقمی درج‌شده در <ph name="SIDE_OF_CARD" /> است</translation>
+<translation id="8398335999901363925">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود به‌صورت کامل باز شده است.</translation>
 <translation id="8398790343843005537">یافتن تلفن خودتان</translation>
 <translation id="8405579342203358118">‏مدیریت اطلاعاتی که همگام‌سازی می‌کنید در تنظیمات Chrome</translation>
 <translation id="8406071103346257942">استفاده از قفل صفحه برای تکمیل گذرواژه‌ها را متوقف کند</translation>
@@ -3141,6 +3149,7 @@
 <translation id="8830320733681313421">کارت‌پستال هاگاکی</translation>
 <translation id="8834380158646307944">دکمه «بستن پنجره‌های ناشناس»؛ برای بستن همه پنجره‌ها ناشناسی که درحال‌حاضر باز هستند، کلید «ورود» را فشار دهید</translation>
 <translation id="883848425547221593">نشانک‌های دیگر</translation>
+<translation id="8842351563145134519">روش‌های پرداخت دردسترس که باید با لمس کردن تکمیل شود به‌صورت نیمه باز شده است.</translation>
 <translation id="884264119367021077">اطلاعات ارسال</translation>
 <translation id="8849231003559822746">۱۸۰ × ۱۳۰ میلی‌متر</translation>
 <translation id="884923133447025588">هیچ مکانیزم ابطالی یافت نشد.</translation>

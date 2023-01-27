@@ -18,6 +18,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1076785341346483463">Synkroniser med administrert konto</translation>
+<translation id="1080365971383768617">Passord på alle enhetene dine</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
 <translation id="1085696779717592361">Bruk Chrome som standard</translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
@@ -74,7 +75,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1404330357948037222">Du er logget av</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
-<translation id="1434356225517321998">Nettleseren din administreres. <ph name="BEGIN_LINK" />Detaljer<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul passordet</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er på. Bruk økt beskyttelse om du vil ha enda mer sikkerhet.</translation>
 <translation id="149095475893949513">Dette nettstedet prøver å laste ned en konfigurasjonsprofil.</translation>
@@ -398,7 +398,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Passord</translation>
 <translation id="3959736869653157332">Meny → Ny inkognitofane</translation>
-<translation id="3964173450954943920">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />. Google kan bruke loggen din for å gi Søk og andre Google-tjenester et personlig preg.</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
 <translation id="3989635538409502728">Logg av</translation>
@@ -547,6 +546,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5056446788882570708">Fant problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disk</translation>
+<translation id="50641035439563602">Passord lagres nå i Google-kontoen din (<ph name="ACCOUNT" />). Du kan bruke dem alle steder hvor du er logget på. Gå til <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" /> for å slå av dette.</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelsen.</translation>
 <translation id="5090832849094901128">Sletting av dette passordet sletter ikke kontoen din på <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Twitter-meldingen er fullført.</translation>
@@ -597,6 +597,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="5520466080178053306">Trykk på Passordlagring, og trykk på Legg til</translation>
 <translation id="5525095647255982834">For å sende denne fanen til en annen enhet, logg på Chrome der.</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
+<translation id="5530084793407600786">Søk i bildet med Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> er funnet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynne å se gjennom en nettside på denne enheten og deretter fortsette på Mac-en din uten problemer. Den åpne nettsiden vises i dokken til Mac-en din.
 
@@ -1035,6 +1036,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8680787084697685621">Kontoens påloggingsdetaljer er utdaterte.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Lukk fanen}other{Lukk fanene}}</translation>
 <translation id="8706588385081740091">Passord</translation>
+<translation id="8712637175834984815">Skjønner</translation>
 <translation id="8717864919010420084">Kopiér linken</translation>
 <translation id="8721297211384281569">Verktøy-menyen</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>

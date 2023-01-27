@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
+<translation id="2779966372261694284">Vous serez déconnecté de ce site</translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Empêcher les sites d'utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="6447842834002726250">Témoins</translation>
-<translation id="6453641458248223456">Zoom avant ou zoom arrière sur une page depuis le menu principal</translation>
 <translation id="6467852467360539617">Effacer les données et réinitialiser les autorisations</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Demander avant d'autoriser des sites à utiliser votre microphone (recommandé)</translation>
 <translation id="7000754031042624318">Désactivée dans les paramètres Android</translation>
 <translation id="7016516562562142042">Autorisée pour le moteur de recherche actuel</translation>
+<translation id="702275896380648118">Ce site détermine ce que vous aimez et suggère ensuite des annonces à d'autres sites. Ce site récupère également les sujets de vos annonces à partir de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="702463548815491781">Recommandé lorsque le service TalkBack ou Switch Access est activé</translation>
 <translation id="7053983685419859001">Bloquer</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 élément sélectionné}one{# élément sélectionné}other{# éléments sélectionnés}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7667547420449112975">Le Magicien d'Oz</translation>
 <translation id="7684642910516280563">Ne pas autoriser un site à utiliser des témoins tiers</translation>
-<translation id="7690549345586282764">Afficher l'option zoom</translation>
 <translation id="7719367874908701697">Zoom de la page</translation>
 <translation id="7781829728241885113">Hier</translation>
 <translation id="7791543448312431591">Ajouter</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Bloquer les témoins pour un site en particulier.</translation>
 <translation id="8959122750345127698">Navigation inaccessible : <ph name="URL" /></translation>
 <translation id="8986362086234534611">Supprimer</translation>
-<translation id="900095568014372589">Rétrécir ou agrandir le texte et les images par défaut sur les sites</translation>
+<translation id="8990043154272859344">Vous serez déconnecté de tous les sites</translation>
 <translation id="9019902583201351841">Géré par tes parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="FPS_OWNER" />.</translation>

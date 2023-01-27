@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Adicionar ao dicionário</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022489261739821355">A mostrar palavras-passe da sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">O seu dispositivo é gerido por <ph name="DOMAIN" />. Os administradores conseguem aceder aos dados em qualquer perfil neste dispositivo.</translation>
 <translation id="1026655690966755180">Adicionar porta</translation>
 <translation id="1026822031284433028">Carregar imagem</translation>
 <translation id="1028604629594230522">O Chrome pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita.</translation>
@@ -95,6 +96,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 separador}other{<ph name="GROUP_TITLE" /> - # separadores}}</translation>
 <translation id="1082214733466244292">O seu administrador bloqueou algumas funcionalidades para este dispositivo</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> pretende restaurar as suas definições do Chrome para as predefinições originais. Esta ação repõe a página inicial, a página novo separador e o motor de pesquisa, desativa as extensões e solta todos os separadores. Limpa também outros dados em cache e temporários, tais como cookies, conteúdos e dados de sites.</translation>
+<translation id="1082725763867769612">Ficheiros offline</translation>
 <translation id="1084096383128641877">Remover esta palavra-passe não elimina a sua conta em <ph name="DOMAIN" />. Altere a palavra-passe ou elimine a sua conta em <ph name="DOMAIN_LINK" /> para a manter protegida contra terceiros.</translation>
 <translation id="1084288067399862432">Alterou com êxito a palavra-passe comprometida.
 
@@ -1864,6 +1866,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2643064289437760082">Pode sempre apagar dados de medição de anúncios ao apagar os seus dados de navegação</translation>
 <translation id="2643698698624765890">Faça a gestão das suas extensões clicando em Extensões no menu Janela.</translation>
 <translation id="2645047101481282803">O seu dispositivo é gerido por <ph name="PROFILE_NAME" />.</translation>
+<translation id="2645388244376970260">A transmitir este separador para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Cadeia de certificados ASCII codificados em Base64</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
@@ -2737,6 +2740,7 @@ Pretende pará-lo?</translation>
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Ler os seus dados em vários Sites</translation>
 <translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
+<translation id="3447797901512053632">A transmitir <ph name="TAB_NAME" /> para <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
 <translation id="3449393517661170867">Nova janela com separadores</translation>
 <translation id="3449839693241009168">Prima <ph name="SEARCH_KEY" /> para enviar comandos para <ph name="EXTENSION_NAME" /></translation>
@@ -2891,6 +2895,7 @@ Pretende pará-lo?</translation>
 <translation id="3590295622232282437">A entrar na sessão gerida…</translation>
 <translation id="3591057288287063271">Manter <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Saiba mais</translation>
+<translation id="3592344177526089979">A transmitir um separador para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Ativar modo Pinyin semelhante</translation>
 <translation id="3593965109698325041">Restrições de nome do certificado</translation>
 <translation id="3596012367874587041">Definições da app</translation>
@@ -3166,6 +3171,7 @@ Pretende pará-lo?</translation>
 <translation id="3823310065043511710">Recomenda-se, pelo menos, <ph name="INSTALL_SIZE" /> de espaço para o Linux.</translation>
 <translation id="3824621460022590830">O token de inscrição de dispositivo é inválido. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Memorizar a minha escolha para este tipo de ficheiro: <ph name="FILE_TYPES" />}other{Memorizar a minha escolha para estes tipos de ficheiros: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Mostrar ponto no ícone da app para alertas de apps</translation>
 <translation id="3826071569074535339">Com autorização para utilizar sensores de movimentos</translation>
 <translation id="3826440694796503677">O seu administrador desativou a adição de mais Contas Google.</translation>
 <translation id="3827774300009121996">&amp;Ecrã inteiro</translation>
@@ -4484,6 +4490,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5063480226653192405">Utilização</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gerir DNS seguro nas definições do ChromeOS</translation>
+<translation id="5066160542186949327">Mova para outra pasta</translation>
 <translation id="5067399438976153555">Sempre ativado</translation>
 <translation id="5067867186035333991">Perguntar se <ph name="HOST" /> pretende aceder ao seu microfone</translation>
 <translation id="5068553687099139861">mostrar palavras-passe</translation>

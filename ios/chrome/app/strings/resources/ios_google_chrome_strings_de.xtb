@@ -50,7 +50,6 @@
 <translation id="3984746313391923992">Deine Organisation verlangt, dass du aus Chrome abgemeldet bleibst.</translation>
 <translation id="3988789688219830639">Chrome hat keinen Zugriff auf deine Fotos und Videos. Aktiviere den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="417201473131094001">Wird von Chrome Canary nicht unterstützt</translation>
-<translation id="4192781968753717021">Dieses Passwort wurde in einer Datenpanne gefunden. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="4233521129555661685"><ph name="USER_EMAIL1" /> hat Chrome genutzt und Lesezeichen, Passwörter und andere Einstellungen auf diesem Gerät festgelegt.</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249068189593983585">Chrome-Tipp: Wenn du weitere Tab-Optionen sehen möchtest, berühre und halte die Schaltfläche „Tabs anzeigen“ in der Symbolleiste. Sie befindet sich unten oder oben auf dem Bildschirm.</translation>
@@ -85,6 +84,7 @@
 <translation id="6634107063912726160">Wenn du dich abmeldest, synchronisiert Chrome keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="6648150602980899529">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chrome abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="6676840375528380067">Deine Chrome-Daten vom Gerät löschen?</translation>
+<translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="701356708427365932">Das neue Chrome-Menü</translation>

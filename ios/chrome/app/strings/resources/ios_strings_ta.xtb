@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="1407135791313364759">எல்லாவற்றையும் திற</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
-<translation id="1434356225517321998">உங்கள் உலாவி நிர்வகிக்கப்படுகிறது. <ph name="BEGIN_LINK" />விவரங்கள்<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">கடவுச்சொல்லை மறைக்கும்</translation>
 <translation id="1450170672351507823">நிலையான பாதுகாப்பு இயக்கப்பட்டுள்ளது. இன்னும் கூடுதலான பாதுகாப்பிற்கு மேம்பட்ட பாதுகாப்பைப் பயன்படுத்துங்கள்.</translation>
 <translation id="149095475893949513">உள்ளமைவுச் சுயவிவரத்தை இந்த இணையதளம் பதிவிறக்க முயல்கிறது.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3943492037546055397">கடவுச்சொற்கள்</translation>
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
-<translation id="3964173450954943920">எதையெல்லாம் ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம். Search மற்றும் பிற Google சேவைகளைப் பிரத்தியேகமாக்க, இதுவரை பார்த்தவை தொடர்பான விவரங்களை Google பயன்படுத்தக்கூடும்.</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
 <translation id="3989635538409502728">வெளியேறு</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">கணக்கு உள்நுழைவு விவரங்கள் காலாவதியாகிவிட்டன.</translation>
 <translation id="8693663554456874301">{count,plural, =1{தாவலை மூடுக}other{தாவல்களை மூடுக}}</translation>
 <translation id="8706588385081740091">கடவுச்சொற்கள்</translation>
+<translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="8717864919010420084">இணைப்பை நகலெடு</translation>
 <translation id="8721297211384281569">கருவிகள் மெனு</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>

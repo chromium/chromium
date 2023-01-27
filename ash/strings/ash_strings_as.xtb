@@ -290,6 +290,7 @@
 <translation id="2501920221385095727">ষ্টিকি কী</translation>
 <translation id="2509468283778169019">CAPS LOCK হৈ আছে</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">ৱিণ্ড’ আনলক কৰক</translation>
 <translation id="2542089167727451762">আপোনাৰ প্ৰ’ফাইলৰ প্ৰতিচ্ছবিত টিপক</translation>
 <translation id="255671100581129685">ৰাজহুৱা ছেশ্বনত Google Assistant নাই।</translation>
 <translation id="256712445991462162">ড'ক কৰা বিৱৰ্ধকটো</translation>
@@ -319,6 +320,7 @@
 <translation id="2704781753052663061">অন্য ৱাই-ফাই নেটৱৰ্কসমূহত যোগদান কৰক</translation>
 <translation id="2705001408393684014">মাইক ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">ওপৰলৈ</translation>
+<translation id="2710984741481549981">ৱিণ্ড’ লক কৰক</translation>
 <translation id="2718395828230677721">ৰাতিৰ পোহৰ</translation>
 <translation id="2726420622004325180">এটা হটস্পট প্ৰদান কৰিবলৈ আপোনাৰ ফ’নত ম’বাইল ডেটা থাকিবই লাগিব</translation>
 <translation id="2727175239389218057">প্ৰত্যুত্তৰ দিয়ক</translation>
@@ -576,6 +578,7 @@
 <translation id="4130035430755296270">লে’আউটৰ অধিক বিকল্পৰ বাবে মাউছৰ কাৰ্ছৰডাল ঘূৰাই থাকক</translation>
 <translation id="4136724716305260864">সূৰ্যোদয় পৰ্যন্ত অন কৰি ৰাখক</translation>
 <translation id="4146833061457621061">সংগীত প্লে’ কৰক</translation>
+<translation id="4150201353443180367">ডিছপ্লে’</translation>
 <translation id="4165275524535002941">কে’বলে ডিছপ্লে’ সমৰ্থন নকৰিবও পাৰে</translation>
 <translation id="4177913004758410636">{0,plural, =1{এদিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}one{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}other{# দিনৰ ভিতৰত ডিভাইচটো আপডে’ট কৰক}}</translation>
 <translation id="4181841719683918333">ভাষাসমূহ</translation>

@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止網站使用你的虛擬實境裝置和資料</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6453641458248223456">使用主選單縮放頁面比例</translation>
 <translation id="6467852467360539617">清除資料並重設權限</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">藍牙掃描</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">綠野仙蹤</translation>
 <translation id="7684642910516280563">不允許網站使用第三方 Cookie</translation>
-<translation id="7690549345586282764">顯示縮放比例</translation>
 <translation id="7719367874908701697">頁面縮放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">新增</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">瀏覽的網址無法存取：<ph name="URL" /></translation>
 <translation id="8986362086234534611">清除</translation>
 <translation id="8990043154272859344">系統會將你登出所有網站</translation>
-<translation id="900095568014372589">縮放網站文字和圖片的預設大小</translation>
 <translation id="9019902583201351841">你的家長已停用這項功能</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9090268041676521955">這個網站所屬的群組可以查看你的活動。這是 <ph name="FPS_OWNER" /> 定義的群組</translation>

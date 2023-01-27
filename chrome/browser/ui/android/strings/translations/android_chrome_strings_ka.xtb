@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებას<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">თქვენს ნაგულისხმევ საძიებო სისტემას უგზავნის ზოგიერთ ქუქი-ჩანაწერს და საძიებო მოთხოვნებს მისამართთა ზოლიდან ან საძიებო ველიდან</translation>
 <translation id="200114059308480249">გსურთ, დაურთოთ გარშემო ტექსტი Google ძიებებს?</translation>
+<translation id="2009341475524975924">რეკლამის ეფექტურობის გაზომვის მიზნით, საიტებს შორის შეიძლება გაზიარდეს შეზღუდული ტიპის მონაცემები — მაგალითად, ის, თუ დღის რომელ მონაკვეთში იყო რეკლამა ნაჩვენები თქვენთვის.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ფაილი}other{# ფაილი}}</translation>
 <translation id="2021896219286479412">სრულეკრანიანი რეჟიმის მართვა</translation>
 <translation id="2038563949887743358">საიტის დესკტოპის ვერსიის მოთხოვნის ჩართვა</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">მიმდინარეობს პაროლების მომზადება…</translation>
 <translation id="2323763861024343754">საიტების მეხსიერება</translation>
 <translation id="2328985652426384049">სისტემაში შესვლა ვერ მოხერხდა</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" />-ის ინსტალაცია ვერ მოხერხდა.</translation>
 <translation id="234265804618409743">კამერის გახსნა ვერ მოხერხდა. წარმოიქმნა შეფერხება.</translation>
 <translation id="2349710944427398404">Chrome-ის მიერ გამოყენებული მეხსიერების საერთო მოცულობა, რომელშიც ინახება ანგარიშები, სანიშნეები და შენახული პარამეტრები</translation>
 <translation id="235789365079050412">Google-ის კონფიდენციალურობის დებულება</translation>
@@ -344,6 +346,7 @@
 <translation id="2909615210195135082">Google შეტყობინებების პლატფორმა</translation>
 <translation id="2912296070571964914">მართეთ თქვენთვის საინტერესო თემები</translation>
 <translation id="2912345083818861431">გახსნილი ინკოგნიტო ჩანართების სანახავად გამოიყენეთ ეკრანის დაბლოკვა</translation>
+<translation id="2922568440285376746">სურათში ძიება Google-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">სახელი არასწორია</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ის მეხსიერება</translation>
 <translation id="2932222164150889403">თქვენი კლავიატურა არ შეიცვლება</translation>
@@ -652,6 +655,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />-ის გახსნა</translation>
 <translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4634124774493850572">პაროლის გამოყენება</translation>
+<translation id="4637420359569396807">რეკლამის ეფექტურობის გაზომვის ფუნქცია საშუალებას იძლევა, საკუთარი რეკლამის ეფექტურობის გაზომვის მიზნით, საიტებს შორის  გაზიარდეს შეზღუდული ტიპის მონაცემები — მაგალითად, ის, თუ დღის რომელ მონაკვეთში იყო რეკლამა ნაჩვენები თქვენთვის.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 გატეხილი პაროლი}other{# გატეხილი პაროლი}}</translation>
 <translation id="4650364565596261010">სისტემის ნაგულისხმევი</translation>
 <translation id="465657074423018424">Safe Browsing გიცავთ შეცდომაში შემყვანი ვებსაიტებისგან. გამორთვის შემთხვევაში, ვების დათვალიერებისას, გამოიჩინეთ განსაკუთრებული სიფრთხილე, განსაკუთრებით პაროლების შეყვანამდე.</translation>
@@ -664,6 +668,7 @@
 <translation id="4684427112815847243">ყველაფრის სინქრონიზაცია</translation>
 <translation id="4685741273709472646">აირჩიეთ ჩამოსაშლელი სიიდან</translation>
 <translation id="4687718960473379118">საიტების მიერ შემოთავაზებული რეკლამა</translation>
+<translation id="4689792375321623175">სურათის ძიება Google-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
 <translation id="4719927025381752090">თარგმანის შემოთავაზება</translation>
@@ -810,6 +815,7 @@
 <translation id="5438292632479953702">ხელახლა ჩამოტვირთვა</translation>
 <translation id="5441466871879044658">ამ ენაზე თარგმნა</translation>
 <translation id="5441522332038954058">მისამართთა ზოლზე გადასვლა</translation>
+<translation id="5444999712122199445">საიტზე დაბრუნება</translation>
 <translation id="544776284582297024">ჩანართების გასახსნელად და ერთდროულად სხვადასხვა გვერდის მოსანახულებლად შეეხეთ ჩანართების გახსნის ღილაკს</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />-ით</translation>
 <translation id="5456381639095306749">გვერდის ჩამოტვირთვა</translation>

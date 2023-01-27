@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">Прво кратка ивица</translation>
 <translation id="168693727862418163">Валидација шеме ове вредности за смернице није успела и занемариће се.</translation>
 <translation id="168841957122794586">Сертификат сервера садржи слаб криптографски кључ.</translation>
+<translation id="1689333818294560261">Надимак</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Како можете да управљате подацима:<ph name="END_BOLD" /> Chrome аутоматски брише теме старије од 4 недеље. Када наставите да прегледате, тема ће се можда поново појавити на листи. Можете и да блокирате теме које не желите да Chrome дели са сајтовима и да у сваком тренутку искључите теме огласа у подешавањима Chrome-а.</translation>
 <translation id="1697532407822776718">Спремни сте!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Управљајте Google налогом, притисните Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
 <translation id="2436186046335138073">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове?</translation>
 <translation id="2438874542388153331">Четвороструко бушење на десној страни</translation>
+<translation id="2441854154602066476">Начини плаћања доступни за унос додиром. Тастатура је сакривена.</translation>
 <translation id="2448295565072560657">Периферни уређаји прикључени на овај уређај док сте пријављени</translation>
 <translation id="2450021089947420533">Путеви</translation>
 <translation id="2463739503403862330">Попуни</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">Затворите друге програме</translation>
 <translation id="2918922650248459053">Роњење и подводне активности</translation>
 <translation id="2922350208395188000">Није могуће проверити сертификат сервера.</translation>
+<translation id="292371311537977079">Подешавања Chrome-а</translation>
 <translation id="2925673989565098301">Начин испоруке</translation>
 <translation id="2928905813689894207">Адреса за обрачун</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">Управљај</translation>
 <translation id="3815434930383843058">8×12 in</translation>
 <translation id="3816482573645936981">Вредност (замењена)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Прегледачем управља <ph name="BROWSER_DOMAIN" />, а профилом управља <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ако користите прокси сервер...</translation>
 <translation id="3826050100957962900">Пријављивање треће стране</translation>
@@ -1575,6 +1579,7 @@
 <translation id="4880827082731008257">Претражи историју</translation>
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="4881808915112408168">24×31,5 in</translation>
+<translation id="4882314601499260499">Нису примењене никакве смернице за корисникњ. Да бисте додали смернице за кориснике, организација мора да <ph name="LINK_BEGIN" />верификује домен<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Плаћајте помоћу картице <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Заштитите лозинке помоћу Windows Hello-а</translation>
 <translation id="4888600795924685526">Студије страних језика</translation>
@@ -2458,6 +2463,7 @@
 <translation id="7136009930065337683">Сазнајте више о режиму без архивирања</translation>
 <translation id="7138472120740807366">Начин испоруке</translation>
 <translation id="7139892792842608322">Примарна фиока</translation>
+<translation id="7140087718106278457">Листа начина плаћања је затворена.</translation>
 <translation id="714064300541049402">Померање слике 2. стране по X оси</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -2735,6 +2741,7 @@
 <translation id="7755287808199759310">Родитељ може да га одблокира за тебе</translation>
 <translation id="7755624218968747854">Примарни котур</translation>
 <translation id="7758069387465995638">Можда је заштитни зид или антивирусни софтвер блокирао везу.</translation>
+<translation id="7759809451544302770">Опционално</translation>
 <translation id="7760497246331667482">Реге и карипска музика</translation>
 <translation id="776110834126722255">Застарело</translation>
 <translation id="7761159795823346334">Желите ли да дозволите камеру?</translation>
@@ -2980,6 +2987,7 @@
 <translation id="8381674639488873545">Ти трошкови могу да буду једнократни или периодични и можда нису одмах видљиви. <ph name="BEGIN_LINK" />Ипак прикажи<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Смернице за администраторе блокирају дељење са <ph name="ORIGIN_NAME" /> на локацију <ph name="VM_NAME" /></translation>
 <translation id="8396522675989118466">Ово је <ph name="NUMBER_OF_DIGITS" />-цифрени кôд на: <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Начини плаћања доступни за унос додиром отворени су у пуној висини.</translation>
 <translation id="8398790343843005537">Пронађи телефон</translation>
 <translation id="8405579342203358118">Управљајте тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="8406071103346257942">да престане са коришћењем закључавања екрана за попуњавање лозинки</translation>
@@ -3141,6 +3149,7 @@
 <translation id="8830320733681313421">Hagaki разгледница</translation>
 <translation id="8834380158646307944">Дугме Затвори прозоре без архивирања, притисните Enter да бисте затворили све прозоре без архивирања који су тренутно отворени</translation>
 <translation id="883848425547221593">Остали обележивачи</translation>
+<translation id="8842351563145134519">Начини плаћања доступни за унос додиром отворени су до пола висине.</translation>
 <translation id="884264119367021077">Адреса за испоруку</translation>
 <translation id="8849231003559822746">130×180 mm</translation>
 <translation id="884923133447025588">Није пронађен ниједан механизам опозива.</translation>

@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;શબ્દકોષમાં ઉમેરો</translation>
 <translation id="1018656279737460067">રદ કરેલા</translation>
 <translation id="1022489261739821355">તમારા <ph name="BEGIN_LINK" />Google એકાઉન્ટ<ph name="END_LINK" />માંથી પાસવર્ડ બતાવી રહ્યાં છીએ</translation>
+<translation id="1022669824195822609">તમારું ડિવાઇસ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. ઍડમિનિસ્ટ્રેટર આ ડિવાઇસ પર કોઈપણ પ્રોફાઇલમાંનો ડેટા ઍક્સેસ કરી શકે છે.</translation>
 <translation id="1026655690966755180">પોર્ટ ઉમેરો</translation>
 <translation id="1026822031284433028">છબી લોડ કરો</translation>
 <translation id="1028604629594230522">તમે જે પેજની મુલાકાત લેશો તેવી શક્યતા હોય, Chrome તેને પહેલેથી લોડ કરે છે, જેથી જ્યારે તમે તેમની મુલાકાત લો, ત્યારે તે વધુ ઝડપથી લોડ થાય.</translation>
@@ -95,6 +96,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 ટૅબ}one{<ph name="GROUP_TITLE" /> - # ટૅબ}other{<ph name="GROUP_TITLE" /> - # ટૅબ}}</translation>
 <translation id="1082214733466244292">તમારા વ્યવસ્થાપકે આ ડિવાઇસ માટેની અમુક કાર્યક્ષમતા બ્લૉક કરી છે</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />, તમારા Chrome સેટિંગને એના મૂળ ડિફૉલ્ટ પર પહેલાં જેવું કરવા માગે છે. આ તમારા હોમપેજ, નવા ટૅબ પેજ અને શોધ એન્જિનને રીસેટ કરશે, તમારા એક્સ્ટેન્શનને બંધ કરશે અને તમામ ટૅબને અનપિન કરશે. તે બીજા અસ્થાયી અને કૅશ મેમરીના ડેટા જેમ કે કુકી, કન્ટેન્ટ અને સાઇટ ડેટાને પણ સાફ કરશે.</translation>
+<translation id="1082725763867769612">ઑફલાઇન ફાઇલ</translation>
 <translation id="1084096383128641877">આ પાસવર્ડ કાઢી નાખવાથી <ph name="DOMAIN" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં. અન્ય લોકોથી તમારા એકાઉન્ટને સુરક્ષિત રાખવા માટે, <ph name="DOMAIN_LINK" /> પર તમારો પાસવર્ડ બદલો અથવા તમારું એકાઉન્ટ ડિલીટ કરો.</translation>
 <translation id="1084288067399862432">ચેડાં કરાયેલો પાસવર્ડ સફળતાપૂર્વક બદલ્યો.
 
@@ -1862,6 +1864,7 @@
 <translation id="2643064289437760082">તમારા બ્રાઉઝિંગ ડેટાને ડિલીટ કરીને, તમે હંમેશાં જાહેરાત-માપણીનો ડેટા ડિલીટ કરી શકો છો</translation>
 <translation id="2643698698624765890">વિંડો મેનૂમાં એક્સટેંશનને ક્લિક કરીને તમારા એક્સ્ટેંશન્સને મેનેજ કરો.</translation>
 <translation id="2645047101481282803">તમારું ડિવાઇસ <ph name="PROFILE_NAME" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" /> પર આ ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, પ્રમાણપત્ર ચેન</translation>
 <translation id="265156376773362237">પહેલેથી લોડ કરવાનો માનક મોડ</translation>
@@ -2734,6 +2737,7 @@
 <translation id="3446274660183028131">Windows ઇન્સ્ટૉલ કરવા માટે કૃપા કરીને Parallels ડેસ્કટૉપ લૉન્ચ કરો.</translation>
 <translation id="344630545793878684">ઘણી વેબસાઇટ્સ પર તમારો ડેટા વાંચી શકે છે</translation>
 <translation id="3447644283769633681">તમામ તૃતીય-પક્ષની કૂકીઝને અવરોધિત કરો</translation>
+<translation id="3447797901512053632"><ph name="DEVICE_NAME" /> પર <ph name="TAB_NAME" /> કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3448492834076427715">એકાઉન્ટ અપડેટ કરો</translation>
 <translation id="3449393517661170867">નવી ટૅબવાળી વિંડો</translation>
 <translation id="3449839693241009168">આદેશોને <ph name="EXTENSION_NAME" /> પર મોકલવા માટે <ph name="SEARCH_KEY" /> દબાવો</translation>
@@ -2888,6 +2892,7 @@
 <translation id="3590295622232282437">મેનેજ કરાયેલ સત્રમાં દાખલ થઈ રહ્યા છીએ.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> રાખો</translation>
 <translation id="3592260987370335752">&amp;વધુ જાણો</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" /> પર ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin મોડને સક્ષમ કરો </translation>
 <translation id="3593965109698325041">પ્રમાણપત્રના નામની મર્યાદાઓ</translation>
 <translation id="3596012367874587041">ઍપ સેટિંગ</translation>

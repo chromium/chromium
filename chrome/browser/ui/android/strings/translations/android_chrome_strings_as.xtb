@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">অফ কৰক</translation>
 <translation id="1045899828449635435">এই ছাইটসমূহৰ পৰাও ডেটা মচিবনে?</translation>
 <translation id="1049743911850919806">ইনক’গনিট’</translation>
+<translation id="1058669287135776095">আপুনি অফলাইন হৈ আছে। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="10614374240317010">কেতিয়াও ছেভ কৰা নহয়</translation>
 <translation id="1062628064301375934">অধিক ব্যক্তিগত ৱেব নিৰ্মাণ কৰাত আমাক সহায় কৰক</translation>
 <translation id="107147699690128016">আপুনি যদি ফাইল এক্সটেনশ্বন সলনি কৰে ফাইলটো হয়তো বেলেগ এটা এপ্লিকেশ্বনত খুলিব আৰু সেয়া আপোনাৰ ডিভাইচটোৰ বাবে এক সম্ভাব্য বিপদ হ’ব পাৰে।</translation>
@@ -562,6 +563,7 @@
 <translation id="4108314971463891922">ফ’ল’ কৰক</translation>
 <translation id="4108998448622696017">বিপজ্জনক ঘটনাবোৰৰ চিনাক্ত কৰে আৰু সেইবোৰ ঘটাৰ সময়ত আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="4116038641877404294">অফলাইন ব্যৱহাৰ কৰিবলৈ পৃষ্ঠা ডাউনল’ড কৰক</translation>
+<translation id="4124152339699379357">জাননীৰ অনুমতিৰ প্ৰৱাহ পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="4135200667068010335">এটা টেব শ্বেয়াৰ কৰিবলৈ থকা ডিভাইচসমূহৰ সূচী বন্ধ আছে।</translation>
 <translation id="4137746084635924146">বর্তমানৰ ডিভাইচটোৰ ভাষা</translation>
 <translation id="414128724510021958">ডিফ’ল্ট হিচাপে ডেস্কটপৰ ছাইটৰ বাবে অনুৰোধ কৰা হৈছে</translation>
@@ -868,6 +870,7 @@
 <translation id="5780792035410621042">পাছৱৰ্ডসমূহৰ প্ৰতিলিপি কৰিবলৈ, আপোনাৰ ডিভাইচত প্ৰথমে এটা স্ক্ৰীন লক ছেট কৰক</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />ৰ <ph name="SPACE_USED" /> ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="5795872532621730126">সন্ধান আৰু ব্ৰাউজ কৰক</translation>
+<translation id="5797949256525811424">অৱৰোধিত বিষয়বস্তু</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{#ঘণ্টা পূৰ্বে}one{#ঘণ্টা পূৰ্বে}other{#ঘণ্টা পূৰ্বে}}</translation>
 <translation id="5810288467834065221">স্বত্বাধিকাৰ <ph name="YEAR" /> Google Inc। সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="5813552293717797987">এই ব্ৰাউজাৰটো <ph name="PARENT_NAME_1" /> আৰু <ph name="PARENT_NAME_2" />এ পৰিচালনা কৰে।</translation>
@@ -1195,6 +1198,7 @@
 <translation id="7485033510383818941">ফীডৰ সমলটো ৰিফ্ৰেশ্ব কৰিবলৈ, পৃষ্ঠাখন তললৈ টানক</translation>
 <translation id="749294055653435199">এই ডিভাইচটোত Google Lens উপলব্ধ নহয়</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> ( <ph name="TIME_SINCE_UPDATE" />ত আপডে'ট কৰা হৈছিল)</translation>
+<translation id="7497755084107113646">বিষয়বস্তুটো সম্ভাব্য বিষয়বস্তুৰ সূচীত পুনৰ যোগ দিয়া হৈছে</translation>
 <translation id="7498271377022651285">অনুগ্ৰহ কৰি অপেক্ষা কৰক…</translation>
 <translation id="7502234197872745058">আটাইবোৰ ৱেবছাইটত আপোনাৰ Google একাউণ্টৰ পৰা ছাইন আউট কৰিবলৈ <ph name="BEGIN_LINK1" />Chromeৰ পৰা ছাইন আউট কৰক<ph name="END_LINK1" />।</translation>
 <translation id="750228856503700085">আপডে’ট উপলব্ধ নহয়</translation>
@@ -1398,6 +1402,7 @@
 <translation id="8516012719330875537">প্ৰতিচ্ছবিৰ সম্পাদক</translation>
 <translation id="8516431725144212809">Chromeএ অনুমান কৰা অনুসৰি আপোনাৰ আগ্ৰহ</translation>
 <translation id="8523928698583292556">ষ্ট’ৰ কৰি ৰখা পাছৱৰ্ড মচক</translation>
+<translation id="8526855376374973824">জাননীৰ অনুমতিৰ প্ৰৱাহ</translation>
 <translation id="8540136935098276800">এটা সঠিকভাৱে ফর্মেট কৰা URL দিয়ক</translation>
 <translation id="854522910157234410">এই পৃষ্ঠাটো খোলক</translation>
 <translation id="8551513938758868521">আপুনি Chromeৰ পৰা বাহিৰ ওলালে ইনক’গনিট’ টেবসমূহ লক কৰক</translation>
@@ -1457,6 +1462,7 @@
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, টেব</translation>
 <translation id="8854223127042600341">আপোনাৰ অফলাইন ফাইলসমূহ চাওক</translation>
 <translation id="8856607253650333758">বিৱৰণ লাভ কৰক</translation>
+<translation id="8856931513242997049">জাননীৰ অনুমতিৰ প্ৰৱাহ বন্ধ কৰা হৈছে</translation>
 <translation id="8873817150012960745">আৰম্ভ কৰিবলৈ ইয়াত টিপক</translation>
 <translation id="8881973373982641723">সন্ধানৰ বাকচটোত থকাসমূহকে ধৰি ব্ৰাউজিঙৰ ইতিহাস মচে।</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />আপুনি নিজৰ ডেটা কেনেকৈ পৰিচালনা কৰিব পাৰে:<ph name="END_BOLD" /> আপোনাৰ গোপনীয়তা সুৰক্ষিত কৰিবলৈ, আমি ৪ সপ্তাহতকৈ পুৰণি হোৱা ছাইটসমূহ সূচীখনৰ পৰা স্বয়ংক্ৰিয়ভাৱে মচোঁ। আপুনি পুনৰ চোৱা ছাইট সূচীখনত পুনৰ প্ৰদৰ্শিত হ’ব পাৰে। অথবা আপুনি কোনো ছাইটে আপোনাৰ আগ্ৰহসমূহ আৰু কেতিয়াও সংজ্ঞাবদ্ধ কৰাটো নিবিচাৰিলে সেই ছাইটটো আঁতৰাব পাৰে।</translation>
@@ -1489,6 +1495,7 @@
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{#টা ভিডিঅ’}one{#টা ভিডিঅ’}other{#টা ভিডিঅ’}}</translation>
 <translation id="9042893549633094279">গোপনীয়তা আৰু সুৰক্ষা</translation>
 <translation id="9050666287014529139">পাছফ্ৰেজ</translation>
+<translation id="9055497320631373736">ছাইটটো বিজ্ঞাপনৰ পৰামৰ্শ দিব পৰা সম্ভাব্য ছাইটৰ সূচীত পুনৰ যোগ দিয়া হৈছে</translation>
 <translation id="9063523880881406963">ডেস্কটপ ছাইট অনুৰোধ কৰা সুবিধাটি বন্ধ কৰক</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9065383040763568503">Chromeএ গুৰুত্বপূৰ্ণ বুলি গণ্য নকৰা ষ্ট’ৰ কৰি ৰখা ডেটা (যেনে, এনে ছাইট যিবিলাকৰ ছেটিংসমূহ ছেভ কৰি ৰখা হোৱা নাই অথবা যিবিলাক আপুনি সঘনাই নাচায়)</translation>

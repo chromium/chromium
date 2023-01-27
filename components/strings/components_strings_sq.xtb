@@ -314,6 +314,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1682696192498422849">Ana e shkurtër në fillim</translation>
 <translation id="168693727862418163">Vërtetimi i kësaj vlere të politikës kundrejt skemës së saj dështoi dhe do të shpërfillet.</translation>
 <translation id="168841957122794586">Certifikata e serverit përmban një çelës të dobët kriptografik.</translation>
+<translation id="1689333818294560261">Pseudonimi</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin automatikisht temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Mund t'i bllokosh po ashtu temat që nuk dëshiron që Chrome t'i ndajë me sajtet dhe mund t'i çaktivizosh temat e reklamave në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="1697532407822776718">Je gati!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2430968933669123598">Menaxho "Llogarinë e Google", shtyp Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
 <translation id="2436186046335138073">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
+<translation id="2441854154602066476">Mënyrat e pagesës të disponueshme për t'u plotësuar me prekje. Tastiera është e fshehur.</translation>
 <translation id="2448295565072560657">Pajisjet periferike të montuara në këtë pajisje ndërkohë që je i/e identifikuar</translation>
 <translation id="2450021089947420533">Udhëtimet</translation>
 <translation id="2463739503403862330">Plotëso</translation>
@@ -776,6 +778,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2916038427272391327">Mbyll programet e tjera</translation>
 <translation id="2918922650248459053">Zhytja dhe aktivitetet nënujore</translation>
 <translation id="2922350208395188000">Certifikata e serverit nuk mund të kontrollohet.</translation>
+<translation id="292371311537977079">Cilësimet e Chrome</translation>
 <translation id="2925673989565098301">Mënyra e dorëzimit</translation>
 <translation id="2928905813689894207">Adresa e faturimit</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> tjetër}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> të tjera}}</translation>
@@ -1145,6 +1148,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="3815434930383843058">8 x 12 inç</translation>
 <translation id="3816482573645936981">Vlera (e zëvendësuar)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Shfletuesi yt menaxhohet nga <ph name="BROWSER_DOMAIN" /> dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Nëse përdor një server përfaqësues...</translation>
 <translation id="3826050100957962900">Identifikimi i palëve të treta</translation>
@@ -1198,6 +1202,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="398470910934384994">Shpendët</translation>
 <translation id="3985750352229496475">Menaxho adresat...</translation>
 <translation id="3986705137476756801">Çaktivizo "Titrat në çast" për momentin</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Më pak se 1 MB</translation>
 <translation id="3990250421422698716">Zhvendosja e bordurës</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
@@ -1574,6 +1579,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4880827082731008257">Historiku i kërkimeve</translation>
 <translation id="4881695831933465202">Hap</translation>
 <translation id="4881808915112408168">24 x 31,5 inç</translation>
+<translation id="4882314601499260499">Nuk zbatohet asnjë politikë e përdoruesit. Për të shtuar politikat e përdoruesit, organizata jote duhet <ph name="LINK_BEGIN" />të verifikojë domenin tënd<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes</translation>
 <translation id="4887406273302438710">Mbroji fjalëkalimet me Windows Hello</translation>
 <translation id="4888600795924685526">Studimi i gjuhëve të huaja</translation>
@@ -1751,6 +1757,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5306593769196050043">Të dyja fletët</translation>
 <translation id="5307166000025436103">Në rregull</translation>
 <translation id="5308380583665731573">Lidh</translation>
+<translation id="5308406951783863385">Mund të bësh ndryshime te cilësimet e Chrome</translation>
 <translation id="5308689395849655368">Raportimi i ndërprerjes aksidentale është çaktivizuar.</translation>
 <translation id="5310178588836736698">Automjetet për terrene të ashpra</translation>
 <translation id="5314967030527622926">Krijuesi i broshurës</translation>
@@ -2048,6 +2055,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6059925163896151826">Pajisjet USB</translation>
 <translation id="6060009363608157444">Modalitet i pavlefshëm DnsOverHttps.</translation>
 <translation id="6061154937977953833">Mundja</translation>
+<translation id="6062937464449575061">Anulo monitorimin e çmimeve</translation>
 <translation id="6064217302520318294">Kyçja e ekranit</translation>
 <translation id="6064602040258638498">Kuponët dhe ofertat e zbritjeve</translation>
 <translation id="6080696365213338172">Je qasur në përmbajtje duke përdorur një certifikatë të dhënë nga administratori. Të dhënat që jep për <ph name="DOMAIN" /> mund të zbulohen nga administratori yt.</translation>
@@ -2404,6 +2412,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
 <translation id="7016992613359344582">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë.</translation>
 <translation id="702146556168549005">URL-të e faqeve që viziton i dërgohen Google Cloud ose palëve të treta për analizim. Për shembull, ato mund të skanohen për të zbuluar sajtet e pasigurta të uebit ose për të filtruar sajtet e uebit bazuar në rregullat e caktuar nga administratori.</translation>
+<translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7023162328967545559">Paralajmërim nga administratori</translation>
 <translation id="7029809446516969842">Fjalëkalimet</translation>
 <translation id="7030436163253143341">Certifikata nuk është e vlefshme</translation>
@@ -2454,6 +2463,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7136009930065337683">Mëso më shumë rreth modalitetit "Të fshehtë"</translation>
 <translation id="7138472120740807366">Mënyra e dorëzimit</translation>
 <translation id="7139892792842608322">Tabakaja parësore</translation>
+<translation id="7140087718106278457">Lista e mënyrave të pagesës është mbyllur.</translation>
 <translation id="714064300541049402">Zhvendosja e imazhit në boshtin X në anën 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> tjetër}other{<ph name="PAYMENT_METHOD_PREVIEW" /> dhe <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> të tjera}}</translation>
@@ -2976,6 +2986,7 @@ Detaje shtesë:
 <translation id="8381674639488873545">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë. <ph name="BEGIN_LINK" />Shfaqi gjithsesi<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Ndarja nga <ph name="ORIGIN_NAME" /> te <ph name="VM_NAME" /> është bllokuar nga politika e administratorit</translation>
 <translation id="8396522675989118466">Ky është kodi me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Mënyrat e pagesës të disponueshme për t'u plotësuar me prekje janë hapur në lartësi të plotë.</translation>
 <translation id="8398790343843005537">Gjej telefonin tënd</translation>
 <translation id="8405579342203358118">Menaxho se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="8406071103346257942">të ndalojë përdorimin e kyçjes së ekranit për plotësimin e fjalëkalimeve</translation>
@@ -3136,6 +3147,7 @@ Detaje shtesë:
 <translation id="8830320733681313421">Hagaki (kartolinë)</translation>
 <translation id="8834380158646307944">Butoni "Mbyll dritaret e fshehta". Shtyp "Enter" për të mbyllur të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
 <translation id="883848425547221593">Faqeshënues të tjerë</translation>
+<translation id="8842351563145134519">Mënyrat e pagesës të disponueshme për t'u plotësuar me prekje janë hapur në gjysmë lartësi.</translation>
 <translation id="884264119367021077">Adresa e transportit</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Nuk u gjet asnjë mekanizëm revokimi.</translation>
@@ -3301,6 +3313,7 @@ Detaje shtesë:
 <translation id="935608979562296692">PASTRO FORMULARIN</translation>
 <translation id="936602727769022409">Mund të humbësh qasjen në "Llogarinë tënde të Google". Chromium rekomandon që ta ndryshosh fjalëkalimin tani. Do të të kërkohet që të identifikohesh.</translation>
 <translation id="937457230470581909">Kopshtet zoologjike, akuariumet dhe rezervuarët</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Çfarë të dhënash përdoren:<ph name="END_BOLD" /> Temat e tua të reklamave bazohen në historikun tënd të shfletimit së fundi, një listë sajtesh që ke vizituar duke përdorur Chrome në këtë pajisje.</translation>
 <translation id="939736085109172342">Dosje e re</translation>
 <translation id="940053046584497293">Udhëtimi dhe transporti</translation>
 <translation id="945855313015696284">Kontrollo informacionin më poshtë dhe fshi çdo kartë të pavlefshme</translation>

@@ -563,6 +563,7 @@
 <translation id="4108314971463891922">フォロー</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
+<translation id="4124152339699379357">通知権限フローが画面全体に表示されています</translation>
 <translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
 <translation id="4137746084635924146">現在のデバイスの言語</translation>
 <translation id="414128724510021958">PC 版サイトをデフォルトでリクエスト</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8516012719330875537">画像エディタ</translation>
 <translation id="8516431725144212809">Chrome が推定したお客様の興味 / 関心</translation>
 <translation id="8523928698583292556">保存したパスワードを削除</translation>
+<translation id="8526855376374973824">通知権限フロー</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
 <translation id="854522910157234410">このページを開く</translation>
 <translation id="8551513938758868521">Chrome を終了するときにシークレット タブをロックする</translation>
@@ -1460,6 +1462,7 @@
 <translation id="8853345339104747198">「<ph name="TAB_TITLE" />」タブ</translation>
 <translation id="8854223127042600341">オフライン ファイルを表示</translation>
 <translation id="8856607253650333758">説明文を取得</translation>
+<translation id="8856931513242997049">通知権限フローは閉じています</translation>
 <translation id="8873817150012960745">始めるにはここをタップ</translation>
 <translation id="8881973373982641723">検索ボックスなどの履歴を削除します。</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> ユーザーのプライバシーを保護するために、4 週間以上経過したサイトはリストから自動削除されます。再度アクセスしたサイトが、またリストに表示される場合があります。ユーザーの興味 / 関心を定義させたくないサイトを完全に削除することもできます。</translation>

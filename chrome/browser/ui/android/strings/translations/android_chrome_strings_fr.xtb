@@ -8,6 +8,7 @@
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1045899828449635435">Effacer ces données ?</translation>
 <translation id="1049743911850919806">Navigation privée</translation>
+<translation id="1058669287135776095">Vous êtes hors connexion. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1062628064301375934">Aidez-nous à créer un Web plus respectueux de la confidentialité</translation>
 <translation id="107147699690128016">Si vous modifiez l'extension du fichier, celui-ci pourrait s'ouvrir dans une application différente et potentiellement endommager votre appareil.</translation>
@@ -868,6 +869,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5780792035410621042">Pour copier les mots de passe, définissez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="5793665092639000975">Utilisation de <ph name="SPACE_USED" /> sur <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Rechercher et parcourir</translation>
+<translation id="5797949256525811424">Thème bloqué</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Il y a # heure}one{Il y a # heure}other{Il y a # heures}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="5813552293717797987">Ce navigateur est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
@@ -1195,6 +1197,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7485033510383818941">Pour actualiser le contenu du flux, déroulez la page</translation>
 <translation id="749294055653435199">Google Lens n'est pas disponible sur cet appareil</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (Dernière mise à jour <ph name="TIME_SINCE_UPDATE" />)</translation>
+<translation id="7497755084107113646">Thème ajouté de nouveau aux thèmes potentiels</translation>
 <translation id="7498271377022651285">Veuillez patienter…</translation>
 <translation id="7502234197872745058">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK1" />déconnectez-vous de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="750228856503700085">Aucune nouvelle information</translation>
@@ -1489,6 +1492,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# vidéo}one{# vidéo}other{# vidéos}}</translation>
 <translation id="9042893549633094279">Confidentialité et sécurité</translation>
 <translation id="9050666287014529139">Phrase secrète</translation>
+<translation id="9055497320631373736">Site ajouté de nouveau aux sites potentiels</translation>
 <translation id="9063523880881406963">Désactiver "Voir version ordinateur"</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9065383040763568503">Données stockées que Chrome ne considère pas comme importantes (par exemple, pour des sites sans paramètres enregistrés ou que vous ne consultez pas souvent)</translation>

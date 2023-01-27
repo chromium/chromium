@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">لقد سجّلت الخروج من حسابك.</translation>
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
-<translation id="1434356225517321998">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />التفاصيل<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="1450170672351507823">الحماية العادية مفعَّلة. لزيادة مستوى الأمان، يمكنك استخدام "الحماية المُحسَّنة".</translation>
 <translation id="149095475893949513">يحاول هذا الموقع الإلكتروني تنزيل ملف شخصي يتضمّن إعدادات.</translation>
@@ -261,7 +260,7 @@
 <translation id="288655811176831528">إغلاق علامة التبويب</translation>
 <translation id="2890171748217283516">‏تم حفظ المواقع الإلكترونية التي تُتابعها في حسابك على Google. يمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات القسم "اقتراحات".</translation>
 <translation id="2898963176829412617">مجلد جديد...</translation>
-<translation id="2902684821701498619">الإضافة إلى قائمة القراءة</translation>
+<translation id="2902684821701498619">إضافة إلى قائمة القراءة</translation>
 <translation id="2916171785467530738">‏الإكمال التلقائي لعناوين URL وعمليات البحث</translation>
 <translation id="291754862089661335">ضَع رمز الاستجابة السريعة أو الرمز الشريطي في هذا الإطار</translation>
 <translation id="2920866371965792875">للاطّلاع على التحديثات في هذا الموقع الإلكتروني، يُرجى النقر هنا.</translation>
@@ -400,7 +399,6 @@
 <translation id="3929457972718048006">العناوين</translation>
 <translation id="3943492037546055397">كلمات المرور</translation>
 <translation id="3959736869653157332">القائمة ← علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
-<translation id="3964173450954943920">‏يمكنك متى شئت اختيار ما تريد مزامنته من خلال <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />. قد تستخدم Google سجلّك لتخصيص "بحث Google" وخدمات Google الأخرى.</translation>
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3968505803272650567">إدارة الاهتمامات</translation>
 <translation id="3989635538409502728">تسجيل الخروج</translation>
@@ -1038,6 +1036,7 @@
 <translation id="8680787084697685621">تفاصيل تسجيل الدخول إلى الحساب قديمة.</translation>
 <translation id="8693663554456874301">{count,plural, =1{إغلاق علامة التبويب}zero{إغلاق علامات التبويب}two{إغلاق علامتَي التبويب}few{إغلاق علامات التبويب}many{إغلاق علامات التبويب}other{إغلاق علامات التبويب}}</translation>
 <translation id="8706588385081740091">كلمات المرور</translation>
+<translation id="8712637175834984815">حسنًا</translation>
 <translation id="8717864919010420084">نسخ الرابط</translation>
 <translation id="8721297211384281569">قائمة الأدوات</translation>
 <translation id="8725066075913043281">إعادة المحاولة</translation>

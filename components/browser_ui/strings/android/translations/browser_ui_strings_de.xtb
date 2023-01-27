@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2717722538473713889">E-Mail-Adressen</translation>
 <translation id="2750481671343847896">Websites dürfen Anmeldungsaufforderungen von Identitätsdiensten anzeigen.</translation>
+<translation id="2779966372261694284">Du wirst von dieser Website abgemeldet</translation>
 <translation id="2822354292072154809">Möchtest du wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
@@ -255,6 +256,7 @@
 <translation id="5804241973901381774">Berechtigungen</translation>
 <translation id="5860033963881614850">Aus</translation>
 <translation id="5876056640971328065">Video anhalten</translation>
+<translation id="5884085660368669834">Websiteeinstellung</translation>
 <translation id="5887687176710214216">Gestern zuletzt besucht</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5922853908706496913">Bildschirmfreigabe läuft</translation>
@@ -288,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Websites daran hindern, mein Virtual-Reality-Gerät und meine Virtual-Reality-Daten zu verwenden</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Seite über das Hauptmenü heran- und herauszoomen</translation>
 <translation id="6467852467360539617">Daten löschen und Berechtigungen zurücksetzen</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
@@ -306,6 +307,7 @@
 <translation id="6746124502594467657">Nach unten</translation>
 <translation id="6749077623962119521">Berechtigungen zurücksetzen?</translation>
 <translation id="6766622839693428701">Zum Schließen nach unten wischen.</translation>
+<translation id="6787751205395685251">Wähle eine Option aus für <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6818926723028410516">Einträge auswählen</translation>
 <translation id="6864395892908308021">NFC wird von diesem Gerät nicht unterstützt</translation>
@@ -316,6 +318,7 @@
 <translation id="6992289844737586249">Nachfragen, bevor Websites auf mein Mikrofon zugreifen dürfen (empfohlen)</translation>
 <translation id="7000754031042624318">In den Android-Einstellungen deaktiviert</translation>
 <translation id="7016516562562142042">Für die aktuelle Suchmaschine zugelassen</translation>
+<translation id="702275896380648118">Diese Website erhebt Informationen dazu, was dir gefällt, und schlägt dann anderen Websites Werbung vor. Außerdem ruft sie deine Anzeigenthemen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann.</translation>
 <translation id="702463548815491781">Empfohlen, wenn TalkBack oder der Schalterzugriff aktiviert ist</translation>
 <translation id="7053983685419859001">Blockieren</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ausgewählt}other{# ausgewählt}}</translation>
@@ -346,7 +349,6 @@
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7667547420449112975">Der Zauberer von Oz</translation>
 <translation id="7684642910516280563">Einer Website nicht erlauben, Drittanbieter-Cookies zu verwenden</translation>
-<translation id="7690549345586282764">Zoomoption anzeigen</translation>
 <translation id="7719367874908701697">Seitenzoom</translation>
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
@@ -425,7 +427,7 @@
 <translation id="8958424370300090006">Cookies für eine bestimmte Website werden blockiert.</translation>
 <translation id="8959122750345127698">Navigation nicht möglich: <ph name="URL" /> ist nicht erreichbar.</translation>
 <translation id="8986362086234534611">Entfernen</translation>
-<translation id="900095568014372589">Standardtext und -bilder auf Websites verkleinern oder vergrößern</translation>
+<translation id="8990043154272859344">Du wirst von allen Websites abgemeldet</translation>
 <translation id="9019902583201351841">Von deinen Eltern verwaltet</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Diese Website ist einer Gruppe zugeordnet, die deine Aktivitäten sehen kann. Die Gruppe wird durch <ph name="FPS_OWNER" /> definiert.</translation>

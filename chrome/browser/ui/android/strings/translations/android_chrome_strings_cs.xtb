@@ -563,6 +563,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4108314971463891922">Sledovat</translation>
 <translation id="4108998448622696017">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
 <translation id="4116038641877404294">Stáhněte si stránky k použití offline</translation>
+<translation id="4124152339699379357">Postup udělení oprávnění k zasílání oznámení je otevřený na celou výšku</translation>
 <translation id="4135200667068010335">Seznam zařízení, se kterými se má karta sdílet, je zavřený.</translation>
 <translation id="4137746084635924146">Aktuální jazyk zařízení</translation>
 <translation id="414128724510021958">Ve výchozím nastavení jsou požadovány weby pro počítače</translation>
@@ -1401,6 +1402,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8516012719330875537">Editor obrázků</translation>
 <translation id="8516431725144212809">Vaše zájmy podle odhadu Chromu</translation>
 <translation id="8523928698583292556">Vymazat uložené heslo</translation>
+<translation id="8526855376374973824">Postup udělení oprávnění k zasílání oznámení</translation>
 <translation id="8540136935098276800">Zadejte správně formátovanou adresu URL</translation>
 <translation id="854522910157234410">Otevřít tuto stránku</translation>
 <translation id="8551513938758868521">Při zavření Chromu zamknout anonymní karty</translation>
@@ -1460,6 +1462,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, karta</translation>
 <translation id="8854223127042600341">Zobrazte si soubory offline</translation>
 <translation id="8856607253650333758">Zobrazovat popisy</translation>
+<translation id="8856931513242997049">Postup udělení oznámení k zasílání oprávnění je zavřený</translation>
 <translation id="8873817150012960745">Začnete klepnutím sem</translation>
 <translation id="8881973373982641723">Vymaže historii, včetně vyhledávacího pole.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, weby starší než 4 měsíce ze seznamu automaticky mažeme. Web, který navštívíte znovu, se může na seznamu opět objevit. Pokud nechcete, aby nějaký web definoval vaše zájmy, můžete ho odstranit.</translation>

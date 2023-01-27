@@ -314,6 +314,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1682696192498422849">Napred krátkym okrajom</translation>
 <translation id="168693727862418163">Túto hodnotu pravidla sa nepodarilo v jeho schéme overiť a bude ignorovaná.</translation>
 <translation id="168841957122794586">Certifikát servera obsahuje slabý kryptografický kľúč.</translation>
+<translation id="1689333818294560261">Prezývka</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> Chrome automaticky odstraňuje témy staršie ako štyri týždne. Počas ďalšieho prehliadania sa určitá téma môže v zozname znova zobraziť. V nastaveniach Chromu môžete navyše kedykoľvek zablokovať témy, ktoré Chrome nemá zdieľať s webmi, a vypnúť témy reklám.</translation>
 <translation id="1697532407822776718">Všetko je nastavené!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2430968933669123598">Spravovať účet Google, stlačením klávesa Enter môžete spravovať informácie, ochranu súkromia a zabezpečenie v účte Google</translation>
 <translation id="2436186046335138073">Chcete povoliť obslužnému programu <ph name="HANDLER_HOSTNAME" /> otvárať všetky odkazy protokolu <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Štyri dierky vpravo</translation>
+<translation id="2441854154602066476">Spôsoby platby, ktoré sa dajú vyplniť po klepnutí. Klávesnica je skrytá.</translation>
 <translation id="2448295565072560657">Periférie pripojené k tomuto zariadeniu počas vášho prihlásenia</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2463739503403862330">Vyplniť</translation>
@@ -776,6 +778,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2916038427272391327">Zavrite ostatné programy</translation>
 <translation id="2918922650248459053">Potápanie a aktivity pod vodnou hladinou</translation>
 <translation id="2922350208395188000">Certifikát servera sa nedá overiť.</translation>
+<translation id="292371311537977079">Nastavenia Chromu</translation>
 <translation id="2925673989565098301">Spôsob doručenia</translation>
 <translation id="2928905813689894207">Fakturačná adresa</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšia}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšie}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalšej}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> ďalších}}</translation>
@@ -1141,6 +1144,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3815434930383843058">8 × 12 palcov</translation>
 <translation id="3816482573645936981">Hodnota (nahradená)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Váš prehliadač spravuje <ph name="BROWSER_DOMAIN" />. Váš profil spravuje <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="382518646247711829">Ak používate server proxy...</translation>
 <translation id="3826050100957962900">Prihlásenie tretej strany</translation>
@@ -1571,6 +1575,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4880827082731008257">Hľadať v histórii</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
 <translation id="4881808915112408168">24 × 31,5 palca</translation>
+<translation id="4882314601499260499">Neuplatňujú sa žiadne pravidlá pre používateľov. Ak chcete pridať pravidlá pre používateľov, vaša organizácia musí <ph name="LINK_BEGIN" />overiť vašu doménu<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Zaplaťte za nákup kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Ochrana hesiel pomocou funkcie Windows Hello</translation>
 <translation id="4888600795924685526">Štúdium cudzích jazykov</translation>
@@ -2454,6 +2459,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7136009930065337683">Ďalšie informácie o režime inkognito</translation>
 <translation id="7138472120740807366">Spôsob doručenia</translation>
 <translation id="7139892792842608322">Hlavný zásobník</translation>
+<translation id="7140087718106278457">Zoznam spôsobov platby je zavretý.</translation>
 <translation id="714064300541049402">Posun obrázka strany č. 2 na osi X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalší}few{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšie}many{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalšieho}other{<ph name="PAYMENT_METHOD_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> ďalších}}</translation>
@@ -2731,6 +2737,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7755287808199759310">Váš rodič ho môže pre vás odblokovať</translation>
 <translation id="7755624218968747854">Hlavný kotúč</translation>
 <translation id="7758069387465995638">Pripojenie mohla zablokovať brána firewall alebo antivírusový softvér.</translation>
+<translation id="7759809451544302770">Voliteľné</translation>
 <translation id="7760497246331667482">Reggae a karibská hudba</translation>
 <translation id="776110834126722255">Ukončená podpora</translation>
 <translation id="7761159795823346334">Chcete povoliť prístup ku kamere?</translation>
@@ -2976,6 +2983,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8381674639488873545">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné. <ph name="BEGIN_LINK" />Napriek tomu zobraziť<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Zdieľanie zo zdroja <ph name="ORIGIN_NAME" /> na miesto <ph name="VM_NAME" /> je blokované pravidlami správcu</translation>
 <translation id="8396522675989118466">Je to <ph name="NUMBER_OF_DIGITS" />-miestny kód na <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Spôsoby platby, ktoré sa dajú vyplniť po klepnutí, sú otvorené na celú výšku.</translation>
 <translation id="8398790343843005537">Nájsť telefón</translation>
 <translation id="8405579342203358118">Spravujte v nastaveniach Chromu, aké údaje sa synchronizujú</translation>
 <translation id="8406071103346257942">zabrániť používaniu zámky obrazovky pri vypĺňaní hesiel</translation>
@@ -3137,6 +3145,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8830320733681313421">Hagaki pohľadnica</translation>
 <translation id="8834380158646307944">Tlačidlo na zavretie okien inkognito, stlačením klávesa Enter zavrite všetky okná inkognito, ktoré sú momentálne otvorené</translation>
 <translation id="883848425547221593">Iné záložky</translation>
+<translation id="8842351563145134519">Spôsoby platby, ktoré sa dajú vyplniť po klepnutí, sú otvorené na polovičnú výšku.</translation>
 <translation id="884264119367021077">Dodacia adresa</translation>
 <translation id="8849231003559822746">130 × 180 mm</translation>
 <translation id="884923133447025588">Nenašiel sa žiadny mechanizmus rušenia certifikátov.</translation>

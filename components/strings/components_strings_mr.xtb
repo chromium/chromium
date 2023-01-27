@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">शॉर्ट एज प्रथम</translation>
 <translation id="168693727862418163">हे धोरण मूल्य त्याच्या स्कीमासोबत प्रमाणित करता आले नाही आणि त्याच्याकडे दुर्लक्ष केले जाईल.</translation>
 <translation id="168841957122794586">सर्व्हर सर्टिफिकेटमध्ये एक कमकुवत क्रिप्टोग्राफिक की आहे.</translation>
+<translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:<ph name="END_BOLD" /> Chrome हे चार आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो. Chrome ने साइटसह शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉकदेखील करू शकता आणि Chrome सेटिंग्जमध्ये जाहिरातीचे विषय कधीही बंद करू शकता.</translation>
 <translation id="1697532407822776718">तुम्ही पूर्णपणे तयार आहात!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Google खाते व्यवस्थापित करा, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
 <translation id="2438874542388153331">क्वाड पंच राइट</translation>
+<translation id="2441854154602066476">स्पर्श करून भरण्यासाठी पेमेंट पद्धती उपलब्ध आहेत. कीबोर्ड लपवलेला आहे.</translation>
 <translation id="2448295565072560657">तुम्ही लॉग इन केलेले असताना या डिव्हाइसला अटॅच केलेली उपकरणे</translation>
 <translation id="2450021089947420533">प्रवास</translation>
 <translation id="2463739503403862330">भरून टाका</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">अन्य प्रोग्राम बंद करा</translation>
 <translation id="2918922650248459053">डायव्हिंग आणि पाण्याखालील अ‍ॅक्टिव्हिटी</translation>
 <translation id="2922350208395188000">सर्व्हरचे सर्टिफिकेट तपासणे शक्य नाही.</translation>
+<translation id="292371311537977079">Chrome सेटिंग्ज</translation>
 <translation id="2925673989565098301">वितरण पद्धत</translation>
 <translation id="2928905813689894207">बिलिंग पत्ता</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> आणखी}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> आणखी}}</translation>
@@ -1144,6 +1147,7 @@
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
 <translation id="3815434930383843058">८ x १२ इं</translation>
 <translation id="3816482573645936981">मूल्य (अधिग्रहित केलेले)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">तुमचा ब्राउझर <ph name="BROWSER_DOMAIN" /> द्वारे आणि तुमची प्रोफाइल <ph name="PROFILE_DOMAIN" /> द्वारे व्यवस्थापित केली जाते</translation>
 <translation id="382518646247711829">तुम्ही प्रॉक्सी सर्व्हर वापरत असल्यास...</translation>
 <translation id="3826050100957962900">तृतीय पक्ष साइन इन</translation>
@@ -1574,6 +1578,7 @@
 <translation id="4880827082731008257">इतिहास शोध</translation>
 <translation id="4881695831933465202">उघडा</translation>
 <translation id="4881808915112408168">२४ x ३१.५ इं</translation>
+<translation id="4882314601499260499">कोणतीही वापरकर्ता धोरणे लागू केलेली नाहीत. वापरकर्ता धोरणे जोडण्यासाठी, तुमच्या संस्थेने <ph name="LINK_BEGIN" />तुमच्या डोमेनची पडताळणी करणे<ph name="LINK_END" /> आवश्यक आहे.</translation>
 <translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
 <translation id="4888600795924685526">विदेशी भाषा शिकणे</translation>
@@ -1751,6 +1756,7 @@
 <translation id="5306593769196050043">दोन्ही पत्रके</translation>
 <translation id="5307166000025436103">ओके</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
+<translation id="5308406951783863385">तुम्ही Chrome सेटिंग्जमध्ये बदल करू शकता</translation>
 <translation id="5308689395849655368">क्रॅश अहवाल बंद केला आहे.</translation>
 <translation id="5310178588836736698">ऑफ-रोड वाहने</translation>
 <translation id="5314967030527622926">बुकलेट मेकर</translation>
@@ -2458,6 +2464,7 @@
 <translation id="7136009930065337683">गुप्त मोडबद्दल अधिक जाणून घ्या</translation>
 <translation id="7138472120740807366">वितरण पद्धत</translation>
 <translation id="7139892792842608322">प्राथमिक ट्रे</translation>
+<translation id="7140087718106278457">पेमेंट पद्धतींची सूची बंद आहे.</translation>
 <translation id="714064300541049402">साइड २ इमेज X शिफ्ट</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}other{<ph name="PAYMENT_METHOD_PREVIEW" /> आणि <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> आणखी}}</translation>
@@ -2735,6 +2742,7 @@
 <translation id="7755287808199759310">तुमचे पालक तुमच्यासाठी ती अनब्लॉक करू शकतात</translation>
 <translation id="7755624218968747854">प्राथमिक रोल</translation>
 <translation id="7758069387465995638">फायरवॉल किंवा अँटीव्हायरस सॉफ्टवेअरने कदाचित कनेक्शन ब्लॉक केले असावे.</translation>
+<translation id="7759809451544302770">पर्यायी</translation>
 <translation id="7760497246331667482">रेगे आणि कॅरिबियन संगीत</translation>
 <translation id="776110834126722255">कालबाह्य झाले</translation>
 <translation id="7761159795823346334">कॅमेराला अनुमती द्यायची का?</translation>
@@ -2980,6 +2988,7 @@
 <translation id="8381674639488873545">हे शुल्क एका वेळचे किंवा आवर्ती असू शकते आणि ते उघड नसणे शक्य आहे. <ph name="BEGIN_LINK" />तरीही दाखवा<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे <ph name="ORIGIN_NAME" /> वरून <ph name="VM_NAME" /> वर शेअर करणे ब्लॉक केले आहे</translation>
 <translation id="8396522675989118466">हा <ph name="SIDE_OF_CARD" /> असलेला <ph name="NUMBER_OF_DIGITS" /> अंकी कोड आहे</translation>
+<translation id="8398335999901363925">स्पर्श करून भरण्यासाठी उपलब्ध पेमेंट पद्धती पूर्ण उंचीवर उघडल्या आहेत.</translation>
 <translation id="8398790343843005537">तुमचा फोन शोधा</translation>
 <translation id="8405579342203358118">Chrome सेटिंग्जमध्ये तुम्ही कोणती माहिती सिंक करता ते व्यवस्थापित करा</translation>
 <translation id="8406071103346257942">पासवर्ड भरण्यासाठी तुमचे स्क्रीन लॉक वापरणे थांबवा</translation>
@@ -3140,6 +3149,7 @@
 <translation id="8830320733681313421">Hagaki पोस्टकार्ड</translation>
 <translation id="8834380158646307944">गुप्त विंडो बंद करा बटण, सध्या उघड्या असलेल्या सर्व गुप्त विंडो बंद करण्यासाठी एंटर दाबा</translation>
 <translation id="883848425547221593">अन्य बुकमार्क</translation>
+<translation id="8842351563145134519">स्पर्श करून भरण्यासाठी उपलब्ध पेमेंट पद्धती अर्ध्या उंचीवर उघडल्या आहेत.</translation>
 <translation id="884264119367021077">वहनावळ पत्ता</translation>
 <translation id="8849231003559822746">१३० x १८० मिमी</translation>
 <translation id="884923133447025588">कोणतीही निरस्त करण्याची प्रणाली आढळली नाही.</translation>
@@ -3305,6 +3315,7 @@
 <translation id="935608979562296692">फॉर्म साफ करा</translation>
 <translation id="936602727769022409">तुम्ही तुमच्या Google खात्याचा ॲक्सेस कदाचित गमवाल. Chromium आता तुमचा पासवर्ड बदलण्याची शिफारस करते. तुम्हाला साइन इन करण्यासाठी सांगितले जाऊ शकते.</translation>
 <translation id="937457230470581909">प्राणिसंग्रहालये, मत्स्यालये आणि अभयारण्ये</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />कोणता डेटा वापरला जातो:<ph name="END_BOLD" /> तुमच्या जाहिरातीचे विषय हे तुमचा अलीकडील ब्राउझिंग इतिहास, म्हणजेच तुम्ही या डिव्हाइसवर Chrome वापरून भेट दिलेल्या साइटच्या सूचीवर आधारित असतात.</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
 <translation id="940053046584497293">प्रवास आणि परिवहन</translation>
 <translation id="945855313015696284">खालील माहिती तपासा आणि कोणतीही चुकीची कार्डे हटवा</translation>

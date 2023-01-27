@@ -95,6 +95,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 個分頁}other{<ph name="GROUP_TITLE" /> - # 個分頁}}</translation>
 <translation id="1082214733466244292">管理員已封鎖此裝置的部分功能</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求還原您的 Chrome 設定為原始預設值，並會重設您的首頁、新分頁和搜尋引擎、停用您的擴充功能，以及取消固定所有分頁。其他暫存資料和快取資料 (例如 Cookie、內容和網站資料) 亦會一併清除。</translation>
+<translation id="1082725763867769612">離線檔案</translation>
 <translation id="1084096383128641877">移除此密碼不會刪除您在 <ph name="DOMAIN" /> 的帳戶。請變更密碼或刪除您在 <ph name="DOMAIN_LINK" /> 的帳戶，以免被他人盜用。</translation>
 <translation id="1084288067399862432">已成功變更被盜用的密碼。
 
@@ -1278,7 +1279,7 @@
 <translation id="2114820389966440614">在此查看「近期精選相片」和其他回憶</translation>
 <translation id="2114896190328250491">相片提供：<ph name="NAME" /></translation>
 <translation id="2114995631896158695">沒有插入 SIM 卡</translation>
-<translation id="2116020356255810305">可在開機時啟動應用程式</translation>
+<translation id="2116020356255810305">可以喺開機嘅時候啟動應用程式</translation>
 <translation id="2116619964159595185">網站通常會連接藍牙裝置，以提供設定或同步低功耗信標、健康與健身追蹤器或智能燈泡等功能</translation>
 <translation id="2117655453726830283">下一張投影片</translation>
 <translation id="2119349053129246860">在 <ph name="APP" /> 中開啟</translation>
@@ -1373,6 +1374,7 @@
 <translation id="2195331105963583686">您仍可在該時間點後使用此 <ph name="DEVICE_TYPE" />，但屆時此裝置將無法自動取得軟件和安全性更新</translation>
 <translation id="2195729137168608510">電郵保護</translation>
 <translation id="2198625180564913276">正在新增設定檔。這項操作可能需時數分鐘。</translation>
+<translation id="2198712775285959645">編輯</translation>
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2200094388063410062">電郵</translation>
 <translation id="2200356397587687044">Chrome 需要權限才能繼續</translation>
@@ -3022,9 +3024,9 @@
 <translation id="3700888195348409686">正在顯示 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允許網站追蹤攝錄機位置</translation>
 <translation id="3702500414347826004">您的起始網頁已變更，包含 <ph name="URL" />。</translation>
-<translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />為這部正在設定的展示模式裝置輸入零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />如果不知道商店編號，輸入「0000」即可繼續進行展示模式安裝作業。<ph name="END_PARAGRAPH2" />
-    <ph name="BEGIN_PARAGRAPH3" />*注意：Google 會使用這類資訊確認裝置應接收的展示模式版本，並評估展示模式的使用方式。<ph name="END_PARAGRAPH3" /></translation>
+<translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />輸入此示範裝置要設定的零售商名稱和商店編號*。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如不知道商店編號，輸入「0000」即可繼續進行「示範模式」安裝。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*請注意：Google 會使用這些資料確認裝置應接收的「示範模式」版本，並評估「示範模式」的使用情況。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3703699162703116302">已重新整理票證</translation>
 <translation id="370415077757856453">已封鎖 JavaScript</translation>
 <translation id="3704331259350077894">操作停止</translation>
@@ -3180,6 +3182,7 @@
 <translation id="3823310065043511710">Linux 需要至少 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">在應用程式圖示上顯示代表快訊的圓點</translation>
 <translation id="3826071569074535339">已允許使用動作感應器</translation>
 <translation id="3826440694796503677">您的管理員已停用新增更多 Google 帳戶的功能</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
@@ -3334,6 +3337,7 @@
 <translation id="3957844511978444971">輕按 [接受]，即表示您確認選擇這些 Google 服務設定。</translation>
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3961005895395968120">可以對　<ph name="IBAN_DESCRIPTION" />　執行嘅其他操作</translation>
 <translation id="3962119236270174787">對已知的危險網站、下載檔案及擴充程式提供標準保護功能</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
 <translation id="3965811923470826124">包含</translation>
@@ -3831,7 +3835,7 @@
 <translation id="4427365070557649936">正在驗證確認碼…</translation>
 <translation id="4429163740524851942">實體鍵盤配置</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="443031431654216610">只能使用數字</translation>
+<translation id="443031431654216610">只使用數字</translation>
 <translation id="4430369329743628066">已新增書籤</translation>
 <translation id="4430422687972614133">啟用虛擬卡</translation>
 <translation id="4432621511648257259">密碼不正確</translation>
@@ -4499,6 +4503,7 @@
 <translation id="5063480226653192405">使用狀況</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">在 Chrome OS 設定中管理安全 DNS</translation>
+<translation id="5066160542186949327">移至其他資料夾</translation>
 <translation id="5067399438976153555">保持開啟</translation>
 <translation id="5067867186035333991">當 <ph name="HOST" /> 要求存取麥克風時詢問我。</translation>
 <translation id="5068553687099139861">顯示密碼</translation>
@@ -5033,7 +5038,7 @@
 <translation id="5555639311269196631">關閉熱點</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5558129378926964177">放大(&amp;I)</translation>
-<translation id="5558247502209241936">可在視窗中開啟應用程式</translation>
+<translation id="5558247502209241936">可以喺視窗入面啟動應用程式</translation>
 <translation id="55601339223879446">調整顯示屏內的桌面邊界</translation>
 <translation id="5561162485081632007">偵測並在危險事件發生時發出警告</translation>
 <translation id="5562781907504170924">這個分頁已連線至藍牙裝置。</translation>
@@ -5881,6 +5886,7 @@
 <translation id="6345418402353744910">Proxy <ph name="PROXY" /> 要求您提供使用者名稱和密碼，以便管理員設定您的網絡</translation>
 <translation id="6345878117466430440">標示為已閱讀</translation>
 <translation id="6347010704471250799">顯示通知</translation>
+<translation id="634887995541211148">在裝置上執行 Bruschetta。</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
 <translation id="635609604405270300">保持裝置開啟</translation>
@@ -5928,7 +5934,7 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6401458660421980302">如要將此分頁傳送至其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6401597285454423070">您的電腦具有可信任平台模組 (TPM) 安全性裝置，Chrome OS 需要透過該裝置來執行許多重要的安全防護功能。如要進一步瞭解，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="6402624310818737708">將密碼儲存到 Google 帳戶 (<ph name="ACCOUNT" />)</translation>
+<translation id="6402624310818737708">將密碼儲存至 Google 帳戶 (<ph name="ACCOUNT" />)</translation>
 <translation id="6404187344102273690">Chromebook 遊戲</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
@@ -6286,6 +6292,7 @@
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看最新內容</translation>
 <translation id="67269783048918309">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
+<translation id="6728528977475057549">IBAN 最後嘅數字係 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">請輸入您的使用者名稱</translation>
 <translation id="6731320427842222405">這可能需要幾分鐘的時間</translation>
 <translation id="6733620523445262364">建立咗 <ph name="BOOKMARK_TITLE" />。</translation>
@@ -6902,6 +6909,7 @@
 <translation id="7298195798382681320">建議</translation>
 <translation id="7299337219131431707">啟用訪客瀏覽</translation>
 <translation id="7299515639584427954">是否變更開啟支援連結的預設應用程式？</translation>
+<translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">您可以問：「Ok Google，呢首係咩歌？」或「Ok Google，我螢幕上面有乜嘢？」</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{此應用程式可能會令 Chrome 無法正常運作。}other{這些應用程式可能會令 Chrome 無法正常運作。}}</translation>
 <translation id="7303281435234579599">糟糕！設定示範模式時發生問題。</translation>
@@ -7703,6 +7711,7 @@
 <translation id="8013993649590906847">如果圖片並無有用的說明，Chrome 會嘗試為您提供說明。因此，圖片將傳送至 Google 以建立說明。</translation>
 <translation id="8014154204619229810">正在執行更新程式。請稍後重新整理並再次查看。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> 無法還原至上一個安裝版本，請嘗試在裝置執行 Powerwash。</translation>
+<translation id="8015812716978143">在新分頁中顯示所有下載項目</translation>
 <translation id="8016266267177410919">暫時儲存空間</translation>
 <translation id="8017176852978888182">Linux 共用目錄</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8811,6 +8820,7 @@
 <translation id="9026731007018893674">下載檔案</translation>
 <translation id="9026852570893462412">此程序可能需時幾分鐘。正在下載虛擬機器。</translation>
 <translation id="9027459031423301635">在新分頁中開啟連結(&amp;T)</translation>
+<translation id="9027707169256972235">移除</translation>
 <translation id="9029667986262585240">您已關閉帳戶的「強化安全瀏覽」功能。</translation>
 <translation id="9030515284705930323">您的機構並未為您的帳戶啟用「Google Play 商店」。請聯絡您的管理員，以取得更多資料。</translation>
 <translation id="9030754204056345429">較快</translation>

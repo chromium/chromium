@@ -11,6 +11,7 @@
 <translation id="1002439864875515590">Si no se configura esta política o se establece como un string en blanco, <ph name="PRODUCT_OS_NAME" /> no mostrará una opción de autocompletar durante el flujo de acceso del usuario.
       Si se establece como una string que representa un nombre de dominio, <ph name="PRODUCT_OS_NAME" /> mostrará una opción de autocompletar durante el acceso del usuario, lo que le permitirá escribir solamente su nombre sin la extensión del nombre de dominio.  El usuario podrá sobrescribir esta extensión de nombre de dominio.
       Si el valor de la política no es un dominio válido, no se aplicará la política.</translation>
+<translation id="1002829167638728809">Permitir la generación de informes sobre los datos relacionados con la confiabilidad de dominios</translation>
 <translation id="1004590217607585595">Configuración de la administración de aplicaciones web</translation>
 <translation id="1006218396155867129">Impedir que los usuarios de acceso remoto transfieran archivos desde y hacia el host remoto</translation>
 <translation id="1007149936182752368">Inhabilitar la edición de favoritos</translation>
@@ -2178,6 +2179,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="305106159605171619">Se inhabilita la reducción de usuario-agente, y las pruebas de campo o de origen no la habilitan</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3060177910182947411">Tiempo de espera de inactividad del protector de pantalla del usuario</translation>
 <translation id="3063302084011279315">Inhabilitar Screencast</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación de Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo apliquen la transferencia de ADB</translation>
@@ -2220,6 +2222,7 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="309416443108680956">Especifica lo que sucede cuando un usuario que se autentica mediante un token de seguridad (p. ej., con una tarjeta inteligente) quita ese token durante una sesión activa. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: No pasa nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Se cierra la sesión y el usuario sale. Si no estableces esta política, se aplicará la configuración predeterminada <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
 <translation id="309885424548342662">Habilitar la autenticación en la nube de Microsoft®</translation>
+<translation id="310020160141550490">Intervalo de visualización de la imagen del protector de pantalla del usuario</translation>
 <translation id="3101035417394748390">El tamaño máximo (en bytes) que puede transferirse entre el cliente y el host a través de la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Elegir cómo especificar la configuración del servidor proxy</translation>
 <translation id="3101709781009526431">Fecha y hora</translation>
@@ -2805,6 +2808,13 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
+<translation id="359203136434560942">Configura la lista de imágenes que se mostrarán en el protector de pantalla de la pantalla de bloqueo.
+
+Cada elemento de la lista hace referencia a una imagen que se mostrará en el protector de pantalla. El elemento debe tener como miembros una URL a la imagen y el valor de hash SHA-256 del archivo de imagen para la verificación. El formato de imagen debe ser JPEG. El dispositivo <ph name="PRODUCT_OS_NAME" /> descargará estas imágenes y mantendrá una caché local de estas referencias.
+
+Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.
+
+Si no estableces esta política, o la lista no contiene referencias de imagen válidas, no se mostrará el protector de pantalla para la pantalla de bloqueo, independientemente del valor establecido en la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
 <translation id="3596112486106491038">Habilitar el acceso a la línea de comandos de la máquina virtual</translation>
 <translation id="3603469950773500315">Habilita las mitigaciones de comprobación de <ph name="CORS" /> en la nueva implementación de <ph name="CORS" />, lo que permite que las extensiones mantengan su compatibilidad y que <ph name="PRODUCT_NAME" /> envíe encabezados específicos sin las comprobaciones de <ph name="CORS" />.
@@ -3103,6 +3113,16 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3891175633496805812">Inhabilitar el controlador de telemetría y diagnósticos wilco</translation>
 <translation id="3891357445869647828">Habilitar JavaScript</translation>
 <translation id="3891769546914233112">Imprimir PDF como imagen disponible</translation>
+<translation id="389527805641080362">Esta política controla el valor del <ph name="IPP_ATTRIBUTE" /> <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> (<ph name="IPP_PROTOCOL" />) en los trabajos de impresión.
+
+ Si estableces la política, se enviará un valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional para los trabajos de impresión enviados a las impresoras <ph name="IPP_PROTOCOL" />. El miembro <ph name="CLIENT_TYPE_IPP_ATTRIBUTE" /> del valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> agregado se establecerá como <ph name="CLIENT_TYPE_OTHER" />. El miembro <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> del valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> agregado se establecerá con el valor de la política después de la sustitución de las variables del marcador de posición. Las variables del marcador de posición admitidas son <ph name="DIRECTORY_ID_PLACEHOLDER" />, <ph name="SERIAL_NUMBER_PLACEHOLDER" />, <ph name="ASSET_ID_PLACEHOLDER" /> y <ph name="ANNOTATED_LOCATION_PLACEHOLDER" />. No se remplazarán las variables de marcador de posición no admitidas.
+
+ El valor resultante después de la sustitución de las variables del marcador de posición se considera válido si no tiene más de 127 caracteres y solo contiene los siguientes caracteres: letras minúsculas y mayúsculas del alfabeto inglés, dígitos, guiones ("-") y puntos (".") y guiones bajos ("_").
+
+ Ten en cuenta que, por razones de privacidad, esta política solo tiene efecto si la conexión a la impresora es segura (esquema de URI <ph name="IPPS_SCHEME" />) y el usuario que envía el trabajo de impresión está afiliado. Además, ten en cuenta que esta política solo se aplica a las impresoras que admiten <ph name="CLIENT_INFO_IPP_ATTRIBUTE" />.
+
+ Si no estableces la política o la estableces como un valor vacío o no válido, no se agregará un valor <ph name="CLIENT_INFO_IPP_ATTRIBUTE" /> adicional a las solicitudes de trabajos de impresión.
+</translation>
 <translation id="3897218615484393758">Limita el tiempo durante el cual un usuario que se autenticó mediante SAML puede acceder sin conexión a través de la pantalla de bloqueo</translation>
 <translation id="3897860452756794695">Usar el comportamiento nuevo de offsetParent</translation>
 <translation id="3898345958122666461">Desactivar NTLMv2</translation>
@@ -3353,16 +3373,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       producirá un error.
 
       Esta política solo está disponible en instancias de Windows vinculadas a un dominio de <ph name="MS_AD_NAME" />, en instancias de Windows 10 Pro o Enterprise habilitadas para la administración de dispositivos, o en instancias de macOS administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
-<translation id="4135805680586226327">Esta política controla la refactorización reciente de las APIs de Graphics3D en el complemento PPAPI.
-
-La migración solo afecta los detalles de implementación internos y no debe
-cambiar ningún comportamiento. Sin embargo, esta política se puede usar en caso de que las aplicaciones PPAPI
-no funcionen como se espera.
-
-Si no estableces la política o la habilitas, el navegador decidirá
-qué implementación se utiliza.
-Si la inhabilitas, el navegador usará la implementación anterior
-hasta que la política venza.</translation>
 <translation id="4136603825567209889">Habilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4140646780789794190">Inhabilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
@@ -3392,26 +3402,6 @@ hasta que la política venza.</translation>
       Si la inhabilitas, no se ignorarán las políticas debido a su origen. Solo se ignorarán las políticas en caso de conflicto y si la política no tiene la prioridad más alta.
 
       Si se establece esta política desde un origen de nube, no podrá orientarse a un usuario específico.</translation>
-<translation id="4166865262840412074">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
-
-      El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
-      aislado en un clúster de agentes con clave de origen o bien en un
-      clúster con clave de sitio. Esto tiene repercusiones en la seguridad ya que un
-      clúster de agentes con clave de origen permite el aislamiento de documentos por origen. La consecuencia
-      visible de esto para el desarrollador es que el descriptor de acceso de document.domain ya no podrá
-      establecerse.
-
-      El comportamiento predeterminado cuando no se establece un encabezado Origin-Agent-Cluster
-      cambia en M106 de clave de sitio a clave de origen. Si habilitas
-      o no estableces la política, el navegador seguirá la nueva configuración predeterminada
-      de esa versión en adelante. Si la inhabilitas, se revierte este cambio y
-      los documentos que no contengan encabezados Origin-Agent-Cluster se asignarán a
-      los clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso de document.domain
-      podrá establecerse de forma predeterminada. Esto coincide con el comportamiento heredado.
-
-      Para obtener más información, consulta
-      https://developer.chrome.com/blog/immutable-document-domain/.
-      </translation>
 <translation id="416817811987180750">Habilitar la función de lista de compras para los usuarios</translation>
 <translation id="4169094969938998854">No permitir el bloqueo de la pantalla</translation>
 <translation id="4169692397912242417">Habilita la función de accesibilidad de comentarios por voz en la pantalla de acceso.
@@ -3831,6 +3821,11 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si no estableces la política, no se implementará la selección automática para ningún sitio.</translation>
 <translation id="4611983465824842867">No mostrar advertencias ni inhabilitar la opción Autocompletar en los formularios poco seguros</translation>
 <translation id="4615003180013429835">Modo de análisis de la lista de sitios</translation>
+<translation id="4616586760991368127">Configura el intervalo en segundos para que se muestre una imagen cuando el protector de pantalla de la pantalla de bloqueo tenga varias imágenes para mostrar.
+
+Los valores válidos varían entre 1 segundo y 9,999 segundos. Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utilizará el valor predeterminado de 60 segundos.
+
+Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.</translation>
 <translation id="4617338332148204752">Omitir la comprobación de metaetiquetas en <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="461901491675418689">Hacer que la función NewBaseUrlInheritanceBehavior esté disponible</translation>
 <translation id="4624006912948309924">Si estableces la política, se determinarán los identificadores de aplicación que <ph name="PRODUCT_OS_NAME" /> mostrará como apps fijas en la barra del selector; los usuarios no podrán cambiarlos.
@@ -3969,6 +3964,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
           Si no la estableces, el audio mono estará inicialmente inhabilitado, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="4768446404233019970">Habilitar los conjuntos de algoritmos de cifrado 3DES en TLS</translation>
 <translation id="4770334626033858263">La configuración que se usa para generar y verificar el código de acceso parental.</translation>
+<translation id="4772431363738215349">La URL desde la cual se puede descargar la imagen del protector de pantalla.</translation>
 <translation id="4773997835955617342">Cambia la configuración sugerida de <ph name="KRB5_CONFIG" /> para los nuevos tickets creados manualmente.
 
       Si habilitas esta política, el valor de la política "KerberosCustomPrefilledConfig" se aplicará como la configuración sugerida y se mostrará en la sección "Configuración avanzada" del diálogo de autenticación de Kerberos.
@@ -4275,8 +4271,11 @@ Si inhabilitas esta política o no la estableces, la API de window.webkitStorage
 <translation id="5082296146261894974">Permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5082572440690475059">Permite el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
+<translation id="5087932158260897375">Si se establece esta política como falsa, se inhabilitarán los informes sobre datos de diagnóstico de confiabilidad de dominios y no se enviarán datos a Google.
+Si no se establece esta política o se establece como verdadera, los informes sobre datos de diagnóstico de confiabilidad de dominios seguirán el comportamiento de MetricsReportingEnabled en <ph name="PRODUCT_NAME" /> o el de DeviceMetricsReportingEnabled en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
 <translation id="5091315650312105069">Permitir la autenticación <ph name="BASIC_AUTH" /> para HTTP</translation>
+<translation id="5093603777978346818">No habilitar el protector de pantalla en la pantalla de bloqueo</translation>
 <translation id="5099239365323299669">A partir de la versión M106, no se admitirá la cuota persistente. Esta política volverá a habilitar la funcionalidad de la cuota persistente hasta la versión M107.
 
       Si habilitas esta política, webkitRequestFileSystem con tipo persistente funcionará con cuota persistente.
@@ -4463,6 +4462,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si no se establece esta política, no se aplicarán restricciones y el usuario podrá acceder independientemente de la versión de <ph name="PRODUCT_NAME" />.
 
       Aquí la "versión" puede ser exacta, como "61.0.3163.120", o el prefijo de una versión, como "61.0".  </translation>
+<translation id="5247584184349816217">Habilitar el protector de pantalla en la pantalla de bloqueo</translation>
 <translation id="5247973380763021389">Impedir que las políticas de nube destinadas a los usuarios anulen las políticas de nube de la máquina</translation>
 <translation id="5249453807420671499">Los usuarios pueden agregar cuentas de Kerberos</translation>
 <translation id="5249555581286638799">Habilitar el modo de alta eficiencia</translation>
@@ -4570,6 +4570,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 
       Si la estableces como falsa, se inhabilitará la redirección de puertos a los contenedores de Crostini.</translation>
 <translation id="538108065117008131">Permitir que <ph name="PRODUCT_FRAME_NAME" /> maneje los siguientes tipos de contenido.</translation>
+<translation id="5382211603538487131">El hash SHA-256 de la imagen.</translation>
 <translation id="538768040137709073">Habilita la función de portapapeles compartido, que permite que los usuarios compartan texto entre computadoras de escritorios con Chrome y dispositivos Android cuando está habilitada la sincronización y el usuario accedió a su cuenta.
 
           Si se establece la política como verdadera, el usuario de Chrome podrá compartir texto entre dispositivos.
@@ -4877,6 +4878,15 @@ Si no estableces la política, ningún dominio podrá acceder a las URLs de file
       Esta política puede anularse para patrones de URL específicos a través de las políticas <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> y <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" />.
 
       Esta política solo afecta las operaciones del portapapeles que están controladas por el permiso para sitios del portapapeles. No afecta las interacciones seguras del portapapeles.</translation>
+<translation id="565149060065571736">Configura el protector de pantalla del usuario para la pantalla de bloqueo.
+
+Si estableces esta política como verdadera, el dispositivo <ph name="PRODUCT_OS_NAME" /> mostrará un protector de pantalla en la pantalla de bloqueo cuando esté inactivo.
+
+Si la estableces como falsa o no la estableces, no se mostrará el protector de pantalla en la pantalla de bloqueo.
+
+El protector de pantalla del usuario muestra las imágenes a las que hace referencia la política <ph name="SCREENSAVER_IMAGES_POLICY_NAME" />. Si no estableces <ph name="SCREENSAVER_IMAGES_POLICY_NAME" />, la estableces como una lista vacía o una lista sin imágenes válidas, no se mostrará el protector de pantalla para la pantalla de bloqueo.
+
+El tiempo de espera de inactividad para iniciar el protector de pantalla y el intervalo en el que se muestra una imagen se pueden modificar con las políticas <ph name="SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> y <ph name="SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Si no estableces alguna de estas políticas, se usarán sus valores predeterminados.</translation>
 <translation id="5652250453612826983">Controla las políticas de supervisión parental, que se aplican solo a las cuentas de menores de edad.
       Estas políticas no se establecen en la Consola del administrador; se configuran directamente en el servidor de la API de Kids.</translation>
 <translation id="5654682237531873653">Si habilitas la política, se activará el corrector ortográfico, y los usuarios no podrán desactivarlo. En <ph name="MS_WIN_NAME" />, <ph name="PRODUCT_OS_NAME" /> y <ph name="LINUX_OS_NAME" />, es posible activar y desactivar individualmente idiomas con corrección ortográfica, por lo que de todos modos los usuarios podrán desactivar el corrector ortográfico si desactivan cada idioma que tenga corrección ortográfica. A fin de evitarlo, usa la política<ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> para habilitar idiomas específicos con corrección ortográfica de manera automática.
@@ -5597,6 +5607,7 @@ principal del string usuario-agente en 99.
         Agrega expresiones regulares de URL a |url_list| para incluir en la lista de elementos permitidos las URL que coincidan con ellas.
         Para incluir una app en la lista de elementos permitidos, agrégala con sus valores de |app_id| y |app_type| a |app_list|.
        </translation>
+<translation id="6334522128949184555">Habilitar el protector de pantalla del usuario</translation>
 <translation id="6337782882143073193">Esta política es obsoleta; usa la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> en su lugar.
 
       Inhabilita los esquemas de protocolos que aparecen en <ph name="PRODUCT_NAME" />.
@@ -6396,6 +6407,7 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7046997898355294677">Mostrar las notificaciones de privacidad hasta que el usuario las descarte</translation>
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
 <translation id="7055022222176591388">No permitir el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
+<translation id="7056040036973126753">Enviar datos de confiabilidad de dominios a Google en función de la política de Métricas del usuario (UMA) de Chrome</translation>
 <translation id="7062803946218028349">Permitir que se habilite Phone Hub</translation>
 <translation id="7066292150801784098">Impedir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio.</translation>
@@ -7270,6 +7282,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo estará disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, están inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> o se ejecutan en Windows 10 Pro. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="7919665519909231619">Permitir que se habilite la función de lista de compras</translation>
 <translation id="7922358664346625612">Mantener la última pestaña abierta en Chrome</translation>
+<translation id="7923734850959347297">Configuración del protector de pantalla</translation>
 <translation id="7924321157669251966">El porcentaje de brillo de la pantalla cuando el dispositivo esté funcionando con batería.</translation>
 <translation id="7925224837072026018">Si estableces la política, se habilitará el acceso a claves empresariales desde extensiones o aplicaciones para Android. Solo se designan las claves para uso corporativo si se generan con la API chrome.enterprise.platformKeys en una cuenta administrada. Los usuarios no pueden otorgar ni quitar acceso a claves empresariales desde extensiones ni aplicaciones para Android.
 
@@ -7356,6 +7369,11 @@ Esta política empresarial existe para permitir que los administradores controle
 <translation id="7992613144342460685">Otorgar el permiso de Ubicación de ventanas a estos sitios</translation>
 <translation id="7994034037344330969">Especifica la lista de dominios de aplicaciones web de terceros que pueden usar la API de Desk para controlar los escritorios de ChromeOS. Estos patrones de URL deben seguir el formato definido para la propiedad "coincidencias" en https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
 <translation id="7995610550667275367">Análisis (compatible a partir de la versión 87)</translation>
+<translation id="799688680472213098">Configura el tiempo en segundos que el dispositivo permanecerá inactivo antes de mostrar el protector de pantalla para la pantalla de bloqueo.
+
+Los valores válidos varían entre 1 segundo y 9,999 segundos. Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utilizará el valor predeterminado de 7 segundos.
+
+Esta política no tendrá ningún efecto si estableces la política <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> como falsa.</translation>
 <translation id="7999023147219236247">Esta política solicita al usuario que otorgue permisos a las apps. PERMISSION_POLICY_UNSPECIFIED: La política no está especificada. Si no se especifican políticas para un permiso en ningún nivel, se usará el comportamiento "PROMPT" de forma predeterminada. PROMPT: Le solicita al usuario que otorgue un permiso. GRANT: Otorga un permiso de forma automática. DENY: Rechaza un permiso de forma automática.</translation>
 <translation id="7999336306414770162">Inhabilitar los informes de los VPD del dispositivo</translation>
 <translation id="7999818120028621358">Habilitar la generación de informes para los eventos de prevención de filtración de datos</translation>
@@ -8302,6 +8320,7 @@ VM. Se pueden instalar varias VMs desde la misma configuración en el mismo disp
 <translation id="8854571659927427063">Si habilitas la política, se importarán los favoritos del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún favorito en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a los favoritos estará marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="8855929790177853633">Fuente de la imagen del protector de pantalla del usuario</translation>
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar la aplicación del Certificado de transparencia para una lista de hash de subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Los usuarios pueden configurar el canal de versiones de <ph name="PRODUCT_OS_NAME" /></translation>
@@ -8390,6 +8409,7 @@ VM. Se pueden instalar varias VMs desde la misma configuración en el mismo disp
 
       Después de Chrome 84, se quitará esta política.</translation>
 <translation id="8940173892071872775">Controla las respuestas que se ejecutan cuando el navegador está inactivo.</translation>
+<translation id="8941673774841510404">Controla la configuración del protector de pantalla de la pantalla de acceso del dispositivo y la pantalla de bloqueo del usuario.</translation>
 <translation id="8942616385591203339">Esta política controla si se muestra el consentimiento de sincronización al usuario durante el primer acceso. Debe establecerse como falso si consideras que el usuario nunca necesitará este consentimiento.
       Si se establece como falso, no se mostrará el consentimiento.
       Si se establece como verdadero o no se establece, se puede mostrar el consentimiento.</translation>
@@ -8599,6 +8619,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 
       Las posibilidades reales de reversión también dependen de los parches de vulnerabilidad críticos y de la placa.</translation>
 <translation id="9123464369663964441">Permitir que los usuarios agreguen excepciones para habilitar contenido mixto</translation>
+<translation id="9124770007620653639">Nunca enviar datos de confiabilidad de dominios a Google</translation>
 <translation id="9129169595075460149">Si habilitas la política, la función SafeSearch estará siempre activa en la Búsqueda de Google, y los usuarios no podrán cambiar esta configuración.
 
       Si la inhabilitas o no la estableces, no se aplicará SafeSearch en la Búsqueda de Google.</translation>

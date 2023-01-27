@@ -578,6 +578,7 @@
 <translation id="4130035430755296270">ลากเมาส์ไปเรื่อยๆ เพื่อดูตัวเลือกเลย์เอาต์เพิ่มเติม</translation>
 <translation id="4136724716305260864">เปิดจนถึงพระอาทิตย์ขึ้น</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
+<translation id="4150201353443180367">การแสดงผล</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
 <translation id="4177913004758410636">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 วัน}other{อัปเดตอุปกรณ์ภายใน # วัน}}</translation>
 <translation id="4181841719683918333">ภาษา</translation>
@@ -733,6 +734,7 @@
 <translation id="492453977506755176">แป้นสำหรับโหมดจับภาพ</translation>
 <translation id="4925542575807923399">ผู้ดูแลระบบต้องทำให้บัญชีนี้เป็นบัญชีที่ลงชื่อเข้าใช้เป็นบัญชีแรก ในเซสชันการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="4929163402621253029">คุณพูดอยู่ใช่ไหม คุณปิดเสียงอยู่ ดูข้อมูลเพิ่มเติม</translation>
+<translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
@@ -1387,6 +1389,7 @@
 <translation id="8477270416194247200">กด Alt + Search หรือ Shift เพื่อยกเลิก</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ไม่รองรับ <ph name="SPECIFIED_RESOLUTION" /> ระบบเปลี่ยนความละเอียดเป็น <ph name="FALLBACK_RESOLUTION" /> คลิก "ยืนยัน" เพื่อเก็บการเปลี่ยนแปลงไว้ ระบบจะคืนการตั้งค่าก่อนหน้าใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="8496402167048257517">แสดงการตั้งค่าการแชร์ใกล้เคียง</translation>
+<translation id="8507563469658346379">ทุกคน <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">บลูทูธของ Chromebook ปิดอยู่ หากต้องการปลดล็อก Chromebook ให้ป้อนรหัสผ่าน</translation>
 <translation id="8513108775083588393">หมุนอัตโนมัติ</translation>
 <translation id="851458219935658693">แสดงหน้าต่างจากเดสก์ปัจจุบัน เลือกปุ่มตัวเลือกแล้ว</translation>

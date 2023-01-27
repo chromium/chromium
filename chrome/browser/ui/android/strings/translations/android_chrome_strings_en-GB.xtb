@@ -182,6 +182,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="1995884366040846621">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Sends some cookies and searches from the address bar and search box to your default search engine</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
+<translation id="2009341475524975924">To measure the performance of an ad, limited types of data can be shared among sites, such as the time of day that an ad was shown to you.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# Files}}</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
 <translation id="2038563949887743358">Turn on Request desktop site</translation>
@@ -236,6 +237,7 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2321086116217818302">Preparing passwords…</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328985652426384049">Can’t sign in</translation>
+<translation id="2341410551640223969">Couldn’t install <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Can't open your camera. Something went wrong.</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
@@ -344,6 +346,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Manage the topics that you're interested in</translation>
 <translation id="2912345083818861431">Use screen lock to see open incognito tabs</translation>
+<translation id="2922568440285376746">Search inside image with Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
 <translation id="2932222164150889403">Your keyboard won’t change</translation>
@@ -652,6 +655,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4616150815774728855">Open <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4634124774493850572">Use password</translation>
+<translation id="4637420359569396807">With ad measurement, limited types of data can be shared among sites and apps to measure the performance of their ads, such as the time of day that an ad was shown to you.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
 <translation id="4650364565596261010">System default</translation>
 <translation id="465657074423018424">Safe Browsing protects you against deceptive websites. If you turn it off, be extra careful when browsing, especially before entering passwords.</translation>
@@ -664,6 +668,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4684427112815847243">Sync everything</translation>
 <translation id="4685741273709472646">Select from the drop-down list</translation>
 <translation id="4687718960473379118">Site-suggested ads</translation>
+<translation id="4689792375321623175">Search image with Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> more}}</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4719927025381752090">Offer to translate</translation>
@@ -810,6 +815,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5438292632479953702">Download again</translation>
 <translation id="5441466871879044658">Translate into this language</translation>
 <translation id="5441522332038954058">Jump to the address bar</translation>
+<translation id="5444999712122199445">Go back to site</translation>
 <translation id="544776284582297024">To open tabs and visit different pages at the same time, tap the open tabs button</translation>
 <translation id="5454166040603940656">with <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Download page</translation>

@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">પહેલાં ટૂંકી કિનારી</translation>
 <translation id="168693727862418163">આ પૉલિસીનું મૂલ્ય તેના સ્કીમા સામે માન્ય કરવામાં નિષ્ફળ ગયું છે અને તેને અવગણવામાં આવશે.</translation>
 <translation id="168841957122794586">સર્વર પ્રમાણપત્ર એક નબળી ક્રિપ્ટોગ્રાફિક કી ધરાવે છે.</translation>
+<translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />તમારો ડેટા મેનેજ કરવાની રીત:<ph name="END_BOLD" /> 4 અઠવાડિયાથી જૂના વિષયો Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ જેમ તમે બ્રાઉઝ કરતા જશો, તેમ તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. કોઈ અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો તેમજ કોઈપણ સમયે Chrome સેટિંગમાંથી જાહેરાતના વિષયો બંધ કરી શકો છો.</translation>
 <translation id="1697532407822776718">તમારું બધું સેટ છે!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -777,6 +778,7 @@
 <translation id="2916038427272391327">અન્ય પ્રોગ્રામ બંધ કરો</translation>
 <translation id="2918922650248459053">ડાઇવિંગ અને ઊંડા પાણીમાં કરાતી પ્રવૃત્તિઓ</translation>
 <translation id="2922350208395188000">સર્વરનું પ્રમાણપત્ર તપાસી શકાતું નથી.</translation>
+<translation id="292371311537977079">Chrome સેટિંગ</translation>
 <translation id="2925673989565098301">વિતરણ પદ્ધતિ</translation>
 <translation id="2928905813689894207">બિલિંગનું સરનામું</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> વધુ}}</translation>
@@ -1146,6 +1148,7 @@
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="3815434930383843058">8 x 12 ઇંચ</translation>
 <translation id="3816482573645936981">મૂલ્ય (જગ્યા અન્ય દ્વારા લેવામાં આવી છે)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">તમારું બ્રાઉઝર <ph name="BROWSER_DOMAIN" /> દ્વારા અને પ્રોફાઇલ <ph name="PROFILE_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="382518646247711829">જો તમે કોઈ પ્રૉક્સી સર્વરનો ઉપયોગ કરો છો...</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -2739,6 +2742,7 @@
 <translation id="7755287808199759310">તમારા માટે તમારા માતાપિતા તેને અનાવરોધિત કરી શકે છે</translation>
 <translation id="7755624218968747854">પ્રાથમિક રોલ</translation>
 <translation id="7758069387465995638">ફાયરવોલ અથવા એન્ટિવાયરસ સોફ્ટવેર એ કનેક્શન અવરોધિત કર્યું હોઈ શકે છે.</translation>
+<translation id="7759809451544302770">વૈકલ્પિક</translation>
 <translation id="7760497246331667482">રેગે અને કેરેબિયન મ્યુઝિક</translation>
 <translation id="776110834126722255">ટાળેલી</translation>
 <translation id="7761159795823346334">શું કૅમેરાની મંજૂરી આપીએ?</translation>

@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">Cu latura scurtă înainte</translation>
 <translation id="168693727862418163">Valoarea politicii nu s-a validat în raport cu schema și va fi ignorată.</translation>
 <translation id="168841957122794586">Certificatul de server conține o cheie criptografică slabă.</translation>
+<translation id="1689333818294560261">Pseudonim</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. În plus, poți să blochezi subiectele pe care nu vrei să le trimită Chrome la site-uri și să dezactivezi oricând subiectele anunțurilor din setările Chrome.</translation>
 <translation id="1697532407822776718">Ești gata!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Gestionează Contul Google, apasă pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
 <translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perforare cvadruplă în dreapta</translation>
+<translation id="2441854154602066476">Metodele de plată disponibile pentru completarea la atingere. Tastatura este ascunsă.</translation>
 <translation id="2448295565072560657">Dispozitivele periferice atașate acestui dispozitiv în timp ce ești conectat(ă)</translation>
 <translation id="2450021089947420533">Parcursuri</translation>
 <translation id="2463739503403862330">Completează</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">închide celelalte programe;</translation>
 <translation id="2918922650248459053">Scufundări și activități subacvatice</translation>
 <translation id="2922350208395188000">Certificatul serverului nu poate fi verificat.</translation>
+<translation id="292371311537977079">Setări Chrome</translation>
 <translation id="2925673989565098301">Metodă de livrare</translation>
 <translation id="2928905813689894207">Adresă de facturare</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="3815434930383843058">8 x 12 in</translation>
 <translation id="3816482573645936981">Valoare (înlocuită)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Browserul este gestionat de <ph name="BROWSER_DOMAIN" />, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Dacă utilizați un server proxy...</translation>
 <translation id="3826050100957962900">Third-party sign-in</translation>
@@ -1575,6 +1579,7 @@
 <translation id="4880827082731008257">Caută în istoric</translation>
 <translation id="4881695831933465202">Deschide</translation>
 <translation id="4881808915112408168">24 x 31.5 in</translation>
+<translation id="4882314601499260499">Nu s-a aplicat nicio politică privind utilizatorii. Pentru a adăuga politici privind utilizatorii, organizația ta trebuie să îți <ph name="LINK_BEGIN" />confirme domeniul<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Plătești cu <ph name="CARD_DETAIL" /> la finalizarea achiziției</translation>
 <translation id="4887406273302438710">Protejează-ți parolele cu Windows Hello</translation>
 <translation id="4888600795924685526">Studiul limbilor străine</translation>
@@ -2459,6 +2464,7 @@
 <translation id="7136009930065337683">Află mai multe despre modul incognito</translation>
 <translation id="7138472120740807366">Metodă de livrare</translation>
 <translation id="7139892792842608322">Tava principală</translation>
+<translation id="7140087718106278457">Lista metodelor de plată este închisă.</translation>
 <translation id="714064300541049402">Deplasarea poziției X a imaginii de pe fața 2</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> și încă <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -2736,6 +2742,7 @@ Detalii suplimentare:
 <translation id="7755287808199759310">Părintele tău îl poate debloca pentru tine</translation>
 <translation id="7755624218968747854">Rola principală</translation>
 <translation id="7758069387465995638">Este posibil ca firewallul sau software-ul antivirus să fi blocat conexiunea.</translation>
+<translation id="7759809451544302770">Opțional</translation>
 <translation id="7760497246331667482">Muzică reggae și din Caraibi</translation>
 <translation id="776110834126722255">Învechită</translation>
 <translation id="7761159795823346334">Permiți accesul la cameră?</translation>
@@ -2981,6 +2988,7 @@ Detalii suplimentare:
 <translation id="8381674639488873545">Aceste costuri pot fi unice sau recurente și ascunse. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Permiterea accesului de pe <ph name="ORIGIN_NAME" /> la <ph name="VM_NAME" /> a fost blocată de politica implementată de administrator</translation>
 <translation id="8396522675989118466">Acesta este codul alcătuit din <ph name="NUMBER_OF_DIGITS" /> cifre din <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Metodele de plată disponibile pentru completarea la atingere, deschise la înălțimea completă.</translation>
 <translation id="8398790343843005537">Găsește telefonul</translation>
 <translation id="8405579342203358118">Gestionează informațiile de sincronizat din setările Chrome</translation>
 <translation id="8406071103346257942">nu mai folosi blocarea ecranului pentru completarea parolelor</translation>
@@ -3142,6 +3150,7 @@ Detalii suplimentare:
 <translation id="8830320733681313421">Carte poștală Hagaki</translation>
 <translation id="8834380158646307944">Butonul Închide ferestrele incognito, apasă pe Enter pentru a închide toate ferestrele incognito deschise</translation>
 <translation id="883848425547221593">Alte marcaje</translation>
+<translation id="8842351563145134519">Metodele de plată disponibile pentru completarea la atingere, deschise la jumătate din înălțime.</translation>
 <translation id="884264119367021077">Adresa de expediere</translation>
 <translation id="8849231003559822746">130 x 180 mm</translation>
 <translation id="884923133447025588">Nu a fost găsit niciun mecanism de revocare.</translation>

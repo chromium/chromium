@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;เพิ่มลงในพจนานุกรม</translation>
 <translation id="1018656279737460067">ยกเลิกแล้ว</translation>
 <translation id="1022489261739821355">กำลังแสดงรหัสผ่านจาก<ph name="BEGIN_LINK" />บัญชี Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">อุปกรณ์ของคุณจัดการโดย <ph name="DOMAIN" /> ผู้ดูแลระบบจะเข้าถึงข้อมูลของโปรไฟล์ใดก็ได้ในอุปกรณ์นี้</translation>
 <translation id="1026655690966755180">เพิ่มพอร์ต</translation>
 <translation id="1026822031284433028">โหลดภาพ</translation>
 <translation id="1028604629594230522">Chrome โหลดหน้าเว็บล่วงหน้าสำหรับหน้าที่คุณมักจะเข้าชม เพื่อให้หน้าเหล่านั้นโหลดเร็วขึ้นเมื่อคุณเข้าชม</translation>
@@ -95,6 +96,7 @@
 <translation id="1081956462909987459">{NUM_TABS,plural, =1{<ph name="GROUP_TITLE" /> - 1 แท็บ}other{<ph name="GROUP_TITLE" /> - # แท็บ}}</translation>
 <translation id="1082214733466244292">ผู้ดูแลระบบบล็อกฟังก์ชันการทำงานบางอย่างในอุปกรณ์นี้</translation>
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ต้องการคืนค่าการตั้งค่า Chrome ของคุณกลับไปเป็นค่าเริ่มต้นดั้งเดิม การดำเนินการนี้จะรีเซ็ตหน้าหลักของคุณ หน้าแท็บใหม่ และเครื่องมือค้นหา ปิดใช้ส่วนขยาย และเลิกปักหมุดแท็บทั้งหมด นอกจากนี้ยังล้างข้อมูลชั่วคราวอื่นๆ และข้อมูลที่แคชไว้ เช่น คุกกี้ เนื้อหา และข้อมูลเว็บไซต์อีกด้วย</translation>
+<translation id="1082725763867769612">ไฟล์ออฟไลน์</translation>
 <translation id="1084096383128641877">การนำรหัสผ่านนี้ออกจะไม่ลบบัญชีของคุณใน <ph name="DOMAIN" /> เปลี่ยนรหัสผ่านหรือลบบัญชีของคุณใน <ph name="DOMAIN_LINK" /> เพื่อให้ปลอดภัยจากบุคคลอื่น</translation>
 <translation id="1084288067399862432">เปลี่ยนรหัสผ่านที่ถูกละเมิดเรียบร้อยแล้ว
 
@@ -1865,6 +1867,7 @@
 <translation id="2643064289437760082">คุณลบข้อมูลการวัดผลโฆษณาได้ทุกเมื่อโดยการลบข้อมูลการท่องเว็บ</translation>
 <translation id="2643698698624765890">จัดการส่วนขยายของคุณโดยคลิกที่ "ส่วนขยาย" ในเมนู "หน้าต่าง"</translation>
 <translation id="2645047101481282803">อุปกรณ์ของคุณจัดการโดย <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">กำลังแคสต์แท็บนี้ไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, กลุ่มใบรับรอง (Certificate Chain)</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
@@ -2737,6 +2740,7 @@
 <translation id="3446274660183028131">โปรดเปิด Parallels Desktop เพื่อติดตั้ง Windows</translation>
 <translation id="344630545793878684">อ่านข้อมูลบนเว็บไซต์จำนวนมาก</translation>
 <translation id="3447644283769633681">ปิดกั้นคุกกี้ของบุคคลที่สามทั้งหมด</translation>
+<translation id="3447797901512053632">กำลังแคสต์ <ph name="TAB_NAME" /> ไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">อัปเดตบัญชี</translation>
 <translation id="3449393517661170867">หน้าต่างแท็บใหม่</translation>
 <translation id="3449839693241009168">กด <ph name="SEARCH_KEY" /> เพื่อส่งคำสั่งไปที่ <ph name="EXTENSION_NAME" /></translation>
@@ -2891,6 +2895,7 @@
 <translation id="3590295622232282437">กำลังเข้าสู่เซสชันที่มีการจัดการ</translation>
 <translation id="3591057288287063271">เก็บ <ph name="FILE_NAME" /> ไว้</translation>
 <translation id="3592260987370335752">&amp;ดูข้อมูลเพิ่มเติม</translation>
+<translation id="3592344177526089979">กำลังแคสต์แท็บไปยัง <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">เปิดการใช้งานโหมด Fuzzy-Pinyin</translation>
 <translation id="3593965109698325041">ข้อจำกัดของชื่อใบรับรอง</translation>
 <translation id="3596012367874587041">การตั้งค่าแอป</translation>
@@ -3166,6 +3171,7 @@
 <translation id="3823310065043511710">ขอแนะนำให้เตรียมพื้นที่ว่างอย่างน้อย <ph name="INSTALL_SIZE" /> สำหรับ Linux</translation>
 <translation id="3824621460022590830">โทเค็นการลงทะเบียนอุปกรณ์ไม่ถูกต้อง โปรดติดต่อเจ้าของอุปกรณ์หรือผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทนี้ <ph name="FILE_TYPES" />}other{จดจำตัวเลือกของฉันสำหรับไฟล์ประเภทต่อไปนี้ <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">แสดงจุดบนไอคอนแอปสำหรับการแจ้งเตือนของแอป</translation>
 <translation id="3826071569074535339">ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="3826440694796503677">ผู้ดูแลระบบของคุณปิดใช้การเพิ่มบัญชี Google อื่นไว้</translation>
 <translation id="3827774300009121996">เ&amp;ต็มหน้าจอ</translation>
@@ -4485,6 +4491,7 @@
 <translation id="5063480226653192405">การใช้</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">จัดการ DNS ที่ปลอดภัยในการตั้งค่า Chrome OS</translation>
+<translation id="5066160542186949327">ย้ายไปยังโฟลเดอร์อื่น</translation>
 <translation id="5067399438976153555">เปิดเสมอ</translation>
 <translation id="5067867186035333991">ถามว่า <ph name="HOST" /> ต้องการเข้าถึงไมโครโฟนของคุณไหม</translation>
 <translation id="5068553687099139861">แสดงรหัสผ่าน</translation>

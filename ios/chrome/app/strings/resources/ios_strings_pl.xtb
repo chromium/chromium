@@ -18,6 +18,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="1066060668811609597">Zarządzanie synchronizacją</translation>
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1076785341346483463">Synchronizacja z kontem zarządzanym</translation>
+<translation id="1080365971383768617">Hasła na wszystkich Twoich urządzeniach</translation>
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
@@ -74,7 +75,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie 
 <translation id="1404330357948037222">Nie korzystasz teraz z konta</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1430915738399379752">Drukuj</translation>
-<translation id="1434356225517321998">Twoja przeglądarka jest zarządzana. <ph name="BEGIN_LINK" />Szczegóły<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Ukryj hasło</translation>
 <translation id="1450170672351507823">Włączona jest standardowa ochrona. Jeśli zależy Ci na większym bezpieczeństwie, użyj silniejszej ochrony.</translation>
 <translation id="149095475893949513">Ta strona próbuje pobrać profil konfiguracji.</translation>
@@ -398,7 +398,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3929457972718048006">Adresy</translation>
 <translation id="3943492037546055397">Hasła</translation>
 <translation id="3959736869653157332">Menu → Nowa karta incognito</translation>
-<translation id="3964173450954943920">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, żeby personalizować wyniki wyszukiwania i działanie innych usług Google.</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3968505803272650567">Zarządzaj zainteresowaniami</translation>
 <translation id="3989635538409502728">Wyloguj się</translation>
@@ -547,6 +546,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5056446788882570708">Znaleziono problemy <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Zainstaluj Dysk Google</translation>
+<translation id="50641035439563602">Hasła są teraz zapisywane na Twoim koncie Google (<ph name="ACCOUNT" />). Możesz ich używać wszędzie, gdzie się zalogujesz. Aby wyłączyć tę funkcję, otwórz <ph name="BEGIN_LINK" />ustawienia<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet opublikowany.</translation>
@@ -597,6 +597,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5520466080178053306">Kliknij kolejno: Menedżer haseł i Dodaj</translation>
 <translation id="5525095647255982834">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome.</translation>
 <translation id="5525269841082836315">Utwórz hasło</translation>
+<translation id="5530084793407600786">Przeszukaj obraz za pomocą Google</translation>
 <translation id="5542540507657872337">Znaleziono <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Dzięki funkcji Handoff możesz rozpocząć przeglądanie strony na tym urządzeniu, a następnie płynnie kontynuować na Macu. Aktualnie otwarta strona internetowa wyświetli się w Docku na Macu.
 
@@ -1035,6 +1036,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8706588385081740091">Hasła</translation>
+<translation id="8712637175834984815">Rozumiem</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
 <translation id="8721297211384281569">Menu Narzędzia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>

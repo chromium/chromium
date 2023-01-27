@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">ບລັອກບໍ່ໃຫ້ເວັບໄຊໃຊ້ອຸປະກອນ ແລະ ຂໍ້ມູນເວີຊົວ ຣິອາລິຕີຂອງທ່ານ</translation>
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
-<translation id="6453641458248223456">ຊູມເຂົ້າ ຫຼື ອອກໃນໜ້າຈາກເມນູຫຼັກ</translation>
 <translation id="6467852467360539617">ລຶບລ້າງຂໍ້ມູນ ແລະ ຣີເຊັດການອະນຸຍາດ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7667547420449112975">ພໍ່ມົດອັດສະຈັນແຫ່ງອອດຊ໌</translation>
 <translation id="7684642910516280563">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
-<translation id="7690549345586282764">ສະແດງຊູມ</translation>
 <translation id="7719367874908701697">ຊູມໜ້າ</translation>
 <translation id="7781829728241885113">ມື້​ວານ​ນີ້</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">ການນຳທາງແມ່ນບໍ່ສາມາດເຂົ້າເຖິງໄດ້: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ລືມ</translation>
 <translation id="8990043154272859344">ທ່ານຈະຖືກອອກຈາກລະບົບເວັບໄຊທັງໝົດ</translation>
-<translation id="900095568014372589">ເຮັດໃຫ້ຂໍ້ຄວາມ ແລະ ຮູບພາບເລີ່ມຕົ້ນຢູ່ໃນເວັບໄຊນ້ອຍລົງ ຫຼື ໃຫຍ່ຂຶ້ນ</translation>
 <translation id="9019902583201351841">ຈັດ​ການ​ໂດຍ​ຜູ້​ປົກ​ຄອງ​ຂອງ​ທ່ານ</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">ເວັບໄຊນີ້ແມ່ນຢູ່ໃນກຸ່ມທີ່ສາມາດເບິ່ງເຫັນການເຄື່ອນໄຫວຂອງທ່ານໄດ້. ກຸ່ມນີ້ແມ່ນກຳນົດໂດຍ <ph name="FPS_OWNER" /></translation>

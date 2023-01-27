@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Không cho các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6453641458248223456">Phóng to hoặc thu nhỏ trang từ trình đơn chính</translation>
 <translation id="6467852467360539617">Xoá dữ liệu và đặt lại quyền</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6545864417968258051">Quét tìm Bluetooth</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7667547420449112975">Phù thủy xứ Oz</translation>
 <translation id="7684642910516280563">Không cho phép một trang web dùng cookie của bên thứ ba</translation>
-<translation id="7690549345586282764">Hiện mục thu phóng</translation>
 <translation id="7719367874908701697">Thu phóng trang</translation>
 <translation id="7781829728241885113">Hôm qua</translation>
 <translation id="7791543448312431591">Thêm</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">Không thể tiếp cận điều hướng: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Quên</translation>
 <translation id="8990043154272859344">Bạn sẽ bị đăng xuất khỏi tất cả các trang web</translation>
-<translation id="900095568014372589">Thu nhỏ hoặc phóng to văn bản và hình ảnh mặc định trên các trang web</translation>
 <translation id="9019902583201351841">Do cha mẹ của bạn quản lý</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Trang web này nằm trong nhóm có thể xem hoạt động của bạn. Nhóm này do <ph name="FPS_OWNER" /> xác định</translation>

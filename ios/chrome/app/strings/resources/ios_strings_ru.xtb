@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">Вход в аккаунт не выполнен.</translation>
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1430915738399379752">Печать</translation>
-<translation id="1434356225517321998">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Скрыть пароль</translation>
 <translation id="1450170672351507823">Стандартная защита включена. Для большей безопасности используйте улучшенную защиту.</translation>
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">Адреса</translation>
 <translation id="3943492037546055397">Пароли</translation>
 <translation id="3959736869653157332">Меню → Новая вкладка инкогнито</translation>
-<translation id="3964173450954943920">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может использовать вашу историю для персонализации Поиска и других своих сервисов.</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
 <translation id="3989635538409502728">Выйти</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыть вкладку}one{Закрыть вкладки}few{Закрыть вкладки}many{Закрыть вкладки}other{Закрыть вкладки}}</translation>
 <translation id="8706588385081740091">Пароли</translation>
+<translation id="8712637175834984815">Готово</translation>
 <translation id="8717864919010420084">Копировать ссылку</translation>
 <translation id="8721297211384281569">Меню "Инструменты"</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>

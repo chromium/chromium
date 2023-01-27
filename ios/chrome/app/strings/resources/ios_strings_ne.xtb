@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">तपाईं साइन आउट हुनुभएको छ</translation>
 <translation id="1407135791313364759">सबै खोल्नुहोस्</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
-<translation id="1434356225517321998">कसैले तपाईंको ब्राउजर व्यवस्थापन गर्छन्। <ph name="BEGIN_LINK" />विवरण<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">पासवर्ड लुकाउनुहोस्</translation>
 <translation id="1450170672351507823">"मानक सुरक्षा" अन गरिएको छ। अझै बढी सुरक्षित हुन "परिष्कृत सुरक्षा" प्रयोग गर्नुहोस्।</translation>
 <translation id="149095475893949513">यो वेबसाइट कुनै कन्फिगुरेसन प्रोफाइल डाउनलोड गर्न खोज्दै छ।</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3943492037546055397">पासवर्डहरू</translation>
 <translation id="3959736869653157332">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
-<translation id="3964173450954943920">तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई आफूले सिंक गर्न चाहेका कुराहरू छनौट गर्न सक्नुहुन्छ। Google ले Search तथा Google का अन्य सेवाहरू पर्सनलाइज गर्नका निम्ति तपाईंको गतिविधिसम्बन्धी इतिहास प्रयोग गर्न सक्छ।</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">खाता साइन-इन विवरणहरूको समय समाप्त भएको छ।</translation>
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8706588385081740091">पासवर्डहरू</translation>
+<translation id="8712637175834984815">भयो</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>

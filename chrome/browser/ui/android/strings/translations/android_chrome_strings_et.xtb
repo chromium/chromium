@@ -563,6 +563,7 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4108314971463891922">Jälgi</translation>
 <translation id="4108998448622696017">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad.</translation>
 <translation id="4116038641877404294">Laadige lehed alla, et neid võrguühenduseta kasutada</translation>
+<translation id="4124152339699379357">Märguandeloa voog on avatud täiskõrgusel</translation>
 <translation id="4135200667068010335">Vahelehe jagamise seadmete loend on suletud.</translation>
 <translation id="4137746084635924146">Seadme praegune keel</translation>
 <translation id="414128724510021958">Vaikimisi taotletakse arvutisaite</translation>
@@ -1401,6 +1402,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8516012719330875537">Pildiredigeerija</translation>
 <translation id="8516431725144212809">Teie Chrome'i prognoositud huvid</translation>
 <translation id="8523928698583292556">Salvestatud parooli kustutamine</translation>
+<translation id="8526855376374973824">Märguandeloa voog</translation>
 <translation id="8540136935098276800">Sisestage õigesti vormindatud URL</translation>
 <translation id="854522910157234410">Ava leht</translation>
 <translation id="8551513938758868521">Lukusta Chrome'ist lahkumisel inkognito vahelehed</translation>
@@ -1460,6 +1462,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, vahekaart</translation>
 <translation id="8854223127042600341">Vaadake oma võrguühenduseta faile</translation>
 <translation id="8856607253650333758">Esita kirjeldusi</translation>
+<translation id="8856931513242997049">Märguandeloa voog on suletud</translation>
 <translation id="8873817150012960745">Alustamiseks puudutage siin</translation>
 <translation id="8881973373982641723">Tühjendab ajaloo, sh otsingukasti ajaloo.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame loendist automaatselt saidid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib sait uuesti loendis ilmuda. Võite ka saidi eemaldada, kui te ei soovi, et see sait teie huvisid määratleks.</translation>

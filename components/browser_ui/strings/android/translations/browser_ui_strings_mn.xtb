@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг хориглох</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Үндсэн цэсээс хуудсыг томруулах эсвэл жижгэрүүлээрэй</translation>
 <translation id="6467852467360539617">Өгөгдлийг цуцлаад зөвшөөрлийг шинэчлэх</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7667547420449112975">Озын Гайхамшигт шидтэн</translation>
 <translation id="7684642910516280563">Сайтад гуравдагч талын күүки ашиглахыг бүү зөвшөөр</translation>
-<translation id="7690549345586282764">Томруулалтыг харуулах</translation>
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">Навигацтай холбогдох боломжгүй байна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8990043154272859344">Таныг бүх сайтаас гаргана</translation>
-<translation id="900095568014372589">Сайт дээрх өгөгдмөл текст болон зургийг жижгэрүүлэх эсвэл томруулаарай</translation>
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Энэ сайт таны үйл ажиллагааг харах боломжтой бүлэгт байна. Бүлгийг <ph name="FPS_OWNER" />-с тодорхойлсон</translation>

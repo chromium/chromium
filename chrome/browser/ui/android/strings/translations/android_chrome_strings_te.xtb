@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
 <translation id="2000419248597011803">అడ్రస్ బార్, సెర్చ్ బాక్స్‌లలో చేసే సెర్చ్‌లు, కొన్ని కుక్కీలను మీరు ఆటోమేటిక్ ఆప్షన్‌గా సెట్ చేసిన సెర్చ్ ఇంజిన్‌కు పంపుతుంది</translation>
 <translation id="200114059308480249">Googleలో ఏదైనా సెర్చ్ చేసినప్పుడు, ఆ సెర్చ్ తాలూకు సందర్భోచిత టెక్స్ట్‌ను కూడా చేర్చాలనుకుంటున్నారా?</translation>
+<translation id="2009341475524975924">యాడ్ పనితీరును కొలవడానికి, సైట్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది, ఉదాహరణకు మీకు యాడ్ చూపబడిన రోజు సమయం మొదలైనవి.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="2021896219286479412">ఫుల్-స్క్రీన్‌ సైట్ నియంత్రణలు</translation>
 <translation id="2038563949887743358">డెస్క్‌టాప్ సైట్ రిక్వెస్ట్‌ను ఆన్ చేయండి</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
 <translation id="2323763861024343754">సైట్ నిల్వ</translation>
 <translation id="2328985652426384049">సైన్ ఇన్ చేయడం సాధ్యపడదు</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="234265804618409743">మీ కెమెరాను తెరవడం సాధ్యపడలేదు. ఏదో పొరపాటు జరిగింది.</translation>
 <translation id="2349710944427398404">ఖాతాలు, బుక్‌మార్క్‌లు, సేవ్ చేసిన సెట్టింగ్‌లతో సహా Chrome ఉపయోగించిన మొత్తం డేటా</translation>
 <translation id="235789365079050412">Google గోప్యతా పాలసీ</translation>
@@ -344,6 +346,7 @@
 <translation id="2909615210195135082">Google నోటిఫికేషన్‌ల ప్లాట్‌ఫామ్</translation>
 <translation id="2912296070571964914">మీకు ఆసక్తికరమైన టాపిక్‌లను మేనేజ్ చేయండి</translation>
 <translation id="2912345083818861431">తెరిచి ఉన్న అజ్ఞాత ట్యాబ్‌లను చూడడానికి స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
+<translation id="2922568440285376746">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" />తో ఇమేజ్ లోపల సెర్చ్ చేయండి</translation>
 <translation id="2923908459366352541">పేరు చెల్లదు</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> నిల్వ</translation>
 <translation id="2932222164150889403">మీ కీబోర్డ్ మారదు</translation>
@@ -652,6 +655,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ని తెరువు</translation>
 <translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4634124774493850572">పాస్‌వర్డ్‌ను ఉపయోగించండి</translation>
+<translation id="4637420359569396807">యాడ్ మెజర్‌మెంట్ సహాయంతో, యాడ్‌ల పనితీరును కొలవడానికి సైట్‌లు, యాప్‌ల మధ్య పరిమిత రకాల డేటా షేర్ చేయబడుతుంది, ఉదాహరణకు మీకు యాడ్ చూపబడిన రోజు సమయం మొదలైనవి.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 చోరీకి గురైన పాస్‌వర్డ్}other{# చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="4650364565596261010">సిస్టమ్ డిఫాల్ట్</translation>
 <translation id="465657074423018424">మోసపూరిత వైబ్‌సైట్‌ల నుంచి మిమల్ని సురక్షిత బ్రౌజింగ్ రక్షిస్తోంది. మీరు దీనిని ఆఫ్ చేస్తే, బ్రౌజ్ చేసేటప్పుడు మరింత జాగ్రత్త వహించాల్సి ఉంటుంది, ముఖ్యంగా పాస్‌వర్డ్‌లను ఎంటర్ చేసేటప్పుడు.</translation>
@@ -664,6 +668,7 @@
 <translation id="4684427112815847243">అంతా సింక్ చేయండి</translation>
 <translation id="4685741273709472646">డ్రాప్‌డౌన్ లిస్ట్ నుండి ఎంచుకోండి</translation>
 <translation id="4687718960473379118">సైట్ సూచించిన యాడ్‌లు</translation>
+<translation id="4689792375321623175">Google <ph name="BEGIN_NEW" />New<ph name="END_NEW" />తో ఇమేజ్‌ను సెర్చ్ చేయండి</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">కాష్ చేసిన చిత్రాలు మరియు ఫైళ్లు</translation>
 <translation id="4719927025381752090">అనువదించమని ఆఫర్ చేయి</translation>
@@ -810,6 +815,7 @@
 <translation id="5438292632479953702">మళ్లీ డౌన్‌లోడ్ చేయండి</translation>
 <translation id="5441466871879044658">ఈ భాషలోకి అనువదించు</translation>
 <translation id="5441522332038954058">అడ్రస్‌ బార్‌కు వెళ్లండి</translation>
+<translation id="5444999712122199445">సైట్‌కు తిరిగి వెళ్లండి</translation>
 <translation id="544776284582297024">ఒకే సమయంలో ట్యాబ్‍లను తెరిచి వేర్వేరు పేజీలను సందర్శించడానికి, ట్యాబ్‍లను తెరువు బటన్‍ను ట్యాప్ చేయండి</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" />తో</translation>
 <translation id="5456381639095306749">పేజీని డౌన్‌లోడ్ చేయండి</translation>

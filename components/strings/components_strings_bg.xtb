@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">Късата страна напред</translation>
 <translation id="168693727862418163">Стойността на това правило не бе потвърдена спрямо съответната схема и ще бъде пренебрегната.</translation>
 <translation id="168841957122794586">Сертификатът на сървъра съдържа слаб криптографски ключ.</translation>
+<translation id="1689333818294560261">Псевдоним</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как можете да управлявате данните си<ph name="END_BOLD" />: Chrome автоматично изтрива темите, които са по-стари от 4 седмици. Докато сърфирате, дадена тема може отново да се покаже в списъка. Също така имате възможност да блокирате темите, които не искате Chrome да споделя със сайтовете, и да изключвате рекламни теми по всяко време от настройките на браузъра.</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +602,7 @@
 <translation id="2430968933669123598">Управление на профила в Google. Натиснете Enter, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
 <translation id="2436186046335138073">Да се разреши ли на <ph name="HANDLER_HOSTNAME" /> да отваря всички връзки от типа „<ph name="PROTOCOL" />“?</translation>
 <translation id="2438874542388153331">Четворно перфориране отдясно</translation>
+<translation id="2441854154602066476">Списък с начини на плащане, които да бъдат попълнени при докосване. Клавиатурата е скрита.</translation>
 <translation id="2448295565072560657">Периферните устройства, свързани с това устройство, докато сте в профила си</translation>
 <translation id="2450021089947420533">Пътешествия</translation>
 <translation id="2463739503403862330">Попълване</translation>
@@ -776,6 +778,7 @@
 <translation id="2916038427272391327">Затворете другите програми.</translation>
 <translation id="2918922650248459053">Гмуркане и подводни дейности</translation>
 <translation id="2922350208395188000">Сертификатът на сървъра не може да бъде проверен.</translation>
+<translation id="292371311537977079">Настройки на Chrome</translation>
 <translation id="2925673989565098301">Начин на бърза доставка</translation>
 <translation id="2928905813689894207">Адрес за фактуриране</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3815434930383843058">8 x 12 инча</translation>
 <translation id="3816482573645936981">Стойност (заменена)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Браузърът ви се управлява от <ph name="BROWSER_DOMAIN" />, а потребителският ви профил – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Ако използвате прокси сървър...</translation>
 <translation id="3826050100957962900">Подкани за вход от трети страни</translation>
@@ -1198,6 +1202,7 @@
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управление на адресите…</translation>
 <translation id="3986705137476756801">Изключване на „Надписи на живо“ засега</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">По-малко от 1 МБ</translation>
 <translation id="3990250421422698716">Разделно офсетово отпечатване</translation>
 <translation id="3992684624889376114">Всичко за тази страница</translation>
@@ -1574,6 +1579,7 @@
 <translation id="4880827082731008257">Търсене в историята</translation>
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="4881808915112408168">24 x 31,5 инча</translation>
+<translation id="4882314601499260499">Не са приложени правила за потребители. За да добави такива правила, организацията ви трябва <ph name="LINK_BEGIN" />да потвърди домейна ви<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Плащане с <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
 <translation id="4888600795924685526">Чуждоезиково обучение</translation>
@@ -2049,6 +2055,7 @@
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6060009363608157444">Невалиден режим за DnsOverHttps.</translation>
 <translation id="6061154937977953833">Борба</translation>
+<translation id="6062937464449575061">Спиране на проследяването на цената</translation>
 <translation id="6064217302520318294">Заключване на екрана</translation>
 <translation id="6064602040258638498">Талони и оферти за отстъпка</translation>
 <translation id="6080696365213338172">Осъществихте достъп до съдържанието посредством осигурен от администратора сертификат. Данните, които предоставите на <ph name="DOMAIN" />, могат да бъдат прихванати от администратора ви.</translation>
@@ -2406,6 +2413,7 @@
 <translation id="7014741021609395734">Увеличение</translation>
 <translation id="7016992613359344582">Тези таксувания може да са еднократни или повтарящи се и е възможно да не са явни.</translation>
 <translation id="702146556168549005">URL адресите на страниците, които посещавате, се изпращат до Google Cloud или до трети страни за анализ. Възможно е например да бъдат сканирани за откриване на опасни уебсайтове или за филтриране на сайтове въз основа на правила, зададени от администратора.</translation>
+<translation id="702275896380648118">Този сайт определя какво харесвате и след това предлага реклами на други сайтове. Той също така получава информация за рекламните ви теми от Chrome, за да ви показва по-подходящи реклами.</translation>
 <translation id="7023162328967545559">Предупреждение от администратор</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030436163253143341">Сертификатът не е валиден</translation>
@@ -2456,6 +2464,7 @@
 <translation id="7136009930065337683">Научете повече за режима „инкогнито“</translation>
 <translation id="7138472120740807366">Начин на бърза доставка</translation>
 <translation id="7139892792842608322">Основна тава</translation>
+<translation id="7140087718106278457">Списъкът с начини на плащане е затворен.</translation>
 <translation id="714064300541049402">Изместване на изображението от страна 2 по оста X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -2733,6 +2742,7 @@
 <translation id="7755287808199759310">Родителят ви може да го отблокира за вас</translation>
 <translation id="7755624218968747854">Основна ролка</translation>
 <translation id="7758069387465995638">Възможно е връзката да е блокирана от защитна стена или антивирусен софтуер.</translation>
+<translation id="7759809451544302770">По избор</translation>
 <translation id="7760497246331667482">Реге и карибска музика</translation>
 <translation id="776110834126722255">Оттеглено</translation>
 <translation id="7761159795823346334">Да се разреши ли достъпът до камерата?</translation>
@@ -2978,6 +2988,7 @@
 <translation id="8381674639488873545">Тези таксувания може да са еднократни или периодични и е възможно да не са явни. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Споделянето от <ph name="ORIGIN_NAME" /> в(ъв) <ph name="VM_NAME" /> е блокирано от администраторски правила</translation>
 <translation id="8396522675989118466">Това е <ph name="NUMBER_OF_DIGITS" />-цифреният код на <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Списъкът с начини на плащане, които да бъдат попълнени при докосване, е отворен на пълната височина.</translation>
 <translation id="8398790343843005537">Намиране на телефона ви</translation>
 <translation id="8405579342203358118">Управление на данните, които да се синхронизират, от настройките на Chrome</translation>
 <translation id="8406071103346257942">спре да използва опцията ви за заключване на екрана при попълване на пароли</translation>
@@ -3138,6 +3149,7 @@
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8834380158646307944">Бутон „Затваряне на прозорците в режим „инкогнито“. Натиснете Enter, за да затворите всички прозорци в режим „инкогнито“</translation>
 <translation id="883848425547221593">Други отметки</translation>
+<translation id="8842351563145134519">Списъкът с начини на плащане, които да бъдат попълнени при докосване, е отворен на половината височина.</translation>
 <translation id="884264119367021077">Адрес за доставка</translation>
 <translation id="8849231003559822746">130 x 180 мм</translation>
 <translation id="884923133447025588">Не е намерен механизъм за анулиране.</translation>

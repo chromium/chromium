@@ -578,6 +578,7 @@
 <translation id="4130035430755296270">將滑鼠游標懸停在上方，即可查看更多版面配置選項</translation>
 <translation id="4136724716305260864">開啟，直到日出</translation>
 <translation id="4146833061457621061">播音樂</translation>
+<translation id="4150201353443180367">顯示屏</translation>
 <translation id="4165275524535002941">連接線可能不支援顯示屏</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
 <translation id="4181841719683918333">語言</translation>
@@ -733,6 +734,7 @@
 <translation id="492453977506755176">擷取模式鍵</translation>
 <translation id="4925542575807923399">這個帳戶的管理員要求這個帳戶必須是多重登入工作階段中第一個登入的帳戶。</translation>
 <translation id="4929163402621253029">您正在說話嗎？您的麥克風未開啟。瞭解詳情</translation>
+<translation id="4936329710968938986">所有人，已關閉</translation>
 <translation id="4938176435186993759">隱藏所有建議</translation>
 <translation id="4945196315133970626">關閉通知</translation>
 <translation id="4946376291507881335">擷取</translation>
@@ -1385,6 +1387,7 @@
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> 不支援 <ph name="SPECIFIED_RESOLUTION" />，解像度已變更為 <ph name="FALLBACK_RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="8496402167048257517">顯示「咫尺共享」設定</translation>
+<translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Chromebook 的藍牙已關閉。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>

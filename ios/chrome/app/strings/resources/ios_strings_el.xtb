@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">Είστε αποσυνδεδεμένοι</translation>
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
-<translation id="1434356225517321998">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="1450170672351507823">Η Βασική προστασία είναι ενεργή. Για ακόμη μεγαλύτερη ασφάλεια, χρησιμοποιήστε τη Βελτιωμένη προστασία.</translation>
 <translation id="149095475893949513">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα προφίλ διαμόρφωσης.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">Διευθύνσεις</translation>
 <translation id="3943492037546055397">Κωδικοί πρόσβασης</translation>
 <translation id="3959736869653157332">Μενού → Νέα καρτέλα ανώνυμης περιήγησης</translation>
-<translation id="3964173450954943920">Μπορείτε πάντα να επιλέξετε τα στοιχεία που θέλετε να συγχρονίσετε στις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" />. Η Google μπορεί να χρησιμοποιήσει το ιστορικό σας για την εξατομίκευση της Αναζήτησης και άλλων υπηρεσιών Google.</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3968505803272650567">Διαχείριση Ενδιαφερόντων</translation>
 <translation id="3989635538409502728">Έξοδος</translation>
@@ -1036,6 +1034,7 @@
 <translation id="8680787084697685621">Τα στοιχεία σύνδεσης λογαριασμού έχουν λήξει.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Κλείσιμο καρτέλας}other{Κλείσιμο καρτελών}}</translation>
 <translation id="8706588385081740091">Κωδικοί πρόσβασης</translation>
+<translation id="8712637175834984815">Κατάλαβα!</translation>
 <translation id="8717864919010420084">Αντιγραφή συνδέσμου</translation>
 <translation id="8721297211384281569">Μενού εργαλείων</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>

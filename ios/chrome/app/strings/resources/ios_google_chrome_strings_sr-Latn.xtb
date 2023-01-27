@@ -50,7 +50,6 @@
 <translation id="3984746313391923992">Organizacija zahteva da ostanete odjavljeni sa Chrome-a.</translation>
 <translation id="3988789688219830639">Google Chrome ne može da pristupa slikama ili video snimcima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
-<translation id="4192781968753717021">Ova lozinka je pronađena pri povredi podataka. Google menadžer lozinki preporučuje da odmah promenite lozinku.</translation>
 <translation id="4233521129555661685">Korisnik <ph name="USER_EMAIL1" /> je koristio Chrome i ostavio obeleživače, lozinke i druga podešavanja na ovom uređaju.</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4249068189593983585">Savet za Chrome. Ako želite više opcija za kartice, dodirnite i zadržite dugme Prikaži kartice na traci s alatkama, koja se nalazi u dnu ili vrhu ekrana.</translation>
@@ -85,6 +84,7 @@
 <translation id="6634107063912726160">Kada se odjavite, Chrome ne sinhronizuje nikakve nove podatke sa Google nalogom. Prethodno sinhronizovani podaci ostaju na nalogu.</translation>
 <translation id="6648150602980899529">Prijavljujete se pomoću naloga kojim upravlja <ph name="DOMAIN" /> i dajete njegovom administratoru kontrolu nad svojim Chrome podacima. Podaci će postati trajno povezani sa tim nalogom. Odjavljivanjem iz Chrome-a ćete izbrisati podatke sa ovog uređaja, ali će oni ostati sačuvani na Google nalogu.</translation>
 <translation id="6676840375528380067">Želite li da obrišete Chrome podatke sa ovog uređaja?</translation>
+<translation id="6709398533399187136">Vaša lozinka je otkrivena pri upadu u podatke. Google menadžer lozinki preporučuje da je odmah promenite.</translation>
 <translation id="6822673484890854830">Chrome nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="6964931465519938134">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="701356708427365932">Upoznajte novi Chrome meni</translation>

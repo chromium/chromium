@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">管理同步功能</translation>
 <translation id="1076421457278169141">已掃描圖碼/條碼</translation>
 <translation id="1076785341346483463">與受管理帳戶同步</translation>
+<translation id="1080365971383768617">在所有裝置上都能使用自己的密碼</translation>
 <translation id="1084365883616172403">已順利發布到 Facebook。</translation>
 <translation id="1085696779717592361">預設為使用 Chrome</translation>
 <translation id="1103523840287552314">一律翻譯<ph name="LANGUAGE" /></translation>
@@ -74,7 +75,6 @@
 <translation id="1404330357948037222">你已登出帳戶</translation>
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1430915738399379752">列印</translation>
-<translation id="1434356225517321998">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />詳細資料<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">隱藏密碼</translation>
 <translation id="1450170672351507823">已啟用標準防護功能。如需更完整的安全防護，請使用強化防護功能。</translation>
 <translation id="149095475893949513">這個網站正在嘗試下載設定描述檔。</translation>
@@ -398,7 +398,6 @@
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
 <translation id="3959736869653157332">「選單」→「新增無痕分頁」</translation>
-<translation id="3964173450954943920">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會使用你的歷史記錄，為你提供個人化的搜尋服務和其他各項 Google 服務。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣喜好</translation>
 <translation id="3989635538409502728">登出</translation>
@@ -547,6 +546,7 @@
 <translation id="5056446788882570708"><ph name="TIME" />發現問題。</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝 Google 雲端硬碟</translation>
+<translation id="50641035439563602">密碼目前已儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)，只要登入帳戶即可使用。如要關閉這項功能，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
 <translation id="5090832849094901128">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
 <translation id="5094827893301452931">已順利發布到 Twitter。</translation>
@@ -597,6 +597,7 @@
 <translation id="5520466080178053306">依序輕觸「密碼管理工具」和「新增」</translation>
 <translation id="5525095647255982834">如要將這個分頁傳送到另一部裝置，請在該裝置上登入 Chrome。</translation>
 <translation id="5525269841082836315">建立通關密語</translation>
+<translation id="5530084793407600786">使用 Google 搜尋圖片內容</translation>
 <translation id="5542540507657872337">找到 <ph name="COUNT" /> 個已開啟的分頁</translation>
 <translation id="5548760955356983418">有了 Handoff，您使用這個裝置開始瀏覽網站後，可輕鬆改用 Mac 繼續瀏覽。目前開啟的網站會自動顯示在 Mac 的 Dock 中。
 
@@ -1035,6 +1036,7 @@
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8706588385081740091">密碼</translation>
+<translation id="8712637175834984815">我瞭解了</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>

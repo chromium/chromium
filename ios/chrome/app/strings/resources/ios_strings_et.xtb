@@ -74,7 +74,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="1404330357948037222">Olete välja logitud</translation>
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1430915738399379752">Printimine</translation>
-<translation id="1434356225517321998">Teie brauserit hallatakse. <ph name="BEGIN_LINK" />Üksikasjad<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Peida parool</translation>
 <translation id="1450170672351507823">Tavakaitse on sisse lülitatud. Turvalisuse suurendamiseks kasutage täiustatud kaitset.</translation>
 <translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
@@ -398,7 +397,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3929457972718048006">Aadressid</translation>
 <translation id="3943492037546055397">Paroolid</translation>
 <translation id="3959736869653157332">Menüü → Uus inkognito vaheleht</translation>
-<translation id="3964173450954943920">Jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" /> saate igal ajal valida, mida sünkroonida. Google võib kasutada teie ajalugu Otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3968505803272650567">Huvide haldamine</translation>
 <translation id="3989635538409502728">Logi välja</translation>
@@ -1035,6 +1033,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8680787084697685621">Konto sisselogimisüksikasjad on aegunud.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Sule vaheleht}other{Sule vahelehed}}</translation>
 <translation id="8706588385081740091">Paroolid</translation>
+<translation id="8712637175834984815">Selge</translation>
 <translation id="8717864919010420084">Kopeeri link</translation>
 <translation id="8721297211384281569">Menüü Tööriistad</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>

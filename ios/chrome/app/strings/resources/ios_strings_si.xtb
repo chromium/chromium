@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">ඔබ වරනු ලැබීය</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
-<translation id="1434356225517321998">ඔබේ බ්‍රවුසරය කළමනාකරණය කෙරේ. <ph name="BEGIN_LINK" />විස්තර<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">මුරපදය සඟවන්න</translation>
 <translation id="1450170672351507823">සම්මත ආරක්ෂාව ක්‍රියාත්මකයි. ඊටත් වඩා වැඩි ආරක්ෂාව සඳහා, වැඩි දියුණු කළ ආරක්ෂාව භාවිත කරන්න.</translation>
 <translation id="149095475893949513">මෙම වෙබ් අඩවිය වින්‍යාසකරණ පැතිකඩක් බාගැනීමට උත්සාහ කරයි.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">ලිපින</translation>
 <translation id="3943492037546055397">මුරපද</translation>
 <translation id="3959736869653157332">මෙනුව → නව අප්‍රකට ටැබය</translation>
-<translation id="3964173450954943920">ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැකිය. සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලිකකරණය කිරීමට Google ඔබගේ ඉතිහාසය භාවිත කළ හැකිය.</translation>
 <translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3968505803272650567">රුචිකත්ව කළමනාකරණය කරන්න</translation>
 <translation id="3989635538409502728">වරන්න</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">ගිණුමේ සයින් ඉන් විස්තර යල් පැන ගොස් තිබේ.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ටැබය වසන්න}one{ටැබ වසන්න}other{ටැබ වසන්න}}</translation>
 <translation id="8706588385081740091">මුරපද</translation>
+<translation id="8712637175834984815">එය ලැබුණා</translation>
 <translation id="8717864919010420084">සබැඳිය පිටපත් කරන්න</translation>
 <translation id="8721297211384281569">මෙවලම් මෙනුව</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>

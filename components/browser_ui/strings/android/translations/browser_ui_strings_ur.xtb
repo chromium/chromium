@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2717722538473713889">ای میل پتے</translation>
 <translation id="2750481671343847896">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں۔</translation>
+<translation id="2779966372261694284">آپ اس سائٹ سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="2822354292072154809">کیا آپ واقعی <ph name="CHOSEN_OBJECT_NAME" /> کے لیے سائٹ کی سبھی اجازتوں کو دوبارہ ترتیب دینا چاہتے ہیں؟</translation>
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2874939134665556319">پچھلا ٹریک</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے سے مسدود کریں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
-<translation id="6453641458248223456">اصل مینو سے کسی صفحے پر زوم ان یا آؤٹ کریں</translation>
 <translation id="6467852467360539617">ڈیٹا صاف کریں اور اجازتیں دوبارہ ترتیب دیں</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6545864417968258051">بلوٹوتھ اسکیننگ</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">سائٹس کو آپ کا مائیکروفون استعمال کرنے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="7000754031042624318">‏Android ترتیبات میں آف کر دیا گیا</translation>
 <translation id="7016516562562142042">موجودہ سرچ انجن کیلئے اجازت یافتہ</translation>
+<translation id="702275896380648118">‏یہ سائٹ آپ کی پسندیدہ چیزوں کا تعین کرتی ہے اور پھر دیگر سائٹس کو اشتہارات تجویز کرتی ہے۔ آپ کو مزید متعلقہ اشتہارات دکھانے کیلئے، یہ سائٹ Chrome سے آپ کے اشتہار کے موضوعات بھی وصول کرتی ہے۔</translation>
 <translation id="702463548815491781">‏TalkBack یا سوئچ رسائی آن ہونے پر تجویز کردہ</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 منتخب ہے}other{# منتخب کردہ}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7667547420449112975">اوز کا شاندار جادوگر</translation>
 <translation id="7684642910516280563">سائٹ کو فریق ثالث کوکیز استعمال کرنے کی اجازت نہ دیں</translation>
-<translation id="7690549345586282764">زوم کے لیے مینو آئٹم دکھائیں</translation>
 <translation id="7719367874908701697">صفحہ کا زوم</translation>
 <translation id="7781829728241885113">گزشتہ کل</translation>
 <translation id="7791543448312431591">شامل کریں</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">کسی مخصوص سائٹ کے لیے کوکیز مسدود کریں۔</translation>
 <translation id="8959122750345127698">نیویگیشن ناقابل رسائی ہے: <ph name="URL" /></translation>
 <translation id="8986362086234534611">بھول جائیں</translation>
-<translation id="900095568014372589">سائٹس پر بطور ڈیفالٹ ٹیکسٹ اور تصاویر کو چھوٹی یا بڑی کریں</translation>
+<translation id="8990043154272859344">آپ سبھی سائٹس سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="9019902583201351841">آپ کے والدین کے زیر انتظام</translation>
 <translation id="9074739597929991885">بلوٹوتھ</translation>
 <translation id="9090268041676521955">یہ سائٹ ایک گروپ میں موجود ہے، جو آپ کی سرگرمی دیکھ سکتا ہے۔ گروپ کی وضاحت <ph name="FPS_OWNER" /> نے کی ہے</translation>

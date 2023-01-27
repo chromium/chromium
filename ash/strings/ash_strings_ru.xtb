@@ -290,6 +290,7 @@
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2526581474998477112">Открепить окна</translation>
 <translation id="2542089167727451762">Нажмите на фото профиля</translation>
 <translation id="255671100581129685">Google Ассистент не работает в режиме открытого доступа.</translation>
 <translation id="256712445991462162">Закрепленная лупа</translation>
@@ -319,6 +320,7 @@
 <translation id="2704781753052663061">Подключиться к другим сетям Wi-Fi</translation>
 <translation id="2705001408393684014">Кнопка включения и отключения микрофона. <ph name="STATE_TEXT" /></translation>
 <translation id="2706462751667573066">Вверх</translation>
+<translation id="2710984741481549981">Закрепить окна</translation>
 <translation id="2718395828230677721">Ночной свет</translation>
 <translation id="2726420622004325180">Чтобы включить точку доступа на телефоне, требуется подключение к мобильному Интернету</translation>
 <translation id="2727175239389218057">Ответить</translation>
@@ -576,6 +578,7 @@
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
 <translation id="4136724716305260864">Вкл. до рассвета</translation>
 <translation id="4146833061457621061">Включить музыку</translation>
+<translation id="4150201353443180367">Экран</translation>
 <translation id="4165275524535002941">Кабель несовместим с экраном</translation>
 <translation id="4177913004758410636">{0,plural, =1{Перезагрузите устройство в течение 1 дня}one{Перезагрузите устройство в течение # дня}few{Перезагрузите устройство в течение # дней}many{Перезагрузите устройство в течение # дней}other{Перезагрузите устройство в течение # дня}}</translation>
 <translation id="4181841719683918333">Языки</translation>

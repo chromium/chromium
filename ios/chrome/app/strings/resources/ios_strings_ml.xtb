@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്‌തു</translation>
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
-<translation id="1434356225517321998">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെടുന്നു. <ph name="BEGIN_LINK" />വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">പാസ്‍വേഡ് അദൃശ്യമാക്കുക</translation>
 <translation id="1450170672351507823">സാധാരണ പരിരക്ഷ ഓണാണ്. കൂടുതൽ സുരക്ഷയ്ക്ക്, മെച്ചപ്പെടുത്തിയ പരിരക്ഷ ഉപയോഗിക്കുക.</translation>
 <translation id="149095475893949513">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യാൻ ഈ വെബ്സൈറ്റ് ശ്രമിക്കുന്നു.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3943492037546055397">പാസ്‌വേഡുകൾ</translation>
 <translation id="3959736869653157332">മെനു → പുതിയ അദൃശ്യ ടാബ്</translation>
-<translation id="3964173450954943920">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> തിരഞ്ഞെടുക്കാം. Search-ഉം മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം.</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="3989635538409502728">സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">അക്കൗണ്ട് പ്രവേശന വിവരങ്ങള്‍ കാലഹരണപ്പെട്ടതാണ്.</translation>
 <translation id="8693663554456874301">{count,plural, =1{ടാബ് അടയ്‌ക്കുക}other{ടാബുകള്‍ അടയ്ക്കുക}}</translation>
 <translation id="8706588385081740091">പാസ്‌വേഡുകൾ</translation>
+<translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
 <translation id="8721297211384281569">ഉപകരണ മെനു</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>

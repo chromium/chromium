@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Apagar cámara</translation>
 <translation id="2717722538473713889">Enderezos de correo electrónico</translation>
 <translation id="2750481671343847896">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade.</translation>
+<translation id="2779966372261694284">Pecharase a sesión neste sitio</translation>
 <translation id="2822354292072154809">Seguro que queres restablecer todos os permisos do sitio <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impide que os sitios utilicen os teus datos e dispositivos de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Reduce ou aumenta o zoom dunha páxina desde o menú principal</translation>
 <translation id="6467852467360539617">Borrar datos e restablecer permisos</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Pregunta antes de permitir que os sitios utilicen o teu micrófono (recomendado)</translation>
 <translation id="7000754031042624318">Desactivouse na configuración de Android</translation>
 <translation id="7016516562562142042">Permitido para o motor de busca actual</translation>
+<translation id="702275896380648118">Este sitio determina o que che gusta e logo suxírelles anuncios a outros sitios. Este sitio tamén obtén os teus temas de anuncios de Chrome para mostrarche anuncios máis relevantes.</translation>
 <translation id="702463548815491781">Recoméndase cando están activadas as funcións TalkBack ou Acceso con interruptores</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 elemento seleccionado}other{# elementos seleccionados}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O marabilloso mago de Oz</translation>
 <translation id="7684642910516280563">Non permite que un sitio use cookies de terceiros</translation>
-<translation id="7690549345586282764">Mostrar zoom</translation>
 <translation id="7719367874908701697">Zoom na páxina</translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7791543448312431591">Engadir</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Bloquea cookies para un sitio específico.</translation>
 <translation id="8959122750345127698">A navegación é inaccesible: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Borrar</translation>
-<translation id="900095568014372589">Reduce ou aumenta o tamaño do texto predeterminado e das imaxes dos sitios</translation>
+<translation id="8990043154272859344">Pecharase a sesión en todos os sitios</translation>
 <translation id="9019902583201351841">Xestionado por teus pais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Este sitio está nun grupo que pode ver a túa actividade. O grupo definiuno <ph name="FPS_OWNER" /></translation>

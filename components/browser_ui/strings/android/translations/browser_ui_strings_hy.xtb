@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Անջատել տեսախցիկը</translation>
 <translation id="2717722538473713889">Էլ․ հասցեներ</translation>
 <translation id="2750481671343847896">Կայքերը կարող են ցույց տալ նույնականացման ծառայությունների մուտքի հարցումներ։</translation>
+<translation id="2779966372261694284">Դուք դուրս կգրվեք հաշվից այս կայքում</translation>
 <translation id="2822354292072154809">Վերակայե՞լ բոլոր կայքերի թույլտվությունները <ph name="CHOSEN_OBJECT_NAME" />-ի համար:</translation>
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2874939134665556319">Նախորդը</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Արգելել կայքերին օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="6447842834002726250">Cookie ֆայլեր</translation>
-<translation id="6453641458248223456">Մեծացրեք կամ փոքրացրեք էջի բովանդակությունը հիմնական ընտրացանկից</translation>
 <translation id="6467852467360539617">Ջնջել տվյալները և զրոյացնել թույլտվությունները</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
 <translation id="6545864417968258051">Bluetooth սարքերի որոնում</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Հարցնել նախքան ձեր խոսափողը կայքերին հասանելի դարձնելը (խորհուրդ է տրվում)</translation>
 <translation id="7000754031042624318">Անջատված է Android-ի կարգավորումներում</translation>
 <translation id="7016516562562142042">Թույլատրված է ընթացիկ որոնիչին</translation>
+<translation id="702275896380648118">Այս կայքը որոշում է ձեր նախասիրությունները և դրանց հիման վրա գովազդ է առաջարկում այլ կայքերի։ Այս կայքը Chrome-ից նաև ստանում է գովազդի թեմաների մասին տվյալներ՝ ձեզ ավելի համապատասխան գովազդ ցուցադրելու համար։</translation>
 <translation id="702463548815491781">Խորհուրդ է տրվում, երբ TalkBack-ը կամ Switch Access-ը միացված են</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ընտրված տարր}one{# ընտրված տարր}other{# ընտրված տարր}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7667547420449112975">Օզի կախարդը</translation>
 <translation id="7684642910516280563">Արգելեք կայքին օգտագործել երրորդ կողմի քուքիներ</translation>
-<translation id="7690549345586282764">Ցույց տալ մասշտաբը</translation>
 <translation id="7719367874908701697">Էջի մասշտաբավորում</translation>
 <translation id="7781829728241885113">Երեկ</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Արգելափակել քուքիները կոնկրետ կայքի համար:</translation>
 <translation id="8959122750345127698">Նավիգացիան անհասանելի է՝ <ph name="URL" /></translation>
 <translation id="8986362086234534611">Հեռացնել</translation>
-<translation id="900095568014372589">Փոքրացրեք կամ մեծացրեք կայքերի տեքստի ու պատկերների կանխադրված չափսը</translation>
+<translation id="8990043154272859344">Դուք դուրս կգրվեք բոլոր կայքերից</translation>
 <translation id="9019902583201351841">Կառավարվում է ձեր ծնողների կողմից</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Այս կայքը խմբում է, որը կարող է տեսնել ձեր գործողությունները։ Խումբը սահմանված է <ph name="FPS_OWNER" /> տիրույթի կողմից։</translation>

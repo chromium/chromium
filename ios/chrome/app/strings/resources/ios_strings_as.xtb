@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">আপুনি ছাইন আউট কৰিলে</translation>
 <translation id="1407135791313364759">সকলো খোলক</translation>
 <translation id="1430915738399379752">প্ৰিণ্ট কৰক</translation>
-<translation id="1434356225517321998">আপোনাৰ ব্ৰাউজাৰটো পৰিচালিত। <ph name="BEGIN_LINK" />সবিশেষ<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="1450170672351507823">সাধাৰণ সুৰক্ষা অন কৰা আছে। আৰু অধিক সুৰক্ষাৰ বাবে বৰ্ধিত সুৰক্ষা ব্যৱহাৰ কৰক।</translation>
 <translation id="149095475893949513">এই ৱেবছাইটটোৱে এটা কনফিগাৰেশ্বনৰ প্ৰ'ফাইল ডাউনল'ড কৰিবলৈ চেষ্টা কৰি আছে।</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">ঠিকনা</translation>
 <translation id="3943492037546055397">পাছৱৰ্ড</translation>
 <translation id="3959736869653157332">মেনু → নতুন ইনক’গনিট’ টেব</translation>
-<translation id="3964173450954943920">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK" />ছেটিঙ<ph name="END_LINK" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ Search আৰু Googleৰ অন্য সেৱাসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আপোনাৰ ইতিহাস ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3968505803272650567">আগ্ৰহসমূহ পৰিচালনা কৰক</translation>
 <translation id="3989635538409502728">ছাইন আউট কৰক</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">একাউণ্টৰ ছাইন ইনৰ সবিশেষৰ ম্যাদ উকলিল।</translation>
 <translation id="8693663554456874301">{count,plural, =1{টেব বন্ধ কৰক}one{টেববোৰ বন্ধ কৰক}other{টেববোৰ বন্ধ কৰক}}</translation>
 <translation id="8706588385081740091">পাছৱৰ্ডসমূহ</translation>
+<translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8717864919010420084">লিংকটো প্ৰতিলিপি কৰক</translation>
 <translation id="8721297211384281569">সঁজুলিৰ মেনু</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
