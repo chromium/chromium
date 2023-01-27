@@ -414,7 +414,8 @@ bool IsDeferrableContent(const NGInlineNodeData& data) {
 }  // namespace
 
 NGInlineNode::NGInlineNode(LayoutBlockFlow* block)
-    : NGLayoutInputNode(block, kInline) {
+    : NGLayoutInputNode(block, kInline),
+      record_replay_id_(recordreplay::NewIdMainThread("NGInlineNode")) {
   DCHECK(block);
   DCHECK(block->IsLayoutNGObject());
   if (!block->HasNGInlineNodeData())
@@ -1257,6 +1258,11 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
                              const String* previous_text,
                              const HeapVector<NGInlineItem>* previous_items,
                              const Font* override_font) const {
+
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeText id=%d",
+    record_replay_id_);
+
   TRACE_EVENT0("fonts", "NGInlineNode::ShapeText");
   const String& text_content = data->text_content;
   HeapVector<NGInlineItem>* items = &data->items;
@@ -1454,6 +1460,10 @@ void NGInlineNode::ShapeText(NGInlineItemsData* data,
 
 // Create HeapVector<NGInlineItem> with :first-line rules applied if needed.
 void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextForFirstLineIfNeeded id=%d",
+    record_replay_id_);
+
   // First check if the document has any :first-line rules.
   DCHECK(!data->first_line_items_);
   LayoutObject* layout_object = GetLayoutBox();
@@ -1503,6 +1513,11 @@ void NGInlineNode::ShapeTextIncludingFirstLine(
     NGInlineNodeData* data,
     const String* previous_text,
     const HeapVector<NGInlineItem>* previous_items) const {
+
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert("[RUN-1219] NGInlineNode::ShapeTextIncludingFirstLine id=%d",
+    record_replay_id_);
+
   DCHECK_NE(new_state, NGInlineNodeData::kShapingNone);
   data->shaping_state_ = new_state;
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -1905,6 +1920,11 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
     WritingMode container_writing_mode,
     const NGConstraintSpace& space,
     const MinMaxSizesFloatInput& float_input) const {
+
+  // https://linear.app/replay/issue/RUN-1219
+  recordreplay::Assert("[RUN-1219] NGInlineNode::ComputeMinMaxSizes id=%d",
+    record_replay_id_);
+
   PrepareLayoutIfNeeded();
   ShapeTextOrDefer(space);
 
