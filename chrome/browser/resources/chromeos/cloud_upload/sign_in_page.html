@@ -32,6 +32,12 @@
   Connect to Microsoft OneDrive to open files in Microsoft 365
 </div>
 <div slot="body">
+  <div id="error-message" hidden>
+    <div class="icon"></div>
+    <span class="error-text">
+      Unable to connect to OneDrive. Please try again.
+    </span>
+  </div>
   <p>
     To edit files in Microsoft 365, they need to be stored in Microsoft OneDrive
     cloud storage. If you open a file not already in OneDrive, your Chromebook
@@ -41,10 +47,6 @@
   <p>
     You'll need to sign in with your Microsoft account to continue.
   </p>
-  <div id="error-message" hidden>
-    <div class="icon"></div>
-    <p class="error-text">Unable to connect to OneDrive. Please try again.</p>
-  </div>
 </div>
 <div slot="button-container">
   <cr-button class="cancel-button">$i18n{cancel}</cr-button>

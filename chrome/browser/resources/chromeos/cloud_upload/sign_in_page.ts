@@ -20,7 +20,9 @@ export class SignInPageElement extends BaseSetupPageElement {
   /**
    * Initialises the page specific content inside the page.
    */
-  connectedCallback(): void {
+  override connectedCallback(): void {
+    super.connectedCallback();
+
     this.innerHTML = getTemplate();
     const connectButton = this.querySelector<HTMLElement>('.action-button')!;
     const cancelButton = this.querySelector<HTMLElement>('.cancel-button')!;
@@ -40,6 +42,11 @@ export class SignInPageElement extends BaseSetupPageElement {
       const errorMessage = this.querySelector<HTMLElement>('#error-message')!;
       connectButton.innerText = 'Retry';
       errorMessage.toggleAttribute('hidden', false);
+      // Update top/bottom fade style if the dialog's content overflows.
+      const contentElement =
+          this.shadowRoot!.querySelector<HTMLElement>('#content')!;
+      contentElement.scrollTop = 0;
+      this.updateContentFade(contentElement);
     }
   }
 

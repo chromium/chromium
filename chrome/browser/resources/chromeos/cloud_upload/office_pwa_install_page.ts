@@ -17,7 +17,9 @@ import {getTemplate} from './office_pwa_install_page.html.js';
  * Microsoft 365 web app.
  */
 export class OfficePwaInstallPageElement extends BaseSetupPageElement {
-  connectedCallback() {
+  override connectedCallback(): void {
+    super.connectedCallback();
+
     this.innerHTML = getTemplate();
 
     const actionButton = this.querySelector<HTMLElement>('.action-button')!;

@@ -591,7 +591,7 @@ bool CloudUploadDialog::ShouldShowCloseButton() const {
 
 namespace {
 const int kDialogWidthForOneDriveSetup = 512;
-const int kDialogHeightForOneDriveSetup = 532;
+const int kDialogHeightForOneDriveSetup = 552;
 
 const int kDialogWidthForFileHandlerDialog = 512;
 const int kDialogHeightForFileHandlerDialog = 338;

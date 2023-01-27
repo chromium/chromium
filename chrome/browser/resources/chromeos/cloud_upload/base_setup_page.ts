@@ -48,6 +48,18 @@ export class BaseSetupPageElement extends HTMLElement {
         .appendChild(template.content.cloneNode(true));
   }
 
+  /**
+   * Initialises the page specific content inside the page.
+   */
+  connectedCallback(): void {
+    const contentElement =
+        this.shadowRoot!.querySelector<HTMLElement>('#content')!;
+    this.updateContentFade(contentElement);
+    contentElement.addEventListener(
+        'scroll', this.updateContentFade.bind(undefined, contentElement),
+        {passive: true});
+  }
+
   attributeChangedCallback(name: string, _oldValue: string, _newValue: string) {
     assert(name === 'page-number' || name === 'total-pages');
 
@@ -64,5 +76,16 @@ export class BaseSetupPageElement extends HTMLElement {
       }
       dotsElement.appendChild(dot);
     }
+  }
+
+  updateContentFade(contentElement: HTMLElement) {
+    window.requestAnimationFrame(() => {
+      const atTop = contentElement.scrollTop === 0;
+      const atBottom =
+          contentElement.scrollHeight - contentElement.scrollTop ===
+          contentElement.clientHeight;
+      contentElement.classList.toggle('fade-top', !atTop);
+      contentElement.classList.toggle('fade-bottom', !atBottom);
+    });
   }
 }

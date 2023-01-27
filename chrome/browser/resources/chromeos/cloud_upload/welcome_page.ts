@@ -15,7 +15,9 @@ export class WelcomePageElement extends BaseSetupPageElement {
     super();
   }
 
-  connectedCallback() {
+  override connectedCallback(): void {
+    super.connectedCallback();
+
     this.innerHTML = getTemplate();
 
     const actionButton = this.querySelector('.action-button') as HTMLElement;

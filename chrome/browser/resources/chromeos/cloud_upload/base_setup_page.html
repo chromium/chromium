@@ -3,16 +3,57 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 532px;
+    height: 552px;
     padding: 32px;
     width: 512px;
   }
 
-  div#content {
+  #content {
     flex-grow: 1;
+    margin-block: 32px;
+    max-height: 192px;
+    overflow: scroll;
   }
 
-  div#header-image {
+  #content.fade-top::before {
+    background: linear-gradient(var(--cros-bg-color) 0,
+                                transparent 100%);
+    bottom: 268px;  /* margin + buttons + content margin and height - height */
+    content: '';
+    height: 20px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #content.fade-top::before {
+      background: linear-gradient(var(--cros-bg-color-elevation-3) 0,
+                                  transparent 100%);
+    }
+  }
+
+  #content.fade-bottom::after {
+    background: linear-gradient(transparent 0,
+                                var(--cros-bg-color) 100%);
+    bottom: 96px;  /* margin + buttons + content margin */
+    content: '';
+    height: 20px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #content.fade-bottom::after {
+      background: linear-gradient(transparent 0,
+                                  var(--cros-bg-color-elevation-3) 100%);
+    }
+  }
+
+  #header-image {
     background-color: var(--cros-highlight-color);
     border-radius: 12px;
     height: 200px;
@@ -38,13 +79,11 @@
   ::slotted([slot=title]) {
     color: var(--cros-text-color-primary);
     font: var(--cros-display-6-font);
-    margin-block-start: 32px;
   }
 
   ::slotted([slot=body]) {
     color: var(--cros-text-color-secondary);
     font: var(--cros-body-2-font);
-    margin-block-end: 32px;
     margin-block-start: 16px;
   }
 
@@ -73,10 +112,10 @@
   }
 </style>
 
+<div id="header-image">
+  <slot name="header-image"></slot>
+</div>
 <div id="content">
-  <div id="header-image">
-    <slot name="header-image"></slot>
-  </div>
   <slot name="title"></slot>
   <slot name="body"></slot>
 </div>
