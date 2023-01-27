@@ -19,9 +19,7 @@ enum class CdmLoadResult {
   kFileMissing,        // The CDM does not exist.
   kLoadFailed,         // CDM exists but LoadNativeLibrary() failed.
   kEntryPointMissing,  // CDM loaded but some required entry point missing.
-  kActivateCdmFactoryFailed,  // CDM loaded but ActivateCdmFactory() failed.
-  kMaxValue =
-      kActivateCdmFactoryFailed  // Max value for Uma Histogram Enumeration.
+  kMaxValue = kEntryPointMissing  // Max value for Uma Histogram Enumeration.
 };
 
 // Reports the result of loading CDM library to UMA.

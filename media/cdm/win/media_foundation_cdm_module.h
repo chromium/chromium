@@ -44,7 +44,12 @@ class MEDIA_EXPORT MediaFoundationCdmModule {
   // Declared first so it's destructed after `cdm_factory_`.
   base::ScopedNativeLibrary library_;
 
+  // Indicates whether Initialize() has been called.
   bool initialized_ = false;
+
+  // Indicates whether ActivateCdmFactory() has been called.
+  bool activated_ = false;
+
   base::FilePath cdm_path_;
   std::string key_system_;
   Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory> cdm_factory_;
