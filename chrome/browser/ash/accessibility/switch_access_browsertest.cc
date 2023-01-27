@@ -365,7 +365,15 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
   // js-based tests that have the ability to ask the text field for its value.
 }
 
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PointScanClickWhenMouseEventsEnabled \
+  DISABLED_PointScanClickWhenMouseEventsEnabled
+#else
+#define MAYBE_PointScanClickWhenMouseEventsEnabled \
+  PointScanClickWhenMouseEventsEnabled
+#endif
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
+                       MAYBE_PointScanClickWhenMouseEventsEnabled) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
 
@@ -397,8 +405,15 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, PointScanClickWhenMouseEventsEnabled) {
   ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
 }
 
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PointScanClickWhenMouseEventsDisabled \
+  DISABLED_PointScanClickWhenMouseEventsDisabled
+#else
+#define MAYBE_PointScanClickWhenMouseEventsDisabled \
+  PointScanClickWhenMouseEventsDisabled
+#endif
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
-                       PointScanClickWhenMouseEventsDisabled) {
+                       MAYBE_PointScanClickWhenMouseEventsDisabled) {
   EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                      {'3', 'C'} /* previous */);
 
