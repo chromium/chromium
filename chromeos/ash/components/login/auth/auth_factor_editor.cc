@@ -299,9 +299,6 @@ void AuthFactorEditor::ReplacePinFactor(std::unique_ptr<UserContext> context,
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
 
-  cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
-  cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
-
   auto on_updated_callback = base::BindOnce(
       &AuthFactorEditor::OnUpdateAuthFactor, weak_factory_.GetWeakPtr(),
       std::move(context), std::move(callback));
