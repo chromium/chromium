@@ -158,8 +158,8 @@ struct KeyEvent {
 
 // This interface is implemented by Ash-Chrome.
 // It enables tests in Lacros-Chrome to send commands as an input method.
-// Next version: 3
-// Next method id: 4
+// Next version: 4
+// Next method id: 5
 [Stable, Uuid="c214f4f5-c583-44d1-9547-bb2456d9e70b"]
 interface InputMethodTestInterface {
   // Calls the callback when the input method has focused on some input field.
@@ -173,7 +173,29 @@ interface InputMethodTestInterface {
   [MinVersion=1] SetComposition@2(string text, uint32 index) => ();
 
   // Calls `ash::InputMethodAsh::SendKeyEvent`.
-  [MinVersion=2] SendKeyEvent@3(KeyEvent event) => ();
+  //
+  // The key will be stuck in a pending state until KeyEventHandled is called.
+  // While the key is pending, other methods in this test interface can be
+  // called to simulate the input method performing input operations as a
+  // result of the key events.
+  //
+  // The key event is resolved once KeyEventHandled is called with the
+  // corresponding `key_event_id` that is returned by this call.
+  //
+  // For example, this will simulate a Korean input method for the key 'g':
+  //
+  //   SendKeyEventAsync(KeyEvent('g'),
+  //     base::BindLambdaForTesting([&](uint64 key_event_id){
+  //       SetComposition("ㅎ", 1);
+  //       KeyEventHandled(key_event_id, true);
+  //     });
+  [MinVersion=2] SendKeyEvent@3(KeyEvent event)
+      => ([MinVersion=3] uint64 key_event_id);
+
+  // Calls `ash::InputMethodAsh::SendKeyEvent`.
+  // Handle the pending key event with ID `key_event_id` with result of
+  // `handled`.
+  [MinVersion=3] KeyEventHandled@4(uint64 key_event_id, bool handled) => ();
 };
 
 // This interface is implemented by Ash-Chrome.
