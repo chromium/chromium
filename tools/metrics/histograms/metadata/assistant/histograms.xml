@@ -239,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.AgsaVersion{Timing}" units="Version"
-    expires_after="2023-03-05">
+    expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -252,7 +252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.ConsentOutcome"
-    enum="AssistantConsentOutcome" expires_after="2023-03-05">
+    enum="AssistantConsentOutcome" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility.FailureReason{Timing}"
-    enum="EligibilityFailureReason" expires_after="2023-03-05">
+    enum="EligibilityFailureReason" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -282,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.VoiceSearch.UserEligibility{Timing}"
-    enum="BooleanEligible" expires_after="2023-03-05">
+    enum="BooleanEligible" expires_after="2023-07-05">
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
