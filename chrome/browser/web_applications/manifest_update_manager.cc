@@ -128,19 +128,11 @@ ManifestUpdateManager::~ManifestUpdateManager() = default;
 void ManifestUpdateManager::SetSubsystems(
     WebAppInstallManager* install_manager,
     WebAppRegistrar* registrar,
-    WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
-    WebAppInstallFinalizer* install_finalizer,
-    OsIntegrationManager* os_integration_manager,
-    WebAppSyncBridge* sync_bridge,
     WebAppCommandScheduler* command_scheduler) {
   install_manager_ = install_manager;
   registrar_ = registrar;
-  icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
-  install_finalizer_ = install_finalizer;
-  os_integration_manager_ = os_integration_manager;
-  sync_bridge_ = sync_bridge;
   command_scheduler_ = command_scheduler;
 }
 

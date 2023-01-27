@@ -35,9 +35,6 @@ class WebContents;
 namespace web_app {
 
 class WebAppUiManager;
-class WebAppInstallFinalizer;
-class OsIntegrationManager;
-class WebAppSyncBridge;
 class WebAppCommandScheduler;
 
 // Checks for updates to a web app's manifest and triggers a reinstall if the
@@ -71,11 +68,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
 
   void SetSubsystems(WebAppInstallManager* install_manager,
                      WebAppRegistrar* registrar,
-                     WebAppIconManager* icon_manager,
                      WebAppUiManager* ui_manager,
-                     WebAppInstallFinalizer* install_finalizer,
-                     OsIntegrationManager* os_integration_manager,
-                     WebAppSyncBridge* sync_bridge,
                      WebAppCommandScheduler* command_scheduler);
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
@@ -177,15 +170,9 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                     ManifestUpdateResult result);
 
   raw_ptr<WebAppRegistrar, DanglingUntriaged> registrar_ = nullptr;
-  raw_ptr<WebAppIconManager, DanglingUntriaged> icon_manager_ = nullptr;
   raw_ptr<WebAppUiManager, DanglingUntriaged> ui_manager_ = nullptr;
-  raw_ptr<WebAppInstallFinalizer, DanglingUntriaged> install_finalizer_ =
-      nullptr;
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
-  raw_ptr<OsIntegrationManager, DanglingUntriaged> os_integration_manager_ =
-      nullptr;
-  raw_ptr<WebAppSyncBridge, DanglingUntriaged> sync_bridge_ = nullptr;
   raw_ptr<WebAppInstallManager, DanglingUntriaged> install_manager_ = nullptr;
   raw_ptr<WebAppCommandScheduler, DanglingUntriaged> command_scheduler_ =
       nullptr;
