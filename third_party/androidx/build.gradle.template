@@ -34,6 +34,7 @@ dependencies {
     compile 'androidx.browser:browser:{{androidx_dependency_version}}'
     compile 'androidx.cardview:cardview:{{androidx_dependency_version}}'
     compile 'androidx.collection:collection:{{androidx_dependency_version}}'
+    compile 'androidx.collection:collection-ktx:{{androidx_dependency_version}}'
     compile 'androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}'
     compile 'androidx.coordinatorlayout:coordinatorlayout:{{androidx_dependency_version}}'
     compile 'androidx.core:core:{{androidx_dependency_version}}'
