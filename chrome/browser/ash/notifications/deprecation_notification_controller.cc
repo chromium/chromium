@@ -17,7 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -80,9 +80,10 @@ void DeprecationNotificationController::ResetStateForTesting() {
 void DeprecationNotificationController::ShowNotificationFromIdWithLauncherKey(
     const std::string& id,
     int message_id) {
-  const int launcher_key_name_id = ui::DeviceUsesKeyboardLayout2()
-                                       ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
-                                       : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
+  const int launcher_key_name_id =
+      Shell::Get()->keyboard_capability()->HasLauncherButton()
+          ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER
+          : IDS_ASH_SHORTCUT_MODIFIER_SEARCH;
   const std::u16string launcher_key_name =
       l10n_util::GetStringUTF16(launcher_key_name_id);
   const std::u16string message_body =
