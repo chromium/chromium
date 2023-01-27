@@ -405,6 +405,8 @@ class SequenceManagerTest
     }
   }
 
+  debug::CrashKeyString* dummy_key() { return &dummy_key_; }
+
   void AdvanceMockTickClock(TimeDelta delta) override {
     fixture_->AdvanceMockTickClock(delta);
   }
@@ -445,6 +447,7 @@ class SequenceManagerTest
   }
 
  private:
+  debug::CrashKeyString dummy_key_{"dummy", debug::CrashKeySize::Size64};
   std::unique_ptr<Fixture> fixture_;
 };
 
@@ -5105,14 +5108,13 @@ TEST_P(SequenceManagerTest, CrashKeys) {
 
   MockCrashKeyImplementation* mock_impl = crash_key_impl.get();
   debug::SetCrashKeyImplementation(std::move(crash_key_impl));
-  debug::CrashKeyString dummy_key("dummy", debug::CrashKeySize::Size64);
 
   // Parent task.
   auto parent_location = FROM_HERE;
   auto expected_stack1 = StringPrintf(
       "0x%zX 0x0",
       reinterpret_cast<uintptr_t>(parent_location.program_counter()));
-  EXPECT_CALL(*mock_impl, Allocate(_, _)).WillRepeatedly(Return(&dummy_key));
+  EXPECT_CALL(*mock_impl, Allocate(_, _)).WillRepeatedly(Return(dummy_key()));
   EXPECT_CALL(*mock_impl, Set(_, testing::Eq(expected_stack1)));
 
   // Child task.
