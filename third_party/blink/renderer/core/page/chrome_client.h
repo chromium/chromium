@@ -489,7 +489,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void HandleKeyboardEventOnTextField(HTMLInputElement&,
                                               KeyboardEvent&) {}
   virtual void TextFieldDataListChanged(HTMLInputElement&) {}
+
+  // Called when the selected option of a <select> control is changed as a
+  // result of user activation - see
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
   virtual void DidChangeSelectionInSelectControl(HTMLFormControlElement&) {}
+
   virtual void SelectFieldOptionsChanged(HTMLFormControlElement&) {}
   virtual void AjaxSucceeded(LocalFrame*) {}
   // Called when |element| is in autofilled state and the value has been changed

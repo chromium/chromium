@@ -52,7 +52,9 @@ class WebAutofillClient {
   // This is called when the datalist for an input has changed.
   virtual void DataListOptionsChanged(const WebInputElement&) {}
 
-  // Called when selected option of select control change.
+  // Called when the selected option of a <select> control is changed as a
+  // result of user activation - see
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
   virtual void SelectControlDidChange(const WebFormControlElement&) {}
 
   // Called when the options of a select control change.
