@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
@@ -63,7 +62,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
   DCHECK(main_thread_runner_);
   // Register as a listener for the playout reference signal. Used for e.g. echo
   // cancellation.
-  if (settings.NeedPlayoutReference() && playout_data_source) {
+  if (audio_processor_->needs_playout_reference() && playout_data_source) {
     playout_listener_ =
         std::make_unique<PlayoutListener>(std::move(playout_data_source), this);
   }

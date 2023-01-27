@@ -18,6 +18,7 @@
 #include "media/base/audio_processing.h"
 #include "media/base/audio_push_fifo.h"
 #include "media/webrtc/audio_delay_stats_reporter.h"
+#include "media/webrtc/webrtc_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing_statistics.h"
@@ -83,7 +84,8 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       const media::AudioParameters& input_format,
       const media::AudioParameters& output_format,
       rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-      bool stereo_mirroring);
+      bool stereo_mirroring,
+      bool needs_playout_reference);
 
   ~AudioProcessor();
 
@@ -162,6 +164,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
       const AudioParameters& input_format,
       const AudioProcessingSettings& settings);
 
+  // Returns true if `OnPlayoutData()` should be called.
+  bool needs_playout_reference() const { return needs_playout_reference_; }
+
  private:
   friend class AudioProcessorTest;
 
@@ -200,6 +205,9 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // If true, then the audio processor should swap the left and right channel of
   // captured stereo audio.
   const bool stereo_mirroring_;
+
+  // If true, `OnPlayoutData()` should be called.
+  const bool needs_playout_reference_;
 
   // Members accessed only by the owning sequence:
 

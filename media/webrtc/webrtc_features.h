@@ -28,6 +28,9 @@ extern const base::FeatureParam<
     ::webrtc::AudioProcessing::Config::Pipeline::DownmixMethod>
     kWebRtcApmDownmixMethodParam;
 
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+BASE_DECLARE_FEATURE(kWebRtcApmTellsIfPlayoutReferenceIsNeeded);
+
 }  // namespace features
 
 #endif  // MEDIA_WEBRTC_WEBRTC_FEATURES_H_
