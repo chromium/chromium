@@ -3792,6 +3792,7 @@ enum WebFeature {
   kContentDispositionInSvgUse = 4451,
   kSameDocumentCrossOriginInitiator = 4452,
   kServiceWorkerFetchHandlerModifiedAfterInitialization = 4453,
+  kOptionLabelInQuirksMode = 4454,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

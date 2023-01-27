@@ -1,0 +1,51 @@
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<select>
+  <option id=option></option>
+</select>
+
+<script>
+const option = document.getElementById('option');
+const useCounterId = 4454;
+
+test(() => {
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'Having an option element with no label attribute should not activate the use counter.');
+
+  option.setAttribute('label', '');
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'Setting the label attribute to an empty string in quirks mode should not activate the use counter.');
+
+  option.setAttribute('label', 'hello world');
+  assert_true(internals.isUseCounted(document, useCounterId),
+    'Setting the label attribute to a non-empty string in quirks mode should activate the use counter.');
+
+  option.removeAttribute('label');
+  internals.clearUseCounter(document, useCounterId);
+
+  option.textContent = 'foo bar';
+  option.setAttribute('label', 'foo bar');
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'Setting the label attribute to be the same as the text content should not activate the use counter.');
+
+  option.textContent = '';
+  option.removeAttribute('label');
+  internals.clearUseCounter(document, useCounterId);
+
+  option.textContent = '  hello world  ';
+  option.setAttribute('label', 'hello world');
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'Adding whitespace to an otherwise identical textContent should not activate the use counter.');
+
+  option.textContent = '';
+  option.removeAttribute('label');
+  internals.clearUseCounter(document, useCounterId);
+
+  option.textContent = 'hello world';
+  option.setAttribute('label', '  hello world  ');
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'Adding whitespace to an otherwise identical label attribute should not activate the use counter.');
+});
+</script>

@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -144,18 +145,24 @@ String HTMLOptionElement::DisplayLabel() const {
   String text;
 
   // WinIE does not use the label attribute, so as a quirk, we ignore it.
-  if (!document.InQuirksMode())
-    text = FastGetAttribute(html_names::kLabelAttr);
+  String label_attr = String(FastGetAttribute(html_names::kLabelAttr))
+    .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  String inner_text = CollectOptionInnerText()
+    .StripWhiteSpace(IsHTMLSpace<UChar>).SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  if (!document.InQuirksMode()) {
+    text = label_attr;
+  } else if (!label_attr.empty() && label_attr != inner_text) {
+    UseCounter::Count(GetDocument(), WebFeature::kOptionLabelInQuirksMode);
+  }
 
   // FIXME: The following treats an element with the label attribute set to
   // the empty string the same as an element with no label attribute at all.
   // Is that correct? If it is, then should the label function work the same
   // way?
   if (text.empty())
-    text = CollectOptionInnerText();
+    text = inner_text;
 
-  return text.StripWhiteSpace(IsHTMLSpace<UChar>)
-      .SimplifyWhiteSpace(IsHTMLSpace<UChar>);
+  return text;
 }
 
 String HTMLOptionElement::text() const {
