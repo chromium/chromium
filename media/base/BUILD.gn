@@ -461,8 +461,6 @@ source_set("base") {
     sources += [ "demuxer_memory_limit_android.cc" ]
   } else if (is_castos) {
     sources += [ "demuxer_memory_limit_cast.cc" ]
-  } else if (is_fuchsia) {
-    sources += [ "demuxer_memory_limit_low.cc" ]
   } else {
     sources += [ "demuxer_memory_limit_default.cc" ]
   }

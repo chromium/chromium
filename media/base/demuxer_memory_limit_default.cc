@@ -4,17 +4,23 @@
 
 #include "media/base/demuxer_memory_limit.h"
 
+#include "base/system/sys_info.h"
+
 namespace media {
 
 size_t GetDemuxerStreamAudioMemoryLimit(
     const AudioDecoderConfig* /*audio_config*/) {
-  return internal::kDemuxerStreamAudioMemoryLimitDefault;
+  return base::SysInfo::IsLowEndDevice()
+             ? internal::kDemuxerStreamAudioMemoryLimitLow
+             : internal::kDemuxerStreamAudioMemoryLimitDefault;
 }
 
 size_t GetDemuxerStreamVideoMemoryLimit(
     Demuxer::DemuxerTypes /*demuxer_type*/,
     const VideoDecoderConfig* /*video_config*/) {
-  return internal::kDemuxerStreamVideoMemoryLimitDefault;
+  return base::SysInfo::IsLowEndDevice()
+             ? internal::kDemuxerStreamVideoMemoryLimitLow
+             : internal::kDemuxerStreamVideoMemoryLimitDefault;
 }
 
 size_t GetDemuxerMemoryLimit(Demuxer::DemuxerTypes demuxer_type) {
