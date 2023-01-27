@@ -10,7 +10,6 @@ import "services/data_decoder/public/mojom/gzipper.mojom";
 import "services/data_decoder/public/mojom/image_decoder.mojom";
 import "services/data_decoder/public/mojom/json_parser.mojom";
 import "services/data_decoder/public/mojom/structured_headers_parser.mojom";
-import "services/data_decoder/public/mojom/web_bundler.mojom";
 import "services/data_decoder/public/mojom/xml_parser.mojom";
 
 [EnableIf=is_chromeos_ash]
@@ -40,9 +39,6 @@ interface DataDecoderService {
   // Binds an interface which can be used to parse Web Bundles.
   BindWebBundleParserFactory(
       pending_receiver<web_package.mojom.WebBundleParserFactory> receiver);
-
-  // Binds an interface which can be used to generate a Web Bundle.
-  BindWebBundler(pending_receiver<WebBundler> receiver);
 
   // Binds an interface which can be used to compress and decompress data using
   // gzip.

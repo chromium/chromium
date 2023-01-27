@@ -14,7 +14,6 @@
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
-#include "services/data_decoder/public/mojom/web_bundler.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -60,14 +59,6 @@ class DataDecoderService : public mojom::DataDecoderService {
     web_bundle_parser_factory_binder_ = binder;
   }
 
-  // Configures the service to use |binder| to bind WebBundler in subsequent
-  // BindWebBundler() calls.
-  void SetWebBundlerBinderForTesting(
-      base::RepeatingCallback<void(mojo::PendingReceiver<mojom::WebBundler>)>
-          binder) {
-    web_bundler_binder_ = binder;
-  }
-
  private:
   // mojom::DataDecoderService implementation:
   void BindImageDecoder(
@@ -80,8 +71,6 @@ class DataDecoderService : public mojom::DataDecoderService {
   void BindWebBundleParserFactory(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
           receiver) override;
-  void BindWebBundler(
-      mojo::PendingReceiver<mojom::WebBundler> receiver) override;
   void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -98,8 +87,6 @@ class DataDecoderService : public mojom::DataDecoderService {
   base::RepeatingCallback<void(
       mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
       web_bundle_parser_factory_binder_;
-  base::RepeatingCallback<void(mojo::PendingReceiver<mojom::WebBundler>)>
-      web_bundler_binder_;
 };
 
 }  // namespace data_decoder

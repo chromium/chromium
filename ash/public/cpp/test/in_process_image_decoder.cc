@@ -108,10 +108,6 @@ class InProcessImageDecoder::DataDecoderServiceImpl
           receiver) override {
     FAIL();
   }
-  void BindWebBundler(mojo::PendingReceiver<data_decoder::mojom::WebBundler>
-                          receiver) override {
-    FAIL();
-  }
   void BindGzipper(
       mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override {
     FAIL();

@@ -12,11 +12,9 @@ mojom("mojom") {
     "image_decoder.mojom",
     "json_parser.mojom",
     "structured_headers_parser.mojom",
-    "web_bundler.mojom",
   ]
 
   public_deps = [
-    ":mojom_resource_snapshot_for_web_bundle",
     ":mojom_xml_parser",
     "//components/web_package/mojom",
     "//mojo/public/mojom/base",
@@ -37,20 +35,4 @@ mojom("mojom_xml_parser") {
   sources = [ "xml_parser.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
-}
-
-mojom("mojom_resource_snapshot_for_web_bundle") {
-  generate_java = true
-  sources = [ "resource_snapshot_for_web_bundle.mojom" ]
-
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_gurl",
-  ]
-
-  if (!is_ios) {
-    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
-    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-    export_header_blink = "third_party/blink/public/platform/web_common.h"
-  }
 }
