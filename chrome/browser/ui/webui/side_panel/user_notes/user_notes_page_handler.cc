@@ -25,7 +25,8 @@ namespace {
 const int kCurrentVersionNumber = 1;
 
 side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
-    const power_bookmarks::PowerOverview& power_overview) {
+    const power_bookmarks::PowerOverview& power_overview,
+    const GURL& current_tab_url) {
   auto* power = power_overview.power();
   DCHECK(power->power_type() ==
          sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE);
@@ -36,9 +37,8 @@ side_panel::mojom::NoteOverviewPtr PowerOverviewToMojo(
   result->title = power->url().spec();
   result->text = power->power_entity()->note_entity().plain_text();
   result->num_notes = power_overview.count();
-  result->is_current_tab = false;
-  // TODO(crbug.com/1378131): Get the last_modification_time of the overview
-  // item for sorting.
+  result->is_current_tab = (power->url() == current_tab_url);
+  result->last_modification_time = power->time_modified();
   return result;
 }
 
@@ -127,16 +127,17 @@ void UserNotesPageHandler::GetNoteOverviews(const std::string& user_input,
   service_->GetPowerOverviewsForType(
       sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE,
       base::BindOnce(
-          [](GetNoteOverviewsCallback callback,
+          [](GetNoteOverviewsCallback callback, const GURL& current_tab_url,
              std::vector<std::unique_ptr<power_bookmarks::PowerOverview>>
                  power_overviews) {
             std::vector<side_panel::mojom::NoteOverviewPtr> results;
             for (auto& power_overview : power_overviews) {
-              results.push_back(PowerOverviewToMojo(*power_overview));
+              results.push_back(
+                  PowerOverviewToMojo(*power_overview, current_tab_url));
             }
             std::move(callback).Run(std::move(results));
           },
-          std::move(callback)));
+          std::move(callback), current_tab_url_));
 }
 
 void UserNotesPageHandler::GetNotesForCurrentTab(

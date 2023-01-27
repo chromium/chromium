@@ -102,6 +102,24 @@ TEST_F(UserNotesPageHandlerTest, GetNoteOverviews) {
   ASSERT_EQ(3u, note_overviews.size());
 }
 
+TEST_F(UserNotesPageHandlerTest, GetNoteOverviewIsCurrentTab) {
+  side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url1"));
+  ASSERT_TRUE(waiter.NewNoteFinished("note1"));
+
+  // Note overview is for current tab.
+  auto note_overviews = waiter.GetNoteOverviews("");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_TRUE(note_overviews[0]->is_current_tab);
+
+  handler()->SetCurrentTabUrlForTesting(GURL(u"https://url2"));
+
+  // Note overview is not for current tab.
+  note_overviews = waiter.GetNoteOverviews("");
+  ASSERT_EQ(1u, note_overviews.size());
+  ASSERT_FALSE(note_overviews[0]->is_current_tab);
+}
+
 TEST_F(UserNotesPageHandlerTest, CreateAndDeleteNote) {
   EXPECT_CALL(page_, NotesChanged()).Times(2);
   side_panel::mojom::UserNotesPageHandlerAsyncWaiter waiter(handler());
