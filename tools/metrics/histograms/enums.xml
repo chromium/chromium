@@ -73594,7 +73594,6 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="NTPBackgroundImageSource">
-  <int value="0" label="Unknown source"/>
   <int value="1" label="No image"/>
   <int value="2" label="First party (NTP) theme without refresh daily enabled"/>
   <int value="3" label="First party (NTP) theme with refresh daily enabled"/>
