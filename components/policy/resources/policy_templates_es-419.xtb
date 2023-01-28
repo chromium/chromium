@@ -2403,7 +2403,7 @@ Si inhabilitas la política, no se mostrará al usuario la promoción para calif
 
 El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
 
-Estos son algunos polyfills que recuperan el comportamiento anterior para ayudarte a migrar https://github.com/josepharhar/offsetparent-polyfills
+Estos son algunos polyfills que recuperan el comportamiento anterior para ayudarte a hacer la migración: https://github.com/josepharhar/offsetparent-polyfills
 
 Si se habilita esta política, se utilizará el comportamiento nuevo.
 
