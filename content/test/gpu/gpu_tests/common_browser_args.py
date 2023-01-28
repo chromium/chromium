@@ -13,7 +13,7 @@ DISABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--disable-direct-composition-video-overlays'
 DISABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=1'
 DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS = '--disable-domain-blocking-for-3d-apis'
-DISABLE_FEATURES_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'
+DISABLE_D3D11_VIDEO_DECODER = '--disable_d3d11_video_decoder=1'
 DISABLE_GPU = '--disable-gpu'
 DISABLE_GPU_COMPOSITING = '--disable-gpu-compositing'
 DISABLE_GPU_PROCESS_CRASH_LIMIT = '--disable-gpu-process-crash-limit'
@@ -23,6 +23,7 @@ DISABLE_SOFTWARE_RASTERIZER = '--disable-software-rasterizer'
 ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--enable-direct-composition-video-overlays'
 ENABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=0'
+ENABLE_DXVA_VIDEO_DECODER = '--enable-features=DXVAVideoDecoding'
 ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =\
     '--enable-experimental-web-platform-features'
 ENABLE_GPU_BENCHMARKING = '--enable-gpu-benchmarking'

@@ -33,8 +33,10 @@ D3D11VideoDecoder::GetD3D11DeviceCB GetD3D11DeviceCallback() {
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     VideoDecoderTraits& traits) {
   if (traits.gpu_workarounds->disable_d3d11_video_decoder) {
-    if (traits.gpu_workarounds->disable_dxva_video_decoder)
+    if (traits.gpu_workarounds->disable_dxva_video_decoder ||
+        !base::FeatureList::IsEnabled(kDXVAVideoDecoding)) {
       return nullptr;
+    }
     return VdaVideoDecoder::Create(
         traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
         *traits.target_color_space, traits.gpu_preferences,
