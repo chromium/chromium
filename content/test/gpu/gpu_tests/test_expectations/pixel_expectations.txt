@@ -301,14 +301,13 @@ crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRound
 # Flaky on Fuchsia.
 crbug.com/1368748 [ fuchsia ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 
-# Fails on Fuchsia emulators
-crbug.com/1302427 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
 crbug.com/1268120 [ mac asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
-crbug.com/1297636 [ mac mac-x86_64 ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+crbug.com/1297636 [ asan intel mac-x86_64 monterey release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
+crbug.com/1297636 [ mac-x86_64 mojave no-asan nvidia-0xfe9 release ] Pixel_WebGPUImportUnaccelerated2DCanvas [ Failure ]
 
 # Pixel_WebGPUDisplayP3 socket timeout on Mac FYI Retina Release (NVIDIA)
 crbug.com/1392819 [ mac nvidia no-asan ] Pixel_WebGPUDisplayP3 [ Failure ]
