@@ -80882,7 +80882,7 @@
       ]
      ],
      "border-image-image-type-003.htm": [
-      "1b44510f938022e17d64f7aacd72a99fa0a1942d",
+      "b5a7543fcb845f6b54e22f37efdff55ed09d3ef4",
       [
        null,
        [
@@ -80898,11 +80898,11 @@
           [
            [
             0,
-            1
+            3
            ],
            [
             0,
-            8000
+            10800
            ]
           ]
          ]
@@ -162254,6 +162254,32 @@
        [
         [
          "/css/css-scoping/reference/green-text.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scoped-reference-animation-001.html": [
+      "891bda52a39b42322cf15cb01727f9cad58cf026",
+      [
+       null,
+       [
+        [
+         "/css/css-scoping/scoped-reference-animation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "scoped-reference-animation-002.html": [
+      "d5c25f06c0aa73269615ec9bf2b6399729ea261a",
+      [
+       null,
+       [
+        [
+         "/css/css-scoping/scoped-reference-animation-ref.html",
          "=="
         ]
        ],
@@ -311967,6 +311993,10 @@
        []
       ]
      },
+     "scoped-reference-animation-ref.html": [
+      "9f407eb690e0fb3d033afba0817082f84e30b783",
+      []
+     ],
      "slotted-parsing-expected.txt": [
       "52192acd57dd8d125b45c84b1beca944ce4e491b",
       []
