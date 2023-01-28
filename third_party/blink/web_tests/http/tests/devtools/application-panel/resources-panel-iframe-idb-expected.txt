@@ -13,12 +13,12 @@ Application
 Storage
  Local Storage
   http://127.0.0.1:8000/
-  http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  http://devtools.oopif.test:8000/^0http://127.0.0.1
  Session Storage
   http://127.0.0.1:8000/
-  http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  http://devtools.oopif.test:8000/^0http://127.0.0.1
  IndexedDB
-  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1
    Database-iframe
   Database-main-frame - http://127.0.0.1:8000/
  Web SQL
@@ -98,13 +98,13 @@ Application
 Storage
  Local Storage
   http://127.0.0.1:8000/
-  http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  http://devtools.oopif.test:8000/^0http://127.0.0.1
  Session Storage
   http://127.0.0.1:8000/
-  http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  http://devtools.oopif.test:8000/^0http://127.0.0.1
  IndexedDB
   Database-main-frame - http://127.0.0.1:8000/
-  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1^31
+  Database-iframe - http://devtools.oopif.test:8000/^0http://127.0.0.1
    Database-iframe
  Web SQL
  Cookies

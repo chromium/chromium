@@ -485,6 +485,10 @@ void StorageHandler::ClearDataForStorageKey(
 
   absl::optional<blink::StorageKey> key =
       blink::StorageKey::Deserialize(storage_key);
+  if (!key) {
+    return callback->sendFailure(
+        Response::InvalidParams("Unable to deserialize storage key"));
+  }
   storage_partition_->ClearData(
       remove_mask, StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, *key,
       base::Time(), base::Time::Max(),

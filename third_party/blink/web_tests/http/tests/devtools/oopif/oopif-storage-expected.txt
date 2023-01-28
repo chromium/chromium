@@ -1,6 +1,6 @@
 Verify DOM storage with OOPIFs
 Local Storage:
-http://127.0.0.1:8000/http://devtools.oopif.test:8000/^0http://127.0.0.1^31http://devtools.oopif.test:8000/^0http://127.0.0.1^31http://127.0.0.1:8000/^0http://127.0.0.1^31
+http://127.0.0.1:8000/http://devtools.oopif.test:8000/^0http://127.0.0.1http://devtools.oopif.test:8000/^0http://127.0.0.1http://127.0.0.1:8000/^31
 Session Storage:
-http://127.0.0.1:8000/http://devtools.oopif.test:8000/^0http://127.0.0.1^31http://devtools.oopif.test:8000/^0http://127.0.0.1^31http://127.0.0.1:8000/^0http://127.0.0.1^31
+http://127.0.0.1:8000/http://devtools.oopif.test:8000/^0http://127.0.0.1http://devtools.oopif.test:8000/^0http://127.0.0.1http://127.0.0.1:8000/^31
 

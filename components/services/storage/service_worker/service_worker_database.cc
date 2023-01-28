@@ -56,11 +56,8 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + "/" + [ "^0" +
-//   <StorageKey `key`.top_level_site> ]
-//   - or -
-//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + "/" + "^1" +
-//   <StorageKey 'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
+//   See StorageKey::Deserialize() for more information on the format.
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey>
 //   value: <empty>
 //
 //   key: "PRES:" + <int64_t 'purgeable_resource_id'>
@@ -69,14 +66,9 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
-//   key: "REG:" + <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit> ] +
-//   '\x00' + <int64_t 'registration_id'>
-//   - or -
-//   key: "REG:" + <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
-//   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits> + '\x00' +
-//   <int64_t 'registration_id'>
-//    (ex. "REG:http://example.com\x00123456")
+//   See StorageKey::Deserialize() for more information on the format.
+//   key: "REG:" + <StorageKey> + '\x00' + <int64_t 'registration_id'>
+//    (ex. "REG:https://example.com/\x00123456")
 //   value: <ServiceWorkerRegistrationData (except for the StorageKey)
 //   serialized as a string>
 //
@@ -101,12 +93,9 @@
 //   Note: This has changed from `GURL origin` to StorageKey but the name will
 //   be updated in the future to avoid a migration.
 //   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   See StorageKey::Deserialize() for more information on the format.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
-//   value: <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
-//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit>]
-//   - or -
-//   value: <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
-//   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
+//   value: <StorageKey>
 //
 //   OBSOLETE: https://crbug.com/539713
 //   key: "INITDATA_DISKCACHE_MIGRATION_NOT_NEEDED"

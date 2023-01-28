@@ -656,6 +656,9 @@ void ServiceWorkerInternalsHandler::HandleUnregister(const Value::List& args) {
 
   absl::optional<blink::StorageKey> storage_key =
       blink::StorageKey::Deserialize(*storage_key_string);
+  if (!storage_key) {
+    return;
+  }
 
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
@@ -685,6 +688,9 @@ void ServiceWorkerInternalsHandler::HandleStartWorker(const Value::List& args) {
 
   absl::optional<blink::StorageKey> storage_key =
       blink::StorageKey::Deserialize(*storage_key_string);
+  if (!storage_key) {
+    return;
+  }
 
   base::OnceCallback<void(blink::ServiceWorkerStatusCode)> callback =
       base::BindOnce(OperationCompleteCallback, weak_ptr_factory_.GetWeakPtr(),
