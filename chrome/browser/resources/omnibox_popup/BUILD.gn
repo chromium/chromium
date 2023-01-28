@@ -32,7 +32,5 @@ build_webui("build") {
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
     ]
-    optimize_webui_resource_paths_rewrites =
-        [ "omnibox_popup.rollup.js|omnibox_popup.js" ]
   }
 }

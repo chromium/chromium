@@ -70,9 +70,5 @@ build_webui("build") {
       "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
-    optimize_webui_resource_paths_rewrites = [
-      "history.rollup.js|history.js",
-      "lazy_load.rollup.js|lazy_load.js",
-    ]
   }
 }

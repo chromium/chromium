@@ -56,7 +56,5 @@ build_webui("build") {
       "chrome://resources/js/cr.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
     ]
-    optimize_webui_resource_paths_rewrites =
-        [ "downloads.rollup.js|downloads.js" ]
   }
 }

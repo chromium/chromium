@@ -86,8 +86,6 @@ build_webui("build") {
       "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
       "fuse.js",
     ]
-    optimize_webui_resource_paths_rewrites =
-        [ "tab_search.rollup.js|tab_search.js" ]
   }
 }
 

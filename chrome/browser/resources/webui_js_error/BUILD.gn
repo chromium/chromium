@@ -20,7 +20,5 @@ build_webui("build") {
     optimize_webui_host = "webuijserror"
     optimize_webui_in_files = [ "webui_js_error.js" ]
     optimize_webui_excludes = []
-    optimize_webui_resource_paths_rewrites =
-        [ "webui_js_error.rollup.js|webui_js_error.js" ]
   }
 }

@@ -267,7 +267,12 @@ template("build_webui") {
     if (optimize) {
       deps += [ ":build_bundle" ]
       manifest_files += [ "$target_gen_dir/$bundle_manifest" ]
-      resource_path_rewrites = invoker.optimize_webui_resource_paths_rewrites
+      resource_path_rewrites = []
+      foreach(f, invoker.optimize_webui_in_files) {
+        name = get_path_info(f, "name")
+        output_file = string_replace(f, "${name}.js", "${name}.rollup.js")
+        resource_path_rewrites += [ "${output_file}|${f}" ]
+      }
     } else {
       deps += [ ":build_ts" ]
       manifest_files +=

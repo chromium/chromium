@@ -103,7 +103,5 @@ build_webui("build") {
     optimize_webui_host = "extensions"
     optimize_webui_in_files = [ "extensions.js" ]
     optimize_webui_excludes = [ "chrome://resources/js/cr.js" ]
-    optimize_webui_resource_paths_rewrites =
-        [ "extensions.rollup.js|extensions.js" ]
   }
 }
