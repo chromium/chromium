@@ -8,9 +8,13 @@
 #include <memory>
 
 #include "base/android/jni_weak_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -19,6 +23,15 @@ class NavigationHandle;
 class NavigationThrottle;
 class WebContents;
 }
+
+namespace network {
+struct ResourceRequest;
+
+namespace mojom {
+class URLLoader;
+class URLLoaderClient;
+}  // namespace mojom
+}  // namespace network
 
 namespace url {
 class Origin;
@@ -85,9 +98,26 @@ class InterceptNavigationDelegate : public base::SupportsUserData::Data {
   // xrh, fetch, etc.)
   void OnResourceRequestWithGesture();
 
+  void OnSubframeAsyncActionTaken(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_gurl);
+
  private:
+  void LoaderCallback(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> pending_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> pending_client);
+
+  void MaybeHandleSubframeAction();
+
   JavaObjectWeakGlobalRef weak_jdelegate_;
   bool escape_external_handler_value_ = false;
+
+  mojo::SelfOwnedReceiverRef<network::mojom::URLLoader> url_loader_;
+  // An empty URL if an async action is pending, or a URL to redirect to when
+  // the URLLoader is ready.
+  std::unique_ptr<GURL> subframe_redirect_url_;
+  base::WeakPtrFactory<InterceptNavigationDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace navigation_interception

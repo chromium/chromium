@@ -215,7 +215,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                     return null;
                 }
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
-                return null;
+                // Empty GURL indicates a pending async action.
+                return GURL.emptyGURL();
             case OverrideUrlLoadingResultType.NO_OVERRIDE:
             default:
                 logBlockedNavigationToDevToolsConsole(escapedUrl);
@@ -343,7 +344,12 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     private void onDidAsyncActionInSubFrame(AsyncActionTakenParams params) {
-        // TODO(https://crbug.com/1365100): Implement navigate action.
+        GURL redirectUrl =
+                (params.actionType == AsyncActionTakenParams.AsyncActionTakenType.NAVIGATE)
+                ? params.targetUrl
+                : null;
+        InterceptNavigationDelegateImplJni.get().onSubframeAsyncActionTaken(
+                mWebContents, redirectUrl);
     }
 
     private void onDidFinishMainFrameIntentLaunch(boolean canCloseTab, GURL escapedUrl) {
@@ -461,5 +467,6 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         void associateWithWebContents(
                 InterceptNavigationDelegateImpl nativeInterceptNavigationDelegateImpl,
                 WebContents webContents);
+        void onSubframeAsyncActionTaken(WebContents webContents, GURL url);
     }
 }

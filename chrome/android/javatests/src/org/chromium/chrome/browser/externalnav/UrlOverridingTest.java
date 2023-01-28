@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.externalnav;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -27,6 +30,7 @@ import android.util.Pair;
 import android.widget.TextView;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
@@ -147,8 +151,6 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_xhr_callback_and_short_timeout.html";
     private static final String NAVIGATION_WITH_FALLBACK_URL_PAGE =
             BASE_PATH + "navigation_with_fallback_url.html";
-    private static final String NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE =
-            BASE_PATH + "navigation_with_fallback_url_parent_frame.html";
     private static final String FALLBACK_LANDING_PATH = BASE_PATH + "hello.html";
     private static final String OPEN_WINDOW_FROM_USER_GESTURE_PAGE =
             BASE_PATH + "open_window_from_user_gesture.html";
@@ -178,10 +180,10 @@ public class UrlOverridingTest {
             BASE_PATH + "navigation_from_long_timeout.html";
     private static final String NAVIGATION_FROM_PAGE_SHOW =
             BASE_PATH + "navigation_from_page_show.html";
-    private static final String NAVIGATION_TO_SELF_PARENT_FRAME_PAGE =
-            BASE_PATH + "navigation_to_self_with_fallback_parent.html";
-    private static final String NAVIGATION_TO_SELF_PAGE =
-            BASE_PATH + "navigation_to_self_with_fallback.html";
+    private static final String SUBFRAME_NAVIGATION_PARENT =
+            BASE_PATH + "subframe_navigation_parent.html";
+    private static final String SUBFRAME_NAVIGATION_CHILD =
+            BASE_PATH + "subframe_navigation_child.html";
 
     private static final String OTHER_BROWSER_PACKAGE = "com.other.browser";
     // Needs to be a real package on the device so we can get an icon from it. It will not be
@@ -189,6 +191,9 @@ public class UrlOverridingTest {
     private static final String NON_BROWSER_PACKAGE = "com.android.settings";
 
     private static final String EXTERNAL_APP_SCHEME = "externalappscheme";
+
+    private static final int ALERT_OK_BUTTON = android.R.id.button1;
+    private static final int ALERT_CANCEL_BUTTON = android.R.id.button2;
 
     @Mock
     private RedirectHandler mRedirectHandler;
@@ -579,6 +584,24 @@ public class UrlOverridingTest {
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }
 
+    private String getSubframeNavigationUrl(String subframeTargetUrl) {
+        // The replace_text parameters for SUBFRAME_NAVIGATION_CHILD, which is loaded in
+        // the iframe in SUBFRAME_NAVIGATION_PARENT, have to go through the
+        // embedded test server twice and, as such, have to be base64-encoded twice.
+        byte[] paramBase64Name = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_NAME");
+        byte[] base64ParamSubframeUrl = Base64.encode(
+                ApiCompatibilityUtils.getBytesUtf8("PARAM_SUBFRAME_URL"), Base64.URL_SAFE);
+        byte[] paramBase64Value = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_VALUE");
+        byte[] base64SubframeUrl = Base64.encode(
+                ApiCompatibilityUtils.getBytesUtf8(subframeTargetUrl), Base64.URL_SAFE);
+
+        return mTestServer.getURL(SUBFRAME_NAVIGATION_PARENT
+                + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(base64ParamSubframeUrl, Base64.URL_SAFE)
+                + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
+                + Base64.encodeToString(base64SubframeUrl, Base64.URL_SAFE));
+    }
+
     @Test
     @SmallTest
     public void testNavigationFromTimer() {
@@ -682,22 +705,10 @@ public class UrlOverridingTest {
     @Features.DisableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
     public void testNavigationWithFallbackURLInSubFrame_FallbackDisabled() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        // The replace_text parameters for NAVIGATION_WITH_FALLBACK_URL_PAGE, which is loaded in
-        // the iframe in NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE, have to go through the
-        // embedded test server twice and, as such, have to be base64-encoded twice.
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
-        byte[] paramBase64Name = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_NAME");
-        byte[] base64ParamFallbackUrl = Base64.encode(
-                ApiCompatibilityUtils.getBytesUtf8("PARAM_FALLBACK_URL"), Base64.URL_SAFE);
-        byte[] paramBase64Value = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_VALUE");
-        byte[] base64FallbackUrl =
-                Base64.encode(ApiCompatibilityUtils.getBytesUtf8(fallbackUrl), Base64.URL_SAFE);
-
-        String originalUrl = mTestServer.getURL(NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE
-                + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64ParamFallbackUrl, Base64.URL_SAFE)
-                + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64FallbackUrl, Base64.URL_SAFE));
+        String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
+                + fallbackUrl + ";end";
+        String originalUrl = getSubframeNavigationUrl(subframeUrl);
 
         OverrideUrlLoadingResult result = loadUrlAndWaitForIntentUrl(originalUrl, true, false);
 
@@ -711,22 +722,10 @@ public class UrlOverridingTest {
     @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
     public void testNavigationWithFallbackURLInSubFrame_FallbackEnabled() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        // The replace_text parameters for NAVIGATION_WITH_FALLBACK_URL_PAGE, which is loaded in
-        // the iframe in NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE, have to go through the
-        // embedded test server twice and, as such, have to be base64-encoded twice.
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
-        byte[] paramBase64Name = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_NAME");
-        byte[] base64ParamFallbackUrl = Base64.encode(
-                ApiCompatibilityUtils.getBytesUtf8("PARAM_FALLBACK_URL"), Base64.URL_SAFE);
-        byte[] paramBase64Value = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_VALUE");
-        byte[] base64FallbackUrl =
-                Base64.encode(ApiCompatibilityUtils.getBytesUtf8(fallbackUrl), Base64.URL_SAFE);
-
-        String originalUrl = mTestServer.getURL(NAVIGATION_WITH_FALLBACK_URL_PARENT_FRAME_PAGE
-                + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64ParamFallbackUrl, Base64.URL_SAFE)
-                + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64FallbackUrl, Base64.URL_SAFE));
+        String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
+                + fallbackUrl + ";end";
+        String originalUrl = getSubframeNavigationUrl(subframeUrl);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -850,8 +849,8 @@ public class UrlOverridingTest {
     @LargeTest
     public void testCCTRedirectFromIntentUriStaysInChrome_InIncognito() throws TimeoutException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        // This will make the mActivityTestRule.getActivity().getActivityTab() used in the method
-        // loadUrlAndWaitForIntentUrl to return an incognito tab instead.
+        // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
+        // instead.
         mActivityTestRule.loadUrlInNewTab("chrome://about/", /**incognito**/ true);
 
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
@@ -1380,7 +1379,7 @@ public class UrlOverridingTest {
     }
 
     @Test
-    @SmallTest
+    @LargeTest
     @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME,
             ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME})
     public void
@@ -1395,21 +1394,7 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        // The replace_text parameters for NAVIGATION_TO_SELF_PAGE, which is loaded in
-        // the iframe in NAVIGATION_TO_SELF_PARENT_FRAME_PAGE, have to go through the
-        // embedded test server twice and, as such, have to be base64-encoded twice.
-        byte[] paramBase64Name = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_NAME");
-        byte[] base64ParamTargetUrl = Base64.encode(
-                ApiCompatibilityUtils.getBytesUtf8("PARAM_SELF_URL"), Base64.URL_SAFE);
-        byte[] paramBase64Value = ApiCompatibilityUtils.getBytesUtf8("PARAM_BASE64_VALUE");
-        byte[] base64TargetUrl =
-                Base64.encode(ApiCompatibilityUtils.getBytesUtf8(subframeTarget), Base64.URL_SAFE);
-
-        String originalUrl = mTestServer.getURL(NAVIGATION_TO_SELF_PARENT_FRAME_PAGE
-                + "?replace_text=" + Base64.encodeToString(paramBase64Name, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64ParamTargetUrl, Base64.URL_SAFE)
-                + "&replace_text=" + Base64.encodeToString(paramBase64Value, Base64.URL_SAFE) + ":"
-                + Base64.encodeToString(base64TargetUrl, Base64.URL_SAFE));
+        String originalUrl = getSubframeNavigationUrl(subframeTarget);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1437,5 +1422,73 @@ public class UrlOverridingTest {
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
         subframeRedirect.waitForFirst();
+    }
+
+    void doTestIncognitoSubframeExternalNavigation(boolean acceptPrompt) throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
+        // This will cause getActivityTab() in loadUrlAndWaitForIntentUrl to return an incognito tab
+        // instead.
+        mActivityTestRule.loadUrlInNewTab("chrome://about/", /**incognito**/ true);
+
+        String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
+        String subframeUrl =
+                "intent://test/#Intent;scheme=externalappscheme;S.browser_fallback_url="
+                + fallbackUrl + ";end";
+        String originalUrl = getSubframeNavigationUrl(subframeUrl);
+
+        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+
+        final CallbackHelper subframeRedirect = new CallbackHelper();
+        EmptyTabObserver observer = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                Assert.assertEquals(originalUrl, navigation.getUrl().getSpec());
+            }
+
+            @Override
+            public void onDidRedirectNavigation(Tab tab, NavigationHandle navigation) {
+                if (acceptPrompt) Assert.fail();
+                Assert.assertFalse(navigation.isInPrimaryMainFrame());
+                if (fallbackUrl.equals(navigation.getUrl().getSpec())) {
+                    subframeRedirect.notifyCalled();
+                }
+            }
+        };
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.addObserver(observer); });
+
+        OverrideUrlLoadingResult result =
+                loadUrlAndWaitForIntentUrl(originalUrl, true, false, false, originalUrl, false);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, result.getResultType());
+
+        if (acceptPrompt) {
+            Espresso.onView(withId(ALERT_OK_BUTTON)).perform(click());
+            CriteriaHelper.pollUiThread(() -> {
+                Criteria.checkThat(mActivityMonitor.getHits(), Matchers.is(1));
+                Criteria.checkThat(
+                        mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec(),
+                        Matchers.is(originalUrl));
+            });
+        } else {
+            Espresso.onView(withId(ALERT_CANCEL_BUTTON)).perform(click());
+            subframeRedirect.waitForFirst();
+            Assert.assertEquals(0, mActivityMonitor.getHits());
+        }
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
+    public void testIncognitoSubframeExternalNavigation_Rejected() throws Exception {
+        doTestIncognitoSubframeExternalNavigation(false);
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures({ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS_NAME})
+    public void testIncognitoSubframeExternalNavigation_Accepted() throws Exception {
+        doTestIncognitoSubframeExternalNavigation(true);
     }
 }

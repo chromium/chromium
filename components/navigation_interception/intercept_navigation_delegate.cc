@@ -60,10 +60,11 @@ bool CheckIfShouldIgnoreNavigationOnUIThread(
 
 class RedirectURLLoader : public network::mojom::URLLoader {
  public:
-  RedirectURLLoader(const GURL& url,
-                    const network::ResourceRequest& resource_request,
+  RedirectURLLoader(const network::ResourceRequest& resource_request,
                     mojo::PendingRemote<network::mojom::URLLoaderClient> client)
-      : client_(std::move(client)) {
+      : client_(std::move(client)), request_(resource_request) {}
+
+  void DoRedirect(std::unique_ptr<GURL> url) {
     net::HttpStatusCode response_code = net::HTTP_TEMPORARY_REDIRECT;
     auto response_head = network::mojom::URLResponseHead::New();
     response_head->encoded_data_length = 0;
@@ -74,24 +75,27 @@ class RedirectURLLoader : public network::mojom::URLLoader {
     // This doesn't violate: `docs/security/rule-of-2.md`, because the input is
     // trusted, before appending the Location: <url> header.
     response_head->parsed_headers =
-        network::PopulateParsedHeaders(response_head->headers.get(), url);
+        network::PopulateParsedHeaders(response_head->headers.get(), *url);
 
-    response_head->headers->AddHeader("Location", url.spec());
+    response_head->headers->AddHeader("Location", url->spec());
 
     auto first_party_url_policy =
-        resource_request.update_first_party_url_on_redirect
+        request_.update_first_party_url_on_redirect
             ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
             : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL;
 
     client_->OnReceiveRedirect(
         net::RedirectInfo::ComputeRedirectInfo(
-            resource_request.method, resource_request.url,
-            resource_request.site_for_cookies, first_party_url_policy,
-            resource_request.referrer_policy, resource_request.referrer.spec(),
-            response_code, url, absl::nullopt,
+            request_.method, request_.url, request_.site_for_cookies,
+            first_party_url_policy, request_.referrer_policy,
+            request_.referrer.spec(), response_code, *url, absl::nullopt,
             /*insecure_scheme_was_upgraded=*/false,
             /*copy_fragment=*/false),
         std::move(response_head));
+  }
+
+  void OnNonRedirectAsyncAction() {
+    client_->OnComplete(network::URLLoaderCompletionStatus(net::ERR_ABORTED));
   }
 
   RedirectURLLoader(const RedirectURLLoader&) = delete;
@@ -114,18 +118,8 @@ class RedirectURLLoader : public network::mojom::URLLoader {
   void ResumeReadingBodyFromNet() override {}
 
   mojo::Remote<network::mojom::URLLoaderClient> client_;
+  network::ResourceRequest request_;
 };
-
-void RedirectToCallback(
-    GURL url,
-    const network::ResourceRequest& resource_request,
-    mojo::PendingReceiver<network::mojom::URLLoader> pending_receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> pending_client) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<RedirectURLLoader>(url, resource_request,
-                                          std::move(pending_client)),
-      std::move(pending_receiver));
-}
 
 }  // namespace
 
@@ -205,6 +199,12 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  // If there's a pending async subframe action, don't consider external
+  // navigation for the current navigation.
+  if (subframe_redirect_url_ || url_loader_) {
+    return;
+  }
+
   GURL escaped_url = escape_external_handler_value_
                          ? GURL(base::EscapeExternalHandlerValue(url.spec()))
                          : url;
@@ -223,14 +223,42 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
           initiating_origin ? initiating_origin->CreateJavaObject() : nullptr);
   if (j_gurl.is_null())
     return;
-  std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  subframe_redirect_url_ = url::GURLAndroid::ToNativeGURL(env, j_gurl);
 
   mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver =
       out_factory->InitWithNewPipeAndPassReceiver();
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
       base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-          base::BindOnce(&RedirectToCallback, *gurl));
+          base::BindOnce(&InterceptNavigationDelegate::LoaderCallback,
+                         weak_ptr_factory_.GetWeakPtr()));
   loader_factory->Clone(std::move(receiver));
+}
+
+void InterceptNavigationDelegate::LoaderCallback(
+    const network::ResourceRequest& resource_request,
+    mojo::PendingReceiver<network::mojom::URLLoader> pending_receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> pending_client) {
+  url_loader_ = mojo::MakeSelfOwnedReceiver(
+      std::make_unique<RedirectURLLoader>(resource_request,
+                                          std::move(pending_client)),
+      std::move(pending_receiver));
+  MaybeHandleSubframeAction();
+}
+
+void InterceptNavigationDelegate::MaybeHandleSubframeAction() {
+  // An empty subframe_redirect_url_ implies a pending async action.
+  if (!url_loader_ ||
+      (subframe_redirect_url_ && subframe_redirect_url_->is_empty())) {
+    return;
+  }
+  RedirectURLLoader* loader =
+      static_cast<RedirectURLLoader*>(url_loader_->impl());
+  if (!subframe_redirect_url_) {
+    loader->OnNonRedirectAsyncAction();
+  } else {
+    loader->DoRedirect(std::move(subframe_redirect_url_));
+  }
+  url_loader_.reset();
 }
 
 void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
@@ -239,6 +267,16 @@ void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
   if (jdelegate.is_null())
     return;
   Java_InterceptNavigationDelegate_onResourceRequestWithGesture(env, jdelegate);
+}
+
+void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_gurl) {
+  // subframe_redirect_url_ no longer empty indicates the async action has been
+  // taken.
+  subframe_redirect_url_ =
+      j_gurl.is_null() ? nullptr : url::GURLAndroid::ToNativeGURL(env, j_gurl);
+  MaybeHandleSubframeAction();
 }
 
 }  // namespace navigation_interception

@@ -37,7 +37,8 @@ public abstract class InterceptNavigationDelegate {
      * @param hasUserGesture Whether the navigation is associated with a user gesture.
      * @param initiatorOrigin The Origin that initiated this navigation, if any.
      *
-     * @return A URL to redirect the subframe to, or null if the frame should not be redirected.
+     * @return Tri-state: An empty URL indicating an async action is pending, a URL to redirect the
+     *         subframe to, or null if no action is to be taken.
      */
     @CalledByNative
     protected GURL handleSubframeExternalProtocol(GURL escapedUrl, @PageTransition int transition,
