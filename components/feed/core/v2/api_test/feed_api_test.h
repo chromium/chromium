@@ -270,6 +270,12 @@ class TestFeedNetwork : public FeedNetwork {
   void InjectResponse(feedwire::webfeed::ListWebFeedsResponse response) {
     InjectApiResponse<ListWebFeedsDiscoverApi>(std::move(response));
   }
+  void InjectResponse(const feedwire::webfeed::QueryWebFeedResponse& response) {
+    InjectApiResponse<QueryWebFeedDiscoverApi>(response);
+  }
+  void InjectQueryResponse(const FeedNetwork::RawResponse& response) {
+    InjectApiRawResponse<QueryWebFeedDiscoverApi>(response);
+  }
 
   void InjectListWebFeedsResponse(
       std::vector<feedwire::webfeed::WebFeed> web_feeds) {

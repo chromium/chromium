@@ -107264,6 +107264,14 @@ This is true even if the type has been removed from the mojom file.
       label="Unavailable - Post-follow dialog for an unavailable web feed"/>
 </enum>
 
+<enum name="WebFeedQueryRequestStatus">
+  <int value="0" label="Unknown status"/>
+  <int value="1" label="Success. The query succeeded."/>
+  <int value="2" label="Failed because the device is offline"/>
+  <int value="3" label="Failed for an unknown reason"/>
+  <int value="4" label="Failed due to pending ClearAll action"/>
+</enum>
+
 <enum name="WebFeedRefreshStatus">
   <int value="0" label="Unknown status"/>
   <int value="1" label="Success"/>

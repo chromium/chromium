@@ -128,6 +128,8 @@ WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url);
 feedwire::webfeed::FollowWebFeedResponse SuccessfulFollowResponse(
     const std::string& follow_name);
 feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse();
+feedwire::webfeed::QueryWebFeedResponse SuccessfulQueryResponse(
+    const std::string& query_name);
 feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain);
 
 }  // namespace feed

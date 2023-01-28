@@ -119,6 +119,8 @@ source_set("feed_core_v2") {
     "web_feed_subscriptions/fetch_recommended_web_feeds_task.h",
     "web_feed_subscriptions/fetch_subscribed_web_feeds_task.cc",
     "web_feed_subscriptions/fetch_subscribed_web_feeds_task.h",
+    "web_feed_subscriptions/query_web_feed_task.cc",
+    "web_feed_subscriptions/query_web_feed_task.h",
     "web_feed_subscriptions/subscribe_to_web_feed_task.cc",
     "web_feed_subscriptions/subscribe_to_web_feed_task.h",
     "web_feed_subscriptions/subscription_datastore_provider.cc",

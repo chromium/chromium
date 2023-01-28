@@ -124,6 +124,23 @@ std::ostream& operator<<(std::ostream& out,
   }
 }
 
+std::ostream& operator<<(std::ostream& out, WebFeedQueryRequestStatus value) {
+  switch (value) {
+    case WebFeedQueryRequestStatus::kUnknown:
+      return out << "kUnknown";
+    case WebFeedQueryRequestStatus::kSuccess:
+      return out << "kSuccess";
+    case WebFeedQueryRequestStatus::kFailedOffline:
+      return out << "kFailedOffline";
+    case WebFeedQueryRequestStatus::kFailedUnknownError:
+      return out << "kFailedUnknownError";
+    case WebFeedQueryRequestStatus::kFailedInvalidUrl:
+      return out << "kFailedInvalidUrl";
+    case WebFeedQueryRequestStatus::kAbortWebFeedQueryPendingClearAll:
+      return out << "kAbortWebFeedQueryPendingClearAll";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, WebFeedAvailabilityStatus value) {
   switch (value) {
     case WebFeedAvailabilityStatus::kStateUnspecified:

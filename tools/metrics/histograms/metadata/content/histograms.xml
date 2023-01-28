@@ -1874,6 +1874,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.QueryResult"
+    enum="WebFeedQueryRequestStatus" expires_after="2023-07-23">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Reports the result of a user's request to query a Web Feed.
+    Reported after the query attempt has completed, once per request.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.RefreshContentOrder"
     enum="FeedContentOrder" expires_after="2023-07-23">
   <owner>harringtond@chromium.org</owner>

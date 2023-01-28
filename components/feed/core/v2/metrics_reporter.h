@@ -158,6 +158,7 @@ class MetricsReporter {
   void RefreshSubscribedWebFeedsAttempted(bool subscriptions_were_stale,
                                           WebFeedRefreshStatus status,
                                           int subscribed_web_feed_count);
+  void OnQueryAttempt(const WebFeedSubscriptions::QueryWebFeedResult& result);
 
   // Info card events.
   void OnInfoCardTrackViewStarted(const StreamType& stream_type,
