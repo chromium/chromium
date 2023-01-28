@@ -343,6 +343,15 @@ void BluetoothAdapterFloss::SetDiscoverable(bool discoverable,
       discoverable);
 }
 
+base::TimeDelta BluetoothAdapterFloss::GetDiscoverableTimeout() const {
+  if (!IsPresent()) {
+    return base::Seconds(0);
+  }
+
+  return base::Seconds(
+      FlossDBusManager::Get()->GetAdapterClient()->GetDiscoverableTimeout());
+}
+
 bool BluetoothAdapterFloss::IsDiscovering() const {
   if (!IsPresent())
     return false;

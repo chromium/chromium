@@ -98,6 +98,12 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
                        base::OnceClosure callback,
                        ErrorCallback error_callback) override {}
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  base::TimeDelta GetDiscoverableTimeout() const override {
+    return base::Microseconds(0);
+  }
+#endif
+
   bool IsDiscovering() const override { return false; }
 
   UUIDList GetUUIDs() const override { return UUIDList(); }

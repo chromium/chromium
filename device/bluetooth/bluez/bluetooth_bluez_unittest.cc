@@ -4268,8 +4268,8 @@ TEST_P(BluetoothBlueZTestP, GetConnectionInfoForConnectedDevice) {
 }
 
 TEST_F(BluetoothBlueZTest, GetDiscoverableTimeout) {
-  constexpr uint32_t kShortDiscoverableTimeout = 30;
-  constexpr uint32_t kLongDiscoverableTimeout = 240;
+  constexpr base::TimeDelta kShortDiscoverableTimeout = base::Seconds(30);
+  constexpr base::TimeDelta kLongDiscoverableTimeout = base::Seconds(240);
   GetAdapter();
   BluetoothAdapterBlueZ* adapter_bluez =
       static_cast<BluetoothAdapterBlueZ*>(adapter_.get());

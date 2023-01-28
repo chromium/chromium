@@ -554,6 +554,13 @@ void FakeCentral::SetDiscoverable(bool discoverable,
   NOTREACHED();
 }
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+base::TimeDelta FakeCentral::GetDiscoverableTimeout() const {
+  NOTREACHED();
+  return base::Microseconds(0);
+}
+#endif
+
 bool FakeCentral::IsDiscovering() const {
   NOTREACHED();
   return false;

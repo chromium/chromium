@@ -40,6 +40,7 @@ const char kGetAddress[] = "GetAddress";
 const char kGetName[] = "GetName";
 const char kSetName[] = "SetName";
 const char kGetDiscoverable[] = "GetDiscoverable";
+const char kGetDiscoverableTimeout[] = "GetDiscoverableTimeout";
 const char kSetDiscoverable[] = "SetDiscoverable";
 const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";

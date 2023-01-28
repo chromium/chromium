@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
@@ -136,7 +137,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void SetDiscoverable(bool discoverable,
                        base::OnceClosure callback,
                        ErrorCallback error_callback) override;
-  uint32_t GetDiscoverableTimeout() const;
+  base::TimeDelta GetDiscoverableTimeout() const override;
   bool IsDiscovering() const override;
   bool IsDiscoveringForTesting() const;
   std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>

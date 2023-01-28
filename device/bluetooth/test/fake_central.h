@@ -165,6 +165,9 @@ class FakeCentral final : public mojom::FakeCentral,
   void SetDiscoverable(bool discoverable,
                        base::OnceClosure callback,
                        ErrorCallback error_callback) override;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  base::TimeDelta GetDiscoverableTimeout() const override;
+#endif
   bool IsDiscovering() const override;
   UUIDList GetUUIDs() const override;
   void CreateRfcommService(const device::BluetoothUUID& uuid,

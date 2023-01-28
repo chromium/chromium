@@ -478,10 +478,6 @@ void ArcBluetoothBridge::OnAdapterInitialized(
   arc_bridge_service_->bluetooth()->SetHost(this);
 }
 
-bluez::BluetoothAdapterBlueZ* ArcBluetoothBridge::GetBluezAdapter() const {
-  return static_cast<bluez::BluetoothAdapterBlueZ*>(bluetooth_adapter_.get());
-}
-
 void ArcBluetoothBridge::AdapterPoweredChanged(BluetoothAdapter* adapter,
                                                bool powered) {
   AdapterPowerState power_change =
@@ -2664,8 +2660,9 @@ ArcBluetoothBridge::GetAdapterProperties(
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::ADAPTER_DISCOVERY_TIMEOUT) {
-    properties.push_back(mojom::BluetoothProperty::NewDiscoveryTimeout(
-        GetBluezAdapter()->GetDiscoverableTimeout()));
+    properties.push_back(
+        mojom::BluetoothProperty::NewDiscoveryTimeout(static_cast<uint32_t>(
+            bluetooth_adapter_->GetDiscoverableTimeout().InSeconds())));
   }
   if (type == mojom::BluetoothPropertyType::ALL ||
       type == mojom::BluetoothPropertyType::LOCAL_LE_FEATURES) {

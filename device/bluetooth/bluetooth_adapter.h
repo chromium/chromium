@@ -498,6 +498,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
                                base::OnceClosure callback,
                                ErrorCallback error_callback) = 0;
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Gets the current discoverable time for the adapter radio.
+  virtual base::TimeDelta GetDiscoverableTimeout() const = 0;
+#endif
+
   // Indicates whether the adapter is currently discovering new devices.
   virtual bool IsDiscovering() const = 0;
 

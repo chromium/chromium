@@ -78,6 +78,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(bool discoverable,
                     base::OnceClosure callback,
                     ErrorCallback error_callback));
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  MOCK_CONST_METHOD0(GetDiscoverableTimeout, base::TimeDelta());
+#endif
+
   MOCK_CONST_METHOD0(IsDiscovering, bool());
   MOCK_METHOD2(
       StartScanWithFilter_,

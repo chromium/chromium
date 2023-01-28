@@ -339,8 +339,6 @@ class ArcBluetoothBridge
       ReleaseAdvertisementHandleCallback callback) override;
 
  protected:
-  bluez::BluetoothAdapterBlueZ* GetBluezAdapter() const;
-
   void ReserveAdvertisementHandleImpl(
       ReserveAdvertisementHandleCallback callback);
   void EnableAdvertisementImpl(

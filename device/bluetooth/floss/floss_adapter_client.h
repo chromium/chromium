@@ -164,6 +164,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void SetDiscoverable(ResponseCallback<Void> callback,
                                bool discoverable);
 
+  // Get the discoverable timeout for the adapter. Updates whenever the
+  // discoverable state changes.
+  uint32_t GetDiscoverableTimeout() const { return discoverable_timeout_; }
+
   // Start a discovery session.
   virtual void StartDiscovery(ResponseCallback<Void> callback);
 
@@ -302,6 +306,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   // Handle GetConnectedDevices.
   void OnGetConnectedDevices(DBusResult<std::vector<FlossDeviceId>> ret);
 
+  // Calls GetDiscoverableTimeout.
+  void UpdateDiscoverableTimeout();
+
+  // Handle GetDiscoverableTimeout and cache the returned value.
+  void OnDiscoverableTimeout(DBusResult<uint32_t> ret);
+
   // List of observers interested in event notifications from this client.
   base::ObserverList<Observer> observers_;
 
@@ -313,6 +323,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Service which implements the adapter interface.
   std::string service_name_;
+
+  // Cached discoverable timeout value (updates on init and on discoverable
+  // state changes).
+  uint32_t discoverable_timeout_ = 0;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FlossAdapterClientTest, CallAdapterMethods);

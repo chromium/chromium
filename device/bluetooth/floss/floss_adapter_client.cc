@@ -249,6 +249,8 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindRepeating(&FlossAdapterClient::OnDiscoverableChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
+  UpdateDiscoverableTimeout();
+
   dbus::MethodCall register_callback(kAdapterInterface,
                                      adapter::kRegisterCallback);
 
@@ -313,6 +315,9 @@ void FlossAdapterClient::OnDiscoverableChanged(const bool& discoverable) {
   for (auto& observer : observers_) {
     observer.DiscoverableChanged(discoverable);
   }
+
+  // Also update the discoverable timeout.
+  UpdateDiscoverableTimeout();
 }
 
 void FlossAdapterClient::OnDiscoveringChanged(
@@ -495,6 +500,19 @@ void FlossAdapterClient::OnDeviceDisconnected(
   }
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
+}
+
+void FlossAdapterClient::UpdateDiscoverableTimeout() {
+  CallAdapterMethod<uint32_t>(
+      base::BindOnce(&FlossAdapterClient::OnDiscoverableTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      adapter::kGetDiscoverableTimeout);
+}
+
+void FlossAdapterClient::OnDiscoverableTimeout(DBusResult<uint32_t> ret) {
+  if (ret.has_value()) {
+    discoverable_timeout_ = *ret;
+  }
 }
 
 FlossAdapterClient::FlossAdapterClient() = default;

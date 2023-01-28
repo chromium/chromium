@@ -48,6 +48,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetName[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetName[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetDiscoverable[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetDiscoverableTimeout[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetDiscoverable[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
