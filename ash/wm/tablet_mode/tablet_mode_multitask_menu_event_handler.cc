@@ -128,43 +128,53 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
           std::fabs(details.scroll_x_hint())) {
         return;
       }
-      if (!multitask_menu_ && details.scroll_y_hint() > 0) {
+      if (is_drag_active_) {
+        return;
+      }
+      if (details.scroll_y_hint() > 0) {
+        // If the menu hasn't been created yet and scroll down begins inside the
+        // target area, start a drag.
         MaybeCreateMultitaskMenu(active_window);
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
-      } else if (multitask_menu_ && details.scroll_y_hint() < 0) {
-        multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
-        event->SetHandled();
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      // While the menu is open and we are scrolling down, we mark
-      // `SetHandled()` even if the event goes out of menu bounds to keep the
-      // menu open. If we are scrolling up, we only handle events inside the
-      // menu to avoid consuming them before `OnWidgetActivationChanged()`.
-      if (multitask_menu_ && details.scroll_y() > 0) {
-        multitask_menu_->UpdateDrag(window_location.y(), /*down=*/true);
-        event->SetHandled();
-      } else if (multitask_menu_ && details.scroll_y() < 0 &&
+        is_drag_active_ = true;
+      } else if (details.scroll_y_hint() < 0 && multitask_menu_ &&
                  gfx::RectF(
                      multitask_menu_->widget()->GetWindowBoundsInScreen())
                      .Contains(screen_location)) {
-        multitask_menu_->UpdateDrag(window_location.y(), /*down=*/false);
+        // If the menu is open and scroll up begins, only handle events inside
+        // the menu to avoid consuming scroll events outside the menu.
+        multitask_menu_->BeginDrag(window_location.y(), /*down=*/false);
+        event->SetHandled();
+        is_drag_active_ = true;
+      }
+      break;
+    case ui::ET_GESTURE_SCROLL_UPDATE:
+      if (is_drag_active_) {
+        multitask_menu_->UpdateDrag(window_location.y(),
+                                    /*down=*/details.scroll_y() > 0);
         event->SetHandled();
       }
       break;
     case ui::ET_GESTURE_SCROLL_END:
-      if (multitask_menu_) {
+    case ui::ET_GESTURE_END:
+      // If an unsupported gesture is sent, make sure we reset `is_drag_active_`
+      // to stop consuming events.
+      if (is_drag_active_) {
         multitask_menu_->EndDrag();
         if (multitask_menu_) {
-          // If `multitask_menu_` wasn't destroyed, it was dragged to show.
+          // If `multitask_menu_` wasn't destroyed, it was animated to show.
           RecordMultitaskMenuEntryType(
               chromeos::MultitaskMenuEntryType::kGestureScroll);
         }
         event->SetHandled();
+        is_drag_active_ = false;
       }
       break;
     case ui::ET_SCROLL_FLING_START:
+      if (!is_drag_active_) {
+        return;
+      }
       // Normally ET_GESTURE_SCROLL_BEGIN will fire first and have already
       // created the multitask menu, however occasionally ET_SCROLL_FLING_START
       // may fire first (https://crbug.com/821237).
@@ -176,6 +186,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
             chromeos::MultitaskMenuEntryType::kGestureFling);
       }
       event->SetHandled();
+      is_drag_active_ = false;
       break;
     default:
       break;
