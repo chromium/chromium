@@ -219,12 +219,6 @@ TEST_F(StorageKeyTest, SerializeFirstPartyForLocalStorage) {
       SCOPED_TRACE(test.origin_str);
       StorageKey key(url::Origin::Create(GURL(test.origin_str)));
       EXPECT_EQ(test.expected_serialization, key.SerializeForLocalStorage());
-      if (key.origin().scheme() != "file") {
-        EXPECT_EQ(StorageKey::DeserializeForLocalStorage(test.origin_str), key);
-        EXPECT_EQ(
-            StorageKey::DeserializeForLocalStorage(test.expected_serialization),
-            key);
-      }
     }
   }
 }
@@ -1371,6 +1365,22 @@ TEST_F(StorageKeyTest, MalformedOriginsAndSchemefulSites) {
       SCOPED_TRACE(test_case);
       EXPECT_FALSE(StorageKey::Deserialize(test_case));
     }
+  }
+}
+
+TEST_F(StorageKeyTest, DeserializeForLocalStorageFirstParty) {
+  for (const bool toggle : {false, true}) {
+    base::test::ScopedFeatureList scope_feature_list;
+    scope_feature_list.InitWithFeatureState(
+        net::features::kThirdPartyStoragePartitioning, toggle);
+
+    // This should deserialize as it lacks a trailing slash.
+    EXPECT_TRUE(StorageKey::DeserializeForLocalStorage("https://example.com")
+                    .has_value());
+
+    // This should deserialize as it lacks a trailing slash.
+    EXPECT_FALSE(StorageKey::DeserializeForLocalStorage("https://example.com/")
+                     .has_value());
   }
 }
 }  // namespace blink

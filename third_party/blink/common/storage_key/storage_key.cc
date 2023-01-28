@@ -367,9 +367,16 @@ absl::optional<StorageKey> StorageKey::DeserializeForLocalStorage(
   // We have to support the local storage specific variant that lacks the
   // trailing slash.
   const url::Origin maybe_origin = url::Origin::Create(GURL(in));
-  if (!maybe_origin.opaque() && maybe_origin.Serialize() == in) {
-    return StorageKey(maybe_origin, net::SchemefulSite(maybe_origin), nullptr,
-                      blink::mojom::AncestorChainBit::kSameSite);
+  if (!maybe_origin.opaque()) {
+    if (maybe_origin.Serialize() == in) {
+      return StorageKey(maybe_origin, net::SchemefulSite(maybe_origin), nullptr,
+                        blink::mojom::AncestorChainBit::kSameSite);
+    } else if (maybe_origin.GetURL().spec() == in) {
+      // This first party key was passed in with a trailing slash. This is
+      // required in Deserialize() but improper for DeserializeForLocalStorage()
+      // and must be rejected.
+      return absl::nullopt;
+    }
   }
 
   // Otherwise we fallback on base deserialization.
