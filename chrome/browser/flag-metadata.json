@@ -6726,7 +6726,7 @@
   {
     "name": "terminal-tmux-integration",
     "owners": [ "lxj", "easy", "//chrome/browser/ash/guest_os/OWNERS" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "text-based-audio-descriptions",
