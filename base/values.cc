@@ -1023,6 +1023,18 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
+void Value::Append(bool value) {
+  GetList().Append(value);
+}
+
+void Value::Append(int value) {
+  GetList().Append(value);
+}
+
+void Value::Append(double value) {
+  GetList().Append(value);
+}
+
 void Value::Append(const char* value) {
   GetList().Append(value);
 }
@@ -1033,6 +1045,10 @@ void Value::Append(StringPiece value) {
 
 void Value::Append(std::string&& value) {
   GetList().Append(std::move(value));
+}
+
+void Value::Append(StringPiece16 value) {
+  GetList().Append(value);
 }
 
 void Value::Append(Value&& value) {
