@@ -392,6 +392,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
+<translation id="3104179992611025423">Your browser is managed by your parents</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">linked with</translation>
 <translation id="3123734510202723619">Announcements</translation>
@@ -401,6 +402,7 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3157931365184549694">Restore</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="316694332262407393">Chrome is already running here.</translation>
+<translation id="3167258285411721858">You can request the mobile site for <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Bookmarked</translation>
@@ -1467,6 +1469,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8849001918648564819">Hidden</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, tab</translation>
 <translation id="8854223127042600341">See your offline files</translation>
+<translation id="885480114717186641">You can request the desktop site for <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Get descriptions</translation>
 <translation id="8856931513242997049">Notification permission flow closed</translation>
 <translation id="8873817150012960745">Tap here to start</translation>

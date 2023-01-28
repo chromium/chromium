@@ -3166,6 +3166,7 @@
 <translation id="3823310065043511710">കുറഞ്ഞത് <ph name="INSTALL_SIZE" />  ഇടമാണ് Linux-ന് വേണ്ടി ശുപാർശ ചെയ്യുന്നത്.</translation>
 <translation id="3824621460022590830">ഉപകരണ എൻറോൾമെന്റ് ടോക്കൺ സാധുവല്ല. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ഉടമയെയോ അഡ്‌മിനെയോ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ഈ ഫയൽ തരത്തിനുള്ള എന്റെ തിരഞ്ഞെടുപ്പ് ഓർമ്മിക്കുക: <ph name="FILE_TYPES" />}other{ഈ ഫയൽ തരങ്ങൾക്കുള്ള എന്റെ തിരഞ്ഞെടുപ്പ് ഓർമ്മിക്കുക: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">ആപ്പ് അലേർട്ടുകൾക്കായി ആപ്പ് ഐക്കണിൽ ഡോട്ട് കാണിക്കുക</translation>
 <translation id="3826071569074535339">മോഷൻ സെൻസറുകൾ ഉപയോഗിക്കാൻ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="3826440694796503677">കൂടുതൽ Google അക്കൗണ്ടുകൾ ചേർക്കുന്നത് നിങ്ങളുടെ അഡ്മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="3827774300009121996">&amp;പൂര്‍ണ്ണ ‌സ്‌ക്രീന്‍</translation>
@@ -3828,6 +3829,7 @@
 <translation id="4441147046941420429">തുടരാൻ, നിങ്ങളുടെ ഉപകരണത്തിൽ നിന്ന് സുരക്ഷാ കീ നീക്കം ചെയ്ത ശേഷം അത് വീണ്ടും പ്ലഗ് ഇൻ ചെയ്ത് സ്പർശിക്കുക</translation>
 <translation id="444134486829715816">വികസിപ്പിക്കുക...</translation>
 <translation id="4441928470323187829">നിങ്ങളുടെ അഡ്‌മിൻ പിൻ ചെയ്തത്</translation>
+<translation id="4442863809158514979">വെബ് അനുമതികൾ കാണുക</translation>
 <translation id="4443536555189480885">&amp;സഹായം</translation>
 <translation id="4444304522807523469">USB വഴിയോ പ്രാദേശിക നെറ്റ്‌വർക്കിലോ അറ്റാച്ച് ചെയ്‌ത പ്രമാണ സ്‌കാനറുകൾ ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="4444512841222467874">ഇടം സൃഷ്‌ടിച്ചില്ലെങ്കിൽ, ഉപയോക്താക്കളും വിവരങ്ങളും സ്വയം നീക്കംചെയ്യപ്പെടും.</translation>
@@ -4484,6 +4486,7 @@
 <translation id="5063480226653192405">ഉപയോഗം</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ക്രമീകരണത്തിൽ സുരക്ഷിത DNS മാനേജ് ചെയ്യുക</translation>
+<translation id="5066160542186949327">മറ്റൊരു ഫോൾഡറിലേക്ക് നീക്കുക</translation>
 <translation id="5067399438976153555">എല്ലായ്‌പ്പോഴും ഓണാക്കുക</translation>
 <translation id="5067867186035333991"><ph name="HOST" />-ന് നിങ്ങളുടെ മൈക്രോഫോൺ ആക്‌സസ് ചെയ്യണോ എന്ന് ചോദിക്കുക</translation>
 <translation id="5068553687099139861">പാസ്‌വേ‌ഡുകൾ കാണിക്കുക</translation>
@@ -7458,6 +7461,7 @@
 <translation id="779308894558717334">ഇളം പച്ച</translation>
 <translation id="7793098747275782155">ഇരുണ്ട നീല</translation>
 <translation id="7797571222998226653">ഓഫാണ്</translation>
+<translation id="7798504574384119986">വെബ് അനുമതികൾ കാണുക</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> സ്വയമേവ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="7800518121066352902">എ&amp;തിർ ഘടികാരദിശയിൽ തിരിക്കുക</translation>
 <translation id="7801679634091975683">നിങ്ങൾ ഇവിടെ വരുത്തുന്ന മാറ്റങ്ങൾ Lacros Chrome ബ്രൗസറിൽ മാത്രമേ ബാധകമാകൂ. നിങ്ങളുടെ Chrome ബ്രൗസർ ക്രമീകരണത്തിൽ മാറ്റങ്ങൾ വരുത്താൻ, Chrome ബ്രൗസർ തുറന്ന് ക്രമീകരണത്തിലേക്ക് പോകുക.</translation>

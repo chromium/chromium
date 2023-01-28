@@ -348,7 +348,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8493179195440786826">Chromium is Out of Date</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8558383651099478961">Your parent has turned off 'Permissions for sites, apps and extensions' for Chromium. Adding this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
-<translation id="8561285221328166383">To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium can check your passwords when you sign in with your Google Account</translation>
 <translation id="8574036838419011058">When on, Chromium conserves battery power by limiting background activity and visual effects, such as smooth scrolling and video frame rates. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
@@ -381,7 +380,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium may not function correctly because it is no longer supported on Windows XP or Windows Vista</translation>
 <translation id="942598560705308788">Certificates managed by Chromium</translation>
-<translation id="945990405696787151">To get future Chromium updates, you'll need macOS 10.13 or later. This computer is using OS X 10.11.</translation>
 <translation id="965162752251293939">Who's using Chromium?</translation>
 <translation id="967427899662692980">Get Chromium's strongest security</translation>
 <translation id="9792300276217204">Always clear site data from your device when you close Chromium</translation>

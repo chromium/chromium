@@ -125,11 +125,6 @@ Bu politikanın <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> ve <ph name
 <translation id="1117535567637097036">Bu politika aracılığıyla ayarlanan protokol işleyicileri, Android amaçları işlenirken kullanılmaz.</translation>
 <translation id="1118093128235245168">Sitelerin, bağlı bir USB cihazına erişmek için kullanıcıdan izin istemesine izin ver</translation>
 <translation id="111910763555783249">Bildirim ayarları</translation>
-<translation id="1120291391245112391">Cihazın coğrafi konumunu bildirir.
-
-      Politika, Etkin değerine ayarlanırsa kayıtlı cihazlar düzenli aralıklarla konumlarını bildirir.
-
-      Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar konumlarını bildirmez.</translation>
 <translation id="1122089575901325963">Politika ayarlanırsa cihazda kullanılabilmesi halinde <ph name="WILCO_NAME" /> teşhis ve telemetri denetleyicisi (DTC) yapılandırılır. Yapılandırmanın boyutu 1 MB'tan (1.000.000 bayt) büyük olmamalı ve biçimi JSON olmalıdır. Bunun işlenmesinden <ph name="WILCO_NAME" /> DTC sorumludur. Şifreleme karma değeri, indirmenin bütünlüğünü doğrulamak için kullanılır. Yapılandırma indirilerek önbelleğe alınır. URL veya karma değer her değiştiğinde bu tekrar indirilir.
 
       Bu politikayı ayarlarsanız kullanıcılar tarafından değiştirilemez.</translation>

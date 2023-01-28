@@ -3173,6 +3173,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3823310065043511710">Linuxi jaoks on soovitatav vähemalt <ph name="INSTALL_SIZE" /> vaba ruumi.</translation>
 <translation id="3824621460022590830">Seadme registreerimistunnus on sobimatu. Võtke ühendust seadme omaniku või administraatoriga. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Jäta minu valik selle failitüübi puhul meelde: <ph name="FILE_TYPES" />}other{Jäta minu valik nende failitüüpide puhul meelde: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Kuva rakenduse teatiste puhul rakenduse ikoonil punkt</translation>
 <translation id="3826071569074535339">Lubatud kasutada liikumisandureid</translation>
 <translation id="3826440694796503677">Teie administraator keelas Google'i kontode lisamise</translation>
 <translation id="3827774300009121996">&amp;Täisekraan</translation>
@@ -4492,6 +4493,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5063480226653192405">Kasutus</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Hallake turvalist DNS-i Chrome OS-i seadetes</translation>
+<translation id="5066160542186949327">Teisalda teise kausta</translation>
 <translation id="5067399438976153555">Alati sees</translation>
 <translation id="5067867186035333991">Küsi, kui sait <ph name="HOST" /> soovib juurdepääsu mikrofonile</translation>
 <translation id="5068553687099139861">kuvada paroole</translation>

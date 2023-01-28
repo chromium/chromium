@@ -18,6 +18,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1066060668811609597">Sünkroonimise haldamine</translation>
 <translation id="1076421457278169141">Kood on skannitud</translation>
 <translation id="1076785341346483463">Sünkroonimine hallatud kontoga</translation>
+<translation id="1080365971383768617">Paroolid kõigis teie seadmetes</translation>
 <translation id="1084365883616172403">Facebooki postitus on valmis.</translation>
 <translation id="1085696779717592361">Vaikimisi Chrome'i kasutamine</translation>
 <translation id="1103523840287552314">Tõlgi alati: <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5056446788882570708">Probleemid leiti <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installi Google Drive</translation>
+<translation id="50641035439563602">Paroolid salvestatakse nüüd teie Google'i kontole (<ph name="ACCOUNT" />). Saate neid kasutada kõikjal, kus olete sisse logitud. Selle väljalülitamiseks avage <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Failisuurust ei saa tuvastada.</translation>
 <translation id="5090832849094901128">Selle parooli eemaldamisel ei kustutata teie kontot saidil <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Säuts on valmis.</translation>
@@ -595,6 +597,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5520466080178053306">Puudutage valikuid Paroolihaldur &gt; Lisa</translation>
 <translation id="5525095647255982834">Selle vahelehe saatmiseks teise seadmesse logige selles Chrome'i sisse.</translation>
 <translation id="5525269841082836315">Parooli loomine</translation>
+<translation id="5530084793407600786">Otsi pildilt Google'iga</translation>
 <translation id="5542540507657872337">Leiti <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoffi abil saate alustada veebisaidi sirvimist selles seadmes ja jätkata seda hõlpsalt Macis. Praegu avatud veebisait kuvatakse Maci Dockis.
 

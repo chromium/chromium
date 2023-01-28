@@ -3165,6 +3165,7 @@
 <translation id="3823310065043511710">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ।</translation>
 <translation id="3824621460022590830">यन्त्र दर्ता गर्न प्रयोग गरिने टोकन अवैध छ। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{यो प्रकारको फाइलका हकमा मेरो रोजाइ याद राखियोस्: <ph name="FILE_TYPES" />}other{यी प्रकारका फाइलका हकमा मेरो रोजाइ याद राखियोस्: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">एपसम्बन्धी अलर्टहरूका लागि एपको आइकनमा डट देखाइयोस्</translation>
 <translation id="3826071569074535339">मोसन सेन्सरहरू प्रयोग गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="3826440694796503677">तपाईंका व्यवस्थापकले योभन्दा बढी Google खाताहरू थप्ने सुविधा असक्षम पार्नुभएको छ</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रिन</translation>
@@ -4483,6 +4484,7 @@
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS का सेटिङमा गई Secure DNS व्यवस्थापन गर्नुहोस्</translation>
+<translation id="5066160542186949327">अर्को फोल्डरमा जानुहोस्</translation>
 <translation id="5067399438976153555">सधैं सक्रिय</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> तपाईंको माइक्रोफोनको पहुँच गर्न चाहन्छ कि चाहँदैन भनि सोध्नुहोस्</translation>
 <translation id="5068553687099139861">पासवर्डहरू देखाइयोस्</translation>

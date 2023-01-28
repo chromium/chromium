@@ -345,7 +345,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8493179195440786826">‏Chromium אינו מעודכן</translation>
 <translation id="8550334526674375523">פרופיל העבודה שלך נפרד לחלוטין מהפרופיל האישי שלך.</translation>
 <translation id="8558383651099478961">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להוסיף את ה<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה מותקנת מערכת ההפעלה macOS 10.12.</translation>
 <translation id="8568283329061645092">‏Chromium יכול לבדוק את הסיסמאות כשנכנסים באמצעות חשבון Google</translation>
 <translation id="8574036838419011058">‏כשהתכונה מופעלת, Chromium חוסך בחיי הסוללה על ידי הגבלת הפעילות ברקע והאפקטים החזותיים, כמו גלילה חלקה וקצב פריימים של סרטונים. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
@@ -378,7 +377,6 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="9190841055450128916">‏Chromium ‏(mDNS-In)</translation>
 <translation id="93478295209880648">‏ייתכן ש-Chromium לא יפעל כראוי כי הוא כבר לא נתמך ב-Windows XP וב-Windows Vista</translation>
 <translation id="942598560705308788">‏אישורים שמנוהלים על ידי Chromium</translation>
-<translation id="945990405696787151">‏כדי לקבל עדכונים של Chromium בעתיד, צריך להשתמש ב-macOS מגרסה 10.13 ואילך. במחשב הזה פועלת מערכת ההפעלה ‎OS X 10.11.</translation>
 <translation id="965162752251293939">‏מי משתמש/ת ב-Chromium?</translation>
 <translation id="967427899662692980">‏רוצה להשיג את רמת האבטחה הגבוהה ביותר של Chromium?</translation>
 <translation id="9792300276217204">‏ניקוי נתונים מאתרים מהמכשיר בכל פעם שסוגרים את Chromium</translation>

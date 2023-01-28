@@ -236,6 +236,7 @@
 <translation id="2321086116217818302">പാസ്‍വേഡുകൾ തയ്യാറാക്കുന്നു…</translation>
 <translation id="2323763861024343754">സൈറ്റ് സ്‌റ്റോറേജ്</translation>
 <translation id="2328985652426384049">സൈൻ ഇൻ ചെയ്യാനാകില്ല</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ഇൻസ്‌റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="234265804618409743">നിങ്ങളുടെ ക്യാമറ തുറക്കാനാവുന്നില്ല. എന്തോ കുഴപ്പമുണ്ടായി.</translation>
 <translation id="2349710944427398404">അക്കൗണ്ടുകളും ബുക്ക്‌മാർക്കുകളും സംരക്ഷിച്ച ക്രമീകരണവും ഉൾപ്പെടെ Chrome ഉപയോഗിക്കുന്ന മൊത്തം വിവരങ്ങൾ</translation>
 <translation id="235789365079050412">Google സ്വകാര്യതാ നയം</translation>
@@ -344,6 +345,7 @@
 <translation id="2909615210195135082">Google അറിയിപ്പുകൾ പ്ലാറ്റ്‌ഫോം</translation>
 <translation id="2912296070571964914">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="2912345083818861431">തുറന്നിരിക്കുന്ന അദൃശ്യ ടാബുകൾ കാണാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കുക</translation>
+<translation id="2922568440285376746">Google ഉപയോഗിച്ച് ചിത്രത്തിലുള്ളവ തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">പേര് അസാധുവാണ്</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> സ്‌റ്റോറേജ്</translation>
 <translation id="2932222164150889403">നിങ്ങളുടെ കീബോഡ് മാറില്ല</translation>
@@ -664,6 +666,7 @@
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
 <translation id="4685741273709472646">ഡ്രോപ്പ്ഡൗൺ ലിസ്റ്റിൽ നിന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4687718960473379118">സൈറ്റ് നിർദ്ദേശിക്കുന്ന പരസ്യങ്ങൾ</translation>
+<translation id="4689792375321623175">Google ഉപയോഗിച്ച് ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="4699172675775169585">കാഷെ ചെയ്‌ത ചിത്രങ്ങളും ഫയലുകളും</translation>
 <translation id="4719927025381752090">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
@@ -810,6 +813,7 @@
 <translation id="5438292632479953702">വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="5441466871879044658">ഈ ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5441522332038954058">വിലാസ ബാറിലേക്ക് പോകുക</translation>
+<translation id="5444999712122199445">സൈറ്റിലേക്ക് മടങ്ങുക</translation>
 <translation id="544776284582297024">ടാബുകൾ തുറക്കാനും ഒരേ സമയം വ്യത്യസ്‌ത പേജുകൾ സന്ദർശിക്കാനും 'തുറന്നിരിക്കുന്ന ടാബുകൾ' ബട്ടൺ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> എന്നതിനൊപ്പം</translation>
 <translation id="5456381639095306749">പേജ് ഡൗൺലോഡ് ചെയ്യുക</translation>

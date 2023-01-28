@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Додај у речник</translation>
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1022489261739821355">Приказују се лозинке са <ph name="BEGIN_LINK" />Google налога<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Уређајем управља <ph name="DOMAIN" />. Администратори могу да приступају подацима свих профила на овом уређају.</translation>
 <translation id="1026655690966755180">Додајте порт</translation>
 <translation id="1026822031284433028">Учитај слику</translation>
 <translation id="1028604629594230522">Chrome предучитава странице које ћете вероватно посетити, како би се брже учитавале када их посетите.</translation>
@@ -1865,6 +1866,7 @@
 <translation id="2643064289437760082">Податке мерења огласа увек можете да избришете брисањем података прегледања</translation>
 <translation id="2643698698624765890">Управљајте додацима кликом на ставку Додаци у менију Прозор.</translation>
 <translation id="2645047101481282803">Уређајем управља <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Ова картица се пребацује на <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
 <translation id="2649045351178520408">ASCII датотека шифрована методом „Base64“, ланац сертификата</translation>
 <translation id="265156376773362237">Стандардно предучитавање</translation>
@@ -2737,6 +2739,7 @@
 <translation id="3446274660183028131">Покрените Parallels Desktop да бисте инсталирали Windows.</translation>
 <translation id="344630545793878684">Читање ваших података на више веб-сајтова</translation>
 <translation id="3447644283769633681">Блокирај све колачиће трећих страна</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> се пребацује на <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ажурирај налог</translation>
 <translation id="3449393517661170867">Нови прозор са картицама</translation>
 <translation id="3449839693241009168">Притисните <ph name="SEARCH_KEY" /> да бисте послали команде у <ph name="EXTENSION_NAME" /></translation>
@@ -2891,6 +2894,7 @@
 <translation id="3590295622232282437">Приступа се управљаној сесији.</translation>
 <translation id="3591057288287063271">Задржите <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Сазнајте више</translation>
+<translation id="3592344177526089979">Картице се пребацује на <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Омогући Fuzzy-Pinyin режим</translation>
 <translation id="3593965109698325041">Ограничења назива сертификата </translation>
 <translation id="3596012367874587041">Подешавања апликације</translation>

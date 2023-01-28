@@ -392,6 +392,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ilovasi Chrome ichida ochiladi. Davom etish bilan siz <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" /> bilan <ph name="BEGIN_LINK2" />Google Chrome va ChromeOS qoʻshimcha xizmat shartlariga<ph name="END_LINK2" /> rozilik bildirgan hisoblanasiz. <ph name="BEGIN_LINK3" />Maxfiylik siyosati<ph name="END_LINK3" /> ham tatbiq etiladi.</translation>
 <translation id="3091010850649238832">Vaqtincha xotira kontentini chiqarish</translation>
 <translation id="3098745985164956033">Tavsiflarini yaxshilash uchun ayrim rasmlar Googlega yuborildi</translation>
+<translation id="3104179992611025423">Brauzeringiz ota-onangiz boshqaruvida</translation>
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ulandi</translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
@@ -401,6 +402,7 @@ Ishonch tokenlari Internetdagi maxfiylikni oshiradi va shaxsiy maʼlumotlaringiz
 <translation id="3157931365184549694">Qayta tiklash</translation>
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
 <translation id="316694332262407393">Chrome allaqachon ishga tushgan.</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> saytining mobil versiyasini talab qilish mumkin</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Reklamani oʻlchash</translation>
 <translation id="3207960819495026254">Xatcho‘plarga qo‘shildi</translation>
@@ -1467,6 +1469,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8849001918648564819">Yashirin</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, varaq</translation>
 <translation id="8854223127042600341">Oflayn fayllarni ochish</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> saytining kompyuter versiyasini talab qilish mumkin</translation>
 <translation id="8856607253650333758">Tavsiflarini yuklash</translation>
 <translation id="8856931513242997049">Bildirishnomalarga ruxsat zanjiri yopildi</translation>
 <translation id="8873817150012960745">Boshlash uchun bu yerga bosing</translation>

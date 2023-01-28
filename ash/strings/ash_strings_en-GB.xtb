@@ -162,7 +162,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="1787955149152357925">Off</translation>
-<translation id="1797271123677381264">Forgot password</translation>
 <translation id="1807246157184219062">Light</translation>
 <translation id="181103072419391116">Signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="1816896987747843206">This allows camera access for all apps and websites with the camera permission</translation>
@@ -424,6 +423,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
+<translation id="332827762492701193">Notifications are hidden</translation>
 <translation id="3339826665088060472">Screen capture, tools to take screenshots and screen recordings</translation>
 <translation id="3340978935015468852">settings</translation>
 <translation id="3341303451326249809">Screenshot captured</translation>
@@ -700,6 +700,7 @@ Connect your device to power.</translation>
 <translation id="4735944890391795473">Desk 12</translation>
 <translation id="473775607612524610">Update</translation>
 <translation id="4740516757091333363">Delete saved desk?</translation>
+<translation id="4747410141429390146">Please unlock to view notifications</translation>
 <translation id="4752784485658729358">Only six saved desks allowed. Remove a desk to save a new one.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762573482154983647">Hide apps</translation>

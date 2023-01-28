@@ -3180,6 +3180,7 @@
 <translation id="3823310065043511710">Linuxৰ বাবে অতি কমেও <ph name="INSTALL_SIZE" /> ঠাই থকাটো চুপাৰিছ কৰা হয়।</translation>
 <translation id="3824621460022590830">ডিভাইচৰ পঞ্জীয়নৰ ট’কেনটো অমান্য। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচৰ গৰাকী অথবা প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ফাইলৰ এই ধৰণটোৰ বাবে মোৰ পচন্দ মনত ৰাখক: <ph name="FILE_TYPES" />}one{ফাইলৰ এই ধৰণসমূহৰ বাবে মোৰ পচন্দ মনত ৰাখক: <ph name="FILE_TYPES" />}other{ফাইলৰ এই ধৰণসমূহৰ বাবে মোৰ পচন্দ মনত ৰাখক: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">এপ্‌ সম্পৰ্কীয় সতৰ্কবাৰ্তাৰ বাবে এপৰ চিহ্নত বিন্দু দেখুৱাওক</translation>
 <translation id="3826071569074535339">ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি আছে</translation>
 <translation id="3826440694796503677">আপোনাৰ প্ৰশাসকে অধিক Google একাউণ্ট যোগ কৰা সুবিধাটো অক্ষম কৰিছে</translation>
 <translation id="3827774300009121996">&amp;সম্পূৰ্ণ স্ক্ৰীন</translation>
@@ -4499,6 +4500,7 @@
 <translation id="5063480226653192405">ব্যৱহাৰ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOSৰ ছেটিঙত সুৰক্ষিত DNS পৰিচালনা কৰক</translation>
+<translation id="5066160542186949327">আন এটা ফ’ল্ডাৰলৈ স্থানান্তৰ কৰক</translation>
 <translation id="5067399438976153555">সদায় অন</translation>
 <translation id="5067867186035333991">যদি <ph name="HOST" />এ আপোনাৰ মাইক্ৰ‘ফ‘নটো এক্সেছ কৰিব বিচাৰে তেন্তে সোধক।</translation>
 <translation id="5068553687099139861">পাছৱৰ্ড দেখুৱাওক</translation>

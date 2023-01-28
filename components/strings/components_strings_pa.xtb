@@ -583,6 +583,7 @@
 <translation id="2359629602545592467">ਇੱਕ ਤੋਂ ਵਧੇਰੇ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2361263712565360498">275 x 395 ਮਿ.ਮੀ.</translation>
+<translation id="2362083820973145409"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। <ph name="USER_EMAIL" />. ਇਸ ਬਟਨ ਨਾਲ ਸੈਟਿੰਗਾਂ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="236340516568226369">ਟੌਗਲ ਮੀਨੂ ਦਾ ਆਕਾਰ ਬਦਲੋ</translation>
 <translation id="2367567093518048410">ਪੱਧਰ</translation>
 <translation id="2380886658946992094">ਕਨੂੰਨੀ</translation>
@@ -1925,6 +1926,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ਇਸ ਕਾਰਡ ਲਈ ਕੋਈ ਆਭਾਸੀ ਨੰਬਰ ਵਰਤੋ}one{ਕਾਰਡ ਚੁਣੋ}other{ਕਾਰਡ ਚੁਣੋ}}</translation>
 <translation id="5752552348183096912">ਐਂਟੀਪਰਸਪਿਰੈਂਟ, ਡੀਓਡੋਰੈਂਟ ਅਤੇ ਬਾਡੀ ਸਪ੍ਰੇ</translation>
 <translation id="5754400531489347219">ਪਾਲਤੂ ਅਤੇ ਜਾਨਵਰ</translation>
+<translation id="5755162682436943950">ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ। ਇਸ ਬਟਨ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਾਲੀ ਵਿੰਡੋ ਖੁੱਲ੍ਹਦੀ ਹੈ ਅਤੇ ਸਿੰਕ ਚਾਲੂ ਹੁੰਦਾ ਹੈ।</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
@@ -1947,7 +1949,6 @@
 <translation id="5808435672482059465">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
 <translation id="5808542072418270309">ਸਿਮੂਲੇਸ਼ਨ ਗੇਮਾਂ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ਵਿੱਚ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਕਿਸੇ ਪੁਰਾਣਾ ਸਿਫ਼ਰ ਸੂਟ ਦਾ ਉਪਯੋਗ ਕਰਕੇ ਏਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
-<translation id="5812947184178430888">Chrome ਵੱਲੋਂ ਸੁਰੱਖਿਆ ਇਵੈਂਟਾਂ ਨੂੰ ਫਲੈਗ ਕੀਤੇ ਜਾਣ 'ਤੇ, ਇਵੈਂਟਾਂ ਸੰਬੰਧੀ ਢੁਕਵਾਂ ਡਾਟਾ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ। ਇਸ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ Chrome 'ਚ ਦੇਖੇ ਜਾਂਦੇ ਪੰਨਿਆਂ ਦੇ URL, ਫ਼ਾਈਲਾਂ ਦੇ ਨਾਮ ਜਾਂ ਮੈਟਾਡਾਟਾ, ਅਤੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਅਤੇ Chrome ਵਿੱਚ ਵੈੱਬ-ਆਧਾਰਿਤ ਐਪਲੀਕੇਸ਼ਨਾਂ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਸ਼ਾਮਲ ਹੋ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5813119285467412249">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="5813309815819933152">ਟੀਵੀ ਰਿਐਲਟੀ ਸ਼ੋਅ</translation>
 <translation id="5813753398265398978">ਭੌਤਿਕ ਵਿਗਿਆਨ</translation>
@@ -2331,6 +2332,7 @@
 <translation id="6826993739343257035">ਕੀ AR ਨੂੰ ਇਜਾਜ਼ਤ ਦੇਣੀ ਹੈ?</translation>
 <translation id="6828866289116430505">ਜੈਨੇਟਿਕਸ</translation>
 <translation id="6831043979455480757">ਅਨੁਵਾਦ ਕਰੋ</translation>
+<translation id="683108308100148227">ਆਈਟਮ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="6832753933931306326">ਫ਼ਾਰਮ ਭਰਿਆ ਗਿਆ ਸੀ</translation>
 <translation id="6842196666980060516">184 x 260 ਮਿ.ਮੀ.</translation>
 <translation id="6846340164947227603">ਕੋਈ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਵਰਤੋ...</translation>
@@ -2467,6 +2469,7 @@
 <translation id="7153618581592392745">ਲਵਿੰਡਰ</translation>
 <translation id="7156870133441232244">ਸਰਵਰ, TLS 1.2 ਜਾਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="7163295244162773898">{0,plural, =1{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}one{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}other{ਕੀ ਗੁਪਤ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਾਪੀ ਕਰਨਾ ਹੈ?}}</translation>
+<translation id="7168323970702333693"><ph name="USER_NAME" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ। ਇਸ ਬਟਨ ਨਾਲ ਸੈਟਿੰਗਾਂ ਖੁੱਲ੍ਹਦੀਆਂ ਹਨ।</translation>
 <translation id="717330890047184534">GAIA ਆਈ.ਡੀ.:</translation>
 <translation id="7174545416324379297">ਵਿਲੀਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}}</translation>

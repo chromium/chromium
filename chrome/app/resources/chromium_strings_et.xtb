@@ -346,7 +346,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8493179195440786826">Chromium on aegunud</translation>
 <translation id="8550334526674375523">See tööprofiil on teie isiklikust profiilist täielikult eraldi.</translation>
 <translation id="8558383651099478961">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
-<translation id="8561285221328166383">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium saab teie paroole kontrollida siis, kui logite sisse oma Google'i kontoga</translation>
 <translation id="8574036838419011058">Kui see on sisse lülitatud, säästab Chromium akutoidet, piirates taustal toimuvaid tegevusi ja visuaalseid efekte, nagu sujuv kerimine ja video kaadrisagedus. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
@@ -379,7 +378,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium ei pruugi õigesti töötada, kuna seda ei toetata enam Windows XP-s ega Windows Vistas</translation>
 <translation id="942598560705308788">Chromiumi hallatavad sertifikaadid</translation>
-<translation id="945990405696787151">Chromiumi tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 10.13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi OS X 10.11.</translation>
 <translation id="965162752251293939">Kes kasutab Chromiumi?</translation>
 <translation id="967427899662692980">Hankige Chromiumi parimad turbefunktsioonid</translation>
 <translation id="9792300276217204">Saidi andmed kustutatakse alati seadmest, kui Chromiumi sulgete</translation>

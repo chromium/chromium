@@ -237,6 +237,7 @@
 <translation id="2321086116217818302">Προετοιμασία κωδικών πρόσβασης…</translation>
 <translation id="2323763861024343754">Αποθηκ. χώρος ιστοσελίδας</translation>
 <translation id="2328985652426384049">Δεν είναι δυνατή η σύνδεση</translation>
+<translation id="2341410551640223969">Δεν ήταν δυνατή η εγκατάσταση της εφαρμογής <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Δεν είναι δυνατό το άνοιγμα της κάμερας. Παρουσιάστηκε ένα πρόβλημα.</translation>
 <translation id="2349710944427398404">Σύνολο δεδομένων που χρησιμοποιούνται από το Chrome, συμπεριλαμβανομένων των λογαριασμών, των σελιδοδεικτών και των αποθηκευμένων ρυθμίσεων</translation>
 <translation id="235789365079050412">Πολιτική απορρήτου της Google</translation>
@@ -345,6 +346,7 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Διαχειριστείτε τα θέματα που σας ενδιαφέρουν</translation>
 <translation id="2912345083818861431">Χρήση του κλειδώματος οθόνης για εμφάνιση των ανοιχτών καρτελών ανώνυμης περιήγησης</translation>
+<translation id="2922568440285376746">Αναζήτηση εντός εικόνας με το Google <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Το όνομα δεν είναι έγκυρο</translation>
 <translation id="2932150158123903946">Αποθηκευτικός χώρος Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Το πληκτρολόγιό σας δεν θα αλλάξει</translation>
@@ -666,6 +668,7 @@
 <translation id="4684427112815847243">Συγχρονισμός όλων</translation>
 <translation id="4685741273709472646">Επιλέξτε από την αναπτυσσόμενη λίστα</translation>
 <translation id="4687718960473379118">Διαφημίσεις που προτείνονται από ιστότοπο</translation>
+<translation id="4689792375321623175">Αναζήτηση εικόνας με το Google <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
 <translation id="4719927025381752090">Πρόταση για μετάφραση</translation>
@@ -812,6 +815,7 @@
 <translation id="5438292632479953702">Λήψη ξανά</translation>
 <translation id="5441466871879044658">Μετάφραση σε αυτήν τη γλώσσα</translation>
 <translation id="5441522332038954058">Μετάβαση στη γραμμή διευθύνσεων</translation>
+<translation id="5444999712122199445">Επιστροφή στον ιστότοπο</translation>
 <translation id="544776284582297024">Για να ανοίξετε καρτέλες και να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα, πατήστε το κουμπί Άνοιγμα καρτελών.</translation>
 <translation id="5454166040603940656">με <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Λήψη σελίδας</translation>

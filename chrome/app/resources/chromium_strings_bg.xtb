@@ -341,7 +341,6 @@
 <translation id="8493179195440786826">Chromium не е актуален</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8558383651099478961">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chromium. Добавянето на <ph name="EXTENSION_TYPE_PARAMETER" /> не е разрешено.</translation>
-<translation id="8561285221328166383">За да получавате бъдещи актуализации на Chromium, трябва да използвате macOS 10.13 или по-нова версия. Компютърът ви работи с macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium може да проверява паролите ви, когато влезете с профила си в Google</translation>
 <translation id="8574036838419011058">Когато настройката е включена, Chromium пести заряда на батерията, като ограничава активността на заден план и различни визуални ефекти, като например гладкото превъртане и скоростта на кадрите за видеоклиповете. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
@@ -374,7 +373,6 @@
 <translation id="9190841055450128916">Chromium (входящ трафик за mDNS)</translation>
 <translation id="93478295209880648">Chromium може да не функционира правилно, тъй като вече не се поддържа под Windows XP и Windows Vista</translation>
 <translation id="942598560705308788">Сертификати, управлявани от Chromium</translation>
-<translation id="945990405696787151">За да получавате бъдещи актуализации на Chromium, трябва да използвате macOS 10.13 или по-нова версия. Компютърът ви работи с OS X 10.11.</translation>
 <translation id="965162752251293939">Кой използва Chromium?</translation>
 <translation id="967427899662692980">Получете най-високото ниво на сигурност на Chromium</translation>
 <translation id="9792300276217204">Изчистване на данните за сайтовете от устройството ви при всяко затваряне на Chromium</translation>

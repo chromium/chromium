@@ -182,6 +182,7 @@ Ao excluir todo o histórico de navegação ou apenas o de um site específico, 
 <translation id="1995884366040846621">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Consulte a <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="END_LINK1" /> do site.</translation>
 <translation id="2000419248597011803">Envia alguns cookies e pesquisas da barra de endereço e da caixa de pesquisa para seu mecanismo de pesquisa padrão.</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
+<translation id="2009341475524975924">Para medir a performance de um anúncio, tipos limitados de dados podem ser compartilhados entre sites, como a hora do dia em que o anúncio foi mostrado para você.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# arquivo}one{# arquivo}other{# arquivos}}</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
 <translation id="2038563949887743358">Ativar "Ver versão para computador"</translation>
@@ -655,6 +656,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Confirmar sua identidade</translation>
 <translation id="4634124774493850572">Usar senha</translation>
+<translation id="4637420359569396807">Com a medição de anúncios, é possível compartilhar tipos limitados de dados entre sites e apps para avaliar a performance, como a hora do dia em que o anúncio foi mostrado.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 senha comprometida}one{# senha comprometida}other{# senhas comprometidas}}</translation>
 <translation id="4650364565596261010">Padrão do sistema</translation>
 <translation id="465657074423018424">O "Navegação segura" protege você de sites enganosos. Se desativá-lo, tenha cuidado redobrado ao navegar pela Internet, principalmente quando for digitar senhas.</translation>

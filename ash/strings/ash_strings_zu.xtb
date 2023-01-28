@@ -162,7 +162,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1771761307086386028">Skrolela ngakwesokudla</translation>
 <translation id="1774796056689732716">Ikhalenda, <ph name="CURRENT_MONTH_YEAR" />, okwamanje umhla ka-<ph name="DATE" /> ukhethiwe.</translation>
 <translation id="1787955149152357925">Valiwe</translation>
-<translation id="1797271123677381264">Ukhohlwe iphasiwedi</translation>
 <translation id="1807246157184219062">Okukhanyayo</translation>
 <translation id="181103072419391116">Amandla esignali <ph name="SIGNAL_STRENGTH" />, Kuphethwe umlawuli wakho</translation>
 <translation id="1816896987747843206">Lokhu kuvumela ukufinyelela kwekhamera kuwo wonke ama-app namawebhusayithi ngemvume yekhamera</translation>
@@ -734,6 +733,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="492453977506755176">Thatha ukhiye wemodi</translation>
 <translation id="4925542575807923399">Umlawuli wale akhawunti udinga le akhawunti ukuthi ibe yi-akhawunti yokuqala engene ngemvume kuseshini yokungena ngemvume eningi.</translation>
 <translation id="4929163402621253029">Uyakhuluma? Uthulisiwe. Funda kabanzi</translation>
+<translation id="4936329710968938986">Wonke umuntu, ivaliwe</translation>
 <translation id="4938176435186993759">Fihla zonke iziphakamiso</translation>
 <translation id="4945196315133970626">Vala izaziso</translation>
 <translation id="4946376291507881335">Thatha</translation>
@@ -1388,6 +1388,7 @@ Ukufaka okusha</translation>
 <translation id="8477270416194247200">Cindezela ku-Alt+Search noma ku-Shift ukuze ukhansele.</translation>
 <translation id="8492573885090281069">I-<ph name="DISPLAY_NAME" /> ayisekeli i-<ph name="SPECIFIED_RESOLUTION" />. Ukulungiswa kuguqulelwe ku-<ph name="FALLBACK_RESOLUTION" />. Chofoza okuthi qinisekisa ukuze ugcine izinguquko. Izilungiselelo zangaphambilini zizobuyiselwa nge-<ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Bonisa Amasethingi Okuthumela Eduze</translation>
+<translation id="8507563469658346379">Wonke umuntu, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">I-Bluetooth ye-Chromebook yakho ivaliwe. Ukuze uvule i-Chromebook yakho, faka iphasiwedi.</translation>
 <translation id="8513108775083588393">I-auto-rotate</translation>
 <translation id="851458219935658693">Bonisa amawindi kusuka kudeski lamanje, inkinobho yerediyo ikhethiwe</translation>

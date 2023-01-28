@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="1774796056689732716">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" />, നിലവിൽ <ph name="DATE" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു.</translation>
 <translation id="1787955149152357925">ഓഫാണ്</translation>
-<translation id="1797271123677381264">പാസ്‌വേഡ് മറന്നു</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="181103072419391116">സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="1816896987747843206">ക്യാമറ ആക്‌സസ് ചെയ്യാൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും ഇത് ക്യാമറയിലേക്ക് ആക്‌സസ് അനുവദിക്കുന്നു</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">ക്യാപ്‌ചർ മോഡ് കീ</translation>
 <translation id="4925542575807923399">ഈ അക്കൗണ്ട് ഒന്നിലധികം സൈൻ ഇൻ സെഷനിൽ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന ആദ്യ അക്കൗണ്ട് ആയിരിക്കാൻ ഈ അക്കൗണ്ടിനായുള്ള അഡ്‌മിനിസ്‌ട്രേറ്റർ ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="4929163402621253029">നിങ്ങൾ സംസാരിക്കുന്നുണ്ടോ? നിങ്ങൾ മ്യൂട്ട് ചെയ്‌തിരിക്കുകയാണ്. കൂടുതലറിയുക</translation>
+<translation id="4936329710968938986">എല്ലാവരും, ഓഫാണ്</translation>
 <translation id="4938176435186993759">എല്ലാ നിർദ്ദേശങ്ങളും മറയ്ക്കുക</translation>
 <translation id="4945196315133970626">അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="4946376291507881335">ക്യാപ്‌ചർ ചെയ്യുക</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">റദ്ദാക്കാൻ Alt+തിരയൽ അല്ലെങ്കിൽ Shift അമർത്തുക.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> എന്നതിനെ പിന്തുണയ്‌ക്കുന്നില്ല. റെസല്യൂഷൻ <ph name="FALLBACK_RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="8496402167048257517">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
+<translation id="8507563469658346379">എല്ലാവരും, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">നിങ്ങളുടെ Chromebook-ന്റെ Bluetooth ഓഫാണ്. Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക.</translation>
 <translation id="8513108775083588393">സ്വയം തിരിയുക</translation>
 <translation id="851458219935658693">നിലവിലെ ഡെസ്‌കിൽ നിന്ന് വിൻഡോകൾ കാണിക്കുക, റേഡിയോ ബട്ടൺ തിരഞ്ഞെടുത്തു</translation>

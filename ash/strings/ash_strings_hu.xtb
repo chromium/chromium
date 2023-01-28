@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">Görgetés jobbra</translation>
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="1787955149152357925">Ki</translation>
-<translation id="1797271123677381264">Elfelejtett jelszó</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="181103072419391116">Jelerősség: <ph name="SIGNAL_STRENGTH" />, a rendszergazdája kezeli</translation>
 <translation id="1816896987747843206">Ezzel engedélyezi a kamerához való hozzáférést a kamerahasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
@@ -735,6 +734,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="492453977506755176">Rögzítés mód billentyűje</translation>
 <translation id="4925542575807923399">A fiók rendszergazdája megköveteli, hogy ez a fiók legyen az első bejelentkezett fiók a többfiókos bejelentkezés munkamenete során.</translation>
 <translation id="4929163402621253029">Ön most beszél? Le van némítva További információ.</translation>
+<translation id="4936329710968938986">Mindenki, kikapcsolva</translation>
 <translation id="4938176435186993759">Összes javaslat elrejtése</translation>
 <translation id="4945196315133970626">Az értesítések kikapcsolása</translation>
 <translation id="4946376291507881335">Rögzítés</translation>
@@ -1389,6 +1389,7 @@ Frissen telepítve</translation>
 <translation id="8477270416194247200">A kikapcsoláshoz nyomja meg az Alt+Keresés billentyűkombinációt vagy a Shift billentyűt.</translation>
 <translation id="8492573885090281069">A(z) <ph name="DISPLAY_NAME" /> nem támogatja a következő felbontást: <ph name="SPECIFIED_RESOLUTION" />. A felbontás erre módosult: <ph name="FALLBACK_RESOLUTION" />. A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
 <translation id="8496402167048257517">A Közeli megosztás funkció beállításainak megjelenítése</translation>
+<translation id="8507563469658346379">Mindenki, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">A Chromebookon ki van kapcsolva a Bluetooth. A zárolás feloldásához írja be jelszavát.</translation>
 <translation id="8513108775083588393">Autom.forgatás</translation>
 <translation id="851458219935658693">A jelenlegi asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>

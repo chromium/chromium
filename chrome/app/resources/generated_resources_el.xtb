@@ -3186,6 +3186,7 @@
 <translation id="3823310065043511710">Για το Linux συνιστώνται τουλάχιστον <ph name="INSTALL_SIZE" /> αποθηκευτικού χώρου.</translation>
 <translation id="3824621460022590830">Το διακριτικό εγγραφής συσκευής δεν είναι έγκυρο. Επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Απομνημόνευση της επιλογής μου για αυτόν τον τύπο αρχείου: <ph name="FILE_TYPES" />}other{Απομνημόνευση της επιλογής μου για αυτούς τους τύπους αρχείων: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Εμφάνιση κουκκίδας στο εικονίδιο εφαρμογής για ειδοποιήσεις εφαρμογής</translation>
 <translation id="3826071569074535339">Επιτρέπεται να χρησιμοποιούν αισθητήρες κίνησης</translation>
 <translation id="3826440694796503677">Ο διαχειριστής έχει απενεργοποιήσει τη δυνατότητα προσθήκης περισσότερων Λογαριασμών Google</translation>
 <translation id="3827774300009121996">&amp;Πλήρης Οθόνη</translation>
@@ -4506,6 +4507,7 @@
 <translation id="5063480226653192405">Χρήση</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Διαχείριση ασφαλούς DNS στις ρυθμίσεις του Chrome OS</translation>
+<translation id="5066160542186949327">Μετακίνηση σε άλλον φάκελο</translation>
 <translation id="5067399438976153555">Πάντα ενεργό</translation>
 <translation id="5067867186035333991">Ερώτηση αν το <ph name="HOST" /> επιθυμεί να αποκτήσει πρόσβαση στο μικρόφωνό σας</translation>
 <translation id="5068553687099139861">εμφάνιση κωδικών πρόσβασης</translation>

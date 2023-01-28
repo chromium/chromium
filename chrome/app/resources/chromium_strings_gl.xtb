@@ -348,7 +348,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8493179195440786826">Chromium está desactualizado</translation>
 <translation id="8550334526674375523">Este perfil de traballo é totalmente independente do teu perfil persoal.</translation>
 <translation id="8558383651099478961">O teu pai ou nai desactivou esta opción en Chromium: Permisos para sitios, aplicacións e extensións. Non está permitido engadir esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google</translation>
 <translation id="8574036838419011058">Se activas esta opción, Chromium conservará a carga da batería limitando as actividades en segundo plano e os efectos visuais, como o desprazamento suave ou os fotogramas por segundo dos vídeos. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
@@ -381,7 +380,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">É posible que Chromium non funcione correctamente porque xa non admite Windows XP nin Windows Vista</translation>
 <translation id="942598560705308788">Certificados que xestiona Chromium</translation>
-<translation id="945990405696787151">Se queres recibir actualizacións de Chromium no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten OS X 10.11.</translation>
 <translation id="965162752251293939">Quen está utilizando Chromium?</translation>
 <translation id="967427899662692980">Goza da máxima seguranza de Chromium</translation>
 <translation id="9792300276217204">Borrar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>

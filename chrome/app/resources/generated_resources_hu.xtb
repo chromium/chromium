@@ -3181,6 +3181,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3823310065043511710">Ajánlott legalább <ph name="INSTALL_SIZE" /> méretű területet szánni a Linuxra.</translation>
 <translation id="3824621460022590830">Érvénytelen eszközregisztrációs token. Vegye fel a kapcsolatot az eszköz tulajdonosával vagy rendszergazdájával. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Emlékezzen a következő fájltípussal kapcsolatos választásomra: <ph name="FILE_TYPES" />}other{Emlékezzen a következő fájltípusokkal kapcsolatos választásomra: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Pont megjelenítése az alkalmazás ikonján, ha van alkalmazásértesítés</translation>
 <translation id="3826071569074535339">Használhatják a mozgásérzékelőket</translation>
 <translation id="3826440694796503677">A rendszergazda kikapcsolta a további Google-fiókok hozzáadásának lehetőségét</translation>
 <translation id="3827774300009121996">&amp;Teljes képernyő</translation>
@@ -4500,6 +4501,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5063480226653192405">Használat</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Biztonságos DNS kezelése a ChromeOS beállításai között</translation>
+<translation id="5066160542186949327">Áthelyezés másik mappába</translation>
 <translation id="5067399438976153555">Mindig bekapcsolva</translation>
 <translation id="5067867186035333991">Kérdezzen rá, ha a(z) <ph name="HOST" /> hozzá szeretne férni a mikrofonhoz</translation>
 <translation id="5068553687099139861">jelszavak mutatása</translation>

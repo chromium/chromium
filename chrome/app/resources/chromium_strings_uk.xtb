@@ -347,7 +347,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8493179195440786826">Версія Chromium застаріла</translation>
 <translation id="8550334526674375523">Цей робочий профіль ніяк не пов'язаний із вашим особистим профілем.</translation>
 <translation id="8558383651099478961">Хтось із твоїх батьків вимкнув "Дозволи для сайтів, додатків і розширень" у Chromium. Додавати це <ph name="EXTENSION_TYPE_PARAMETER" /> заборонено.</translation>
-<translation id="8561285221328166383">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система macOS 10.13 або новішої версії. На цьому комп’ютері встановлено macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium зможе перевірити ваші паролі, коли ви ввійдете у свій обліковий запис Google</translation>
 <translation id="8574036838419011058">Коли цей параметр увімкнено, Chromium зберігає заряд акумулятора, обмежуючи фонову активність і візуальні ефекти, як-от плавне прокручування та частоту кадрів відео. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
@@ -380,7 +379,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium може працювати неналежним чином, оскільки більше не підтримується у Windows XP та Windows Vista</translation>
 <translation id="942598560705308788">Сертифікати, якими керує Chromium</translation>
-<translation id="945990405696787151">Щоб отримувати майбутні оновлення Chromium, потрібна операційна система macOS 10.13 або новішої версії. На цьому комп’ютері встановлено OS X 10.11.</translation>
 <translation id="965162752251293939">Хто користується веб-переглядачем Chromium?</translation>
 <translation id="967427899662692980">Отримайте найвищий рівень безпеки в Chromium</translation>
 <translation id="9792300276217204">Завжди очищати дані сайтів із пристрою, коли ви закриваєте Chromium</translation>

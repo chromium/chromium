@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">Voeg by woordeboek</translation>
 <translation id="1018656279737460067">Gekanselleer</translation>
 <translation id="1022489261739821355">Wys tans wagwoorde in jou <ph name="BEGIN_LINK" />Google-rekening<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Jou toestel word bestuur deur <ph name="DOMAIN" />. Administrateurs het toegang tot die data in enige profiel op hierdie toestel.</translation>
 <translation id="1026655690966755180">Voeg poort by</translation>
 <translation id="1026822031284433028">Laai prent</translation>
 <translation id="1028604629594230522">Chrome laai bladsye wat jy moontlik sal besoek vooraf, sodat hulle vinniger laai wanneer jy hulle wel besoek.</translation>
@@ -1881,6 +1882,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2643064289437760082">Jy kan altyd advertensiemetingdata uitvee deur jou blaaierdata uit te vee</translation>
 <translation id="2643698698624765890">Bestuur jou uitbreidings deur Uitbreidings in die Venster-kieslys te klik.</translation>
 <translation id="2645047101481282803">Jou toestel word bestuur deur <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Saai tans hierdie oortjie uit na <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
 <translation id="2649045351178520408">Basis64-geënkodeerde ASCII, sertifikaatketting</translation>
 <translation id="265156376773362237">Standaardvooraflaai</translation>
@@ -2753,6 +2755,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3446274660183028131">Begin Parallels Desktop om Windows te installeer.</translation>
 <translation id="344630545793878684">Lees jou data op 'n aantal webwerwe</translation>
 <translation id="3447644283769633681">Blokkeer alle derdepartywebkoekies</translation>
+<translation id="3447797901512053632">Saai tans <ph name="TAB_NAME" /> uit na <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Dateer rekening op</translation>
 <translation id="3449393517661170867">Nuwe oortjievenster</translation>
 <translation id="3449839693241009168">Druk <ph name="SEARCH_KEY" /> om bevele na <ph name="EXTENSION_NAME" /> te stuur</translation>
@@ -2907,6 +2910,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3590295622232282437">Gaan tans by bestuurde sessie in.</translation>
 <translation id="3591057288287063271">Behou <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">Kom meer te wete</translation>
+<translation id="3592344177526089979">Saai tans ¹n oortjie uit na <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktiveer Fuzzy-Pinyin-modus</translation>
 <translation id="3593965109698325041">Sertifikaatnaam-beperkings</translation>
 <translation id="3596012367874587041">Programinstellings</translation>
@@ -3182,6 +3186,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3823310065043511710">Minstens <ph name="INSTALL_SIZE" /> se spasie word vir Linux aanbeveel.</translation>
 <translation id="3824621460022590830">Toestelinskrywingtoken is ongeldig. Kontak asseblief jou toesteleienaar of administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Onthou my keuse vir hierdie lêertipe: <ph name="FILE_TYPES" />}other{Onthou my keuse vir hierdie lêertipes: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Wys kol op appikoon vir appopletberigte</translation>
 <translation id="3826071569074535339">Mag bewegingsensors gebruik</translation>
 <translation id="3826440694796503677">Jou administrateur het die byvoeging van meer Google-rekeninge gedeaktiveer</translation>
 <translation id="3827774300009121996">Volskerm</translation>
@@ -4502,6 +4507,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Bestuur Veilige DNS in Chrome-bedryfstelselinstellings</translation>
+<translation id="5066160542186949327">Skuif na ander vouer</translation>
 <translation id="5067399438976153555">Altyd aan</translation>
 <translation id="5067867186035333991">Vra of <ph name="HOST" /> by jou mikrofoon wil ingaan</translation>
 <translation id="5068553687099139861">wys wagwoorde</translation>

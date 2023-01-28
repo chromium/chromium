@@ -349,7 +349,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8493179195440786826">Prehliadač Chromium je zastaraný</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
 <translation id="8558383651099478961">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v prehliadači Chromium. Pridanie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) nie je povolené.</translation>
-<translation id="8561285221328166383">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.13 alebo novší. V tomto počítači používate macOS 10.12.</translation>
 <translation id="8568283329061645092">Keď sa prihlásite pomocou účtu Google, Chromium môže skontrolovať vaše heslá</translation>
 <translation id="8574036838419011058">Keď je táto možnosť zapnutá, Chromium šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
@@ -382,7 +381,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium nemusí fungovať správne, pretože v systémoch Windows XP a Windows Vista už nie je podporovaný</translation>
 <translation id="942598560705308788">Certifikáty, ktoré spravuje Chromium</translation>
-<translation id="945990405696787151">Ak chcete dostávať budúce aktualizácie prehliadača Chromium, musíte používať systém macOS 10.13 alebo novší. V tomto počítači používate OS X 10.11.</translation>
 <translation id="965162752251293939">Kto používa Chromium?</translation>
 <translation id="967427899662692980">Získajte najsilnejšie zabezpečenie prehliadača Chromium</translation>
 <translation id="9792300276217204">Vždy vymazať dáta webov zo zariadenia po zavretí prehliadača Chromium</translation>

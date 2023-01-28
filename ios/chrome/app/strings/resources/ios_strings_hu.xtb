@@ -18,6 +18,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1066060668811609597">Szinkronizálás kezelése</translation>
 <translation id="1076421457278169141">Kód beolvasva</translation>
 <translation id="1076785341346483463">Szinkronizálás felügyelt fiókkal</translation>
+<translation id="1080365971383768617">Jelszavak az összes eszközén</translation>
 <translation id="1084365883616172403">A Facebook-bejegyzés kész.</translation>
 <translation id="1085696779717592361">A Chrome használata alapértelmezettként</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> - mindig legyen lefordítva</translation>
@@ -545,6 +546,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5056446788882570708">A biztonsági ellenőrzés <ph name="TIME" /> talált problémát.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive telepítése</translation>
+<translation id="50641035439563602">A jelszavakat mostantól a Google-fiókjába (<ph name="ACCOUNT" />) menti a rendszer. Mindenhol használhatja őket, ahol be van jelentkezve. Ha ki szeretné kapcsolni, lépjen a <ph name="BEGIN_LINK" />beállításokhoz<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">A fájlméret ismeretlen.</translation>
 <translation id="5090832849094901128">A jelszó eltávolításával nem törli fiókját a következő domainről: <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">A Tweet kész.</translation>
@@ -595,6 +597,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5520466080178053306">Koppintson a Jelszókezelő, majd a Hozzáadás elemre</translation>
 <translation id="5525095647255982834">Ha szeretné elküldeni ezt a lapot másik eszközre, jelentkezzen be a Chrome-ba az adott eszközön.</translation>
 <translation id="5525269841082836315">Jelszó létrehozása</translation>
+<translation id="5530084793407600786">Keresés a képen belül a Google-lal</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> találat</translation>
 <translation id="5548760955356983418">Az Átadás segítségével ha ezen az eszközön kezd böngészni egy webhelyet, könnyedén folytathatja azt Mac típusú számítógépén. A jelenleg megnyitott webhely a Mac dokkján jelenik meg.
 

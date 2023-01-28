@@ -340,7 +340,6 @@
 <translation id="8493179195440786826">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="8550334526674375523">ಈ ಉದ್ಯೋಗ ಪ್ರೊಫೈಲ್‌ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಪ್ರೊಫೈಲ್‌ನಿಂದ ಸಂಪೂರ್ಣವಾಗಿ ಪ್ರತ್ಯೇಕವಾಗಿದೆ.</translation>
 <translation id="8558383651099478961">ನಿಮ್ಮ ಪೋಷಕರು Chromium ನಲ್ಲಿ "ಸೈಟ್‌ಗಳು, ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳಿಗಾಗಿ ಅನುಮತಿಗಳನ್ನು" ಆಫ್ ಮಾಡಿದ್ದಾರೆ. ಈ <ph name="EXTENSION_TYPE_PARAMETER" /> ಅನ್ನು ಸೇರಿಸಲು ಅನುಮತಿಯಿಲ್ಲ.</translation>
-<translation id="8561285221328166383">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ macOS 10.13 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಗಳ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ macOS 10.12 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="8568283329061645092">ನೀವು Google ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, Chromium ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಬಲ್ಲದು</translation>
 <translation id="8574036838419011058">ಆನ್ ಆಗಿರುವಾಗ, ಹಿನ್ನೆಲೆಯ ಚಟುವಟಿಕೆ ಮತ್ತು ಸ್ಮೂತ್ ಸ್ಕ್ರಾಲಿಂಗ್ ಹಾಗೂ ವೀಡಿಯೊ ಫ್ರೇಮ್ ರೇಟ್‌ಗಳಂತಹ ವಿಶುವಲ್ ಎಫೆಕ್ಟ್‌ಗಳನ್ನು ಮಿತಿಗೊಳಿಸುವ ಮೂಲಕ Chromium ಬ್ಯಾಟರಿಯ ಶಕ್ತಿಯನ್ನು ಸಂರಕ್ಷಿಸುತ್ತದೆ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">ಹಕ್ಕುಸ್ವಾಮ್ಯ <ph name="YEAR" /> Chromium ಲೇಖಕರು. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
@@ -373,7 +372,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Windows XP ಅಥವಾ Windows Vista ದಲ್ಲಿ Chromium ಗೆ ಈಗ ಬೆಂಬಲವಿಲ್ಲದೇ ಇರುವುದರಿಂದ ಅದು ಸರಿಯಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದೇ ಇರಬಹುದು</translation>
 <translation id="942598560705308788">Chromium ನಿರ್ವಹಿತ ಮಾಣೀಕರಣಗಳು</translation>
-<translation id="945990405696787151">ಭವಿಷ್ಯದ Chromium ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ macOS 10.13 ಅಥವಾ ಅದರ ನಂತರದ ಆವೃತ್ತಿಗಳ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ OS X 10.11. ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="965162752251293939">Chromium ಅನ್ನು ಯಾರು ಬಳಸುತ್ತಿದ್ದಾರೆ?</translation>
 <translation id="967427899662692980">Chromium ನ ಪ್ರಬಲ ಭದ್ರತೆಯನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="9792300276217204">ನೀವು Chromium ಅನ್ನು ಮುಚ್ಚಿದಾಗ ನಿಮ್ಮ ಸಾಧನದಿಂದ ಸೈಟ್ ಡೇಟಾವನ್ನು ಯಾವಾಗಲೂ ತೆರವುಗೊಳಿಸಿ</translation>

@@ -565,6 +565,7 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4108314971463891922">Följ</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="4116038641877404294">Ladda ned sidor så att du kan använda dem offline</translation>
+<translation id="4124152339699379357">Behörighetsflödet för aviseringar har öppnats över hela skärmen</translation>
 <translation id="4135200667068010335">Listan över enheter som fliken kan delas med är stängd.</translation>
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>
 <translation id="414128724510021958">Webbplatser för dator begärs som standard</translation>
@@ -1404,6 +1405,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8516012719330875537">Bildredigeringsverktyget</translation>
 <translation id="8516431725144212809">Chromes uppskattning av dina intressen</translation>
 <translation id="8523928698583292556">Radera sparat lösenord</translation>
+<translation id="8526855376374973824">Behörighetsflödet för aviseringar</translation>
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
 <translation id="854522910157234410">Öppna sidan</translation>
 <translation id="8551513938758868521">Lås inkognitoflikar när du stänger Chrome</translation>
@@ -1463,6 +1465,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, flik</translation>
 <translation id="8854223127042600341">Se dina offlinefiler</translation>
 <translation id="8856607253650333758">Få beskrivningar</translation>
+<translation id="8856931513242997049">Behörighetsflödet för aviseringar har stängts</translation>
 <translation id="8873817150012960745">Börja genom att trycka här</translation>
 <translation id="8881973373982641723">Rensar historiken, inklusive från sökrutan.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt webbplatser som är äldre än fyra veckor från listan. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan också ta bort en webbplats om du inte vill att webbplatsen någonsin ska definiera dina intressen.</translation>

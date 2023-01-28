@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
 <translation id="1391289752476847787">Акции и облигации</translation>
+<translation id="1391625539203220400">Сохранить код IBAN на этом устройстве?</translation>
 <translation id="139305205187523129">Сайт <ph name="HOST_NAME" /> не отправил данных.</translation>
 <translation id="1396259464226642517">Считаете, что это произошло по ошибке? <ph name="BEGIN_LINK" />Отправьте нам отзыв<ph name="END_LINK" />.</translation>
 <translation id="1405567553485452995">Светло-зеленый</translation>
@@ -1949,7 +1950,6 @@
 <translation id="5808435672482059465">Посмотреть историю Chrome</translation>
 <translation id="5808542072418270309">Игры-симуляторы</translation>
 <translation id="5810442152076338065">Соединение с <ph name="DOMAIN" /> зашифровано с помощью устаревшего набора шифров.</translation>
-<translation id="5812947184178430888">Когда Chrome сообщает о событиях безопасности, вашему администратору отправляется информация о них, в частности URL страниц, которые вы открывали в браузере Chrome, названия файлов или метаданные, а также ваше имя пользователя для входа в веб-приложения, систему на устройстве и в Chrome.</translation>
 <translation id="5813119285467412249">&amp;Повторить добавление</translation>
 <translation id="5813309815819933152">Телевизионные реалити-шоу</translation>
 <translation id="5813753398265398978">Физика</translation>

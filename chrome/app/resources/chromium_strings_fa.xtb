@@ -345,7 +345,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="8493179195440786826">‏نسخه Chromium قدیمی است</translation>
 <translation id="8550334526674375523">این نمایه کاری کاملاً مجزا از نمایه شخصی‌تان است.</translation>
 <translation id="8558383651099478961">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chromium خاموش کرده است. افزودن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
-<translation id="8561285221328166383">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از macOS نسخه ۱۰.۱۲ استفاده می‌کند.</translation>
 <translation id="8568283329061645092">‏وقتی با «حساب Google» خود به سیستم وارد می‌شوید، Chromium می‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="8574036838419011058">‏وقتی روشن باشد، Chromium با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری، مثل پیمایش روان و نرخ فریم ویدیو، در مصرف باتری صرفه‌جویی می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">‏حق نشر <ph name="YEAR" /> نویسندگان Chromium. کلیه حقوق محفوظ است.</translation>
@@ -378,7 +377,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="9190841055450128916">‏Chromium‏ (mDNS ورودی)</translation>
 <translation id="93478295209880648">‏Chromium ممکن است درست کار نکند زیرا دیگر در Windows XP یا Windows Vista پشتیبانی نمی‌شود</translation>
 <translation id="942598560705308788">‏گواهینامه‌های تحت‌مدیریت Chromium</translation>
-<translation id="945990405696787151">‏برای دریافت به‌روزرسانی‌های آتی Chromium، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۱ استفاده می‌کند.</translation>
 <translation id="965162752251293939">‏چه‌کسی از Chromium استفاده می‌کند؟</translation>
 <translation id="967427899662692980">‏دریافت قوی‌ترین امنیت Chromium</translation>
 <translation id="9792300276217204">‏داده‌های سایت همواره بعداز بستن Chromium از دستگاه پاک شود</translation>

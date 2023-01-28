@@ -1370,6 +1370,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2195331105963583686">Bado utaweza kutumia <ph name="DEVICE_TYPE" /> hii baada ya wakati huo, lakini haitapata tena masasisho ya kiotomatiki ya programu na usalama.</translation>
 <translation id="2195729137168608510">Ulinzi wa Barua Pepe</translation>
 <translation id="2198625180564913276">Inaweka wasifu. Hatua hii inaweza kuchukua dakika kadhaa.</translation>
+<translation id="2198712775285959645">Badilisha</translation>
 <translation id="2199298570273670671">Hitilafu</translation>
 <translation id="2200094388063410062">Barua pepe</translation>
 <translation id="2200356397587687044">Chrome inahitaji ruhusa ili iendelee</translation>
@@ -3332,6 +3333,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3957844511978444971">Gusa “Kubali” ili uthibitishe chaguo lako la mipangilio hii ya huduma za Google.</translation>
 <translation id="3958088479270651626">Leta alamisho na mipangilio</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3961005895395968120">Vitendo zaidi vya <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Ulinzi wa kawaida dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari</translation>
 <translation id="3964480518399667971">Zima Mtandao wa Simu</translation>
 <translation id="3965811923470826124">Ukitumia</translation>
@@ -5879,6 +5881,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="6345418402353744910">Unahitaji kuweka jina la mtumiaji na nenosiri lako kwenye seva mbadala ya <ph name="PROXY" /> ili msimamizi aweze kuweka mipangilio ya mtandao wako</translation>
 <translation id="6345878117466430440">Tia alama kuwa umesoma</translation>
 <translation id="6347010704471250799">Onyesha arifa</translation>
+<translation id="634887995541211148">Tekeleza Bruschetta kwenye kifaa chako.</translation>
 <translation id="6349101878882523185">Sakinisha <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">SECG kizingo cha mviringo secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Usizime kifaa</translation>
@@ -6284,6 +6287,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6725970970008349185">Idadi ya wagombea ya kuonyesha kwa kila ukurasa</translation>
 <translation id="672609503628871915">Angalia yaliyo mapya</translation>
 <translation id="67269783048918309">Tuma data ya matumizi na uchunguzi. Kwa sasa, kifaa hiki kinatuma kiotomatiki data ya uchunguzi na matumizi ya programu na kifaa kwa Google. Hatutatumia data hii kumtambulisha mtoto wako na itatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu za Google na washirika kama vile wasanidi programu za Android. <ph name="BEGIN_LINK1" />Mipangilio<ph name="END_LINK1" /> hii inatekelezwa na mmiliki. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu kwa ajili ya mtoto wako, data hii inaweza kuhifadhiwa kwenye akaunti yake ya Google. <ph name="BEGIN_LINK2" />Pata maelezo zaidi<ph name="END_LINK2" /></translation>
+<translation id="6728528977475057549">IBAN inaisha baada ya <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Andika jina lako la mtumiaji</translation>
 <translation id="6731320427842222405">Huenda hii ikachukua dakika kadhaa</translation>
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' imewekwa.</translation>
@@ -6900,6 +6904,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7298195798382681320">Zinazopendekezwa</translation>
 <translation id="7299337219131431707">Washa kuvinjari kwa Mgeni</translation>
 <translation id="7299515639584427954">Ungependa kubadilisha programu chaguomsingi ya kufungua viungo vinavyoweza kutumika?</translation>
+<translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Unaweza kuuliza “Ok Google, huu ni wimbo gani?” au “Ok Google, ni nini kilicho kwenye skrini yangu?”</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Huenda programu hii ikazuia Chrome isifanye kazi inavyostahili.}other{Huenda programu hizi zikazuia Chrome isifanye kazi inavyostahili.}}</translation>
 <translation id="7303281435234579599">Lo! Hitilafu imetokea wakati wa kuweka hali ya onyesho.</translation>
@@ -7702,6 +7707,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8014154204619229810">Programu ya kusasisha inatekeleza kwa sasa. Onyesha upya baada ya dakika moja ili uangalie tena.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> haiwezi kurejesha toleo lililokuwa limesakinishwa. Tafadhali jaribu kutumia tena Powerwash kwenye kifaa chako.</translation>
+<translation id="8015812716978143">Onyesha vipakuliwa vyote katika kichupo kipya</translation>
 <translation id="8016266267177410919">Hifadhi ya muda</translation>
 <translation id="8017176852978888182">Saraka za Linux zinazoshirikiwa</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8810,6 +8816,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="9026731007018893674">pakua</translation>
 <translation id="9026852570893462412">Huenda mchakato huu ukachukua dakika kadhaa. Inapakua kompyuta iliyo mbali.</translation>
 <translation id="9027459031423301635">Fungua Kiungo katika Kichupo &amp;Kipya</translation>
+<translation id="9027707169256972235">Ondoa</translation>
 <translation id="9029667986262585240">Umezima Kipengele cha Kuvinjari Salama Kilichoboreshwa katika akaunti yako.</translation>
 <translation id="9030515284705930323">Shirika lako halijaruhusu Duka la Google Play kwa akaunti yako. Wasiliana na msimamizi wako kwa maelezo zaidi.</translation>
 <translation id="9030754204056345429">Haraka sana</translation>

@@ -126,11 +126,6 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1117535567637097036">I gestori di protocollo impostati tramite questa norma non sono utilizzati durante la gestione degli intent di Android.</translation>
 <translation id="1118093128235245168">Consenti ai siti di chiedere all'utente di concedere l'accesso a un dispositivo USB collegato</translation>
 <translation id="111910763555783249">Impostazioni di notifica</translation>
-<translation id="1120291391245112391">Segnala la posizione geografica del dispositivo.
-
-      Se il criterio viene impostato su Attivato, i dispositivi registrati segnalano periodicamente la loro posizione.
-
-      Se il criterio viene impostato su Disattivato o se non viene impostato, i dispositivi registrati non segnalano la loro posizione.</translation>
 <translation id="1122089575901325963">L'impostazione di questo criterio consente di configurare il controller DTC (Diagnostics and Telemetry Controller) <ph name="WILCO_NAME" />, se disponibile sul dispositivo. Le dimensioni della configurazione non possono superare 1 MB (1.000.000 di byte) e il formato deve essere JSON. Il controller DTC <ph name="WILCO_NAME" /> è responsabile della gestione della configurazione. L'hash di crittografia consente di verificare l'integrità del download. La configurazione viene scaricata e memorizzata nella cache. Viene scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>

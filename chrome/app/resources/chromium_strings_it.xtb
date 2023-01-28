@@ -346,7 +346,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8558383651099478961">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'aggiunta di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
-<translation id="8561285221328166383">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium può controllare le tue password quando accedi con il tuo Account Google</translation>
 <translation id="8574036838419011058">Quando questa modalità è attiva, Chromium risparmia carica della batteria limitando l'attività in background e gli effetti visivi, ad esempio lo scorrimento continuo e le frequenze di fotogrammi dei video. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
@@ -379,7 +378,6 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium potrebbe non funzionare correttamente perché non è più supportato su Windows XP o Windows Vista</translation>
 <translation id="942598560705308788">Certificati gestiti da Chromium</translation>
-<translation id="945990405696787151">Per ricevere gli aggiornamenti futuri di Chromium, devi avere macOS 10.13 o versioni successive. Su questo computer è installato il sistema operativo X 10.11.</translation>
 <translation id="965162752251293939">Chi usa Chromium?</translation>
 <translation id="967427899662692980">Usa la funzionalità di sicurezza più efficace di Chromium</translation>
 <translation id="9792300276217204">Cancella sempre i dati dei siti dal dispositivo alla chiusura di Chromium</translation>

@@ -125,11 +125,6 @@ Op <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> en <ph name="LINUX_OS_NA
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
-<translation id="1120291391245112391">De geografische locatie van het apparaat rapporteren.
-
-      Als je het beleid toepast, rapporteren ingeschreven apparaten periodiek hun locatie.
-
-      Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten hun locatie niet.</translation>
 <translation id="1122089575901325963">Als je dit beleid instelt, wordt de <ph name="WILCO_NAME" /> DTC (controller voor diagnostische gegevens en telemetrie) ingesteld als deze beschikbaar is op het apparaat. De grootte van de configuratie mag maximaal 1 MB (1.000.000 bytes) en moet een json-indeling hebben. De <ph name="WILCO_NAME" /> DTC is verantwoordelijk voor de verwerking. De cryptografische hash verifieert de integriteit van de download. De configuratie wordt gedownload en gecachet. Deze wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
 
       Als je dit beleid instelt, kunnen gebruikers het niet wijzigen.</translation>

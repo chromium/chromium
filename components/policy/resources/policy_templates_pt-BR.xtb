@@ -128,11 +128,6 @@ isso não impede capturas de tela com apps do sistema operacional ou de terceiro
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
-<translation id="1120291391245112391">Informar a localização geográfica do dispositivo.
-
-      Se a política for ativada, os dispositivos registrados vão informar a localização periodicamente.
-
-      Se ela for desativada ou deixada sem definição, os dispositivos registrados não vão informar a localização.</translation>
 <translation id="1122089575901325963">A definição da política configura o controlador de diagnósticos e telemetria (DTC, na sigla em inglês) <ph name="WILCO_NAME" />, se disponível no dispositivo. O tamanho da configuração não pode exceder 1 MB (1.000.000 de bytes) e precisa estar no formato JSON. O DTC <ph name="WILCO_NAME" /> é responsável pelo processamento dela. O hash criptográfico verifica a integridade do download. A configuração é transferida por download e armazenada em cache. O download é refeito sempre que o URL ou o hash mudam.
 
       Se você definir a política, os usuários não poderão mudá-la.</translation>
@@ -474,6 +469,7 @@ No <ph name="MS_WIN_NAME" />, essa funcionalidade está disponível apenas em in
       Se esta política for definida como "Rápida", o <ph name="PRODUCT_NAME" /> evitará a varredura sempre que possível. Reduzir a quantidade de varreduras pode ajudar a diminuir o tamanho dos trabalhos de impressão e aumentar a velocidade de impressão.
 
       Se a política for deixada sem definição, o <ph name="PRODUCT_NAME" /> ficará no modo de varredura completa.</translation>
+<translation id="1451597482289285597">Tempo limite de inatividade do protetor de tela do dispositivo.</translation>
 <translation id="1455351936334569779">Se o tipo da impressora estiver na lista de proibições, não será possível descobrir esse equipamento ou buscar as funcionalidades dele.
 
       Colocar todos os tipos de impressora na lista de proibições desativa a impressão de modo eficaz porque não há destinos disponíveis para enviar um documento para impressão.
@@ -1110,6 +1106,11 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="2018425641414671849">Não permitir que os usuários reproduzam mídia enquanto o dispositivo estiver bloqueado</translation>
 <translation id="2021087124402050619">Permitir que a Varredura do Chrome verifique o sistema periodicamente e ativar as verificações manuais</translation>
 <translation id="2024476116966025075">Configurar o nome de domínio obrigatório para clientes de acesso remoto</translation>
+<translation id="2027764364653772586">Configura quantos segundos o dispositivo deve ficar inativo antes de mostrar o protetor na tela de login.
+
+Os valores vão de 1 a 9.999 segundos. Se a política for deixada sem definição, o valor padrão de 7 segundos vai ser usado pelo <ph name="PRODUCT_OS_NAME" />.
+
+Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> estiver definida como falsa.</translation>
 <translation id="2029985289397958781">Desativar a pesquisa assistida pela câmera do <ph name="GOOGLE_LENS_PRODUCT_NAME" /> para usuários corporativos</translation>
 <translation id="2030905906517501646">Palavra-chave do provedor de pesquisa padrão</translation>
 <translation id="203096360153626918">Esta política não tem nenhum efeito sobre os apps Android. Eles poderão entrar no modo tela cheia mesmo se a política estiver definida como <ph name="FALSE" />.</translation>
@@ -1478,6 +1479,15 @@ Quando a política é desativada, ela impede que usuários ou variações do <ph
 <translation id="2366301887862414321">Permitir hosts de mensagens nativas no nível do usuário e do sistema</translation>
 <translation id="2373014700224092497">Permitir que os usuários adicionem contas do Kerberos</translation>
 <translation id="2376134474855349829">Desativar o teclado na tela de login e permitir que o usuário o ative temporariamente</translation>
+<translation id="2377822335794178310">Configura o protetor de tela do dispositivo para a tela de login.
+
+Se a política for definida como verdadeira, o dispositivo <ph name="PRODUCT_OS_NAME" /> vai mostrar um protetor na tela de login quando estiver inativo.
+
+Se ela for definida como falsa ou deixada sem definição, o protetor não vai aparecer na tela de login.
+
+O protetor de tela do dispositivo mostra as imagens referenciadas pela política <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" />. Se a <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> for deixada sem definição ou for uma lista vazia ou sem imagens válidas, o protetor não será mostrado na tela de login.
+
+O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de exibição de uma imagem podem ser modificados com as políticas <ph name="DEVICE_SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> e <ph name="DEVICE_SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Se uma dessas políticas for deixada sem definição, os valores padrão vão ser usados.</translation>
 <translation id="2382672620906337383">A função setTimeout() do JavaScript não será ajustada até um limite de aninhamento maior.</translation>
 <translation id="2384233438419344179">Se a política for definida como "Ativada", os cookies não poderão ser definidos por elementos de página da Web que não sejam do domínio que está na barra de endereço do navegador. Se a política for definida como "Desativada", os cookies poderão ser definidos por esses elementos e os usuários serão impedidos de mudar essa configuração.
 
@@ -1936,6 +1946,11 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 
       Definir a política como "Desativada" ou deixá-la sem definição faz com que o SPN do Kerberos gerado não inclua uma porta.</translation>
 <translation id="2834965199373338033">Ativar modo de segundo plano</translation>
+<translation id="2835648603076938116">Configura de quantos segundos é o intervalo de exibição de uma imagem quando o protetor de tela tem várias delas.
+
+Os valores vão de 1 a 9.999 segundos. Se a política for deixada sem definição, o valor padrão de 60 segundos vai ser usado pelo <ph name="PRODUCT_OS_NAME" />.
+
+Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> estiver definida como falsa.</translation>
 <translation id="2835686964326214400">Definir uma programação personalizada para reiniciar dispositivos</translation>
 <translation id="2838830882081735096">Bloquear migração de dados e ARC</translation>
 <translation id="2839294585867804686">Configurações do Compartilhamento de arquivos de rede</translation>
@@ -3551,6 +3566,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
 Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que os usuários se conectem apenas aos serviços Bluetooth especificados com uma exceção quando a lista estiver vazia, ou seja, quando qualquer serviço tiver permissão para ser usado. UUIDs reservados pela Bluetooth SIG podem ser representados como <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> ou <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />. UUIDs personalizados podem ser representados como <ph name="BLUETOOTH_CUSTOM_UUID" />. UUIDs não diferenciam maiúsculas e minúsculas. Se esta política não for definida, os usuários poderão se conectar a qualquer serviço Bluetooth.</translation>
 <translation id="4332177773549877617">Registra eventos de instalações do app Android</translation>
+<translation id="4340809889556703745">Origem da imagem do protetor de tela do dispositivo.</translation>
 <translation id="4341199399451274159">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> especificará as codificações de caracteres compatíveis com o provedor de pesquisa. As codificações são nomes de páginas de código como UTF-8, GB2312 e ISO-8859-1. Elas são testadas na ordem fornecida.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> não for definida, UTF-8 será usada.</translation>
@@ -4160,6 +4176,7 @@ também é seguro.</translation>
           Se você definir esta política, os usuários não poderão alterá-la nem substituí-la.
 
           Se esta política não for definida, o áudio mono ficará desativado na tela de login, mas poderá ser ativado pelo usuário a qualquer momento.</translation>
+<translation id="4933079174563348731">Intervalo de exibição da imagem do protetor de tela do dispositivo.</translation>
 <translation id="4933301190614090397">Controla a duração (em segundos) permitida para solicitações de sinal de atividade no encerramento do navegador.
 
       Quando especificada, o encerramento do navegador pode ser bloqueado pelo número de segundos especificado
@@ -4492,6 +4509,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se ela estiver ativada ou for deixada sem definição, a tradução das Respostas rápidas ficará ativada.
       Se a política estiver desativada, a tradução das Respostas rápidas ficará desativada.</translation>
+<translation id="5252745944062824150">Protetor de tela do dispositivo ativado.</translation>
 <translation id="5252995168844634755">Se a política for definida como verdadeira, a área de trabalho unificada será ativada e permitirá que aplicativos apareçam em várias telas. Os usuários poderão desativar essa configuração para usarem as telas individualmente.
 
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
@@ -4793,6 +4811,13 @@ Se a política for desativada ou deixada sem definição, as configurações de 
 <translation id="5535256585099022933">Configurar o intervalo de tempo para reinicialização</translation>
 <translation id="553806128266843748">Uma sinalização booleana indicando se a limitação está ativada.</translation>
 <translation id="5540885720415375851">Permitir a detecção de dispositivos locais</translation>
+<translation id="5545132877693005604">Configura a lista de imagens que vão ser mostradas no protetor da tela de login.
+
+Cada item da lista faz referência a uma imagem que será mostrada no protetor de tela. O item precisa ter um URL para a imagem e o valor de hash SHA-256 do arquivo de imagem para verificação. O formato da imagem precisa ser JPEG. O dispositivo <ph name="PRODUCT_OS_NAME" /> vai fazer o download dessas imagens e manter um cache local das referências.
+
+Esta política não terá efeito se a <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> for definida como falsa.
+
+Se a política for deixada sem definição ou se a lista não tiver referências de imagem válidas, o protetor da tela de login não vai ser mostrado, independente do valor definido na <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" />.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Ativar o alto contraste na tela de login</translation>
 <translation id="555077880566103058">Permitir que todos os sites executem o plug-in <ph name="FLASH_PLUGIN_NAME" /> automaticamente</translation>
@@ -6596,6 +6621,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política for definida como <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 3), por padrão, o usuário receberá um aviso quando a permissão para posicionamento de janelas for solicitada. Se o usuário conceder a permissão, ela vai ampliar a capacidade dos sites de ver informações sobre as telas do dispositivo e usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
 
       Se a política for deixada sem definição, a <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> será aplicada, mas o usuário poderá mudar essa configuração.</translation>
+<translation id="7238955809343698945">Ativar o protetor da tela de login.</translation>
 <translation id="7244600351241637530">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e fazer o download de fotos e vídeos do smartphone pelo ChromeOS.
 
       Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> estiver desativada, os usuários também não vão ter permissão para usar o recurso.
@@ -7858,6 +7884,7 @@ vai ser definida como padrão durante o login do usuário.</translation>
 
       Se a política for definida como verdadeira ou não for definida, o acesso root aos contêineres do Crostini será concedido ao usuário.
       Se a política for definida como falsa, o acesso root aos contêineres do Crostini novos e já existentes não será concedido ao usuário.</translation>
+<translation id="8409672666693526293">Não ativar o protetor na tela de login.</translation>
 <translation id="8410477879938914253">Esta política se aplica apenas a sessões de visitante gerenciadas.
       Se a política for definida como verdadeira ou deixada sem definição, uma caixa de diálogo será exibida e pedirá que o usuário confirme ou negue que quer sair da conta depois que a última janela for fechada.
       Se a política for definida como falsa, a caixa de diálogo não será exibida e, portanto, a saída automática será desativada após o fechamento da última janela.</translation>

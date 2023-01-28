@@ -346,7 +346,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8493179195440786826">Chromium er utdatert</translation>
 <translation id="8550334526674375523">Denne jobbprofilen er helt separat fra den personlige profilen din.</translation>
 <translation id="8558383651099478961">Forelderen din har slått av «Tillatelser for nettsteder, apper og utvidelser» for Chromium. Du har ikke tillatelse til å legge til denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium kan sjekke passordene dine når du logger på med Google-kontoen din</translation>
 <translation id="8574036838419011058">Når dette er på, sparer Chromium batteristrøm ved å begrense bakgrunnsaktivitet og visuelle effekter, for eksempel jevn rulling og bildefrekvensen til videoer. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
@@ -379,7 +378,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-Inn)</translation>
 <translation id="93478295209880648">Chromium fungerer kanskje ikke riktig fordi den ikke lenger støttes på Windows XP eller Windows Vista</translation>
 <translation id="942598560705308788">Sertifikater administreres av Chromium</translation>
-<translation id="945990405696787151">For å få fremtidige Chromium-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker OS X 10.11.</translation>
 <translation id="965162752251293939">Hvem bruker Chromium?</translation>
 <translation id="967427899662692980">Få den sterkeste sikkerheten i Chromium</translation>
 <translation id="9792300276217204">Slett alltid nettstedsdata fra enheten når du lukker Chromium</translation>

@@ -236,6 +236,7 @@
 <translation id="2321086116217818302">पासवर्डहरू निर्यात गर्ने तयारी गरिँदै…</translation>
 <translation id="2323763861024343754">साइटको भण्डारण</translation>
 <translation id="2328985652426384049">साइन इन गर्न सकिएन</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इन्स्टल गर्न सकिएन।</translation>
 <translation id="234265804618409743">तपाईंको क्यामेरा खोल्न सकिएन। केही चिज गडबड भयो।</translation>
 <translation id="2349710944427398404">खाता, पुस्तक चिन्ह र सुरक्षित गरिएका सेटिङहरू सहित Chrome ले प्रयोग गरेको कुल डेटा</translation>
 <translation id="235789365079050412">Google को गोपनीयता नीति</translation>
@@ -344,6 +345,7 @@
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
 <translation id="2912296070571964914">आफूलाई रुचि भएका विषयहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2912345083818861431">तपाईं हाल खोलिएका इन्कोग्निटो ट्याब हेर्न चाहनुहुन्छ भने स्क्रिन लक प्रयोग गर्नुहोस्</translation>
+<translation id="2922568440285376746">Google प्रयोग गरी फोटोमा खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> को भण्डारण</translation>
 <translation id="2932222164150889403">तपाईंको किबोर्ड परिवर्तन हुने छैन</translation>
@@ -663,6 +665,7 @@
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
 <translation id="4685741273709472646">ड्रपडाउन सूचीबाट चयन गर्नुहोस्</translation>
 <translation id="4687718960473379118">साइटले सिफारिस गरेका विज्ञापनहरू</translation>
+<translation id="4689792375321623175">Google प्रयोग गरी फोटो खोज्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> थप}}</translation>
 <translation id="4699172675775169585">क्यास गरिएका फोटो र फाइलहरू</translation>
 <translation id="4719927025381752090">अनुवादको गर्न प्रस्ताव गर्नुहोस्</translation>
@@ -809,6 +812,7 @@
 <translation id="5438292632479953702">फेरि डाउनलोड गर्नुहोस्</translation>
 <translation id="5441466871879044658">यो भाषामा अनुवाद गर्नुहोस्</translation>
 <translation id="5441522332038954058">ठेगाना पट्टीमा जानुहोस्</translation>
+<translation id="5444999712122199445">साइटमा फर्कनुहोस्</translation>
 <translation id="544776284582297024">एकै पटक ट्याबहरू खोल्न र विभिन्न पृष्ठहरूमा जान 'ट्याबहरू खोल्नुहोस्' बटनमा ट्याप गर्नुहोस्</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> सँग</translation>
 <translation id="5456381639095306749">पृष्ठ डाउनलोड गर्नुहोस्</translation>

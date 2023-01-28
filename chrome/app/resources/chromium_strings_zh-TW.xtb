@@ -347,7 +347,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8558383651099478961">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法新增這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
-<translation id="8561285221328166383">如要取得日後的 Chromium 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.12。</translation>
 <translation id="8568283329061645092">如果你使用 Google 帳戶登入，Chromium 可以檢查你的密碼</translation>
 <translation id="8574036838419011058">開啟後，Chromium 會限制背景活動和視覺效果 (例如順暢捲動和視訊影格速率)，以節省電池電力。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
@@ -380,7 +379,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium 已不適用於 Windows XP 或 Windows Vista，因此可能無法正常運作</translation>
 <translation id="942598560705308788">由 Chromium 管理的憑證</translation>
-<translation id="945990405696787151">如要取得日後的 Chromium 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.11。</translation>
 <translation id="965162752251293939">誰在使用 Chromium？</translation>
 <translation id="967427899662692980">獲得 Chromium 最強大的安全防護</translation>
 <translation id="9792300276217204">在 Chromium 關閉後一律清除裝置上的網站資料</translation>

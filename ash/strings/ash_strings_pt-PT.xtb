@@ -162,7 +162,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
 <translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Desativado</translation>
-<translation id="1797271123677381264">Esqueci-me da palavra-passe</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="181103072419391116">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="1816896987747843206">Isto permite o acesso à câmara para todas as apps e Websites com a autorização da câmara</translation>
@@ -424,6 +423,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3307642347673023554">Mudou para o modo de portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pode iniciar sessão mais tarde.</translation>
 <translation id="3321628682574733415">Código parental incorreto</translation>
+<translation id="332827762492701193">As notificações estão ocultas</translation>
 <translation id="3339826665088060472">Captura de ecrã, ferramentas para fazer capturas de ecrã e gravações de ecrã</translation>
 <translation id="3340978935015468852">definições</translation>
 <translation id="3341303451326249809">Captura de ecrã efetuada</translation>
@@ -700,6 +700,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4735944890391795473">Espaço de trabalho 12</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4740516757091333363">Eliminar espaço de trabalho guardado?</translation>
+<translation id="4747410141429390146">Desbloqueie para ver as notificações</translation>
 <translation id="4752784485658729358">Só é permitido guardar 6 espaços de trabalho. Remova um espaço de trabalho para guardar um novo.</translation>
 <translation id="4759238208242260848">Transferências</translation>
 <translation id="4762573482154983647">Oculte as apps</translation>

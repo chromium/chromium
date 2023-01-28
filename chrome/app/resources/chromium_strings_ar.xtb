@@ -343,7 +343,6 @@
 <translation id="8493179195440786826">‏إصدار Chromium قديم</translation>
 <translation id="8550334526674375523">هذا الملف الشخصي للعمل منفصِل تمامًا عن ملفك الشخصي.</translation>
 <translation id="8558383651099478961">‏أوقفَ أحد والدَيك "أذونات المواقع الإلكترونية والتطبيقات والإضافات" لمتصفِّح Chromium. ولا يمكن تثبيت <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 10.13 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل macOS 10.12.</translation>
 <translation id="8568283329061645092">‏لا يستطيع Chromium التحقّق من كلمات المرور إلا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="8574036838419011058">‏عندما يكون هذا الإعداد مفعَّلاً، يحافظ Chromium على طاقة البطارية من خلال الحدّ من الأنشطة في الخلفية والتأثيرات المرئية، مثل التمرير السلس وعدد اللقطات في الثانية للفيديو. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
@@ -376,7 +375,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">‏قد لا يعمل Chromium بشكل صحيح لأنه لم يعد مدعومًا على أنظمة التشغيل Windows XP أو Windows Vista.</translation>
 <translation id="942598560705308788">‏الشهادات التي يديرها متصفّح Chromium</translation>
-<translation id="945990405696787151">‏للحصول على تحديثات Chromium في المستقبل، يجب استخدام جهاز يعمل بنظام التشغيل macOS 10.13 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل OS X 10.11.</translation>
 <translation id="965162752251293939">‏مَن يستخدم Chromium؟</translation>
 <translation id="967427899662692980">‏الحصول على أعلى مستوى من الأمان في متصفِّح Chromium</translation>
 <translation id="9792300276217204">‏محو بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>

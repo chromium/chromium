@@ -162,7 +162,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1771761307086386028">Rollees regs</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> is tans gekies.</translation>
 <translation id="1787955149152357925">Af</translation>
-<translation id="1797271123677381264">Wagwoord vergeet</translation>
 <translation id="1807246157184219062">Lig</translation>
 <translation id="181103072419391116">Seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="1816896987747843206">Dit gee kameratoegang vir alle apps en webwerwe met die kameratoestemming</translation>
@@ -735,6 +734,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="492453977506755176">Vasvangmodus-sleutel</translation>
 <translation id="4925542575807923399">Die administrateur vir hierdie rekening vereis dat hierdie rekening die eerste een moet wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="4929163402621253029">Praat jy tans? Jy is gedemp. Meer oor</translation>
+<translation id="4936329710968938986">Almal, af</translation>
 <translation id="4938176435186993759">Versteek alle voorstelle</translation>
 <translation id="4945196315133970626">Skakel kennisgewings af</translation>
 <translation id="4946376291507881335">Vang vas</translation>
@@ -1389,6 +1389,7 @@ Nuwe installasie</translation>
 <translation id="8477270416194247200">Druk Alt+Search of Shift om te kanselleer.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> werk nie met <ph name="SPECIFIED_RESOLUTION" /> nie. Die resolusie is verander na <ph name="FALLBACK_RESOLUTION" />. Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="8496402167048257517">Wys Nabydeling-instellings</translation>
+<translation id="8507563469658346379">Almal, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Jou Chromebook se Bluetooth is af. Voer wagwoord in om jou Chromebook te ontsluit.</translation>
 <translation id="8513108775083588393">Outodraai</translation>
 <translation id="851458219935658693">Wys vensters van die huidige lessenaar af; radioknoppie is gekies</translation>

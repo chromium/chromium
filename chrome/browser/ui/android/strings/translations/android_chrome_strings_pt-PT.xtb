@@ -392,6 +392,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3072980200212375806">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
 <translation id="3098745985164956033">Algumas imagens são enviadas para a Google para melhorar as descrições.</translation>
+<translation id="3104179992611025423">O navegador é gerido pelos teus pais</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">associado a</translation>
 <translation id="3123734510202723619">Anúncios</translation>
@@ -401,6 +402,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3157931365184549694">Restaurar</translation>
 <translation id="3166827708714933426">Atalhos de separadores e de janelas</translation>
 <translation id="316694332262407393">O Chrome já está a ser executado aqui.</translation>
+<translation id="3167258285411721858">Pode pedir o site para dispositivos móveis para o anfitrião <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Medição de anúncios</translation>
 <translation id="3207960819495026254">Adicionado aos marcadores</translation>
@@ -566,6 +568,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="4116038641877404294">Descarregue páginas para as utilizar offline.</translation>
+<translation id="4124152339699379357">Fluxo de autorização de notificações aberto à altura total</translation>
 <translation id="4135200667068010335">A lista de dispositivos com os quais pretende partilhar um separador está fechada.</translation>
 <translation id="4137746084635924146">Idioma do dispositivo atual</translation>
 <translation id="414128724510021958">Sites para computador pedidos por predefinição</translation>
@@ -1407,6 +1410,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8516012719330875537">Editor de imagens</translation>
 <translation id="8516431725144212809">Os seus interesses conforme estimados pelo Chrome</translation>
 <translation id="8523928698583292556">Eliminar palavra-passe armazenada</translation>
+<translation id="8526855376374973824">Fluxo de autorização de notificações</translation>
 <translation id="8540136935098276800">Introduza um URL formatado corretamente.</translation>
 <translation id="854522910157234410">Abrir esta página</translation>
 <translation id="8551513938758868521">Bloquear os separadores de navegação anónima quando sai do Chrome</translation>
@@ -1465,7 +1469,9 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8849001918648564819">Oculto</translation>
 <translation id="8853345339104747198">Separador <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Veja os seus ficheiros offline</translation>
+<translation id="885480114717186641">Pode pedir o site para computador para o anfitrião <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Obter descrições</translation>
+<translation id="8856931513242997049">Fluxo de autorização de notificações fechado</translation>
 <translation id="8873817150012960745">Toque aqui para começar.</translation>
 <translation id="8881973373982641723">Limpa o histórico, incluindo na caixa de pesquisa.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os sites da lista com mais de 4 semanas. Um site que visita novamente pode voltar a aparecer na lista. Em alternativa, pode remover um site se não quiser que o mesmo defina interesses para si.</translation>

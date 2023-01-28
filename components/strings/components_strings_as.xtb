@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">সুৰক্ষিত পৰিশোধৰ ক্ৰিডেনশ্বিয়েলৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণ শ্বীট</translation>
 <translation id="1386623374109090026">এন’টেশ্বন</translation>
 <translation id="1391289752476847787">ষ্ট’ক আৰু বণ্ড</translation>
+<translation id="1391625539203220400">এই ডিভাইচত IBAN ছেভ কৰিবনে?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />এ কোনো ডেটা পঠিওৱা নাই।</translation>
 <translation id="1396259464226642517">এই ফলাফলটো অপ্ৰত্যাশিত আছিল নেকি? <ph name="BEGIN_LINK" />মতামত পঠিয়াওক<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">পাতল সেউজীয়া</translation>
@@ -1946,7 +1947,6 @@
 <translation id="5808435672482059465">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="5808542072418270309">ছিমুলেশ্বন গে’ম</translation>
 <translation id="5810442152076338065">আপোনাৰ <ph name="DOMAIN" />ৰ সৈতে থকা সংযোগ কোনো অপ্ৰচলিত চাইফাৰ ছুট ব্যৱহাৰ কৰি এনক্ৰিপ্ট কৰা হৈছে।</translation>
-<translation id="5812947184178430888">Chromeএ সুৰক্ষা সম্পৰ্কীয় ঘটনা ফ্লেগ কৰিলে ঘটনাসমূহৰ বিষয়ে প্ৰাসংগিক ডেটা আপোনাৰ প্ৰশাসকলৈ পঠিওৱা হয়। ইয়াত আপুনি Chromeত চোৱা পৃষ্ঠাসমূহৰ URL, ফাইলৰ নাম অথবা মেটাডেটা আৰু আপুনি ৱেবৰ ওপৰত আধাৰিত এপ্লিকেশ্বন, নিজৰ ডিভাইচ তথা Chromeত ছাইন ইন কৰিবলৈ ব্যৱহাৰ কৰা ব্যৱহাৰকাৰীৰ নামটো থাকিব পাৰে।</translation>
 <translation id="5813119285467412249">যোগ কৰা কার্য &amp;ৰিডু কৰক</translation>
 <translation id="5813309815819933152">টিভিৰ ৰিয়েলিটী শ্ব’</translation>
 <translation id="5813753398265398978">পদাৰ্থ বিজ্ঞান</translation>
@@ -2737,6 +2737,7 @@
 <translation id="7755287808199759310">আপোনাৰ অভিভাৱকে এই ছাইটটো আপোনাৰ বাবে অৱৰোধৰ পৰা আঁতৰাব পাৰে</translation>
 <translation id="7755624218968747854">প্ৰাথমিক ৰোল</translation>
 <translation id="7758069387465995638">ফায়াৰৱাল বা এণ্টিভাইৰাছ ছফটৱেৰে সংযোগটো অৱৰোধ কৰিব পাৰে।</translation>
+<translation id="7759809451544302770">ঐচ্ছিক</translation>
 <translation id="7760497246331667482">ৰেহগেই আৰু কেৰিবিয়ান সংগীত</translation>
 <translation id="776110834126722255">অপ্ৰচলিত</translation>
 <translation id="7761159795823346334">কেমেৰাৰ অনুমতি দিবনে?</translation>

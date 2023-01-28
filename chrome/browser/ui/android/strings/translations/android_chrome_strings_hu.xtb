@@ -236,6 +236,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2321086116217818302">Jelszavak előkészítése…</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
+<translation id="2341410551640223969">A(z) <ph name="WEBAPK_NAME" /> telepítése nem sikerült.</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
 <translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
@@ -344,6 +345,7 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Az Önt érdeklő témakörök kezelése</translation>
 <translation id="2912345083818861431">A képernyőzár használata a megnyitott inkognitó lapok megtekintéséhez</translation>
+<translation id="2922568440285376746">Keresés a képen a Google-lal <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">A név érvénytelen</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-tárhely</translation>
 <translation id="2932222164150889403">A billentyűzet ugyanaz marad</translation>
@@ -664,6 +666,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4684427112815847243">Az összes szinkronizálása</translation>
 <translation id="4685741273709472646">Választás a legördülő listából</translation>
 <translation id="4687718960473379118">Webhely által javasolt hirdetések</translation>
+<translation id="4689792375321623175">Kép keresése a Google-lal <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">A gyorsítótárban szereplő képek és fájlok</translation>
 <translation id="4719927025381752090">Fordítás felajánlása</translation>
@@ -810,6 +813,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5438292632479953702">Letöltés újra</translation>
 <translation id="5441466871879044658">Fordítás erre a nyelvre</translation>
 <translation id="5441522332038954058">Ugrás a címsávba</translation>
+<translation id="5444999712122199445">Vissza a webhelyre</translation>
 <translation id="544776284582297024">Ha egyidejűleg több lapot is megnyitna, és különböző oldalakat is felkeresne, koppintson a megnyitott lapok gombra</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> szolgáltatóval</translation>
 <translation id="5456381639095306749">Oldal letöltése</translation>

@@ -188,6 +188,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1384725838384960382">Veilige betaling se eiebewysstawingblad</translation>
 <translation id="1386623374109090026">Aantekeninge</translation>
 <translation id="1391289752476847787">Aandele en effekte</translation>
+<translation id="1391625539203220400">Stoor IBAN op hierdie toestel?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> het geen data gestuur nie.</translation>
 <translation id="1396259464226642517">Was hierdie resultaat onverwags? <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Liggroen</translation>
@@ -1950,7 +1951,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5808435672482059465">Bekyk jou Chrome-geskiedenis</translation>
 <translation id="5808542072418270309">Simulasiespeletjies</translation>
 <translation id="5810442152076338065">Jou verbinding aan <ph name="DOMAIN" /> is geënkripteer deur 'n verouderde syferreeks te gebruik.</translation>
-<translation id="5812947184178430888">Wanneer sekuriteitsgevalle deur Chrome gevlag word, word relevante data oor die gevalle aan jou administrateur gestuur. Dit kan insluit: URL'e van bladsye wat jy in Chrome besoek, lêername of metadata, en die gebruikernaam wat jy gebruik om by webgegronde programme, op jou toestel en by Chrome aan te meld.</translation>
 <translation id="5813119285467412249">Herdoen byvoeging</translation>
 <translation id="5813309815819933152">TV-realiteitsprogramme</translation>
 <translation id="5813753398265398978">Fisika</translation>

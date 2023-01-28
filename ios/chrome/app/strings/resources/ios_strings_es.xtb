@@ -7,7 +7,7 @@
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1049743911850919806">Incógnito</translation>
-<translation id="105093091697134113">Estas cuentas usan contraseñas que se han visto expuestas en una quiebra de seguridad de datos externa o que se han introducido en un sitio web engañoso. Cámbialas de inmediato para proteger tus cuentas.</translation>
+<translation id="105093091697134113">Estas cuentas usan contraseñas que se han visto expuestas en una brecha de seguridad de datos externa o que se han introducido en un sitio web engañoso. Cámbialas de inmediato para proteger tus cuentas.</translation>
 <translation id="105214722824962652">No se cerrará la sesión de tu cuenta de Google. Es posible que <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.
 
         
@@ -18,6 +18,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1066060668811609597">Gestionar sincronización</translation>
 <translation id="1076421457278169141">Código escaneado</translation>
 <translation id="1076785341346483463">Sincronizar con cuenta gestionada</translation>
+<translation id="1080365971383768617">Contraseñas en todos tus dispositivos</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
 <translation id="1085696779717592361">Usa Chrome de forma predeterminada</translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5056446788882570708">Problemas detectados <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Aceptar</translation>
 <translation id="5062321486222145940">Instalar Google Drive</translation>
+<translation id="50641035439563602">Las contraseñas ahora se guardan en tu cuenta de Google (<ph name="ACCOUNT" />). Puedes usarlas en cualquier dispositivo cuando inicies sesión. Para desactivar esta opción, ve a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido.</translation>
 <translation id="5090832849094901128">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tuit enviado</translation>
@@ -595,6 +597,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5520466080178053306">Toca Gestor de contraseñas &gt; Añadir</translation>
 <translation id="5525095647255982834">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ese dispositivo.</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
+<translation id="5530084793407600786">Buscar en la imagen con Google</translation>
 <translation id="5542540507657872337">Resultados: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff te permite empezar a navegar en un sitio web en este dispositivo y continuar fácilmente en tu Mac más tarde. El sitio web abierto actualmente aparecerá en el Dock de tu Mac.
 
@@ -759,7 +762,7 @@ Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="6510072653668207258">Recordármelo más tarde</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
-<translation id="6530992499366869131">Avisarte si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
+<translation id="6530992499366869131">Avisarte si tus contraseñas se ven expuestas en una brecha de seguridad de datos</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6540120577248033958">Visita un sitio y haz clic en Seguir en el menú de Chrome</translation>
 <translation id="6561262006871132942">Ampliar</translation>
@@ -933,7 +936,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7887198238286927132">Para proteger tu privacidad, Chrome no autocompletará este campo.</translation>
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo.</translation>
 <translation id="7920949005883349320">Privacidad y seguridad</translation>
-<translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una quiebra de seguridad de datos.</translation>
+<translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una brecha de seguridad de datos.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas...</translation>
 <translation id="794799177247607889">Detener registro</translation>

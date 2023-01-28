@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">સિંક મેનેજ કરો</translation>
 <translation id="1076421457278169141">કોડ સ્કેન કર્યો</translation>
 <translation id="1076785341346483463">મેનેજ કરેલા એકાઉન્ટ સાથે સિંક કરો</translation>
+<translation id="1080365971383768617">તમારા બધા ડિવાઇસમાંના પાસવર્ડ</translation>
 <translation id="1084365883616172403">Facebook પોસ્ટ પૂર્ણ કરી છે.</translation>
 <translation id="1085696779717592361">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> સમસ્યાઓ મળી.</translation>
 <translation id="5059136629401106827">ઓકે</translation>
 <translation id="5062321486222145940">Google ડ્રાઇવ ઇન્સ્ટોલ કરો</translation>
+<translation id="50641035439563602">હવે પાસવર્ડને તમારા Google એકાઉન્ટ (<ph name="ACCOUNT" />)માં સાચવવામાં આવે છે. તમે જ્યાં પણ સાઇન ઇન થયા હો, ત્યાં તેનો ઉપયોગ કરી શકો છો. આ સુવિધા બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" />માં જાઓ.</translation>
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="5094827893301452931">ટ્વિટ પૂર્ણ કરેલ છે.</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Passwords મેનેજર પર ટૅપ કરો પછી ઉમેરો પર ટૅપ કરો</translation>
 <translation id="5525095647255982834">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો.</translation>
 <translation id="5525269841082836315">પાસફ્રેઝ બનાવો</translation>
+<translation id="5530084793407600786">Google વડે છબીમાં પણ શોધો</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> મળ્યા</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
 

@@ -125,11 +125,6 @@ Sachez que, sur <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> et <ph name
 <translation id="1117535567637097036">Les gestionnaires de protocoles définis par cette règle ne sont pas utilisés pour gérer les intents Android.</translation>
 <translation id="1118093128235245168">Autoriser les sites à demander à l'utilisateur d'accorder l'accès à un appareil USB connecté</translation>
 <translation id="111910763555783249">Paramètres de notification</translation>
-<translation id="1120291391245112391">Communique l'emplacement géographique de l'appareil.
-
-      Si cette règle est activée, les appareils enregistrés communiquent régulièrement leur position.
-
-      Si cette règle est désactivée ou n'est pas configurée, les appareils enregistrés ne communiquent pas leur position.</translation>
 <translation id="1122089575901325963">La définition de cette règle permet de configurer le dispositif de contrôle de diagnostic et de télémétrie (DTC) de <ph name="WILCO_NAME" />, à condition qu'il soit disponible sur l'appareil. La taille du fichier de configuration ne peut pas dépasser 1 Mo (1 000 000 octets) et doit être au format JSON. Le dispositif DTC de <ph name="WILCO_NAME" /> en assure le traitement. Le hachage cryptographique permet de valider l'intégrité du téléchargement. La configuration est téléchargée et mise en cache. Elle est de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>

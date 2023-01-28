@@ -347,7 +347,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8493179195440786826">Chromium er forældet</translation>
 <translation id="8550334526674375523">Denne arbejdsprofil er totalt adskilt fra din personlige profile.</translation>
 <translation id="8558383651099478961">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at tilføje denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.13 eller nyere. Denne computer anvender macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium kan tjekke dine adgangskoder, når du er logget ind med din Google-konto</translation>
 <translation id="8574036838419011058">Når denne indstilling er aktiveret, sparer Chromium på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. jævn rulning og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
@@ -380,7 +379,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium fungerer muligvis ikke korrekt på grund af manglende understøttelse i Windows XP og Windows Vista</translation>
 <translation id="942598560705308788">Certifikater, der administreres af Chromium</translation>
-<translation id="945990405696787151">Hvis du vil have fremtidige Chromium-opdateringer, skal du have macOS 10.13 eller nyere. Denne computer anvender OS X 10.11.</translation>
 <translation id="965162752251293939">Hvem bruger Chromium?</translation>
 <translation id="967427899662692980">Få Chromiums stærkeste beskyttelse</translation>
 <translation id="9792300276217204">Ryd altid websitedata fra din enhed, når du lukker Chromium</translation>

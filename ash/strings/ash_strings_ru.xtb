@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">Вправо</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, сейчас выбрано <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Отключено</translation>
-<translation id="1797271123677381264">Не помню пароль</translation>
 <translation id="1807246157184219062">Светлая</translation>
 <translation id="181103072419391116">Уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="1816896987747843206">Доступ к камере получат все приложения и сайты с разрешением "Камера".</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">Клавиша режима съемки</translation>
 <translation id="4925542575807923399">Чтобы начать сеанс множественного входа, необходимо в первую очередь выполнить вход в этот аккаунт</translation>
 <translation id="4929163402621253029">Вы говорите? У вас выключен звук. Подробнее</translation>
+<translation id="4936329710968938986">Доступно всем: отключено</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
 <translation id="4946376291507881335">Снимок</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">Для отмены нажмите ALT + SEARCH или SHIFT.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Показать настройки Обмена с окружением</translation>
+<translation id="8507563469658346379">Доступно всем: <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">На устройстве Chromebook отключен модуль Bluetooth. Чтобы разблокировать, введите пароль.</translation>
 <translation id="8513108775083588393">Автоповорот</translation>
 <translation id="851458219935658693">Показ окон текущего рабочего стола. Выбран переключатель.</translation>

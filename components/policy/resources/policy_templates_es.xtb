@@ -110,6 +110,7 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1079801999187584280">No permitir el uso de herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1087057100912843460">Permitir las actualizaciones</translation>
+<translation id="1087187152710800704">Niega el permiso de gestión de ventanas en todos los sitios de forma predeterminada</translation>
 <translation id="1087437665304381368">Esta política permite controlar únicamente el modo desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las opciones para desarrolladores de Android, debes asignar un valor a la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">La lista de políticas de Chrome Enterprise se traslada a otra URL. Modifica tus marcadores para que incluyan la URL actualizada: <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Autocompletar el nombre de usuario en la página del proveedor de identidades SAML</translation>
@@ -125,11 +126,6 @@ Ten en cuenta que en <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> y <ph 
 <translation id="1117535567637097036">Los controladores de protocolo configurados a través de esta política no se utilizan al procesar los intents de Android.</translation>
 <translation id="1118093128235245168">Permitir que los sitios pidan permiso al usuario para acceder a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Ajustes de notificaciones</translation>
-<translation id="1120291391245112391">Informa de la ubicación geográfica del dispositivo.
-
-      Si se habilita esta política, los dispositivos registrados informarán periódicamente sobre su ubicación.
-
-      Si esta política se inhabilita o no se establece, los dispositivos registrados no informarán sobre su ubicación.</translation>
 <translation id="1122089575901325963">Si se establece esta política, se configura el controlador de diagnóstico y telemetría de <ph name="WILCO_NAME" /> (DTC), si está disponible en el dispositivo. El tamaño de la configuración no debe superar 1 MB (1.000.000 bytes) y debe estar en formato JSON. <ph name="WILCO_NAME" /> DTC es responsable de gestionarlo. El hash criptográfico comprueba la integridad de la descarga. La configuración se descarga y se almacena en caché. Se vuelve a descargar si se cambia la URL o el hash.
 
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo.</translation>
@@ -312,6 +308,13 @@ La disponibilidad de las extensiones seguirá estando controlada por otras polí
 
       En <ph name="MS_WIN_NAME" />, esta función solo está disponible en instancias que estén vinculadas a un dominio de <ph name="MS_AD_NAME" /> que se ejecuten en Windows 10 Pro o que se hayan registrado en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">La API Event.path no estará disponible.</translation>
+<translation id="1290722184971934486">Si se le asigna el valor <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2) a esta política, automáticamente se niega a los sitios el permiso de gestión de ventanas de forma predeterminada. Esto limitará la capacidad de los sitios de ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
+
+Si se le asigna el valor <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 3), se avisará al usuario cuando el permiso de gestión de ventanas se pida de forma predeterminada. Si los usuarios dan permiso, se extenderá la capacidad de los sitios para ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
+
+Si la política no se establece, se aplicará la política <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" />, pero los usuarios podrán cambiar esta opción.
+
+Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Inhabilita cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="129392056654547767">La imagen del firmware de la UEFI usada por la VM. Se trata de una medida temporal mientras la empaquetamos como DLC de ChromeOS.</translation>
 <translation id="1294263471858445589">Habilita la autenticación pasiva en sesiones normales y de incógnito.</translation>
@@ -704,8 +707,10 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
       Si no se le asigna ningún valor, se utilizará el tamaño de caché predeterminado y los usuarios podrán cambiarlo con el indicador "--media-cache-size".</translation>
 <translation id="1648816843164517573">Lista de nombres que omitirán la comprobación de la política de HSTS</translation>
 <translation id="1651197070942919276">No permitir que el dispositivo ejecute máquinas virtuales</translation>
+<translation id="1651810147727432656">Bloquear el permiso de gestión de ventanas en estos sitios</translation>
 <translation id="1654087023995670109">Forzar el modo Invitado en el navegador</translation>
 <translation id="1655229863189977773">Establecer tamaño de caché de disco en bytes</translation>
+<translation id="1655518801232583832">Habilitar la resolución de DNS del sistema fuera del servicio de red</translation>
 <translation id="165769015320654523">Concede permiso automáticamente a estos sitios para que se conecten a dispositivos HID con los IDs de proveedor y producto facilitados.</translation>
 <translation id="1659406551862245683">El comportamiento predeterminado de cambio de tamaño del teclado virtual se modifica para cambiar el tamaño del viewport de diseño</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
@@ -817,6 +822,7 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
        Nota: Puedes consultar más ejemplos detallados en The Chromium Projects: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett</translation>
 <translation id="1767673020408652620">Habilitar la opción Aplicaciones recomendadas en estado cero del cuadro de búsqueda.</translation>
+<translation id="1768225118528727376">Permitir permiso de gestión de ventanas en estos sitios</translation>
 <translation id="1770071413238151235">Formato de reloj de 12 horas</translation>
 <translation id="1771024053220392089">Inhabilitar la compatibilidad con navegadores antiguos</translation>
 <translation id="1781356041596378058">Esta política también controla el acceso a las Opciones para Desarrolladores de Android. Si se asigna el valor true a esta política, los usuarios no podrán acceder a las Opciones para Desarrolladores. Si se le asigna el valor false o no se configura, los usuarios podrán tocar siete veces el número de compilación en la aplicación Ajustes de Android para acceder a esas opciones.</translation>
@@ -1844,6 +1850,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Para que esta política tenga efecto, es necesario realizar una configuración adicional. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting para consultar más información.</translation>
 <translation id="2731627323327011390">Inhabilitar el uso de certificados de <ph name="PRODUCT_OS_NAME" /> a las aplicaciones ARC</translation>
+<translation id="273678600057164019">La resolución de DNS del sistema se ejecutará dentro del proceso de red.</translation>
 <translation id="2737917415184832294">Usar HTTPS para descargar actualizaciones</translation>
 <translation id="2742843273354638707">Permite ocultar la aplicación Chrome Web Store y el enlace de la parte inferior de la página en la página Nueva pestaña y en el menú de aplicaciones de <ph name="PRODUCT_OS_NAME" />.
 
@@ -2507,6 +2514,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="3302829897293005699">Si se habilita la política o no se establece, los dispositivos registrados enviarán información sobre las sesiones activas del kiosko, como el ID de la aplicación o la versión.
 
       Si se inhabilita la política, los dispositivos registrados no enviarán información sobre las sesiones activas del kiosko.</translation>
+<translation id="3303770131697159224">Configuración predeterminada del permiso de gestión de ventanas</translation>
 <translation id="3303911765031636277">Política de configuración para el conector OnFileAttached de Chrome Enterprise Connectors</translation>
 <translation id="3304662785258434098">Permite especificar si los usuarios pueden añadir excepciones para permitir el contenido mixto en determinados sitios web.
 
@@ -3192,6 +3200,7 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 <translation id="3973371701361892765">No ocultar automáticamente los archivos</translation>
 <translation id="3977304360459208438">Utilizar el valor predeterminado para los paquetes de cifrado 3DES en TLS</translation>
 <translation id="3979738908158213640">Direcciones URL a las que se otorgará acceso para realizar la atestación del dispositivo durante la autenticación de SAML</translation>
+<translation id="3983162212222338509">La resolución de DNS del sistema puede ejecutarse dentro o fuera del proceso de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="3984028218719007910">Permite determinar si <ph name="PRODUCT_OS_NAME" /> mantiene los datos de cuenta locales tras cerrar la sesión. Si el valor se establece en "true", <ph name="PRODUCT_OS_NAME" /> no conservará ninguna cuenta de forma permanente y todos los datos de la sesión del usuario se descartarán al cerrar la sesión. Si esta política no se configura o el valor correspondiente se establece en "false", el dispositivo puede guardar datos de usuario locales (encriptados).</translation>
 <translation id="3986700049001404598">Permitir que los usuarios finalicen procesos con el administrador de tareas de Chrome</translation>
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
@@ -3310,6 +3319,7 @@ Recuerda que no debes dejar esta política habilitada en todo momento, especialm
 
       Si se configura esta política, los usuarios no pueden cambiarla. Si no se le asigna ningún valor, la lupa estará desactivada inicialmente, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="4098920079809952737">Permitir imprimir con y sin gráficos de fondo</translation>
+<translation id="410061592404122032">Preguntar siempre que un sitio quiera obtener el permiso de gestión de ventanas</translation>
 <translation id="410068710490553233">Permite iniciar sesión en más cuentas de Google</translation>
 <translation id="4101282687722389021">Marca de tiempo UTC de la última vez que se actualizó esta entrada. Enviada como cadena porque la marca de tiempo no cabe en un número entero.</translation>
 <translation id="4102347680024644994">Informar sobre los eventos de detección y respuesta extendidas (XDR)</translation>
@@ -3443,6 +3453,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si no le asignas ningún valor, el clic automático se inhabilitará al inicio, pero los usuarios podrán habilitarlo en cualquier momento.</translation>
 <translation id="4212181786686887763">La URL desde la que se puede descargar la imagen del fondo de pantalla.</translation>
 <translation id="4224610387358583899">Retrasos de bloqueo de pantalla</translation>
+<translation id="42267415200641481">Si asignas a esta política el valor true, es posible que la resolución de DNS del sistema (getaddrinfo()) se ejecute fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.
+
+      Si le asignas el valor false, la resolución de DNS del sistema (getaddrinfo()) se ejecutará en el proceso de red y no en el del navegador. Esto podría forzar la inhabilitación del entorno aislado del servicio de red, lo que afectaría a la seguridad de <ph name="PRODUCT_NAME" />.
+
+      Si no se establece esta política, es posible que la resolución de DNS del sistema se ejecute dentro del servicio de red, fuera del servicio de red, o bien parcialmente dentro y fuera de él, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="4228745249339680042">Si se define esta política, se especificarán las URL y los dominios para los que no se muestra ningún mensaje cuando se solicitan certificados de atestación de las llaves de seguridad. Asimismo, se envía una señal a la llave de seguridad para indicar que es posible que se utilice esa atestación individual. Sin esta política, se muestra un mensaje a los usuarios de <ph name="PRODUCT_NAME" /> versión 65 y versiones posteriores cuando los sitios web solicitan la atestación de las llaves de seguridad.
 
       Las URL solo se identifican como appIDs U2F. Los dominios se identifican únicamente como IDs RP de WebAuthn. Por ello, para incluir tanto las API WebAuthn como U2F, se deben indicar la URL appID y el dominio de un determinado sitio web.</translation>
@@ -5462,6 +5477,7 @@ Si esta política se inhabilita, el navegador utilizará la implementación anti
 <translation id="6287128640500683781">Permitir que cualquier usuario inicie sesión</translation>
 <translation id="6287310684159482272">Configuración de cookies</translation>
 <translation id="6299147100249359151">Permite la detección del nivel de las políticas.</translation>
+<translation id="6299554629216555326">Configuración de la gestión de ventanas</translation>
 <translation id="6300871921951390976">Solo se permite que los usuarios cambien el canal de lanzamiento del dispositivo si se le asigna el valor "True" a esta política. Si se le asigna el valor "False" o no se le asigna ninguno, los usuarios no podrán cambiar el canal.
 
       Definir <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> solo tendrá efecto si se le asigna el valor "False" a <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" />.</translation>
@@ -6144,6 +6160,13 @@ Si se asigna el valor false a esta política o no se define, este diseño no est
       Si no se establece esta política, no habrá restricciones impuestas por la política en relación con el conjunto de aplicaciones que los usuarios pueden habilitar en la pantalla de bloqueo.</translation>
 <translation id="6882028194958060206">Aplicar la configuración del contenido Flash a todo el contenido (obsoleta)</translation>
 <translation id="6889123056995503704">El usuario decide el comportamiento del cambio a una versión inferior</translation>
+<translation id="6889617338886728275">Te permite definir una lista de patrones de URL donde se especifique qué sitios otorgarán automáticamente el permiso de gestión de ventanas. Esto extenderá la capacidad de los sitios de ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
+
+Si esta política no se establece para un sitio, se le aplicará la de <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> (si se ha definido). En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.
+
+Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
 <translation id="6897730193187922386">Elimina los mensajes de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Detección automática de la configuración del proxy</translation>
@@ -6605,6 +6628,13 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="731208205557053914">Enviar información sobre VPD</translation>
 <translation id="7313672174502374994">El hash SHA-256 de la imagen de fondo de pantalla.</translation>
 <translation id="7322825363493984512">La contraseña para autenticar los servicios del sistema para el proxy web remoto.</translation>
+<translation id="7323855063560306712">Te permite definir una lista de patrones de URL donde se especifique qué sitios negarán automáticamente el permiso de gestión de ventanas. Esto limitará la capacidad de los sitios de ver información sobre las pantallas de los dispositivos y usarla para abrir y colocar ventanas, o solicitar la pantalla completa en pantallas específicas.
+
+Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />). Esta política solo detecta coincidencias basadas en el origen, así que se ignora cualquier ruta del patrón de URL.
+
+Si esta política no se establece para un sitio, se le aplicará la de <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> (si se ha definido). En caso contrario, el permiso se ajustará a los valores predeterminados del navegador y los usuarios podrán elegir este permiso en función del sitio.
+
+Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7323896582714668701">Parámetros de línea de comandos adicionales para <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Impedir que Chrome bloquee el acceso a protocolos externos dentro de iframes en entornos aislados</translation>
 <translation id="7326394567531622570">Similar a Wipe (valor 2), pero intenta conservar los tokens de inicio de sesión para que el usuario no tenga que volver a iniciar sesión.</translation>
@@ -8647,6 +8677,7 @@ Si la política no se establece, se usará el nuevo comportamiento, tal como suc
 <translation id="943865157632139008">Permite configurar el procesador de HTML predeterminado si se ha instalado <ph name="PRODUCT_FRAME_NAME" />.
       De forma predeterminada, se permite que el navegador del host muestre las páginas HTML, pero puedes anular esta opción para que <ph name="PRODUCT_FRAME_NAME" /> muestre las páginas HTML de forma predeterminada.</translation>
 <translation id="944817693306670849">Establecer tamaño de caché de disco</translation>
+<translation id="957322141096206402">La resolución de DNS del sistema se puede ejecutar dentro o fuera del proceso de red, en función de la configuración del sistema y las marcas de funciones.</translation>
 <translation id="957778406002650056">La URL desde la que se puede descargar la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Permitir que las páginas muestren ventanas emergentes durante la descarga</translation>
 <translation id="958285142322823422">Impedir que una aplicación web de kiosco abra otra ventana del navegador</translation>

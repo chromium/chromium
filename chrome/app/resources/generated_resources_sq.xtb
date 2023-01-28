@@ -1359,6 +1359,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2195331105963583686">Do të jesh sërish në gjendje ta përdorësh këtë <ph name="DEVICE_TYPE" /> pas kësaj kohe, por pajisja nuk do të marrë më përditësime automatike të softuerëve dhe të sigurisë</translation>
 <translation id="2195729137168608510">Mbrojtja e mail-it</translation>
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
+<translation id="2198712775285959645">Modifiko</translation>
 <translation id="2199298570273670671">Gabim</translation>
 <translation id="2200094388063410062">Email-i</translation>
 <translation id="2200356397587687044">Chrome ka nevojë për leje për të vazhduar</translation>
@@ -3318,6 +3319,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3957844511978444971">Trokit te “Prano” për të konfirmuar përzgjedhjen tënde për këto cilësime të shërbimeve të Google.</translation>
 <translation id="3958088479270651626">Importo faqeshënuesit dhe cilësimet</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3961005895395968120">Më shumë veprime për <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">Mbrojtje standarde ndaj sajteve të uebit, shkarkimeve dhe shtesave që njihen si të rrezikshme</translation>
 <translation id="3964480518399667971">Çaktivizo "Rrjetin celular"</translation>
 <translation id="3965811923470826124">Me</translation>
@@ -5866,6 +5868,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6345418402353744910">Emri i përdoruesit dhe fjalëkalimi yt kërkohen për përfaqësuesin <ph name="PROXY" /> që administratori të mund të konfigurojë rrjetin</translation>
 <translation id="6345878117466430440">Shëno si të lexuar</translation>
 <translation id="6347010704471250799">Shfaq njoftimin</translation>
+<translation id="634887995541211148">Ekzekuto Bruschetta në pajisjen tënde.</translation>
 <translation id="6349101878882523185">Instalo <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Kurba eliptike SECG secp256r1 (e njohur edhe si ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
@@ -6271,6 +6274,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6725970970008349185">Numri i kandidatëve për t'u shfaqur për faqe</translation>
 <translation id="672609503628871915">Shiko ç'të reja ka</translation>
 <translation id="67269783048918309">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës. <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
+<translation id="6728528977475057549">Numri IBAN që mbaron me <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Fut emrin e përdoruesit</translation>
 <translation id="6731320427842222405">Kjo mund të zgjasë disa minuta</translation>
 <translation id="6733620523445262364">"<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
@@ -6887,6 +6891,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7298195798382681320">I rekomanduar</translation>
 <translation id="7299337219131431707">Aktivizo shfletimin "vizitor"</translation>
 <translation id="7299515639584427954">Të ndryshohet aplikacioni i parazgjedhur për lidhjet e mbështetura?</translation>
+<translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">Mund të kërkosh “Ok Google, çfarë kënge është kjo?” ose “Ok Google, çfarë kam në ekran?”</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Ky aplikacion mund të pengojë që Chrome të funksionojë siç duhet.}other{Këto aplikacione mund të pengojnë që Chrome të funksionojë siç duhet}}</translation>
 <translation id="7303281435234579599">Mos! Ndodhi një gabim gjatë konfigurimit të modalitetit të demonstrimit.</translation>
@@ -7687,6 +7692,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8014154204619229810">Përditësuesi është aktualisht në ekzekutim. Rifreskoje pas një minute për të kontrolluar përsëri.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nuk mund të kthehet prapa te versioni i instaluar më parë. Provo përsëri për të kryer Powerwash të pajisjes tënde.</translation>
+<translation id="8015812716978143">Shfaqi të gjitha shkarkimet në një skedë të re</translation>
 <translation id="8016266267177410919">Hapësira ruajtëse e përkohshme</translation>
 <translation id="8017176852978888182">Direktoritë e ndara të Linux</translation>
 <translation id="8017679124341497925">Shkurtorja u modifikua</translation>
@@ -8794,6 +8800,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="9026731007018893674">shkarko</translation>
 <translation id="9026852570893462412">Procesi mund të zgjasë disa minuta. Po shkarkohet pajisja virtuale.</translation>
 <translation id="9027459031423301635">Hape lidhjen në një &amp;skedë të re</translation>
+<translation id="9027707169256972235">Hiq</translation>
 <translation id="9029667986262585240">Ke çaktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde.</translation>
 <translation id="9030515284705930323">Organizata jote nuk e ka aktivizuar Dyqanin e Google Play për llogarinë tënde. Kontakto me administratorin për më shumë informacione.</translation>
 <translation id="9030754204056345429">Më shpejt</translation>

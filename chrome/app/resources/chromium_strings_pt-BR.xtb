@@ -341,7 +341,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8493179195440786826">O Chromium está desatualizado</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8558383651099478961">Seu familiar responsável desativou "Permissões para sites, apps e extensões" no Chromium. Não é permitido adicionar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
-<translation id="8561285221328166383">Para receber as próximas atualizações do Chromium, você vai precisar do macOS 10.13 ou mais recente. Este computador está usando o macOS 10.12.</translation>
 <translation id="8568283329061645092">O Chromium pode verificar suas senhas quando você faz login com sua Conta do Google</translation>
 <translation id="8574036838419011058">Quando essa opção está ativada, o Chromium economiza energia da bateria limitando atividades em segundo plano e efeitos visuais, como rolagem suave e frame rates de vídeos. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
@@ -374,7 +373,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">É possível que o Chromium não funcione corretamente, porque ele não é mais compatível com o Windows XP ou Windows Vista</translation>
 <translation id="942598560705308788">Certificados gerenciados pelo Chromium</translation>
-<translation id="945990405696787151">Para receber as próximas atualizações do Chromium, você vai precisar do macOS 10.13 ou mais recente. Este computador está usando o OS X 10.11.</translation>
 <translation id="965162752251293939">Quem está usando o Chromium?</translation>
 <translation id="967427899662692980">Use o nível mais alto de segurança do Chromium</translation>
 <translation id="9792300276217204">Sempre limpar os dados do site do seu dispositivo ao fechar o Chromium</translation>

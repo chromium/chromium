@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">အဘိဓါန်သို့ ပေါင်းထည့်ရန်</translation>
 <translation id="1018656279737460067">ဖျက်သိမ်းခဲ့သည်</translation>
 <translation id="1022489261739821355">သင်၏ <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> မှ စကားဝှက်များ ပြနေသည်</translation>
+<translation id="1022669824195822609">သင့်စက်ပစ္စည်းကို <ph name="DOMAIN" /> က စီမံခန့်ခွဲသည်။ စီမံခန့်ခွဲသူများက ဤစက်ပေါ်ရှိ ပရိုဖိုင်အားလုံးမှ ဒေတာများကို ဝင်ကြည့်နိုင်သည်။</translation>
 <translation id="1026655690966755180">ပို့တ်ထည့်ရန်</translation>
 <translation id="1026822031284433028">ပုံကူးတင်ရန်</translation>
 <translation id="1028604629594230522">သင်ဝင်ကြည့်နိုင်ဖွယ်ရှိသည့် စာမျက်နှာများသို့ ဝင်ကြည့်အခါ ပိုမိုလျင်မြန်စွာ ပွင့်စေရန် Chrome သည် ၎င်းတို့ကို ကြိုဖွင့်သည်။</translation>
@@ -1879,6 +1880,7 @@
 <translation id="2643064289437760082">သင်၏ ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာအား ဖျက်ခြင်းဖြင့် ကြော်ငြာဆိုင်ရာ တိုင်းတာမှုဒေတာကို အချိန်မရွေးဖျက်နိုင်သည်</translation>
 <translation id="2643698698624765890">Window မီနူးထဲမှာ တိုးချဲ့မှုများကို ကလစ်ခြင်းဖြင့် သင်၏ တိုးချဲ့မှုများကို စီမံကွပ်ကဲပါ။</translation>
 <translation id="2645047101481282803">သင့်စက်ပစ္စည်းကို <ph name="PROFILE_NAME" /> က စီမံခန့်ခွဲသည်</translation>
+<translation id="2645388244376970260">ဤတဘ်ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်နေသည်</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-ကုဒ်သွင်းထား ASCII၊ လက်မှတ် ကွင်းဆက်</translation>
 <translation id="265156376773362237">ပုံမှန် ကြိုဖွင့်မှု</translation>
@@ -2751,6 +2753,7 @@
 <translation id="3446274660183028131">Windows ထည့်သွင်းရန် Parallels Desktop ကို ဖွင့်ပါ။</translation>
 <translation id="344630545793878684">ဝဘ်ဆိုက် တသီကြီးမှ သင်၏ ဒေတာကို ဖတ်ရန်</translation>
 <translation id="3447644283769633681">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးအားလုံးကို ပိတ်ပါ</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်နေသည်</translation>
 <translation id="3448492834076427715">အကောင့်ကို အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="3449393517661170867">တဘ်ဝင်းဒိုး အသစ်</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" />ထံ ညွှန်ကြားချက်များ ပေးရန် <ph name="SEARCH_KEY" /> ကို နှိပ်ပါ</translation>
@@ -2905,6 +2908,7 @@
 <translation id="3590295622232282437">ကြီးကြပ်ထားသည့် စက်ရှင်သို့ ဝင်နေသည်။</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> ကို သိမ်းထားရန်</translation>
 <translation id="3592260987370335752">ပိုမို လေ့လာရန်</translation>
+<translation id="3592344177526089979">တဘ်ကို <ph name="DEVICE_NAME" /> သို့ ကာစ်လုပ်နေသည်</translation>
 <translation id="3593152357631900254">ခန့်မှန်းရေး-Pinyin မုဒ် ဖွင့်ပေးရန်</translation>
 <translation id="3593965109698325041">လက်မှတ် အမည် ကန့်သတ်ချက်များ</translation>
 <translation id="3596012367874587041">အက်ပ်ဆက်တင်များ</translation>
@@ -3180,6 +3184,7 @@
 <translation id="3823310065043511710">Linux အတွက် အနည်းဆုံး နေရာ <ph name="INSTALL_SIZE" /> ရှိရန် အကြံပြုပါသည်။</translation>
 <translation id="3824621460022590830">စက်စာရင်းသွင်းရန် တိုကင်နံပါတ် မမှန်ကန်ပါ။ သင့်စက်ပိုင်ရှင် သို့မဟုတ် စီမံခန့်ခွဲသူထံ ဆက်သွယ်ပါ။ အမှားကုဒ် - <ph name="ERROR_CODE" />။</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ဤဖိုင်အမျိုးအစားအတွက် ကျွန်ုပ်၏ရွေးချယ်မှုကို မှတ်ထားရန်- <ph name="FILE_TYPES" />}other{ဤဖိုင်အမျိုးအစားများအတွက် ကျွန်ုပ်၏ရွေးချယ်မှုကို မှတ်ထားရန်- <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">အက်ပ်သတိပေးချက်များအတွက် အက်ပ်သင်္ကေတပေါ်တွင် အစက်ကိုပြပါ</translation>
 <translation id="3826071569074535339">လှုပ်ရှားမှုအာရုံခံစနစ်များ သုံးရန် ခွင့်ပြုထားသည်</translation>
 <translation id="3826440694796503677">သင့်စီမံခန့်ခွဲသူသည် နောက်ထပ် Google အကောင့်များ ထည့်ခြင်းကို ပိတ်ထားသည်။</translation>
 <translation id="3827774300009121996">မျက်နှာပြင် အပြည့်</translation>
@@ -4499,6 +4504,7 @@
 <translation id="5063480226653192405">အသုံးပြုပုံ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ဆက်တင်များတွင် လုံခြုံသည့် DNS ကို စီမံရန်</translation>
+<translation id="5066160542186949327">ဖိုင်တွဲနောက်တစ်ခုသို့ ရွှေ့ရန်</translation>
 <translation id="5067399438976153555">အမြဲတမ်းဖွင့်ရန်</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> သည် သင့်မိုက်ခရိုဖုန်းအား အသုံးပြုလိုသလား မေးပါ</translation>
 <translation id="5068553687099139861">စကားဝှက်များ ပြရန်</translation>

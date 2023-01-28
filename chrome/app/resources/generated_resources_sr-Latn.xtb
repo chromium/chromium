@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Dodaj u rečnik</translation>
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1022489261739821355">Prikazuju se lozinke sa <ph name="BEGIN_LINK" />Google naloga<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Uređajem upravlja <ph name="DOMAIN" />. Administratori mogu da pristupaju podacima svih profila na ovom uređaju.</translation>
 <translation id="1026655690966755180">Dodajte port</translation>
 <translation id="1026822031284433028">Učitaj sliku</translation>
 <translation id="1028604629594230522">Chrome predučitava stranice koje ćete verovatno posetiti, kako bi se brže učitavale kada ih posetite.</translation>
@@ -1865,6 +1866,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2643064289437760082">Podatke merenja oglasa uvek možete da izbrišete brisanjem podataka pregledanja</translation>
 <translation id="2643698698624765890">Upravljajte dodacima klikom na stavku Dodaci u meniju Prozor.</translation>
 <translation id="2645047101481282803">Uređajem upravlja <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Ova kartica se prebacuje na <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">ASCII datoteka šifrovana metodom „Base64“, lanac sertifikata</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
@@ -2737,6 +2739,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3446274660183028131">Pokrenite Parallels Desktop da biste instalirali Windows.</translation>
 <translation id="344630545793878684">Čitanje vaših podataka na više veb-sajtova</translation>
 <translation id="3447644283769633681">Blokiraj sve kolačiće trećih strana</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> se prebacuje na <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ažuriraj nalog</translation>
 <translation id="3449393517661170867">Novi prozor sa karticama</translation>
 <translation id="3449839693241009168">Pritisnite <ph name="SEARCH_KEY" /> da biste poslali komande u <ph name="EXTENSION_NAME" /></translation>
@@ -2891,6 +2894,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3590295622232282437">Pristupa se upravljanoj sesiji.</translation>
 <translation id="3591057288287063271">Zadržite <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Saznajte više</translation>
+<translation id="3592344177526089979">Kartice se prebacuje na <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Omogući Fuzzy-Pinyin režim</translation>
 <translation id="3593965109698325041">Ograničenja naziva sertifikata </translation>
 <translation id="3596012367874587041">Podešavanja aplikacije</translation>

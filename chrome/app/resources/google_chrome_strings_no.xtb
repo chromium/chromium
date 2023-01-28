@@ -50,7 +50,6 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS – inn)</translation>
 <translation id="1877026089748256423">Chrome er utdatert</translation>
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
-<translation id="1952239763774043237">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker macOS 10.12.</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
 <translation id="2018879682492276940">Installasjonen mislyktes. Prøv igjen.</translation>
@@ -212,7 +211,6 @@
 <translation id="4970880042055371251">ChromeOS-versjon</translation>
 <translation id="4970947549776831107">Chrome har blokkert denne filen fordi denne filtypen er farlig</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5037581483200764584">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker OS X 10.11.</translation>
 <translation id="5098668839038261629">Når dette er på, blir du også logget av Chrome</translation>
 <translation id="5132929315877954718">Oppdag flotte apper, spill, utvidelser og temaer for Google Chrome.</translation>
 <translation id="5139423532931106058">Tilpass Chrome-profilen din</translation>

@@ -345,7 +345,6 @@
 <translation id="8493179195440786826">Chromium нь хуучирсан байна</translation>
 <translation id="8550334526674375523">Энэ ажлын профайл нь таны хувийн профайлаас бүрэн тусдаа байна.</translation>
 <translation id="8558383651099478961">Таны эцэг эх Chromium-н "Сайтууд, аппууд болон өргөтгөлүүдийн зөвшөөрөл"-ийг унтраасан байна. Энэ <ph name="EXTENSION_TYPE_PARAMETER" />-г нэмэхийг зөвшөөрдөггүй.</translation>
-<translation id="8561285221328166383">Chromium-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.13 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер macOS 10.12 хувилбарыг ашиглаж байна.</translation>
 <translation id="8568283329061645092">Chromium нь таныг Google Бүртгэлээрээ нэвтрэх үед таны нууц үгсийг шалгах боломжтой</translation>
 <translation id="8574036838419011058">Асаалттай үед Chromium жигд гүйлгэх болон видеоны фреймийн хурд зэрэг дэвсгэрийн үйл ажиллагаа болон визуал эффектийг хязгаарласнаар батарейн цэнэгийг хадгална. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
@@ -378,7 +377,6 @@
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Windows XP болон Windows Vista нь цаашид Chromium-г дэмжихгүй тул буруу ажиллаж болзошгүй</translation>
 <translation id="942598560705308788">Chromium-с удирддаг гэрчилгээ</translation>
-<translation id="945990405696787151">Chromium-н цаашдын шинэчлэлтийг авахын тулд танд macOS 10.13 эсвэл түүнээс хойших хувилбар хэрэгтэй болно. Энэ компьютер OS X 10.11 хувилбарыг ашиглаж байна.</translation>
 <translation id="965162752251293939">Chromium-г хэн ашиглаж байна вэ?</translation>
 <translation id="967427899662692980">Chromium-н хамгийн хүчирхэг аюулгүй байдлыг аваарай</translation>
 <translation id="9792300276217204">Таныг Chromium-г хаах үед төхөөрөмжөөс тань сайтын өгөгдлийг үргэлж арилгана</translation>

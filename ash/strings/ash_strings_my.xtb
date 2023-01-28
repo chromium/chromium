@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">ညာသို့ လှိမ့်ရန်</translation>
 <translation id="1774796056689732716">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" />၊ လက်ရှိ <ph name="DATE" /> ကိုရွေးထားသည်။</translation>
 <translation id="1787955149152357925">ပိတ်ထားသည်</translation>
-<translation id="1797271123677381264">စကားဝှက် မေ့နေသည်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="181103072419391116">လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်</translation>
 <translation id="1816896987747843206">၎င်းက ကင်မရာခွင့်ပြုချက်ပါသည့် အက်ပ်နှင့် ဝဘ်ဆိုက်အားလုံးကို ကင်မရာသုံးခွင့်ပြုသည်</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">ပုံဖမ်းယူမှုမုဒ် ကီး</translation>
 <translation id="4925542575807923399">ဤအကောင့်၏ ကြီးကြပ်သူသည် ဤအကောင့်အား အကြိမ်ကြိမ် လက်မှတ်ထိုးရမည့် အစီအစဉ် ထဲက ပထမဦးဆုံး လက်မှတ်ထိုး ဝင်သည့် အကောင့် အဖြစ်လိုအပ်သည်။</translation>
 <translation id="4929163402621253029">သင်စကားပြောနေသလား။ သင့်ကိုအသံပိတ်ထားသည်။ ပိုမိုလေ့လာရန်</translation>
+<translation id="4936329710968938986">လူတိုင်း၊ ပိတ်ထားသည်</translation>
 <translation id="4938176435186993759">အကြံပြုချက်အားလုံး ဖျောက်ထားရန်</translation>
 <translation id="4945196315133970626">အကြောင်းကြားချက်များ ပိတ်ရန်</translation>
 <translation id="4946376291507881335">ရိုက်ယူရန်</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">ပယ်ဖျက်ရန် Alt+Search သို့မဟုတ် Shift ကို နှိပ်ပါ။</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> က <ph name="SPECIFIED_RESOLUTION" /> ကို မပံ့ပိုးပါ။ ပုံရိပ်ပြတ်သားကိန်းကို <ph name="FALLBACK_RESOLUTION" /> သို့ ပြောင်းထားသည်။ အပြောင်းအလဲများသိမ်းရန် 'အတည်ပြုရန်' ကို နှိပ်ပါ။ ယခင်ဆက်တင်များကို <ph name="TIMEOUT_SECONDS" /> အကြာတွင် ပြန်ထားရှိပါမည်။</translation>
 <translation id="8496402167048257517">‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ ဆက်တင်များ ပြပါ</translation>
+<translation id="8507563469658346379">လူတိုင်း၊ <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">သင့် Chromebook ၏ ဘလူးတုသ်ပိတ်ထားသည်။ Chromebook လော့ခ်ဖွင့်ရန် စကားဝှက်ထည့်ပါ။</translation>
 <translation id="8513108775083588393">အော်တို-လှည့်</translation>
 <translation id="851458219935658693">ဝင်းဒိုးများကို လက်ရှိ မျက်နှာပြင်နေရာမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>

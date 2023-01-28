@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">दायाँतिर स्क्रोल गर्नुहोस्</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="1787955149152357925">अफ छ</translation>
-<translation id="1797271123677381264">पासवर्ड बिर्सनुभयो</translation>
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="181103072419391116">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="1816896987747843206">यसले क्यामेरा प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा प्रयोग गर्ने अनुमति दिन्छ</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">क्याप्चर मोड की</translation>
 <translation id="4925542575807923399">यस खाताको प्रशासकलाई एक बहुविध साइन-इन सत्रमा प्रथम साइन-इन गरिएको खाता हुन यस खातालाई आवश्यक छ।</translation>
 <translation id="4929163402621253029">तपाईं बोल्दै हुनुहुन्छ? तपाईं म्युट हुनुहुन्छ। थप जान्नुहोस्</translation>
+<translation id="4936329710968938986">सबैका लागि, अफ छ</translation>
 <translation id="4938176435186993759">सबै सिफारिसहरू लुकाइयोस्</translation>
 <translation id="4945196315133970626">सूचनाहरू अफ गर्नुहोस्</translation>
 <translation id="4946376291507881335">फोटो खिच्नुहोस्</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">रद्द गर्न Alt+Search वा Shift बटनमा थिच्नुहोस्।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी<ph name="FALLBACK_RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>
 <translation id="8496402167048257517">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्</translation>
+<translation id="8507563469658346379">सबैका लागि, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">तपाईंको Chromebook को ब्लुटुथ अफ छ। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
 <translation id="8513108775083588393">स्वतः परिक्रमा</translation>
 <translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>

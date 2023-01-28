@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">Κύλιση δεξιά</translation>
 <translation id="1774796056689732716">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" />, αυτήν τη στιγμή είναι επιλεγμένη η ημερομηνία <ph name="DATE" />.</translation>
 <translation id="1787955149152357925">Ανενεργό</translation>
-<translation id="1797271123677381264">Ξέχασα τον κωδικό πρόσβασης</translation>
 <translation id="1807246157184219062">Ανοιχτόχρωμο</translation>
 <translation id="181103072419391116">Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="1816896987747843206">Αυτό επιτρέπει την πρόσβαση στην κάμερα για όλες τις εφαρμογές και τους ιστοτόπους με άδεια κάμερας</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">Πλήκτρο λειτουργίας λήψης</translation>
 <translation id="4925542575807923399">Ο διαχειριστής αυτού του λογαριασμού απαιτεί ο συγκεκριμένος λογαριασμός να είναι ο πρώτος λογαριασμός που συνδέεται σε μια περίοδο σύνδεσης πολλαπλών συνδέσεων.</translation>
 <translation id="4929163402621253029">Μιλάτε; Είστε σε σίγαση. Μάθετε περισσότερα.</translation>
+<translation id="4936329710968938986">Όλοι, απενεργοποιημένο</translation>
 <translation id="4938176435186993759">Απόκρυψη όλων των προτάσεων</translation>
 <translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">Πατήστε Alt+Search ή Shift για ακύρωση.</translation>
 <translation id="8492573885090281069">Η οθόνη <ph name="DISPLAY_NAME" /> δεν υποστηρίζει <ph name="SPECIFIED_RESOLUTION" />. Η ανάλυση άλλαξε σε <ph name="FALLBACK_RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Εμφάνιση ρυθμίσεων της λειτουργίας Κοινοποίηση κοντά</translation>
+<translation id="8507563469658346379">Όλοι, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Το Bluetooth του Chromebook είναι ανενεργό. Ξεκλειδώστε το Chromebook με τον κωδικό πρόσβασης</translation>
 <translation id="8513108775083588393">Αυτ. περιστρ.</translation>
 <translation id="851458219935658693">Εμφάνιση παραθύρων από το τρέχον γραφείο, επιλέχτηκε το κουμπί επιλογής.</translation>

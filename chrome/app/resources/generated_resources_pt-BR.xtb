@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Adicionar ao dicionário</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022489261739821355">Mostrando senhas da sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Seu dispositivo é gerenciado por <ph name="DOMAIN" />. Os administradores podem acessar os dados de qualquer perfil neste dispositivo.</translation>
 <translation id="1026655690966755180">Adicionar porta</translation>
 <translation id="1026822031284433028">Carregar Imagem</translation>
 <translation id="1028604629594230522">O Chrome pré-carrega páginas que você provavelmente vai visitar para que elas sejam carregadas mais rapidamente ao serem acessadas.</translation>
@@ -1882,6 +1883,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2643064289437760082">Você pode excluir seus dados de medição de anúncios a qualquer momento excluindo os dados de navegação</translation>
 <translation id="2643698698624765890">Gerencie suas extensões clicando em Extensões no menu Janela.</translation>
 <translation id="2645047101481282803">Seu dispositivo é gerenciado por <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Transmitindo esta guia para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII codificado na Base64, cadeia de certificados</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
@@ -2755,6 +2757,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3446274660183028131">Inicie o Parallels Desktop para instalar o Windows.</translation>
 <translation id="344630545793878684">Leia seus dados em uma série de websites</translation>
 <translation id="3447644283769633681">Bloquear todos os cookies de terceiros</translation>
+<translation id="3447797901512053632">Transmitindo <ph name="TAB_NAME" /> para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Atualizar conta</translation>
 <translation id="3449393517661170867">Nova janela com guias</translation>
 <translation id="3449839693241009168">Pressione <ph name="SEARCH_KEY" /> para enviar comandos para <ph name="EXTENSION_NAME" /></translation>
@@ -2909,6 +2912,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3590295622232282437">Entrando em uma sessão gerenciada.</translation>
 <translation id="3591057288287063271">Manter <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Saiba mais</translation>
+<translation id="3592344177526089979">Transmitindo uma guia para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Ativar o modo Fuzzy-Pinyn</translation>
 <translation id="3593965109698325041">Restrições de nome do certificado</translation>
 <translation id="3596012367874587041">Configurações do app</translation>

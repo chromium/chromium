@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Синхронизация</translation>
 <translation id="1076421457278169141">Код отсканирован</translation>
 <translation id="1076785341346483463">Синхронизация с управляемым аккаунтом</translation>
+<translation id="1080365971383768617">Пароли на всех ваших устройствах</translation>
 <translation id="1084365883616172403">Опубликовано в Facebook.</translation>
 <translation id="1085696779717592361">Используйте Chrome по умолчанию</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708">Проблемы обнаружены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">ОК</translation>
 <translation id="5062321486222145940">Установить Google Диск</translation>
+<translation id="50641035439563602">Теперь пароли сохраняются в вашем аккаунте Google (<ph name="ACCOUNT" />). Они доступны на любом устройстве, где выполнен вход. Чтобы отключить эту функцию, перейдите в <ph name="BEGIN_LINK" />настройки<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Опубликовано в Твиттере.</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Нажмите "Менеджер паролей", а затем "Добавить"</translation>
 <translation id="5525095647255982834">Чтобы отправить вкладку на другое устройство, войдите на нем в Chrome.</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
+<translation id="5530084793407600786">Искать на изображении через Google</translation>
 <translation id="5542540507657872337">Найдено вкладок: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Функция Handoff позволит начать просмотр веб-сайта на одном устройстве и продолжить на другом. Открытый сайт появится на панели Dock вашего компьютера Mac.
 

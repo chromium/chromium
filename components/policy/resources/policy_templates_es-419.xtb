@@ -127,11 +127,6 @@ esto no impide que se tomen capturas de pantalla con aplicaciones del sistema op
 <translation id="1117535567637097036">Los controladores de protocolo establecidos mediante esta política no se usan cuando se controlan intents en Android.</translation>
 <translation id="1118093128235245168">Permite que los sitios soliciten al usuario que otorgue acceso a un dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configuración de notificaciones</translation>
-<translation id="1120291391245112391">Informa la ubicación geográfica del dispositivo.
-
-      Si habilitas la política, los dispositivos inscritos informarán su ubicación periódicamente.
-
-      Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán su ubicación.</translation>
 <translation id="1122089575901325963">Si estableces la política, se configurará el controlador de telemetría y diagnósticos (DTC) <ph name="WILCO_NAME" /> (cuando lo admita el dispositivo). El tamaño de la configuración no puede superar 1 MB (1,000,000 bytes) y debe tener el formato JSON. El DTC <ph name="WILCO_NAME" /> es el responsable de administrarla. El hash criptográfico verifica la integridad de la descarga. La configuración se descarga y queda almacenada en caché y, cada vez que cambie la URL o el hash, se volverá a descargar.
 
       Si estableces esta política, los usuarios no podrán cambiarla.</translation>
@@ -2379,7 +2374,7 @@ Si inhabilitas la política, no se mostrará al usuario la promoción para calif
 
 El comportamiento nuevo puede generar fallas en algunos sitios web exclusivos de <ph name="PRODUCT_NAME" /> que usan <ph name="OFFSET_PARENT" />, <ph name="OFFSET_TOP" /> o <ph name="OFFSET_LEFT" /> junto con Shadow DOM.
 
-Estos son algunos polyfills que recuperan el comportamiento anterior para ayudarte a migrar https://github.com/josepharhar/offsetparent-polyfills
+Estos son algunos polyfills que recuperan el comportamiento anterior para ayudarte a hacer la migración: https://github.com/josepharhar/offsetparent-polyfills
 
 Si se habilita esta política, se utilizará el comportamiento nuevo.
 

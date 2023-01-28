@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> ကို ကြည့်ပါ။</translation>
 <translation id="2000419248597011803">လိပ်စာဘားနှင့် ရှာဖွေမှုအကွက်ထဲရှိ အချို့သော ကွတ်ကီးများနှင့် ရှာဖွေမှုများကို သင်၏မူရင်းရှာဖွေမှုအင်ဂျင်သို့ ပို့သည်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
+<translation id="2009341475524975924">ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန် တစ်နေ့တာတွင် သင့်အား ကြော်ငြာပြသည့်အချိန်ကဲ့သို့ ကန့်သတ်ဒေတာအမျိုးအစားများကို ဝဘ်ဆိုက်များအကြား မျှဝေနိုင်သည်။</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ဖိုင်}other{# ဖိုင်}}</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
 <translation id="2038563949887743358">ဆိုဒ်ကြီး တောင်းဆိုမှု ဖွင့်မည်</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">စကားဝှက်များကို ပြင်ဆင်နေသည်…</translation>
 <translation id="2323763861024343754">ဆိုက် သိုလှောင်ခန်း</translation>
 <translation id="2328985652426384049">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ကို ထည့်သွင်း၍မရပါ။</translation>
 <translation id="234265804618409743">သင့်ကင်မရာကို ဖွင့်၍မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="2349710944427398404">အကောင့်များ၊ ဝဘ်လိပ်စာများနှင့် သိမ်းဆည်းထားသည့် ဆက်တင်များအပါအဝင် Chrome မှ သိမ်းဆည်းထားသည့် စုစုပေါင်းဒေတာများ ပါဝင်ပါသည်</translation>
 <translation id="235789365079050412">Google ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ</translation>
@@ -344,6 +346,7 @@
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
 <translation id="2912296070571964914">သင်စိတ်ဝင်စားသော အကြောင်းအရာများကို စီမံနိုင်သည်</translation>
 <translation id="2912345083818861431">ဖွင့်ထားသောရုပ်ဖျက်တဘ်များ ကြည့်ရန် ဖန်သားပြင်လော့ခ် သုံးနိုင်သည်</translation>
+<translation id="2922568440285376746">Google ဖြင့် အတွင်းရှိပုံ ရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">အမည် မမှန်ကန်ပါ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
 <translation id="2932222164150889403">သင်၏ကီးဘုတ် ပြောင်းသွားမည် မဟုတ်ပါ</translation>
@@ -652,6 +655,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ကို ဖွင့်ပါ</translation>
 <translation id="4619564267100705184">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
 <translation id="4634124774493850572">စကားဝှက်ကို အသုံးပြုရန်</translation>
+<translation id="4637420359569396807">ကြော်ငြာ တိုင်းတာအကဲဖြတ်မှုသုံးပါက ဝဘ်ဆိုက်နှင့် အက်ပ်များရှိ ကြော်ငြာစွမ်းဆောင်ရည်ကို တိုင်းတာရန် တစ်နေ့တာတွင် သင့်အား ကြော်ငြာပြသည့်အချိန်ကဲ့သို့ ကန့်သတ်ဒေတာအမျိုးအစားများကို ၎င်းတို့အကြား မျှဝေနိုင်သည်။</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{ကျိုးပေါက်ထားသည့် စကားဝှက် 1 ခု}other{ကျိုးပေါက်ထားသည့် စကားဝှက် # ခု}}</translation>
 <translation id="4650364565596261010">စက်စနစ် မူရင်း</translation>
 <translation id="465657074423018424">'လုံခြုံစွာ ဖွင့်ကြည့်ခြင်း' က သင့်ကို လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်များမှ ကာကွယ်ပေးသည်။ ၎င်းကိုပိတ်လိုက်ပါက ဖွင့်ကြည့်ချိန်တွင် အထူးသဖြင့် စကားဝှက်မထည့်မီတွင် အထူးဂရုစိုက်ပါ။</translation>
@@ -664,6 +668,7 @@
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
 <translation id="4685741273709472646">ဆွဲချမီနူးစာရင်းမှ ရွေးချယ်နိုင်သည်</translation>
 <translation id="4687718960473379118">ဝဘ်ဆိုက်က အကြံပြုထားသည့် ကြော်ငြာများ</translation>
+<translation id="4689792375321623175">Google ဖြင့် ပုံရှာရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ခု}}</translation>
 <translation id="4699172675775169585">ကက်ရှ်လုပ်ထားသည့် ပုံများနှင့် ဖိုင်များ</translation>
 <translation id="4719927025381752090">ဘာသာပြန်ရန် ပေးအပ်ချက်</translation>
@@ -810,6 +815,7 @@
 <translation id="5438292632479953702">ဒေါင်းလုဒ် ထပ်လုပ်ရန်</translation>
 <translation id="5441466871879044658">ဤဘာသာစကားသို့ ပြန်ဆိုပါ</translation>
 <translation id="5441522332038954058">လိပ်စာဘားတန်းသို့ ပြန်သွားရန်</translation>
+<translation id="5444999712122199445">ဝဘ်ဆိုက်သို့ ပြန်သွားရန်</translation>
 <translation id="544776284582297024">တဘ်များဖွင့်ပြီး စာမျက်နှာအမျိုးမျိုးကို တစ်ချိန်တည်းဝင်ကြည့်ရန်အတွက် တဘ်ဖွင့်ရန်ခလုတ်ကို တို့ပါ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ဖြင့်</translation>
 <translation id="5456381639095306749">ဒေါင်းလုဒ်စာမျက်နှာ</translation>

@@ -563,6 +563,7 @@ Kodet e gjendjes private përmirësojnë privatësinë në ueb dhe nuk mund të 
 <translation id="4108314971463891922">Ndiq</translation>
 <translation id="4108998448622696017">Zbulon dhe të paralajmëron rreth ngjarjeve të rrezikshme kur ato ndodhin.</translation>
 <translation id="4116038641877404294">Shkarko faqet për t'i përdorur ato jashtë linje</translation>
+<translation id="4124152339699379357">Rrjedha e lejeve për njoftimet u hap në lartësi të plotë</translation>
 <translation id="4135200667068010335">Lista e pajisjeve për të ndarë një skedë është e mbyllur.</translation>
 <translation id="4137746084635924146">Gjuha aktuale e pajisjes</translation>
 <translation id="414128724510021958">Sajtet për desktop kërkohen si parazgjedhje</translation>
@@ -1401,6 +1402,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8516012719330875537">Redaktori i imazheve</translation>
 <translation id="8516431725144212809">Interesat e tua sipas përllogaritjes nga Chrome</translation>
 <translation id="8523928698583292556">Fshi fjalëkalimin e ruajtur</translation>
+<translation id="8526855376374973824">Rrjedha e lejeve për njoftimet</translation>
 <translation id="8540136935098276800">Fut një URL të formatuar saktë</translation>
 <translation id="854522910157234410">Hape këtë faqe</translation>
 <translation id="8551513938758868521">Kyçi skedat "e fshehta" kur të largohesh nga Chrome</translation>
@@ -1460,6 +1462,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, skeda</translation>
 <translation id="8854223127042600341">Shiko skedarët e tu jashtë linje</translation>
 <translation id="8856607253650333758">Merr përshkrimet</translation>
+<translation id="8856931513242997049">Rrjedha e lejeve për njoftimet u mbyll</translation>
 <translation id="8873817150012960745">Trokit këtu për të filluar</translation>
 <translation id="8881973373982641723">Pastron historikun, duke përfshirë dhe në kutinë e kërkimit.</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht nga lista sajtet që janë më të vjetra se 4 javë. Një sajt që ti viziton mund të shfaqet në listë përsëri. Ndryshe, mund ta heqësh një sajt nëse nuk dëshiron që ai të përcaktojë ndonjëherë interesat për ty.</translation>

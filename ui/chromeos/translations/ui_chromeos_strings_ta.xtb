@@ -220,6 +220,7 @@
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; உடன் பொருந்தும் உருப்படிகள் எதுவுமில்லை</translation>
 <translation id="2894654529758326923">தகவல்</translation>
 <translation id="2902734494705624966">யு.எஸ். விரிவாக்கப்பட்டது</translation>
+<translation id="2904378509913846215">"<ph name="FILENAME" />" என்ற பெயரில் ஏற்கெனவே ஒரு ஃபோல்டர் உள்ளது. அதற்குப் பதிலாக நீங்கள் நகர்த்தும் ஃபோல்டரை மாற்ற விரும்புகிறீர்களா?</translation>
 <translation id="290843123675549676">மராத்தி</translation>
 <translation id="2923240520113693977">எஸ்தோனியன்</translation>
 <translation id="2938685643439809023">மங்கோலியன்</translation>
@@ -641,6 +642,7 @@
 <translation id="6241349547798190358">டச்சு (பெல்ஜியம்)</translation>
 <translation id="6267547857941397424">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
 <translation id="6269630227984243955">மலாய்</translation>
+<translation id="6271903698064569429">"<ph name="SHARED_DRIVE_NAME" />" இல் போதிய சேமிப்பகம் இல்லாததால் ஃபைல்களைப் பதிவேற்ற முடியவில்லை.</translation>
 <translation id="6287852322318138013">இந்த ஃபைலைத் திறக்க பயன்பாட்டைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="6295542640242147836">சிம்மைப் பூட்டு</translation>
 <translation id="6296410173147755564">தவறான PUK</translation>

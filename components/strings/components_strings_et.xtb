@@ -188,6 +188,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1384725838384960382">Turvalise maksemandaadi autentimisleht</translation>
 <translation id="1386623374109090026">Märkused</translation>
 <translation id="1391289752476847787">Aktsiad ja võlakirjad</translation>
+<translation id="1391625539203220400">Kas salvestada IBAN sellesse seadmesse?</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> ei saatnud andmeid.</translation>
 <translation id="1396259464226642517">Kas see tulemus oli ootamatu? <ph name="BEGIN_LINK" />Saatke tagasisidet<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Heleroheline</translation>
@@ -1950,7 +1951,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5808435672482059465">Chrome’i ajaloo vaatamine</translation>
 <translation id="5808542072418270309">Simulatsioonimängud</translation>
 <translation id="5810442152076338065">Teie ühendus domeeniga <ph name="DOMAIN" /> on krüpteeritud aegunud šifreerimiskomplektiga.</translation>
-<translation id="5812947184178430888">Kui Chrome märgistab turvalisusega seotud sündmused, saadetakse teie administraatorile asjakohased andmed sündmuste kohta. See võib hõlmata teie Chrome'is külastatud lehtede URL-e, failinimesid või metaandmeid ja kasutajanime, mida kasutate veebipõhistesse rakendustesse, seadmesse ja Chrome'i sisselogimiseks.</translation>
 <translation id="5813119285467412249">&amp;Lisa uuesti</translation>
 <translation id="5813309815819933152">Tõsielusarjad</translation>
 <translation id="5813753398265398978">Füüsika</translation>

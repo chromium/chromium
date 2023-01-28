@@ -162,7 +162,6 @@
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1774796056689732716">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" />, বৰ্তমান <ph name="DATE" /> বাছনি কৰা হৈছে।</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
-<translation id="1797271123677381264">পাছৱৰ্ড পাহৰিলে</translation>
 <translation id="1807246157184219062">পাতল</translation>
 <translation id="181103072419391116">ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="1816896987747843206">এইটোৱে কেমেৰাৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে কেমেৰা এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
@@ -734,6 +733,7 @@
 <translation id="492453977506755176">কেপচাৰ ম'ডৰ কী</translation>
 <translation id="4925542575807923399">এই একাউণ্টৰ প্ৰশাসকে এই একাউণ্টটো একাধিকবাৰ ছাইন-ইন কৰা কোনো ছেশ্বনত প্ৰথমে ছাইন ইন কৰাটো বিচাৰে।</translation>
 <translation id="4929163402621253029">আপুনি কথা কৈ আছে নেকি? আপুনি মিউটত আছে। অধিক জানক</translation>
+<translation id="4936329710968938986">সকলো, অফ আছে</translation>
 <translation id="4938176435186993759">আটাইবোৰ পৰামৰ্শ লুকুৱাওক</translation>
 <translation id="4945196315133970626">জাননী অফ কৰক</translation>
 <translation id="4946376291507881335">কেপচাৰ কৰক</translation>
@@ -1388,6 +1388,7 @@
 <translation id="8477270416194247200">বাতিল কৰিবলৈ Alt+Search বা Shift টিপক।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />এ <ph name="SPECIFIED_RESOLUTION" /> সমৰ্থন নকৰে। ৰিজ’লিউশ্বনটো <ph name="FALLBACK_RESOLUTION" />লৈ সলনি কৰা হৈছে। সালসলনিসমূহ ৰাখিবলৈ নিশ্চিত কৰকত ক্লিক কৰক। পূৰ্বৱৰ্তী ছেটিংসমূহ <ph name="TIMEOUT_SECONDS" />ত পুনঃস্থাপন কৰা হ’ব।</translation>
 <translation id="8496402167048257517">Nearby Shareৰ ছেটিং দেখুৱাওক</translation>
+<translation id="8507563469658346379">সকলো, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">আপোনাৰ Chromebookৰ ব্লুটুথ অফ হৈ আছে। আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক।</translation>
 <translation id="8513108775083588393">স্বয়ং-ঘূৰ্ণন</translation>
 <translation id="851458219935658693">বৰ্তমানৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ’ বুটাম বাছনি কৰা হ'ল</translation>

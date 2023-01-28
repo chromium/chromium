@@ -583,6 +583,7 @@
 <translation id="2359629602545592467">Олон</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2361263712565360498">275 х 395 мм</translation>
+<translation id="2362083820973145409"><ph name="USER_NAME" />-р нэвтэрсэн. <ph name="USER_EMAIL" />. Тохиргоог нээнэ.</translation>
 <translation id="236340516568226369">Хэмжээг өөрчлөхийг асаах/унтраах цэс</translation>
 <translation id="2367567093518048410">Түвшин</translation>
 <translation id="2380886658946992094">Хууль ёсны</translation>
@@ -1929,6 +1930,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{Энэ картад зориулан виртуал дугаарыг ашиглах}other{Картыг сонгоно уу}}</translation>
 <translation id="5752552348183096912">Хөлс дарагч, үнэр дарагч болон сүрчиг</translation>
 <translation id="5754400531489347219">Тэжээвэр амьтад, амьтад</translation>
+<translation id="5755162682436943950">Гарсан. Нэвтрэх харилцах цонхыг нээж, синк хийхийг асаана.</translation>
 <translation id="5759751709240058861">Таны камерыг ашиглах, хөдөлгөх</translation>
 <translation id="5763042198335101085">Зөв имэйл хаяг оруулна уу</translation>
 <translation id="5764725887548570807">Эхийн формат буруу байна.</translation>
@@ -1951,7 +1953,6 @@
 <translation id="5808435672482059465">Chrome-н түүхээ үзэх</translation>
 <translation id="5808542072418270309">Загварчилсан тоглоом</translation>
 <translation id="5810442152076338065">Таны <ph name="DOMAIN" />-тай холбогдох холболтыг хоцрогдсон шифр ашиглан шифрлэсэн байна.</translation>
-<translation id="5812947184178430888">Аюулгүй байдлын үйлдлүүдийг Chrome-с дарцагласан үед үйлдлүүдийн талаарх хамааралтай өгөгдлийг танай администратор луу илгээдэг. Үүнд таны Chrome-д зочилсон хуудаснуудын URL, файлын нэр эсвэл мета өгөгдөл, таны вебд суурилсан аппликэйшн, төхөөрөмж болон Chrome-д нэвтрэхдээ ашигладаг хэрэглэгчийн нэр багтах боломжтой.</translation>
 <translation id="5813119285467412249">&amp; Нэмэх үйлдлийг дахин хийх</translation>
 <translation id="5813309815819933152">ТВ-ийн реалити шоу</translation>
 <translation id="5813753398265398978">Физик</translation>
@@ -2335,6 +2336,7 @@
 <translation id="6826993739343257035">AR-г зөвшөөрөх үү?</translation>
 <translation id="6828866289116430505">Генетик</translation>
 <translation id="6831043979455480757">Хөрвүүлэх</translation>
+<translation id="683108308100148227">Зүйл нуух</translation>
 <translation id="6832753933931306326">Маягтыг бөглөсөн байна</translation>
 <translation id="6842196666980060516">184 x 260 мм</translation>
 <translation id="6846340164947227603">Виртуал картын дугаар ашиглах...</translation>
@@ -2471,6 +2473,7 @@
 <translation id="7153618581592392745">Цайвар ягаан</translation>
 <translation id="7156870133441232244">Серверийг TLS 1.2 эсвэл түүнээс дээших хувилбар луу дэвшүүлэх шаардлагатай.</translation>
 <translation id="7163295244162773898">{0,plural, =1{Нууцлалтай файлыг хуулах уу?}other{Нууцлалтай файлуудыг хуулах уу?}}</translation>
+<translation id="7168323970702333693"><ph name="USER_NAME" />-р нэвтэрсэн. Тохиргоог нээнэ.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">Нэгтгэсэн</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> болон бусад <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>

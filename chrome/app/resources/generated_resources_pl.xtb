@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Dodaj do słownika</translation>
 <translation id="1018656279737460067">Anulowano</translation>
 <translation id="1022489261739821355">Wyświetlanie haseł z Twojego <ph name="BEGIN_LINK" />konta Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Twoim urządzeniem zarządza <ph name="DOMAIN" />. Dostęp do danych każdego profilu na nim mają administratorzy.</translation>
 <translation id="1026655690966755180">Dodaj port</translation>
 <translation id="1026822031284433028">Wczytaj obraz</translation>
 <translation id="1028604629594230522">Chrome wstępnie wczytuje strony, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały.</translation>
@@ -1853,6 +1854,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2643064289437760082">Zawsze możesz usunąć dane pomiarowe reklam, usuwając dane przeglądania</translation>
 <translation id="2643698698624765890">Aby zarządzać zainstalowanymi rozszerzeniami, kliknij Rozszerzenia w menu Okno.</translation>
 <translation id="2645047101481282803">Twoim urządzeniem zarządza <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Przesyłam tę kartę na: <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Plik ASCII z kodowaniem Base64, łańcuch certyfikatów</translation>
 <translation id="265156376773362237">Wczytywanie standardowe</translation>
@@ -2725,6 +2727,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3446274660183028131">Włącz aplikację Parallels Desktop, by zainstalować system Windows.</translation>
 <translation id="344630545793878684">Odczyt Twoich danych na kilku stronach internetowych</translation>
 <translation id="3447644283769633681">Blokuj wszystkie pliki cookie innych firm</translation>
+<translation id="3447797901512053632">Przesyłam kartę <ph name="TAB_NAME" /> na: <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Aktualizuj konto</translation>
 <translation id="3449393517661170867">Nowe okno z kartami</translation>
 <translation id="3449839693241009168">Naciśnij klawisz <ph name="SEARCH_KEY" />, aby wysłać polecenia do rozszerzenia <ph name="EXTENSION_NAME" /></translation>
@@ -2879,6 +2882,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3590295622232282437">Rozpoczynam sesję zarządzaną.</translation>
 <translation id="3591057288287063271">Zachowaj plik <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Więcej informacji</translation>
+<translation id="3592344177526089979">Przesyłam kartę na: <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Włącz tryb „ujednolicony pinyin”</translation>
 <translation id="3593965109698325041">Ograniczenia nazwy certyfikatu</translation>
 <translation id="3596012367874587041">Ustawienia aplikacji</translation>

@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">સુરક્ષિત ચુકવણી માટે લૉગ ઇન વિગતના પ્રમાણીકરણની શીટ</translation>
 <translation id="1386623374109090026">ટીકાટિપ્પણી</translation>
 <translation id="1391289752476847787">સ્ટૉક અને બોન્ડ</translation>
+<translation id="1391625539203220400">શું IBANને આ ડિવાઇસ પર સાચવીએ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> એ કોઈપણ ડેટા મોકલ્યો ન હતો.</translation>
 <translation id="1396259464226642517">શું આ પરિણામ અનપેક્ષિત હતું? <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">આછો લીલો</translation>
@@ -583,6 +584,7 @@
 <translation id="2359629602545592467">બહુવિધ</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2361263712565360498">275 x 395 મિમી</translation>
+<translation id="2362083820973145409"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. <ph name="USER_EMAIL" />. સેટિંગ ખોલે છે.</translation>
 <translation id="236340516568226369">કદ બદલવા માટેના ટૉગલ ધરાવતું મેનૂ</translation>
 <translation id="2367567093518048410">સ્તર</translation>
 <translation id="2380886658946992094">કાનૂની</translation>
@@ -1928,6 +1930,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{આ કાર્ડ માટે વર્ચ્યુઅલ નંબરનો ઉપયોગ કરો}one{કાર્ડ પસંદ કરો}other{કાર્ડ પસંદ કરો}}</translation>
 <translation id="5752552348183096912">ઍન્ટીપર્સપિરન્ટ, ડીઓડરન્ટ અને બૉડી સ્પ્રે</translation>
 <translation id="5754400531489347219">પાળેલાં પશુઓ અને પ્રાણીઓ</translation>
+<translation id="5755162682436943950">સાઇન આઉટ થયેલા. સાઇન ઇન કરવા માટે સંવાદ ખોલે છે અને સિંકની સુવિધા ચાલુ કરે છે.</translation>
 <translation id="5759751709240058861">તમારા કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો</translation>
 <translation id="5763042198335101085">એક માન્ય ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
 <translation id="5764725887548570807">મૂળ ફૉર્મેટ અમાન્ય છે.</translation>
@@ -1950,7 +1953,6 @@
 <translation id="5808435672482059465">તમારો Chrome ઇતિહાસ જુઓ</translation>
 <translation id="5808542072418270309">સિમ્યુલેશન ગેમ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> સાથેના તમારા કનેક્શનને ઑબ્સોલિટ સાઇફર સ્યૂટનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરાયું છે.</translation>
-<translation id="5812947184178430888">જ્યારે કોઈ સુરક્ષા ઇવેન્ટને Chrome દ્વારા ચિહ્નિત કરવામાં આવે, ત્યારે તમારા વ્યવસ્થાપકને ઇવેન્ટ વિશેનો સંબંધિત ડેટા મોકલવામાં આવે છે. આમાં તમે Chromeમાં મુલાકાત લીધી હોય તે પેજના URLs, ફાઇલોના નામ કે મેટાડેટા તેમજ વેબ-આધારિત ઍપ્લિકેશનો, તમારા ડિવાઇસ અને Chromeમાં સાઇન ઇન કરવા માટે તમે ઉપયોગ કરો છો તે વપરાશકર્તાના નામનો સમાવેશ થઈ શકે છે.</translation>
 <translation id="5813119285467412249">&amp;ઉમેરવું ફરી કરો</translation>
 <translation id="5813309815819933152">ટીવી રિયાલિટી શો</translation>
 <translation id="5813753398265398978">ભૌતિકશાસ્ત્ર</translation>
@@ -2335,6 +2337,7 @@
 <translation id="6826993739343257035">ARને મંજૂરી આપીએ?</translation>
 <translation id="6828866289116430505">જિનેટિક્સ</translation>
 <translation id="6831043979455480757">અનુવાદ કરો</translation>
+<translation id="683108308100148227">આઇટમ છુપાવો</translation>
 <translation id="6832753933931306326">ફોર્મ ભરવામાં આવ્યું</translation>
 <translation id="6842196666980060516">184 x 260 મિમી</translation>
 <translation id="6846340164947227603">વર્ચ્યુઅલ કાર્ડ નંબરનો ઉપયોગ કરો…</translation>
@@ -2471,6 +2474,7 @@
 <translation id="7153618581592392745">આછો જાંબલી</translation>
 <translation id="7156870133441232244">સર્વરને TLS 1.2 અથવા તે પછીના વર્ઝન પર અપગ્રેડ કરવું જોઈએ.</translation>
 <translation id="7163295244162773898">{0,plural, =1{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}one{શું ગોપનીય ફાઇલ કૉપિ કરીએ?}other{શું ગોપનીય ફાઇલો કૉપિ કરીએ?}}</translation>
+<translation id="7168323970702333693"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. સેટિંગ ખોલે છે.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">મર્જ કર્યાં</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}one{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}other{<ph name="SHIPPING_OPTION_PREVIEW" /> અને <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> વધુ}}</translation>

@@ -349,7 +349,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8493179195440786826">Prohlížeč Chromium je zastaralý</translation>
 <translation id="8550334526674375523">Tento pracovní profil je zcela oddělen od vašeho osobního profilu.</translation>
 <translation id="8558383651099478961">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Přidání tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povoleno.</translation>
-<translation id="8561285221328166383">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.13 nebo novější. Tento počítač používá systém macOS 10.12.</translation>
 <translation id="8568283329061645092">Když se přihlásíte pomocí účtu Google, může vám Chromium kontrolovat hesla</translation>
 <translation id="8574036838419011058">Když je tato funkce zapnutá, Chromium šetří baterii tím, že omezuje aktivitu na pozadí a vizuální efekty, jako jsou plynulé posouvání a snímková frekvence videí. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
@@ -382,7 +381,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Prohlížeč Chromium nemusí fungovat správně, protože v systémech Windows XP a Windows Vista již není podporován</translation>
 <translation id="942598560705308788">Certifikáty spravované prohlížečem Chromium</translation>
-<translation id="945990405696787151">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Chromium, budete potřebovat systém macOS 10.13 nebo novější. Tento počítač používá systém OS X 10.11.</translation>
 <translation id="965162752251293939">Kdo Chromium používá?</translation>
 <translation id="967427899662692980">Aktivujte si v prohlížeči Chromium maximální zabezpečení</translation>
 <translation id="9792300276217204">Při zavření prohlížeče Chromium vždy vymazat ze zařízení data webů</translation>

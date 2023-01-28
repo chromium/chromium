@@ -349,7 +349,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8493179195440786826">Chromium је застарео</translation>
 <translation id="8550334526674375523">Овај пословни профил је потпуно одвојен од личног профила.</translation>
 <translation id="8558383651099478961">Родитељ је искључио Дозволе за сајтове, апликације и додатке за Chromium. Додавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
-<translation id="8561285221328166383">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 10.13 или новија верзија. Овај рачунар користи macOS 10.12.</translation>
 <translation id="8568283329061645092">Chromium може да вам проверава лозинке када се пријавите помоћу Google налога</translation>
 <translation id="8574036838419011058">Када је укљученa, Chromium штеди батерију тако што ограничава активности у позадини и визуелне ефекте, као што је глатко скроловање и брзине кадрова у видеу. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8586442755830160949">Ауторска права <ph name="YEAR" />. Аутори Chromium-а. Сва права задржана.</translation>
@@ -382,7 +381,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="93478295209880648">Chromium можда неће исправно функционисати зато што више није подржан на Windows XP-у или Windows Vista-и</translation>
 <translation id="942598560705308788">Сертификати којима управља Chromium</translation>
-<translation id="945990405696787151">Да бисте добијали будућа Chromium ажурирања, треба вам macOS 10.13 или новија верзија. Овај рачунар користи ОС X 10.11.</translation>
 <translation id="965162752251293939">Ко користи Chromium?</translation>
 <translation id="967427899662692980">Набавите најјачу Chromium заштиту</translation>
 <translation id="9792300276217204">Увек обришите податке о сајтовима са уређаја када затворите Chromium</translation>

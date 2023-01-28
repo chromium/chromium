@@ -1363,6 +1363,7 @@
 <translation id="2195331105963583686">اس وقت کے بعد، آپ اب بھی اس <ph name="DEVICE_TYPE" /> کا استعمال کر سکیں گے، لیکن اب اسے خودکار سافٹ ویئر اور سیکیورٹی اپ ڈیٹس حاصل نہیں ہوں گی</translation>
 <translation id="2195729137168608510">ای میل کا تحفظ</translation>
 <translation id="2198625180564913276">پروفائل شامل کی جا رہی ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
+<translation id="2198712775285959645">ترمیم کریں</translation>
 <translation id="2199298570273670671">خرابی</translation>
 <translation id="2200094388063410062">ای میل کریں</translation>
 <translation id="2200356397587687044">‏جاری رکھنے کے لیے Chrome کو اجازت درکار ہے</translation>
@@ -3322,6 +3323,7 @@
 <translation id="3957844511978444971">‏Google سروسز کی ان ترتیبات کے اپنے انتخاب کی توثیق کرنے کے لیے ”قبول کریں“ پر تھپتھپائیں۔</translation>
 <translation id="3958088479270651626">بُک مارکس اور ترتیبات درآمد کریں</translation>
 <translation id="3960566196862329469">ONC</translation>
+<translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> کے لیے مزید کارروائیاں</translation>
 <translation id="3962119236270174787">خطرناک مانی جانے والی ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے معیاری حفاظت</translation>
 <translation id="3964480518399667971">سیلولر نیٹ ورک کو آف کریں</translation>
 <translation id="3965811923470826124">اس کے ساتھ</translation>
@@ -5869,6 +5871,7 @@
 <translation id="6345418402353744910">پراکسی <ph name="PROXY" /> کیلئے آپ کا صارف نام اور پاس ورڈ درکار ہے تاکہ منتظم آپ کے نیٹ ورک کو ترتیب دے سکے</translation>
 <translation id="6345878117466430440">بطور پڑھا ہوا مارک کریں</translation>
 <translation id="6347010704471250799">اطلاع دکھائیں</translation>
+<translation id="634887995541211148">‏اپنے آلے پر Bruschetta چلائیں۔</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> انسٹال کریں</translation>
 <translation id="6354918092619878358">‏SECG elliptic curve secp256r1 (المعروف ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">آلے کو آن رکھیں</translation>
@@ -6274,6 +6277,7 @@
 <translation id="6725970970008349185">فی صفحہ ڈسپلے کرنے کیلئے امیدواروں کی تعداد</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
 <translation id="67269783048918309">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
+<translation id="6728528977475057549">‏<ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا IBAN</translation>
 <translation id="6729192290958770680">اپنا صارف نام درج کریں</translation>
 <translation id="6731320427842222405">اس میں چند منٹ لگ سکتے ہیں</translation>
 <translation id="6733620523445262364">'<ph name="BOOKMARK_TITLE" />' تخلیق ہو گیا۔</translation>
@@ -6890,6 +6894,7 @@
 <translation id="7298195798382681320">تجویز کردہ</translation>
 <translation id="7299337219131431707">مہمان براؤزنگ فعال کریں</translation>
 <translation id="7299515639584427954">تعاون یافتہ لنکس کے لیے ڈیفالٹ ایپ تبدیل کریں؟</translation>
+<translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">‏آپ پوچھ سکتے ہیں "Ok Google" یہ کون سا گانا ہے؟ یا Ok Google میری اسکرین ہر کیا ہے؟</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏یہ ایپلیکیشن Chrome کو ٹھیک طریقے سے کام کرنے سے روک سکتی ہے۔}other{‏یہ ایپلیکیشنز Chrome کو ٹھیک طریقے سے کام کرنے سے روک سکتی ہیں۔}}</translation>
 <translation id="7303281435234579599">افوہ! ڈیمو موڈ کو سیٹ کرتے وقت کچھ غلط ہوگیا۔</translation>
@@ -7691,6 +7696,7 @@
 <translation id="8013993649590906847">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chrome آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔</translation>
 <translation id="8014154204619229810">اپ ڈیٹ کنندہ فی الحال چل رہا ہے۔ دوبارہ چیک کرنے کیلئے ایک منٹ بعد ریفریش کریں۔</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> پہلے انسٹال کردہ ورژن پر لوٹنے سے قاصر ہے۔ اپنے آلہ کو پاور واش کرنے کیلئے براہ کرم دوبارہ کوشش کریں۔</translation>
+<translation id="8015812716978143">تمام ڈاؤن لوڈز کو ایک نئے ٹیب میں دکھائیں</translation>
 <translation id="8016266267177410919">عارضی اسٹوریج</translation>
 <translation id="8017176852978888182">‏Linux کی اشتراک کردہ ڈائرکٹریز</translation>
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
@@ -8798,6 +8804,7 @@
 <translation id="9026731007018893674">ڈاؤن لوڈ</translation>
 <translation id="9026852570893462412">اس کارروائی میں کچھ منٹ لگ سکتے ہيں۔ ورچوئل مشین ڈاؤن لوڈ ہو رہی ہے۔</translation>
 <translation id="9027459031423301635">لنک کو نئے &amp;ٹیب میں کھولیں</translation>
+<translation id="9027707169256972235">ہٹائیں</translation>
 <translation id="9029667986262585240">آپ نے اپنے اکاؤنٹ میں بہتر کردہ محفوظ براؤزنگ کو آف کر دیا ہے۔</translation>
 <translation id="9030515284705930323">‏آپ کی تنظیم نے آپ کے اکاؤنٹ کیلئے Google Play اسٹور کو فعال نہیں کیا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="9030754204056345429">تیز تر</translation>

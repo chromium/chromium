@@ -125,11 +125,6 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 <translation id="1117535567637097036">Die über diese Richtlinie festgelegten Protokoll-Handler werden bei der Verarbeitung von Android-Intents nicht verwendet.</translation>
 <translation id="1118093128235245168">Websites dürfen den Nutzer um Zugriff auf ein angeschlossenes USB-Gerät bitten</translation>
 <translation id="111910763555783249">Benachrichtigungseinstellungen</translation>
-<translation id="1120291391245112391">Dadurch wird festgelegt, ob Geräte ihren geografischen Standort melden.
-
-      Wenn diese Richtlinie aktiviert ist, melden registrierte Geräte regelmäßig ihren Standort.
-
-      Ist die Richtlinie deaktiviert oder nicht konfiguriert, melden registrierte Geräte ihren Standort nicht.</translation>
 <translation id="1122089575901325963">Durch diese Richtlinie wird der <ph name="WILCO_NAME" /> Diagnostics and Telemetry Controller (DTC) konfiguriert, wenn er auf dem Gerät vorhanden ist. Die Konfiguration darf nicht größer als 1 MB (1.000.000 Byte) sein und muss im JSON-Format vorliegen. Der <ph name="WILCO_NAME" /> DTC übernimmt die Verwaltung. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Konfiguration wird heruntergeladen und im Cache gespeichert. Sobald sich URL oder Hash ändern, wird sie noch einmal heruntergeladen.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden.</translation>

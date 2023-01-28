@@ -51,7 +51,6 @@
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome no está actualizado.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
-<translation id="1952239763774043237">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.13 o o una versión posterior. Esta computadora usa macOS 10.12.</translation>
 <translation id="1953553007165777902">Descargando… Minutos restantes: <ph name="MINUTE" /></translation>
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
 <translation id="2018879682492276940">No se completó la instalación. Vuelve a intentarlo.</translation>
@@ -213,7 +212,6 @@
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome bloqueó este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canario</translation>
-<translation id="5037581483200764584">Para recibir las próximas actualizaciones de Google Chrome, necesitarás macOS 10.13 o una versión posterior. Esta computadora usa OS X 10.11.</translation>
 <translation id="5098668839038261629">Si activas esta opción, saldrás de Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicaciones, juegos, extensiones y temas geniales para Google Chrome.</translation>
 <translation id="5139423532931106058">Personaliza tu perfil de Chrome</translation>
