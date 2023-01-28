@@ -13,7 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
-#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
+#include "chrome/services/keymanagement/public/mojom/cert_store_types.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -95,7 +95,7 @@ class CertStoreService : public KeyedService,
 
   void UpdateCertificates();
 
-  void OnCertificatesListed(keymaster::mojom::ChapsSlot slot,
+  void OnCertificatesListed(keymanagement::mojom::ChapsSlot slot,
                             std::vector<CertDescription> certificates,
                             net::ScopedCERTCertificateList cert_list);
 
@@ -104,7 +104,7 @@ class CertStoreService : public KeyedService,
   // initially empty. Must be recursive because of async calls.
   void BuildAllowedCertDescriptionsRecursively(
       BuildAllowedCertDescriptionsCallback callback,
-      keymaster::mojom::ChapsSlot slot,
+      keymanagement::mojom::ChapsSlot slot,
       base::queue<net::ScopedCERTCertificate> cert_queue,
       std::vector<CertDescription> allowed_certs) const;
   // Decides to either proceed to build a |CertDescription| for the given |cert|
@@ -112,7 +112,7 @@ class CertStoreService : public KeyedService,
   // recursive call to BuildAllowedCertDescriptionsRecursively.
   void BuildAllowedCertDescriptionAndRecurse(
       BuildAllowedCertDescriptionsCallback callback,
-      keymaster::mojom::ChapsSlot slot,
+      keymanagement::mojom::ChapsSlot slot,
       base::queue<net::ScopedCERTCertificate> cert_queue,
       std::vector<CertDescription> allowed_certs,
       net::ScopedCERTCertificate cert,
@@ -121,7 +121,7 @@ class CertStoreService : public KeyedService,
   // the recursive call to BuildAllowedCertDescriptionsRecursively.
   void AppendCertDescriptionAndRecurse(
       BuildAllowedCertDescriptionsCallback callback,
-      keymaster::mojom::ChapsSlot slot,
+      keymanagement::mojom::ChapsSlot slot,
       base::queue<net::ScopedCERTCertificate> cert_queue,
       std::vector<CertDescription> allowed_certs,
       absl::optional<CertDescription> cert_description) const;
@@ -130,13 +130,13 @@ class CertStoreService : public KeyedService,
   // restart the process to gather certificates on the system slot (when |slot|
   // is the user slot), or proceed to update keymaster keys.
   void OnBuiltAllowedCertDescriptions(
-      keymaster::mojom::ChapsSlot slot,
+      keymanagement::mojom::ChapsSlot slot,
       std::vector<CertDescription> cert_descriptions) const;
 
   // Processes metadata from |allowed_certs| stored in the given |slot| and
   // appends them to |certificates|.
   void OnFilteredAllowedCertificates(
-      keymaster::mojom::ChapsSlot slot,
+      keymanagement::mojom::ChapsSlot slot,
       std::vector<CertDescription> certificates,
       net::ScopedCERTCertificateList allowed_certs);
   void OnUpdatedKeymasterKeys(std::vector<CertDescription> certificates,

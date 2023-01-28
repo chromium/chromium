@@ -157,13 +157,13 @@ void PostListedCertsBackToOriginalTaskRunner(
 }
 
 void ListCertsOnIO(scoped_refptr<base::TaskRunner> original_task_runner,
-                   keymaster::mojom::ChapsSlot slot,
+                   keymanagement::mojom::ChapsSlot slot,
                    net::NSSCertDatabase::ListCertsCallback callback,
                    net::NSSCertDatabase* database) {
   // |database->ListCertsInSlot| must be called from the IO thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (slot == keymaster::mojom::ChapsSlot::kSystem &&
+  if (slot == keymanagement::mojom::ChapsSlot::kSystem &&
       !database->GetSystemSlot()) {
     // Trying to list system slot when it's not available, return empty list.
     PostListedCertsBackToOriginalTaskRunner(original_task_runner,
@@ -179,14 +179,14 @@ void ListCertsOnIO(scoped_refptr<base::TaskRunner> original_task_runner,
   database->ListCertsInSlot(
       base::BindOnce(&PostListedCertsBackToOriginalTaskRunner,
                      original_task_runner, std::move(callback)),
-      slot == keymaster::mojom::ChapsSlot::kUser
+      slot == keymanagement::mojom::ChapsSlot::kUser
           ? database->GetPrivateSlot().get()
           : database->GetSystemSlot().get());
 }
 
 void ListCertsWithDbGetterOnIO(
     scoped_refptr<base::TaskRunner> original_task_runner,
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     net::NSSCertDatabase::ListCertsCallback callback,
     NssCertDatabaseGetter database_getter) {
   // |database_getter| must be run from the IO thread.
@@ -209,7 +209,7 @@ void ListCertsWithDbGetterOnIO(
 // database and list certs from the IO thread, while posting |callback| with the
 // output list to the original caller thread.
 void ListCerts(content::BrowserContext* const context,
-               keymaster::mojom::ChapsSlot slot,
+               keymanagement::mojom::ChapsSlot slot,
                net::NSSCertDatabase::ListCertsCallback callback) {
   // |context| must be accessed on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -263,7 +263,7 @@ void IsCertificateAllowed(IsCertificateAllowedCallback callback,
 // |nss_cert|.
 absl::optional<CertDescription> BuildCertDescritionOnWorkerThread(
     net::ScopedCERTCertificate nss_cert,
-    keymaster::mojom::ChapsSlot slot) {
+    keymanagement::mojom::ChapsSlot slot) {
   // Direct NSS calls must be made on a worker thread (not the IO/UI threads).
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::IO));
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -311,7 +311,7 @@ using BuildCertDescritionCallback =
 // known to be stored in |slot| in a worker thread. Note direct NSS calls must
 // be made at a worker thread.
 void BuildCertDescription(net::ScopedCERTCertificate nss_cert,
-                          keymaster::mojom::ChapsSlot slot,
+                          keymanagement::mojom::ChapsSlot slot,
                           BuildCertDescritionCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -383,15 +383,15 @@ void CertStoreService::OnCertDBChanged() {
 }
 
 void CertStoreService::UpdateCertificates() {
-  ListCerts(context_, keymaster::mojom::ChapsSlot::kUser,
+  ListCerts(context_, keymanagement::mojom::ChapsSlot::kUser,
             base::BindOnce(&CertStoreService::OnCertificatesListed,
                            weak_ptr_factory_.GetWeakPtr(),
-                           keymaster::mojom::ChapsSlot::kUser,
+                           keymanagement::mojom::ChapsSlot::kUser,
                            std::vector<CertDescription>()));
 }
 
 void CertStoreService::OnCertificatesListed(
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     std::vector<CertDescription> cert_descriptions,
     net::ScopedCERTCertificateList cert_list) {
   base::queue<net::ScopedCERTCertificate> cert_queue;
@@ -409,7 +409,7 @@ void CertStoreService::OnCertificatesListed(
 // TODO(b/193785308) Try to simplify these recursive calls.
 void CertStoreService::BuildAllowedCertDescriptionsRecursively(
     BuildAllowedCertDescriptionsCallback callback,
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     base::queue<net::ScopedCERTCertificate> cert_queue,
     std::vector<CertDescription> allowed_certs) const {
   if (cert_queue.empty()) {
@@ -441,7 +441,7 @@ void CertStoreService::BuildAllowedCertDescriptionsRecursively(
 
 void CertStoreService::BuildAllowedCertDescriptionAndRecurse(
     BuildAllowedCertDescriptionsCallback callback,
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     base::queue<net::ScopedCERTCertificate> cert_queue,
     std::vector<CertDescription> allowed_certs,
     net::ScopedCERTCertificate cert,
@@ -463,7 +463,7 @@ void CertStoreService::BuildAllowedCertDescriptionAndRecurse(
 
 void CertStoreService::AppendCertDescriptionAndRecurse(
     BuildAllowedCertDescriptionsCallback callback,
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     base::queue<net::ScopedCERTCertificate> cert_queue,
     std::vector<CertDescription> allowed_certs,
     absl::optional<CertDescription> cert_description) const {
@@ -476,7 +476,7 @@ void CertStoreService::AppendCertDescriptionAndRecurse(
 }
 
 void CertStoreService::OnBuiltAllowedCertDescriptions(
-    keymaster::mojom::ChapsSlot slot,
+    keymanagement::mojom::ChapsSlot slot,
     std::vector<CertDescription> cert_descriptions) const {
   ArcKeymasterBridge* const keymaster_bridge =
       ArcKeymasterBridge::GetForBrowserContext(context_);
@@ -485,17 +485,17 @@ void CertStoreService::OnBuiltAllowedCertDescriptions(
     return;
   }
 
-  if (slot == keymaster::mojom::ChapsSlot::kUser) {
+  if (slot == keymanagement::mojom::ChapsSlot::kUser) {
     // Done with the user slot, so try to process additional certs in the
     // system slot. If there is no system slot (e.g. the user is not allowed
     // to access it), this call won't mutate |cert_descriptions|, and only
     // return the user slot certificates. However, it's necessary to perform
     // this check asynchronously on the IO thread (through ListCerts), because
     // that's the only thread that knows if the system slot is enabled.
-    ListCerts(context_, keymaster::mojom::ChapsSlot::kSystem,
+    ListCerts(context_, keymanagement::mojom::ChapsSlot::kSystem,
               base::BindOnce(&CertStoreService::OnCertificatesListed,
                              weak_ptr_factory_.GetMutableWeakPtr(),
-                             keymaster::mojom::ChapsSlot::kSystem,
+                             keymanagement::mojom::ChapsSlot::kSystem,
                              std::move(cert_descriptions)));
     return;
   }

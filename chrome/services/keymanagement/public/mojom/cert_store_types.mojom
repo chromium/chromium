@@ -1,0 +1,23 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 1
+
+// This file contains cert store related types that are shared between keymaster
+// and keymint. Sharing this file allows keymaster and keymint to share
+// CertStoreService, rather than having separate copies.
+
+module arc.keymanagement.mojom;
+
+// The possible chaps slots relevant for arc-keymaster or arc-keymint. Note this
+// does NOT map to the PKCS#11 CK_SLOT_ID, but rather to an abstract
+// representation of the value. The corresponding CK_SLOT_ID must be queried
+// from cryptohome.
+[Extensible, RenamedFrom="arc.keymaster.mojom.ChapsSlot"]
+enum ChapsSlot {
+  // The key is stored in the user slot.
+  [Default] kUser,
+  // The key is stored in the system slot.
+  kSystem,
+};

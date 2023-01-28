@@ -70,12 +70,13 @@ constexpr char kFakeExtensionId[] = "fakeextensionid";
 struct TestCertData {
   TestCertData(const std::string& file_name,
                bool is_corporate_usage,
-               keymaster::mojom::ChapsSlot slot)
+               keymanagement::mojom::ChapsSlot slot)
       : file_name(file_name),
         is_corporate_usage(is_corporate_usage),
         slot(slot) {
     // Keys in system slot must be corporate usage.
-    DCHECK(slot != keymaster::mojom::ChapsSlot::kSystem || is_corporate_usage);
+    DCHECK(slot != keymanagement::mojom::ChapsSlot::kSystem ||
+           is_corporate_usage);
   }
   TestCertData(const TestCertData&) = default;
   bool operator==(const TestCertData& other) const {
@@ -85,7 +86,7 @@ struct TestCertData {
 
   std::string file_name;
   bool is_corporate_usage;
-  keymaster::mojom::ChapsSlot slot;
+  keymanagement::mojom::ChapsSlot slot;
 };
 
 // Associates a |test_data| to its |nss_cert| once installed.
@@ -362,7 +363,7 @@ class CertStoreServiceTest
   // Checks that |keymaster_bridge_->placeholder_keys()| contains a key with
   // given |id| and |slot|.
   bool PlaceholdersContainIdAndSlot(const std::string& id,
-                                    keymaster::mojom::ChapsSlot slot);
+                                    keymanagement::mojom::ChapsSlot slot);
 
   // Initializes |test_system_slot_|.
   void SetUpTestSystemSlot();
@@ -557,7 +558,7 @@ void CertStoreServiceTest::SetUpTestClientCerts(
     base::ScopedAllowBlockingForTesting allow_io;
     net::ImportSensitiveKeyFromFile(
         net::GetTestCertsDirectory(), test_data.file_name + ".pk8",
-        test_data.slot == keymaster::mojom::ChapsSlot::kUser
+        test_data.slot == keymanagement::mojom::ChapsSlot::kUser
             ? cert_db->GetPrivateSlot().get()
             : cert_db->GetSystemSlot().get());
     net::ScopedCERTCertificateList certs =
@@ -582,7 +583,7 @@ void CertStoreServiceTest::ImportCert(CERTCertificate* const nss_cert,
 
 bool CertStoreServiceTest::PlaceholdersContainIdAndSlot(
     const std::string& id,
-    keymaster::mojom::ChapsSlot slot) {
+    keymanagement::mojom::ChapsSlot slot) {
   for (const auto& key : keymaster_bridge_->placeholder_keys()) {
     if (key->key_data->is_chaps_key_data() &&
         key->key_data->get_chaps_key_data()->id == id &&
@@ -673,39 +674,39 @@ INSTANTIATE_TEST_SUITE_P(
         std::vector<TestCertData>{
             TestCertData(kFileName1,
                          false /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser),
+                         keymanagement::mojom::ChapsSlot::kUser),
             TestCertData(kFileName2,
                          false /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser)},
+                         keymanagement::mojom::ChapsSlot::kUser)},
         // Corporate usage keys in user slot.
         std::vector<TestCertData>{
             TestCertData(kFileName1,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser),
+                         keymanagement::mojom::ChapsSlot::kUser),
             TestCertData(kFileName2,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser)},
+                         keymanagement::mojom::ChapsSlot::kUser)},
         // Corporate usage keys in system slot.
         std::vector<TestCertData>{
             TestCertData(kFileName1,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kSystem),
+                         keymanagement::mojom::ChapsSlot::kSystem),
             TestCertData(kFileName2,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kSystem)},
+                         keymanagement::mojom::ChapsSlot::kSystem)},
         // Corporate usage keys in both slots.
         std::vector<TestCertData>{
             TestCertData(kFileName1,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser),
+                         keymanagement::mojom::ChapsSlot::kUser),
             TestCertData(kFileName2,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kSystem),
+                         keymanagement::mojom::ChapsSlot::kSystem),
             TestCertData(kFileName3,
                          false /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kUser),
+                         keymanagement::mojom::ChapsSlot::kUser),
             TestCertData(kFileName4,
                          true /* is_corporate_usage */,
-                         keymaster::mojom::ChapsSlot::kSystem)}));
+                         keymanagement::mojom::ChapsSlot::kSystem)}));
 
 }  // namespace arc

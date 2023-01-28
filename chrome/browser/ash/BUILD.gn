@@ -3387,6 +3387,7 @@ source_set("ash") {
     "//chrome/common:constants",
     "//chrome/common/extensions/api",
     "//chrome/services/file_util/public/cpp",
+    "//chrome/services/keymanagement/public/mojom",
     "//chrome/services/keymaster/public/mojom",
     "//chrome/services/media_gallery_util/public/cpp",
     "//chrome/services/media_gallery_util/public/mojom:mojom_headers",

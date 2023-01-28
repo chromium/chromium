@@ -82,7 +82,7 @@ void AddCert(const std::string& cn, std::vector<CertDescription>* certs) {
       reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size());
   ASSERT_TRUE(cert);
   certs->emplace_back(key.release(), cert.release(),
-                      keymaster::mojom::ChapsSlot::kUser, kLabel, kId);
+                      keymanagement::mojom::ChapsSlot::kUser, kLabel, kId);
 }
 
 }  // namespace
