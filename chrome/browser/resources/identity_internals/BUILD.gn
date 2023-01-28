@@ -15,7 +15,7 @@ build_webui("build") {
   web_component_files = [ "token_list_item.ts" ]
   non_web_component_files = [ "identity_internals.ts" ]
   html_to_wrapper_template = "native"
-  ts_deps = [ "//ui/webui/resources:library" ]
+  ts_deps = [ "//ui/webui/resources/js:build_ts" ]
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_use_local_config = false
 }

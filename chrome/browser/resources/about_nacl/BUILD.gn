@@ -11,5 +11,5 @@ ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "about_nacl.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
 }

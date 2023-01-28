@@ -14,6 +14,6 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   in_files = [ "components.ts" ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
   extra_deps = [ ":preprocess" ]
 }

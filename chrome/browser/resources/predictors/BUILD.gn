@@ -13,6 +13,9 @@ ts_library("build_ts") {
     "autocomplete_action_predictor.ts",
     "resource_prefetch_predictor.ts",
   ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 }

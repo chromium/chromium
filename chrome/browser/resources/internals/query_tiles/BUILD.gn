@@ -14,5 +14,5 @@ ts_library("build_ts") {
     "query_tiles_internals_browser_proxy.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
 }

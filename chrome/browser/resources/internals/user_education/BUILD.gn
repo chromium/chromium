@@ -43,8 +43,9 @@ ts_library("build_ts") {
     "user_education_internals.mojom-webui.ts",
   ]
   deps = [
-    "//ui/webui/resources:library",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
     ":copy_mojo",
