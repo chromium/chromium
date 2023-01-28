@@ -81348,7 +81348,7 @@
       ]
      ],
      "border-image-slice-005.htm": [
-      "9993ccd673cdb0543352b0ff7a639f687b55d48f",
+      "5d8bd7df1c3fe1b09a8a9387e355e2c7d111b805",
       [
        null,
        [
@@ -81364,11 +81364,11 @@
           [
            [
             0,
-            35
+            92
            ],
            [
             0,
-            1250
+            5314
            ]
           ]
          ]
@@ -81377,7 +81377,7 @@
       ]
      ],
      "border-image-slice-007.htm": [
-      "7666444ce574c1c4c283b6a8fcb27e6dd0ed9917",
+      "e9c1827fc76c00f0bb81a23f27335a2f2074ace2",
       [
        null,
        [
@@ -81393,11 +81393,11 @@
           [
            [
             0,
-            35
+            92
            ],
            [
             0,
-            1250
+            5314
            ]
           ]
          ]
@@ -82755,7 +82755,7 @@
       ]
      ],
      "css3-border-image-repeat-repeat.html": [
-      "1b8e7588d261e9478cbe35a68039b0da06c900e3",
+      "b6db467a668856eac84475dc2b86e03fc4342095",
       [
        null,
        [
@@ -82764,7 +82764,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            58
+           ],
+           [
+            0,
+            412
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "css3-border-image-repeat-stretch.html": [
@@ -254319,6 +254335,19 @@
         ],
         {}
        ]
+      ],
+      "painting-stretchy-operator-001.html": [
+       "2a9578badc0474075e219bf44a0a855a6fdc362c",
+       [
+        null,
+        [
+         [
+          "/mathml/presentation-markup/operators/painting-stretchy-operator-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
      },
      "radicals": {
@@ -346124,8 +346153,12 @@
       "7a90c74f3e51bf9d61870ec33d16b0857bb07772",
       []
      ],
+     "stretchy-centered-on-baseline.woff": [
+      "fd753edf7611a36570045a357690a1137ee5d137",
+      []
+     ],
      "stretchy.woff": [
-      "fc1b75c948d460b5f6061122bca29b4ad737fc79",
+      "eb67181e1ea241ff03a2a5d6b98c93238cc011cf",
       []
      ],
      "underover-accentbaseheight4000-overbarextraascender3000.woff": [
@@ -352724,11 +352757,11 @@
        []
       ],
       "name2dir-canvas.yaml": [
-       "f1ebe4b8a9d0c3c1df735f8c00ea9f7f443c3b82",
+       "c3818ebc76e8d85636ed298a580ec14f8253a6fa",
        []
       ],
       "name2dir-offscreen.yaml": [
-       "4ac261fe325fddc6563f49423c400a15e4884563",
+       "807b09507b1cb137cef392be63a550f49bdd9725",
        []
       ],
       "name2dir.yaml": [
@@ -352751,10 +352784,6 @@
         ],
         "fill-and-stroke-styles.yaml": [
          "fe7b8841ae97ed4f55abef0f48fd684206d5a4aa",
-         []
-        ],
-        "line-styles.yaml": [
-         "604f4f3659a40b89b05f1bce3968f2580dce3c6f",
          []
         ],
         "meta.yaml": [
@@ -352793,10 +352822,6 @@
        "offscreen": {
         "fill-and-stroke-styles.yaml": [
          "9d34588c100cc47586bc1573de182f5b2a7eaf5b",
-         []
-        ],
-        "line-styles.yaml": [
-         "984949827db86ce0c071db266e399b617fc5c7f1",
          []
         ],
         "meta.yaml": [
@@ -352856,6 +352881,10 @@
        ],
        "filters.yaml": [
         "cc5dfe7fefbcd9a5cbf487e46cdab3afdd84c3d1",
+        []
+       ],
+       "line-styles.yaml": [
+        "604f4f3659a40b89b05f1bce3968f2580dce3c6f",
         []
        ],
        "reset.yaml": [
@@ -371289,6 +371318,10 @@
        "9d853344e287641fd3bac87bf9ddcd0cd5ebe7d0",
        []
       ],
+      "painting-stretchy-operator-001-ref.html": [
+       "0c7642a20ac6ebc0779a2c9e2222797c92dad579",
+       []
+      ],
       "support": {
        "operator-dictionary-tests.css": [
         "4f80ad7f8dd0e28a40900b0c11ee9adaa800bd97",
@@ -372042,8 +372075,12 @@
       "f112a707690e7eb095c9cf7152d0f3877e17a27c",
       []
      ],
+     "stretchy-centered-on-baseline.py": [
+      "fa75bafcf0eb6368bae11b9ac144e6703b58d2ca",
+      []
+     ],
      "stretchy.py": [
-      "b93dbcee74d01b53c8d4cd884fb3b7395f0c0e04",
+      "1d1096261cb6350291ce1a406c749c0dc434d929",
       []
      ],
      "underover.py": [
@@ -372060,7 +372097,7 @@
        []
       ],
       "mathfont.py": [
-       "d030c9f2ce07785112cea4b9e786cdbe7020829e",
+       "79772a24cb5e8b4269005ef5337495062ccdb8f8",
        []
       ],
       "misc.py": [
@@ -435512,21 +435549,21 @@
       ]
      ],
      "anchor-position-dynamic-002.html": [
-      "f70f93441d0281c99eb84b3078a11136f09845cd",
+      "a0924e92201993d081b01ca2a20b9ae37895698a",
       [
        null,
        {}
       ]
      ],
      "anchor-position-dynamic-003.html": [
-      "04ccd56c77c3dc4fae24d90ebc19ad26a29f0eb1",
+      "6deba86c7efe75dce05a3c3280e4193e7719ae79",
       [
        null,
        {}
       ]
      ],
      "anchor-position-dynamic-004.html": [
-      "b818e23c7fa24dc6cb5e76d09a63c069ff6e7b7a",
+      "01f1cd2ebc7e185db37c570139bd803756f51c27",
       [
        null,
        {}
@@ -435666,7 +435703,7 @@
       ]
      ],
      "anchor-query-fallback.html": [
-      "8d413fd862d5b697b07d4777ce12053b34c4d7e5",
+      "95d43ffedb7b8cbe437c2e444d5b454d5738ffcb",
       [
        null,
        {}
@@ -526075,112 +526112,112 @@
       },
       "line-styles": {
        "2d.line.cap.butt.html": [
-        "7f34def5648a8d8b44deb038dfe091792893c2f0",
+        "717317de706f27c2603ac856b0852b9bfd6513eb",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.butt.worker.js": [
-        "3eacba11a3e16bf038a81808c1eb8a3a04f9816f",
+        "3ad21e9da96c507cd33974000b9e34013f1272da",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.butt.worker.html",
          {}
         ]
        ],
        "2d.line.cap.closed.html": [
-        "0a3f3fcab77edc110f8e338ce78a9b561b96d16f",
+        "b6479be77e10886954076487816b48085fdcd1d9",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.closed.worker.js": [
-        "24bace4c27535bda8afccb7d742a04aecb36d7a3",
+        "50c81519d2e7d44e7c0ee6e47bea2badb0f70c1c",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.closed.worker.html",
          {}
         ]
        ],
        "2d.line.cap.invalid.html": [
-        "f02cfcc758ce360334780143834e8bea22e54f7e",
+        "b4598fdd85ee385b287c8dfd1a1f4c66bcd75a06",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.invalid.worker.js": [
-        "4ef69f35afa820dc2faf7e237c86797cedcf0e45",
+        "bf933941023265afaca4c97a5d791ffb89613d22",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.invalid.worker.html",
          {}
         ]
        ],
        "2d.line.cap.open.html": [
-        "00b72b62d2d66f01c60e9e31e6b50b6ec62e4b63",
+        "211ff760f662a71385862f4c69fb687ed091676a",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.open.worker.js": [
-        "621de99a83f1dc83f215b46f0a5ae781846fba11",
+        "ff081deb7d0773dc2ad2b344d9f8b28734080b7c",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.open.worker.html",
          {}
         ]
        ],
        "2d.line.cap.round.html": [
-        "9f6c66567e9030c3347c80d61d5b33c38bd93ec6",
+        "37a27b17bcd57cf1c9d4efc888fda5d454fb12de",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.round.worker.js": [
-        "e744d2906fae4da099554f6fc215a85a36aef448",
+        "f03579ee54ba7e4405f52b50d529da8d1a74ada6",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.round.worker.html",
          {}
         ]
        ],
        "2d.line.cap.square.html": [
-        "0fd4b2c71a75515ca3a4bd4b0d7356d4bcbc2523",
+        "75f9e44e21ab7633e7704f3993f6b29fbc1a75bd",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.square.worker.js": [
-        "7684bbbc85f318b6c5f8e22cf322ff67f1e6f7ef",
+        "439f100409afeb8cb8b93ea7b68ce64df2f94dfa",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.square.worker.html",
          {}
         ]
        ],
        "2d.line.cap.valid.html": [
-        "ce7b4c8ad62c955d0b4b213e3f9f88a1d565528d",
+        "d4fcdfc0b5ef1deffefc6b8781035b73d2bd5228",
         [
          null,
          {}
         ]
        ],
        "2d.line.cap.valid.worker.js": [
-        "7fa84f4d6f445932912c8121be3362bb08196bcf",
+        "52907f433eccf6c2a115a555af60cb38d1eea48f",
         [
          "html/canvas/offscreen/line-styles/2d.line.cap.valid.worker.html",
          {}
         ]
        ],
        "2d.line.cross.html": [
-        "09d3a00b3177e26090857d6c86ee302ffa6c138e",
+        "51fd1c407846a99496c6a6c52e29a3c8889642f2",
         [
          null,
          {}
         ]
        ],
        "2d.line.cross.worker.js": [
-        "82b289bdeaca6fb5c85d608623f8fde79832c9ad",
+        "e455aa6155dd1f693e245f9930b35ccf0ca81928",
         [
          "html/canvas/offscreen/line-styles/2d.line.cross.worker.html",
          {}
@@ -526200,309 +526237,323 @@
          {}
         ]
        ],
+       "2d.line.invalid.strokestyle.html": [
+        "c1bb974dbf79d11f2edb822c44eca65e7f3e0e17",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.line.invalid.strokestyle.worker.js": [
+        "c9f2fa3d9f2a4ead65a29d9efb9b98e9a1290e81",
+        [
+         "html/canvas/offscreen/line-styles/2d.line.invalid.strokestyle.worker.html",
+         {}
+        ]
+       ],
        "2d.line.join.bevel.html": [
-        "45c8d3eb5439224a9f70fc1a8a9a7d9db5454315",
+        "ecf83e7b5a0daf54fcb9d7f57c0f3860fb226de7",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.bevel.worker.js": [
-        "2dfbf34f1566a8fbd446694d43da8c2c7d382396",
+        "87bf6a8d37c83ed5bce18d0470c86d1a7ccb8116",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.bevel.worker.html",
          {}
         ]
        ],
        "2d.line.join.closed.html": [
-        "5e88ad0d0179b35b3150aceb6ce8f6682a9d6e67",
+        "7ce6599f4c100281033f251b7b7b6d0e90ab5da7",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.closed.worker.js": [
-        "f2b029ecaf08058e1af459c9fa6b486b6f0b2a28",
+        "cc7073fadba492825e7d66092bcf97b65903e6b9",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.closed.worker.html",
          {}
         ]
        ],
        "2d.line.join.invalid.html": [
-        "a54861205edf7801fcfedd9cd7c52682cbba7006",
+        "59d8b4311d8e0a9f03021d383d181c3145eda7a1",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.invalid.worker.js": [
-        "23dfe67230df1034a6a9f8adbd509cd3e6c77a96",
+        "fa19bd70b0c3441c56d26cbe7bbc3e2ff5077f00",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.invalid.worker.html",
          {}
         ]
        ],
        "2d.line.join.miter.html": [
-        "64918eca38382e4bcbda700df72c717f319abb12",
+        "d28fb8b69f384b18d9a7242efd0d06d2feab4974",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.miter.worker.js": [
-        "02712a806eb2315b8d2456ab0e4fa6597a01ec98",
+        "3a3eb8f86f2803ca605e8555913a67cb84e52e7c",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.miter.worker.html",
          {}
         ]
        ],
        "2d.line.join.open.html": [
-        "48154df59b63718fc26e3ddc8243a2d3a0b28bc0",
+        "5bd8e48061c30df3a46d4f0d470963442e3f5a82",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.open.worker.js": [
-        "133854bf5488968ecc025385cdbd8d107fc4dbfa",
+        "5f52b6337adb6b7df37f263575ffe69ec727f977",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.open.worker.html",
          {}
         ]
        ],
        "2d.line.join.parallel.html": [
-        "fdda123dd8a45ce88e41160e1c766fde0c3caba7",
+        "928bb86f120693444f24ab7c7852e3e34994f88f",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.parallel.worker.js": [
-        "68ed957b6d7a00120f3fd2363a30e47115e4396a",
+        "d431d5e99f5ee26ec644fa0e5d8a24946b73d90a",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.parallel.worker.html",
          {}
         ]
        ],
        "2d.line.join.round.html": [
-        "ebc71c30f8389fa91252473cabd9003491c6eabd",
+        "9441585e50d4b22373a5859ee2487fb8f285c223",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.round.worker.js": [
-        "c7da3520b3fa3dfe05e0e64637826af215948753",
+        "44a847bd30cfbf3ec905789ccf8d3005fdf1e10d",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.round.worker.html",
          {}
         ]
        ],
        "2d.line.join.valid.html": [
-        "eaa7c24967e99193cd6690c0179b4005ce85dd16",
+        "b3b15fc09d68111536cb93825efe6cec90314b93",
         [
          null,
          {}
         ]
        ],
        "2d.line.join.valid.worker.js": [
-        "4e7154358a0d17fd9150b812b1dd6d03f90d3b0d",
+        "407dbdd59e0fa3522dad0fc785909b812a3c786c",
         [
          "html/canvas/offscreen/line-styles/2d.line.join.valid.worker.html",
          {}
         ]
        ],
        "2d.line.miter.acute.html": [
-        "fd6902ca4d694e72483f9976ed1bd8d9742d4d2c",
+        "1713d8174ea27ed99aaeec806332ab439b03f1dc",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.acute.worker.js": [
-        "ef2954a7fe2e21342471f14016f3bd26884fe489",
+        "95040d131943b6b8486f7b02f6cfde1fcd5ad431",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.acute.worker.html",
          {}
         ]
        ],
        "2d.line.miter.exceeded.html": [
-        "fd0e7a1ca2ffd61480370c788ae6f6a3002c9a74",
+        "172c63ca1cedee595df9c12031cd87134c0fcc6b",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.exceeded.worker.js": [
-        "2e0fbd4910cec862ff397076a8273246cabc3ca5",
+        "e2b04e21f63c63fb01a0548793314ae8c4f991df",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.exceeded.worker.html",
          {}
         ]
        ],
        "2d.line.miter.invalid.html": [
-        "35bda1a11ac95c4ae331547580e4613af516bf4a",
+        "27251d4902aff9b6aa1448c276dec82be88bfd42",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.invalid.worker.js": [
-        "ef4c17eea2d64a87159c7bd05ece8a5eaf111cf6",
+        "dbc64d52d94f9075f97fcebc848d60a83d276464",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.invalid.worker.html",
          {}
         ]
        ],
        "2d.line.miter.lineedge.html": [
-        "292ed560de64898cd49c06e526eeb036a95273b8",
+        "5ede60b8995dbb7345dd182783836700b3ef9b87",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.lineedge.worker.js": [
-        "c7fa1e6d17334953694aa1be8c210d5f84df6071",
+        "24f4fa30f5ea0f0a14849ab310b606edd7bca556",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.lineedge.worker.html",
          {}
         ]
        ],
        "2d.line.miter.obtuse.html": [
-        "4e60253ddcad8abacc6527a39ca7f19e6e996104",
+        "0eaeedfa4197622d387b316ec27a1bb76e4833a4",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.obtuse.worker.js": [
-        "3cf78ed21e8ed72e5b0c82ff8717381845692cbc",
+        "45900dbc88a33d8dc1e8016b5375d1954743ac5f",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.obtuse.worker.html",
          {}
         ]
        ],
        "2d.line.miter.rightangle.html": [
-        "33cbe5d02c3b9dcc500d9296998f0f1326d2e993",
+        "7f8134f180fe52abdaa4bb44286f47a60cfa92d0",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.rightangle.worker.js": [
-        "895318c3ef35bee0a24b3c556651a42dbe700d0d",
+        "a2a07247b1e5667c4c4ea9940cbb28c884aa475d",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.rightangle.worker.html",
          {}
         ]
        ],
        "2d.line.miter.valid.html": [
-        "1d034052aa04b8b2a4e105a65349e1f2e11e46a0",
+        "2702fc57a3c18ce503590431a0dd73ae506872c4",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.valid.worker.js": [
-        "b34561407ea5c875d3d93d63fa67ef9cc314de61",
+        "c71c726f126de39180db96ecba995c9bf29affde",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.valid.worker.html",
          {}
         ]
        ],
        "2d.line.miter.within.html": [
-        "4af7c84a6a1532778e5c002d99231ab0ece16807",
+        "a9f7a366a38a687d54ea14d06f235e4dfe791045",
         [
          null,
          {}
         ]
        ],
        "2d.line.miter.within.worker.js": [
-        "64fe4312c27164eefc0906a70a6ccdb8db4e4c6b",
+        "c09ad957e89bd39f5952488252a99b7742864188",
         [
          "html/canvas/offscreen/line-styles/2d.line.miter.within.worker.html",
          {}
         ]
        ],
        "2d.line.union.html": [
-        "60defee7cb8aa32028ef7c71c814285c4c8bdd2b",
+        "1f8b3a0d67c7f2b43edeb43c7a880e504b3a8665",
         [
          null,
          {}
         ]
        ],
        "2d.line.union.worker.js": [
-        "ed262373374890d50fecc717b75ae3ce567b0b07",
+        "02ebbfd8af01ee2a6ea492af9c3f1bee3cad6d38",
         [
          "html/canvas/offscreen/line-styles/2d.line.union.worker.html",
          {}
         ]
        ],
        "2d.line.width.basic.html": [
-        "9b81b1c386c15d6bcd1c8e03c234625072c2aa35",
+        "1d0e0298288891a002c3322701f4325da44f846d",
         [
          null,
          {}
         ]
        ],
        "2d.line.width.basic.worker.js": [
-        "e822679c637a90c0d256ce564f29ed802cdb5548",
+        "d066427897971977a964faa1f427402fe7d42aca",
         [
          "html/canvas/offscreen/line-styles/2d.line.width.basic.worker.html",
          {}
         ]
        ],
        "2d.line.width.invalid.html": [
-        "439af5ecf29222c2cee965320ff9104a097ae7a9",
+        "993dc17948f42c334d0a3122e3722fafdb595891",
         [
          null,
          {}
         ]
        ],
        "2d.line.width.invalid.worker.js": [
-        "d87b87e901ba6ff58cf70e04273c5490269ef58f",
+        "dc5e2c29263ffcea8330f4cc136c52cec754acec",
         [
          "html/canvas/offscreen/line-styles/2d.line.width.invalid.worker.html",
          {}
         ]
        ],
        "2d.line.width.scaledefault.html": [
-        "78139978580c48c1b4caaf1c4e969d15a61c2789",
+        "091fd80c298a2cd0c29e84b9f408b2048dc56a52",
         [
          null,
          {}
         ]
        ],
        "2d.line.width.scaledefault.worker.js": [
-        "f9506c4accfa95b407fa68420fe3a50ad92b1627",
+        "a692f4cc11331236a028641bcebe5719a2fefac7",
         [
          "html/canvas/offscreen/line-styles/2d.line.width.scaledefault.worker.html",
          {}
         ]
        ],
        "2d.line.width.transformed.html": [
-        "e75cccd99127f0e0c5ec1ad4eae3b5de265c21fb",
+        "c54943e462cc70b0e04ab33a7b8cc1e610e3ae36",
         [
          null,
          {}
         ]
        ],
        "2d.line.width.transformed.worker.js": [
-        "f377d03ca75d6b50384e899c1dc5807cb344e1ed",
+        "e26e93b1e4f93e87557bd00d59bb728db4e74744",
         [
          "html/canvas/offscreen/line-styles/2d.line.width.transformed.worker.html",
          {}
         ]
        ],
        "2d.line.width.valid.html": [
-        "adaabccc114ce753372d0d748e4e1944a7aef83e",
+        "bdd86c6fbbf5cd69f5f1dfd5678f39cfa0f983ea",
         [
          null,
          {}
         ]
        ],
        "2d.line.width.valid.worker.js": [
-        "f409e1fa8bf08fadfdd2a8992383e0825b6ad817",
+        "df6ee9838e8a808ee8390e24c5cdf7257591ecd9",
         [
          "html/canvas/offscreen/line-styles/2d.line.width.valid.worker.html",
          {}
