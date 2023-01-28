@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">គ្រប់គ្រង​ការធ្វើ​សមកាលកម្ម</translation>
 <translation id="1076421457278169141">បានស្កេនរកលេខកូដ</translation>
 <translation id="1076785341346483463">ធ្វើ​សម​កាល​កម្មដោយប្រើ​គណនីដែលស្ថិតក្រោមការគ្រប់គ្រង</translation>
+<translation id="1080365971383768617">ពាក្យសម្ងាត់លើឧបករណ៍ទាំងអស់របស់អ្នក</translation>
 <translation id="1084365883616172403">ការបង្ហោះតាម Facebook បានបញ្ចប់។</translation>
 <translation id="1085696779717592361">ប្រើ Chrome តាម​លំនាំដើម</translation>
 <translation id="1103523840287552314">បកប្រែ <ph name="LANGUAGE" /> ជានិច្ច</translation>
@@ -74,7 +75,6 @@
 <translation id="1404330357948037222">អ្នកបានចេញពីគណនី</translation>
 <translation id="1407135791313364759">បើកទាំងអស់</translation>
 <translation id="1430915738399379752">បោះពុម្ព</translation>
-<translation id="1434356225517321998">កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង។ <ph name="BEGIN_LINK" />ព័ត៌មាន​លម្អិត<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">លាក់​ពាក្យសម្ងាត់</translation>
 <translation id="1450170672351507823">ការការពារស្តង់ដារ​ត្រូវបានបើក។ ដើម្បី​ឱ្យ​កាន់​តែ​មាន​សុវត្ថិភាព​ថែម​ទៀត សូមប្រើ​ការការពារ​ដែលប្រសើរ​ជាងមុន។</translation>
 <translation id="149095475893949513">គេហទំព័រនេះ​កំពុងព្យាយាម​ទាញយក​កម្រងព័ត៌មាន​នៃការកំណត់រចនាសម្ព័ន្ធ។</translation>
@@ -398,7 +398,6 @@
 <translation id="3929457972718048006">អាសយដ្ឋាន</translation>
 <translation id="3943492037546055397">ពាក្យ​សម្ងាត់</translation>
 <translation id="3959736869653157332">ម៉ឺនុយ → ផ្ទាំងឯកជនថ្មី</translation>
-<translation id="3964173450954943920">អ្នកអាចជ្រើសរើស​អ្វីដែលត្រូវធ្វើសមកាលកម្ម​នៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />បានជានិច្ច។ Google អាចនឹងប្រើ​ប្រវត្តិរបស់អ្នក ដើម្បី​កំណត់ឱ្យកម្មវិធីស្វែងរក និងសេវាកម្ម​ Google ផ្សេងទៀតស្របនឹងអ្នក។</translation>
 <translation id="3967822245660637423">ការទាញយកបានបញ្ចប់</translation>
 <translation id="3968505803272650567">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
 <translation id="3989635538409502728">ចេញ</translation>
@@ -547,6 +546,7 @@
 <translation id="5056446788882570708">បានរកឃើញបញ្ហាកាលពី <ph name="TIME" />។</translation>
 <translation id="5059136629401106827">យល់ព្រម</translation>
 <translation id="5062321486222145940">ដំឡើង Google Drive</translation>
+<translation id="50641035439563602">ឥឡូវនេះ ពាក្យសម្ងាត់ត្រូវបានរក្សាទុកទៅក្នុងគណនី Google (<ph name="ACCOUNT" />) របស់អ្នក។ អ្នកអាចប្រើពាក្យសម្ងាត់ទាំងនោះ នៅគ្រប់កន្លែងដែលអ្នកចូលគណនី។ ដើម្បីបិទមុខងារនេះ សូមចូលទៅកាន់<ph name="BEGIN_LINK" />ការកំណត់<ph name="END_LINK" />។</translation>
 <translation id="5083464117946352670">មិនអាចដឹងពីទំហំឯកសារទេ។</translation>
 <translation id="5090832849094901128">ការលុបពាក្យសម្ងាត់នេះ​នឹងមិន​លុបគណនីរបស់អ្នក​នៅលើ <ph name="WEBSITE" />​ ទេ។</translation>
 <translation id="5094827893301452931">ការបង្ហោះតាម Twitter រួចរាល់។</translation>
@@ -597,6 +597,7 @@
 <translation id="5520466080178053306">ចុច​កម្មវិធីគ្រប់គ្រងពាក្យសម្ងាត់ បន្ទាប់មក​ចុច​ "បញ្ចូល"</translation>
 <translation id="5525095647255982834">ដើម្បីបញ្ជូន​ផ្ទាំងនេះ​ទៅ​ឧបករណ៍​ផ្សេង សូម​ចូល Chrome នៅ​លើ​នោះ។</translation>
 <translation id="5525269841082836315">បង្កើតឃ្លាសម្ងាត់</translation>
+<translation id="5530084793407600786">ស្វែងរកខាងក្នុងរូបភាពតាមរយៈ Google</translation>
 <translation id="5542540507657872337">បានរកឃើញ <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff អនុញ្ញាតឲ្យអ្នកចាប់ផ្តើមរុករកគេហទំព័រលើឧបករណ៍នេះ ហើយបន្តប្រើប្រាស់យ៉ាងងាយស្រួលនៅលើឧបករណ៍ Mac របស់អ្នក។ គេហទំព័រដែលបើកពេលបច្ចុប្បន្ននឹងបង្ហាញលើរបារកម្មវិធីនៃឧបករណ៍ Mac របស់អ្នក។
 
@@ -1035,6 +1036,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8680787084697685621">ព័ត៌មានលំអិតក្នុងគណនីចូលហួសសម័យ។</translation>
 <translation id="8693663554456874301">{count,plural, =1{បិទផ្ទាំង}other{បិទផ្ទាំង}}</translation>
 <translation id="8706588385081740091">ពាក្យ​សម្ងាត់</translation>
+<translation id="8712637175834984815">យល់ហើយ</translation>
 <translation id="8717864919010420084">ចម្លងតំណ</translation>
 <translation id="8721297211384281569">ម៉ឺនុយឧបករណ៍</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>

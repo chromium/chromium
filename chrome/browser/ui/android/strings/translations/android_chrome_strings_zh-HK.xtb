@@ -236,6 +236,7 @@
 <translation id="2321086116217818302">正在準備密碼…</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
+<translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
 <translation id="235789365079050412">Google 私隱權政策</translation>
@@ -344,6 +345,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2912296070571964914">管理您感興趣的主題</translation>
 <translation id="2912345083818861431">透過螢幕鎖定查看開啟的無痕式分頁</translation>
+<translation id="2922568440285376746">使用 Google 搜尋圖片內容 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">名稱無效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存空間</translation>
 <translation id="2932222164150889403">這不會影響您的鍵盤設定</translation>
@@ -563,6 +565,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4108314971463891922">追蹤</translation>
 <translation id="4108998448622696017">偵測並在危險事件發生時發出警告。</translation>
 <translation id="4116038641877404294">下載網頁，以便在離線時使用</translation>
+<translation id="4124152339699379357">通知權限流程宜家顯示喺成個畫面</translation>
 <translation id="4135200667068010335">要共用分頁嘅裝置清單閂咗。</translation>
 <translation id="4137746084635924146">目前的裝置語言</translation>
 <translation id="414128724510021958">已根據預設要求顯示桌面版網站</translation>
@@ -663,6 +666,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4685741273709472646">由下拉式選單入面揀</translation>
 <translation id="4687718960473379118">網站建議的廣告</translation>
+<translation id="4689792375321623175">使用 Google 搜尋圖片 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4719927025381752090">提供翻譯</translation>
@@ -809,6 +813,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="5438292632479953702">再次下載</translation>
 <translation id="5441466871879044658">翻譯至此語言</translation>
 <translation id="5441522332038954058">跳至網址列</translation>
+<translation id="5444999712122199445">返回網站</translation>
 <translation id="544776284582297024">如要同時開啟分頁和瀏覽不同網頁，請輕按開啟分頁按鈕</translation>
 <translation id="5454166040603940656">與 <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">下載網頁</translation>
@@ -1401,6 +1406,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8516012719330875537">圖片編輯器</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8523928698583292556">刪除已儲存的密碼</translation>
+<translation id="8526855376374973824">通知權限流程</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟此頁</translation>
 <translation id="8551513938758868521">離開 Chrome 時鎖定無痕式分頁</translation>
@@ -1460,6 +1466,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> (分頁)</translation>
 <translation id="8854223127042600341">查看離線檔案</translation>
 <translation id="8856607253650333758">取得說明</translation>
+<translation id="8856931513242997049">閂咗通知權限流程</translation>
 <translation id="8873817150012960745">輕按此處即可開始搜尋</translation>
 <translation id="8881973373982641723">清除記錄 (包括搜尋框中的記錄)。</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />您可如何管理資料：<ph name="END_BOLD" />為保障您的私隱，我們會自動刪除清單上超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。如果您不想系統根據特定網站定義興趣，亦可移除網站。</translation>

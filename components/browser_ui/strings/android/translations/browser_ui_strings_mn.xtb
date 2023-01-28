@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Зар</translation>
 <translation id="1919950603503897840">Харилцагчдыг сонгох</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Зочилдог бүх сайтынхаа текст болон зургийг том эсвэл жижиг болгоорой</translation>
 <translation id="1984937141057606926">Гуравдагч этгээдээс бусад этгээдийг зөвшөөрсөн байна</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1994173015038366702">Сайтын URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Дуу</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="216989819110952009">Дороти болон түүний нөхөд ногоон өнгийн шилээр нүдээ хамгаалсан байсан ч гайхамшигт хотын гялтганах гэрэлд нүд гялбаж байлаа.</translation>
+<translation id="2176704795966505152">Үндсэн цэсэд томруулалтын сонголтыг харуулах</translation>
 <translation id="2182457891543959921">Сайтуудад таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянахыг зөвшөөрөхийн өмнө асуух (санал болгосон)</translation>
 <translation id="2212565012507486665">Күүкиг зөвшөөрөх</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />-д камертаа хандахыг зөвшөөрөхийн тулд камерыг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
@@ -166,6 +168,7 @@
 <translation id="4008040567710660924">Күүкиг тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
+<translation id="4151930093518524179">Өгөгдмөл томруулалт</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
 <translation id="4194328954146351878">Сайтуудыг NFC төхөөрөмжүүд дээрх мэдээллийг харах болон өөрчлөхийг зөвшөөрөхөөс өмнө асуух (зөвлөсөн)</translation>
@@ -189,6 +192,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" />-д таны микрофонд хандахыг зөвшөөрөхийн тулд микрофоныг мөн <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" />-нд асаана уу.</translation>
 <translation id="4566417217121906555">Микрофоны дууг хаах</translation>
 <translation id="4570913071927164677">Дэлгэрэнгүй</translation>
+<translation id="4575264539271661854">Зочилдог сaйтынхаа текст болон зургийг томруулахыг хялбар болгоорой</translation>
 <translation id="4598549027014564149">Нууцлалтай горимд байх үед сайтууд таны күүкиг сайтууд, тэр байтугай холбогдох сайтууд дээрх хөтчийн үйл ажиллагааг тань харахад ашиглах боломжгүй. Таны хөтчийн үйл ажиллагааг зар хувийн болгох зэрэг зүйлсэд ашигладаггүй. Зарим сайтын онцлогууд ажиллахгүй байж магадгүй.</translation>
 <translation id="4645575059429386691">Эцэг, эх нь хариуцаж байна</translation>
 <translation id="4670064810192446073">Виртуал бодит байдал</translation>
@@ -290,7 +294,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Сайтуудад таны виртуал бодит байдлын төхөөрөмж болон өгөгдлийг ашиглахыг хориглох</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Үндсэн цэсээс хуудсыг томруулах эсвэл жижгэрүүлээрэй</translation>
 <translation id="6467852467360539617">Өгөгдлийг цуцлаад зөвшөөрлийг шинэчлэх</translation>
 <translation id="6527303717912515753">Хуваалцах</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
@@ -350,7 +353,6 @@
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7667547420449112975">Озын Гайхамшигт шидтэн</translation>
 <translation id="7684642910516280563">Сайтад гуравдагч талын күүки ашиглахыг бүү зөвшөөр</translation>
-<translation id="7690549345586282764">Томруулалтыг харуулах</translation>
 <translation id="7719367874908701697">Хуудсыг томруулах</translation>
 <translation id="7781829728241885113">Өчигдөр</translation>
 <translation id="7791543448312431591">Нэмэх</translation>
@@ -430,7 +432,6 @@
 <translation id="8959122750345127698">Навигацтай холбогдох боломжгүй байна: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Мартах</translation>
 <translation id="8990043154272859344">Таныг бүх сайтаас гаргана</translation>
-<translation id="900095568014372589">Сайт дээрх өгөгдмөл текст болон зургийг жижгэрүүлэх эсвэл томруулаарай</translation>
 <translation id="9019902583201351841">Эцэг, эх нь хариуцан удирдаж байна</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Энэ сайт таны үйл ажиллагааг харах боломжтой бүлэгт байна. Бүлгийг <ph name="FPS_OWNER" />-с тодорхойлсон</translation>

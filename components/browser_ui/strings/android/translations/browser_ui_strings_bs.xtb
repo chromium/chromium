@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokira web lokacijama korištenje uređaja i podataka virtuelne realnosti</translation>
 <translation id="6447842834002726250">Kolačići</translation>
-<translation id="6453641458248223456">Uvećajte ili umanjite stranicu s glavnog menija</translation>
 <translation id="6467852467360539617">Obriši podatke i poništi odobrenja</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6545864417968258051">Skeniranje Bluetootha</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7667547420449112975">Čarobnjak iz Oza</translation>
 <translation id="7684642910516280563">Nemojte dozvoliti web lokaciji da koristi kolačiće treće strane</translation>
-<translation id="7690549345586282764">Prikaži zumiranje</translation>
 <translation id="7719367874908701697">Zumiranje stranice</translation>
 <translation id="7781829728241885113">Jučer</translation>
 <translation id="7791543448312431591">Dodaj</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">Navigacija je nedostupna: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zaboravi</translation>
 <translation id="8990043154272859344">Odjavit ćete se sa svih web lokacija</translation>
-<translation id="900095568014372589">Povećajte ili smanjite zadani tekst i slike na web lokacijama</translation>
 <translation id="9019902583201351841">Upravljaju tvoji roditelji</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Ova web lokacija je u grupi koja može vidjeti vašu aktivnost. Grupu definira <ph name="FPS_OWNER" /></translation>

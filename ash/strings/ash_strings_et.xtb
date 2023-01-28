@@ -734,6 +734,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="492453977506755176">Jäädvustusrežiimi klahv</translation>
 <translation id="4925542575807923399">Selle konto administraator nõuab, et mitmesse kontosse sisselogimisega seansil logitaks esmalt sisse sellesse kontosse.</translation>
 <translation id="4929163402621253029">Kas kõnelete? Teie mikrofon on vaigistatud. Lisateave</translation>
+<translation id="4936329710968938986">Kõik, väljas</translation>
 <translation id="4938176435186993759">Peida kõik soovitused</translation>
 <translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
@@ -1388,6 +1389,7 @@ Uus installimine</translation>
 <translation id="8477270416194247200">Tühistamiseks vajutage klahvikombinatsiooni Alt + Otsing või tõstuklahvi.</translation>
 <translation id="8492573885090281069">Seade <ph name="DISPLAY_NAME" /> ei toeta eraldusvõimet <ph name="SPECIFIED_RESOLUTION" />. Eraldusvõimeks määrati <ph name="FALLBACK_RESOLUTION" />. Muudatuste säilitamiseks klõpsake nupul Kinnita. Eelmised seaded taastatakse <ph name="TIMEOUT_SECONDS" /> pärast.</translation>
 <translation id="8496402167048257517">Läheduses jagamise seadete kuvamine</translation>
+<translation id="8507563469658346379">Kõik, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Teie Chromebooki Bluetooth on välja lülitatud. Chromebooki avamiseks sisestage parool.</translation>
 <translation id="8513108775083588393">Aut. pööramine</translation>
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>

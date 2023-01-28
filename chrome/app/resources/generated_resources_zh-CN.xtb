@@ -1027,6 +1027,7 @@
 <translation id="1910908536872421421">Chrome 测试版 v<ph name="BROWSER_VERSION" /> 仅适用于自动测试。若要进行常规浏览，请使用可自动更新的标准版 Chrome。</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">中止</translation>
+<translation id="1915734383465415025">商店编号</translation>
 <translation id="1916502483199172559">默认的红色头像</translation>
 <translation id="1918141783557917887">缩小(&amp;S)</translation>
 <translation id="1919872106782726755">若要设置指纹，请让您的孩子轻触键盘右上角的指纹传感器（位于电源按钮旁边）。您孩子的指纹数据会安全地存储在此 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
@@ -1656,6 +1657,7 @@
 <translation id="2458379781610688953">更新帐号，<ph name="EMAIL" /></translation>
 <translation id="2458591546854598341">设备管理令牌无效。</translation>
 <translation id="2459703812219683497">检测到激活码</translation>
+<translation id="2460356425461033301">备份您的浏览器资料，以便在任意设备上使用</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
 <translation id="2467755475704469005">未检测到任何设备。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -1773,6 +1775,7 @@
 <translation id="2564653188463346023">增强的“拼写检查”功能</translation>
 <translation id="2568694057933302218">在无痕模式下，网站无法使用 Cookie 查看您在各个网站上的浏览活动。系统不会将您的浏览活动用于展示个性化广告等用途。某些网站上的功能可能会无法正常运行。</translation>
 <translation id="2568774940984945469">信息栏容器</translation>
+<translation id="2569972178052279830">零售商名称</translation>
 <translation id="257088987046510401">主题背景</translation>
 <translation id="2571655996835834626">更改您用于控制以下权限的设置：网站对 Cookie、JavaScript、插件、地理位置信息、麦克风、摄像头等功能的使用权限。</translation>
 <translation id="2572032849266859634">已授予对 <ph name="VOLUME_NAME" />的只读权限。</translation>
@@ -2994,6 +2997,9 @@
 <translation id="3700888195348409686">展示中 (<ph name="PAGE_ORIGIN" />)</translation>
 <translation id="3700993174159313525">不允许网站跟踪您的摄像头位置</translation>
 <translation id="3702500414347826004">您的启动页已更改，添加了 <ph name="URL" />。</translation>
+<translation id="3702797829026927713"><ph name="BEGIN_PARAGRAPH1" />为这部正在配置的演示设备输入零售商名称和商店编号*。<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />如果您不知道商店编号，可以输入“0000”以继续执行演示模式安装。<ph name="END_PARAGRAPH2" />
+    <ph name="BEGIN_PARAGRAPH3" />*注意：Google 会使用这些信息来确定设备应接收哪个版本的演示模式，以及衡量演示模式的使用情况。<ph name="END_PARAGRAPH3" /></translation>
 <translation id="3703699162703116302">已刷新票据</translation>
 <translation id="370415077757856453">已拦截 JavaScript</translation>
 <translation id="3704331259350077894">操作终止</translation>
@@ -3798,6 +3804,7 @@
 <translation id="4427365070557649936">正在验证确认码…</translation>
 <translation id="4429163740524851942">实体键盘布局</translation>
 <translation id="4430019312045809116">音量</translation>
+<translation id="443031431654216610">只能使用数字</translation>
 <translation id="4430369329743628066">已添加书签</translation>
 <translation id="4430422687972614133">启用虚拟卡</translation>
 <translation id="4432621511648257259">密码不正确</translation>
@@ -5290,6 +5297,7 @@
 <translation id="583673505367439042">网站可以请求修改您设备上的文件和文件夹</translation>
 <translation id="5836999627049108525">原文语言</translation>
 <translation id="583756221537636748">耳机盒</translation>
+<translation id="5839524803417937122">使用 <ph name="SEARCH_ENGINE" /> 搜索图片中的内容</translation>
 <translation id="5840680448799937675">始终离线分享</translation>
 <translation id="5841270259333717135">配置以太网</translation>
 <translation id="5842497610951477805">蓝牙开关</translation>

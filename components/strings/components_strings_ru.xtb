@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">Экран проверки учетных данных для защищенных платежей</translation>
 <translation id="1386623374109090026">Заметки</translation>
 <translation id="1391289752476847787">Акции и облигации</translation>
+<translation id="1391625539203220400">Сохранить код IBAN на этом устройстве?</translation>
 <translation id="139305205187523129">Сайт <ph name="HOST_NAME" /> не отправил данных.</translation>
 <translation id="1396259464226642517">Считаете, что это произошло по ошибке? <ph name="BEGIN_LINK" />Отправьте нам отзыв<ph name="END_LINK" />.</translation>
 <translation id="1405567553485452995">Светло-зеленый</translation>
@@ -314,6 +315,7 @@
 <translation id="1682696192498422849">Начиная с короткого края</translation>
 <translation id="168693727862418163">Такое значение правила не предусмотрено и будет проигнорировано.</translation>
 <translation id="168841957122794586">Сертификат сервера содержит ненадежный криптографический ключ.</translation>
+<translation id="1689333818294560261">Название</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />Как вы можете управлять своими данными.<ph name="END_BOLD" /> Chrome автоматически удаляет темы, добавленные более четырех недель назад. По мере просмотра веб-страниц тема может снова появиться в списке. В настройках Chrome можно в любое время запретить браузеру делиться определенными темами с сайтами или полностью отключить темы рекламы.</translation>
 <translation id="1697532407822776718">Готово!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -601,6 +603,7 @@
 <translation id="2430968933669123598">Параметры аккаунта Google. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Ввод.</translation>
 <translation id="2436186046335138073">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />"?</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
+<translation id="2441854154602066476">Список способов оплаты, данные которых можно ввести нажатием. Клавиатура скрыта.</translation>
 <translation id="2448295565072560657">Когда вы вошли в систему, к этому устройству были подключены следующие периферийные устройства.</translation>
 <translation id="2450021089947420533">Поиск по теме</translation>
 <translation id="2463739503403862330">Заполнить</translation>
@@ -776,6 +779,7 @@
 <translation id="2916038427272391327">Закройте другие программы.</translation>
 <translation id="2918922650248459053">Дайвинг и подводное плавание</translation>
 <translation id="2922350208395188000">Не удается проверить сертификат сервера.</translation>
+<translation id="292371311537977079">Настройки Chrome</translation>
 <translation id="2925673989565098301">Способ доставки</translation>
 <translation id="2928905813689894207">Платежный адрес</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}one{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адрес}few{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}many{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адресов}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> адреса}}</translation>
@@ -1144,6 +1148,7 @@
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3815434930383843058">8 x 12 дюймов</translation>
 <translation id="3816482573645936981">Значение (заменяемое)</translation>
+<translation id="3823019343150397277">Код IBAN</translation>
 <translation id="3823402221513322552">Вашим браузером управляет <ph name="BROWSER_DOMAIN" />, а вашим профилем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Если вы используете прокси-сервер...</translation>
 <translation id="3826050100957962900">Предложения войти в аккаунт от третьих сторон</translation>
@@ -1197,6 +1202,7 @@
 <translation id="398470910934384994">Птицы</translation>
 <translation id="3985750352229496475">Настроить адреса</translation>
 <translation id="3986705137476756801">Отключить автоматические субтитры</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менее 1 МБ</translation>
 <translation id="3990250421422698716">Смещение</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
@@ -1573,6 +1579,7 @@
 <translation id="4880827082731008257">Искать в истории</translation>
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="4881808915112408168">24 x 31,5 дюйма</translation>
+<translation id="4882314601499260499">Нет правил для пользователей. Чтобы добавить их, организация должна <ph name="LINK_BEGIN" />подтвердить ваш домен<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">Оплатите с помощью <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защитите пароли с помощью Windows Hello</translation>
 <translation id="4888600795924685526">Изучение иностранных языков</translation>
@@ -1750,6 +1757,7 @@
 <translation id="5306593769196050043">Оба листа</translation>
 <translation id="5307166000025436103">ОК</translation>
 <translation id="5308380583665731573">Подключение</translation>
+<translation id="5308406951783863385">Вы можете изменить свой выбор в настройках Chrome</translation>
 <translation id="5308689395849655368">Отчеты о сбоях отключены.</translation>
 <translation id="5310178588836736698">Внедорожные транспортные средства</translation>
 <translation id="5314967030527622926">Изготовление буклета</translation>
@@ -2047,6 +2055,7 @@
 <translation id="6059925163896151826">USB-устройства</translation>
 <translation id="6060009363608157444">Недопустимый режим DnsOverHttps.</translation>
 <translation id="6061154937977953833">Борьба</translation>
+<translation id="6062937464449575061">Перестать отслеживать цену</translation>
 <translation id="6064217302520318294">Блокировка экрана</translation>
 <translation id="6064602040258638498">Купоны и скидки</translation>
 <translation id="6080696365213338172">Вы используете сертификат, предоставленный администратором, поэтому он может заблокировать передачу данных на сайт <ph name="DOMAIN" />.</translation>
@@ -2404,6 +2413,7 @@
 <translation id="7014741021609395734">Масштаб</translation>
 <translation id="7016992613359344582">Списание может быть разовым или повторяющимся без каких-либо уведомлений.</translation>
 <translation id="702146556168549005">URL страниц, которые вы посещаете, передаются на проверку в Google Cloud или сторонние сервисы. Страницы могут быть просканированы на предмет безопасности или отфильтрованы на основе правил, заданных администратором.</translation>
+<translation id="702275896380648118">Этот сайт определяет ваши интересы и затем предлагает другим сайтам рекламу для вас. Кроме того, он использует темы рекламы из Chrome, чтобы показывать вам более подходящие объявления.</translation>
 <translation id="7023162328967545559">Предупреждение от администратора</translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7030436163253143341">Недействительный сертификат</translation>
@@ -2454,6 +2464,7 @@
 <translation id="7136009930065337683">Подробнее о режиме инкогнито</translation>
 <translation id="7138472120740807366">Способ доставки</translation>
 <translation id="7139892792842608322">Основной лоток</translation>
+<translation id="7140087718106278457">Список способов оплаты закрыт.</translation>
 <translation id="714064300541049402">Смещение изображений на оборотной стороне по оси X</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
@@ -2731,6 +2742,7 @@
 <translation id="7755287808199759310">Для разблокировки обратитесь к родителю.</translation>
 <translation id="7755624218968747854">Основной рулон</translation>
 <translation id="7758069387465995638">Возможно, подключение заблокировано брандмауэром или антивирусным ПО.</translation>
+<translation id="7759809451544302770">Необязательно</translation>
 <translation id="7760497246331667482">Регги и карибская музыка</translation>
 <translation id="776110834126722255">Устаревшее правило</translation>
 <translation id="7761159795823346334">Предоставить доступ к камере?</translation>
@@ -2976,6 +2988,7 @@
 <translation id="8381674639488873545">Списание может быть разовым или повторяющимся без каких-либо уведомлений. <ph name="BEGIN_LINK" />Все равно продолжить<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">Администратор запретил переносить контент со страницы <ph name="ORIGIN_NAME" /> в <ph name="VM_NAME" />.</translation>
 <translation id="8396522675989118466">Ваш <ph name="NUMBER_OF_DIGITS" />-значный код находится здесь: <ph name="SIDE_OF_CARD" /></translation>
+<translation id="8398335999901363925">Список способов оплаты, данные которых можно ввести нажатием, развернут полностью.</translation>
 <translation id="8398790343843005537">Найти телефон</translation>
 <translation id="8405579342203358118">Указать данные для синхронизации в настройках Chrome</translation>
 <translation id="8406071103346257942">прекратить использовать блокировку экрана для ввода паролей</translation>
@@ -3136,6 +3149,7 @@
 <translation id="8830320733681313421">Hagaki (открытка)</translation>
 <translation id="8834380158646307944">Кнопка "Закрыть окна в режиме инкогнито". Нажмите Ввод, чтобы закрыть все окна, открытые в режиме инкогнито.</translation>
 <translation id="883848425547221593">Другие закладки</translation>
+<translation id="8842351563145134519">Список способов оплаты, данные которых можно ввести нажатием, развернут наполовину.</translation>
 <translation id="884264119367021077">Адрес доставки</translation>
 <translation id="8849231003559822746">130 x 180 мм</translation>
 <translation id="884923133447025588">Не обнаружен механизм отзыва.</translation>
@@ -3301,6 +3315,7 @@
 <translation id="935608979562296692">ОЧИСТИТЬ ФОРМУ</translation>
 <translation id="936602727769022409">Вы можете потерять доступ к аккаунту Google. Рекомендуем немедленно сменить пароль. После этого потребуется снова войти в аккаунт.</translation>
 <translation id="937457230470581909">Зоопарки, аквариумы и заповедники</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Какие данные используются.<ph name="END_BOLD" /> Темы рекламы подбираются на основе истории браузера – списка сайтов, которые вы открывали в Chrome на этом устройстве.</translation>
 <translation id="939736085109172342">Новая папка</translation>
 <translation id="940053046584497293">Путешествия и перевозки</translation>
 <translation id="945855313015696284">Проверьте данные и удалите недействительные карты.</translation>

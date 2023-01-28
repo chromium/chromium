@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Додај во речник</translation>
 <translation id="1018656279737460067">Откажано</translation>
 <translation id="1022489261739821355">Се прикажуваат лозинки од <ph name="BEGIN_LINK" />сметката на Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Со уредот управува <ph name="DOMAIN" />. Администраторите може да пристапуваат до податоците на секој профил на уредов.</translation>
 <translation id="1026655690966755180">Додајте порта</translation>
 <translation id="1026822031284433028">Вчитај слика</translation>
 <translation id="1028604629594230522">Chrome вчитува страници однапред кои е веројатно дека ќе ги посетите за да може да се вчитуваат побрзо кога ги посетувате.</translation>
@@ -1881,6 +1882,7 @@
 <translation id="2643064289437760082">Секогаш може да ги избришете податоците за мерење на рекламите со бришење на податоците од прелистувањето</translation>
 <translation id="2643698698624765890">Уредувајте ги наставките со кликнување на Наставки во менито Прозорец.</translation>
 <translation id="2645047101481282803">Со уредот управува <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Се емитува картичкава на <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64-шифриран ASCII, ланец на сертификати</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
@@ -2753,6 +2755,7 @@
 <translation id="3446274660183028131">Стартувајте Parallels Desktop за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Читајте ги вашите податоци на голем број веб-локации</translation>
 <translation id="3447644283769633681">Блокирајте ги сите колачиња од трети страни</translation>
+<translation id="3447797901512053632">Се емитува <ph name="TAB_NAME" /> на <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Ажурирајте ја сметката</translation>
 <translation id="3449393517661170867">Нов прозорец со картички</translation>
 <translation id="3449839693241009168">Притисни <ph name="SEARCH_KEY" /> за да испратиш команди на <ph name="EXTENSION_NAME" /></translation>
@@ -2907,6 +2910,7 @@
 <translation id="3590295622232282437">Се влегува во управувана сесија.</translation>
 <translation id="3591057288287063271">Задржи ја <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Дознај повеќе</translation>
+<translation id="3592344177526089979">Се емитува картичка на <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Овозможи режим за нејасен Пин Јин</translation>
 <translation id="3593965109698325041">Ограничувања на име на сертификат</translation>
 <translation id="3596012367874587041">Поставки за апликацијата</translation>
@@ -3182,6 +3186,7 @@
 <translation id="3823310065043511710">За Linux, се препорачува најмалку <ph name="INSTALL_SIZE" /> слободен простор.</translation>
 <translation id="3824621460022590830">Токенот за регистрација на уредот е неважечки. Контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомни го мојот избор за овој вид датотека: <ph name="FILE_TYPES" />}one{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}other{Запомни го мојот избор за овие видови датотеки: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Прикажувај точка на икона за апликација за известувања од апликација</translation>
 <translation id="3826071569074535339">Дозволено им е да ги користат сензорите за движење</translation>
 <translation id="3826440694796503677">Администраторот оневозможил додавање повеќе сметки на Google</translation>
 <translation id="3827774300009121996">&amp;Цел екран</translation>
@@ -4502,6 +4507,7 @@
 <translation id="5063480226653192405">Користење</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Управувајте со функцијата „Безбеден DNS“ во поставките за Chrome OS</translation>
+<translation id="5066160542186949327">Премести во друга папка</translation>
 <translation id="5067399438976153555">Секогаш вклучено</translation>
 <translation id="5067867186035333991">Прашај дали <ph name="HOST" /> сака да пристапи до вашиот микрофон</translation>
 <translation id="5068553687099139861">ги прикаже лозинките</translation>

@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">短辺から</translation>
 <translation id="168693727862418163">このポリシーの値は、スキーマの検証でエラーとなったため無視されます。</translation>
 <translation id="168841957122794586">サーバー証明書に脆弱な暗号鍵が含まれています。</translation>
+<translation id="1689333818294560261">ニックネーム</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />データを管理する方法:<ph name="END_BOLD" /> Chrome では、4 週間以上経過したトピックは自動削除されます。ブラウジングを続けていると、トピックがリストに再度表示される場合もあります。また、Chrome の設定でいつでも、サイトと共有したくないトピックをブロックしたり、広告のトピックを無効にしたりできます。</translation>
 <translation id="1697532407822776718">設定が完了しました。</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -776,6 +777,7 @@
 <translation id="2916038427272391327">他のプログラムを終了する</translation>
 <translation id="2918922650248459053">ダイビング、水中アクティビティ</translation>
 <translation id="2922350208395188000">サーバーの証明書を確認できません。</translation>
+<translation id="292371311537977079">Chrome の設定</translation>
 <translation id="2925673989565098301">配達方法</translation>
 <translation id="2928905813689894207">請求先住所</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 件）}}</translation>
@@ -1145,6 +1147,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3815434930383843058">8x12 インチ</translation>
 <translation id="3816482573645936981">値（優先）</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">お使いのブラウザは <ph name="BROWSER_DOMAIN" /> によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="382518646247711829">プロキシ サーバーを使用している場合...</translation>
 <translation id="3826050100957962900">サードパーティのログイン</translation>
@@ -2407,6 +2410,7 @@
 <translation id="7012363358306927923">中国銀聯</translation>
 <translation id="7014741021609395734">ズームレベル</translation>
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
+<translation id="702146556168549005">アクセスしたページの URL は分析のため Google Cloud または第三者に送信されます。たとえば、安全でないウェブサイトを検出するためにスキャンされる場合や、管理者が設定したルールに基づいてウェブサイトがフィルタリングされる場合があります。</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
 <translation id="7029809446516969842">パスワード</translation>
@@ -2721,6 +2725,7 @@
 <translation id="7716147886133743102">管理者によってブロック</translation>
 <translation id="7716375162095500223">まだアップロードされていないか、無視されました</translation>
 <translation id="7716424297397655342">このサイトをキャッシュから読み込むことができません</translation>
+<translation id="772128550427553158">CVC はカードの表側に記載されています。</translation>
 <translation id="7723047071702270851">カードの編集</translation>
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7734285854693414638">Google フォームで新しいフォームをすばやく作成します</translation>
@@ -2734,6 +2739,7 @@
 <translation id="7755287808199759310">ブロックの解除は保護者が行うことができます</translation>
 <translation id="7755624218968747854">メインロール</translation>
 <translation id="7758069387465995638">ファイアウォールまたはウイルス対策ソフトウェアによって接続がブロックされた可能性があります。</translation>
+<translation id="7759809451544302770">省略可</translation>
 <translation id="7760497246331667482">レゲエ、カリビアン音楽</translation>
 <translation id="776110834126722255">廃止</translation>
 <translation id="7761159795823346334">カメラの使用を許可しますか？</translation>

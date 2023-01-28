@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">安全付款憑證驗證表</translation>
 <translation id="1386623374109090026">註解</translation>
 <translation id="1391289752476847787">股票與債券</translation>
+<translation id="1391625539203220400">要將 IBAN 儲存到這部裝置嗎？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未傳送任何資料。</translation>
 <translation id="1396259464226642517">這並非預期結果嗎？<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">淺綠色</translation>
@@ -314,6 +315,7 @@
 <translation id="1682696192498422849">先從短邊開始</translation>
 <translation id="168693727862418163">這項政策的值未通過其結構定義的驗證，因此會遭到忽略。</translation>
 <translation id="168841957122794586">伺服器憑證含有防護力薄弱的加密編譯金鑰。</translation>
+<translation id="1689333818294560261">暱稱</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />管理資料的方式：<ph name="END_BOLD" />Chrome 會自動刪除 4 週以前的主題。隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你隨時可以在 Chrome 設定中封鎖不想讓 Chrome 與網站分享的主題，也可以關閉廣告主題設定。</translation>
 <translation id="1697532407822776718">大功告成！</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -777,6 +779,7 @@
 <translation id="2916038427272391327">關閉其他程式</translation>
 <translation id="2918922650248459053">潛水活動</translation>
 <translation id="2922350208395188000">無法檢查伺服器憑證。</translation>
+<translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2925673989565098301">快遞方式</translation>
 <translation id="2928905813689894207">帳單地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}other{「<ph name="SHIPPING_ADDRESS_PREVIEW" />」和另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 個地址}}</translation>
@@ -1145,6 +1148,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3815434930383843058">8 x 12 吋</translation>
 <translation id="3816482573645936981">值 (已被取代)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">你的瀏覽器是由 <ph name="BROWSER_DOMAIN" /> 管理，設定檔則是由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="382518646247711829">如果你使用 Proxy 伺服器...</translation>
 <translation id="3826050100957962900">第三方登入</translation>
@@ -2738,6 +2742,7 @@
 <translation id="7755287808199759310">你的家長可以為你解除封鎖這個網站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火牆或防毒軟體可能封鎖了連線。</translation>
+<translation id="7759809451544302770">選用</translation>
 <translation id="7760497246331667482">雷鬼樂與加勒比海音樂</translation>
 <translation id="776110834126722255">已淘汰</translation>
 <translation id="7761159795823346334">要授予相機權限嗎？</translation>

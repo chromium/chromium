@@ -314,6 +314,7 @@
 <translation id="1682696192498422849">短边先入</translation>
 <translation id="168693727862418163">此政策值未能根据其架构进行验证，因此会被忽略。</translation>
 <translation id="168841957122794586">服务器证书包含弱加密密钥。</translation>
+<translation id="1689333818294560261">昵称</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可随时在 Chrome 设置中屏蔽不希望 Chrome 与网站分享的主题，以及停用广告主题。</translation>
 <translation id="1697532407822776718">搞定了！</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -776,6 +777,7 @@
 <translation id="2916038427272391327">关闭其他程序</translation>
 <translation id="2918922650248459053">潜水与水下活动</translation>
 <translation id="2922350208395188000">无法核实服务器证书。</translation>
+<translation id="292371311537977079">Chrome 设置</translation>
 <translation id="2925673989565098301">递送方式</translation>
 <translation id="2928905813689894207">帐单邮寄地址</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> 个地址}}</translation>
@@ -1141,6 +1143,7 @@
 <translation id="3810973564298564668">管理</translation>
 <translation id="3815434930383843058">8 x 12 英寸</translation>
 <translation id="3816482573645936981">值（已被取代）</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">您的浏览器由 <ph name="BROWSER_DOMAIN" /> 管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="382518646247711829">如果您使用代理服务器…</translation>
 <translation id="3826050100957962900">第三方登录</translation>
@@ -1194,6 +1197,7 @@
 <translation id="398470910934384994">养鸟/观鸟</translation>
 <translation id="3985750352229496475">管理地址…</translation>
 <translation id="3986705137476756801">暂时关闭“实时字幕”功能</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小于 1 MB</translation>
 <translation id="3990250421422698716">撞页偏移</translation>
 <translation id="3992684624889376114">关于此页面</translation>
@@ -2045,6 +2049,7 @@
 <translation id="6059925163896151826">USB 设备</translation>
 <translation id="6060009363608157444">DnsOverHttps 模式无效。</translation>
 <translation id="6061154937977953833">摔跤</translation>
+<translation id="6062937464449575061">取消跟踪价格</translation>
 <translation id="6064217302520318294">屏幕锁定</translation>
 <translation id="6064602040258638498">优惠券与折扣优惠</translation>
 <translation id="6080696365213338172">您已使用管理员提供的证书访问了内容，因此管理员可以拦截您提供给 <ph name="DOMAIN" /> 的数据。</translation>
@@ -2401,6 +2406,7 @@
 <translation id="7014741021609395734">缩放级别</translation>
 <translation id="7016992613359344582">这些费用可能只收取一次，也可能会周期性收取，而且可能不易察觉。</translation>
 <translation id="702146556168549005">系统会将您所访问网页的网址发送给 Google Cloud 或第三方以供分析。例如，这些网页可能会被扫描，以检测不安全的网站或按照管理员设定的规则过滤网站。</translation>
+<translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7023162328967545559">管理员警告</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7030436163253143341">证书无效</translation>
@@ -2728,6 +2734,7 @@
 <translation id="7755287808199759310">您的父亲/母亲可为您取消屏蔽此网站</translation>
 <translation id="7755624218968747854">主卷</translation>
 <translation id="7758069387465995638">防火墙或防病毒软件可能已阻止您连接到网络。</translation>
+<translation id="7759809451544302770">可选</translation>
 <translation id="7760497246331667482">雷鬼与加勒比音乐</translation>
 <translation id="776110834126722255">已弃用</translation>
 <translation id="7761159795823346334">允许使用摄像头？</translation>

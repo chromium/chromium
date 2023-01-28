@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">از سیستم خارج شده‌اید</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1430915738399379752">چاپ</translation>
-<translation id="1434356225517321998">مرورگرتان تحت‌مدیریت است. <ph name="BEGIN_LINK" />جزئیات<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">پنهان کردن گذرواژه</translation>
 <translation id="1450170672351507823">«محافظت استاندارد» روشن است. برای امنیت بیشتر، از «محافظت پیشرفته» استفاده کنید.</translation>
 <translation id="149095475893949513">این وب‌سایت می‌خواهد نمایه پیکربندی بارگیری کند.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">نشانی‌ها</translation>
 <translation id="3943492037546055397">گذرواژه‌ها</translation>
 <translation id="3959736869653157332">منو ← برگه ناشناس جدید</translation>
-<translation id="3964173450954943920">‏هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> انتخاب کنید. Google ممکن است از سابقه شما برای شخصی کردن «جستجو» و دیگر سرویس‌های Google استفاده کند.</translation>
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968505803272650567">مدیریت علایق</translation>
 <translation id="3989635538409502728">خروج از سیستم</translation>
@@ -474,7 +472,7 @@
 <translation id="4592368184551360546">صفحه‌کلید</translation>
 <translation id="4606247758155004938">مرورگر را سازمانتان مدیریت می‌کند.</translation>
 <translation id="461440297010471931">‏درحال جستجو با Google</translation>
-<translation id="4619564267100705184">هویتتان را به‌تأیید برسانید</translation>
+<translation id="4619564267100705184">تأیید کنید این شمایید</translation>
 <translation id="4619615317237390068">برگه‌ها از دستگاه‌های دیگر</translation>
 <translation id="4620246317052452550">صفحه‌هایی که خوانده‌اید</translation>
 <translation id="4620888520263267479">نمایش پیش‌نمایش‌های پیوند</translation>
@@ -868,7 +866,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
 <translation id="734758817008927353">گزینه‌های ذخیره کارت</translation>
 <translation id="7351537303876921605">‏در Context Menu (منوی بافت) روی Create Link (ایجاد پیوند) ضربه بزنید</translation>
-<translation id="7353432112255316844">هویتتان را به‌تأیید برسانید</translation>
+<translation id="7353432112255316844">تأیید کنید هویتتان</translation>
 <translation id="7356359962760467032">توقف پیگیری قیمت</translation>
 <translation id="7383797227493018512">فهرست خواندن</translation>
 <translation id="7398893703713203428">ایجاد پیوند</translation>
@@ -1035,6 +1033,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
 <translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8706588385081740091">گذرواژه‌ها</translation>
+<translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>

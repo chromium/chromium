@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">আপনি সাইন-আউট করেছেন</translation>
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
-<translation id="1434356225517321998">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />বিবরণ<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
 <translation id="1450170672351507823">'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করা আছে। আরও উন্নত নিরাপত্তার জন্য 'স্ট্যান্ডার্ড সুরক্ষা' ফিচারটি চালু করুন।</translation>
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3943492037546055397">পাসওয়ার্ড</translation>
 <translation id="3959736869653157332">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
-<translation id="3964173450954943920"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কী সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারেন। সার্চ এবং অন্যান্য Google পরিষেবা আপনার পছন্দমতো সাজানোর জন্য Google আপনার ইতিহাস ব্যবহার করতে পারে।</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968505803272650567">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="3989635538409502728">সাইন-আউট করুন</translation>
@@ -1036,6 +1034,7 @@
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
 <translation id="8693663554456874301">{count,plural, =1{'ট্যাব' বন্ধ করুন}one{'ট্যাব' বন্ধ করুন}other{'ট্যাব' বন্ধ করুন}}</translation>
 <translation id="8706588385081740091">পাসওয়ার্ড</translation>
+<translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>

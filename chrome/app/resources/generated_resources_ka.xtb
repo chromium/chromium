@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;ლექსიკონში დამატება</translation>
 <translation id="1018656279737460067">გაუქმდა</translation>
 <translation id="1022489261739821355">ნაჩვენებია პაროლები თქვენი <ph name="BEGIN_LINK" />Google ანგარიშიდან<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">თქვენს მოწყობილობას მართავს <ph name="DOMAIN" />. ადმინისტრატორებს შეუძლიათ ამ მოწყობილობაზე არსებული ნებისმიერი პროფილის მონაცემებზე წვდომა.</translation>
 <translation id="1026655690966755180">პორტის დამატება</translation>
 <translation id="1026822031284433028">სურათის ჩატვირთვა</translation>
 <translation id="1028604629594230522">Chrome წინასწარ ჩატვირთავს გვერდებს, რომელთა ნახვასაც, სავარაუდოდ, დააპირებთ — ამგვარად, ამ გვერდებზე გადასვლისას, ისინი უფრო სწრაფად ჩაიტვირთება.</translation>
@@ -1865,6 +1866,7 @@
 <translation id="2643064289437760082">რეკლამის ეფექტურობის გასაზომად გამოყენებული მონაცემების წაშლა ნებისმიერ დროს შეგიძლიათ თქვენი დათვალიერების მონაცემების წაშლით</translation>
 <translation id="2643698698624765890">მართეთ თქვენი გაფართოებები, ფანჯრის მენიუში „გაფართოებებზე“ დაწკაპუნებით.</translation>
 <translation id="2645047101481282803">თქვენს მოწყობილობას მართავს <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">მიმდინარეობს ამ ჩანართის ტრანსლირება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-დაშიფრული ASCII, სერტიფიკატების ჯაჭვი</translation>
 <translation id="265156376773362237">სტანდარტული წინაწარი ჩატვირთვა</translation>
@@ -1901,6 +1903,7 @@
 <translation id="2672142220933875349">crx ფაილი დაზიანებულია, ამოღება ვერ მოხერხდა.</translation>
 <translation id="2673135533890720193">დათვალიერების ისტორიის წაკითხვა</translation>
 <translation id="2674764818721168631">გამორთული</translation>
+<translation id="2676492189600898281">ავტომატურ შევსებასთან დაკავშირებით გამოხმაურება</translation>
 <translation id="2678063897982469759">ხელახლა ჩართვა</translation>
 <translation id="2678100101831051676">ტრანსლირება ვერ ხერხდება.</translation>
 <translation id="268053382412112343">ი&amp;სტორია</translation>
@@ -2736,6 +2739,7 @@
 <translation id="3446274660183028131">Windows-ის ინსტალაციისთვის გაუშვით Parallels Desktop.</translation>
 <translation id="344630545793878684">წაიკითხეთ თქვენი მონაცემები რამდენიმე ვებსაიტზე</translation>
 <translation id="3447644283769633681">დაბლოკეთ მესამე მხარის ყველა ქუქი-ჩანაწერი</translation>
+<translation id="3447797901512053632">მიმდინარეობს „<ph name="TAB_NAME" />“ ტრანსლირება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="3448492834076427715">ანგარიშის განახლება</translation>
 <translation id="3449393517661170867">ახალი ფანჯრის გახსნა ჩანართებიან რეჟიმში</translation>
 <translation id="3449839693241009168">დააჭირეთ ღილაკს <ph name="SEARCH_KEY" />, <ph name="EXTENSION_NAME" />-ში ბრძანებების გასაგზავნად</translation>
@@ -2890,6 +2894,7 @@
 <translation id="3590295622232282437">მიმდინარეობს მართულ სესიაში შესვლა.</translation>
 <translation id="3591057288287063271">შენარჩუნდეს <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;შეიტყვეთ მეტი</translation>
+<translation id="3592344177526089979">მიმდინარეობს ჩანართის ტრანსლირება <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin რეჟიმის ჩართვა</translation>
 <translation id="3593965109698325041">სერტიფიკატის სახელის შეზღუდვები</translation>
 <translation id="3596012367874587041">აპის პარამეტრები</translation>
@@ -3165,6 +3170,7 @@
 <translation id="3823310065043511710">Linux-ის გამოსაყენებლად რეკომენდებულია მინიმუმ <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">მოწყობილობის რეგისტრაციის ჟეტონი არასწორია. დაუკავშირდით მოწყობილობის მფლობელს ან ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ჩემი არჩევანის დამახსოვრება ფაილის შემდეგი ტიპისთვის: <ph name="FILE_TYPES" />}other{ჩემი არჩევანის დამახსოვრება ფაილების შემდეგი ტიპებისთვის: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">წერტილის ჩვენება აპის ხატულაზე აპის გაფრთხილებების აღსანიშნად</translation>
 <translation id="3826071569074535339">მოძრაობის სენსორების გამოყენება დაშვებულია</translation>
 <translation id="3826440694796503677">თქვენმა ადმინისტრატორმა გათიშა სხვა Google ანგარიშების დამატების შესაძლებლობა</translation>
 <translation id="3827774300009121996">&amp;სრული ეკრანი</translation>
@@ -3420,6 +3426,7 @@
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">მთავარ გვერდზე გადასვლა</translation>
 <translation id="4048384495227695211">გამოჩნდეს <ph name="FILE_NAME" /> საქაღალდეში</translation>
+<translation id="404894744863342743">ჩამოტვირთული ფაილის გამოყენების დასრულების შემდეგ წაშალეთ ის, რათა ამ მოწყობილობის სხვა მომხმარებლებმა ვერ ნახონ თქვენი პაროლები.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# კონტაქტი მიუწვდომელია. მასთან მახლობლად გაზიარება რომ გამოიყენოთ, თქვენს კონტაქტებს დაამატეთ ელფოსტის მისამართი, რომელიც დაკავშირებულია მის Google ანგარიშთან.}other{# კონტაქტი მიუწვდომელია. მათთან მახლობლად გაზიარება რომ გამოიყენოთ, თქვენს კონტაქტებს დაამატეთ ელფოსტის მისამართები, რომელიც დაკავშირებულია მათ Google ანგარიშებთან.}}</translation>
 <translation id="4050225813016893843">ავტორიზაციის მეთოდი</translation>
 <translation id="4050534976465737778">დარწმუნდით, რომ ორივე მოწყობილობა განბლოკილია, ახლოსაა ერთმანეთთან და მათზე ჩართულია Bluetooth. თუ აზიარებთ Chromebook-თან, რომელიც თქვენს კონტაქტებში არ არის, მასზე ჩართული უნდა იყოს ახლომახლო ხილვადობა (გახსენით სტატუსის არე, შემდეგ კი ჩართეთ ახლომახლო ხილვადობა). <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
@@ -4483,6 +4490,7 @@
 <translation id="5063480226653192405">გამოყენება</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">მართეთ დაცული DNS ChromeOS-ის პარამეტრებიდან</translation>
+<translation id="5066160542186949327">სხვა საქაღალდეში გადატანა</translation>
 <translation id="5067399438976153555">ყოველთვის ჩართული</translation>
 <translation id="5067867186035333991">იკითხეთ, თუ <ph name="HOST" />-ს სურს თქვენს მიკროფონზე წვდომა</translation>
 <translation id="5068553687099139861">პაროლების ჩვენება</translation>
@@ -5596,6 +5604,7 @@
 <translation id="6087746524533454243">ბრაუზერის ინფორმაციის გვერდს ეძებთ? მოინახულეთ</translation>
 <translation id="6087960857463881712">არაჩვეულებრივი სახე</translation>
 <translation id="608912389580139775">ეს გვერდი საკითხავ სიას რომ დაამატოთ, დააწკაპუნეთ სანიშნეს ხატულაზე</translation>
+<translation id="6090760257419195752">დახურული გაფრთხილებები</translation>
 <translation id="6091761513005122595">გაზიარება მიერთებულია წარმატებით.</translation>
 <translation id="6093803049406781019">პროფილის წაშლა</translation>
 <translation id="6093888419484831006">განახლების გაუქმება…</translation>
@@ -7160,6 +7169,7 @@
 <translation id="7550830279652415241">bookmarks_<ph name="DATESTAMP" />.html</translation>
 <translation id="7551059576287086432"><ph name="FILE_NAME" />-ის ჩამოტვირთვა ვერ მოხერხდა</translation>
 <translation id="7551643184018910560">თაროზე ჩამაგრება</translation>
+<translation id="7552658769580484674">ავტომატურ შევსებასთან დაკავშირებით გამოხმაურება</translation>
 <translation id="7552846755917812628">ცადეთ შემდეგი:</translation>
 <translation id="7553012839257224005">მიმდინარეობს Linux-ის კონტეინერის შემოწმება</translation>
 <translation id="7553242001898162573">შეიყვანეთ თქვენი პაროლი</translation>

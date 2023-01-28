@@ -74,7 +74,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="1404330357948037222">Vous êtes déconnecté</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
 <translation id="1430915738399379752">Imprimer</translation>
-<translation id="1434356225517321998">Votre navigateur est géré. <ph name="BEGIN_LINK" />Détails<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Masquer le mot de passe</translation>
 <translation id="1450170672351507823">La protection standard est activée. Pour un niveau de sécurité supérieur, activez la protection renforcée.</translation>
 <translation id="149095475893949513">Ce site Web essaie de télécharger un profil de configuration.</translation>
@@ -398,7 +397,6 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3929457972718048006">Adresses</translation>
 <translation id="3943492037546055397">Mots de passe</translation>
 <translation id="3959736869653157332">Menu → Nouvel onglet de navigation privée</translation>
-<translation id="3964173450954943920">Vous pouvez toujours choisir quels éléments synchroniser dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />. Google peut utiliser votre historique pour personnaliser la recherche et d'autres services Google.</translation>
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3968505803272650567">Gérer les centres d'intérêt</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
@@ -677,7 +675,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6064824697233747382">Votre organisation vous oblige à désactiver la synchronisation.</translation>
-<translation id="6066301408025741299">Appuyez sur l'écran pour annuler.</translation>
+<translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6071409777669089905">Retirer l'onglet</translation>
 <translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
@@ -700,7 +698,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6219550825416862075">Bon retour parmi nous</translation>
 <translation id="6219688215832490856">Ne jamais traduire</translation>
 <translation id="6223816392543092032">Accédez à vos favoris, votre historique, vos mots de passe et d'autres paramètres sur tous vos appareils.</translation>
-<translation id="6229318421047648685">Demander le site pour ordinateur</translation>
+<translation id="6229318421047648685">Demander la version pour ordinateur</translation>
 <translation id="6231782223312638214">Suggestions</translation>
 <translation id="6232329973559504466">Recherche en navigation privée</translation>
 <translation id="6247557882553405851">Gestionnaire de mots de passe Google</translation>
@@ -1036,6 +1034,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fermer l'onglet}one{Fermer l'onglet}other{Fermer les onglets}}</translation>
 <translation id="8706588385081740091">Mots de passe</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8717864919010420084">Copier le lien</translation>
 <translation id="8721297211384281569">Menu "Outils"</translation>
 <translation id="8725066075913043281">Réessayer</translation>

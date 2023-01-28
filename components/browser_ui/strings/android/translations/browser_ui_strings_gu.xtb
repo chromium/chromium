@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">જાહેરાતો</translation>
 <translation id="1919950603503897840">સંપર્કો પસંદ કરો</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">તમે મુલાકાત લેતા હો એવી બધી સાઇટ માટે, ટેક્સ્ટ અને છબીઓનું કદ નાનું મોટું કરો</translation>
 <translation id="1984937141057606926">મંજૂર, તૃતીય-પક્ષ સિવાય</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="1994173015038366702">સાઈટ URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">ધ્વનિ</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="216989819110952009">લીલા ચશ્માં દ્વારા આંખો સુરક્ષિત હોવા છતાં પણ, ડોરોથી અને તેના મિત્રો પહેલાં તો આનાથી અંજાઈ ગયા હતા</translation>
+<translation id="2176704795966505152">મુખ્ય મેનૂમાં નાનું-મોટું કરવાનો વિકલ્પ બતાવો</translation>
 <translation id="2182457891543959921">કોઈ સાઇટને તમારી આજુબાજુનો 3D નકશો બનાવતા અથવા કૅમેરાના સ્ટેટસને ટ્રૅક કરવાની મંજૂરી આપતા પહેલાં પૂછો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2212565012507486665">કુકીને મંજૂરી આપો</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> તમારો કૅમેરા ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ કૅમેરા ચાલુ કરો.</translation>
@@ -166,6 +168,7 @@
 <translation id="4008040567710660924">કોઈ ચોક્કસ સાઇટ માટે કુકીને મંજૂરી આપો.</translation>
 <translation id="4046123991198612571">આગલો ટ્રૅક</translation>
 <translation id="4149994727733219643">વેબપેજ માટે સરળ દૃશ્ય</translation>
+<translation id="4151930093518524179">'નાનું-મોટું કરો'નું ડિફૉલ્ટ લેવલ</translation>
 <translation id="4165986682804962316">સાઇટ સેટિંગ</translation>
 <translation id="4169549551965910670">કોઈ USB ડિવાઇસથી કનેક્ટેડ</translation>
 <translation id="4194328954146351878">NFC ડિવાઇસ પર સાઇટને માહિતી જોવાની અને બદલવાની મંજૂરી આપતા પહેલાં પૂછો (ભલામણ કરવામાં આવે છે)</translation>
@@ -189,6 +192,7 @@
 <translation id="4534723447064627427"><ph name="APP_NAME" /> તમારું માઇક્રોફોન ઍક્સેસ કરી શકે તે માટે <ph name="BEGIN_LINK" />Android સેટિંગ<ph name="END_LINK" />માં પણ માઇક્રોફોન ચાલુ કરો.</translation>
 <translation id="4566417217121906555">માઇક્રોફોન મ્યૂટ કરો</translation>
 <translation id="4570913071927164677">વિગતો</translation>
+<translation id="4575264539271661854">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ માટે, ટેક્સ્ટ અને છબીઓને મોટી કરવાનું સરળ બનાવો</translation>
 <translation id="4598549027014564149">જ્યારે છૂપા મોડમાં હો, ત્યારે સમગ્ર સાઇટ કે સંબંધિત સાઇટ પર પણ તમારી બ્રાઉઝિંગ પ્રવૃત્તિને જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં. તમારી બ્રાઉઝિંગ પ્રવૃત્તિનો ઉપયોગ જાહેરાતોને મનગમતી બનાવવા જેવી વસ્તુઓ માટે કરવામાં આવતો નથી. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં.</translation>
 <translation id="4645575059429386691">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="4670064810192446073">વર્ચ્યુઅલ રિયાલિટી</translation>
@@ -290,7 +294,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">સાઇટને તમારું વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
 <translation id="6447842834002726250">કૂકીઝ</translation>
-<translation id="6453641458248223456">મુખ્ય મેનૂમાંથી પેજને મોટું કે નાનું કરો</translation>
 <translation id="6467852467360539617">ડેટા સાફ કરો અને પરવાનગીઓ રીસેટ કરો</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
@@ -350,7 +353,6 @@
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7667547420449112975">ધ વન્ડરફુલ વિઝાર્ડ ઑફ ઓઝ</translation>
 <translation id="7684642910516280563">સાઇટને ત્રીજા પક્ષની કુકીનો ઉપયોગ કરવાની મંજૂરી ન આપો</translation>
-<translation id="7690549345586282764">નાનું-મોટું કરવાનું મેનૂ બતાવો</translation>
 <translation id="7719367874908701697">પેજ નાનું-મોટું કરો</translation>
 <translation id="7781829728241885113">ગઈ કાલે</translation>
 <translation id="7791543448312431591">ઉમેરો</translation>
@@ -430,7 +432,6 @@
 <translation id="8959122750345127698">નેવિગેશન બિનપહોંચ યોગ્ય છે: <ph name="URL" /></translation>
 <translation id="8986362086234534611">ભૂલી જાઓ</translation>
 <translation id="8990043154272859344">બધી સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
-<translation id="900095568014372589">સાઇટ પર ડિફૉલ્ટ ટેક્સ્ટ અને છબીઓને નાની અથવા મોટી કરો</translation>
 <translation id="9019902583201351841">તમારા માતાપિતા દ્વારા મેનેજ થયેલ</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
 <translation id="9090268041676521955">આ સાઇટ એવા ગ્રૂપમાં છે, જે તમારી પ્રવૃત્તિ જોઈ શકે છે. ગ્રૂપ <ph name="FPS_OWNER" /> દ્વારા નિર્ધારિત છે</translation>

@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">सुरक्षित तरिकाले भुक्तानी गर्नका निम्ति क्रिडेन्सियल पुष्टि गर्ने पाना</translation>
 <translation id="1386623374109090026">एनोटेसनहरू</translation>
 <translation id="1391289752476847787">सेयर तथा बचतपत्र</translation>
+<translation id="1391625539203220400">यो डिभाइसमा IBAN सेभ गर्ने हो?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ले कुनै पनि डेटा पठाएन।</translation>
 <translation id="1396259464226642517">तपाईंलाई यस्तो परिणाम आउला भन्ने लागेको थियो? <ph name="BEGIN_LINK" />प्रतिक्रिया पठाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">हल्का हरियो</translation>
@@ -314,6 +315,7 @@
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
+<translation id="1689333818294560261">उपनाम</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। तपाईं जुनसुकै बेला Chrome का सेटिङमा गई तपाईं Chrome ले साइटहरूसँग जुन जुन विषयहरू सेयर नगरोस् भन्ने चाहनुहुन्छ ती विषय ब्लक गर्नुका साथै "विज्ञापनका विषयहरू" अफ गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
 <translation id="1702815194757674443">ROC 16K</translation>
@@ -777,6 +779,7 @@
 <translation id="2916038427272391327">अन्य प्रोग्रामहरू बन्द गर्नुहोस्</translation>
 <translation id="2918922650248459053">डाइभिङ तथा पानीमुनि गरिने क्रियाकलापहरू</translation>
 <translation id="2922350208395188000">सर्भरको प्रमाणपत्र जाँच गर्न सकिँदैन।</translation>
+<translation id="292371311537977079">Chrome का सेटिङ</translation>
 <translation id="2925673989565098301">डेलिभरीको विधि</translation>
 <translation id="2928905813689894207">बिलिङ ठेगाना</translation>
 <translation id="2929525460561903222">{SHIPPING_ADDRESS,plural, =0{<ph name="SHIPPING_ADDRESS_PREVIEW" />}=1{<ph name="SHIPPING_ADDRESS_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" /> र थप <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
@@ -1143,6 +1146,7 @@
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="3815434930383843058">८ x १२ इन्च</translation>
 <translation id="3816482573645936981">मान (यो मानको साटो लागू गरिएको)</translation>
+<translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552"><ph name="BROWSER_DOMAIN" /> ले तपाईंको ब्राउजर व्यवस्थापन गर्छ र <ph name="PROFILE_DOMAIN" /> ले तपाईंको प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="382518646247711829">यदि तपाईंले कुनै एउटा प्रोक्सी सर्भर प्रयोग गर्नुभयो भने ...</translation>
 <translation id="3826050100957962900">तेस्रो पक्षीय साइन इन</translation>
@@ -1196,6 +1200,7 @@
 <translation id="398470910934384994">चराहरू</translation>
 <translation id="3985750352229496475">ठेगानाहरू व्यवस्थापन गर्नुहोस्...</translation>
 <translation id="3986705137476756801">अहिलेका लागि लाइभ क्याप्सन अफ गर्नुहोस्</translation>
+<translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">१ एम.बि. भन्दा कम</translation>
 <translation id="3990250421422698716">जग अफसेट</translation>
 <translation id="3992684624889376114">यो पेजका बारेमा</translation>
@@ -2048,6 +2053,7 @@
 <translation id="6059925163896151826">USB सम्बन्धी यन्त्रहरू</translation>
 <translation id="6060009363608157444">अमान्य DnsOverHttps मोड।</translation>
 <translation id="6061154937977953833">कुस्ती</translation>
+<translation id="6062937464449575061">मूल्य ट्र्याक गर्न छाड्नुहोस्</translation>
 <translation id="6064217302520318294">स्क्रिन लक</translation>
 <translation id="6064602040258638498">कुपन तथा छुट अफरहरू</translation>
 <translation id="6080696365213338172">तपाइँले प्रशासक-प्रदान गरिएको प्रमाणपत्र प्रयोग गर्दै सामग्री पहुँच गर्नुभएको छ। तपाइँले <ph name="DOMAIN" /> लाई उपलब्ध गर्नुभएको लगत तपाइँको प्रशासकद्वारा अन्तर्खण्ड गर्न सकिन्छ।</translation>
@@ -2405,6 +2411,7 @@
 <translation id="7014741021609395734">जुमको स्तर</translation>
 <translation id="7016992613359344582">यी शुल्कहरू एक पटक तिरे पुग्ने वा बारम्बार तिर्नु पर्ने हुन सक्छन् र यस सम्बन्धमा स्पष्टता नहुन पनि सक्छ।</translation>
 <translation id="702146556168549005">तपाईंले खोल्ने पेजका URL हरू विश्लेषण गर्ने प्रयोजनका लागि Google Cloud मा वा तेस्रा पक्षकहाँ पठाइन्छन्। उदाहरणका लागि, असुरक्षित वेबसाइटहरू पत्ता लगाउन वा एड्मिनले तय गरेका नियमहरूको आधारमा फिल्टर गर्न तिनलाई स्क्यान गरिन सक्छ।</translation>
+<translation id="702275896380648118">यो साइटले तपाईंलाई मन पर्ने कुराहरू निर्धारण गरेर अन्य साइटहरूलाई विज्ञापनहरू सिफारिस गर्छ। यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome छनौट गर्नुभएका विज्ञापनका विषयसम्बन्धी जानकारी पनि प्राप्त गर्छ।</translation>
 <translation id="7023162328967545559">एड्मिनले दिएका चेतावनी</translation>
 <translation id="7029809446516969842">पासवर्डहरू</translation>
 <translation id="7030436163253143341">प्रमाणपत्र वैध छैन</translation>
@@ -2733,6 +2740,7 @@
 <translation id="7755287808199759310">तपाईंको अभिभावकले तपाईंको रोक हटाउन सक्नुहुन्छ</translation>
 <translation id="7755624218968747854">मुख्य रोल</translation>
 <translation id="7758069387465995638">फायरवाल वा एन्टिभाइरस सफ्टवेयरले जडानमाथि रोक लगाएको हुनसक्छ।</translation>
+<translation id="7759809451544302770">वैकल्पिक</translation>
 <translation id="7760497246331667482">रेगे तथा क्यारेबियाली सङ्गीत</translation>
 <translation id="776110834126722255">चल्तीबाट हटाइएको</translation>
 <translation id="7761159795823346334">क्यामेरा प्रयोग गर्ने अनुमति दिने हो?</translation>
@@ -3032,7 +3040,7 @@
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
 <translation id="8539500321752640291">२ वटै अनुमति दिने हो?</translation>
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
-<translation id="8541410041357371550">यो साइटले तपाईंलाई अझ सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि Chrome मा सेभ गरिएका तपाईंका विज्ञापनका विषयहरू प्राप्त गर्छ</translation>
+<translation id="8541410041357371550">यो साइटले तपाईंलाई थप सान्दर्भिक विज्ञापनहरू देखाउने प्रयोजनका लागि तपाईंले Chrome छनौट गर्नुभएका विज्ञापनका विषयसम्बन्धी जानकारी प्राप्त गर्छ</translation>
 <translation id="8542014550340843547">फेदमा तीन स्टिच</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">तपाईं <ph name="BEGIN_ERROR_LINK" />एक पत्ता लगाउने समस्या रिपोर्ट गर्न<ph name="END_ERROR_LINK" /> सक्नुहुन्छ, यदि तपाईं आफ्नो सुरक्षाको जोखिम बुझ्नुहुन्छ भने, <ph name="BEGIN_LINK" />असुरक्षित साइटको भ्रमण गर्नुहोस्<ph name="END_LINK" />।</translation>

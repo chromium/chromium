@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
 <translation id="2750481671343847896">Siteler, kimlik hizmetlerinden gelen oturum açma istemlerini gösterebilir.</translation>
+<translation id="2779966372261694284">Bu sitedeki oturumunuz kapatılacak</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> için tüm site izinlerini sıfırlamak istediğinizden emin misiniz?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Önceki parça</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Sitelerin sanal gerçeklik cihazımı ve verilerimi kullanmasını engelle</translation>
 <translation id="6447842834002726250">Çerezler</translation>
-<translation id="6453641458248223456">Ana menüden sayfaları yakınlaştırıp uzaklaştırın</translation>
 <translation id="6467852467360539617">Verileri temizle ve izinleri sıfırla</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6545864417968258051">Bluetooth taraması</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Sitelerin, mikrofonunuzu kullanmasına izin verilmeden önce size sorulsun (önerilen)</translation>
 <translation id="7000754031042624318">Android ayarlarından kapatıldı</translation>
 <translation id="7016516562562142042">Geçerli arama motoru için izin verildi</translation>
+<translation id="702275896380648118">Bu site, nelerden hoşlandığınızı belirleyip diğer sitelere reklam önerir. Ayrıca, size daha alakalı reklamlar göstermek için Chrome'dan reklam konularınızı da öğrenir.</translation>
 <translation id="702463548815491781">TalkBack veya Anahtar Erişimi açık olduğunda önerilir</translation>
 <translation id="7053983685419859001">Engelle</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 öğe seçildi}other{# öğe seçildi}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7667547420449112975">Muhteşem Oz Büyücüsü</translation>
 <translation id="7684642910516280563">Bir sitenin, üçüncü taraf çerezlerini kullanmasına izin vermeyin</translation>
-<translation id="7690549345586282764">Yakınlaştırmayı göster</translation>
 <translation id="7719367874908701697">Sayfa yakınlaştırma</translation>
 <translation id="7781829728241885113">Dün</translation>
 <translation id="7791543448312431591">Ekle</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Belirli bir site için çerezleri engelleyin.</translation>
 <translation id="8959122750345127698">Gezinme işlevine ulaşılamıyor: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Unut</translation>
-<translation id="900095568014372589">Sitelerdeki varsayılan metin ve resimleri küçültün veya büyütün</translation>
+<translation id="8990043154272859344">Tüm sitelerdeki oturumunuz kapatılacak</translation>
 <translation id="9019902583201351841">Ebeveynleriniz tarafından yönetiliyor</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Bu site, etkinliğinizi görebilen bir grupta bulunuyor. Grup, <ph name="FPS_OWNER" /> tarafından tanımlanmıştır.</translation>

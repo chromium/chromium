@@ -290,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Bloker websites fra at benytte dine virtual reality-enheder og -data</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Zoom ind eller ud på en side fra hovedmenuen</translation>
 <translation id="6467852467360539617">Ryd data, og nulstil tilladelser</translation>
 <translation id="6527303717912515753">Del</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
@@ -350,7 +349,6 @@
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7667547420449112975">Den vidunderlige troldmand fra Oz</translation>
 <translation id="7684642910516280563">Tillad ikke, at et website bruger tredjepartscookies</translation>
-<translation id="7690549345586282764">Vis zoom</translation>
 <translation id="7719367874908701697">Sidezoom</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7791543448312431591">Tilføj</translation>
@@ -430,7 +428,6 @@
 <translation id="8959122750345127698">Navigationen er ikke mulig: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8990043154272859344">Du bliver logget ud af alle websites</translation>
-<translation id="900095568014372589">Gør standardteksten og -billederne på websites mindre eller større</translation>
 <translation id="9019902583201351841">Administreret af dine forældre</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="FPS_OWNER" /></translation>

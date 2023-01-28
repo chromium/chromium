@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Ads</translation>
 <translation id="1919950603503897840">Select contacts</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Make text and images larger or smaller for all sites that you visit</translation>
 <translation id="1984937141057606926">Allowed, except third-party</translation>
 <translation id="1989112275319619282">Browse</translation>
 <translation id="1994173015038366702">Site URL</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Sound</translation>
 <translation id="2148716181193084225">Today</translation>
 <translation id="216989819110952009">Even with eyes protected by the green spectacles, Dorothy and her friends were at first dazzled by the</translation>
+<translation id="2176704795966505152">Show zoom option in main menu</translation>
 <translation id="2182457891543959921">Ask before allowing sites to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
 <translation id="2228071138934252756">To let <ph name="APP_NAME" /> access your camera, also turn on camera in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -166,6 +168,7 @@
 <translation id="4008040567710660924">Allow cookies for a specific site.</translation>
 <translation id="4046123991198612571">Next track</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
+<translation id="4151930093518524179">Default zoom</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4169549551965910670">Connected to a USB device</translation>
 <translation id="4194328954146351878">Ask before allowing sites to see and change information on NFC devices (recommended)</translation>
@@ -189,6 +192,7 @@
 <translation id="4534723447064627427">To let <ph name="APP_NAME" /> access your microphone, also turn on microphone in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Mute microphone</translation>
 <translation id="4570913071927164677">Details</translation>
+<translation id="4575264539271661854">Make it easier to zoom in on text and images for a site that you visit</translation>
 <translation id="4598549027014564149">While in Incognito, sites can't use your cookies to see your browsing activity across sites, even related sites. Your browsing activity isn't used for things like personalising ads. Features on some sites may not work.</translation>
 <translation id="4645575059429386691">Managed by your parent</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -290,7 +294,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Block sites from using your virtual reality device and data</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Zoom in or out on a page from the main menu</translation>
 <translation id="6467852467360539617">Clear data and reset permissions</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
@@ -350,7 +353,6 @@
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
 <translation id="7684642910516280563">Don't allow a site to use third-party cookies</translation>
-<translation id="7690549345586282764">Show zoom</translation>
 <translation id="7719367874908701697">Page zoom</translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7791543448312431591">Add</translation>
@@ -430,7 +432,6 @@
 <translation id="8959122750345127698">Navigation is unreachable: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8990043154272859344">You'll be signed out of all sites</translation>
-<translation id="900095568014372589">Make the default text and images on sites smaller or larger</translation>
 <translation id="9019902583201351841">Managed by your parents</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER" /></translation>

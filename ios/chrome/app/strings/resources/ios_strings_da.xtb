@@ -18,6 +18,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1066060668811609597">Administrer synkronisering</translation>
 <translation id="1076421457278169141">Koden er scannet</translation>
 <translation id="1076785341346483463">Synkroniser med managerstyret konto</translation>
+<translation id="1080365971383768617">Adgangskoder på alle dine enheder</translation>
 <translation id="1084365883616172403">Indlæg delt på Facebook.</translation>
 <translation id="1085696779717592361">Brug Chrome som standard</translation>
 <translation id="1103523840287552314">Oversæt altid <ph name="LANGUAGE" /></translation>
@@ -74,7 +75,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1404330357948037222">Du er logget ud</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1430915738399379752">Udskriv</translation>
-<translation id="1434356225517321998">Din browser administreres. <ph name="BEGIN_LINK" />Info<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
 <translation id="1450170672351507823">Standardbeskyttelse er aktiveret. Du kan øge sikkerheden ved at bruge forbedret beskyttelse.</translation>
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
@@ -398,7 +398,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3929457972718048006">Adresser</translation>
 <translation id="3943492037546055397">Adgangskoder</translation>
 <translation id="3959736869653157332">Menu → Ny inkognitofane</translation>
-<translation id="3964173450954943920">Du kan altid vælge, hvad der skal synkroniseres, i <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" />. Google kan bruge din historik til at tilpasse Søgning og andre Google-tjenester.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3968505803272650567">Administrer interesser</translation>
 <translation id="3989635538409502728">Log ud</translation>
@@ -547,6 +546,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5056446788882570708">Der blev registreret problemer <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Drev</translation>
+<translation id="50641035439563602">Adgangskoder gemmes nu på din Google-konto (<ph name="ACCOUNT" />). Du kan bruge dem, uanset hvor du er logget ind. Gå til <ph name="BEGIN_LINK" />indstillingerne<ph name="END_LINK" /> for at deaktivere denne funktion.</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Indlæg delt på Twitter.</translation>
@@ -597,6 +597,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5520466080178053306">Tryk på Adgangskodeadministrator efterfulgt af Tilføj</translation>
 <translation id="5525095647255982834">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på den pågældende enhed.</translation>
 <translation id="5525269841082836315">Opret adgangssætning</translation>
+<translation id="5530084793407600786">Søg på billedet med Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> blev fundet</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynde at se på et website på denne enhed og derefter nemt fortsætte på din Mac. Det website, du har åbent, vises i docken på din Mac.
 
@@ -1035,6 +1036,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
 <translation id="8706588385081740091">Adgangskoder</translation>
+<translation id="8712637175834984815">Forstået</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
 <translation id="8721297211384281569">Menuen Værktøjer</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>

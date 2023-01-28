@@ -733,6 +733,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="492453977506755176">Klawisz trybu przechwytywania</translation>
 <translation id="4925542575807923399">Administrator tego konta wymaga, by w sesji wielokrotnego logowania logować się na nie jako pierwsze.</translation>
 <translation id="4929163402621253029">Coś mówisz? Masz wyciszony mikrofon. Więcej informacji</translation>
+<translation id="4936329710968938986">Wszystkim, wyłączono</translation>
 <translation id="4938176435186993759">Ukryj wszystkie sugestie</translation>
 <translation id="4945196315133970626">Wyłącz powiadomienia</translation>
 <translation id="4946376291507881335">Zapis</translation>
@@ -1386,6 +1387,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="8477270416194247200">Aby anulować, naciśnij Alt + Szukaj lub Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />. Kliknij „Potwierdź”, by zachować zmiany. Poprzednie ustawienia zostaną przywrócone za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Pokaż ustawienia Udostępniania w pobliżu</translation>
+<translation id="8507563469658346379">Wszystkim, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth Chromebooka jest wyłączony. Aby odblokować Chromebooka, wpisz hasło.</translation>
 <translation id="8513108775083588393">Autoobracanie</translation>
 <translation id="851458219935658693">Wybrano opcję Pokaż okna z bieżącego biurka</translation>

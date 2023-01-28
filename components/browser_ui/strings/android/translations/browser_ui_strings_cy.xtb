@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Diffodd y camera</translation>
 <translation id="2717722538473713889">Cyfeiriadau e-bost</translation>
 <translation id="2750481671343847896">Gall gwefannau ddangos anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>
+<translation id="2779966372261694284">Byddwch yn cael eich allgofnodi o'r wefan hon</translation>
 <translation id="2822354292072154809">Ydych yn siŵr eich bod am ailosod yr holl ganiatadau gwefan ar gyfer <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Gwefan</translation>
 <translation id="2874939134665556319">Trac blaenorol</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Rhwystro gwefannau rhag defnyddio eich dyfais rhithwrionedd a'i data</translation>
 <translation id="6447842834002726250">Cwcis</translation>
-<translation id="6453641458248223456">Chwyddo neu bellhau o dudalen o'r brif ddewislen</translation>
 <translation id="6467852467360539617">Clirio data ac ailosod caniatadau</translation>
 <translation id="6527303717912515753">Rhannu</translation>
 <translation id="6545864417968258051">Sganio Bluetooth</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Gofyn yn gyntaf cyn caniatáu i wefannau ddefnyddio'ch meicroffon (argymhellir)</translation>
 <translation id="7000754031042624318">Wedi'i ddiffodd yn Gosodiadau Android</translation>
 <translation id="7016516562562142042">Wedi'i ganiatáu ar gyfer y peiriant chwilio presennol</translation>
+<translation id="702275896380648118">Mae'r wefan hon yn penderfynu pethau rydych yn eu hoffi ac yn cynnig hysbysebion i wefannau eraill. Mae'r wefan hon hefyd yn cael eich pynciau hysbysebion o Chrome i ddangos hysbysebion mwy perthnasol i chi.</translation>
 <translation id="702463548815491781">Argymhellir pan fydd TalkBack neu Newid Mynediad ymlaen</translation>
 <translation id="7053983685419859001">Rhwystro</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Mae 1 wedi'i ddewis}zero{Mae # wedi'u dewis}two{Mae # wedi'u dewis}few{Mae # wedi'u dewis}many{Mae # wedi'u dewis}other{Mae # wedi'u dewis}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7667547420449112975">Dewin Rhyfeddol Oz</translation>
 <translation id="7684642910516280563">Peidio â chaniatáu i wefan ddefnyddio cwcis trydydd parti</translation>
-<translation id="7690549345586282764">Dangos chwyddo</translation>
 <translation id="7719367874908701697">Lefel chwyddo'r dudalen</translation>
 <translation id="7781829728241885113">Ddoe</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Rhwystro cwcis ar gyfer gwefan benodol.</translation>
 <translation id="8959122750345127698">Mae llywio yn anghyraeddadwy: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Anghofio</translation>
-<translation id="900095568014372589">Gwnewch y testun a'r lluniau diofyn ar wefannau yn llai neu yn fwy</translation>
+<translation id="8990043154272859344">Byddwch yn cael eich allgofnodi o bob gwefan</translation>
 <translation id="9019902583201351841">Rheolir gan eich rhieni</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Mae'r wefan hon mewn grŵp sy'n gallu gweld eich gweithgarwch. Diffinnir y grŵp gan <ph name="FPS_OWNER" /></translation>

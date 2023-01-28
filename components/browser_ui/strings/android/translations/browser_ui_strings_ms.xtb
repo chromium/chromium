@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
+<translation id="2779966372261694284">Anda akan dilog keluar daripada laman ini</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Sekat tapak daripada menggunakan peranti dan data realiti maya anda</translation>
 <translation id="6447842834002726250">Kuki</translation>
-<translation id="6453641458248223456">Zum masuk atau keluar pada halaman daripada menu utama</translation>
 <translation id="6467852467360539617">Kosongkan data &amp; tetapkan semula kebenaran</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Tanya dahulu sebelum membenarkan tapak menggunakan mikrofon anda (disyorkan)</translation>
 <translation id="7000754031042624318">Dimatikan dalam tetapan Android</translation>
 <translation id="7016516562562142042">Dibenarkan untuk enjin carian semasa</translation>
+<translation id="702275896380648118">Laman ini menentukan perkara yang anda sukai dan kemudian mencadangkan iklan kepada laman lain. Laman ini juga mendapat topik iklan anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda.</translation>
 <translation id="702463548815491781">Disyorkan apabila TalkBack atau Akses Suis dihidupkan</translation>
 <translation id="7053983685419859001">Sekat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 dipilih}other{# dipilih}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7667547420449112975">Ahli Sihir Oz yang Menakjubkan</translation>
 <translation id="7684642910516280563">Jangan benarkan laman menggunakan kuki pihak ketiga</translation>
-<translation id="7690549345586282764">Tunjukkan zum</translation>
 <translation id="7719367874908701697">Zum halaman</translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7791543448312431591">Tambah</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Sekat kuki untuk tapak tertentu.</translation>
 <translation id="8959122750345127698">Tidak dapat mencapai navigasi: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Lupa</translation>
-<translation id="900095568014372589">Jadikan teks dan imej lalai pada laman lebih kecil atau lebih besar</translation>
+<translation id="8990043154272859344">Anda akan dilog keluar daripada semua laman</translation>
 <translation id="9019902583201351841">Diurus oleh ibu bapa anda</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Laman ini berada dalam kumpulan yang boleh melihat aktiviti anda. Kumpulan tersebut ditakrifkan oleh <ph name="FPS_OWNER" /></translation>

@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
+<translation id="2779966372261694284">Du loggas ut från webbplatsen</translation>
 <translation id="2822354292072154809">Vill du återställa alla webbplatsbehörigheter för <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2874939134665556319">Föregående spår</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blockera webbplatser från att använda VR-enheter och VR-data</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Zooma in eller ut på en sida från huvudmenyn</translation>
 <translation id="6467852467360539617">Rensa data och återställ behörigheter</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">Fråga innan webbplatser tillåts att använda mikrofonen (rekommenderas)</translation>
 <translation id="7000754031042624318">Inaktiverad i Android-inställningarna</translation>
 <translation id="7016516562562142042">Tillåt för den nuvarande sökmotorn</translation>
+<translation id="702275896380648118">Den här webbplatsen avgör vad du gillar och föreslår sedan annonser till andra webbplatser. Webbplatsen hämtar dessutom dina annonsämnen från Chrome för att visa mer relevanta annonser för dig.</translation>
 <translation id="702463548815491781">Rekommenderas när TalkBack eller brytarstyrning är aktiverat</translation>
 <translation id="7053983685419859001">Blockera</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 har valts}other{# har valts}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7667547420449112975">Trollkarlen från Oz</translation>
 <translation id="7684642910516280563">Tillåt inte att en webbplats använder tredjepartscookies</translation>
-<translation id="7690549345586282764">Visa zoom</translation>
 <translation id="7719367874908701697">Sidzoom</translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7791543448312431591">Lägg till</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">Blockera cookies för en enskild webbplats.</translation>
 <translation id="8959122750345127698">Det går inte att nå webbadressen: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Glöm</translation>
-<translation id="900095568014372589">Gör text och bilder på webbplatser större eller mindre som standard</translation>
+<translation id="8990043154272859344">Du loggas ut från alla webbplatser</translation>
 <translation id="9019902583201351841">Hanteras av dina föräldrar</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Den här webbplatsen ingår i en grupp som kan se din aktivitet. Gruppen har definierats av <ph name="FPS_OWNER" /></translation>

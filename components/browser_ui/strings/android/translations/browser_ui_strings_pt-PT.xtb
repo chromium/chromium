@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Anúncios</translation>
 <translation id="1919950603503897840">Selecionar contactos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Aumente ou diminua o tamanho do texto e das imagens de todos os sites que visitar</translation>
 <translation id="1984937141057606926">Permitidos, exceto de terceiros</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="1994173015038366702">URL do site</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Som</translation>
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="216989819110952009">Mesmo com os olhos protegidos pelos óculos verdes, Dorothy e os seus amigos ficaram ofuscados pelo</translation>
+<translation id="2176704795966505152">Mostrar opção de zoom no menu principal</translation>
 <translation id="2182457891543959921">Perguntar antes de permitir que os sites criem um mapa 3D do ambiente à sua volta ou monitorizem a posição da câmara (recomendado)</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
 <translation id="2228071138934252756">Para permitir que a app <ph name="APP_NAME" /> aceda à câmara, ative também a câmara nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
@@ -166,6 +168,7 @@
 <translation id="4008040567710660924">Permita cookies para um site específico.</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
+<translation id="4151930093518524179">Zoom predefinido</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
 <translation id="4194328954146351878">Perguntar antes de permitir que os sites vejam e alterem informações em dispositivos NFC (recomendado)</translation>
@@ -189,6 +192,7 @@
 <translation id="4534723447064627427">Para permitir que a app <ph name="APP_NAME" /> aceda ao microfone, ative também o microfone nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Desativar microfone</translation>
 <translation id="4570913071927164677">Detalhes</translation>
+<translation id="4575264539271661854">Facilite o aumento do zoom no texto e nas imagens de um site que visitar</translation>
 <translation id="4598549027014564149">Quando estiver na Navegação anónima, os sites não podem usar cookies para ver a sua atividade de navegação em sites, mesmo em sites relacionados. A sua atividade de navegação não é usada para, por exemplo, personalizar anúncios. As funcionalidades em alguns sites podem não funcionar.</translation>
 <translation id="4645575059429386691">Gerido pelos teus pais</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
@@ -290,7 +294,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Impedir que os sites utilizem aos seus dados e dispositivo de realidade virtual</translation>
 <translation id="6447842834002726250">Cookies</translation>
-<translation id="6453641458248223456">Aumente ou diminua o zoom numa página a partir do menu principal</translation>
 <translation id="6467852467360539617">Limpar dados e repor autorizações</translation>
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
@@ -350,7 +353,6 @@
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O Maravilhoso Feiticeiro de Oz</translation>
 <translation id="7684642910516280563">Não permita que um site use cookies de terceiros</translation>
-<translation id="7690549345586282764">Mostrar zoom</translation>
 <translation id="7719367874908701697">Zoom da página</translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7791543448312431591">Adicionar</translation>
@@ -430,7 +432,6 @@
 <translation id="8959122750345127698">A navegação está inacessível: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8990043154272859344">A sua sessão vai ser terminada em todos os sites</translation>
-<translation id="900095568014372589">Aumente ou diminua o texto e as imagens predefinidos nos sites</translation>
 <translation id="9019902583201351841">Gerido pelos teus pais</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">Este site está num grupo que pode ver a sua atividade. O grupo é definido por <ph name="FPS_OWNER" /></translation>

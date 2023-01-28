@@ -563,6 +563,7 @@
 <translation id="4108314971463891922">팔로우</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
+<translation id="4124152339699379357">알림 권한 흐름이 전체 높이로 열림</translation>
 <translation id="4135200667068010335">탭을 공유할 기기 목록이 닫혔습니다.</translation>
 <translation id="4137746084635924146">기기의 현재 언어</translation>
 <translation id="414128724510021958">기본적으로 요청되는 데스크톱 사이트</translation>
@@ -1401,6 +1402,7 @@
 <translation id="8516012719330875537">이미지 편집기</translation>
 <translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>
 <translation id="8523928698583292556">저장된 암호 삭제</translation>
+<translation id="8526855376374973824">알림 권한 흐름</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
 <translation id="854522910157234410">페이지 열기</translation>
 <translation id="8551513938758868521">Chrome 종료 시 시크릿 탭 잠금</translation>
@@ -1460,6 +1462,7 @@
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, 탭</translation>
 <translation id="8854223127042600341">오프라인 파일 보기</translation>
 <translation id="8856607253650333758">설명 보기</translation>
+<translation id="8856931513242997049">알림 권한 흐름 닫힘</translation>
 <translation id="8873817150012960745">여기를 탭하여 시작</translation>
 <translation id="8881973373982641723">검색창에 입력한 내용을 비롯한 기록 삭제</translation>
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chromium에서는 방문한 지 4주 이상 된 사이트를 목록에서 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 사이트에서 관심분야를 정의하는 것을 원치 않으면 해당 사이트를 삭제하면 됩니다.</translation>

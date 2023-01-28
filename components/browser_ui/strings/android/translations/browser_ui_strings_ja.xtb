@@ -256,6 +256,7 @@
 <translation id="5804241973901381774">権限</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5876056640971328065">動画を一時停止</translation>
+<translation id="5884085660368669834">サイトの設定</translation>
 <translation id="5887687176710214216">最終アクセス日: 昨日</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5922853908706496913">画面を共有しています</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">サイトによるバーチャル リアリティ デバイスとデータの使用をブロックする</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6453641458248223456">メインメニューからページのズームレベルを変更できるようにします</translation>
 <translation id="6467852467360539617">データを消去して権限をリセット</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6545864417968258051">Bluetooth のスキャン</translation>
@@ -307,6 +307,7 @@
 <translation id="6746124502594467657">下に移動</translation>
 <translation id="6749077623962119521">権限をリセットしますか？</translation>
 <translation id="6766622839693428701">閉じるには下にスワイプします。</translation>
+<translation id="6787751205395685251"><ph name="SITE_NAME" /> のオプションを選択してください</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="6818926723028410516">アイテムを選択</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7667547420449112975">オズの魔法使い</translation>
 <translation id="7684642910516280563">サイトにサードパーティ Cookie の使用を許可しない</translation>
-<translation id="7690549345586282764">ズームを表示</translation>
 <translation id="7719367874908701697">ページのズーム</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7791543448312431591">追加</translation>
@@ -428,7 +428,6 @@
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="8986362086234534611">削除</translation>
 <translation id="8990043154272859344">すべてのサイトからログアウトします</translation>
-<translation id="900095568014372589">サイトのデフォルトのテキストや画像のサイズを変更します</translation>
 <translation id="9019902583201351841">保護者により管理されています</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9090268041676521955">このサイトは、アクティビティを確認できるグループに属しています。グループは <ph name="FPS_OWNER" /> によって定義されます</translation>

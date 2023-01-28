@@ -733,6 +733,7 @@ Connect your device to power.</translation>
 <translation id="492453977506755176">Capture mode key</translation>
 <translation id="4925542575807923399">The administrator for this account requires this account to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="4929163402621253029">Are you speaking? You are on mute. Learn more</translation>
+<translation id="4936329710968938986">Everyone, off</translation>
 <translation id="4938176435186993759">Hide all suggestions</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
@@ -1387,6 +1388,7 @@ New install</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" />. The resolution was changed to <ph name="FALLBACK_RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Show Nearby Share settings</translation>
+<translation id="8507563469658346379">Everyone, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Your Chromebook’s Bluetooth is off. To unlock your Chromebook, enter password.</translation>
 <translation id="8513108775083588393">Auto-rotate</translation>
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>

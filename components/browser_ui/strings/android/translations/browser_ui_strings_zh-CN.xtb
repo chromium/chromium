@@ -97,6 +97,7 @@
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
+<translation id="2779966372261694284">您将会从此网站上自动退出帐号</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2874939134665556319">上一首</translation>
@@ -289,7 +290,6 @@
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">禁止网站使用您的虚拟现实设备和数据</translation>
 <translation id="6447842834002726250">Cookie</translation>
-<translation id="6453641458248223456">通过主菜单放大或缩小页面</translation>
 <translation id="6467852467360539617">清除数据并重置权限</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
@@ -318,6 +318,7 @@
 <translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
 <translation id="7000754031042624318">已在 Android 设置中关闭</translation>
 <translation id="7016516562562142042">允许当前搜索引擎使用</translation>
+<translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="702463548815491781">建议在开启 TalkBack 或“开关控制”时使用</translation>
 <translation id="7053983685419859001">禁止</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
@@ -348,7 +349,6 @@
 <translation id="7658239707568436148">取消</translation>
 <translation id="7667547420449112975">绿野仙踪</translation>
 <translation id="7684642910516280563">不允许网站使用第三方 Cookie</translation>
-<translation id="7690549345586282764">显示缩放比例菜单</translation>
 <translation id="7719367874908701697">网页缩放</translation>
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7791543448312431591">添加</translation>
@@ -427,7 +427,7 @@
 <translation id="8958424370300090006">阻止特定网站使用 Cookie。</translation>
 <translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
 <translation id="8986362086234534611">不保存</translation>
-<translation id="900095568014372589">放大或缩小网站上的默认文字和图片</translation>
+<translation id="8990043154272859344">您将会从所有网站上自动退出帐号</translation>
 <translation id="9019902583201351841">由您父母管理</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9090268041676521955">此网站属于由 <ph name="FPS_OWNER" /> 定义的群组，因此能查看您的活动记录。</translation>

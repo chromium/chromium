@@ -74,7 +74,6 @@
 <translation id="1404330357948037222">Вы выйшлі з уліковага запісу</translation>
 <translation id="1407135791313364759">Адкрыць усе</translation>
 <translation id="1430915738399379752">Друк</translation>
-<translation id="1434356225517321998">Ваш браўзер знаходзіцца пад кіраваннем. <ph name="BEGIN_LINK" />Падрабязныя звесткі<ph name="END_LINK" /></translation>
 <translation id="1449835205994625556">Схаваць пароль</translation>
 <translation id="1450170672351507823">Стандартная абарона ўключана. Каб павысіць бяспеку, выкарыстоўвайце Палепшаную абарону.</translation>
 <translation id="149095475893949513">Гэты вэб-сайт спрабуе спампаваць профіль канфігурацыі.</translation>
@@ -398,7 +397,6 @@
 <translation id="3929457972718048006">Адрасы</translation>
 <translation id="3943492037546055397">Паролі</translation>
 <translation id="3959736869653157332">Меню → Новая ўкладка ў рэжыме інкогніта</translation>
-<translation id="3964173450954943920">Вы заўсёды можаце выбраць, што сінхранізаваць, <ph name="BEGIN_LINK" />у наладах<ph name="END_LINK" />. Google можа выкарыстоўваць вашу гісторыю, каб персаналізаваць Пошук і іншыя сэрвісы Google.</translation>
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3968505803272650567">Кіраваць інтарэсамі</translation>
 <translation id="3989635538409502728">Выйсці</translation>
@@ -1035,6 +1033,7 @@
 <translation id="8680787084697685621">Даныя ўліковага запісу для ўваходу састарэлі.</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыць укладку}one{Закрыць укладкі}few{Закрыць укладкі}many{Закрыць укладкі}other{Закрыць укладкі}}</translation>
 <translation id="8706588385081740091">Паролі</translation>
+<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>
 <translation id="8721297211384281569">Меню "Інструменты"</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
