@@ -79,11 +79,16 @@ std::unique_ptr<PostProcessingPipeline> FilterGroup::CreatePrerenderPipeline(
     int num_channels) {
   ++prerender_creation_count_;
   LOG(INFO) << "Creating prerender pipeline for " << name_;
-  auto result = ppp_factory_->CreatePipeline(
+  auto pipeline = ppp_factory_->CreatePipeline(
       "prerender_" + name_ + base::NumberToString(prerender_creation_count_),
       &prerender_filter_list_, num_channels);
+  for (const auto& config : post_processing_configs_) {
+    LOG(INFO) << "Setting prerender post processing config for " << config.first
+              << " to " << config.second;
+    pipeline->SetPostProcessorConfig(config.first, config.second);
+  }
   LOG(INFO) << "Done creating prerender pipeline for " << name_;
-  return result;
+  return pipeline;
 }
 
 void FilterGroup::AddMixedInput(FilterGroup* input) {
@@ -308,6 +313,7 @@ void FilterGroup::ResizeBuffers() {
 void FilterGroup::SetPostProcessorConfig(const std::string& name,
                                          const std::string& config) {
   post_processing_pipeline_->SetPostProcessorConfig(name, config);
+  post_processing_configs_.insert_or_assign(name, config);
   for (MixerInput* input : active_inputs_) {
     input->SetPostProcessorConfig(name, config);
   }
