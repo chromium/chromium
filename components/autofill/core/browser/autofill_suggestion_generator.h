@@ -177,11 +177,6 @@ class AutofillSuggestionGenerator {
                      const CreditCard& credit_card,
                      bool virtual_card_option) const;
 
-  // Return the CardMetadataLoggingContext based on the credit cards
-  // to be shown in the suggestion.
-  autofill_metrics::CardMetadataLoggingContext GetMetadataLoggingContext(
-      const std::vector<CreditCard*>& cards_to_suggest) const;
-
   // Maps suggestion backend ID to and from an internal ID identifying it. Two
   // of these intermediate internal IDs are packed by MakeFrontendID to make the
   // IDs that this class generates for the UI and for IPC.

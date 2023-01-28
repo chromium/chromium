@@ -6186,6 +6186,7 @@ TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataMetrics) {
 
   CreditCard masked_server_card = test::GetMaskedServerCard();
   masked_server_card.set_guid(kTestMaskedCardId);
+  masked_server_card.set_issuer_id("amex");
   if (card_metadata_available()) {
     masked_server_card.set_product_description(u"card_description");
     masked_server_card.set_card_art_url(
@@ -6208,30 +6209,40 @@ TEST_P(AutofillMetricsTestForCardMetadata, LogCardMetadataMetrics) {
       mojom::RendererFormDataAction::kFill, form, form.fields.front(),
       MakeFrontendId({.credit_card_id = kTestMaskedCardId}));
 
-  std::string histogram_prefix =
-      "Autofill.CreditCard.SuggestionAcceptanceLatencySinceShown";
-  std::string histogram_name = histogram_prefix;
+  std::string latency_histogram_prefix =
+      "Autofill.CreditCard.SelectionLatencySinceShown";
+
+  std::string latency_histogram_suffix;
   if (card_metadata_available()) {
     // Verify the suggestion acceptance latency was logged when metadata was
     // available or the suggestions had one virtual card.
     if (card_product_name_enabled() &&
         (card_art_image_enabled() || card_has_linked_virtual_card())) {
-      histogram_name += ".ProductDescriptionAndArtImageShown";
+      latency_histogram_suffix =
+          autofill_metrics::kProductNameAndArtImageBothShownSuffix;
     } else if (card_product_name_enabled()) {
-      histogram_name += ".ProductDescriptionShown";
+      latency_histogram_suffix = autofill_metrics::kProductNameShownOnlySuffix;
     } else if (card_art_image_enabled() || card_has_linked_virtual_card()) {
-      histogram_name += ".ArtImageShown";
+      latency_histogram_suffix = autofill_metrics::kArtImageShownOnlySuffix;
     } else {
-      histogram_name += ".MetadataNotShown";
+      latency_histogram_suffix =
+          autofill_metrics::kProductNameAndArtImageNotShownSuffix;
     }
-    EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(histogram_prefix),
-                ElementsAre(testing::Pair(histogram_name, 1)));
-    histogram_tester.ExpectUniqueSample(histogram_name, 2000, 1);
+
+    histogram_tester.ExpectUniqueSample(latency_histogram_prefix +
+                                            ".AnyCardWithMetadata" +
+                                            latency_histogram_suffix,
+                                        2000, 1);
+    histogram_tester.ExpectUniqueSample(latency_histogram_prefix +
+                                            ".SelectedCardWithMetadata" +
+                                            latency_histogram_suffix + ".Amex",
+                                        2000, 1);
   } else {
     // Verify that no histogram should be logged when metadata was not
     // available and the suggestions had no virtual card.
     EXPECT_TRUE(
-        histogram_tester.GetTotalCountsForPrefix(histogram_prefix).empty());
+        histogram_tester.GetTotalCountsForPrefix(latency_histogram_prefix)
+            .empty());
   }
 }
 
