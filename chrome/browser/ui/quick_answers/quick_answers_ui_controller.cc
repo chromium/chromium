@@ -9,8 +9,10 @@
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,6 +99,16 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
 }
 
 void QuickAnswersUiController::OnQuickAnswersViewPressed() {
+  if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
+    auto* const rich_answers_view =
+        new RichAnswersView(quick_answers_view_tracker_.view()->bounds(),
+                            weak_factory_.GetWeakPtr());
+    rich_answers_view_tracker_.SetView(rich_answers_view);
+    rich_answers_view->GetWidget()->ShowInactive();
+    controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
+    return;
+  }
+
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 

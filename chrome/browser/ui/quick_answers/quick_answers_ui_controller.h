@@ -99,9 +99,10 @@ class QuickAnswersUiController {
  private:
   raw_ptr<QuickAnswersControllerImpl> controller_ = nullptr;
 
-  // Trackers for quick answers and user consent view.
+  // Trackers for quick answers related views.
   views::ViewTracker quick_answers_view_tracker_;
   views::ViewTracker user_consent_view_tracker_;
+  views::ViewTracker rich_answers_view_tracker_;
 
   std::string query_;
 
