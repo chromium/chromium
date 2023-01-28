@@ -6890,6 +6890,24 @@
             ]
         }
     ],
+    "LimitImageDecodeCacheSize": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "mb": "32"
+                    },
+                    "enable_features": [
+                        "LimitImageDecodeCacheSize"
+                    ]
+                }
+            ]
+        }
+    ],
     "LinkCapturingPostNavUXStudy": [
         {
             "platforms": [
