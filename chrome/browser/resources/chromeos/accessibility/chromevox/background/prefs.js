@@ -49,7 +49,6 @@ export class ChromeVoxPrefs {
         LocalStorage.set(pref, ChromeVoxPrefs.DEFAULT_PREFS[pref]);
       }
     }
-    ChromeVoxPrefs.instance.enableOrDisableLogUrlWatcher_();
 
     BridgeHelper.registerHandler(
         TARGET, Action.GET_PREFS, () => ChromeVoxPrefs.instance.getPrefs());

@@ -42,6 +42,7 @@ import {BackgroundKeyboardHandler} from './keyboard_handler.js';
 import {LiveRegions} from './live_regions.js';
 import {EventStreamLogger} from './logging/event_stream_logger.js';
 import {LogStore} from './logging/log_store.js';
+import {LogUrlWatcher} from './logging/log_url_watcher.js';
 import {MathHandler} from './math_handler.js';
 import {MediaAutomationHandler} from './media_automation_handler.js';
 import {Output} from './output/output.js';
@@ -136,6 +137,7 @@ export class Background extends ChromeVoxState {
     LiveRegions.init();
     LocaleOutputHelper.init();
     LogStore.init();
+    LogUrlWatcher.init();
     PageLoadSoundHandler.init();
     PanelBackground.init();
     RangeAutomationHandler.init();
