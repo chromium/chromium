@@ -76,7 +76,9 @@ involved, members of the security team, and the original reporter.
 
 ## 4. Author and land a CL on `main`
 
-The developer will author a fix and a regression test for the security issue.
+The developer will author a fix and a regression test for the security issue
+The CL description should mention the bug number in a
+[`Bug:` or `Fixed:` footer](../contributing.md#cl-footer-reference).
 Once the CL lands, it will not yet be widely available to users, since it is
 only in the `main` branch. Unless further steps are taken (see below), the fix
 will roll out as part of the normal [release
