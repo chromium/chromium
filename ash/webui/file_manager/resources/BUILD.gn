@@ -123,7 +123,7 @@ if (!optimize_webui) {
 
     in_files = ts_files
 
-    deps = [ "//ui/webui/resources:library" ]
+    deps = [ "//ui/webui/resources/js:build_ts" ]
   }
 }
 
