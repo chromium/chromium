@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.SysUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
@@ -25,6 +27,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -44,6 +47,12 @@ public class DesktopSiteSettingsIPHController {
     static final String PARAM_IPH_TYPE_GENERIC = "iph_type_generic";
     static final String PARAM_IPH_TYPE_SPECIFIC = "iph_type_specific";
     static final String PARAM_SITE_LIST = "site_list";
+
+    static final String PARAM_GENERIC_IPH_SCREEN_SIZE_THRESHOLD_INCHES =
+            "generic_iph_screen_size_threshold_inches";
+    static final double DEFAULT_GENERIC_IPH_SCREEN_SIZE_THRESHOLD_INCHES = 0.0;
+    static final String PARAM_GENERIC_IPH_MEMORY_THRESHOLD_MB = "generic_iph_memory_threshold_mb";
+    static final int DEFAULT_GENERIC_IPH_MEMORY_THRESHOLD_MB = 0;
 
     private final UserEducationHelper mUserEducationHelper;
     private final WindowAndroid mWindowAndroid;
@@ -68,10 +77,11 @@ public class DesktopSiteSettingsIPHController {
      * @param profile The current {@link Profile}.
      * @param toolbarMenuButton The toolbar menu button to which the IPH will be anchored.
      * @param appMenuHandler The app menu handler.
+     * @param screenSizeInInches The device primary display size in inches.
      */
     public static @Nullable DesktopSiteSettingsIPHController create(Activity activity,
             WindowAndroid windowAndroid, ActivityTabProvider activityTabProvider, Profile profile,
-            View toolbarMenuButton, AppMenuHandler appMenuHandler) {
+            View toolbarMenuButton, AppMenuHandler appMenuHandler, double screenSizeInInches) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH)) {
             return null;
         }
@@ -79,13 +89,13 @@ public class DesktopSiteSettingsIPHController {
         return new DesktopSiteSettingsIPHController(windowAndroid, activityTabProvider, profile,
                 toolbarMenuButton, appMenuHandler,
                 new UserEducationHelper(activity, new Handler(Looper.getMainLooper())),
-                new WebsitePreferenceBridge());
+                new WebsitePreferenceBridge(), screenSizeInInches);
     }
 
     DesktopSiteSettingsIPHController(WindowAndroid windowAndroid,
             ActivityTabProvider activityTabProvider, Profile profile, View toolbarMenuButton,
             AppMenuHandler appMenuHandler, UserEducationHelper userEducationHelper,
-            WebsitePreferenceBridge websitePreferenceBridge) {
+            WebsitePreferenceBridge websitePreferenceBridge, double screenSizeInInches) {
         mWindowAndroid = windowAndroid;
         mToolbarMenuButton = toolbarMenuButton;
         mAppMenuHandler = appMenuHandler;
@@ -93,7 +103,7 @@ public class DesktopSiteSettingsIPHController {
         mActivityTabProvider = activityTabProvider;
         mWebsitePreferenceBridge = websitePreferenceBridge;
 
-        maybeRegisterTabObserverForPerSiteIPH(profile);
+        maybeCreateTabObserverForPerSiteIPH(profile, screenSizeInInches);
     }
 
     public void destroy() {
@@ -127,11 +137,6 @@ public class DesktopSiteSettingsIPHController {
 
     @VisibleForTesting
     void showGenericIPH(@NonNull Tab tab, Profile profile) {
-        // Return early if the device is not a tablet.
-        if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
-            return;
-        }
-
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.REQUEST_DESKTOP_SITE_EXCEPTIONS_GENERIC_FEATURE;
         if (perSiteIPHPreChecksFailed(tab, tracker, featureName)) return;
@@ -182,6 +187,30 @@ public class DesktopSiteSettingsIPHController {
         return UrlUtilities.isInternalScheme(url) || tab.getWebContents() == null;
     }
 
+    private boolean genericIPHDevicePreChecksFailed(double screenSizeInInches) {
+        // Return early if the device is not a tablet.
+        if (!DeviceFormFactor.isWindowOnTablet(mWindowAndroid)) {
+            return true;
+        }
+
+        // Return early if the device does not satisfy screen size requirements.
+        double screenSizeThresholdInInches = ChromeFeatureList.getFieldTrialParamByFeatureAsDouble(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH,
+                PARAM_GENERIC_IPH_SCREEN_SIZE_THRESHOLD_INCHES,
+                DEFAULT_GENERIC_IPH_SCREEN_SIZE_THRESHOLD_INCHES);
+        if (screenSizeInInches < screenSizeThresholdInInches) {
+            return true;
+        }
+
+        // Return early if the device does not satisfy memory requirements.
+        int memoryThresholdInMb = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH,
+                PARAM_GENERIC_IPH_MEMORY_THRESHOLD_MB, DEFAULT_GENERIC_IPH_MEMORY_THRESHOLD_MB);
+        return memoryThresholdInMb != 0
+                && SysUtils.amountOfPhysicalMemoryKB()
+                < memoryThresholdInMb * ConversionUtils.KILOBYTES_PER_MEGABYTE;
+    }
+
     private void requestShowPerSiteIPH(String featureName, int textId, Object[] textArgs) {
         mUserEducationHelper.requestShowIPH(
                 new IPHCommandBuilder(mToolbarMenuButton.getContext().getResources(), featureName,
@@ -189,11 +218,16 @@ public class DesktopSiteSettingsIPHController {
                         .setAnchorView(mToolbarMenuButton)
                         .setOnShowCallback(
                                 () -> turnOnHighlightForMenuItem(R.id.request_desktop_site_id))
-                        .setOnDismissCallback(this::turnOffHighlightForMenuItem)
+                        .setOnDismissCallback(() -> {
+                            turnOffHighlightForMenuItem();
+                            RecordHistogram.recordBooleanHistogram(
+                                    "Android.RequestDesktopSite.PerSiteIphDismissed.AppMenuOpened",
+                                    mAppMenuHandler.isAppMenuShowing());
+                        })
                         .build());
     }
 
-    private void maybeRegisterTabObserverForPerSiteIPH(Profile profile) {
+    private void maybeCreateTabObserverForPerSiteIPH(Profile profile, double screenSizeInInches) {
         boolean showGenericIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.REQUEST_DESKTOP_SITE_PER_SITE_IPH, PARAM_IPH_TYPE_GENERIC, false);
         boolean showSpecificIPH = ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
@@ -209,20 +243,21 @@ public class DesktopSiteSettingsIPHController {
                             .split(","));
             createActivityTabTabObserver(tab -> showSpecificIPH(tab, profile));
         } else if (showGenericIPH) {
+            if (genericIPHDevicePreChecksFailed(screenSizeInInches)) return;
             createActivityTabTabObserver(tab -> showGenericIPH(tab, profile));
         }
     }
 
-    private void createActivityTabTabObserver(Callback<Tab> callback) {
+    private void createActivityTabTabObserver(Callback<Tab> showIPHCallback) {
         mActivityTabTabObserver = new ActivityTabTabObserver(mActivityTabProvider) {
             @Override
             protected void onObservingDifferentTab(Tab tab, boolean hint) {
-                callback.onResult(tab);
+                showIPHCallback.onResult(tab);
             }
 
             @Override
             public void onPageLoadFinished(Tab tab, GURL url) {
-                callback.onResult(tab);
+                showIPHCallback.onResult(tab);
             }
         };
     }

@@ -98,44 +98,12 @@ import java.util.Map.Entry;
 public class RequestDesktopUtilsUnitTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
-    @Mock
-    private MessageDispatcher mMessageDispatcher;
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private CriticalPersistedTabData mCriticalPersistedTabData;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mRegularTabModel;
-    @Mock
-    private TabModel mIncognitoTabModel;
-    @Mock
-    private ObservableSupplier<Tab> mCurrentTabSupplier;
 
-    private @ContentSettingValues int mRdsDefaultValue;
-    private SharedPreferencesManager mSharedPreferencesManager;
-
-    private final Map<String, Integer> mContentSettingMap = new HashMap<>();
-    private final GURL mGoogleUrl = new GURL(JUnitTestGURLs.GOOGLE_URL);
-    private final GURL mMapsUrl = new GURL(JUnitTestGURLs.MAPS_URL);
-
-    private Resources mResources;
-
-    private final TestValues mTestValues = new TestValues();
-
+    /**
+     * Shadows {@link SysUtils} class for testing.
+     */
     @Implements(SysUtils.class)
-    static class ShadowSysUtils {
+    public static class ShadowSysUtils {
         private static boolean sLowEndDevice;
         private static int sMemoryInMB;
 
@@ -183,6 +151,42 @@ public class RequestDesktopUtilsUnitTest {
             sGlobalDefaultsExperimentGroupName = groupName;
         }
     }
+
+    @Mock
+    private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock
+    private MessageDispatcher mMessageDispatcher;
+    @Mock
+    private Activity mActivity;
+    @Mock
+    private Profile mProfile;
+    @Mock
+    private ModalDialogManager mModalDialogManager;
+    @Mock
+    private Tracker mTracker;
+    @Mock
+    private Tab mTab;
+    @Mock
+    private CriticalPersistedTabData mCriticalPersistedTabData;
+    @Mock
+    private TabModelSelector mTabModelSelector;
+    @Mock
+    private TabModel mRegularTabModel;
+    @Mock
+    private TabModel mIncognitoTabModel;
+    @Mock
+    private ObservableSupplier<Tab> mCurrentTabSupplier;
+
+    private @ContentSettingValues int mRdsDefaultValue;
+    private SharedPreferencesManager mSharedPreferencesManager;
+
+    private final Map<String, Integer> mContentSettingMap = new HashMap<>();
+    private final GURL mGoogleUrl = new GURL(JUnitTestGURLs.GOOGLE_URL);
+    private final GURL mMapsUrl = new GURL(JUnitTestGURLs.MAPS_URL);
+
+    private Resources mResources;
+
+    private final TestValues mTestValues = new TestValues();
 
     private static final String ANY_SUBDOMAIN_PATTERN = "[*.]";
     private static final String GOOGLE_COM = "[*.]google.com/";
