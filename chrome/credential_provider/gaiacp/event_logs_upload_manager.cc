@@ -428,7 +428,7 @@ HRESULT EventLogsUploadManager::UploadEventViewerLogs(
 
     chunk_id = std::max(chunk_id, log_entry.event_id);
 
-    base::Value log_entry_value(base::Value::Type::DICTIONARY);
+    base::Value log_entry_value(base::Value::Type::DICT);
     log_entry.ToValue(log_entry_value);
 
     // Get the JSON for the log to keep track of payload size.
@@ -520,7 +520,7 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
 }
 
 void EventLogsUploadManager::EventLogEntry::ToValue(base::Value& dict) const {
-  base::Value timestamp(base::Value::Type::DICTIONARY);
+  base::Value timestamp(base::Value::Type::DICT);
   timestamp.SetIntKey(kEventLogTimeStampSecondsParameterName,
                       created_ts.seconds);
   timestamp.SetIntKey(kEventLogTimeStampNanosParameterName, created_ts.nanos);

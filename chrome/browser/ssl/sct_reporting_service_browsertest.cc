@@ -355,7 +355,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     // 2022-01-01 00:00:00 GMT.
     base::Time server_time =
         base::Time::UnixEpoch() + base::Seconds(1640995200);
-    base::Value response(base::Value::Type::DICTIONARY);
+    base::Value response(base::Value::Type::DICT);
     response.SetStringKey("responseStatus", "OK");
     response.SetStringKey("now", base::TimeToISO8601(server_time));
 
@@ -368,14 +368,14 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
     base::Value log_list(base::Value::Type::LIST);
     {
-      base::Value log_status(base::Value::Type::DICTIONARY);
+      base::Value log_status(base::Value::Type::DICT);
       log_status.SetStringKey("logId", base::Base64Encode(kTestGoogleLogId));
       log_status.SetStringKey("ingestedUntil",
                               base::TimeToISO8601(server_time));
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value log_status(base::Value::Type::DICTIONARY);
+      base::Value log_status(base::Value::Type::DICT);
       log_status.SetStringKey("logId",
                               base::Base64Encode(kTestNonGoogleLogId1));
       log_status.SetStringKey("ingestedUntil",
@@ -383,7 +383,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
       log_list.Append(std::move(log_status));
     }
     {
-      base::Value log_status(base::Value::Type::DICTIONARY);
+      base::Value log_status(base::Value::Type::DICT);
       log_status.SetStringKey("logId",
                               base::Base64Encode(kTestNonGoogleLogId2));
       log_status.SetStringKey("ingestedUntil",

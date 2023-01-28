@@ -83,7 +83,7 @@ OncParsedCertificatesForPkcs12File(
   std::string pkcs12_base64_encoded;
   base::Base64Encode(pkcs12_raw, &pkcs12_base64_encoded);
 
-  base::Value onc_certificate(base::Value::Type::DICTIONARY);
+  base::Value onc_certificate(base::Value::Type::DICT);
   onc_certificate.SetKey("GUID", base::Value(guid));
   onc_certificate.SetKey("Type", base::Value("Client"));
   onc_certificate.SetKey("PKCS12", base::Value(pkcs12_base64_encoded));
@@ -387,7 +387,7 @@ class ClientCertResolverTest : public testing::Test,
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
         onc_source, user_hash, *parsed_json,
-        /*global_network_config=*/base::Value(base::Value::Type::DICTIONARY));
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
   }
 
   void SetWifiState(const std::string& state) {
@@ -725,7 +725,7 @@ TEST_F(ClientCertResolverTest, UserPolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_USER_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICTIONARY);
+  base::Value shill_properties(base::Value::Type::DICT);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
@@ -764,7 +764,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyUsesSystemTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICTIONARY);
+  base::Value shill_properties(base::Value::Type::DICT);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =
@@ -805,7 +805,7 @@ TEST_F(ClientCertResolverTest, DevicePolicyDoesNotUseUserTokenSync) {
   SetupCertificateConfigMatchingIssuerCN(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          &client_cert_config);
 
-  base::Value shill_properties(base::Value::Type::DICTIONARY);
+  base::Value shill_properties(base::Value::Type::DICT);
   ClientCertResolver::ResolveClientCertificateSync(
       client_cert::ConfigType::kEap, client_cert_config, &shill_properties);
   std::string pkcs11_id =

@@ -3530,7 +3530,7 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good0));
   EXPECT_FALSE(registry()->blocklisted_extensions().Contains(good0));
 
-  base::Value attributes(base::Value::Type::DICTIONARY);
+  base::Value attributes(base::Value::Type::DICT);
   attributes.SetKey("_malware", base::Value(true));
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -4750,7 +4750,7 @@ TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 
-  base::Value attributes(base::Value::Type::DICTIONARY);
+  base::Value attributes(base::Value::Type::DICT);
   attributes.SetKey("_malware", base::Value(true));
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
@@ -4775,7 +4775,7 @@ TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 
-  base::Value attributes(base::Value::Type::DICTIONARY);
+  base::Value attributes(base::Value::Type::DICT);
   attributes.SetKey("_malware", base::Value(true));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   service()->DisableExtension(good_crx, disable_reason::DISABLE_USER_ACTION);

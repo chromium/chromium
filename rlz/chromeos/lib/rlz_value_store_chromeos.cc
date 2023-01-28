@@ -203,7 +203,7 @@ absl::optional<base::Value> CopyWithoutEmptyChildren(const base::Value& value) {
 const int RlzValueStoreChromeOS::kMaxRetryCount = 3;
 
 RlzValueStoreChromeOS::RlzValueStoreChromeOS(const base::FilePath& store_path)
-    : rlz_store_(base::Value::Type::DICTIONARY),
+    : rlz_store_(base::Value::Type::DICT),
       store_path_(store_path),
       read_only_(true) {
   ReadStore();
@@ -449,7 +449,7 @@ void RlzValueStoreChromeOS::WriteStore() {
   serializer.set_pretty_print(true);
 
   base::Value copy = CopyWithoutEmptyChildren(rlz_store_)
-                         .value_or(base::Value(base::Value::Type::DICTIONARY));
+                         .value_or(base::Value(base::Value::Type::DICT));
   if (!serializer.Serialize(copy)) {
     LOG(ERROR) << "Failed to serialize RLZ data";
     NOTREACHED();

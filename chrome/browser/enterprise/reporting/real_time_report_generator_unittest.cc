@@ -42,7 +42,7 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
       std::make_unique<base::Value>(true));
 
   std::unique_ptr<base::Value> requests =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      std::make_unique<base::Value>(base::Value::Type::DICT);
   requests->SetKey(extension_id, base::Value());
   profile->GetTestingPrefService()->SetUserPref(
       prefs::kCloudExtensionRequestIds, std::move(requests));

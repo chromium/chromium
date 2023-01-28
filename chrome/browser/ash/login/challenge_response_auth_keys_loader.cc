@@ -57,8 +57,9 @@ base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
   const PrefService::Preference* const pref =
       prefs->FindPreference(extensions::pref_names::kInstallForceList);
   if (!pref || !pref->IsManaged() ||
-      pref->GetType() != base::Value::Type::DICTIONARY)
+      pref->GetType() != base::Value::Type::DICT) {
     return {};
+  }
 
   base::flat_set<std::string> extension_ids;
   for (const auto item : pref->GetValue()->DictItems())

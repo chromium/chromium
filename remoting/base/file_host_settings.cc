@@ -76,7 +76,7 @@ void FileHostSettings::SetString(const HostSettingKey key,
 
   if (!settings_) {
     VLOG(1) << "Settings file didn't exist. New file will be created.";
-    settings_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    settings_ = std::make_unique<base::Value>(base::Value::Type::DICT);
   }
   settings_->SetStringKey(key, value);
 

@@ -64,7 +64,7 @@ void PrefRegistrySimple::RegisterListPref(const std::string& path,
 
 void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
                                                 uint32_t flags) {
-  RegisterPreference(path, base::Value(base::Value::Type::DICTIONARY), flags);
+  RegisterPreference(path, base::Value(base::Value::Type::DICT), flags);
 }
 
 void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,

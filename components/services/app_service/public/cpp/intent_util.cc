@@ -355,7 +355,7 @@ bool ExtensionMatched(const std::string& file_name,
 }
 
 base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
-  base::Value intent_value(base::Value::Type::DICTIONARY);
+  base::Value intent_value(base::Value::Type::DICT);
   intent_value.SetStringKey(kActionKey, intent->action);
 
   if (intent->url.has_value()) {
@@ -411,7 +411,7 @@ base::Value ConvertIntentToValue(const apps::IntentPtr& intent) {
   }
 
   if (!intent->extras.empty()) {
-    base::Value extras(base::Value::Type::DICTIONARY);
+    base::Value extras(base::Value::Type::DICT);
     for (const auto& extra : intent->extras) {
       extras.SetStringKey(extra.first, extra.second);
     }

@@ -146,7 +146,7 @@ const char kCapabilitiesPageLoadStrategy[] = "normal";
 
 base::Value CreateErrorValue(const std::string& error,
                              const std::string& message) {
-  base::Value error_value(base::Value::Type::DICTIONARY);
+  base::Value error_value(base::Value::Type::DICT);
   error_value.SetStringKey(kWebDriverErrorCodeValueField, error);
   error_value.SetStringKey(kWebDriverErrorMessageValueField, message);
   error_value.SetStringKey(kWebDriverStackTraceValueField,
@@ -287,7 +287,7 @@ CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
     response->set_code(net::HTTP_OK);
   }
 
-  base::Value response_content(base::Value::Type::DICTIONARY);
+  base::Value response_content(base::Value::Type::DICT);
   response_content.SetKey(kWebDriverValueResponseField, std::move(*result));
   std::string response_content_string;
   base::JSONWriter::Write(response_content, &response_content_string);
@@ -306,11 +306,11 @@ base::Value CWTRequestHandler::InitializeSession() {
   target_tab_id_ =
       base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   session_id_ = base::GenerateGUID();
   result.SetStringKey(kWebDriverSessionIdValueField, session_id_);
 
-  base::Value capabilities(base::Value::Type::DICTIONARY);
+  base::Value capabilities(base::Value::Type::DICT);
   capabilities.SetStringKey(kCapabilitiesBrowserNameField,
                             kCapabilitiesBrowserName);
   capabilities.SetStringKey(kCapabilitiesBrowserVersionField,
@@ -320,7 +320,7 @@ base::Value CWTRequestHandler::InitializeSession() {
   capabilities.SetStringKey(kCapabilitiesPageLoadStrategyField,
                             kCapabilitiesPageLoadStrategy);
   capabilities.SetKey(kCapabilitiesProxyField,
-                      base::Value(base::Value::Type::DICTIONARY));
+                      base::Value(base::Value::Type::DICT));
   capabilities.SetIntPath(kCapabilitiesScriptTimeoutField,
                           script_timeout_.InMilliseconds());
   capabilities.SetIntPath(kCapabilitiesPageLoadTimeoutField,
@@ -430,7 +430,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   std::string stderr_contents;
   base::ReadFileToString(log_file, &stderr_contents);
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   result.SetStringKey(kChromeStderrValueField, stderr_contents);
   return result;
 }
@@ -563,7 +563,7 @@ base::Value CWTRequestHandler::SetWindowRect(const base::Value& rect) {
 }
 
 base::Value CWTRequestHandler::GetVersionInfo() {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   result.SetStringKey(kCapabilitiesBrowserVersionField,
                       version_info::GetVersionNumber());
 

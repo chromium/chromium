@@ -759,7 +759,7 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
           env, value, target_type, coerce_to_string, error);
     case base::Value::Type::STRING:
       return CoerceJavaScriptStringToJavaValue(env, value, target_type, error);
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
     case base::Value::Type::LIST:
       return CoerceJavaScriptObjectToJavaValue(
           env, value, target_type, coerce_to_string, object_refs, error);

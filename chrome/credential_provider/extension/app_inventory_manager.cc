@@ -222,8 +222,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
 
   base::Value app_info_value_list(base::Value::Type::LIST);
   for (std::wstring regPath : app_path_list) {
-    auto request_dict =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+    auto request_dict = std::make_unique<base::Value>(base::Value::Type::DICT);
 
     wchar_t display_name[256];
     ULONG display_length = std::size(display_name);

@@ -47,7 +47,7 @@ const char kContentCodingAes128Gcm[] = "aes128gcm";
 const char kContentEncodingOctetStream[] = "application/octet-stream";
 
 absl::optional<std::string> GetAuthHeader(crypto::ECPrivateKey* vapid_key) {
-  base::Value claims(base::Value::Type::DICTIONARY);
+  base::Value claims(base::Value::Type::DICT);
   claims.SetKey(kClaimsKeyAudience, base::Value(kFCMServerAudience));
 
   int64_t exp =

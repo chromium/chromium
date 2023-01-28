@@ -253,11 +253,11 @@ void AccountChecker::OnPriceEmailPrefChanged() {
   }
 
   // Send the new value to server.
-  base::Value preferences_map(base::Value::Type::DICTIONARY);
+  base::Value preferences_map(base::Value::Type::DICT);
   preferences_map.SetBoolKey(
       kPriceTrackEmailPref,
       pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
-  base::Value post_json(base::Value::Type::DICTIONARY);
+  base::Value post_json(base::Value::Type::DICT);
   post_json.SetKey(kPreferencesKey, std::move(preferences_map));
   std::string post_data;
   base::JSONWriter::Write(post_json, &post_data);

@@ -239,7 +239,7 @@ base::Value PrefService::GetPreferenceValues(
     IncludeDefaults include_defaults) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value out(base::Value::Type::DICTIONARY);
+  base::Value out(base::Value::Type::DICT);
   for (const auto& it : *pref_registry_) {
     if (include_defaults == INCLUDE_DEFAULTS) {
       out.SetPath(it.first, GetPreferenceValue(it.first)->Clone());
@@ -504,8 +504,7 @@ base::TimeDelta PrefService::GetTimeDelta(const std::string& path) const {
 
 base::Value* PrefService::GetMutableUserPref(const std::string& path,
                                              base::Value::Type type) {
-  CHECK(type == base::Value::Type::DICTIONARY ||
-        type == base::Value::Type::LIST);
+  CHECK(type == base::Value::Type::DICT || type == base::Value::Type::LIST);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const Preference* pref = FindPreference(path);

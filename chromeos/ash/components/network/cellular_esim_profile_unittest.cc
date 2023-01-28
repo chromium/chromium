@@ -41,7 +41,7 @@ TEST(CellularESimProfileTest, InvalidDictionary) {
   EXPECT_FALSE(from_non_dictionary);
 
   // Try to convert a dictionary without the required keys.
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   dictionary.SetPath("sampleKey", base::Value("sampleValue"));
   absl::optional<CellularESimProfile> from_dictionary =
       CellularESimProfile::FromDictionaryValue(dictionary);

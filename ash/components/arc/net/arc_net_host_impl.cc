@@ -1484,7 +1484,7 @@ void ArcNetHostImpl::NetworkListChanged() {
 void ArcNetHostImpl::StartLohs(mojom::LohsConfigPtr config,
                                StartLohsCallback callback) {
   NET_LOG(USER) << "Starting LOHS";
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
 
   if (config->hexssid.empty()) {
     NET_LOG(ERROR) << "Cannot create local only hotspot without hex ssid";

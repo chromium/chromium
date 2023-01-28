@@ -48,7 +48,7 @@ TraceEvent& TraceEvent::operator=(TraceEvent&& rhs) = default;
 
 bool TraceEvent::SetFromJSON(const base::Value* event_value) {
   if (!event_value->is_dict()) {
-    LOG(ERROR) << "Value must be Type::DICTIONARY";
+    LOG(ERROR) << "Value must be Type::DICT";
     return false;
   }
 

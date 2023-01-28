@@ -33,10 +33,10 @@ TEST(HostResolverInternalResultTest, DeserializeMalformedValue) {
   base::Value non_dict(base::Value::Type::BOOLEAN);
   EXPECT_FALSE(HostResolverInternalResult::FromValue(non_dict));
 
-  base::Value missing_type(base::Value::Type::DICTIONARY);
+  base::Value missing_type(base::Value::Type::DICT);
   EXPECT_FALSE(HostResolverInternalResult::FromValue(missing_type));
 
-  base::Value bad_type(base::Value::Type::DICTIONARY);
+  base::Value bad_type(base::Value::Type::DICT);
   bad_type.GetDict().Set("type", "foo");
   EXPECT_FALSE(HostResolverInternalResult::FromValue(bad_type));
 }

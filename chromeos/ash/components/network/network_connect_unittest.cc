@@ -230,7 +230,7 @@ TEST_F(NetworkConnectTest, ConfigureAndConnectToNetwork_NoConfiguration) {
               ShowNetworkConnectError(NetworkConnectionHandler::kErrorNotFound,
                                       "bad guid"));
 
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   NetworkConnect::Get()->ConfigureNetworkIdAndConnect("bad guid", properties,
                                                       true);
 }
@@ -241,7 +241,7 @@ TEST_F(NetworkConnectTest,
               ShowNetworkConnectError(
                   NetworkConnectionHandler::kErrorConfigureFailed, kWiFi1Guid));
 
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   NetworkConnect::Get()->ConfigureNetworkIdAndConnect(kWiFi1Guid, properties,
                                                       false);
 }

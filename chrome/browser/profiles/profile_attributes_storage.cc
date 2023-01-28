@@ -348,7 +348,7 @@ void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
   base::Value::Dict& attributes = update.Get();
 
-  base::Value info(base::Value::Type::DICTIONARY);
+  base::Value info(base::Value::Type::DICT);
   info.SetStringKey(ProfileAttributesEntry::kNameKey, params.profile_name);
   info.SetStringKey(ProfileAttributesEntry::kGAIAIdKey, params.gaia_id);
   info.SetStringKey(ProfileAttributesEntry::kUserNameKey, params.user_name);

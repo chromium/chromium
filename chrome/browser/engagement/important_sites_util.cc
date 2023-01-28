@@ -469,7 +469,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
           origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, nullptr);
 
       if (!dict.is_dict())
-        dict = base::Value(base::Value::Type::DICTIONARY);
+        dict = base::Value(base::Value::Type::DICT);
 
       RecordIgnore(dict.GetDict());
 
@@ -487,7 +487,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   // We clear our ignore counter for sites that the user chose.
   for (const std::string& excluded_site : excluded_sites) {
     GURL origin("http://" + excluded_site);
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value dict(base::Value::Type::DICT);
     dict.SetIntKey(kNumTimesIgnoredName, 0);
     dict.RemoveKey(kTimeLastIgnored);
     map->SetWebsiteSettingDefaultScope(origin, origin,

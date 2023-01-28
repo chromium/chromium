@@ -23,7 +23,7 @@ const proto::PageHint* FindPageHintForURL(const GURL& gurl,
                                           const proto::Hint* hint);
 
 // The host is hashed and returned as a string because
-// base::Value(base::Value::Type::DICTIONARY) only accepts strings as keys.
+// base::Value(base::Value::Type::DICT) only accepts strings as keys.
 // Note, some hash collisions could occur on hosts. For querying the blocklist,
 // collisions are acceptable as they would only block additional hosts. For
 // updating the blocklist, a collision would enable a site that should remain on

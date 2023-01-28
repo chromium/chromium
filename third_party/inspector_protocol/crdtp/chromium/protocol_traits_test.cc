@@ -140,7 +140,7 @@ TEST(ProtocolTraits, ListValueSerialization) {
 TEST(ProtocolTraits, DictValueSerialization) {
   base::Value::Dict dict;
   EXPECT_THAT(RoundTrip(base::Value(dict.Clone())),
-              IsJson(base::Value(base::Value::Type::DICTIONARY)));
+              IsJson(base::Value(base::Value::Type::DICT)));
   dict.Set("int", 42);
   dict.Set("double", 2.718281828459045);
   dict.Set("string", "foo");

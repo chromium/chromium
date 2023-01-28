@@ -46,7 +46,7 @@ bool UpdateWidevineCdmHintFile(const base::FilePath& cdm_base_path) {
   CHECK(base::PathService::Get(chrome::FILE_COMPONENT_WIDEVINE_CDM_HINT,
                                &hint_file_path));
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetStringPath(kPath, cdm_base_path.value());
 
   std::string json_string;

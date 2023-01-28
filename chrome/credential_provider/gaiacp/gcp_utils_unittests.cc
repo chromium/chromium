@@ -453,7 +453,7 @@ TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {
   InitializeRegistryOverrideForTesting(&registry_override);
 
   // EnrollToGoogleMdmIfNeeded() should be a noop.
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
 }
 
@@ -514,7 +514,7 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
                         (serial_number && serial_number[0]) &&
                         (is_user_ad_joined && is_user_ad_joined[0]);
 
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   if (email)
     properties.SetStringKey(kKeyEmail, email);
   if (id_token)

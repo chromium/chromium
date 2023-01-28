@@ -324,7 +324,7 @@ HttpRequestHeaders PerUserTopicSubscriptionRequest::Builder::BuildHeaders()
 }
 
 std::string PerUserTopicSubscriptionRequest::Builder::BuildBody() const {
-  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value request(base::Value::Type::DICT);
 
   request.SetStringKey("public_topic_name", topic_);
   if (topic_is_public_)

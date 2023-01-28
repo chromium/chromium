@@ -215,7 +215,7 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
   // The keys of the ModemManager1.SMS interface do not match the
   // exported keys, so a new dictionary is created with the expected
   // key namaes.
-  base::Value new_dictionary(base::Value::Type::DICTIONARY);
+  base::Value new_dictionary(base::Value::Type::DICT);
   const std::string* number =
       dictionary.FindStringKey(SMSClient::kSMSPropertyNumber);
   if (number)

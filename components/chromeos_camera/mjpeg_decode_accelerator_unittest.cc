@@ -283,7 +283,7 @@ void MjpegDecodeAcceleratorTestEnvironment::SetUp() {
   gpu_memory_buffer_manager_ =
       std::make_unique<media::LocalGpuMemoryBufferManager>();
 
-  metrics_ = base::Value(base::Value::Type::DICTIONARY);
+  metrics_ = base::Value(base::Value::Type::DICT);
 }
 
 void MjpegDecodeAcceleratorTestEnvironment::TearDown() {

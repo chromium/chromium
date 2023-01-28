@@ -86,7 +86,7 @@ TEST_F(CanonicalTopicTest, ValueConversion) {
   EXPECT_TRUE(converted_topic);
   EXPECT_EQ(test_topic, *converted_topic);
 
-  base::Value invalid_value(base::Value::Type::DICTIONARY);
+  base::Value invalid_value(base::Value::Type::DICT);
   invalid_value.SetKey("unrelated", base::Value("unrelated"));
   converted_topic = CanonicalTopic::FromValue(invalid_value);
   EXPECT_FALSE(converted_topic);

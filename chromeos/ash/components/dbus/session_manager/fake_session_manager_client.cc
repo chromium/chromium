@@ -806,7 +806,7 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   }
 
   // Encode origin list values.
-  base::Value origin_list_dict(base::Value::Type::DICTIONARY);
+  base::Value origin_list_dict(base::Value::Type::DICT);
   for (const auto& entry : iter->second.origin_list_flags) {
     origin_list_dict.SetStringKey(entry.first, entry.second);
   }

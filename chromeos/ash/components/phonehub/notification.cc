@@ -61,7 +61,7 @@ bool Notification::AppMetadata::operator!=(const AppMetadata& other) const {
 base::Value Notification::AppMetadata::ToValue() const {
   scoped_refptr<base::RefCountedMemory> png_data = icon.As1xPNGBytes();
 
-  base::Value val(base::Value::Type::DICTIONARY);
+  base::Value val(base::Value::Type::DICT);
   val.SetKey(kVisibleAppName, base::Value(visible_app_name));
   val.SetKey(kPackageName, base::Value(package_name));
   val.SetDoubleKey(kUserId, user_id);

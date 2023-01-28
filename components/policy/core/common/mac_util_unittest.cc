@@ -50,7 +50,7 @@ TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
   list.Append(root.Clone());
   root.Set("list", list.Clone());
 
-  // base::Value::Type::DICTIONARY
+  // base::Value::Type::DICT
   root.Set("emptyd", base::Value::Dict());
 
   // Key with dots.

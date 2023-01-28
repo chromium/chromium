@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   auto report = response->GetList().begin();
   auto* type = report->FindKeyOfType("type", base::Value::Type::STRING);
   auto* url = report->FindKeyOfType("url", base::Value::Type::STRING);
-  auto* body = report->FindKeyOfType("body", base::Value::Type::DICTIONARY);
+  auto* body = report->FindKeyOfType("body", base::Value::Type::DICT);
   auto* reason = body->FindKeyOfType("reason", base::Value::Type::STRING);
 
   EXPECT_EQ("crash", type->GetString());

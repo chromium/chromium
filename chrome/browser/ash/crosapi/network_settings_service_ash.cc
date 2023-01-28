@@ -121,7 +121,7 @@ void NetworkSettingsServiceAsh::SetExtensionProxy(
 
   // Required to display the extension which is controlling the proxy in the OS
   // Settings > Network > Proxy window.
-  base::Value proxy_extension(base::Value::Type::DICTIONARY);
+  base::Value proxy_extension(base::Value::Type::DICT);
   proxy_extension.SetStringKey(kPrefExtensionNameKey,
                                proxy_config->extension->name);
   proxy_extension.SetStringKey(kPrefExtensionIdKey,

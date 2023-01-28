@@ -173,7 +173,7 @@ class POLICY_EXPORT Schema {
   // types may not correspond to this Schema anymore.
   void MaskSensitiveValues(base::Value* value) const;
 
-  // Used to iterate over the known properties of Type::DICTIONARY schemas.
+  // Used to iterate over the known properties of Type::DICT schemas.
   class POLICY_EXPORT Iterator {
    public:
     Iterator(const scoped_refptr<const InternalStorage>& storage,
@@ -201,7 +201,7 @@ class POLICY_EXPORT Schema {
     raw_ptr<const internal::PropertyNode> end_;
   };
 
-  // These methods should be called only if type() == Type::DICTIONARY,
+  // These methods should be called only if type() == Type::DICT,
   // otherwise invalid memory will be read. A CHECK is currently enforcing this.
 
   // Returns an iterator that goes over the named properties of this schema.

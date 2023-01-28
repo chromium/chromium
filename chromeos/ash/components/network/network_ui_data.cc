@@ -85,7 +85,7 @@ NetworkUIData::NetworkUIData(const base::Value& dict) {
   }
 
   const base::Value* user_settings_value =
-      dict.FindKeyOfType(kKeyUserSettings, base::Value::Type::DICTIONARY);
+      dict.FindKeyOfType(kKeyUserSettings, base::Value::Type::DICT);
   if (user_settings_value) {
     user_settings_ = user_settings_value->Clone();
   }
@@ -115,7 +115,7 @@ void NetworkUIData::SetUserSettingsDictionary(base::Value dict) {
 }
 
 std::string NetworkUIData::GetAsJson() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   const std::string source_string = GetONCSourceAsString();
   if (!source_string.empty())
     dict.SetKey(kKeyONCSource, base::Value(source_string));

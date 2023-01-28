@@ -43,7 +43,7 @@ TEST_P(GcpWinHttpUrlFetcherTest,
   base::TimeDelta request_timeout = base::Milliseconds(timeout_in_millis);
   absl::optional<base::Value> request_result;
 
-  base::Value expected_result(base::Value::Type::DICTIONARY);
+  base::Value expected_result(base::Value::Type::DICT);
   expected_result.SetStringKey("response-str-key", "response-str-value");
   expected_result.SetIntKey("response-int-key", 4321);
   std::string expected_response;

@@ -105,7 +105,7 @@ static bool ParseResponse(const std::string& json,
 static std::string SerializeCommand(int command_id,
                                     const std::string& method,
                                     base::Value params) {
-  base::Value command(base::Value::Type::DICTIONARY);
+  base::Value command(base::Value::Type::DICT);
   command.SetIntKey(kIdParam, command_id);
   command.SetStringKey(kMethodParam, method);
   command.SetKey(kParamsParam, std::move(params));
@@ -493,7 +493,7 @@ void PortForwardingController::Connection::SerializeChanges(
 void PortForwardingController::Connection::SendCommand(
     const std::string& method, int port) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value params(base::Value::Type::DICT);
   DCHECK(method == kBindMethod || kUnbindMethod == method);
   params.SetIntKey(kPortParam, port);
   int id = ++command_id_;

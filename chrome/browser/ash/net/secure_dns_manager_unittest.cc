@@ -56,7 +56,7 @@ void OnGetProperties(bool* success_out,
   *success_out = result.has_value();
   if (result) {
     base::Value* value = result->FindKeyOfType(
-        shill::kDNSProxyDOHProvidersProperty, base::Value::Type::DICTIONARY);
+        shill::kDNSProxyDOHProvidersProperty, base::Value::Type::DICT);
     if (value != nullptr) {
       for (const auto kv : value->DictItems()) {
         props_out->emplace(kv.first, kv.second.GetString());

@@ -117,7 +117,7 @@ const char
 base::Value
 ReportingJobConfigurationBase::BrowserDictionaryBuilder::BuildBrowserDictionary(
     bool include_device_info) {
-  base::Value browser_dictionary{base::Value::Type::DICTIONARY};
+  base::Value browser_dictionary{base::Value::Type::DICT};
 
   base::FilePath browser_id;
   if (base::PathService::Get(base::DIR_EXE, &browser_id)) {

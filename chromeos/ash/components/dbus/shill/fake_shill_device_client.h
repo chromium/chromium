@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   void SetScanning(const dbus::ObjectPath& device_path, bool is_scanning);
 
   // Dictionary of <device_name, Dictionary>.
-  base::Value stub_devices_{base::Value::Type::DICTIONARY};
+  base::Value stub_devices_{base::Value::Type::DICT};
 
   // Observer list for each device.
   std::map<dbus::ObjectPath, std::unique_ptr<PropertyObserverList>>

@@ -76,7 +76,7 @@ void ProximityAuthProfilePrefManager::StartSyncingToLocalState(
 }
 
 void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
-  base::Value user_prefs_dict(base::Value::Type::DICTIONARY);
+  base::Value user_prefs_dict(base::Value::Type::DICT);
 
   user_prefs_dict.SetBoolKey(ash::multidevice_setup::kSmartLockAllowedPrefName,
                              IsEasyUnlockAllowed());

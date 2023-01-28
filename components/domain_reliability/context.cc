@@ -204,7 +204,7 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   DCHECK_GT(uploading_beacons_size_, 0u);
 
-  base::Value report_value(base::Value::Type::DICTIONARY);
+  base::Value report_value(base::Value::Type::DICT);
   report_value.SetStringKey("reporter", *upload_reporter_string_);
   report_value.SetKey("entries", std::move(beacons_value));
 

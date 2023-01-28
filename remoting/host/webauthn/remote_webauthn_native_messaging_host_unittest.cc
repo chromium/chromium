@@ -38,7 +38,7 @@ using IsUvpaaCallback =
 
 base::Value CreateRequestMessage(const std::string& message_type,
                                  int message_id = 1) {
-  base::Value request(base::Value::Type::DICTIONARY);
+  base::Value request(base::Value::Type::DICT);
   request.SetStringKey(kMessageType, message_type);
   request.SetIntKey(kMessageId, message_id);
   return request;

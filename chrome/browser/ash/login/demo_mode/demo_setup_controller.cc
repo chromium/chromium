@@ -461,7 +461,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
 
 // static
 base::Value DemoSetupController::GetDemoSetupSteps() {
-  base::Value setup_steps_dict(base::Value::Type::DICTIONARY);
+  base::Value setup_steps_dict(base::Value::Type::DICT);
   for (auto entry : GetDemoSetupStepsInfo()) {
     setup_steps_dict.SetIntPath(GetDemoSetupStepString(entry.step),
                                 entry.step_index);

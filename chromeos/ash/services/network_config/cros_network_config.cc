@@ -789,7 +789,7 @@ void SetSubjectAltNameMatch(
         type = ::onc::eap_subject_alternative_name_match::kURI;
         break;
     }
-    base::Value entry(base::Value::Type::DICTIONARY);
+    base::Value entry(base::Value::Type::DICT);
     entry.SetStringKey(::onc::eap_subject_alternative_name_match::kType, type);
     entry.SetStringKey(::onc::eap_subject_alternative_name_match::kValue,
                        ptr->value);
@@ -2025,7 +2025,7 @@ bool NetworkTypeCanBeDisabled(mojom::NetworkType type) {
 }
 
 base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
-  base::Value eap_dict(base::Value::Type::DICTIONARY);
+  base::Value eap_dict(base::Value::Type::DICT);
 
   SetString(::onc::eap::kAnonymousIdentity, eap.anonymous_identity, &eap_dict);
   SetString(::onc::client_cert::kClientCertPKCS11Id, eap.client_cert_pkcs11_id,

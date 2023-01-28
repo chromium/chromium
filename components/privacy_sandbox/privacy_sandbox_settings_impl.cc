@@ -52,7 +52,7 @@ std::vector<ContentSettingsPattern> FledgeBlockToContentSettingsPatterns(
 // Returns a base::Value for storage in prefs that represents |topic| blocked
 // at the current time.
 base::Value CreateBlockedTopicEntry(const CanonicalTopic& topic) {
-  base::Value entry(base::Value::Type::DICTIONARY);
+  base::Value entry(base::Value::Type::DICT);
   entry.SetKey(kBlockedTopicsTopicKey, topic.ToValue());
   entry.SetKey(kBlockedTopicsBlockTimeKey,
                base::TimeToValue(base::Time::Now()));

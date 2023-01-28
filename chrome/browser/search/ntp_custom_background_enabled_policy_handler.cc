@@ -25,6 +25,6 @@ void NtpCustomBackgroundEnabledPolicyHandler::ApplyPolicySettings(
       policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (value && !value->GetBool()) {
     prefs->SetValue(prefs::kNtpCustomBackgroundDict,
-                    base::Value(base::Value::Type::DICTIONARY));
+                    base::Value(base::Value::Type::DICT));
   }
 }

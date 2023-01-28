@@ -410,7 +410,7 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     const std::string& network_type) {
   NET_LOG(EVENT) << "Disable auto-connect forced by policy: "
                  << NetworkPathId(service_path);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
 
   std::string autoconnect_path;
   if (network_type == ::onc::network_config::kWiFi) {

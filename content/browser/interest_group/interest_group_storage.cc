@@ -126,7 +126,7 @@ absl::optional<GURL> DeserializeURL(const std::string& serialized_url) {
 }
 
 base::Value ToValue(const blink::InterestGroup::Ad& ad) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   base::Value::Dict& dict = value.GetDict();
   dict.Set("url", ad.render_url.spec());
   if (ad.metadata)

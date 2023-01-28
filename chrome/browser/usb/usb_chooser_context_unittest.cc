@@ -152,7 +152,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
       device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "123ABC");
   UsbChooserContext* store = GetChooserContext(profile());
 
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(kDeviceNameKey, "Gizmo");
   object.SetIntKey(kVendorIdKey, 0);
   object.SetIntKey(kProductIdKey, 0);
@@ -205,7 +205,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
 
   UsbChooserContext* store = GetChooserContext(profile());
 
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(kDeviceNameKey, "Gizmo");
   object.SetStringKey(kGuidKey, device_info->guid);
   object.SetIntKey(kVendorIdKey, device_info->vendor_id);

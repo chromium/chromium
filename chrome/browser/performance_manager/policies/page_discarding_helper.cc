@@ -406,7 +406,7 @@ base::Value PageDiscardingHelper::DescribePageNodeData(
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   ret.SetKey("has_discard_attempt_marker", base::Value("true"));
 
   return ret;

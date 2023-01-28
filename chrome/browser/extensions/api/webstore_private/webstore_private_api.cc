@@ -345,7 +345,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
   ScopedDictPrefUpdate pending_requests_update(
       profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
   DCHECK(!pending_requests_update->Find(id));
-  base::Value request_data(base::Value::Type::DICTIONARY);
+  base::Value request_data(base::Value::Type::DICT);
   request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
                       ::base::TimeToValue(base::Time::Now()));
   if (!justification.empty()) {

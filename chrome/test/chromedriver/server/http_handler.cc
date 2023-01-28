@@ -1403,7 +1403,7 @@ HttpHandler::PrepareStandardResponse(
   base::Value::Dict body_params;
   if (status.IsError()){
     base::Value* inner_params =
-        body_params.Set("value", base::Value(base::Value::Type::DICTIONARY));
+        body_params.Set("value", base::Value(base::Value::Type::DICT));
     inner_params->SetStringKey("error", StatusCodeToString(status.code()));
     inner_params->SetStringKey("message", status.message());
     inner_params->SetStringKey("stacktrace", status.stack_trace());

@@ -140,7 +140,7 @@ void RegisterItem(OperationResult* result,
   absl::optional<base::Value> registered_items =
       read.settings().Extract(kStoreKeyRegisteredItems);
   if (!registered_items)
-    registered_items = base::Value(base::Value::Type::DICTIONARY);
+    registered_items = base::Value(base::Value::Type::DICT);
 
   if (!registered_items->is_dict()) {
     *result = OperationResult::kFailed;

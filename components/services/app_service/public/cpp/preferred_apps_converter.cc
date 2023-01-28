@@ -17,7 +17,7 @@ constexpr int kVersionSupportsSharing = 1;
 
 base::Value ConvertConditionValueToValue(
     const apps::ConditionValuePtr& condition_value) {
-  base::Value condition_value_dict(base::Value::Type::DICTIONARY);
+  base::Value condition_value_dict(base::Value::Type::DICT);
   condition_value_dict.SetStringKey(apps::kValueKey, condition_value->value);
   condition_value_dict.SetIntKey(apps::kMatchTypeKey,
                                  static_cast<int>(condition_value->match_type));
@@ -25,7 +25,7 @@ base::Value ConvertConditionValueToValue(
 }
 
 base::Value ConvertConditionToValue(const apps::ConditionPtr& condition) {
-  base::Value condition_dict(base::Value::Type::DICTIONARY);
+  base::Value condition_dict(base::Value::Type::DICT);
   condition_dict.SetIntKey(apps::kConditionTypeKey,
                            static_cast<int>(condition->condition_type));
   base::Value condition_values_list(base::Value::Type::LIST);
@@ -131,12 +131,12 @@ const char kPreferredAppsKey[] = "preferred_apps";
 const char kVersionKey[] = "version";
 
 base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
-  base::Value preferred_apps_value(base::Value::Type::DICTIONARY);
+  base::Value preferred_apps_value(base::Value::Type::DICT);
   int version = kVersionSupportsSharing;
   preferred_apps_value.SetIntKey(kVersionKey, version);
   base::Value preferred_apps_list(base::Value::Type::LIST);
   for (auto& preferred_app : preferred_apps) {
-    base::Value preferred_app_dict(base::Value::Type::DICTIONARY);
+    base::Value preferred_app_dict(base::Value::Type::DICT);
     preferred_app_dict.SetKey(
         kIntentFilterKey,
         ConvertIntentFilterToValue(preferred_app->intent_filter));

@@ -89,7 +89,7 @@ class NetworkCertMigrator::MigrationTask
 
   base::Value MigrateClientCertProperties(const std::string& service_path,
                                           const base::Value& properties) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
 
     int configured_slot_id = -1;
     std::string pkcs11_id;

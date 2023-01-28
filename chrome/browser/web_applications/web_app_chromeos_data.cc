@@ -11,7 +11,7 @@
 namespace web_app {
 
 base::Value WebAppChromeOsData::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetBoolKey("show_in_launcher", show_in_launcher);
   root.SetBoolKey("show_in_search", show_in_search);
   root.SetBoolKey("show_in_management", show_in_management);

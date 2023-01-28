@@ -707,7 +707,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                       web_contents, scrub_tab_behavior, extension)
                       .ToValue());
     } else {
-      args.Append(base::Value(base::Value::Type::DICTIONARY));
+      args.Append(base::Value(base::Value::Type::DICT));
     }
   }
 

@@ -104,7 +104,7 @@ class ESimPolicyLoginMetricsLoggerTest : public testing::Test {
   }
 
   void SetGlobalPolicy(bool allow_only_oplicy_cellular) {
-    base::Value global_config(base::Value::Type::DICTIONARY);
+    base::Value global_config(base::Value::Type::DICT);
     global_config.SetBoolKey(
         ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
         allow_only_oplicy_cellular);

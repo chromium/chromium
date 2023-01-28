@@ -106,7 +106,7 @@ TEST(TtsControllerDelegateImplTest, GetPreferredVoiceIdsForUtterance) {
 
   TestingPrefServiceSimple pref_service;
   // Uses default pref voices.
-  base::Value lang_to_voices(base::Value::Type::DICTIONARY);
+  base::Value lang_to_voices(base::Value::Type::DICT);
   lang_to_voices.SetKey(
       "es", base::Value("{\"name\":\"Voice7\",\"extension\":\"id7\"}"));
   lang_to_voices.SetKey(

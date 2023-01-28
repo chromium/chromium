@@ -30,7 +30,7 @@ base::Value CookieStoreOriginFiltered(const std::string& origin,
                                       net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
     return base::Value();
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetStringKey("origin", origin);
   dict.SetBoolKey("is_https", is_https);
   return dict;

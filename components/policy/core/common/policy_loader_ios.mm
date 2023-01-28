@@ -161,7 +161,7 @@ base::Value PolicyLoaderIOS::ConvertPolicyDataIfNecessary(
   }
 
   // Handle the case of a JSON-encoded string for a dict policy.
-  if ((schema.type() == base::Value::Type::DICTIONARY ||
+  if ((schema.type() == base::Value::Type::DICT ||
        schema.type() == base::Value::Type::LIST) &&
       value.is_string()) {
     absl::optional<base::Value> decoded_value = base::JSONReader::Read(

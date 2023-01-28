@@ -62,7 +62,7 @@ PP_Var PPB_X509Certificate_Fields::GetFieldAsPPVar(
                                                                      buffer);
       return array_buffer;
     }
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
     case base::Value::Type::LIST:
       // Not handled.
       break;

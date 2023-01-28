@@ -68,7 +68,7 @@ class LogsPrefWriter {
   void WriteLogEntry(UnsentLogStore::LogInfo* log) {
     DCHECK(!finished_);
 
-    base::Value dict_value{base::Value::Type::DICTIONARY};
+    base::Value dict_value{base::Value::Type::DICT};
     dict_value.SetStringKey(kLogHashKey, EncodeToBase64(log->hash));
     dict_value.SetStringKey(kLogSignatureKey, EncodeToBase64(log->signature));
     dict_value.SetStringKey(kLogDataKey,

@@ -94,7 +94,7 @@ class AbstractPreferenceMergeTest : public testing::Test {
         pref_service_->FindPreference(pref_name);
     ASSERT_TRUE(pref);
     base::Value::Type type = pref->GetType();
-    if (type == base::Value::Type::DICTIONARY) {
+    if (type == base::Value::Type::DICT) {
       pref_service_->SetDict(pref_name, base::Value::Dict());
     } else if (type == base::Value::Type::LIST) {
       pref_service_->SetList(pref_name, base::Value::List());

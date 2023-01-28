@@ -446,7 +446,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
 
  private:
   base::Value fake_network_configs_;
-  base::Value fake_global_network_config_{base::Value::Type::DICTIONARY};
+  base::Value fake_global_network_config_{base::Value::Type::DICT};
   ash::ScopedFakeSessionManagerClient scoped_session_manager_client_;
 };
 

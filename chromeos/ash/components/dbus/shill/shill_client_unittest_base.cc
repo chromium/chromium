@@ -35,7 +35,7 @@ std::unique_ptr<base::Value> PopStringToStringDictionary(
   dbus::MessageReader array_reader(nullptr);
   if (!reader->PopArray(&array_reader))
     return nullptr;
-  auto result = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+  auto result = std::make_unique<base::Value>(base::Value::Type::DICT);
   while (array_reader.HasMoreData()) {
     dbus::MessageReader entry_reader(nullptr);
     std::string key;
@@ -304,7 +304,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
 
 // static
 base::Value ShillClientUnittestBase::CreateExampleServiceProperties() {
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kGuidProperty,
                     base::Value("00000000-0000-0000-0000-000000000000"));
   properties.SetKey(shill::kModeProperty, base::Value(shill::kModeManaged));

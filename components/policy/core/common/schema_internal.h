@@ -21,7 +21,7 @@ struct POLICY_EXPORT SchemaNode {
   // The policy type.
   base::Value::Type type;
 
-  // If |type| is Type::DICTIONARY then |extra| is an offset into
+  // If |type| is Type::DICT then |extra| is an offset into
   // SchemaData::properties_nodes that indexes the PropertiesNode describing
   // the entries of this dictionary.
   //

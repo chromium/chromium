@@ -127,7 +127,7 @@ bool VariableExpander::ExpandValue(base::Value* value) const {
       break;
     }
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       for (const auto child : value->DictItems())
         no_error &= ExpandValue(&child.second);
       break;

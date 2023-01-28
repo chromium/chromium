@@ -121,7 +121,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   static constexpr int64_t kExpectedCallTimes = 10;
   static constexpr int64_t kGenerationId = 1234;
 
-  base::Value data{base::Value::Type::DICTIONARY};
+  base::Value data{base::Value::Type::DICT};
   data.SetKey("TEST_KEY", base::Value("TEST_VALUE"));
 
   std::string json_data;

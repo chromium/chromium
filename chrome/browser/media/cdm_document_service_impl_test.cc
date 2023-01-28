@@ -111,7 +111,7 @@ class CdmDocumentServiceImplTest : public ChromeRenderViewHostTestHarness {
 
     // Create (or overwrite) an entry with only an origin id to simulate some
     // kind of corruption or simply an update to the preference format.
-    base::Value entry(base::Value::Type::DICTIONARY);
+    base::Value entry(base::Value::Type::DICT);
     entry.SetKey(kOriginId, base::UnguessableTokenToValue(
                                 base::UnguessableToken::Create()));
 

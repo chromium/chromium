@@ -250,7 +250,7 @@ std::string GetJsonAppId(const base::Value& app) {
 // Convert a TabGroupInfo object to a base::Value dictionary.
 base::Value ConvertTabGroupInfoToValue(
     const tab_groups::TabGroupInfo& group_info) {
-  base::Value tab_group_dict(base::Value::Type::DICTIONARY);
+  base::Value tab_group_dict(base::Value::Type::DICT);
 
   tab_group_dict.SetIntKey(kTabRangeFirstIndex, group_info.tab_range.start());
   tab_group_dict.SetIntKey(kTabRangeLastIndex, group_info.tab_range.end());
@@ -683,7 +683,7 @@ std::unique_ptr<app_restore::RestoreData> ConvertJsonToRestoreData(
 // Conversion to value methods.
 
 base::Value ConvertWindowBoundToValue(const gfx::Rect& rect) {
-  base::Value rectangle_value(base::Value::Type::DICTIONARY);
+  base::Value rectangle_value(base::Value::Type::DICT);
 
   rectangle_value.SetKey(kWindowBoundTop, base::Value(rect.y()));
   rectangle_value.SetKey(kWindowBoundLeft, base::Value(rect.x()));
@@ -694,7 +694,7 @@ base::Value ConvertWindowBoundToValue(const gfx::Rect& rect) {
 }
 
 base::Value ConvertSizeToValue(const gfx::Size& size) {
-  base::Value size_value(base::Value::Type::DICTIONARY);
+  base::Value size_value(base::Value::Type::DICT);
 
   size_value.SetKey(kSizeWidth, base::Value(size.width()));
   size_value.SetKey(kSizeHeight, base::Value(size.height()));
@@ -798,7 +798,7 @@ base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
   base::Value tab_list = base::Value(base::Value::Type::LIST);
 
   for (const auto& url : urls) {
-    base::Value browser_tab = base::Value(base::Value::Type::DICTIONARY);
+    base::Value browser_tab = base::Value(base::Value::Type::DICT);
     browser_tab.SetKey(kTabUrl, base::Value(url.spec()));
     tab_list.Append(std::move(browser_tab));
   }
@@ -859,7 +859,7 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     return base::Value(base::Value::Type::NONE);
   }
 
-  base::Value app_data = base::Value(base::Value::Type::DICTIONARY);
+  base::Value app_data = base::Value(base::Value::Type::DICT);
 
   if (app->current_bounds.has_value()) {
     app_data.SetKey(kWindowBound,
@@ -987,7 +987,7 @@ base::Value ConvertRestoreDataToValue(
     }
   }
 
-  base::Value apps = base::Value(base::Value::Type::DICTIONARY);
+  base::Value apps = base::Value(base::Value::Type::DICT);
   apps.SetKey(kApps, std::move(desk_data));
   return apps;
 }
@@ -1995,7 +1995,7 @@ std::unique_ptr<ash::DeskTemplate> ParseDeskTemplateFromSource(
 
 base::Value SerializeDeskTemplateAsPolicy(const ash::DeskTemplate* desk,
                                           apps::AppRegistryCache* app_cache) {
-  base::Value desk_dict(base::Value::Type::DICTIONARY);
+  base::Value desk_dict(base::Value::Type::DICT);
   desk_dict.SetKey(kVersion, base::Value(kVersionNum));
   desk_dict.SetKey(kUuid, base::Value(desk->uuid().AsLowercaseString()));
   desk_dict.SetKey(kName, base::Value(desk->template_name()));

@@ -1053,7 +1053,7 @@ settings_api::PrefType PrefsUtil::GetType(const std::string& name,
                                  : settings_api::PrefType::PREF_TYPE_STRING;
     case base::Value::Type::LIST:
       return settings_api::PrefType::PREF_TYPE_LIST;
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
       return settings_api::PrefType::PREF_TYPE_DICTIONARY;
     default:
       return settings_api::PrefType::PREF_TYPE_NONE;
@@ -1237,7 +1237,7 @@ settings_private::SetPrefResult PrefsUtil::SetPref(const std::string& pref_name,
   switch (pref->GetType()) {
     case base::Value::Type::BOOLEAN:
     case base::Value::Type::LIST:
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
       pref_service->Set(pref_name, *value);
       break;
     case base::Value::Type::DOUBLE:

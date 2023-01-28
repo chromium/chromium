@@ -404,7 +404,7 @@ std::u16string CanonicalTopic::GetLocalizedRepresentation() const {
 }
 
 base::Value CanonicalTopic::ToValue() const {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey(kTopicId, base::Value(topic_id_.value()));
   value.SetKey(kTaxonomyVersion, base::Value(taxonomy_version_));
   return value;

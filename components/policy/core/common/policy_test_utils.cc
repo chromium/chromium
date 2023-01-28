@@ -82,7 +82,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       return base::SysUTF8ToCFStringRef(string_value).release();
     }
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       // |dict| is owned by the caller.
       CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
           kCFAllocatorDefault, value.DictSize(), &kCFTypeDictionaryKeyCallBacks,

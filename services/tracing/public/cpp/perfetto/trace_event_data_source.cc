@@ -188,7 +188,7 @@ TraceEventMetadataSource::GenerateTraceConfigMetadataDict() {
     return absl::nullopt;
   }
 
-  base::Value metadata_dict(base::Value::Type::DICTIONARY);
+  base::Value metadata_dict(base::Value::Type::DICT);
   // If argument filtering is enabled, we need to check if the trace config is
   // allowlisted before emitting it.
   // TODO(eseckler): Figure out a way to solve this without calling directly

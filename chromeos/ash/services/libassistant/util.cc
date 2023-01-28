@@ -172,9 +172,9 @@ std::string CreateLibAssistantConfig(
   using Value = base::Value;
   using Type = base::Value::Type;
 
-  Value config(Type::DICTIONARY);
+  Value config(Type::DICT);
 
-  Value device(Type::DICTIONARY);
+  Value device(Type::DICT);
   device.SetKey("board_name", Value(base::SysInfo::GetLsbReleaseBoard()));
   device.SetKey("board_revision", Value("1"));
   absl::optional<std::string> version = chromeos::version_loader::GetVersion(
@@ -193,18 +193,18 @@ std::string CreateLibAssistantConfig(
         chromeos::assistant::GetHttpConnectionServiceAddress(
             is_chromeos_device);
 
-    Value libas_server(Type::DICTIONARY);
+    Value libas_server(Type::DICT);
     libas_server.SetKey("libas_server_address", Value(server_addresses));
     libas_server.SetKey("enable_display_service", Value(true));
     libas_server.SetKey("enable_http_connection_service", Value(true));
     config.SetKey("libas_server", std::move(libas_server));
   }
 
-  Value discovery(Type::DICTIONARY);
+  Value discovery(Type::DICT);
   discovery.SetKey("enable_mdns", Value(false));
   config.SetKey("discovery", std::move(discovery));
 
-  Value internal(Type::DICTIONARY);
+  Value internal(Type::DICT);
   internal.SetKey("surface_type", Value("OPA_CROS"));
 
   std::string user_agent;
@@ -220,7 +220,7 @@ std::string CreateLibAssistantConfig(
   internal.SetKey("visibility", Value("PRIVATE"));
 
   if (ShouldLogToFile()) {
-    Value logging(Type::DICTIONARY);
+    Value logging(Type::DICT);
     std::string log_dir("/var/log/chrome/");
     if (ShouldPutLogsInHomeDirectory()) {
       base::FilePath log_path =
@@ -260,12 +260,12 @@ std::string CreateLibAssistantConfig(
 
   config.SetKey("internal", std::move(internal));
 
-  Value audio_input(Type::DICTIONARY);
+  Value audio_input(Type::DICT);
   // Skip sending speaker ID selection info to disable user verification.
   audio_input.SetKey("should_send_speaker_id_selection_info", Value(false));
 
   Value sources(Type::LIST);
-  Value dict(Type::DICTIONARY);
+  Value dict(Type::DICT);
   dict.SetKey("enable_eraser",
               Value(assistant::features::IsAudioEraserEnabled()));
   dict.SetKey("enable_eraser_toggling",

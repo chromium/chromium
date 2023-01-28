@@ -51,7 +51,7 @@ TEST_F(AppPackageNameLoggingRuleTest, TestFromDictionary) {
   {
     absl::optional<AppPackageNameLoggingRule> record =
         AppPackageNameLoggingRule::FromDictionary(
-            base::Value(base::Value::Type::DICTIONARY));
+            base::Value(base::Value::Type::DICT));
     EXPECT_FALSE(record.has_value());
   }
 }

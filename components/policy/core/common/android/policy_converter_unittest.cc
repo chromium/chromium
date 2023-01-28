@@ -104,7 +104,7 @@ TEST_F(PolicyConverterTest, ConvertToBoolValue) {
   EXPECT_EQ("true", Convert(Value(42), bool_schema));
   EXPECT_EQ("true", Convert(Value(-1), bool_schema));
   EXPECT_EQ("\"1\"", Convert(Value("1"), bool_schema));
-  EXPECT_EQ("{}", Convert(Value(Value::Type::DICTIONARY), bool_schema));
+  EXPECT_EQ("{}", Convert(Value(Value::Type::DICT), bool_schema));
 }
 
 TEST_F(PolicyConverterTest, ConvertToIntValue) {

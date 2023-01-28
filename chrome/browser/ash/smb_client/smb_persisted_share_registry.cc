@@ -27,7 +27,7 @@ constexpr char kUseKerberosKey[] = "use_kerberos";
 constexpr char kPasswordSaltKey[] = "password_salt";
 
 base::Value ShareToDict(const SmbShareInfo& share) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetStringKey(kShareUrlKey, share.share_url().ToString());
   dict.SetStringKey(kDisplayNameKey, share.display_name());
   dict.SetBoolKey(kUseKerberosKey, share.use_kerberos());

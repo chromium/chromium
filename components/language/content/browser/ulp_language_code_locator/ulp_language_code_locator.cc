@@ -20,7 +20,7 @@ const char kCellTokenKey[] = "celltoken";
 const char kLanguageKey[] = "language";
 
 base::Value GetCellLanguagePairValue(S2CellId cell, std::string language) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey(kCellTokenKey, base::Value(cell.ToToken()));
   value.SetKey(kLanguageKey, base::Value(language));
   return value;

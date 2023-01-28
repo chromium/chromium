@@ -23,7 +23,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
     EXPECT_FALSE(FunctionType::Populate(empty_value, &out));
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
 
     FunctionType out;
@@ -34,7 +34,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
 
     FunctionType out;
@@ -42,8 +42,8 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
     EXPECT_EQ(value, out.ToValue());
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
-    base::Value expected_value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
+    base::Value expected_value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
     expected_value.GetDict().Set("event_callback", base::Value::Dict());
 
@@ -55,13 +55,13 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, RequiredFunctionToValue) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
   {
-    base::Value empty_dictionary(base::Value::Type::DICTIONARY);
+    base::Value empty_dictionary(base::Value::Type::DICT);
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_dictionary, &out));
     EXPECT_FALSE(out.event_callback.has_value());
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
 
     OptionalFunctionType out;
@@ -69,7 +69,7 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
     EXPECT_TRUE(out.event_callback.has_value());
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
 
     OptionalFunctionType out;
@@ -80,14 +80,14 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateOptionalFunction) {
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {
   {
-    base::Value empty_value(base::Value::Type::DICTIONARY);
+    base::Value empty_value(base::Value::Type::DICT);
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(empty_value, &out));
     // event_callback should not be set in the return from ToValue.
     EXPECT_EQ(empty_value, out.ToValue());
   }
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.GetDict().Set("event_callback", base::Value::Dict());
 
     OptionalFunctionType out;

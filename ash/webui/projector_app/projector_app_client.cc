@@ -42,7 +42,7 @@ PendingScreencast& PendingScreencast::operator=(const PendingScreencast&) =
 PendingScreencast::~PendingScreencast() = default;
 
 base::Value PendingScreencast::ToValue() const {
-  base::Value val(base::Value::Type::DICTIONARY);
+  base::Value val(base::Value::Type::DICT);
   val.SetKey(kPendingScreencastName, base::Value(name));
   DCHECK_GT(total_size_in_bytes, 0);
   const double upload_progress = static_cast<double>(bytes_transferred) /

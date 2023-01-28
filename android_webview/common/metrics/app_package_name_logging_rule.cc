@@ -72,7 +72,7 @@ AppPackageNameLoggingRule::FromDictionary(const base::Value& dict) {
 }
 
 base::Value AppPackageNameLoggingRule::ToDictionary() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
 
   dict.SetStringKey(kVersionKey, version_.GetString());
   if (!expiry_date_.is_min()) {

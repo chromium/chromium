@@ -55,8 +55,8 @@ class ShillLogSource : public SystemLogsSource {
   std::set<std::string> service_paths_;
   // More than one device may request the same IP configs, so use multiset.
   std::multiset<std::string> ip_config_paths_;
-  base::Value devices_{base::Value::Type::DICTIONARY};
-  base::Value services_{base::Value::Type::DICTIONARY};
+  base::Value devices_{base::Value::Type::DICT};
+  base::Value services_{base::Value::Type::DICT};
   base::WeakPtrFactory<ShillLogSource> weak_ptr_factory_{this};
 };
 

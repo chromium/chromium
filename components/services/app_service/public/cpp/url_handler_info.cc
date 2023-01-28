@@ -43,7 +43,7 @@ void UrlHandlerInfo::Reset() {
 }
 
 base::Value UrlHandlerInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("origin", origin.GetDebugString());
   root.SetBoolKey("has_origin_wildcard", has_origin_wildcard);
 

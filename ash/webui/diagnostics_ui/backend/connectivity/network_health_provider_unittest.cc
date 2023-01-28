@@ -183,7 +183,7 @@ class NetworkHealthProviderTest : public testing::Test {
         ::onc::ONC_SOURCE_DEVICE_POLICY,
         /*userhash=*/std::string(),
         /*network_configs_onc=*/base::Value(base::Value::Type::LIST),
-        /*global_network_config=*/base::Value(base::Value::Type::DICTIONARY));
+        /*global_network_config=*/base::Value(base::Value::Type::DICT));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();
@@ -382,7 +382,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetCellularSimLockStatus(std::string lock_type, bool sim_locked) {
-    base::Value sim_lock_status(base::Value::Type::DICTIONARY);
+    base::Value sim_lock_status(base::Value::Type::DICT);
     sim_lock_status.SetKey(shill::kSIMLockEnabledProperty,
                            base::Value(sim_locked));
     sim_lock_status.SetKey(shill::kSIMLockTypeProperty, base::Value(lock_type));

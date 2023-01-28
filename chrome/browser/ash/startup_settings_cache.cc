@@ -60,7 +60,7 @@ void WriteAppLocale(std::string app_locale) {
   if (!GetCacheFilePath(&cache_file))
     return;
 
-  base::Value settings(base::Value::Type::DICTIONARY);
+  base::Value settings(base::Value::Type::DICT);
   settings.SetKey(kAppLocaleKey, base::Value(app_locale));
 
   std::string output;

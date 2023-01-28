@@ -373,7 +373,7 @@ TEST(PrefServiceTest, WriteablePrefStoreFlags) {
     SCOPED_TRACE("Currently testing pref with name: " +
                  std::string(entry.pref_name));
 
-    prefs->GetMutableUserPref(entry.pref_name, base::Value::Type::DICTIONARY);
+    prefs->GetMutableUserPref(entry.pref_name, base::Value::Type::DICT);
     EXPECT_TRUE(flag_checker->last_write_flags_set());
     EXPECT_EQ(entry.write_flags, flag_checker->GetLastFlagsAndClear());
 
@@ -386,7 +386,7 @@ TEST(PrefServiceTest, WriteablePrefStoreFlags) {
     EXPECT_EQ(entry.write_flags, flag_checker->GetLastFlagsAndClear());
 
     prefs->SetUserPrefValue(entry.pref_name,
-                            base::Value(base::Value::Type::DICTIONARY));
+                            base::Value(base::Value::Type::DICT));
     EXPECT_TRUE(flag_checker->last_write_flags_set());
     EXPECT_EQ(entry.write_flags, flag_checker->GetLastFlagsAndClear());
   }

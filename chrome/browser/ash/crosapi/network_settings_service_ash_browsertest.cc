@@ -215,7 +215,7 @@ class NetworkSettingsServiceAshExtensionTest
     proxy_config->extension->can_be_disabled = can_be_disabled;
     network_service_ash_->SetExtensionProxy(std::move(proxy_config));
 
-    base::Value expected_pref(base::Value::Type::DICTIONARY);
+    base::Value expected_pref(base::Value::Type::DICT);
     expected_pref.SetStringKey(kPrefExtensionNameKey, kExtensionName);
     expected_pref.SetStringKey(kPrefExtensionIdKey, kExtensionId);
     expected_pref.SetBoolKey(kPrefExtensionCanDisabled, can_be_disabled);
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   ASSERT_FALSE(result.is_null());
   EXPECT_TRUE(result->extension.is_null());
   EXPECT_EQ(*(extension_proxy_pref->GetValue()),
-            base::Value(base::Value::Type::DICTIONARY));
+            base::Value(base::Value::Type::DICT));
   // proxy_mode=system is the default value (see
   // PrefProxyConfigTrackerImpl::RegisterProfilePrefs).
   EXPECT_EQ(*(proxy_pref->GetValue()), ProxyConfigDictionary::CreateSystem());

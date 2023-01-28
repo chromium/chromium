@@ -150,7 +150,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
       AppInventoryManager::Get()->GetGemServiceUploadAppInventoryUrl();
   ASSERT_TRUE(app_inventory_url.is_valid());
 
-  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  base::Value expected_response_value(base::Value::Type::DICT);
   expected_response_value.SetStringKey("deviceResourceId",
                                        base::WideToUTF8(device_resource_id));
   std::string expected_response;
@@ -182,7 +182,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
 
-    base::Value request(base::Value::Type::DICTIONARY);
+    base::Value request(base::Value::Type::DICT);
 
     request.SetStringKey("device_resource_id", "valid-device-resource-id");
     request.SetStringKey("dm_token", "valid-dm-token");
@@ -192,8 +192,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
 
     if (has_app_data) {
       std::unique_ptr<base::Value> request_dict_1;
-      request_dict_1 =
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      request_dict_1 = std::make_unique<base::Value>(base::Value::Type::DICT);
       request_dict_1->SetStringKey(kAppDisplayName,
                                    base::WideToUTF8(kAppDisplayName1));
       request_dict_1->SetStringKey(kAppDisplayVersion,
@@ -206,8 +205,7 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
           base::Value::FromUniquePtrValue(std::move(request_dict_1)));
 
       std::unique_ptr<base::Value> request_dict_2;
-      request_dict_2 =
-          std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      request_dict_2 = std::make_unique<base::Value>(base::Value::Type::DICT);
       request_dict_2->SetStringKey(kAppDisplayName,
                                    base::WideToUTF8(kAppDisplayName2));
       request_dict_2->SetStringKey(kAppDisplayVersion,

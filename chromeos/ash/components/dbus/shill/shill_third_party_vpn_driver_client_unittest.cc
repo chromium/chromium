@@ -136,7 +136,7 @@ TEST_F(ShillThirdPartyVpnDriverClientTest, SetParameters) {
   dbus::MessageWriter writer(response.get());
   writer.AppendString(std::string("deadbeef"));
 
-  base::Value parameters(base::Value::Type::DICTIONARY);
+  base::Value parameters(base::Value::Type::DICT);
   const std::string kAddress("1.1.1.1");
   parameters.SetKey(shill::kAddressParameterThirdPartyVpn,
                     base::Value(kAddress));

@@ -30,7 +30,7 @@ void FakeSMSClient::GetAll(const std::string& service_name,
     return;
   }
   // Ownership passed to callback
-  base::Value sms(base::Value::Type::DICTIONARY);
+  base::Value sms(base::Value::Type::DICT);
   sms.SetStringKey("Number", "000-000-0000");
   sms.SetStringKey("Text",
                    "FakeSMSClient: Test Message: " + object_path.value());

@@ -112,7 +112,7 @@ TEST_F(ShillProfileClientTest, GetProperties) {
   // Create the expected value.
   base::Value::List entries;
   entries.Append(kExampleEntryPath);
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.GetDict().Set(shill::kEntriesProperty, std::move(entries));
   // Set expectations.
   PrepareForMethodCall(shill::kGetPropertiesFunction,
@@ -143,7 +143,7 @@ TEST_F(ShillProfileClientTest, GetEntry) {
   writer.CloseContainer(&array_writer);
 
   // Create the expected value.
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   // Set expectations.
   PrepareForMethodCall(
@@ -165,7 +165,7 @@ TEST_F(ShillProfileClientTest, DeleteEntry) {
   std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
 
   // Create the expected value.
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey(shill::kArpGatewayProperty, base::Value(true));
   // Set expectations.
   PrepareForMethodCall(

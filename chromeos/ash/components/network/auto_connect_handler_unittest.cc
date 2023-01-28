@@ -248,7 +248,7 @@ class AutoConnectHandlerTest : public testing::Test {
     }
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
-        /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+        /*global_config=*/base::Value(base::Value::Type::DICT));
     task_environment_.RunUntilIdle();
   }
 
@@ -385,7 +385,7 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertLoading) {
 
   // Applying the policy which restricts autoconnect should disconnect from the
   // shared, unmanaged network.
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       base::Value(true));
@@ -416,7 +416,7 @@ TEST_F(AutoConnectHandlerTest, ReconnectOnCertPatternResolved) {
 
   SetupDevicePolicy(
       /*network_configs_json=*/std::string(),
-      /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+      /*global_config=*/base::Value(base::Value::Type::DICT));
   EXPECT_EQ(0, test_observer_->num_auto_connect_events());
 
   LoginToRegularUser();
@@ -462,7 +462,7 @@ TEST_F(AutoConnectHandlerTest, NoReconnectIfNoCertResolved) {
 
   SetupDevicePolicy(
       /*network_configs_json=*/std::string(),
-      /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+      /*global_config=*/base::Value(base::Value::Type::DICT));
   LoginToRegularUser();
   StartNetworkCertLoader();
   SetupUserPolicy(kPolicy);
@@ -501,7 +501,7 @@ TEST_F(AutoConnectHandlerTest, DisconnectOnPolicyLoading) {
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
 
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       base::Value(true));
@@ -540,8 +540,8 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnDevicePolicyApplied) {
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
 
   // Apply device policy which should trigger ConnectToBestServices.
-  SetupDevicePolicy(
-      kPolicy, /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+  SetupDevicePolicy(kPolicy,
+                    /*global_config=*/base::Value(base::Value::Type::DICT));
 
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
@@ -557,8 +557,8 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyApplied) {
       ConfigureService(kConfigWifi1ManagedSharedConnectable);
   ASSERT_FALSE(wifi1_service_path.empty());
   // Device policy has already been applied.
-  SetupDevicePolicy(std::string(), /*global_config=*/base::Value(
-                        base::Value::Type::DICTIONARY));
+  SetupDevicePolicy(std::string(),
+                    /*global_config=*/base::Value(base::Value::Type::DICT));
 
   // When shill's ConnectToBestServices is called, wifi1 should be come online.
   helper().manager_test()->SetBestServiceToConnect(wifi1_service_path);
@@ -593,7 +593,7 @@ TEST_F(AutoConnectHandlerTest,
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
 
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(true));
@@ -633,8 +633,8 @@ TEST_F(AutoConnectHandlerTest, ReconnectAfterLogin) {
 
   // Applying an empty device policy will not trigger anything yet, until also
   // the user policy is applied.
-  SetupDevicePolicy(std::string(), /*global_config=*/base::Value(
-                        base::Value::Type::DICTIONARY));
+  SetupDevicePolicy(std::string(),
+                    /*global_config=*/base::Value(base::Value::Type::DICT));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
 
@@ -661,9 +661,8 @@ TEST_F(AutoConnectHandlerTest, ManualConnectAbortsReconnectAfterLogin) {
   // policy is loaded.
   LoginToRegularUser();
   StartNetworkCertLoader();
-  SetupDevicePolicy(
-      std::string(),
-      /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+  SetupDevicePolicy(std::string(),
+                    /*global_config=*/base::Value(base::Value::Type::DICT));
 
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
@@ -709,7 +708,7 @@ TEST_F(AutoConnectHandlerTest,
   // Apply 'AllowOnlyPolicyNetworksToAutoconnect' policy as a device
   // policy and provide a network configuration for cellular2 to make it
   // managed.
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyNetworksToAutoconnect,
       base::Value(true));
@@ -753,7 +752,7 @@ TEST_F(AutoConnectHandlerTest,
 
   // Apply 'AllowOnlyPolicyCellularNetworks' policy as a device policy and
   // provide a network configuration for cellular2 to make it managed.
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
       base::Value(true));
@@ -827,7 +826,7 @@ TEST_F(AutoConnectHandlerTest, AllowOnlyPolicyWiFiToConnectIfAvailable) {
 
   // Apply 'AllowOnlyPolicyWiFiToConnectIfAvailable' policy as a device
   // policy and provide a network configuration for wifi1 to make it managed.
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnectIfAvailable,
       base::Value(true));

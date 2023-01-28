@@ -122,7 +122,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
         return mojo_base::mojom::ValueDataView::Tag::kStringValue;
       case base::Value::Type::BINARY:
         return mojo_base::mojom::ValueDataView::Tag::kBinaryValue;
-      case base::Value::Type::DICTIONARY:
+      case base::Value::Type::DICT:
         return mojo_base::mojom::ValueDataView::Tag::kDictionaryValue;
       case base::Value::Type::LIST:
         return mojo_base::mojom::ValueDataView::Tag::kListValue;

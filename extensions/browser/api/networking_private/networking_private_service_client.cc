@@ -348,14 +348,14 @@ void NetworkingPrivateServiceClient::GetDeviceStateList(
 
 void NetworkingPrivateServiceClient::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
-  std::move(callback).Run(base::Value::ToUniquePtrValue(
-      base::Value(base::Value::Type::DICTIONARY)));
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
 }
 
 void NetworkingPrivateServiceClient::GetCertificateLists(
     GetCertificateListsCallback callback) {
-  std::move(callback).Run(base::Value::ToUniquePtrValue(
-      base::Value(base::Value::Type::DICTIONARY)));
+  std::move(callback).Run(
+      base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
 }
 
 void NetworkingPrivateServiceClient::EnableNetworkType(const std::string& type,

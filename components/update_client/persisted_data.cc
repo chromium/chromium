@@ -39,8 +39,9 @@ const base::Value* PersistedData::GetAppKey(const std::string& id) const {
   if (!pref_service_)
     return nullptr;
   const base::Value& dict = pref_service_->GetValue(kPersistedDataPreference);
-  if (dict.type() != base::Value::Type::DICTIONARY)
+  if (dict.type() != base::Value::Type::DICT) {
     return nullptr;
+  }
   const base::Value* apps = dict.FindDictKey("apps");
   if (!apps)
     return nullptr;

@@ -259,7 +259,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunWithStorage(
     case base::Value::Type::LIST:
       return UseReadResult(storage->Get(GetKeysFromList(input)));
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       ValueStore::ReadResult result = storage->Get(GetKeysFromDict(input));
       if (!result.status().ok()) {
         return UseReadResult(std::move(result));
@@ -299,7 +299,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaGetFunction::RunInSession() {
           session_manager->Get(extension_id(), GetKeysFromList(input)));
       break;
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       std::map<std::string, const base::Value*> values =
           session_manager->Get(extension_id(), GetKeysFromDict(input));
 

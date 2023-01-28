@@ -94,15 +94,15 @@ class ClientCertificateFetcherTest : public testing::Test {
                                 const std::string& subject) {
     EXPECT_FALSE(issuer.empty() && subject.empty());
 
-    base::Value filter(base::Value::Type::DICTIONARY);
+    base::Value filter(base::Value::Type::DICT);
     if (!issuer.empty()) {
-      base::Value issuer_value(base::Value::Type::DICTIONARY);
+      base::Value issuer_value(base::Value::Type::DICT);
       issuer_value.SetStringKey("CN", issuer);
       filter.SetKey("ISSUER", std::move(issuer_value));
     }
 
     if (!subject.empty()) {
-      base::Value subject_value(base::Value::Type::DICTIONARY);
+      base::Value subject_value(base::Value::Type::DICT);
       subject_value.SetStringKey("CN", subject);
       filter.SetKey("SUBJECT", std::move(subject_value));
     }

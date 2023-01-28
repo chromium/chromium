@@ -46,7 +46,7 @@ bool TimeIsBetween(const base::Time& time,
 //     more origin_string map...
 // }
 base::Value ToDictValue(const CdmPrefData& pref_data) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
 
   // Origin ID
   dict.SetKey(kOriginId, base::UnguessableTokenToValue(pref_data.origin_id()));

@@ -254,7 +254,7 @@ bool ReadValue(const base::Pickle* pickle,
       *value = base::Value(data);
       break;
     }
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       base::Value::Dict val;
       if (!ReadDictValue(pickle, iter, recursion, &val))
         return false;

@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkUIData {
   static std::unique_ptr<NetworkUIData> CreateFromONC(
       ::onc::ONCSource onc_source);
 
-  // Returns a |user_settings_| as a base::Value::Type::DICTIONARY Value*.
+  // Returns a |user_settings_| as a base::Value::Type::DICT Value*.
   const base::Value* GetUserSettingsDictionary() const;
 
   // Setus |user_settings_| to the provided value which must be a dictionary.

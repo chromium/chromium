@@ -656,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
   ASSERT_TRUE(schema);
 
   ASSERT_TRUE(schema->valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema->type());
+  ASSERT_EQ(base::Value::Type::DICT, schema->type());
   ASSERT_TRUE(schema->GetKnownProperty("string-policy").valid());
   EXPECT_EQ(base::Value::Type::STRING,
             schema->GetKnownProperty("string-policy").type());
@@ -684,13 +684,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
   policy::Schema dict = schema->GetKnownProperty("dict-policy");
   ASSERT_TRUE(dict.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, dict.type());
+  ASSERT_EQ(base::Value::Type::DICT, dict.type());
   list = dict.GetKnownProperty("list");
   ASSERT_TRUE(list.valid());
   ASSERT_EQ(base::Value::Type::LIST, list.type());
   dict = list.GetItems();
   ASSERT_TRUE(dict.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, dict.type());
+  ASSERT_EQ(base::Value::Type::DICT, dict.type());
   ASSERT_TRUE(dict.GetProperty("anything").valid());
   EXPECT_EQ(base::Value::Type::INTEGER, dict.GetProperty("anything").type());
 }

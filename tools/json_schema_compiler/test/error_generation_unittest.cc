@@ -147,7 +147,7 @@ TEST(JsonSchemaCompilerErrorTest, WrongParameterCreationType) {
 
 TEST(JsonSchemaCompilerErrorTest, WrongTypeValueType) {
   {
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     EXPECT_TRUE(EqualsUtf16("", GetPopulateError<errors::ObjectType>(value)));
   }
   {

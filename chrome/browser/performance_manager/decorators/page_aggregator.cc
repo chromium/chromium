@@ -248,7 +248,7 @@ base::Value PageAggregator::DescribePageNodeData(const PageNode* node) const {
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   ret.SetIntKey("num_frames_holding_web_lock",
                 data->num_frames_holding_web_lock_);
   ret.SetIntKey("num_frames_holding_indexeddb_lock",

@@ -102,7 +102,7 @@ std::u16string GetDeviceNameFromIds(int vendor_id, int product_id) {
 }
 
 base::Value DeviceIdsToValue(int vendor_id, int product_id) {
-  base::Value device_value(base::Value::Type::DICTIONARY);
+  base::Value device_value(base::Value::Type::DICT);
   std::u16string device_name = GetDeviceNameFromIds(vendor_id, product_id);
 
   device_value.SetStringKey(kDeviceNameKey, device_name);
@@ -198,7 +198,7 @@ UsbChooserContext::UsbChooserContext(Profile* profile)
 // static
 base::Value UsbChooserContext::DeviceInfoToValue(
     const device::mojom::UsbDeviceInfo& device_info) {
-  base::Value device_value(base::Value::Type::DICTIONARY);
+  base::Value device_value(base::Value::Type::DICT);
   device_value.SetStringKey(kDeviceNameKey, device_info.product_name
                                                 ? *device_info.product_name
                                                 : base::StringPiece16());
@@ -347,7 +347,7 @@ UsbChooserContext::GetGrantedObjects(const url::Origin& origin) {
       // If there is an entry for the device in |device_ids_to_object_map|, use
       // that object to represent the device. Otherwise, attempt to figure out
       // the name of the device from the |vendor_id| and |product_id|.
-      base::Value object(base::Value::Type::DICTIONARY);
+      base::Value object(base::Value::Type::DICT);
       auto it =
           device_ids_to_object_map.find(std::make_pair(vendor_id, product_id));
       if (it != device_ids_to_object_map.end()) {
@@ -412,7 +412,7 @@ UsbChooserContext::GetAllGrantedObjects() {
       // If there is an entry for the device in |device_ids_to_object_map|, use
       // that object to represent the device. Otherwise, attempt to figure out
       // the name of the device from the |vendor_id| and |product_id|.
-      base::Value object(base::Value::Type::DICTIONARY);
+      base::Value object(base::Value::Type::DICT);
       auto it =
           device_ids_to_object_map.find(std::make_pair(vendor_id, product_id));
       if (it != device_ids_to_object_map.end()) {

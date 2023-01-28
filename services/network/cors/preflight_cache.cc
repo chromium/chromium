@@ -35,7 +35,7 @@ enum class CacheMetric {
 };
 
 base::Value NetLogCacheStatusParams(const CacheMetric metric) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   std::string cache_status;
   switch (metric) {
     case CacheMetric::kHitAndPass:

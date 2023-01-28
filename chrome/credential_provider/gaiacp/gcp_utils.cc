@@ -1186,7 +1186,7 @@ void GetOsVersion(std::string* version) {
 
 HRESULT GenerateDeviceId(std::string* device_id) {
   // Build the json data encapsulating different device ids.
-  base::Value device_ids_dict(base::Value::Type::DICTIONARY);
+  base::Value device_ids_dict(base::Value::Type::DICT);
 
   // Add the serial number to the dictionary.
   std::wstring serial_number = GetSerialNumber();

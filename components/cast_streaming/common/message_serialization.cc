@@ -85,7 +85,7 @@ bool DeserializeCastMessage(base::StringPiece buffer,
 std::string SerializeCastMessage(const std::string& sender_id,
                                  const std::string& message_namespace,
                                  const std::string& message) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetStringKey(kKeyNamespace, message_namespace);
   value.SetStringKey(kKeySenderId, sender_id);
   value.SetStringKey(kKeyData, message);

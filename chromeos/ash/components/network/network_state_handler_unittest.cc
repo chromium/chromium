@@ -2510,7 +2510,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyBlocked) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
   properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   SetProperties(wifi1, properties);
@@ -2544,7 +2544,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManaged) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
   properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   SetProperties(wifi1, properties);
@@ -2582,7 +2582,7 @@ TEST_F(NetworkStateHandlerTest, BlockedCellularByPolicyOnlyManaged) {
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
   properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   SetProperties(cellular1, properties);
@@ -2623,7 +2623,7 @@ TEST_F(NetworkStateHandlerTest,
   // Emulate 'cellular1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
   properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   SetProperties(cellular1, properties);
@@ -2656,7 +2656,7 @@ TEST_F(NetworkStateHandlerTest, BlockedWifiByPolicyOnlyManagedIfAvailable) {
   // Emulate 'wifi1' being a managed network.
   std::unique_ptr<NetworkUIData> ui_data =
       NetworkUIData::CreateFromONC(::onc::ONCSource::ONC_SOURCE_USER_POLICY);
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kProfileProperty, base::Value(kProfilePath));
   properties.SetKey(shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   SetProperties(wifi1, properties);

@@ -267,7 +267,7 @@ TEST(ValueIteratorsTest, DictIteratorProxy) {
   storage.emplace("double", std::make_unique<Value>(Value::Type::DOUBLE));
   storage.emplace("string", std::make_unique<Value>(Value::Type::STRING));
   storage.emplace("blob", std::make_unique<Value>(Value::Type::BINARY));
-  storage.emplace("dict", std::make_unique<Value>(Value::Type::DICTIONARY));
+  storage.emplace("dict", std::make_unique<Value>(Value::Type::DICT));
   storage.emplace("list", std::make_unique<Value>(Value::Type::LIST));
 
   using iterator = const_dict_iterator;
@@ -300,7 +300,7 @@ TEST(ValueIteratorsTest, ConstDictIteratorProxy) {
   storage.emplace("double", std::make_unique<Value>(Value::Type::DOUBLE));
   storage.emplace("string", std::make_unique<Value>(Value::Type::STRING));
   storage.emplace("blob", std::make_unique<Value>(Value::Type::BINARY));
-  storage.emplace("dict", std::make_unique<Value>(Value::Type::DICTIONARY));
+  storage.emplace("dict", std::make_unique<Value>(Value::Type::DICT));
   storage.emplace("list", std::make_unique<Value>(Value::Type::LIST));
 
   using iterator = const_dict_iterator;

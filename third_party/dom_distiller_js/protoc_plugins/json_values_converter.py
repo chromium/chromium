@@ -82,7 +82,7 @@ class CppConverterWriter(writer.CodeWriter):
           '}}\n'
           '\n'
           'static base::Value WriteToValue(const {generated_class_name}& message) {{\n'
-          '  base::Value dict(base::Value::Type::DICTIONARY);\n'
+          '  base::Value dict(base::Value::Type::DICT);\n'
           '',
           generated_class_name=generated_class_name)
 

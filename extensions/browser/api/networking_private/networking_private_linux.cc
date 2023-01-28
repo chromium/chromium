@@ -214,7 +214,7 @@ void NetworkingPrivateLinux::GetProperties(const std::string& guid,
 
   std::unique_ptr<std::string> error(new std::string);
   auto network_properties =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      std::make_unique<base::Value>(base::Value::Type::DICT);
 
   // Runs GetCachedNetworkProperties on |dbus_thread|.
   std::string* error_ptr = error.get();
@@ -246,7 +246,7 @@ void NetworkingPrivateLinux::GetState(const std::string& guid,
 
   std::unique_ptr<std::string> error(new std::string);
   auto network_properties =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      std::make_unique<base::Value>(base::Value::Type::DICT);
 
   // Runs GetCachedNetworkProperties on |dbus_thread|.
   std::string* error_ptr = error.get();
@@ -932,7 +932,7 @@ bool NetworkingPrivateLinux::AddAccessPointsFromDevice(
   }
 
   for (const auto& access_point_path : access_point_paths) {
-    base::Value access_point(base::Value::Type::DICTIONARY);
+    base::Value access_point(base::Value::Type::DICT);
 
     if (GetAccessPointInfo(access_point_path, &access_point)) {
       std::string connection_state =

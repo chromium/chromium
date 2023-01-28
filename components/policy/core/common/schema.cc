@@ -116,7 +116,7 @@ const SchemaKeyToValueType kSchemaTypesToValueTypes[] = {
     {schema::kBoolean, base::Value::Type::BOOLEAN},
     {schema::kInteger, base::Value::Type::INTEGER},
     {schema::kNumber, base::Value::Type::DOUBLE},
-    {schema::kObject, base::Value::Type::DICTIONARY},
+    {schema::kObject, base::Value::Type::DICT},
     {schema::kString, base::Value::Type::STRING},
 };
 const SchemaKeyToValueType* kSchemaTypesToValueTypesEnd =
@@ -127,7 +127,7 @@ const SchemaKeyToValueType* kSchemaTypesToValueTypesEnd =
 const SchemaKeyToValueType kAttributesAndTypesForArray[] = {
     {schema::kDescription, base::Value::Type::STRING},
     {schema::kId, base::Value::Type::STRING},
-    {schema::kItems, base::Value::Type::DICTIONARY},
+    {schema::kItems, base::Value::Type::DICT},
     {schema::kSensitiveValue, base::Value::Type::BOOLEAN},
     {schema::kTitle, base::Value::Type::STRING},
     {schema::kType, base::Value::Type::STRING},
@@ -177,11 +177,11 @@ const SchemaKeyToValueType* kAttributesAndTypesForNumberEnd =
 // Allowed attributes and types for type 'object'. These are ordered
 // alphabetically to perform binary search.
 const SchemaKeyToValueType kAttributesAndTypesForObject[] = {
-    {schema::kAdditionalProperties, base::Value::Type::DICTIONARY},
+    {schema::kAdditionalProperties, base::Value::Type::DICT},
     {schema::kDescription, base::Value::Type::STRING},
     {schema::kId, base::Value::Type::STRING},
-    {schema::kPatternProperties, base::Value::Type::DICTIONARY},
-    {schema::kProperties, base::Value::Type::DICTIONARY},
+    {schema::kPatternProperties, base::Value::Type::DICT},
+    {schema::kProperties, base::Value::Type::DICT},
     {schema::kRequired, base::Value::Type::LIST},
     {schema::kSensitiveValue, base::Value::Type::BOOLEAN},
     {schema::kTitle, base::Value::Type::STRING},
@@ -375,7 +375,7 @@ bool ValidateProperties(const base::Value& properties,
                         int options,
                         std::string* error) {
   for (auto dict_it : properties.DictItems()) {
-    if (dict_it.second.type() != base::Value::Type::DICTIONARY) {
+    if (dict_it.second.type() != base::Value::Type::DICT) {
       *error = base::StringPrintf("Schema for property '%s' must be a dict.",
                                   dict_it.first.c_str());
       return false;
@@ -770,7 +770,7 @@ void Schema::InternalStorage::DetermineStorageSizes(
     const base::Value* items = schema.Find(schema::kItems);
     if (items)
       DetermineStorageSizes(*items, sizes);
-  } else if (type == base::Value::Type::DICTIONARY) {
+  } else if (type == base::Value::Type::DICT) {
     sizes->properties_nodes++;
 
     const base::Value* additional_properties =
@@ -874,7 +874,7 @@ bool Schema::InternalStorage::Parse(const base::Value& schema_val,
   if (is_sensitive_value)
     schema_node->is_sensitive_value = *is_sensitive_value;
 
-  if (type == base::Value::Type::DICTIONARY) {
+  if (type == base::Value::Type::DICT) {
     if (!ParseDictionary(schema_val, schema_node, references_and_ids, error)) {
       return false;
     }
@@ -1149,7 +1149,7 @@ bool Schema::InternalStorage::FindSensitiveChildrenRecursive(
 
   handled_schema_nodes->insert(index);
   bool has_sensitive_children = false;
-  if (schema_node.type == base::Value::Type::DICTIONARY) {
+  if (schema_node.type == base::Value::Type::DICT) {
     const PropertiesNode& properties_node =
         properties_nodes_[schema_node.extra];
     // Iterate through properties and patternProperties.
@@ -1518,7 +1518,7 @@ base::Value::Type Schema::type() const {
 
 Schema::Iterator Schema::GetPropertiesIterator() const {
   CHECK(valid());
-  CHECK_EQ(base::Value::Type::DICTIONARY, type());
+  CHECK_EQ(base::Value::Type::DICT, type());
   return Iterator(storage_, storage_->properties(node_->extra));
 }
 
@@ -1532,7 +1532,7 @@ bool CompareKeys(const PropertyNode& node, const std::string& key) {
 
 Schema Schema::GetKnownProperty(const std::string& key) const {
   CHECK(valid());
-  CHECK_EQ(base::Value::Type::DICTIONARY, type());
+  CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
   if (node->begin == kInvalid || node->end == kInvalid)
     return Schema();
@@ -1546,7 +1546,7 @@ Schema Schema::GetKnownProperty(const std::string& key) const {
 
 Schema Schema::GetAdditionalProperties() const {
   CHECK(valid());
-  CHECK_EQ(base::Value::Type::DICTIONARY, type());
+  CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
   if (node->additional == kInvalid)
     return Schema();
@@ -1555,7 +1555,7 @@ Schema Schema::GetAdditionalProperties() const {
 
 SchemaList Schema::GetPatternProperties(const std::string& key) const {
   CHECK(valid());
-  CHECK_EQ(base::Value::Type::DICTIONARY, type());
+  CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
   if (node->end == kInvalid || node->pattern_end == kInvalid)
     return {};
@@ -1573,7 +1573,7 @@ SchemaList Schema::GetPatternProperties(const std::string& key) const {
 
 std::vector<std::string> Schema::GetRequiredProperties() const {
   CHECK(valid());
-  CHECK_EQ(base::Value::Type::DICTIONARY, type());
+  CHECK_EQ(base::Value::Type::DICT, type());
   const PropertiesNode* node = storage_->properties(node_->extra);
   if (node->required_begin == kInvalid || node->required_end == kInvalid)
     return {};

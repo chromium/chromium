@@ -529,9 +529,9 @@ TEST_F(V8ValueConverterImplTest, WeirdTypes) {
                 base::Value::Type::NONE,  // Arbitrary type, result is NULL.
                 std::unique_ptr<base::Value>());
   TestWeirdType(converter, v8::Date::New(context, 1000).ToLocalChecked(),
-                base::Value::Type::DICTIONARY,
+                base::Value::Type::DICT,
                 std::make_unique<base::Value>(base::Value::Type::DICT));
-  TestWeirdType(converter, regex, base::Value::Type::DICTIONARY,
+  TestWeirdType(converter, regex, base::Value::Type::DICT,
                 std::make_unique<base::Value>(base::Value::Type::DICT));
 
   converter.SetDateAllowed(true);

@@ -80,7 +80,7 @@ TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {
   tracing::BackgroundTracingStateManager::GetInstance().SaveState(
       {}, tracing::BackgroundTracingState::STARTED);
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   tracing::BackgroundTracingStateManager::GetInstance().Initialize(nullptr);
 
   auto config = CreateValidConfig();

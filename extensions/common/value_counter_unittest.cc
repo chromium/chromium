@@ -22,7 +22,7 @@ TEST_F(ValueCounterTest, TestAddingSameValue) {
 TEST_F(ValueCounterTest, TestAddingDifferentValue) {
   ValueCounter vc;
   base::Value value1(base::Value::Type::LIST);
-  base::Value value2(base::Value::Type::DICTIONARY);
+  base::Value value2(base::Value::Type::DICT);
   ASSERT_TRUE(vc.Add(value1));
   ASSERT_TRUE(vc.Add(value2));
 }
@@ -51,7 +51,7 @@ TEST_F(ValueCounterTest, TestReAddingSameValue) {
 TEST_F(ValueCounterTest, TestIsEmpty) {
   ValueCounter vc;
   base::Value value1(base::Value::Type::LIST);
-  base::Value value2(base::Value::Type::DICTIONARY);
+  base::Value value2(base::Value::Type::DICT);
   ASSERT_TRUE(vc.is_empty());
   vc.Add(value1);
   ASSERT_FALSE(vc.is_empty());

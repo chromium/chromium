@@ -346,7 +346,7 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     }
     managed_config_handler_->SetPolicy(
         ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
-        /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+        /*global_config=*/base::Value(base::Value::Type::DICT));
     task_environment_.RunUntilIdle();
   }
 
@@ -595,7 +595,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
   ASSERT_FALSE(wifi0_service_path.empty());
-  base::Value global_config(base::Value::Type::DICTIONARY);
+  base::Value global_config(base::Value::Type::DICT);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(true));

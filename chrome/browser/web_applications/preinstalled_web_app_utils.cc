@@ -204,7 +204,7 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
   options.require_manifest = true;
   options.force_reinstall = false;
 
-  if (app_config.type() != base::Value::Type::DICTIONARY) {
+  if (app_config.type() != base::Value::Type::DICT) {
     return base::StrCat(
         {file.AsUTF8Unsafe(), " was not a dictionary as the top level"});
   }

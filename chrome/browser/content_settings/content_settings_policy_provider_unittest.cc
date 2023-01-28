@@ -187,7 +187,7 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
       &provider, google_url, google_url,
       ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, cert_filter_setting.type());
+  ASSERT_EQ(base::Value::Type::DICT, cert_filter_setting.type());
   base::Value::List* cert_filters =
       cert_filter_setting.GetDict().FindList("filters");
   ASSERT_TRUE(cert_filters);

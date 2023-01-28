@@ -372,7 +372,7 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 }
 
 base::Value AppRestoreData::ConvertToValue() const {
-  base::Value launch_info_dict(base::Value::Type::DICTIONARY);
+  base::Value launch_info_dict(base::Value::Type::DICT);
 
   if (event_flag.has_value())
     launch_info_dict.SetIntKey(kEventFlagKey, event_flag.value());

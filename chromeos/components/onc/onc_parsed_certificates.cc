@@ -31,7 +31,7 @@ enum class CertificateType { kServer, kAuthority, kClient };
 absl::optional<CertificateScope> ParseCertScope(
     const base::Value& onc_certificate) {
   const base::Value* scope_dict = onc_certificate.FindKeyOfType(
-      ::onc::certificate::kScope, base::Value::Type::DICTIONARY);
+      ::onc::certificate::kScope, base::Value::Type::DICT);
   if (!scope_dict)
     return CertificateScope::Default();
 

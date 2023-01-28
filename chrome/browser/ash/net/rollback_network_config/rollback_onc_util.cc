@@ -67,7 +67,7 @@ base::Value ManagedOncCreatePasswordDict(const base::Value& network,
     source = onc::kAugmentationSharedSetting;
   }
 
-  base::Value password_dict(base::Value::Type::DICTIONARY);
+  base::Value password_dict(base::Value::Type::DICT);
   password_dict.SetStringKey(onc::kAugmentationActiveSetting, password);
   password_dict.SetStringKey(onc::kAugmentationEffectiveSetting, source);
   password_dict.SetStringKey(source, password);

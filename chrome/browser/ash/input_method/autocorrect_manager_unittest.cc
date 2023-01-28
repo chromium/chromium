@@ -389,7 +389,7 @@ ui::KeyEvent KeyA() {
 void SetAutocorrectPreferenceTo(Profile& profile,
                                 const std::string& engine_id,
                                 int autocorrect_level) {
-  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  base::Value input_method_setting(base::Value::Type::DICT);
   input_method_setting.SetPath(
       engine_id + ".physicalKeyboardAutoCorrectionLevel",
       base::Value(autocorrect_level));

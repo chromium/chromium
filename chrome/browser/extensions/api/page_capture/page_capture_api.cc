@@ -235,7 +235,7 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(source_process_id(),
                                                            mhtml_path_);
 
-  base::Value response(base::Value::Type::DICTIONARY);
+  base::Value response(base::Value::Type::DICT);
   response.SetStringKey("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
   response.SetIntKey("mhtmlFileLength", file_size);
   response.SetIntKey("requestId", request_id());

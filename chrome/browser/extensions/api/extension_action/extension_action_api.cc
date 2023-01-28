@@ -367,7 +367,7 @@ bool ExtensionActionFunction::ExtractDataFromArguments() {
       tab_id_ = first_arg.GetInt();
       break;
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       // Found the details argument.
       details_ = &first_arg.GetDict();
       // Still need to check for the tabId within details.

@@ -993,7 +993,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
 
     ScopedListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
     update->clear();
-    base::Value dict(base::Value::Type::DICTIONARY);
+    base::Value dict(base::Value::Type::DICT);
     dict.SetStringKey("account_id", email);
     dict.SetStringKey("email", email);
     dict.SetStringKey("gaia", gaia_id);

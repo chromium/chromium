@@ -411,7 +411,7 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
                                       DictionaryType dictionary_type) {
   // Support basic types and string-to-string dictionary.
   switch (value.type()) {
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       if (dictionary_type == DICTIONARY_TYPE_STRING) {
         // AppendStringDictionary uses a{ss} to support Cellular.APN which
         // expects a string -> string dictionary.

@@ -784,7 +784,7 @@ ExtensionFunction::ResponseAction TerminalPrivateSetPrefsFunction::Run() {
   static const base::NoDestructor<
       base::flat_map<std::string, base::Value::Type>>
       kAllowList{{{guest_os::prefs::kGuestOsTerminalSettings,
-                   base::Value::Type::DICTIONARY}}};
+                   base::Value::Type::DICT}}};
 
   for (const auto item : params->prefs.additional_properties) {
     // Write prefs if they are allowed, and match expected type, else ignore.

@@ -21,7 +21,7 @@ class TracingUITest : public testing::Test {
 };
 
 std::string GetConfig() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   base::Value filter1(base::trace_event::MemoryDumpManager::kTraceCategory);
   base::Value filter2("filter2");
   base::Value included(base::Value::Type::LIST);
@@ -35,8 +35,8 @@ std::string GetConfig() {
   dict.SetBoolKey("enable_systrace", true);
   dict.SetStringKey("stream_format", "protobuf");
 
-  base::Value memory_config(base::Value::Type::DICTIONARY);
-  base::Value trigger(base::Value::Type::DICTIONARY);
+  base::Value memory_config(base::Value::Type::DICT);
+  base::Value trigger(base::Value::Type::DICT);
   trigger.SetStringKey("mode", "detailed");
   trigger.SetIntKey("periodic_interval_ms", 10000);
   base::Value triggers(base::Value::Type::LIST);

@@ -477,7 +477,7 @@ void RuntimeEventRouter::DispatchOnInstalledEvent(
            i != dependents->end();
            i++) {
         base::Value::List sm_event_args;
-        base::Value sm_info(base::Value::Type::DICTIONARY);
+        base::Value sm_info(base::Value::Type::DICT);
         sm_info.SetStringKey(kInstallReason, kInstallReasonSharedModuleUpdate);
         sm_info.SetStringKey(kInstallPreviousVersion, old_version.GetString());
         sm_info.SetStringKey(kInstallId, extension_id);

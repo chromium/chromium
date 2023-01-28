@@ -62,7 +62,7 @@ absl::optional<DeviceImageInfo> DeviceImageInfo::FromDictionaryValue(
 }
 
 base::Value DeviceImageInfo::ToDictionaryValue() const {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   dictionary.SetKey(kDefaultImageKey, base::Value(default_image_));
   dictionary.SetKey(kLeftBudImageKey, base::Value(left_bud_image_));
   dictionary.SetKey(kRightBudImageKey, base::Value(right_bud_image_));

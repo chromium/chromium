@@ -18,7 +18,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventList) {
       test_util::LoadJSONFile("calendar/events.json");
   ASSERT_TRUE(events.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
   auto event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ("America/Los_Angeles", event_list->time_zone());
@@ -52,7 +52,7 @@ TEST(CalendarAPIResponseTypesTest, ParseEventListWithCorrectEventStatuses) {
       test_util::LoadJSONFile("calendar/event_statuses.json");
   ASSERT_TRUE(events.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
   auto event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(4U, event_list->items().size());
@@ -73,7 +73,7 @@ TEST(CalendarAPIResponseTypesTest,
       test_util::LoadJSONFile("calendar/event_self_response_statuses.json");
   ASSERT_TRUE(events.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
   auto event_list = EventList::CreateFrom(*events);
 
   EXPECT_EQ(8U, event_list->items().size());
@@ -101,7 +101,7 @@ TEST(CalendarAPIResponseTypesTest, ParseFailed) {
       test_util::LoadJSONFile("calendar/invalid_events.json");
   ASSERT_TRUE(events.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, events->type());
+  ASSERT_EQ(base::Value::Type::DICT, events->type());
   auto event_list = EventList::CreateFrom(*events);
   ASSERT_EQ(event_list, nullptr);
 }

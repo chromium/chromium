@@ -261,7 +261,7 @@ void ProtocolTypeTraits<base::Value>::Serialize(const base::Value& value,
       // TODO(caseq): support this?
       NOTREACHED();
       return;
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
       SerializeDict(value.DictItems(), bytes);
       return;
     case base::Value::Type::LIST: {

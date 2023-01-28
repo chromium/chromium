@@ -485,7 +485,7 @@ void DisplayRootData(PartitionRootInspector& root_inspector,
 base::Value Dump(PartitionRootInspector& root_inspector) {
   auto slot_span_to_value = [](const SlotSpanMetadata<ThreadSafe>& slot_span,
                                size_t slots_per_span) -> base::Value {
-    auto result = base::Value(base::Value::Type::DICTIONARY);
+    auto result = base::Value(base::Value::Type::DICT);
 
     result.SetKey("num_allocated_slots",
                   base::Value{slot_span.num_allocated_slots});
@@ -510,7 +510,7 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
 
   auto bucket_to_value =
       [&](const PartitionRootInspector::BucketStats& stats) -> base::Value {
-    auto result = base::Value(base::Value::Type::DICTIONARY);
+    auto result = base::Value(base::Value::Type::DICT);
     const size_t kPageSize = base::GetPageSize();
     size_t slots_per_span =
         (stats.bucket.num_system_pages_per_slot_span * kPageSize) /
@@ -549,7 +549,7 @@ base::Value Dump(PartitionRootInspector& root_inspector) {
     return result;
   };
 
-  auto result = base::Value(base::Value::Type::DICTIONARY);
+  auto result = base::Value(base::Value::Type::DICT);
 
   auto bucket_stats = base::Value(base::Value::Type::LIST);
   for (const auto& stats : root_inspector.bucket_stats()) {

@@ -1075,7 +1075,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
             base::Value(shill::kActivationStateNotActivated));
       }
 
-      base::Value payment_portal(base::Value::Type::DICTIONARY);
+      base::Value payment_portal(base::Value::Type::DICT);
       payment_portal.SetKey(shill::kPaymentPortalMethod, base::Value("POST"));
       payment_portal.SetKey(shill::kPaymentPortalPostData,
                             base::Value("iccid=123&imei=456&mdn=789"));
@@ -1096,7 +1096,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                    shill::kRoamingStateProperty,
                                    base::Value(shill_roaming_state));
 
-      base::Value apn(base::Value::Type::DICTIONARY);
+      base::Value apn(base::Value::Type::DICT);
       apn.SetKey(shill::kApnProperty, base::Value("testapn"));
       apn.SetKey(shill::kApnNameProperty, base::Value("Test APN"));
       apn.SetKey(shill::kApnLocalizedNameProperty,
@@ -1104,7 +1104,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       apn.SetKey(shill::kApnUsernameProperty, base::Value("User1"));
       apn.SetKey(shill::kApnPasswordProperty, base::Value("password"));
       apn.SetKey(shill::kApnAuthenticationProperty, base::Value("chap"));
-      base::Value apn2(base::Value::Type::DICTIONARY);
+      base::Value apn2(base::Value::Type::DICT);
       apn2.SetKey(shill::kApnProperty, base::Value("testapn2"));
       services->SetServiceProperty(kCellularServicePath,
                                    shill::kCellularApnProperty, apn);
@@ -1128,7 +1128,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
     // Shill, "Provider.Type", etc keys are used, but when reading the values
     // "Provider" . "Type", etc keys are used. Here we are setting the values
     // that will be read (by the UI, tests, etc).
-    base::Value provider_properties_openvpn(base::Value::Type::DICTIONARY);
+    base::Value provider_properties_openvpn(base::Value::Type::DICT);
     provider_properties_openvpn.SetStringKey(shill::kTypeProperty,
                                              shill::kProviderOpenVpn);
     provider_properties_openvpn.SetStringKey(shill::kHostProperty, "vpn_host");
@@ -1139,7 +1139,7 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
                                  provider_properties_openvpn);
     profiles->AddService(shared_profile, "/service/vpn1");
 
-    base::Value provider_properties_l2tp(base::Value::Type::DICTIONARY);
+    base::Value provider_properties_l2tp(base::Value::Type::DICT);
     provider_properties_l2tp.SetStringKey(shill::kTypeProperty,
                                           shill::kProviderL2tpIpsec);
     provider_properties_l2tp.SetStringKey(shill::kHostProperty, "vpn_host2");
@@ -1312,7 +1312,7 @@ bool FakeShillManagerClient::ParseOption(const std::string& arg0,
     return true;
   } else if (arg0 == "sim_lock") {
     bool locked = (arg1 == "1");
-    base::Value simlock_dict(base::Value::Type::DICTIONARY);
+    base::Value simlock_dict(base::Value::Type::DICT);
     simlock_dict.SetBoolKey(shill::kSIMLockEnabledProperty, true);
     std::string lock_type = locked ? shill::kSIMLockPin : "";
     simlock_dict.SetStringKey(shill::kSIMLockTypeProperty, lock_type);

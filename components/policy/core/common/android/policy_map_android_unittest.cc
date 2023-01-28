@@ -81,7 +81,7 @@ TEST_F(PolicyMapAndroidTest, StringPolicy) {
 TEST_F(PolicyMapAndroidTest, DictPolicy) {
   Java_PolicyMapTestSupporter_verifyDictPolicy(env_, j_support_,
                                                policy_name_android_, nullptr);
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetIntPath("key", 42);
   SetPolicy(std::move(value));
   Java_PolicyMapTestSupporter_verifyDictPolicy(

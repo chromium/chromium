@@ -157,7 +157,7 @@ std::string TextFragment::ToEscapedString() const {
 }
 
 base::Value TextFragment::ToValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
 
   if (prefix_.size())
     dict.SetKey(kFragmentPrefixKey, base::Value(prefix_));

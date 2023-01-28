@@ -168,7 +168,7 @@ base::Value MojomConfigToShillConfig(
     const hotspot_config::mojom::HotspotConfigPtr mojom_config) {
   using hotspot_config::mojom::HotspotConfig;
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   result.GetDict().Set(shill::kTetheringConfAutoDisableProperty,
                        base::Value(mojom_config->auto_disable));
   result.GetDict().Set(shill::kTetheringConfBandProperty,

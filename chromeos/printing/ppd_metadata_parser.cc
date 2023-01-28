@@ -20,7 +20,7 @@ namespace chromeos {
 namespace {
 
 // Attempts to
-// 1. parse |input| as a Value having Type::DICTIONARY and
+// 1. parse |input| as a Value having Type::DICT and
 // 2. return Value of |key| having a given |target_type| from the same.
 //
 // Additionally,
@@ -45,7 +45,7 @@ absl::optional<base::Value> ParseJsonAndUnnestKey(
     case base::Value::Type::LIST:
       unnested_is_empty = unnested->GetList().empty();
       break;
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
       unnested_is_empty = unnested->DictEmpty();
       break;
     default:
@@ -203,7 +203,7 @@ absl::optional<std::vector<std::string>> ParseLocales(
 absl::optional<ParsedManufacturers> ParseManufacturers(
     base::StringPiece manufacturers_json) {
   const auto as_value = ParseJsonAndUnnestKey(manufacturers_json, "filesMap",
-                                              base::Value::Type::DICTIONARY);
+                                              base::Value::Type::DICT);
   if (!as_value.has_value()) {
     return absl::nullopt;
   }
@@ -221,7 +221,7 @@ absl::optional<ParsedIndex> ParseForwardIndex(
     base::StringPiece forward_index_json) {
   // Firstly, we unnest the dictionary keyed by "ppdIndex."
   absl::optional<base::Value> ppd_index = ParseJsonAndUnnestKey(
-      forward_index_json, "ppdIndex", base::Value::Type::DICTIONARY);
+      forward_index_json, "ppdIndex", base::Value::Type::DICT);
   if (!ppd_index.has_value()) {
     return absl::nullopt;
   }
@@ -245,7 +245,7 @@ absl::optional<ParsedIndex> ParseForwardIndex(
 
 absl::optional<ParsedUsbIndex> ParseUsbIndex(base::StringPiece usb_index_json) {
   absl::optional<base::Value> usb_index = ParseJsonAndUnnestKey(
-      usb_index_json, "usbIndex", base::Value::Type::DICTIONARY);
+      usb_index_json, "usbIndex", base::Value::Type::DICT);
   if (!usb_index.has_value()) {
     return absl::nullopt;
   }
@@ -329,7 +329,7 @@ absl::optional<ParsedPrinters> ParsePrinters(base::StringPiece printers_json) {
 absl::optional<ParsedReverseIndex> ParseReverseIndex(
     base::StringPiece reverse_index_json) {
   const absl::optional<base::Value> makes_and_models = ParseJsonAndUnnestKey(
-      reverse_index_json, "reverseIndex", base::Value::Type::DICTIONARY);
+      reverse_index_json, "reverseIndex", base::Value::Type::DICT);
   if (!makes_and_models.has_value()) {
     return absl::nullopt;
   }

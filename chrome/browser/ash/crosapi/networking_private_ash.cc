@@ -222,7 +222,7 @@ void DeviceStateListCallbackAdapter(
     if (result->at(i)) {
       list->push_back(base::Value(result->at(i)->ToValue()));
     } else {
-      list->push_back(base::Value(base::Value::Type::DICTIONARY));
+      list->push_back(base::Value(base::Value::Type::DICT));
     }
   }
 

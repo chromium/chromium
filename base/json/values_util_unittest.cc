@@ -55,7 +55,7 @@ TEST(ValuesUtilTest, InvalidInt64Values) {
       std::make_unique<Value>(true),
       std::make_unique<Value>(Value::Type::BINARY),
       std::make_unique<Value>(Value::Type::LIST),
-      std::make_unique<Value>(Value::Type::DICTIONARY),
+      std::make_unique<Value>(Value::Type::DICT),
       std::make_unique<Value>(""),
       std::make_unique<Value>("abcd"),
       std::make_unique<Value>("1234.0"),

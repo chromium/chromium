@@ -50,10 +50,10 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
 void ScopedPageFocusOverride::AgentHostClosed(DevToolsAgentHost* agent_host) {}
 
 void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
-  base::Value command(base::Value::Type::DICTIONARY);
+  base::Value command(base::Value::Type::DICT);
   command.SetIntKey("id", ++last_sent_id_);
   command.SetStringKey("method", "Emulation.setFocusEmulationEnabled");
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value params(base::Value::Type::DICT);
   params.SetBoolKey("enabled", enabled);
   command.SetKey("params", std::move(params));
 

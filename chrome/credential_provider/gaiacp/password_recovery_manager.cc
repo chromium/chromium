@@ -110,7 +110,7 @@ bool PadSecret(const std::string& secret, std::string* out) {
   std::memcpy(&padded_secret[padded_length - secret.size()], secret.data(),
               secret.size());
 
-  base::Value pwd_padding_dict(base::Value::Type::DICTIONARY);
+  base::Value pwd_padding_dict(base::Value::Type::DICT);
   pwd_padding_dict.SetStringKey(kPaddedPassword, padded_secret);
   pwd_padding_dict.SetIntKey(kPasswordLength, secret.size());
   SecurelyClearString(padded_secret);
@@ -317,7 +317,7 @@ HRESULT EncryptUserPasswordUsingEscrowService(
   if (opt == absl::nullopt)
     return E_FAIL;
 
-  encrypted_data->emplace(base::Value(base::Value::Type::DICTIONARY));
+  encrypted_data->emplace(base::Value(base::Value::Type::DICT));
   (*encrypted_data)->SetStringKey(kUserPasswordLsaStoreIdKey, resource_id);
 
   std::string cipher_text;

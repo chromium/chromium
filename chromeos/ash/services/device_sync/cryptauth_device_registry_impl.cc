@@ -77,7 +77,7 @@ void CryptAuthDeviceRegistryImpl::OnDeviceRegistryUpdated() {
 }
 
 base::Value CryptAuthDeviceRegistryImpl::AsDictionary() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   for (const std::pair<std::string, CryptAuthDevice>& id_device_pair :
        instance_id_to_device_map()) {
     dict.SetKey(util::EncodeAsString(id_device_pair.first),

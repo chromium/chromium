@@ -153,7 +153,7 @@ base::Value ProcessPriorityAggregator::DescribeProcessNodeData(
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   ret.SetIntKey("user_visible_count", data->user_visible_count_);
   ret.SetIntKey("user_blocking_count", data->user_blocking_count_);
   return ret;

@@ -1932,7 +1932,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckSuccess) {
   ASSERT_THAT(entries, SizeIs(1));
 
   const base::Value& params = entries[0].params;
-  ASSERT_EQ(params.type(), base::Value::Type::DICTIONARY);
+  ASSERT_EQ(params.type(), base::Value::Type::DICT);
 
   EXPECT_THAT(params.GetDict().FindString("client_address_space"),
               Pointee(Eq("local")));
@@ -1961,7 +1961,7 @@ TEST_F(URLLoaderTest, AddsNetLogEntryForPrivateNetworkAccessCheckFailure) {
   ASSERT_THAT(entries, SizeIs(1));
 
   const base::Value& params = entries[0].params;
-  ASSERT_EQ(params.type(), base::Value::Type::DICTIONARY);
+  ASSERT_EQ(params.type(), base::Value::Type::DICT);
 
   EXPECT_THAT(params.GetDict().FindString("client_address_space"),
               Pointee(Eq("public")));

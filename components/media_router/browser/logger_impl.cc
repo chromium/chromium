@@ -168,7 +168,7 @@ LoggerImpl::Entry::~Entry() = default;
 
 // static
 base::Value LoggerImpl::AsValue(const LoggerImpl::Entry& entry) {
-  base::Value entry_val(base::Value::Type::DICTIONARY);
+  base::Value entry_val(base::Value::Type::DICT);
   entry_val.SetKey("severity", base::Value(AsString(entry.severity)));
   entry_val.SetKey("category", base::Value(AsString(entry.category)));
   entry_val.SetKey(

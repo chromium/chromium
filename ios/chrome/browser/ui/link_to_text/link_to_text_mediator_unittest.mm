@@ -155,14 +155,14 @@ class LinkToTextMediatorTest : public PlatformTest {
   std::unique_ptr<base::Value> CreateSuccessResponse(
       const std::string& selected_text,
       CGRect selection_rect) {
-    base::Value rect_value(base::Value::Type::DICTIONARY);
+    base::Value rect_value(base::Value::Type::DICT);
     rect_value.SetDoubleKey("x", selection_rect.origin.x);
     rect_value.SetDoubleKey("y", selection_rect.origin.y);
     rect_value.SetDoubleKey("width", selection_rect.size.width);
     rect_value.SetDoubleKey("height", selection_rect.size.height);
 
     std::unique_ptr<base::Value> response_value =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+        std::make_unique<base::Value>(base::Value::Type::DICT);
     response_value->SetDoubleKey(
         "status", static_cast<double>(LinkGenerationOutcome::kSuccess));
     response_value->SetKey("fragment", kTestTextFragment.ToValue());
@@ -178,7 +178,7 @@ class LinkToTextMediatorTest : public PlatformTest {
   std::unique_ptr<base::Value> CreateErrorResponse(
       LinkGenerationOutcome outcome) {
     std::unique_ptr<base::Value> response_value =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+        std::make_unique<base::Value>(base::Value::Type::DICT);
     response_value->SetDoubleKey("status", static_cast<double>(outcome));
     return response_value;
   }
@@ -398,7 +398,7 @@ TEST_F(LinkToTextMediatorTest, BadResponseLinkGenerationError) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<base::Value> malformed_response =
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+      std::make_unique<base::Value>(base::Value::Type::DICT);
   malformed_response->SetStringKey("somethingElse", "abc");
   SetLinkToTextResponse(malformed_response.get(), /*zoom=*/1.0);
 

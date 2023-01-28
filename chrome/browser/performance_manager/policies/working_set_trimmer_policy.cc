@@ -107,7 +107,7 @@ base::Value WorkingSetTrimmerPolicy::DescribeProcessNodeData(
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   auto last_trim_age = base::TimeTicks::Now() - data->last_trim_;
 
   ret.SetKey(

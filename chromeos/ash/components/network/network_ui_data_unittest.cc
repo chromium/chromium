@@ -10,7 +10,7 @@
 namespace ash {
 
 TEST(NetworkUIDataTest, ONCSource) {
-  base::Value ui_data_dict(base::Value::Type::DICTIONARY);
+  base::Value ui_data_dict(base::Value::Type::DICT);
 
   ui_data_dict.SetStringKey("onc_source", "user_import");
   {

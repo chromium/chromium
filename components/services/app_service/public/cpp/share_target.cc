@@ -25,7 +25,7 @@ ShareTarget::Files& ShareTarget::Files::operator=(ShareTarget::Files&&) =
 ShareTarget::Files::~Files() = default;
 
 base::Value ShareTarget::Files::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("name", name);
   base::Value& accept_json =
       *root.SetKey("accept", base::Value(base::Value::Type::LIST));
@@ -49,7 +49,7 @@ ShareTarget::Params& ShareTarget::Params::operator=(ShareTarget::Params&&) =
 ShareTarget::Params::~Params() = default;
 
 base::Value ShareTarget::Params::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("title", title);
   root.SetStringKey("text", text);
   root.SetStringKey("url", url);
@@ -93,7 +93,7 @@ const char* ShareTarget::EnctypeToString(ShareTarget::Enctype enctype) {
 }
 
 base::Value ShareTarget::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("action", action.spec());
   root.SetStringKey("method", ShareTarget::MethodToString(method));
   root.SetStringKey("enctype", ShareTarget::EnctypeToString(enctype));

@@ -19,7 +19,7 @@ TEST(DriveAPIParserTest, AboutResourceParser) {
       test_util::LoadJSONFile("drive/about.json");
   ASSERT_TRUE(document.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<AboutResource> resource(new AboutResource());
   EXPECT_TRUE(resource->Parse(*document));
 
@@ -35,7 +35,7 @@ TEST(DriveAPIParserTest, TeamDriveResourceParser) {
       test_util::LoadJSONFile("drive/team_drive.json");
   ASSERT_TRUE(document.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<TeamDriveResource> resource(new TeamDriveResource());
   EXPECT_TRUE(resource->Parse(*document));
 
@@ -63,7 +63,7 @@ TEST(DriveAPIParserTest, TeamDriveListParser) {
   ASSERT_TRUE(document.get());
   EXPECT_TRUE(TeamDriveList::HasTeamDriveListKind(*document));
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<TeamDriveList> resource(new TeamDriveList());
   EXPECT_TRUE(resource->Parse(*document));
   EXPECT_EQ(3U, resource->items().size());
@@ -77,7 +77,7 @@ TEST(DriveAPIParserTest, FileListParser) {
       test_util::LoadJSONFile("drive/filelist.json");
   ASSERT_TRUE(document.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<FileList> filelist(new FileList);
   EXPECT_TRUE(filelist->Parse(*document));
 
@@ -206,7 +206,7 @@ TEST(DriveAPIParserTest, ChangeListParser) {
       test_util::LoadJSONFile("drive/changelist.json");
   ASSERT_TRUE(document.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<ChangeList> changelist(new ChangeList);
   EXPECT_TRUE(changelist->Parse(*document));
 
@@ -275,7 +275,7 @@ TEST(DriveAPIParserTest, ChangeListParserWithStartToken) {
       "drive/changelist_with_new_start_page_token.json");
   ASSERT_TRUE(document.get());
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<ChangeList> changelist = ChangeList::CreateFrom(*document);
   EXPECT_TRUE(changelist);
 
@@ -312,7 +312,7 @@ TEST(DriveAPIParserTest, StartPageToken) {
       test_util::LoadJSONFile("drive/start_page_token.json"));
 
   ASSERT_TRUE(document.get());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, document->type());
+  ASSERT_EQ(base::Value::Type::DICT, document->type());
   std::unique_ptr<StartPageToken> resource =
       StartPageToken::CreateFrom(*document);
 

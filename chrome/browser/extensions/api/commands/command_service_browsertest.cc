@@ -471,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   // another platform.
   std::string anotherPlatformKey = GetAnotherCommandPlatform() + ":Alt+G";
   const char kNamedCommandName[] = "toggle-feature";
-  base::Value keybinding(base::Value::Type::DICTIONARY);
+  base::Value keybinding(base::Value::Type::DICT);
   keybinding.SetStringKey("extension", extension->id());
   keybinding.SetStringKey("command_name", kNamedCommandName);
   keybinding.SetBoolKey("global", false);

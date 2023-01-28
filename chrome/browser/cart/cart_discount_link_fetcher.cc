@@ -87,9 +87,9 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
   const cart_db::ChromeCartDiscountProto& cart_discount_proto =
       cart_content_proto.discount_info();
 
-  base::Value discount_dict(base::Value::Type::DICTIONARY);
+  base::Value discount_dict(base::Value::Type::DICT);
   // MerchantIdentifier
-  base::Value merchant_identifier_dict(base::Value::Type::DICTIONARY);
+  base::Value merchant_identifier_dict(base::Value::Type::DICT);
   merchant_identifier_dict.SetStringKey("cartUrl",
                                         cart_content_proto.merchant_cart_url());
   merchant_identifier_dict.SetStringKey("merchantId",
@@ -106,7 +106,7 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
     const cart_db::RuleDiscountInfoProto& rule_discount_info_proto =
         cart_discount_proto.rule_discount_info(i);
 
-    base::Value rule_discount(base::Value::Type::DICTIONARY);
+    base::Value rule_discount(base::Value::Type::DICT);
     // ruleId
     rule_discount.SetStringKey("ruleId", rule_discount_info_proto.rule_id());
     // merchanRuletId
@@ -119,9 +119,9 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
           rule_discount_info_proto.raw_merchant_offer_id());
     }
     // discount
-    base::Value discount(base::Value::Type::DICTIONARY);
+    base::Value discount(base::Value::Type::DICT);
     if (rule_discount_info_proto.has_amount_off()) {
-      base::Value money(base::Value::Type::DICTIONARY);
+      base::Value money(base::Value::Type::DICT);
 
       const cart_db::MoneyProto& money_proto =
           rule_discount_info_proto.amount_off();
@@ -139,7 +139,7 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
   }
   discount_dict.SetKey("ruleDiscounts", std::move(rule_discounts_list));
 
-  base::Value request_dict(base::Value::Type::DICTIONARY);
+  base::Value request_dict(base::Value::Type::DICT);
   request_dict.SetKey("discount", std::move(discount_dict));
   request_dict.SetStringKey("baseUrl", cart_content_proto.merchant_cart_url());
   request_dict.SetStringKey("merchantId", cart_discount_proto.merchant_id());

@@ -199,7 +199,7 @@ void ExtensionsPermissionsTracker::OnForcedExtensionsPrefChanged() {
   // installation_mode: forced.
   const base::Value& value =
       pref_service_->GetValue(pref_names::kInstallForceList);
-  if (value.type() != base::Value::Type::DICTIONARY) {
+  if (value.type() != base::Value::Type::DICT) {
     return;
   }
 

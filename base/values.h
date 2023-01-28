@@ -198,8 +198,6 @@ class BASE_EXPORT GSL_OWNER Value {
     STRING,
     BINARY,
     DICT,
-    // TODO(https://crbug.com/1291670): Deprecated and will be removed.
-    DICTIONARY = DICT,
     LIST,
     // Note: Do not add more types. See the file-level comment above for why.
   };

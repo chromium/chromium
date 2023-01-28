@@ -462,12 +462,12 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                                int update_number,
                                int stats_number) {
     EXPECT_NE((base::Value*)nullptr, dump);
-    ASSERT_EQ(base::Value::Type::DICTIONARY, dump->type());
+    ASSERT_EQ(base::Value::Type::DICT, dump->type());
 
     EXPECT_EQ((size_t)peer_connection_number, dump->DictSize());
     for (auto kv : dump->DictItems()) {
       const base::Value& pc_dump = kv.second;
-      ASSERT_EQ(base::Value::Type::DICTIONARY, pc_dump.type());
+      ASSERT_EQ(base::Value::Type::DICT, pc_dump.type());
 
       // Verifies the number of updates.
       const base::Value* value = pc_dump.FindListKey("updateLog");

@@ -99,7 +99,7 @@ class ExtensionGarbageCollectorChromeOSUnitTest
 
     base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
 
-    base::Value version_info(base::Value::Type::DICTIONARY);
+    base::Value version_info(base::Value::Type::DICT);
     version_info.SetStringKey(
         ExtensionAssetsManagerChromeOS::kSharedExtensionPath, path.value());
 

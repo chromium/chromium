@@ -744,7 +744,7 @@ const base::Value::Dict* ExtensionManagement::LoadDictPreference(
     const char* pref_name,
     bool force_managed) const {
   const base::Value* value =
-      LoadPreference(pref_name, force_managed, base::Value::Type::DICTIONARY);
+      LoadPreference(pref_name, force_managed, base::Value::Type::DICT);
   return value ? &value->GetDict() : nullptr;
 }
 

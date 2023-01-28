@@ -30,7 +30,7 @@ absl::optional<std::string> CreateJSONWebToken(
   }
 
   // Generate header.
-  base::Value header(base::Value::Type::DICTIONARY);
+  base::Value header(base::Value::Type::DICT);
   header.SetKey(kKeyAlg, base::Value(kAlgES256));
   header.SetKey(kKeyTyp, base::Value(kTypJwt));
 

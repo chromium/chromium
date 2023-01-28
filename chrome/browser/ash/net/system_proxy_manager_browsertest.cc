@@ -566,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(SystemProxyManagerPolicyCredentialsBrowserTest,
   ExpectSystemCredentialsSent("", "");
 
   // Configure a proxy via user policy.
-  base::Value proxy_config(base::Value::Type::DICTIONARY);
+  base::Value proxy_config(base::Value::Type::DICT);
   proxy_config.SetKey("mode", base::Value(ProxyPrefs::kPacScriptProxyModeName));
   proxy_config.SetKey("pac_url", base::Value("http://proxy"));
   browser()->profile()->GetPrefs()->Set(::proxy_config::prefs::kProxy,
@@ -661,7 +661,7 @@ class SystemProxyCredentialsReuseBrowserTest
 
   void SetManagedProxy() {
     // Configure a proxy via user policy.
-    base::Value proxy_config(base::Value::Type::DICTIONARY);
+    base::Value proxy_config(base::Value::Type::DICT);
     proxy_config.SetKey("mode",
                         base::Value(ProxyPrefs::kFixedServersProxyModeName));
     proxy_config.SetKey(

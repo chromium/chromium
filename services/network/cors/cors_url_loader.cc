@@ -86,7 +86,7 @@ absl::optional<PreflightRequiredReason> NeedsPreflight(
 }
 
 base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetStringKey("url", request.url.possibly_invalid_spec());
   dict.SetStringKey("method", request.method);
   dict.SetStringKey("headers", request.headers.ToString());
@@ -106,7 +106,7 @@ base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
 
 base::Value NetLogPreflightRequiredParams(
     absl::optional<PreflightRequiredReason> preflight_required_reason) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetBoolKey("preflight_required", preflight_required_reason.has_value());
   if (preflight_required_reason) {
     std::string preflight_required_reason_param;

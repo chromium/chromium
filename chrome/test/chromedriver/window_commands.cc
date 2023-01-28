@@ -1474,8 +1474,8 @@ Status ProcessInputActionSequence(Session* session,
                 origin_dict->FindString(GetElementKey());
             if (!element_id)
               return Status(kInvalidArgument, "'element' is missing");
-            base::Value* origin_result = action_dict.Set(
-                "origin", base::Value(base::Value::Type::DICTIONARY));
+            base::Value* origin_result =
+                action_dict.Set("origin", base::Value(base::Value::Type::DICT));
             origin_result->GetDict().SetByDottedPath(GetElementKey(),
                                                      *element_id);
           } else {

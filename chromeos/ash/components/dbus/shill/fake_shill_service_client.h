@@ -149,7 +149,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void ContinueConnect(const std::string& service_path);
   void SetDefaultFakeTrafficCounters();
 
-  base::Value stub_services_{base::Value::Type::DICTIONARY};
+  base::Value stub_services_{base::Value::Type::DICT};
 
   // Per network service, stores a closure that is executed on each connection
   // attempt. The callback can for example modify the services properties in

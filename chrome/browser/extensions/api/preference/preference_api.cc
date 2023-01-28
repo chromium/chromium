@@ -661,7 +661,7 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
       extensions::preference_helpers::GetLevelOfControl(
           profile, extension_id(), browser_pref, incognito);
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   ProduceGetResult(&result, pref->GetValue(), level_of_control, browser_pref,
                    incognito);
 
@@ -724,7 +724,7 @@ void GetPreferenceFunction::OnLacrosGetSuccess(
           control_state, profile, extension_id(), cached_browser_pref_,
           incognito);
 
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
 
   ProduceGetResult(&result, pref_value, level_of_control, cached_browser_pref_,
                    incognito);

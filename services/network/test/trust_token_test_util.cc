@@ -140,7 +140,7 @@ SerializeTrustTokenParametersAndConstructExpectation(
     const TrustTokenTestParameters& input) {
   auto trust_token_params = mojom::TrustTokenParams::New();
 
-  base::Value parameters(base::Value::Type::DICTIONARY);
+  base::Value parameters(base::Value::Type::DICT);
   parameters.SetStringKey("operation", TrustTokenEnumToString(input.operation));
   trust_token_params->operation = input.operation;
 
@@ -172,7 +172,7 @@ std::string WrapKeyCommitmentsForIssuers(
   std::string ret;
   JSONStringValueSerializer serializer(&ret);
 
-  base::Value to_serialize(base::Value::Type::DICTIONARY);
+  base::Value to_serialize(base::Value::Type::DICT);
 
   for (const auto& kv : issuers_and_commitments) {
     const url::Origin& issuer = kv.first;

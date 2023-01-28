@@ -368,13 +368,13 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
 
 bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
                                   const base::Value& old_properties) {
-  base::Value new_identifying(base::Value::Type::DICTIONARY);
+  base::Value new_identifying(base::Value::Type::DICT);
   if (!CopyIdentifyingProperties(
           new_properties, false /* properties were not read from Shill */,
           &new_identifying)) {
     return false;
   }
-  base::Value old_identifying(base::Value::Type::DICTIONARY);
+  base::Value old_identifying(base::Value::Type::DICT);
   if (!CopyIdentifyingProperties(old_properties,
                                  true /* properties were read from Shill */,
                                  &old_identifying)) {

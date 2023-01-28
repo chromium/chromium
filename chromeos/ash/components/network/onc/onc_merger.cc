@@ -74,7 +74,7 @@ base::Value GetDefaultValue(const chromeos::onc::OncFieldSignature* field) {
 // Returns a dictionary which contains |true| at each path that is editable by
 // the user. No other fields are set.
 base::Value GetEditableFlags(const base::Value& policy) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   MarkRecommendedFieldnames(policy, &result);
 
   // Recurse into nested dictionaries.
@@ -115,7 +115,7 @@ class MergeListOfDictionaries {
   // new dictionary containing all results of those calls at the respective
   // paths. The resulting dictionary doesn't contain empty dictionaries.
   base::Value MergeDictionaries(const ValuePtrs& dicts) {
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     std::set<std::string> visited;
     for (const base::Value* dict_outer : dicts) {
       if (!dict_outer || !dict_outer->is_dict())
@@ -193,7 +193,7 @@ class MergeSettingsAndPolicies : public MergeListOfDictionaries {
     hasDevicePolicy_ = (device_policy != nullptr);
 
     // Note: The call to MergeListOfDictionaries::MergeDictionaries below will
-    // ignore Value entries that are not Type::DICTIONARY.
+    // ignore Value entries that are not Type::DICT.
     base::Value user_editable;
     if (user_policy)
       user_editable = GetEditableFlags(*user_policy);
@@ -403,7 +403,7 @@ class MergeToAugmented : public MergeToEffective {
       return base::Value();
     }
 
-    base::Value augmented_value(base::Value::Type::DICTIONARY);
+    base::Value augmented_value(base::Value::Type::DICT);
 
     if (values.active_setting) {
       augmented_value.SetKey(::onc::kAugmentationActiveSetting,

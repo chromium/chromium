@@ -141,7 +141,7 @@ bool ForceInstallPrefObserver::IsForceInstallPrefSet() const {
     // protects against, and there might be tests that simulate this scenario.
     return false;
   }
-  DCHECK_EQ(pref->GetType(), base::Value::Type::DICTIONARY);
+  DCHECK_EQ(pref->GetType(), base::Value::Type::DICT);
   return pref->GetValue()->FindKey(extension_id_) != nullptr;
 }
 

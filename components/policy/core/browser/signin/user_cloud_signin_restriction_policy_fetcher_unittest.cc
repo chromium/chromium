@@ -64,7 +64,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
   feature_list_->InitAndDisableFeature(
       policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher);
   network::TestURLLoaderFactory url_loader_factory;
-  base::Value expected_response(base::Value::Type::DICTIONARY);
+  base::Value expected_response(base::Value::Type::DICT);
   expected_response.SetStringKey("policyValue", "primary_account");
   std::string response;
   JSONStringValueSerializer serializer(&response);
@@ -87,7 +87,7 @@ TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, NoUseAfterFreeCrash) {
 
 TEST_F(UserCloudSigninRestrictionPolicyFetcherTest, ReturnsValueFromBody) {
   network::TestURLLoaderFactory url_loader_factory;
-  base::Value expected_response(base::Value::Type::DICTIONARY);
+  base::Value expected_response(base::Value::Type::DICT);
   expected_response.SetStringKey("policyValue", "primary_account");
   std::string response;
   JSONStringValueSerializer serializer(&response);

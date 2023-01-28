@@ -511,7 +511,7 @@ bool WebContentsInteractionTestUtil::IsTruthy(const base::Value& value) {
       return value.GetDouble() != 0.0;
     case Type::BINARY:
       return true;
-    case Type::DICTIONARY:
+    case Type::DICT:
       return true;
     case Type::LIST:
       return true;

@@ -331,7 +331,7 @@ GURL GetQueryUrl(const std::u16string& text_query,
 base::Value CreateDeletion(const std::string& min_time,
                            const std::string& max_time,
                            const GURL& url) {
-  base::Value deletion(base::Value::Type::DICTIONARY);
+  base::Value deletion(base::Value::Type::DICT);
   deletion.SetStringKey("type", "CHROME_HISTORY");
   if (url.is_valid())
     deletion.SetStringKey("url", url.spec());
@@ -406,7 +406,7 @@ void WebHistoryService::ExpireHistory(
     const std::vector<ExpireHistoryArgs>& expire_list,
     ExpireWebHistoryCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
-  base::Value delete_request(base::Value::Type::DICTIONARY);
+  base::Value delete_request(base::Value::Type::DICT);
   base::Value deletions(base::Value::Type::LIST);
   base::Time now = base::Time::Now();
 
@@ -492,7 +492,7 @@ void WebHistoryService::SetAudioHistoryEnabled(
   std::unique_ptr<Request> request(CreateRequest(
       url, std::move(completion_callback), partial_traffic_annotation));
 
-  base::Value enable_audio_history(base::Value::Type::DICTIONARY);
+  base::Value enable_audio_history(base::Value::Type::DICT);
   enable_audio_history.SetBoolKey("enable_history_recording",
                                   new_enabled_value);
   enable_audio_history.SetStringKey("client", "audio");

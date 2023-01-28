@@ -261,7 +261,7 @@ HRESULT RegisterWithGoogleDeviceManagement(const std::wstring& mdm_url,
   }
 
   // Build the json data needed by the server.
-  base::Value registration_data(base::Value::Type::DICTIONARY);
+  base::Value registration_data(base::Value::Type::DICT);
   registration_data.SetStringKey("id_token", base::WideToUTF8(id_token));
   registration_data.SetStringKey("access_token",
                                  base::WideToUTF8(access_token));

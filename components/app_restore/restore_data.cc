@@ -73,12 +73,12 @@ std::unique_ptr<RestoreData> RestoreData::Clone() const {
 }
 
 base::Value RestoreData::ConvertToValue() const {
-  base::Value restore_data_dict(base::Value::Type::DICTIONARY);
+  base::Value restore_data_dict(base::Value::Type::DICT);
   for (const auto& it : app_id_to_launch_list_) {
     if (it.second.empty())
       continue;
 
-    base::Value info_dict(base::Value::Type::DICTIONARY);
+    base::Value info_dict(base::Value::Type::DICT);
     for (const auto& data : it.second) {
       info_dict.SetKey(base::NumberToString(data.first),
                        data.second->ConvertToValue());

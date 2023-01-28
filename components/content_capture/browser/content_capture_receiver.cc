@@ -48,14 +48,14 @@ std::string ContentCaptureReceiver::ToJSON(
     return std::string();
   base::Value favicon_array(base::Value::Type::LIST);
   for (const auto& favicon_url : candidates) {
-    base::Value favicon(base::Value::Type::DICTIONARY);
+    base::Value favicon(base::Value::Type::DICT);
     favicon.SetStringKey("url", favicon_url->icon_url.spec());
     favicon.SetStringKey("type", ToFaviconTypeString(favicon_url->icon_type));
 
     if (!favicon_url->icon_sizes.empty()) {
       base::Value sizes(base::Value::Type::LIST);
       for (auto icon_size : favicon_url->icon_sizes) {
-        base::Value size(base::Value::Type::DICTIONARY);
+        base::Value size(base::Value::Type::DICT);
         size.SetIntKey("width", icon_size.width());
         size.SetIntKey("height", icon_size.height());
         sizes.Append(std::move(size));

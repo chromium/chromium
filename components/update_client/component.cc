@@ -651,7 +651,7 @@ base::TimeDelta Component::GetUpdateDuration() const {
 }
 
 base::Value Component::MakeEventUpdateComplete() const {
-  base::Value event(base::Value::Type::DICTIONARY);
+  base::Value event(base::Value::Type::DICT);
   event.SetKey("eventtype", base::Value(update_context_->is_install ? 2 : 3));
   event.SetKey(
       "eventresult",
@@ -687,7 +687,7 @@ base::Value Component::MakeEventUpdateComplete() const {
 
 base::Value Component::MakeEventDownloadMetrics(
     const CrxDownloader::DownloadMetrics& dm) const {
-  base::Value event(base::Value::Type::DICTIONARY);
+  base::Value event(base::Value::Type::DICT);
   event.SetKey("eventtype", base::Value(14));
   event.SetKey("eventresult", base::Value(static_cast<int>(dm.error == 0)));
   event.SetKey("downloader", base::Value(DownloaderToString(dm.downloader)));
@@ -715,7 +715,7 @@ base::Value Component::MakeEventDownloadMetrics(
 
 base::Value Component::MakeEventUninstalled() const {
   DCHECK(state() == ComponentState::kUninstalled);
-  base::Value event(base::Value::Type::DICTIONARY);
+  base::Value event(base::Value::Type::DICT);
   event.SetKey("eventtype", base::Value(4));
   event.SetKey("eventresult", base::Value(1));
   if (extra_code1())
@@ -729,7 +729,7 @@ base::Value Component::MakeEventUninstalled() const {
 
 base::Value Component::MakeEventRegistration() const {
   DCHECK(state() == ComponentState::kRegistration);
-  base::Value event(base::Value::Type::DICTIONARY);
+  base::Value event(base::Value::Type::DICT);
   event.SetKey("eventtype", base::Value(2));
   event.SetKey("eventresult", base::Value(1));
   if (error_code())
@@ -744,7 +744,7 @@ base::Value Component::MakeEventRegistration() const {
 base::Value Component::MakeEventActionRun(bool succeeded,
                                           int error_code,
                                           int extra_code1) const {
-  base::Value event(base::Value::Type::DICTIONARY);
+  base::Value event(base::Value::Type::DICT);
   event.SetKey("eventtype", base::Value(42));
   event.SetKey("eventresult", base::Value(static_cast<int>(succeeded)));
   if (error_code)

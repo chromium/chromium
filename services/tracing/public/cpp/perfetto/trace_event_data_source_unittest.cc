@@ -924,12 +924,12 @@ void MetadataHasNamedValue(const google::protobuf::RepeatedPtrField<
 }
 
 absl::optional<base::Value> AddJsonMetadataGenerator() {
-  base::Value metadata(base::Value::Type::DICTIONARY);
+  base::Value metadata(base::Value::Type::DICT);
   metadata.SetIntKey("foo_int", 42);
   metadata.SetStringKey("foo_str", "bar");
   metadata.SetBoolKey("foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICTIONARY);
+  base::Value child_dict(base::Value::Type::DICT);
   child_dict.SetStringKey("child_str", "child_val");
   metadata.SetKey("child_dict", std::move(child_dict));
   return metadata;
@@ -949,7 +949,7 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorBeforeTracing) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICTIONARY);
+  base::Value child_dict(base::Value::Type::DICT);
   child_dict.SetStringKey("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 }
@@ -968,7 +968,7 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorWhileTracing) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICTIONARY);
+  base::Value child_dict(base::Value::Type::DICT);
   child_dict.SetStringKey("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 }
@@ -976,7 +976,7 @@ TEST_F(TraceEventDataSourceTest, MetadataGeneratorWhileTracing) {
 TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
-    base::Value metadata(base::Value::Type::DICTIONARY);
+    base::Value metadata(base::Value::Type::DICT);
     metadata.SetIntKey("before_int", 42);
     return absl::optional<base::Value>(std::move(metadata));
   }));
@@ -998,7 +998,7 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   MetadataHasNamedValue(metadata, "foo_str", "bar");
   MetadataHasNamedValue(metadata, "foo_bool", true);
 
-  base::Value child_dict(base::Value::Type::DICTIONARY);
+  base::Value child_dict(base::Value::Type::DICT);
   child_dict.SetStringKey("child_str", "child_val");
   MetadataHasNamedValue(metadata, "child_dict", child_dict);
 
@@ -2049,12 +2049,12 @@ TEST_F(TraceEventDataSourceTest, FilteringEventWithFlagCopy) {
 TEST_F(TraceEventDataSourceTest, FilteringMetadataSource) {
   auto* metadata_source = TraceEventMetadataSource::GetInstance();
   metadata_source->AddGeneratorFunction(base::BindRepeating([]() {
-    base::Value metadata(base::Value::Type::DICTIONARY);
+    base::Value metadata(base::Value::Type::DICT);
     metadata.SetIntKey("foo_int", 42);
     metadata.SetStringKey("foo_str", "bar");
     metadata.SetBoolKey("foo_bool", true);
 
-    base::Value child_dict(base::Value::Type::DICTIONARY);
+    base::Value child_dict(base::Value::Type::DICT);
     child_dict.SetStringKey("child_str", "child_val");
     metadata.SetKey("child_dict", std::move(child_dict));
     return absl::optional<base::Value>(std::move(metadata));

@@ -90,7 +90,7 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, AddKey) {
   expected_bundle.AddKey(sym_key);
   EXPECT_EQ(expected_bundle, *key_bundle);
 
-  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  base::Value expected_dict(base::Value::Type::DICT);
   expected_dict.SetKey(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(expected_bundle.name()),
       expected_bundle.AsDictionary());
@@ -140,7 +140,7 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, SetActiveKey) {
   expected_bundle.AddKey(sym_key);
   asym_key.set_status(CryptAuthKey::Status::kInactive);
   expected_bundle.AddKey(asym_key);
-  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  base::Value expected_dict(base::Value::Type::DICT);
   expected_dict.SetKey(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(expected_bundle.name()),
       expected_bundle.AsDictionary());
@@ -166,7 +166,7 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, DeactivateKeys) {
   expected_bundle.AddKey(sym_key);
   asym_key.set_status(CryptAuthKey::Status::kInactive);
   expected_bundle.AddKey(asym_key);
-  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  base::Value expected_dict(base::Value::Type::DICT);
   expected_dict.SetKey(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(expected_bundle.name()),
       expected_bundle.AsDictionary());
@@ -195,7 +195,7 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, DeleteKey) {
   CryptAuthKeyBundle expected_bundle(
       CryptAuthKeyBundle::Name::kLegacyAuthzenKey);
   expected_bundle.AddKey(asym_key);
-  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  base::Value expected_dict(base::Value::Type::DICT);
   expected_dict.SetKey(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(expected_bundle.name()),
       expected_bundle.AsDictionary());
@@ -224,7 +224,7 @@ TEST_F(DeviceSyncCryptAuthKeyRegistryImplTest, SetKeyDirective) {
       CryptAuthKeyBundle::Name::kLegacyAuthzenKey);
   expected_bundle.AddKey(sym_key);
   expected_bundle.set_key_directive(key_directive);
-  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  base::Value expected_dict(base::Value::Type::DICT);
   expected_dict.SetKey(
       CryptAuthKeyBundle::KeyBundleNameEnumToString(expected_bundle.name()),
       expected_bundle.AsDictionary());

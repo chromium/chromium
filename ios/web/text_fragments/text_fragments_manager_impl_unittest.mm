@@ -70,9 +70,9 @@ class MockJSFeature : public web::TextFragmentsJavaScriptFeature {
 base::Value ValueForTestURL() {
   base::Value val(base::Value::Type::LIST);
 
-  base::Value text1(base::Value::Type::DICTIONARY);
+  base::Value text1(base::Value::Type::DICT);
   text1.SetStringKey("textStart", "text 1");
-  base::Value text2(base::Value::Type::DICTIONARY);
+  base::Value text2(base::Value::Type::DICT);
   text2.SetStringKey("textStart", "text 2");
 
   val.Append(std::move(text1));

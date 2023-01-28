@@ -195,7 +195,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProfilePolicies {
   RuntimeValuesSetter runtime_values_setter_;
 
   base::flat_map<std::string, NetworkPolicy> guid_to_policy_;
-  base::Value global_network_config_{base::Value::Type::DICTIONARY};
+  base::Value global_network_config_{base::Value::Type::DICT};
 
   base::flat_map<std::string, std::string> profile_wide_expansions_;
 };

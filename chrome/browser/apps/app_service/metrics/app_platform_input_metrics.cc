@@ -91,9 +91,9 @@ std::string GetInputEventSourceKey(InputEventSource event_source) {
 
 base::Value ConvertEventCountsToValue(
     const AppPlatformInputMetrics::EventSourceToCounts& event_counts) {
-  base::Value event_counts_dict(base::Value::Type::DICTIONARY);
+  base::Value event_counts_dict(base::Value::Type::DICT);
   for (const auto& counts : event_counts) {
-    base::Value count_dict(base::Value::Type::DICTIONARY);
+    base::Value count_dict(base::Value::Type::DICT);
     for (const auto& it : counts.second) {
       count_dict.SetIntKey(GetAppTypeHistogramName(it.first), it.second);
     }

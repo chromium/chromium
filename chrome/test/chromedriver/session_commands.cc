@@ -1067,7 +1067,7 @@ Status ExecuteGetLocation(Session* session,
     return Status(kUnknownError,
                   "Location must be set before it can be retrieved");
   }
-  base::Value location(base::Value::Type::DICTIONARY);
+  base::Value location(base::Value::Type::DICT);
   location.SetDoubleKey("latitude", session->overridden_geoposition->latitude);
   location.SetDoubleKey("longitude",
                         session->overridden_geoposition->longitude);
@@ -1103,7 +1103,7 @@ Status ExecuteGetNetworkConditions(Session* session,
     return Status(kUnknownError,
                   "network conditions must be set before it can be retrieved");
   }
-  base::Value conditions(base::Value::Type::DICTIONARY);
+  base::Value conditions(base::Value::Type::DICT);
   conditions.SetBoolKey("offline",
                         session->overridden_network_conditions->offline);
   conditions.SetIntKey("latency",
@@ -1199,7 +1199,7 @@ Status ExecuteGetWindowPosition(Session* session,
   if (status.IsError())
     return status;
 
-  base::Value position(base::Value::Type::DICTIONARY);
+  base::Value position(base::Value::Type::DICT);
   position.SetIntKey("x", window_rect.x);
   position.SetIntKey("y", window_rect.y);
   *value = base::Value::ToUniquePtrValue(position.Clone());
@@ -1231,7 +1231,7 @@ Status ExecuteGetWindowSize(Session* session,
   if (status.IsError())
     return status;
 
-  base::Value size(base::Value::Type::DICTIONARY);
+  base::Value size(base::Value::Type::DICT);
   size.SetIntKey("width", window_rect.width);
   size.SetIntKey("height", window_rect.height);
   *value = base::Value::ToUniquePtrValue(size.Clone());

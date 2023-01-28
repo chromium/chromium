@@ -17,7 +17,7 @@ TEST(LocalStateUtilsTest, FilterPrefs) {
   all_pref_paths.insert(all_pref_paths.end(), valid_pref_paths.begin(),
                         valid_pref_paths.end());
 
-  base::Value prefs(base::Value::Type::DICTIONARY);
+  base::Value prefs(base::Value::Type::DICT);
   for (const std::string& path : all_pref_paths)
     prefs.SetStringPath(path, path + "_value");
 

@@ -34,8 +34,9 @@ bool IsSameSchema(Schema a, Schema b) {
     return false;
   if (a.type() == base::Value::Type::LIST)
     return IsSameSchema(a.GetItems(), b.GetItems());
-  if (a.type() != base::Value::Type::DICTIONARY)
+  if (a.type() != base::Value::Type::DICT) {
     return true;
+  }
   Schema::Iterator a_it = a.GetPropertiesIterator();
   Schema::Iterator b_it = b.GetPropertiesIterator();
   while (!a_it.IsAtEnd()) {
@@ -59,7 +60,7 @@ bool IsSameSchema(Schema a, Schema b) {
 TEST(GeneratePolicySource, ChromeSchemaData) {
   Schema schema = Schema::Wrap(GetChromeSchemaData());
   ASSERT_TRUE(schema.valid());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  EXPECT_EQ(base::Value::Type::DICT, schema.type());
 
   Schema subschema = schema.GetAdditionalProperties();
   EXPECT_FALSE(subschema.valid());
@@ -96,7 +97,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
 
   subschema = schema.GetProperty(key::kProxySettings);
   ASSERT_TRUE(subschema.valid());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, subschema.type());
+  EXPECT_EQ(base::Value::Type::DICT, subschema.type());
   EXPECT_FALSE(subschema.GetAdditionalProperties().valid());
   EXPECT_FALSE(subschema.GetProperty("no such proxy key exists").valid());
   ASSERT_TRUE(subschema.GetProperty(key::kProxyMode).valid());
@@ -135,7 +136,7 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   subschema = schema.GetProperty(key::kExtensionSettings);
   ASSERT_TRUE(subschema.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, subschema.type());
+  ASSERT_EQ(base::Value::Type::DICT, subschema.type());
   EXPECT_FALSE(subschema.GetAdditionalProperties().valid());
   EXPECT_FALSE(subschema.GetProperty("no such extension id exists").valid());
   EXPECT_TRUE(subschema.GetPatternProperties("*").empty());
@@ -151,14 +152,14 @@ TEST(GeneratePolicySource, ChromeSchemaData) {
   ASSERT_EQ(1u, schema_list.size());
   subschema = schema_list[0];
   ASSERT_TRUE(subschema.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, subschema.type());
+  ASSERT_EQ(base::Value::Type::DICT, subschema.type());
   subschema = subschema.GetProperty("installation_mode");
   ASSERT_TRUE(subschema.valid());
   ASSERT_EQ(base::Value::Type::STRING, subschema.type());
 
   subschema = schema.GetProperty(key::kExtensionSettings).GetProperty("*");
   ASSERT_TRUE(subschema.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, subschema.type());
+  ASSERT_EQ(base::Value::Type::DICT, subschema.type());
   subschema = subschema.GetProperty("installation_mode");
   ASSERT_TRUE(subschema.valid());
   ASSERT_EQ(base::Value::Type::STRING, subschema.type());

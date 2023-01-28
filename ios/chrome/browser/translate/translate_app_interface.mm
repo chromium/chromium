@@ -108,7 +108,7 @@ class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
     // No need to set the `translate_script` JavaScript since it will never be
     // used by this fake object. Instead just invoke host with 'translate.ready'
     // followed by 'translate.status'.
-    base::Value translate_ready_dict(base::Value::Type::DICTIONARY);
+    base::Value translate_ready_dict(base::Value::Type::DICT);
     translate_ready_dict.SetKey("command", base::Value("ready"));
     translate_ready_dict.SetKey("errorCode", base::Value(0));
     translate_ready_dict.SetKey("loadTime", base::Value(0));
@@ -120,7 +120,7 @@ class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
     web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
                                        translate_ready_params);
 
-    base::Value translate_status_dict(base::Value::Type::DICTIONARY);
+    base::Value translate_status_dict(base::Value::Type::DICT);
     translate_status_dict.SetKey("command", base::Value("status"));
     translate_status_dict.SetKey("errorCode", base::Value(0));
     translate_status_dict.SetKey("pageSourceLanguage", base::Value("fr"));

@@ -512,8 +512,8 @@ void NetworkingPrivateLacros::GetGlobalPolicy(
     GetGlobalPolicyCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(base::Value::ToUniquePtrValue(
-        base::Value(base::Value::Type::DICTIONARY)));
+    std::move(callback).Run(
+        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
     return;
   }
   (*networking_private)
@@ -524,8 +524,8 @@ void NetworkingPrivateLacros::GetCertificateLists(
     GetCertificateListsCallback callback) {
   auto* networking_private = GetNetworkingPrivateRemote();
   if (!networking_private || !is_primary_user_) {
-    std::move(callback).Run(base::Value::ToUniquePtrValue(
-        base::Value(base::Value::Type::DICTIONARY)));
+    std::move(callback).Run(
+        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
     return;
   }
   (*networking_private)

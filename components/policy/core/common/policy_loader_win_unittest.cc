@@ -95,7 +95,7 @@ bool InstallValue(const base::Value& value,
              ERROR_SUCCESS;
     }
 
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       if (!value.is_dict())
         return false;
       for (auto key_value : value.DictItems()) {

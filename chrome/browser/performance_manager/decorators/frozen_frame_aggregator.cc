@@ -167,7 +167,7 @@ base::Value FrozenFrameAggregator::DescribePageNodeData(
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   ret.SetIntKey("current_frame_count", data->current_frame_count);
   ret.SetIntKey("frozen_frame_count", data->frozen_frame_count);
   return ret;
@@ -179,7 +179,7 @@ base::Value FrozenFrameAggregator::DescribeProcessNodeData(
   if (data == nullptr)
     return base::Value();
 
-  base::Value ret(base::Value::Type::DICTIONARY);
+  base::Value ret(base::Value::Type::DICT);
   ret.SetIntKey("current_frame_count", data->current_frame_count);
   ret.SetIntKey("frozen_frame_count", data->frozen_frame_count);
   return ret;

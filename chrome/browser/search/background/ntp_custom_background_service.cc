@@ -86,7 +86,7 @@ base::Value::Dict GetBackgroundInfoWithColor(
 }
 
 base::Value NtpCustomBackgroundDefaults() {
-  base::Value defaults(base::Value::Type::DICTIONARY);
+  base::Value defaults(base::Value::Type::DICT);
   defaults.SetKey(kNtpCustomBackgroundURL,
                   base::Value(base::Value::Type::STRING));
   defaults.SetKey(kNtpCustomBackgroundAttributionLine1,

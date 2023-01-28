@@ -183,7 +183,7 @@ base::Value GetSampleDynamicCapabilityNewValue() {
 bool JsonStringEquals(const std::string& json,
                       const std::string& key,
                       const base::Value& value) {
-  base::Value dict_value(base::Value::Type::DICTIONARY);
+  base::Value dict_value(base::Value::Type::DICT);
   dict_value.SetKey(key, value.Clone());
   std::string dict_json;
   return base::JSONWriter::Write(dict_value, &dict_json) && dict_json == json;
@@ -269,7 +269,7 @@ class DeviceCapabilitiesImplTest : public ::testing::Test {
 // Tests that class is in correct state after Create().
 TEST_F(DeviceCapabilitiesImplTest, Create) {
   std::string empty_dict_string;
-  base::JSONWriter::Write(base::Value(base::Value::Type::DICTIONARY),
+  base::JSONWriter::Write(base::Value(base::Value::Type::DICT),
                           &empty_dict_string);
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetAllData()->dictionary().empty());
@@ -287,7 +287,7 @@ TEST_F(DeviceCapabilitiesImplTest, Register) {
 
   EXPECT_EQ(capabilities()->GetValidator(key), &manager);
   std::string empty_dict_string;
-  base::JSONWriter::Write(base::Value(base::Value::Type::DICTIONARY),
+  base::JSONWriter::Write(base::Value(base::Value::Type::DICT),
                           &empty_dict_string);
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetCapability(key).is_none());
@@ -307,7 +307,7 @@ TEST_F(DeviceCapabilitiesImplTest, Unregister) {
 
   EXPECT_FALSE(capabilities()->GetValidator(key));
   std::string empty_dict_string;
-  base::JSONWriter::Write(base::Value(base::Value::Type::DICTIONARY),
+  base::JSONWriter::Write(base::Value(base::Value::Type::DICT),
                           &empty_dict_string);
   EXPECT_EQ(capabilities()->GetAllData()->json_string(), empty_dict_string);
   EXPECT_TRUE(capabilities()->GetCapability(key).is_none());

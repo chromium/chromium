@@ -33,7 +33,7 @@ const int kMaximumBreakpadValueSize = 255;
 
 - (instancetype)initWithKey:(crash_reporter::CrashKeyString<256>&)key {
   if ((self = [super init])) {
-    _dictionary = base::Value(base::Value::Type::DICTIONARY);
+    _dictionary = base::Value(base::Value::Type::DICT);
     _key = &key;
   }
   return self;

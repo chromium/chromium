@@ -50,14 +50,14 @@ constexpr int chromeOmniboxClientId = 6;
 //     }
 std::string BuildDocumentSuggestionRequest(const std::u16string& query,
                                            bool enable_aso_search) {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetKey("query", base::Value(query));
   // The API supports pagination. We're always concerned with the first N
   // results on the first page.
   root.SetKey("start", base::Value(0));
   root.SetKey("pageSize", base::Value(10));
 
-  base::Value request_options(base::Value::Type::DICTIONARY);
+  base::Value request_options(base::Value::Type::DICT);
   request_options.SetKey("searchApplicationId",
                          base::Value("searchapplications/chrome"));
   // While the searchApplicationId is a specific config being used by a client
@@ -66,7 +66,7 @@ std::string BuildDocumentSuggestionRequest(const std::u16string& query,
   request_options.SetKey("clientId", base::Value(chromeOmniboxClientId));
   request_options.SetKey("languageCode",
                          base::Value(base::i18n::GetConfiguredLocale()));
-  base::Value debug_options(base::Value::Type::DICTIONARY);
+  base::Value debug_options(base::Value::Type::DICT);
   debug_options.SetStringKey(
       "optsParams", base::StringPrintf("enable_aso_search:%s",
                                        enable_aso_search ? "true" : "false"));

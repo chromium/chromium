@@ -20,7 +20,7 @@ FileHandler::AcceptEntry::AcceptEntry(const AcceptEntry& accept_entry) =
     default;
 
 base::Value FileHandler::AcceptEntry::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
 
   root.SetStringKey("mime_type", mime_type);
   base::Value& file_extensions_json =
@@ -32,7 +32,7 @@ base::Value FileHandler::AcceptEntry::AsDebugValue() const {
 }
 
 base::Value FileHandler::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
 
   base::Value& accept_json =
       *root.SetKey("accept", base::Value(base::Value::Type::LIST));

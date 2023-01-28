@@ -24,7 +24,7 @@ bool operator!=(const ProtocolHandlerInfo& handler1,
 }
 
 base::Value ProtocolHandlerInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("protocol", protocol);
   root.SetStringKey("url", url.spec());
   return root;

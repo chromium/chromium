@@ -93,7 +93,7 @@ base::Value BookmarkCodec::Encode(
   ids_reassigned_ = false;
   guids_reassigned_ = false;
 
-  base::Value main(base::Value::Type::DICTIONARY);
+  base::Value main(base::Value::Type::DICT);
   main.SetIntKey(kVersionKey, kCurrentVersion);
 
   // Encode Sync metadata before encoding other fields to reduce peak memory
@@ -105,7 +105,7 @@ base::Value BookmarkCodec::Encode(
   }
 
   InitializeChecksum();
-  base::Value roots(base::Value::Type::DICTIONARY);
+  base::Value roots(base::Value::Type::DICT);
   roots.SetKey(kBookmarkBarFolderNameKey, EncodeNode(bookmark_bar_node));
   roots.SetKey(kOtherBookmarkFolderNameKey, EncodeNode(other_folder_node));
   roots.SetKey(kMobileBookmarkFolderNameKey, EncodeNode(mobile_folder_node));
@@ -156,7 +156,7 @@ bool BookmarkCodec::Decode(const base::Value& value,
 }
 
 base::Value BookmarkCodec::EncodeNode(const BookmarkNode* node) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   std::string id = base::NumberToString(node->id());
   value.SetStringKey(kIdKey, id);
   const std::u16string& title = node->GetTitle();
@@ -198,7 +198,7 @@ base::Value BookmarkCodec::EncodeNode(const BookmarkNode* node) {
 
 base::Value BookmarkCodec::EncodeMetaInfo(
     const BookmarkNode::MetaInfoMap& meta_info_map) {
-  base::Value meta_info(base::Value::Type::DICTIONARY);
+  base::Value meta_info(base::Value::Type::DICT);
   for (const auto& item : meta_info_map)
     meta_info.SetKey(item.first, base::Value(item.second));
   return meta_info;

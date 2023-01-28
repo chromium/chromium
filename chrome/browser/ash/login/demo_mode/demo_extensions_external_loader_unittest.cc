@@ -190,7 +190,7 @@ class DemoExtensionsExternalLoaderTest : public testing::Test {
                             base::Value* config) {
     ASSERT_TRUE(config->is_dict());
 
-    base::Value extension(base::Value::Type::DICTIONARY);
+    base::Value extension(base::Value::Type::DICT);
     if (version.has_value()) {
       extension.SetKey(extensions::ExternalProviderImpl::kExternalVersion,
                        base::Value(version.value()));
@@ -265,7 +265,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, InvalidDemoExtensionsConfig) {
 TEST_F(DemoExtensionsExternalLoaderTest, SingleDemoExtension) {
   demo_mode_test_helper_->InitializeSession();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("extensions/a.crx"), &config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
@@ -286,7 +286,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, SingleDemoExtension) {
 TEST_F(DemoExtensionsExternalLoaderTest, MultipleDemoExtension) {
   demo_mode_test_helper_->InitializeSession();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("extensions/a.crx"), &config);
   AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
@@ -317,7 +317,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, MultipleDemoExtension) {
 TEST_F(DemoExtensionsExternalLoaderTest, CrxPathWithAbsolutePath) {
   demo_mode_test_helper_->InitializeSession();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("a.crx"), &config);
   AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
@@ -343,7 +343,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, CrxPathWithAbsolutePath) {
 TEST_F(DemoExtensionsExternalLoaderTest, ExtensionWithPathMissing) {
   demo_mode_test_helper_->InitializeSession();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("a.crx"), &config);
   AddExtensionToConfig(std::string(32, 'b'), absl::make_optional("1.1.0"),
@@ -368,7 +368,7 @@ TEST_F(DemoExtensionsExternalLoaderTest, ExtensionWithPathMissing) {
 TEST_F(DemoExtensionsExternalLoaderTest, ExtensionWithVersionMissing) {
   demo_mode_test_helper_->InitializeSession();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("a.crx"), &config);
   AddExtensionToConfig(std::string(32, 'b'), absl::nullopt,
@@ -406,7 +406,7 @@ TEST_F(DemoExtensionsExternalLoaderTest,
        StartLoaderBeforeOfflineResourcesLoaded) {
   demo_mode_test_helper_->InitializeSessionWithPendingComponent();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("a.crx"), &config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));
@@ -430,7 +430,7 @@ TEST_F(DemoExtensionsExternalLoaderTest,
        StartLoaderBeforeOfflineResourcesLoadFails) {
   demo_mode_test_helper_->InitializeSessionWithPendingComponent();
 
-  base::Value config = base::Value(base::Value::Type::DICTIONARY);
+  base::Value config = base::Value(base::Value::Type::DICT);
   AddExtensionToConfig(std::string(32, 'a'), absl::make_optional("1.0.0"),
                        absl::make_optional("a.crx"), &config);
   ASSERT_TRUE(SetExtensionsConfig(std::move(config)));

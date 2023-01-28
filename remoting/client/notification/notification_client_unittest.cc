@@ -329,9 +329,9 @@ TEST_F(NotificationClientTest, NoAvailableTranslation) {
       .WillOnce(ReturnByMove(base::Value(std::move(rules))));
 
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/message_text.json"))
-      .WillOnce(ReturnByMove(base::Value(base::Value::Type::DICTIONARY)));
+      .WillOnce(ReturnByMove(base::Value(base::Value::Type::DICT)));
   EXPECT_CALL(*fetcher_, FetchJsonFile("notification/link_text.json"))
-      .WillOnce(ReturnByMove(base::Value(base::Value::Type::DICTIONARY)));
+      .WillOnce(ReturnByMove(base::Value(base::Value::Type::DICT)));
 
   base::MockCallback<NotificationClient::NotificationCallback> callback;
   EXPECT_CALL(callback, Run(NoMessage()));

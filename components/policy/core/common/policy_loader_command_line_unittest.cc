@@ -51,21 +51,21 @@ class PolicyLoaderCommandLineTest : public ::testing::Test {
 
 TEST_F(PolicyLoaderCommandLineTest, NoSwitch) {
   LoadAndVerifyPolicies(CreatePolicyLoader().get(),
-                        base::Value(base::Value::Type::DICTIONARY));
+                        base::Value(base::Value::Type::DICT));
 }
 
 TEST_F(PolicyLoaderCommandLineTest, InvalidSwitch) {
   SetCommandLinePolicy("a");
   LoadAndVerifyPolicies(CreatePolicyLoader().get(),
-                        base::Value(base::Value::Type::DICTIONARY));
+                        base::Value(base::Value::Type::DICT));
 
   SetCommandLinePolicy("a:b");
   LoadAndVerifyPolicies(CreatePolicyLoader().get(),
-                        base::Value(base::Value::Type::DICTIONARY));
+                        base::Value(base::Value::Type::DICT));
 
   SetCommandLinePolicy("[a]");
   LoadAndVerifyPolicies(CreatePolicyLoader().get(),
-                        base::Value(base::Value::Type::DICTIONARY));
+                        base::Value(base::Value::Type::DICT));
 }
 
 TEST_F(PolicyLoaderCommandLineTest, ParseSwitchValue) {

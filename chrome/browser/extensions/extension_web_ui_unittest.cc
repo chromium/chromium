@@ -188,13 +188,13 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
     base::Value::Dict& all_overrides = update.Get();
     base::Value newtab_list(base::Value::Type::LIST);
     {
-      base::Value newtab(base::Value::Type::DICTIONARY);
+      base::Value newtab(base::Value::Type::DICT);
       newtab.SetKey("entry", base::Value(newtab_url.spec()));
       newtab.SetKey("active", base::Value(true));
       newtab_list.Append(std::move(newtab));
     }
     {
-      base::Value newtab(base::Value::Type::DICTIONARY);
+      base::Value newtab(base::Value::Type::DICT);
       newtab.SetKey(
           "entry",
           base::Value(extension->GetResourceURL("oldtab.html").spec()));

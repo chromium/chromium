@@ -814,7 +814,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   }
   base::Value AsValue() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.SetKey(kPermissionPathKey, base::FilePathToValue(path_));
     value.SetBoolKey(kPermissionIsDirectoryKey,
                      handle_type_ == HandleType::kDirectory);
@@ -1348,7 +1348,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
     base::Value& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!value.is_dict()) {
-    value = base::Value(base::Value::Type::DICTIONARY);
+    value = base::Value(base::Value::Type::DICT);
     return;
   }
 
@@ -1390,10 +1390,10 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
       ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
       /*info=*/nullptr);
   if (!value.is_dict())
-    value = base::Value(base::Value::Type::DICTIONARY);
+    value = base::Value(base::Value::Type::DICT);
 
   // Create an entry into the nested dictionary.
-  base::Value entry(base::Value::Type::DICTIONARY);
+  base::Value entry(base::Value::Type::DICT);
   entry.SetKey(kPathKey, base::FilePathToValue(path));
   entry.SetIntKey(kPathTypeKey, static_cast<int>(type));
   entry.SetKey(kTimestampKey, base::TimeToValue(clock_->Now()));

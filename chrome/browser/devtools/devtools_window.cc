@@ -322,7 +322,7 @@ bool DevToolsEventForwarder::ForwardEvent(
   if (whitelisted_keys_.find(key) == whitelisted_keys_.end())
     return false;
 
-  base::Value event_data(base::Value::Type::DICTIONARY);
+  base::Value event_data(base::Value::Type::DICT);
   event_data.SetStringKey("type", event_type);
   event_data.SetStringKey("key", ui::KeycodeConverter::DomKeyToKeyString(
                                      static_cast<ui::DomKey>(event.dom_key)));

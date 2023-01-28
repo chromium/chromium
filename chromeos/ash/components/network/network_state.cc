@@ -272,7 +272,7 @@ void NetworkState::GetStateProperties(base::Value* dictionary) const {
     // Shill sends VPN provider properties in a nested dictionary. |dictionary|
     // must replicate that nested structure.
     std::string provider_type = vpn_provider()->type;
-    base::Value provider_property(base::Value::Type::DICTIONARY);
+    base::Value provider_property(base::Value::Type::DICT);
     provider_property.SetKey(shill::kTypeProperty, base::Value(provider_type));
     if (provider_type == shill::kProviderThirdPartyVpn ||
         provider_type == shill::kProviderArcVpn) {

@@ -932,7 +932,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     // Set empty value if policy is missing, to make sure that webui
     // will receive setting update.
     new_values_cache->SetValue(kDeviceDisplayResolution,
-                               base::Value(base::Value::Type::DICTIONARY));
+                               base::Value(base::Value::Type::DICT));
   }
 
   if (policy.has_allow_bluetooth() &&

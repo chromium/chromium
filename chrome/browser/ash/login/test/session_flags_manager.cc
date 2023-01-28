@@ -188,7 +188,7 @@ void SessionFlagsManager::StoreStateToBackingFile() {
     user_profile = it->second;
   }
 
-  base::Value cached_state(base::Value::Type::DICTIONARY);
+  base::Value cached_state(base::Value::Type::DICT);
 
   // Restart job command line should already contain login user and profile
   // switches, no reason to store it separately.

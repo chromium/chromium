@@ -10,7 +10,7 @@
 namespace ash {
 
 base::Value SystemWebAppData::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetIntKey("system_app_type", static_cast<int>(system_app_type));
   return root;
 }

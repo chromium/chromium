@@ -116,7 +116,7 @@ class ResponseValueBuilder {
       return absl::nullopt;
     }
 
-    base::Value upload_failure{base::Value::Type::DICTIONARY};
+    base::Value upload_failure{base::Value::Type::DICT};
     upload_failure.SetKey(kFailedUploadedRecord,
                           BuildSequenceInformationValue(sequence_information));
 
@@ -169,7 +169,7 @@ class ResponseValueBuilder {
  private:
   static base::Value BuildSequenceInformationValue(
       const ::reporting::SequenceInformation& sequence_information) {
-    base::Value sequence_information_value{base::Value::Type::DICTIONARY};
+    base::Value sequence_information_value{base::Value::Type::DICT};
     sequence_information_value.SetIntKey(kSequencingIdKey,
                                          sequence_information.sequencing_id());
     sequence_information_value.SetIntKey(kGenerationIdKey,
@@ -249,13 +249,13 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
 
   base::Value GenerateSingleRecord(base::StringPiece encrypted_wrapped_record,
                                    ::reporting::Priority priority = kPriority) {
-    base::Value record_dictionary{base::Value::Type::DICTIONARY};
+    base::Value record_dictionary{base::Value::Type::DICT};
     std::string base64_encode;
     base::Base64Encode(encrypted_wrapped_record, &base64_encode);
     record_dictionary.SetStringKey(kEncryptedWrappedRecordKey, base64_encode);
 
     base::Value* const sequencing_dictionary = record_dictionary.SetKey(
-        kSequenceInformationKey, base::Value{base::Value::Type::DICTIONARY});
+        kSequenceInformationKey, base::Value{base::Value::Type::DICT});
     sequencing_dictionary->SetStringKey(
         kSequencingIdKey, base::NumberToString(GetNextSequenceId()));
     sequencing_dictionary->SetStringKey(kGenerationIdKey,
@@ -263,7 +263,7 @@ class EncryptedReportingJobConfigurationTest : public testing::Test {
     sequencing_dictionary->SetIntKey(kPriorityKey, priority);
 
     base::Value* const encryption_info_dictionary = record_dictionary.SetKey(
-        kEncryptionInfoKey, base::Value{base::Value::Type::DICTIONARY});
+        kEncryptionInfoKey, base::Value{base::Value::Type::DICT});
     encryption_info_dictionary->SetStringKey(kEncryptionKey,
                                              kEncryptionKeyValue);
     encryption_info_dictionary->SetStringKey(

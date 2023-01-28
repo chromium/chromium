@@ -98,7 +98,7 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
     expected_gaia_id = gaia_id_override;
   }
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   if (!gaia_id_override.empty() && gaia_id_override != expected_gaia_id) {
     dict.SetIntKey(kKeyExitCode, kUiecEMailMissmatch);
   } else {

@@ -263,7 +263,7 @@ void WebAppInstallManager::LogUrlLoaderError(const char* stage,
   if (!error_log_)
     return;
 
-  base::Value url_loader_error(base::Value::Type::DICTIONARY);
+  base::Value url_loader_error(base::Value::Type::DICT);
 
   url_loader_error.SetStringKey("WebAppUrlLoader::Result",
                                 ConvertUrlLoaderResultToString(result));

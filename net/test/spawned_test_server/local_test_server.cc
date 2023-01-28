@@ -46,7 +46,7 @@ bool AppendArgumentFromJSONValue(const std::string& key,
     case base::Value::Type::BOOLEAN:
     case base::Value::Type::DOUBLE:
     case base::Value::Type::LIST:
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
     case base::Value::Type::BINARY:
     default:
       NOTREACHED() << "improper json type";

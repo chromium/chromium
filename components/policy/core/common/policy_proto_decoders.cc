@@ -90,7 +90,7 @@ base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
 }
 
 // Convert a StringPolicyProto to a base::Value of any type (for example,
-// Type::DICTIONARY or Type::LIST) by parsing it as JSON.
+// Type::DICT or Type::LIST) by parsing it as JSON.
 base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
                             std::string* error) {
   const std::string& json = proto.value();

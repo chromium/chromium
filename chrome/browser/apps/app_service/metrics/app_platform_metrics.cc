@@ -400,7 +400,7 @@ AppPlatformMetrics::UsageTime::UsageTime(const base::Value& value) {
 }
 
 base::Value AppPlatformMetrics::UsageTime::ConvertToValue() const {
-  base::Value usage_time_dict(base::Value::Type::DICTIONARY);
+  base::Value usage_time_dict(base::Value::Type::DICT);
   usage_time_dict.SetStringKey(kUsageTimeAppIdKey, app_id);
   usage_time_dict.SetStringKey(kUsageTimeAppTypeKey,
                                GetAppTypeHistogramName(app_type_name));

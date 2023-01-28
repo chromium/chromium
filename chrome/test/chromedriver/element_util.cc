@@ -336,7 +336,7 @@ Status CheckElement(const std::string& element_id) {
 
 base::Value CreateElementCommon(const std::string& key,
                                 const std::string& value) {
-  base::Value element(base::Value::Type::DICTIONARY);
+  base::Value element(base::Value::Type::DICT);
   element.SetStringPath(key, value);
   return element;
 }

@@ -180,7 +180,7 @@ PrintingBackgroundGraphicsDefaultPolicyHandler::
 
 PrintingPaperSizeDefaultPolicyHandler::PrintingPaperSizeDefaultPolicyHandler()
     : TypeCheckingPolicyHandler(key::kPrintingPaperSizeDefault,
-                                base::Value::Type::DICTIONARY) {}
+                                base::Value::Type::DICT) {}
 
 PrintingPaperSizeDefaultPolicyHandler::
     ~PrintingPaperSizeDefaultPolicyHandler() = default;
@@ -248,10 +248,9 @@ bool PrintingPaperSizeDefaultPolicyHandler::GetValue(
   if (custom_size) {
     if (!custom_size->is_dict()) {
       if (errors) {
-        errors->AddError(
-            policy_name(), IDS_POLICY_TYPE_ERROR,
-            base::Value::GetTypeName(base::Value::Type::DICTIONARY),
-            PolicyErrorPath{printing::kPaperSizeCustomSize});
+        errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
+                         base::Value::GetTypeName(base::Value::Type::DICT),
+                         PolicyErrorPath{printing::kPaperSizeCustomSize});
       }
       return false;
     }

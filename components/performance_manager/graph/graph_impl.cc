@@ -87,7 +87,7 @@ template <typename NodeType, typename NodeImplType>
 base::Value NodeDataDescriberRegistryImpl::DescribeNodeImpl(
     base::Value (NodeDataDescriber::*Describe)(const NodeType*) const,
     const NodeImplType* node) const {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
 
   for (const auto& name_and_describer : describers_) {
     base::Value description = (name_and_describer.first->*Describe)(node);

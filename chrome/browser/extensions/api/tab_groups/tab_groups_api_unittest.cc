@@ -274,7 +274,7 @@ TEST_F(TabGroupsApiUnitTest, TabGroupsQueryColor) {
   ASSERT_EQ(1u, groups_list.size());
 
   const base::Value& group_info = groups_list[0];
-  ASSERT_EQ(base::Value::Type::DICTIONARY, group_info.type());
+  ASSERT_EQ(base::Value::Type::DICT, group_info.type());
   EXPECT_EQ(
       tab_groups_util::GetGroupId(group3),
       group_info.FindKeyOfType("id", base::Value::Type::INTEGER)->GetInt());

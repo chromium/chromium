@@ -22,8 +22,8 @@ base::Value Mapper::MapValue(const OncValueSignature& signature,
                              const base::Value& onc_value,
                              bool* error) {
   switch (onc_value.type()) {
-    case base::Value::Type::DICTIONARY: {
-      if (signature.onc_type != base::Value::Type::DICTIONARY) {
+    case base::Value::Type::DICT: {
+      if (signature.onc_type != base::Value::Type::DICT) {
         *error = true;
         return {};
       }
@@ -37,7 +37,7 @@ base::Value Mapper::MapValue(const OncValueSignature& signature,
       return base::Value(MapArray(signature, onc_value.GetList(), error));
     }
     default: {
-      if ((signature.onc_type == base::Value::Type::DICTIONARY) ||
+      if ((signature.onc_type == base::Value::Type::DICT) ||
           (signature.onc_type == base::Value::Type::LIST)) {
         *error = true;
         return {};

@@ -54,10 +54,10 @@ constexpr char kTagKey[] = "tag";
 //   }
 base::Value CreateDummyContentSettingValue(base::StringPiece tag,
                                            bool expired) {
-  base::Value setting(base::Value::Type::DICTIONARY);
+  base::Value setting(base::Value::Type::DICT);
   setting.SetKey(kTagKey, base::Value(tag));
 
-  base::Value pref_value(base::Value::Type::DICTIONARY);
+  base::Value pref_value(base::Value::Type::DICT);
   pref_value.SetKey(kLastModifiedKey, base::Value("13189876543210000"));
   pref_value.SetKey(kSettingKey, std::move(setting));
   pref_value.SetKey(kExpirationKey, expired ? base::Value("13189876543210001")
@@ -116,7 +116,7 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
   };
 
-  base::Value original_pref_value(base::Value::Type::DICTIONARY);
+  base::Value original_pref_value(base::Value::Type::DICT);
   for (const auto* pattern : kTestOriginalPatterns) {
     original_pref_value.SetKey(
         pattern, CreateDummyContentSettingValue(pattern, /*expired=*/false));
@@ -181,7 +181,7 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
 
   // Create two pre-existing entries, one that is expired and one that never
   // expires.
-  base::Value original_pref_value(base::Value::Type::DICTIONARY);
+  base::Value original_pref_value(base::Value::Type::DICT);
   original_pref_value.SetKey(
       kTestPatternCanonicalAlpha,
       CreateDummyContentSettingValue(kTestPatternCanonicalAlpha,
@@ -238,12 +238,12 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
 TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
   constexpr char kPatternPair[] = "http://example.com,*";
 
-  base::Value original_pref_value(base::Value::Type::DICTIONARY);
+  base::Value original_pref_value(base::Value::Type::DICT);
   const base::Time last_modified =
       base::Time::FromInternalValue(13189876543210000);
 
   // Create a single entry using our old internal value for last_modified.
-  base::Value pref_value(base::Value::Type::DICTIONARY);
+  base::Value pref_value(base::Value::Type::DICT);
   pref_value.SetKey(
       kLastModifiedKey,
       base::Value(base::NumberToString(last_modified.ToInternalValue())));

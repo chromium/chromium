@@ -92,7 +92,7 @@ CellularESimProfile& CellularESimProfile::operator=(
 CellularESimProfile::~CellularESimProfile() = default;
 
 base::Value CellularESimProfile::ToDictionaryValue() const {
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   dictionary.SetKey(kKeyState, base::Value(static_cast<int>(state_)));
   dictionary.SetKey(kKeyPath, base::Value(path_.value()));
   dictionary.SetKey(kKeyEid, base::Value(eid_));

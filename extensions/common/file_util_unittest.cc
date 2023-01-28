@@ -69,7 +69,7 @@ scoped_refptr<Extension> LoadExtensionManifest(
       deserializer.Deserialize(nullptr, error);
   if (!result.get())
     return nullptr;
-  CHECK_EQ(base::Value::Type::DICTIONARY, result->type());
+  CHECK_EQ(base::Value::Type::DICT, result->type());
   return LoadExtensionManifest(std::move(*result).TakeDict(), manifest_dir,
                                location, extra_flags, error);
 }

@@ -92,7 +92,7 @@ UserPolicies UserPolicies::FromValue(const base::Value& dict) {
 }
 
 base::Value UserPolicies::ToValue() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetBoolKey(kGcpwPolicyDmEnrollmentParameterName, enable_dm_enrollment);
   dict.SetBoolKey(kGcpwPolicyAutoUpdateParameterName, enable_gcpw_auto_update);
   dict.SetStringKey(kGcpwPolicyPinnerVersionParameterName,

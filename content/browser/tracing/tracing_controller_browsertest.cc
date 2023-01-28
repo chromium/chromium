@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   absl::optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   const base::Value* metadata_json =
-      trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY);
+      trace_json->FindKeyOfType("metadata", base::Value::Type::DICT);
   ASSERT_TRUE(metadata_json);
 
   EXPECT_TRUE(KeyNotEquals(metadata_json, "cpu-brand", "__stripped__"));

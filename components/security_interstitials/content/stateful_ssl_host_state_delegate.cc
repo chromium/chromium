@@ -230,7 +230,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
       url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
   if (!value.is_dict())
-    value = base::Value(base::Value::Type::DICTIONARY);
+    value = base::Value(base::Value::Type::DICT);
 
   base::Value::Dict* cert_dict =
       GetValidCertDecisionsDict(CREATE_DICTIONARY_ENTRIES, value.GetDict());

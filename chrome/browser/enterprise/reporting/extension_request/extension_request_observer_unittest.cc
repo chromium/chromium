@@ -92,9 +92,9 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
   // Creates fake pending request in pref.
   void SetPendingList(const std::vector<std::string>& ids) {
     std::unique_ptr<base::Value> id_values =
-        std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
+        std::make_unique<base::Value>(base::Value::Type::DICT);
     for (const auto& id : ids) {
-      base::Value request_data(base::Value::Type::DICTIONARY);
+      base::Value request_data(base::Value::Type::DICT);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
                           ::base::TimeToValue(base::Time::Now()));
       id_values->SetKey(id, std::move(request_data));

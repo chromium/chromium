@@ -52,7 +52,7 @@ TEST(DeviceImageInfoTest, ToAndFromDictionaryValueValidDefaultConstructor) {
 
 TEST(DeviceImageInfoTest, FromDictionaryValueInvalid) {
   // Should correctly handle dictionaries with missing fields.
-  base::Value invalid_dict(base::Value::Type::DICTIONARY);
+  base::Value invalid_dict(base::Value::Type::DICT);
   EXPECT_FALSE(DeviceImageInfo::FromDictionaryValue(invalid_dict));
 
   // Should correctly handle non-dictionary values.

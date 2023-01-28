@@ -154,7 +154,7 @@ void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
   // about:blank must always be loaded.
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    base::Value url_loader_error(base::Value::Type::DICTIONARY);
+    base::Value url_loader_error(base::Value::Type::DICT);
     url_loader_error.SetStringKey("WebAppUrlLoader::Result",
                                   ConvertUrlLoaderResultToString(result));
     if (command->lock_description().app_ids().size() == 1) {

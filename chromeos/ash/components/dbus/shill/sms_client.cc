@@ -62,7 +62,7 @@ class SMSReceiveHandler {
       return;
 
     if (number_.is_valid() && text_.is_valid() && timestamp_.is_valid()) {
-      base::Value sms(base::Value::Type::DICTIONARY);
+      base::Value sms(base::Value::Type::DICT);
       sms.SetStringKey(SMSClient::kSMSPropertyNumber, number_.value());
       sms.SetStringKey(SMSClient::kSMSPropertyText, text_.value());
       sms.SetStringKey(SMSClient::kSMSPropertyTimestamp, timestamp_.value());

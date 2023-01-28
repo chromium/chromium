@@ -152,7 +152,7 @@ class PreferenceValidationDelegateValues
         return Value(0.47);
       case Value::Type::STRING:
         return Value("i have a spleen");
-      case Value::Type::DICTIONARY: {
+      case Value::Type::DICT: {
         Value::Dict dict;
         dict.Set("twenty-two", 22);
         dict.Set("forty-seven", 47);
@@ -207,7 +207,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(base::Value::Type::STRING,
                         const_cast<char*>("i have a spleen")),
         std::make_tuple(
-            base::Value::Type::DICTIONARY,
+            base::Value::Type::DICT,
             const_cast<char*>("{\"forty-seven\":47,\"twenty-two\":22}")),
         std::make_tuple(base::Value::Type::LIST,
                         const_cast<char*>("[22,47]"))));

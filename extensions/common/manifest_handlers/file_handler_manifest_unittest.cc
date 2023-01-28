@@ -107,7 +107,7 @@ class FileHandlersManifestV3Test : public ManifestTest {
         })";
     base::Value manifest_value =
         base::test::ParseJson(base::StringPrintf(kManifestStub, manifest_part));
-    EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
+    EXPECT_EQ(base::Value::Type::DICT, manifest_value.type());
     return ManifestData(std::move(manifest_value).TakeDict());
   }
 

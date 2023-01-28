@@ -164,7 +164,7 @@ class HeapDumper {
   base::Value Dump() const {
     auto partition_page_to_value = [](uintptr_t offset,
                                       const char* data) -> base::Value {
-      auto ret = base::Value(base::Value::Type::DICTIONARY);
+      auto ret = base::Value(base::Value::Type::DICT);
       std::string value;
       if (offset == 0) {
         value = "metadata";
@@ -217,7 +217,7 @@ class HeapDumper {
     };
     auto super_page_to_value = [&](uintptr_t address,
                                    const char* data) -> base::Value {
-      auto ret = base::Value(base::Value::Type::DICTIONARY);
+      auto ret = base::Value(base::Value::Type::DICT);
       ret.SetKey("address", base::Value{base::StringPrintf("0x%lx", address)});
 
       auto partition_pages = base::Value(base::Value::Type::LIST);
@@ -268,7 +268,7 @@ class HeapDumper {
                                page_size, &compressed);
         }
 
-        auto page_size_dict = base::Value(base::Value::Type::DICTIONARY);
+        auto page_size_dict = base::Value(base::Value::Type::DICT);
         page_size_dict.SetKey("uncompressed",
                               base::Value{static_cast<int>(uncompressed_size)});
         page_size_dict.SetKey("compressed",
@@ -322,8 +322,7 @@ class HeapDumper {
           continue;
         }
 
-        base::Value slot_span_value =
-            base::Value(base::Value::Type::DICTIONARY);
+        base::Value slot_span_value = base::Value(base::Value::Type::DICT);
         slot_span_value.SetKey("start_address", base::Value{base::StringPrintf(
                                                     "0x%lx", slot_span_start)});
         slot_span_value.SetKey(
@@ -385,7 +384,7 @@ class HeapDumper {
       if (bucket.slot_size == kInvalidBucketSize)
         continue;
 
-      auto bucket_value = base::Value(base::Value::Type::DICTIONARY);
+      auto bucket_value = base::Value(base::Value::Type::DICT);
       bucket_value.SetKey("slot_size",
                           base::Value{static_cast<int>(bucket.slot_size)});
       ret.Append(std::move(bucket_value));
@@ -457,7 +456,7 @@ int main(int argc, char** argv) {
     }
   }
 
-  auto overall_dump = base::Value(base::Value::Type::DICTIONARY);
+  auto overall_dump = base::Value(base::Value::Type::DICT);
   auto dump = dumper.Dump();
   overall_dump.SetKey("superpages", std::move(dump));
 

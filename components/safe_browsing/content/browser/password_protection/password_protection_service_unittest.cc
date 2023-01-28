@@ -485,12 +485,12 @@ class PasswordProtectionServiceBaseTest
         nullptr);
 
     if (!verdict_dictionary.is_dict())
-      verdict_dictionary = base::Value(base::Value::Type::DICTIONARY);
+      verdict_dictionary = base::Value(base::Value::Type::DICT);
 
-    base::Value invalid_verdict_entry(base::Value::Type::DICTIONARY);
+    base::Value invalid_verdict_entry(base::Value::Type::DICT);
     invalid_verdict_entry.SetStringKey("invalid", "invalid_string");
 
-    base::Value invalid_cache_expression_entry(base::Value::Type::DICTIONARY);
+    base::Value invalid_cache_expression_entry(base::Value::Type::DICT);
     invalid_cache_expression_entry.SetKey("invalid_cache_expression",
                                           std::move(invalid_verdict_entry));
     verdict_dictionary.SetKey(

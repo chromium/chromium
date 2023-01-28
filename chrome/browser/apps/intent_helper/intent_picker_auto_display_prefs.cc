@@ -30,14 +30,14 @@ base::Value GetAutoDisplayDictForSettings(
     const HostContentSettingsMap* settings,
     const GURL& url) {
   if (!settings)
-    return base::Value(base::Value::Type::DICTIONARY);
+    return base::Value(base::Value::Type::DICT);
 
   base::Value value = settings->GetWebsiteSetting(
       url, url, ContentSettingsType::INTENT_PICKER_DISPLAY, /*info=*/nullptr);
 
-  return value.type() == base::Value::Type::DICTIONARY
+  return value.type() == base::Value::Type::DICT
              ? std::move(value)
-             : base::Value(base::Value::Type::DICTIONARY);
+             : base::Value(base::Value::Type::DICT);
 }
 
 }  // namespace

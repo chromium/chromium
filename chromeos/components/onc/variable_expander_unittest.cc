@@ -128,7 +128,7 @@ TEST(VariableExpanderTest, EdgeCases) {
 }
 
 TEST(VariableExpanderTest, ExpandValueSucceeds) {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   base::Value list(base::Value::Type::LIST);
   list.Append(base::Value(123));
   list.Append(base::Value("${machine_name}"));
@@ -149,7 +149,7 @@ TEST(VariableExpanderTest, ExpandValueSucceeds) {
 }
 
 TEST(VariableExpanderTest, ExpandValueExpandsOnlyGoodVariables) {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetKey("str1", base::Value("${machine_nameBAD}"));
   root.SetKey("str2", base::Value("${machine_name}"));
 

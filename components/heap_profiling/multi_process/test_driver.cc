@@ -98,7 +98,7 @@ int NumProcessesWithName(base::Value* dump_json,
     if (found_name->GetString() != "process_name")
       continue;
     const base::Value* found_args =
-        event.FindKeyOfType("args", base::Value::Type::DICTIONARY);
+        event.FindKeyOfType("args", base::Value::Type::DICT);
     if (!found_args)
       continue;
     const base::Value* found_process_name =

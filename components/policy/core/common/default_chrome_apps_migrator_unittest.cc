@@ -155,7 +155,7 @@ TEST_F(DefaultChromeAppsMigratorTest, WebAppPolicyWrongType) {
   forcelist_value.Append(kAppId1);
 
   // Set WebAppInstallForceList to non-list type.
-  base::Value web_app_value(base::Value::Type::DICTIONARY);
+  base::Value web_app_value(base::Value::Type::DICT);
   policy_map_.GetMutable(key::kWebAppInstallForceList)
       ->set_value(std::move(web_app_value));
 

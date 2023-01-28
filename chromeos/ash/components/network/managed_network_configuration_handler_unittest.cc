@@ -782,9 +782,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, PolicyApplicationRunning) {
   SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                                // no userhash
-      base::Value(base::Value::Type::LIST),         // no device network policy
-      base::Value(base::Value::Type::DICTIONARY));  // no device global config
+      std::string(),                          // no userhash
+      base::Value(base::Value::Type::LIST),   // no device network policy
+      base::Value(base::Value::Type::DICT));  // no device global config
 
   EXPECT_TRUE(managed_handler()->IsAnyPolicyApplicationRunning());
   base::RunLoop().RunUntilIdle();
@@ -1204,9 +1204,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, AutoConnectDisallowed) {
   // unset.
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                                // no userhash
-      base::Value(base::Value::Type::LIST),         // no device network policy
-      base::Value(base::Value::Type::DICTIONARY));  // no device global config
+      std::string(),                          // no userhash
+      base::Value(base::Value::Type::LIST),   // no device network policy
+      base::Value(base::Value::Type::DICT));  // no device global config
 
   base::RunLoop get_properties_run_loop;
   base::Value dictionary;
@@ -1508,9 +1508,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
 
   managed_handler()->SetPolicy(
       ::onc::ONC_SOURCE_DEVICE_POLICY,
-      std::string(),                                // no userhash
-      base::Value(base::Value::Type::LIST),         // no device network policy
-      base::Value(base::Value::Type::DICTIONARY));  // no device global config
+      std::string(),                          // no userhash
+      base::Value(base::Value::Type::LIST),   // no device network policy
+      base::Value(base::Value::Type::DICT));  // no device global config
 
   base::Value dictionary_before_pref;
   base::Value dictionary_after_pref;

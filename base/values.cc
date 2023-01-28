@@ -160,7 +160,7 @@ Value::Value(Type type) {
     case Type::BINARY:
       data_.emplace<BlobStorage>();
       return;
-    case Type::DICTIONARY:
+    case Type::DICT:
       data_.emplace<Dict>();
       return;
     case Type::LIST:
@@ -1095,11 +1095,11 @@ std::string* Value::FindStringKey(StringPiece key) {
 }
 
 const Value* Value::FindDictKey(StringPiece key) const {
-  return FindKeyOfType(key, Type::DICTIONARY);
+  return FindKeyOfType(key, Type::DICT);
 }
 
 Value* Value::FindDictKey(StringPiece key) {
-  return FindKeyOfType(key, Type::DICTIONARY);
+  return FindKeyOfType(key, Type::DICT);
 }
 
 const Value* Value::FindListKey(StringPiece key) const {
@@ -1186,7 +1186,7 @@ std::string* Value::FindStringPath(StringPiece path) {
 }
 
 const Value* Value::FindDictPath(StringPiece path) const {
-  return FindPathOfType(path, Type::DICTIONARY);
+  return FindPathOfType(path, Type::DICT);
 }
 
 Value* Value::FindDictPath(StringPiece path) {
@@ -1305,7 +1305,7 @@ Value* Value::SetPath(span<const StringPiece> path, Value&& value) {
     if (found == cur->dict().end() || found->first != path_component) {
       // No key found, insert one.
       auto inserted = cur->dict().try_emplace(
-          found, path_component, std::make_unique<Value>(Type::DICTIONARY));
+          found, path_component, std::make_unique<Value>(Type::DICT));
       cur = inserted->second.get();
     } else {
       cur = found->second.get();
@@ -1393,7 +1393,7 @@ size_t Value::EstimateMemoryUsage() const {
       return base::trace_event::EstimateMemoryUsage(GetString());
     case Type::BINARY:
       return base::trace_event::EstimateMemoryUsage(GetBlob());
-    case Type::DICTIONARY:
+    case Type::DICT:
       return base::trace_event::EstimateMemoryUsage(dict());
     case Type::LIST:
       return GetList().EstimateMemoryUsage();

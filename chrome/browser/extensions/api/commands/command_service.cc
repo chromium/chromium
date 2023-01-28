@@ -212,7 +212,7 @@ bool CommandService::AddKeybindingPref(
     RemoveKeybindingPrefs(extension_id, command_name);
 
   // Set the keybinding pref.
-  base::Value keybinding(base::Value::Type::DICTIONARY);
+  base::Value keybinding(base::Value::Type::DICT);
   keybinding.SetStringKey(kExtension, extension_id);
   keybinding.SetStringKey(kCommandName, command_name);
   keybinding.SetBoolKey(kGlobal, global);

@@ -16,7 +16,7 @@ using testing::Return;
 namespace {
 
 base::Value CreateSink(const std::string& name, const std::string& id) {
-  base::Value sink(base::Value::Type::DICTIONARY);
+  base::Value sink(base::Value::Type::DICT);
   sink.SetKey("name", base::Value(name));
   sink.SetKey("id", base::Value(id));
   sink.SetKey("session", base::Value("Example session"));

@@ -32,7 +32,7 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest::Message& message) {
-              base::Value dict(base::Value::Type::DICTIONARY);
+              base::Value dict(base::Value::Type::DICT);
               if (message.has_dummy()) {
                 dict.SetBoolKey("1", message.dummy());
               }
@@ -84,7 +84,7 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::TypeTest& message) {
-            base::Value dict(base::Value::Type::DICTIONARY);
+            base::Value dict(base::Value::Type::DICT);
             if (message.has_float_value()) {
               dict.SetDoubleKey("1", message.float_value());
             }
@@ -133,7 +133,7 @@ namespace dom_distiller {
             }
 
             static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated::Message& message) {
-              base::Value dict(base::Value::Type::DICTIONARY);
+              base::Value dict(base::Value::Type::DICT);
               {
                 const auto& repeated_field = message.dummy();
                 base::Value::List field_list;
@@ -222,7 +222,7 @@ namespace dom_distiller {
           }
 
           static base::Value WriteToValue(const dom_distiller::test_sample::proto::Repeated& message) {
-            base::Value dict(base::Value::Type::DICTIONARY);
+            base::Value dict(base::Value::Type::DICT);
             {
               const auto& repeated_field = message.float_value();
               base::Value::List field_list;

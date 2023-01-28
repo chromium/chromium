@@ -45,7 +45,7 @@ TEST(PolicyValuesToStringSetTest, InvalidValues) {
       std::make_unique<base::Value>(true),
       std::make_unique<base::Value>(base::Value::Type::BINARY),
       std::make_unique<base::Value>(base::Value::Type::LIST),
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY),
+      std::make_unique<base::Value>(base::Value::Type::DICT),
       std::make_unique<base::Value>(""),
       std::make_unique<base::Value>("a"),
       std::make_unique<base::Value>("0"),

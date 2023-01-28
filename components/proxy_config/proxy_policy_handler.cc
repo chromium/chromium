@@ -79,13 +79,13 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
   PolicyMap::Entry current_priority;  // Defaults to the lowest priority.
   policy::PolicySource inherited_source =
       policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
+  base::Value proxy_settings(base::Value::Type::DICT);
   for (auto* policy : kDeprecatedProxyPolicies) {
     const PolicyMap::Entry* entry = policies.Get(policy);
     if (!entry)
       continue;
     if (policies.EntryHasHigherPriority(*entry, current_priority)) {
-      proxy_settings = base::Value(base::Value::Type::DICTIONARY);
+      proxy_settings = base::Value(base::Value::Type::DICT);
       current_priority = entry->DeepCopy();
       if (entry->source > inherited_source)  // Higher priority?
         inherited_source = entry->source;

@@ -240,7 +240,7 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
 
   // This can get very large as it  constructs the whole data structure in
   // memory before dumping it to the file.
-  Value root(Value::Type::DICTIONARY);
+  Value root(Value::Type::DICT);
   uint32_t total_calls_count = g_calls_count.load(std::memory_order_relaxed);
   root.SetStringKey("total_calls_count",
                     base::StringPrintf("%" PRIu32, total_calls_count));
@@ -252,7 +252,7 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
       // This callee was never called.
       continue;
 
-    Value callee_element(Value::Type::DICTIONARY);
+    Value callee_element(Value::Type::DICT);
     uint32_t callee_offset = i * 4;
     callee_element.SetStringKey("index",
                                 base::StringPrintf("%" PRIuS, caller_index));
@@ -278,7 +278,7 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
         // No misses.
         continue;
 
-      Value caller_count(Value::Type::DICTIONARY);
+      Value caller_count(Value::Type::DICT);
       caller_count.SetStringKey("caller_offset",
                                 base::StringPrintf("%" PRIu32, caller_offset));
       caller_count.SetStringKey("count", base::StringPrintf("%" PRIu32, count));

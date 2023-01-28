@@ -50,7 +50,7 @@ base::Value AvailableContentToValue(const AvailableOfflineContentPtr& content) {
   // to lessen security risks when this dictionary is passed as a string to
   // |ExecuteJavaScript|.
   std::string base64_encoded;
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey("ID", base::Value(content->id));
   value.SetKey("name_space", base::Value(content->name_space));
   value.SetKey("title_base64",
@@ -192,4 +192,3 @@ void AvailableOfflineContentHelper::AvailableContentReceived(
     item->favicon_data_uri = GURL();
   }
 }
-

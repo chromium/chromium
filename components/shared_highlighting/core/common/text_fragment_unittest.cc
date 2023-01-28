@@ -152,7 +152,7 @@ TEST(TextFragmentTest, FromValue) {
   const char prefix[] = "prefix, * - &";
   const char suffix[] = "suffix, * - &";
 
-  base::Value fragment_value = base::Value(base::Value::Type::DICTIONARY);
+  base::Value fragment_value = base::Value(base::Value::Type::DICT);
 
   // Empty value cases.
   EXPECT_FALSE(TextFragment::FromValue(&fragment_value).has_value());

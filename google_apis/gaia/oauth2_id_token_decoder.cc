@@ -47,7 +47,7 @@ absl::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
   }
   absl::optional<base::Value> decoded_payload = base::JSONReader::Read(payload);
   if (!decoded_payload.has_value() ||
-      decoded_payload->type() != base::Value::Type::DICTIONARY) {
+      decoded_payload->type() != base::Value::Type::DICT) {
     VLOG(1) << "Invalid id_token: paylod is not a well-formed JSON";
     return absl::nullopt;
   }

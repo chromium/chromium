@@ -363,7 +363,7 @@ void FakeShillDeviceClient::RemoveDevice(const std::string& device_path) {
 
 void FakeShillDeviceClient::ClearDevices() {
   ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
-  stub_devices_ = base::Value(base::Value::Type::DICTIONARY);
+  stub_devices_ = base::Value(base::Value::Type::DICT);
 }
 
 void FakeShillDeviceClient::SetDeviceProperty(const std::string& device_path,
@@ -484,9 +484,8 @@ void FakeShillDeviceClient::SetSimLockStatus(const std::string& device_path,
     return;
   }
 
-  base::Value* simlock_dict =
-      device_properties->SetKey(shill::kSIMLockStatusProperty,
-                                base::Value(base::Value::Type::DICTIONARY));
+  base::Value* simlock_dict = device_properties->SetKey(
+      shill::kSIMLockStatusProperty, base::Value(base::Value::Type::DICT));
 
   simlock_dict->SetKey(shill::kSIMLockTypeProperty, base::Value(status.type));
   simlock_dict->SetKey(shill::kSIMLockRetriesLeftProperty,
@@ -599,8 +598,8 @@ base::Value* FakeShillDeviceClient::GetDeviceProperties(
     const std::string& device_path) {
   base::Value* properties = stub_devices_.FindDictKey(device_path);
   if (!properties) {
-    properties = stub_devices_.SetKey(
-        device_path, base::Value(base::Value::Type::DICTIONARY));
+    properties =
+        stub_devices_.SetKey(device_path, base::Value(base::Value::Type::DICT));
   }
   return properties;
 }

@@ -92,7 +92,7 @@ class UpgradeDetectorTest : public ::testing::Test {
   // Sets the browser.relaunch_window preference in Local State.
   void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
     // Create the dict representing relaunch time interval.
-    base::Value entry(base::Value::Type::DICTIONARY);
+    base::Value entry(base::Value::Type::DICT);
     entry.SetIntPath("start.hour", hour);
     entry.SetIntPath("start.minute", minute);
     entry.SetIntKey("duration_mins", duration_mins);
@@ -100,7 +100,7 @@ class UpgradeDetectorTest : public ::testing::Test {
     base::Value entries(base::Value::Type::LIST);
     entries.Append(std::move(entry));
     // Put the list in the policy value.
-    base::Value value(base::Value::Type::DICTIONARY);
+    base::Value value(base::Value::Type::DICT);
     value.SetKey("entries", std::move(entries));
 
     scoped_local_state_.Get()->SetManagedPref(

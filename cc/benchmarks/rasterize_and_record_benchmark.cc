@@ -73,7 +73,7 @@ void RasterizeAndRecordBenchmark::DidUpdateLayers(
                                                paint_benchmark_result);
 
   DCHECK(results_.is_none());
-  results_ = base::Value(base::Value::Type::DICTIONARY);
+  results_ = base::Value(base::Value::Type::DICT);
   results_.SetIntKey("pixels_recorded", record_results_.pixels_recorded);
   results_.SetIntKey("paint_op_memory_usage",
                      static_cast<int>(record_results_.paint_op_memory_usage));

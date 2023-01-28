@@ -66,7 +66,7 @@ class PolicyDetails:
   # - the name of one of the protobufs for shared policy types
   # - the equivalent type in Android's App Restriction Schema
   TYPE_MAP = {
-      'dict': ('Type::DICTIONARY', 'string', 'String', 'string'),
+      'dict': ('Type::DICT', 'string', 'String', 'string'),
       'external': ('TYPE_EXTERNAL', 'string', 'String', 'invalid'),
       'int': ('Type::INTEGER', 'int64', 'Integer', 'integer'),
       'int-enum': ('Type::INTEGER', 'int64', 'Integer', 'choice'),
@@ -74,8 +74,8 @@ class PolicyDetails:
       'main': ('Type::BOOLEAN', 'bool', 'Boolean', 'bool'),
       'string': ('Type::STRING', 'string', 'String', 'string'),
       'string-enum': ('Type::STRING', 'string', 'String', 'choice'),
-      'string-enum-list': ('Type::LIST', 'StringList', 'StringList',
-                           'multi-select'),
+      'string-enum-list':
+      ('Type::LIST', 'StringList', 'StringList', 'multi-select'),
   }
 
   class EnumItem:
@@ -868,8 +868,8 @@ class SchemaNodesGenerator:
       # invalidating all child schema indices.
       index = len(self.schema_nodes)
       self.schema_nodes.append(
-          SchemaNode('Type::DICTIONARY', INVALID_INDEX, is_sensitive_value,
-                     False, {name}))
+          SchemaNode('Type::DICT', INVALID_INDEX, is_sensitive_value, False,
+                     {name}))
 
       if 'additionalProperties' in schema:
         additionalProperties = self.GenerateAndCollectID(
@@ -1068,7 +1068,7 @@ class SchemaNodesGenerator:
 
     handled_schema_nodes.add(index)
     has_sensitive_children = False
-    if node.schema_type == 'Type::DICTIONARY':
+    if node.schema_type == 'Type::DICT':
       properties_node = self.properties_nodes[node.extra]
       # Iterate through properties and patternProperties.
       for property_index in range(properties_node.begin,
@@ -1375,7 +1375,7 @@ void SetEnterpriseUsersDefaults(PolicyMap* policy_map) {
 def _GetStringPolicyType(policy_type):
   if policy_type == 'Type::STRING':
     return 'StringPolicyType::STRING'
-  elif policy_type == 'Type::DICTIONARY':
+  elif policy_type == 'Type::DICT':
     return 'StringPolicyType::JSON'
   elif policy_type == 'TYPE_EXTERNAL':
     return 'StringPolicyType::EXTERNAL'
@@ -1560,7 +1560,7 @@ def _WritePolicyProto(f, policy):
     _OutputComment(f, '\nValid values:')
     for item in policy.items:
       _OutputComment(f, '  %s: %s' % (str(item.value), item.caption))
-  if policy.policy_type == 'Type::DICTIONARY':
+  if policy.policy_type == 'Type::DICT':
     _OutputComment(
         f, '\nValue schema:\n%s' % json.dumps(
             policy.schema, sort_keys=True, indent=4, separators=(',', ': ')))

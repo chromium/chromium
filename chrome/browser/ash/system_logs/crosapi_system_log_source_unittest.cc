@@ -69,7 +69,7 @@ class CrosapiSystemLogSourceTest : public ::testing::Test {
 TEST_F(CrosapiSystemLogSourceTest, OnFeedbackData) {
   // Set up FakeBrowserManager to send log data with 1 log entry for
   // the log source.
-  base::Value system_log_entries(base::Value::Type::DICTIONARY);
+  base::Value system_log_entries(base::Value::Type::DICT);
   system_log_entries.SetStringKey("testing log key", "testing log content");
   SetupBrowserManagerResponse(std::move(system_log_entries));
 

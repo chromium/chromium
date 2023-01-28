@@ -91,7 +91,7 @@ class NetworkStateTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
 
-  base::Value properties_{base::Value::Type::DICTIONARY};
+  base::Value properties_{base::Value::Type::DICT};
 };
 
 // Setting kNameProperty should set network name after call to
@@ -165,7 +165,7 @@ TEST_F(NetworkStateTest, SsidHex) {
   EXPECT_EQ(wifi_hex_result, network_state_->name());
 
   // Check HexSSID via network state dictionary.
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   network_state_->GetStateProperties(&dictionary);
   std::string* value = dictionary.FindStringKey(shill::kWifiHexSsid);
   EXPECT_NE(nullptr, value);
@@ -249,7 +249,7 @@ TEST_F(NetworkStateTest, VPNThirdPartyProvider) {
   EXPECT_TRUE(SetStringProperty(shill::kTypeProperty, shill::kTypeVPN));
   EXPECT_TRUE(SetStringProperty(shill::kNameProperty, "VPN"));
 
-  base::Value provider(base::Value::Type::DICTIONARY);
+  base::Value provider(base::Value::Type::DICT);
   provider.SetKey(shill::kTypeProperty,
                   base::Value(shill::kProviderThirdPartyVpn));
   provider.SetKey(shill::kHostProperty,
@@ -268,7 +268,7 @@ TEST_F(NetworkStateTest, VPNArcProvider) {
   EXPECT_TRUE(SetStringProperty(shill::kTypeProperty, shill::kTypeVPN));
   EXPECT_TRUE(SetStringProperty(shill::kNameProperty, "VPN"));
 
-  base::Value provider(base::Value::Type::DICTIONARY);
+  base::Value provider(base::Value::Type::DICT);
   provider.SetKey(shill::kTypeProperty, base::Value(shill::kProviderArcVpn));
   provider.SetKey(shill::kHostProperty, base::Value("package.name.foo"));
   EXPECT_TRUE(SetProperty(shill::kProviderProperty, std::move(provider)));
@@ -379,7 +379,7 @@ TEST_F(NetworkStateTest, TetherProperties) {
   network_state_->set_tether_has_connected_to_host(true);
   network_state_->set_signal_strength(75);
 
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   network_state_->GetStateProperties(&dictionary);
 
   absl::optional<int> signal_strength =
@@ -412,7 +412,7 @@ TEST_F(NetworkStateTest, CelularPaymentPortalPost) {
   EXPECT_TRUE(SetStringProperty(shill::kActivationStateProperty,
                                 shill::kActivationStateActivated));
 
-  base::Value payment_portal(base::Value::Type::DICTIONARY);
+  base::Value payment_portal(base::Value::Type::DICT);
   payment_portal.SetKey(shill::kPaymentPortalURL,
                         base::Value("http://test-portal.com"));
   payment_portal.SetKey(shill::kPaymentPortalMethod, base::Value("POST"));
@@ -443,7 +443,7 @@ TEST_F(NetworkStateTest, CelularPaymentPortalGet) {
   EXPECT_TRUE(SetStringProperty(shill::kActivationStateProperty,
                                 shill::kActivationStateActivated));
 
-  base::Value payment_portal(base::Value::Type::DICTIONARY);
+  base::Value payment_portal(base::Value::Type::DICT);
   payment_portal.SetKey(shill::kPaymentPortalURL,
                         base::Value("http://test-portal.com"));
   payment_portal.SetKey(shill::kPaymentPortalMethod, base::Value("GET"));
@@ -496,7 +496,7 @@ TEST_F(NetworkStateTest, NonShillCellular) {
   EXPECT_EQ(kTestGuid, non_shill_cellular->guid());
   EXPECT_FALSE(non_shill_cellular->IsManagedByPolicy());
 
-  base::Value dictionary(base::Value::Type::DICTIONARY);
+  base::Value dictionary(base::Value::Type::DICT);
   non_shill_cellular->GetStateProperties(&dictionary);
   EXPECT_EQ(kTestIccid, *dictionary.FindStringKey(shill::kIccidProperty));
   EXPECT_EQ(kTestEid, *dictionary.FindStringKey(shill::kEidProperty));

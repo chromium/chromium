@@ -424,7 +424,7 @@ bool CleanExitBeacon::IsBeaconFileSupported() const {
 }
 
 void CleanExitBeacon::WriteBeaconFile(bool exited_cleanly) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetBoolKey(prefs::kStabilityExitedCleanly, exited_cleanly);
   dict.SetIntKey(kVariationsCrashStreak,
                  local_state_->GetInteger(kVariationsCrashStreak));

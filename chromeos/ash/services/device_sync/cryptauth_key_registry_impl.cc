@@ -71,7 +71,7 @@ void CryptAuthKeyRegistryImpl::OnKeyRegistryUpdated() {
 }
 
 base::Value CryptAuthKeyRegistryImpl::AsDictionary() const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   for (const auto& name_bundle_pair : key_bundles_) {
     dict.SetKey(
         CryptAuthKeyBundle::KeyBundleNameEnumToString(name_bundle_pair.first),

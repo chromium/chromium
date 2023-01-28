@@ -65,7 +65,7 @@ void LogOutcome(const net::NetLogWithSource& log,
       outcome);
   log.EndEvent(net::NetLogEventType::TRUST_TOKEN_OPERATION_REQUESTED,
                [outcome]() {
-                 base::Value ret(base::Value::Type::DICTIONARY);
+                 base::Value ret(base::Value::Type::DICT);
                  ret.SetStringKey("outcome", OutcomeToString(outcome));
                  return ret;
                });

@@ -92,7 +92,7 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
       url, url, ContentSettingsType::FORMFILL_METADATA, nullptr);
 
   if (!formfill_metadata.is_dict()) {
-    formfill_metadata = base::Value(base::Value::Type::DICTIONARY);
+    formfill_metadata = base::Value(base::Value::Type::DICT);
   }
 
   if (!formfill_metadata.FindBoolKey(kUserDataFieldFilledKey)) {

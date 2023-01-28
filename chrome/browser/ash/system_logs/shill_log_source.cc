@@ -148,7 +148,7 @@ void ShillLogSource::AddDeviceAndRequestIPConfigs(
   }
   if (!ip_config_paths_.empty()) {
     device->SetKey(shill::kIPConfigsProperty,
-                   base::Value(base::Value::Type::DICTIONARY));
+                   base::Value(base::Value::Type::DICT));
   }
 }
 
@@ -239,8 +239,8 @@ void ShillLogSource::CheckIfDone() {
   response[kNetworkServices] = std::move(json);
 
   // Clear |devices_| and |services_|.
-  devices_ = base::Value(base::Value::Type::DICTIONARY);
-  services_ = base::Value(base::Value::Type::DICTIONARY);
+  devices_ = base::Value(base::Value::Type::DICT);
+  services_ = base::Value(base::Value::Type::DICT);
 
   std::move(callback_).Run(
       std::make_unique<SystemLogsResponse>(std::move(response)));

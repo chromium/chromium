@@ -145,7 +145,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   std::string ret;
   JSONStringValueSerializer serializer(&ret);
 
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetStringPath("TrustTokenV3PMB.protocol_version",
                       rep_->protocol_version);
   value.SetIntPath("TrustTokenV3PMB.id", rep_->id);

@@ -492,7 +492,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // This will create a dictionary or list if one does not exist in the user
   // pref store. This method returns NULL only if you're requesting an
   // unregistered pref or a non-dict/non-list pref.
-  // |type| may only be Values::Type::DICTIONARY or Values::Type::LIST and
+  // |type| may only be Values::Type::DICT or Values::Type::LIST and
   // |path| must point to a registered preference of type |type|.
   // Ownership of the returned value remains at the user pref store.
   base::Value* GetMutableUserPref(const std::string& path,

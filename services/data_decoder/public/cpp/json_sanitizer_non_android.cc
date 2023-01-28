@@ -25,7 +25,7 @@ void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
             }
 
             const base::Value::Type type = parse_result->type();
-            if (type != base::Value::Type::DICTIONARY &&
+            if (type != base::Value::Type::DICT &&
                 type != base::Value::Type::LIST) {
               std::move(callback).Run(Result::Error("Invalid top-level type"));
               return;

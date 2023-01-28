@@ -156,7 +156,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
 
     config_handler->SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUserHash,
                               base::Value(std::move(user_policy_onc)),
-                              base::Value(base::Value::Type::DICTIONARY));
+                              base::Value(base::Value::Type::DICT));
 
     const std::string device_policy_ssid = kManagedDeviceWifiSsid;
     base::Value::List device_policy_onc =
@@ -176,7 +176,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
             .Build();
     config_handler->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, "",
                               base::Value(std::move(device_policy_onc)),
-                              base::Value(base::Value::Type::DICTIONARY));
+                              base::Value(base::Value::Type::DICT));
   }
 
   void SetDeviceProperty(const std::string& device_path,
@@ -191,7 +191,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
     device_test()->AddDevice(kCellularDevicePath, shill::kTypeCellular,
                              "stub_cellular_device1");
 
-    base::Value home_provider(base::Value::Type::DICTIONARY);
+    base::Value home_provider(base::Value::Type::DICT);
     home_provider.SetStringKey("name", "Cellular1_Provider");
     home_provider.SetStringKey("code", "000000");
     home_provider.SetStringKey("country", "us");
@@ -263,7 +263,7 @@ class NetworkingPrivateApiTest : public ApiUnitTest {
   }
 
   int GetNetworkPriority(const ash::NetworkState* network) {
-    base::Value properties(base::Value::Type::DICTIONARY);
+    base::Value properties(base::Value::Type::DICT);
     network->GetStateProperties(&properties);
     absl::optional<int> priority =
         properties.FindIntKey(shill::kPriorityProperty);

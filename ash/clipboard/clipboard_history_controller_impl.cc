@@ -512,7 +512,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
       continue;
     }
 
-    base::Value item_value(base::Value::Type::DICTIONARY);
+    base::Value item_value(base::Value::Type::DICT);
     switch (clipboard_history_util::CalculateDisplayFormat(item.data())) {
       case clipboard_history_util::DisplayFormat::kPng: {
         if (!item.data().maybe_png().has_value()) {

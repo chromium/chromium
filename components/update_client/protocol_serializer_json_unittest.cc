@@ -41,8 +41,8 @@ TEST(SerializeRequestJSON, Serialize) {
     test::SetDateLastData(metadata.get(), items, 1234);
 
     std::vector<base::Value> events;
-    events.emplace_back(Value::Type::DICTIONARY);
-    events.emplace_back(Value::Type::DICTIONARY);
+    events.emplace_back(Value::Type::DICT);
+    events.emplace_back(Value::Type::DICT);
     events[0].SetKey("a", Value(1));
     events[0].SetKey("b", Value("2"));
     events[1].SetKey("error", Value(0));

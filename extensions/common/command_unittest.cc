@@ -73,7 +73,7 @@ void CheckParse(const ConstCommandsTestData& data,
     }
 
     input.clear();
-    base::Value key_dict(base::Value::Type::DICTIONARY);
+    base::Value key_dict(base::Value::Type::DICT);
 
     for (size_t j = 0; j < platforms.size(); ++j)
       key_dict.SetStringKey(platforms[j], data.key);
@@ -210,7 +210,7 @@ TEST(CommandTest, ExtensionCommandParsingFallback) {
   base::Value::Dict input;
   input.Set("description", description);
   base::Value* key_dict =
-      input.Set("suggested_key", base::Value(base::Value::Type::DICTIONARY));
+      input.Set("suggested_key", base::Value(base::Value::Type::DICT));
   key_dict->SetStringKey("default", "Ctrl+Shift+D");
   key_dict->SetStringKey("windows", "Ctrl+Shift+W");
   key_dict->SetStringKey("mac", "Ctrl+Shift+M");

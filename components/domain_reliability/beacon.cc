@@ -31,7 +31,7 @@ base::Value DomainReliabilityBeacon::ToValue(
     base::TimeTicks last_network_change_time,
     const GURL& collector_url,
     const std::vector<std::unique_ptr<std::string>>& path_prefixes) const {
-  base::Value beacon_value(base::Value::Type::DICTIONARY);
+  base::Value beacon_value(base::Value::Type::DICT);
   DCHECK(url.is_valid());
   GURL sanitized_url = SanitizeURLForReport(url, collector_url, path_prefixes);
   beacon_value.SetStringKey("url", sanitized_url.spec());
@@ -39,7 +39,7 @@ base::Value DomainReliabilityBeacon::ToValue(
   if (!quic_error.empty())
     beacon_value.SetStringKey("quic_error", quic_error);
   if (chrome_error != net::OK) {
-    base::Value failure_value(base::Value::Type::DICTIONARY);
+    base::Value failure_value(base::Value::Type::DICT);
     failure_value.SetStringKey("custom_error",
                                net::ErrorToString(chrome_error));
     beacon_value.SetKey("failure_data", std::move(failure_value));

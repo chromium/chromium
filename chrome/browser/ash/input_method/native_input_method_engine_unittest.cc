@@ -141,7 +141,7 @@ class MockInputMethod : public ime::mojom::InputMethod {
 void SetInputMethodOptions(Profile& profile,
                            bool autocorrect_enabled,
                            bool predictive_writing_enabled) {
-  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  base::Value input_method_setting(base::Value::Type::DICT);
   input_method_setting.SetPath(
       std::string(kEngineIdUs) + ".physicalKeyboardAutoCorrectionLevel",
       base::Value(autocorrect_enabled ? 1 : 0));
@@ -161,7 +161,7 @@ void SetInputMethodOptionsJapaneseMigrationCompleted(
 }
 
 void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
-  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  base::Value input_method_setting(base::Value::Type::DICT);
   input_method_setting.SetStringPath("zh-t-i0-pinyin.xkbLayout", layout);
   profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
                           input_method_setting);

@@ -336,7 +336,7 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The entry wasn't managed and doesn't match any current policy. Global
   // network settings have to be applied.
-  base::Value shill_properties_to_update(base::Value::Type::DICTIONARY);
+  base::Value shill_properties_to_update(base::Value::Type::DICT);
   policy_util::SetShillPropertiesForGlobalPolicy(
       entry_properties, global_network_config_, &shill_properties_to_update);
   if (shill_properties_to_update.DictEmpty()) {
@@ -372,7 +372,7 @@ void PolicyApplicator::WriteNewShillConfiguration(base::Value shill_dictionary,
   if (type && *type == ::onc::network_type::kEthernet &&
       profile_.type() == NetworkProfile::TYPE_USER) {
     const base::Value* ethernet = policy.FindKeyOfType(
-        ::onc::network_config::kEthernet, base::Value::Type::DICTIONARY);
+        ::onc::network_config::kEthernet, base::Value::Type::DICT);
     if (ethernet) {
       const std::string* auth =
           ethernet->FindStringKey(::onc::ethernet::kAuthentication);

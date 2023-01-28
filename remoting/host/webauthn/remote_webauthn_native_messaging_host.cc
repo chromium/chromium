@@ -28,7 +28,7 @@ namespace {
 
 base::Value CreateWebAuthnExceptionDetailsDict(const std::string& name,
                                                const std::string& message) {
-  base::Value details(base::Value::Type::DICTIONARY);
+  base::Value details(base::Value::Type::DICT);
   details.SetStringKey(kWebAuthnErrorNameKey, name);
   details.SetStringKey(kWebAuthnErrorMessageKey, message);
   return details;

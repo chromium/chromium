@@ -210,7 +210,7 @@ TEST_F(ProxyPolicyHandlerTest, PacScriptProxyMode) {
 
 // ProxyPacMandatory can be set only via ProxySettings.
 TEST_F(ProxyPolicyHandlerTest, PacScriptProxyModeWithPacMandatory) {
-  base::Value proxy_settings(base::Value::Type::DICTIONARY);
+  base::Value proxy_settings(base::Value::Type::DICT);
   proxy_settings.SetStringKey(kProxyPacUrl, "http://short.org/proxy.pac");
   proxy_settings.SetStringKey(kProxyMode, ProxyPrefs::kPacScriptProxyModeName);
   proxy_settings.SetBoolKey(kProxyPacMandatory, true);

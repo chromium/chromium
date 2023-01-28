@@ -114,7 +114,7 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
 
   {
     base::Value* issuer =
-        parsed_json->FindKeyOfType("Issuer", base::Value::Type::DICTIONARY);
+        parsed_json->FindKeyOfType("Issuer", base::Value::Type::DICT);
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("SomeOtherCA"));
 
@@ -150,7 +150,7 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
 
   {
     base::Value* issuer =
-        parsed_json->FindKeyOfType("Subject", base::Value::Type::DICTIONARY);
+        parsed_json->FindKeyOfType("Subject", base::Value::Type::DICT);
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("B CA"));
 

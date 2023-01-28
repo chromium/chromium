@@ -80,7 +80,7 @@ void SecureDnsManager::LoadProviders() {
 
 base::Value SecureDnsManager::GetProviders(const std::string& mode,
                                            const std::string& templates) {
-  base::Value doh_providers(base::Value::Type::DICTIONARY);
+  base::Value doh_providers(base::Value::Type::DICT);
 
   if (mode == SecureDnsConfig::kModeOff)
     return doh_providers.Clone();

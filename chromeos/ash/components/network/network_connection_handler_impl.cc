@@ -742,7 +742,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       client_cert_type = client_cert::ConfigType::kEap;
   }
 
-  base::Value config_properties(base::Value::Type::DICTIONARY);
+  base::Value config_properties(base::Value::Type::DICT);
   if (client_cert_type != client_cert::ConfigType::kNone) {
     // Note: if we get here then a certificate *may* be required, so we want
     // to ensure that certificates have loaded successfully before attempting

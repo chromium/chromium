@@ -431,7 +431,7 @@ namespace policy {
 
 const internal::SchemaNode kSchemas[] = {
 //  Type                           Extra  IsSensitiveValue HasSensitiveChildren
-  { base::Value::Type::DICTIONARY,     0, false,           false },  // root node
+  { base::Value::Type::DICT,           0, false,           false },  // root node
   { base::Value::Type::BOOLEAN,       -1, false,           false },  // simple type: boolean
   { base::Value::Type::STRING,        -1, false,           false },  // simple type: string
 };

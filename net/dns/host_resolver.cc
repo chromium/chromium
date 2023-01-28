@@ -317,7 +317,7 @@ HostCache* HostResolver::GetHostCache() {
 }
 
 base::Value HostResolver::GetDnsConfigAsValue() const {
-  return base::Value(base::Value::Type::DICTIONARY);
+  return base::Value(base::Value::Type::DICT);
 }
 
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {

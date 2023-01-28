@@ -94,11 +94,11 @@ def GetValueType(type_):
   if type_.property_type == PropertyType.FUNCTION:
     if type_.is_serializable_function:
       return 'base::Value::Type::STRING'
-    return 'base::Value::Type::DICTIONARY'
+    return 'base::Value::Type::DICT'
   if type_.property_type == PropertyType.INTEGER:
     return 'base::Value::Type::INTEGER'
   if type_.property_type == PropertyType.OBJECT:
-    return 'base::Value::Type::DICTIONARY'
+    return 'base::Value::Type::DICT'
   if type_.property_type == PropertyType.STRING:
     return 'base::Value::Type::STRING'
 

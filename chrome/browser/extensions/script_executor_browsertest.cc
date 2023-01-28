@@ -345,8 +345,7 @@ IN_PROC_BROWSER_TEST_F(ScriptExecutorBrowserTest, PromisesResolve) {
 
     ASSERT_EQ(1u, helper.results().size());
     EXPECT_EQ(web_contents->GetLastCommittedURL(), helper.results()[0].url);
-    EXPECT_EQ(base::Value(base::Value::Type::DICTIONARY),
-              helper.results()[0].value);
+    EXPECT_EQ(base::Value(base::Value::Type::DICT), helper.results()[0].value);
     EXPECT_EQ(0, helper.results()[0].frame_id);
     EXPECT_EQ("", helper.results()[0].error);
   }

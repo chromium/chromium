@@ -694,7 +694,7 @@ void ManagedNetworkConfigurationHandlerImpl::
         const base::Value& existing_properties,
         const base::Value& new_properties,
         base::OnceClosure callback) {
-  base::Value shill_properties(base::Value::Type::DICTIONARY);
+  base::Value shill_properties(base::Value::Type::DICT);
 
   const std::string* profile =
       existing_properties.FindStringKey(shill::kProfileProperty);

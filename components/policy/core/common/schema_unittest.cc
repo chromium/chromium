@@ -284,11 +284,11 @@ TEST(SchemaTest, Ownership) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   schema = schema.GetKnownProperty("sub");
   ASSERT_TRUE(schema.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   {
     Schema::Iterator it = schema.GetPropertiesIterator();
@@ -311,7 +311,7 @@ TEST(SchemaTest, ValidSchema) {
   Schema schema = Schema::Parse(kTestSchema, &error);
   ASSERT_TRUE(schema.valid()) << error;
 
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
   EXPECT_FALSE(schema.GetProperty("invalid").valid());
 
   Schema sub = schema.GetProperty("Boolean");
@@ -342,7 +342,7 @@ TEST(SchemaTest, ValidSchema) {
   ASSERT_EQ(base::Value::Type::LIST, sub.type());
   sub = sub.GetItems();
   ASSERT_TRUE(sub.valid());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, sub.type());
+  EXPECT_EQ(base::Value::Type::DICT, sub.type());
   Schema subsub = sub.GetProperty("one");
   ASSERT_TRUE(subsub.valid());
   EXPECT_EQ(base::Value::Type::STRING, subsub.type());
@@ -364,7 +364,7 @@ TEST(SchemaTest, ValidSchema) {
 
   sub = schema.GetProperty("Object");
   ASSERT_TRUE(sub.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, sub.type());
+  ASSERT_EQ(base::Value::Type::DICT, sub.type());
   subsub = sub.GetProperty("one");
   ASSERT_TRUE(subsub.valid());
   EXPECT_EQ(base::Value::Type::BOOLEAN, subsub.type());
@@ -397,34 +397,34 @@ TEST(SchemaTest, ValidSchema) {
 
   sub = schema.GetProperty("ObjectWithPatternProperties");
   ASSERT_TRUE(sub.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, sub.type());
+  ASSERT_EQ(base::Value::Type::DICT, sub.type());
 
   sub = schema.GetProperty("ObjectWithRequiredProperties");
   ASSERT_TRUE(sub.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, sub.type());
+  ASSERT_EQ(base::Value::Type::DICT, sub.type());
 
   struct {
     const char* expected_key;
     base::Value::Type expected_type;
   } kExpectedProperties[] = {
-    { "Array",                        base::Value::Type::LIST },
-    { "ArrayOfArray",                 base::Value::Type::LIST },
-    { "ArrayOfObjectOfArray",         base::Value::Type::LIST },
-    { "ArrayOfObjects",               base::Value::Type::LIST },
-    { "Boolean",                      base::Value::Type::BOOLEAN },
-    { "Integer",                      base::Value::Type::INTEGER },
-    { "IntegerWithEnums",             base::Value::Type::INTEGER },
-    { "IntegerWithEnumsGaps",         base::Value::Type::INTEGER },
-    { "IntegerWithRange",             base::Value::Type::INTEGER },
-    { "Number",                       base::Value::Type::DOUBLE },
-    { "Object",                       base::Value::Type::DICTIONARY },
-    { "ObjectOfArray",                base::Value::Type::DICTIONARY },
-    { "ObjectOfObject",               base::Value::Type::DICTIONARY },
-    { "ObjectWithPatternProperties",  base::Value::Type::DICTIONARY },
-    { "ObjectWithRequiredProperties", base::Value::Type::DICTIONARY },
-    { "String",                       base::Value::Type::STRING },
-    { "StringWithEnums",              base::Value::Type::STRING },
-    { "StringWithPattern",            base::Value::Type::STRING },
+      {"Array", base::Value::Type::LIST},
+      {"ArrayOfArray", base::Value::Type::LIST},
+      {"ArrayOfObjectOfArray", base::Value::Type::LIST},
+      {"ArrayOfObjects", base::Value::Type::LIST},
+      {"Boolean", base::Value::Type::BOOLEAN},
+      {"Integer", base::Value::Type::INTEGER},
+      {"IntegerWithEnums", base::Value::Type::INTEGER},
+      {"IntegerWithEnumsGaps", base::Value::Type::INTEGER},
+      {"IntegerWithRange", base::Value::Type::INTEGER},
+      {"Number", base::Value::Type::DOUBLE},
+      {"Object", base::Value::Type::DICT},
+      {"ObjectOfArray", base::Value::Type::DICT},
+      {"ObjectOfObject", base::Value::Type::DICT},
+      {"ObjectWithPatternProperties", base::Value::Type::DICT},
+      {"ObjectWithRequiredProperties", base::Value::Type::DICT},
+      {"String", base::Value::Type::STRING},
+      {"StringWithEnums", base::Value::Type::STRING},
+      {"StringWithPattern", base::Value::Type::STRING},
   };
   Schema::Iterator it = schema.GetPropertiesIterator();
   for (size_t i = 0; i < std::size(kExpectedProperties); ++i) {
@@ -442,7 +442,7 @@ TEST(SchemaTest, Lookups) {
 
   Schema schema = Schema::Parse(R"({ "type": "object" })", &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   // This empty schema should never find named properties.
   EXPECT_FALSE(schema.GetKnownProperty("").valid());
@@ -460,7 +460,7 @@ TEST(SchemaTest, Lookups) {
   })",
                          &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   EXPECT_FALSE(schema.GetKnownProperty("").valid());
   EXPECT_FALSE(schema.GetKnownProperty("xyz").valid());
@@ -477,7 +477,7 @@ TEST(SchemaTest, Lookups) {
   })",
                          &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   EXPECT_FALSE(schema.GetKnownProperty("").valid());
   EXPECT_FALSE(schema.GetKnownProperty("xyz").valid());
@@ -513,14 +513,14 @@ TEST(SchemaTest, Lookups) {
     })",
                          &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   EXPECT_EQ(std::vector<std::string>({"String", "Object"}),
             schema.GetRequiredProperties());
 
   schema = schema.GetKnownProperty("Object");
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   EXPECT_EQ(std::vector<std::string>({"Integer"}),
             schema.GetRequiredProperties());
@@ -528,19 +528,19 @@ TEST(SchemaTest, Lookups) {
 
 TEST(SchemaTest, Wrap) {
   const internal::SchemaNode kSchemas[] = {
-    { base::Value::Type::DICTIONARY,   0 },    //  0: root node
-    { base::Value::Type::BOOLEAN,      -1 },   //  1
-    { base::Value::Type::INTEGER,      -1 },   //  2
-    { base::Value::Type::DOUBLE,       -1 },   //  3
-    { base::Value::Type::STRING,       -1 },   //  4
-    { base::Value::Type::LIST,         4 },    //  5: list of strings.
-    { base::Value::Type::LIST,         5 },    //  6: list of lists of strings.
-    { base::Value::Type::INTEGER,      0 },    //  7: integer enumerations.
-    { base::Value::Type::INTEGER,      1 },    //  8: ranged integers.
-    { base::Value::Type::STRING,       2 },    //  9: string enumerations.
-    { base::Value::Type::STRING,       3 },    // 10: string with pattern.
-    { base::Value::Type::DICTIONARY,   1 },    // 11: dictionary with required
-                                             //     properties
+      {base::Value::Type::DICT, 0},      //  0: root node
+      {base::Value::Type::BOOLEAN, -1},  //  1
+      {base::Value::Type::INTEGER, -1},  //  2
+      {base::Value::Type::DOUBLE, -1},   //  3
+      {base::Value::Type::STRING, -1},   //  4
+      {base::Value::Type::LIST, 4},      //  5: list of strings.
+      {base::Value::Type::LIST, 5},      //  6: list of lists of strings.
+      {base::Value::Type::INTEGER, 0},   //  7: integer enumerations.
+      {base::Value::Type::INTEGER, 1},   //  8: ranged integers.
+      {base::Value::Type::STRING, 2},    //  9: string enumerations.
+      {base::Value::Type::STRING, 3},    // 10: string with pattern.
+      {base::Value::Type::DICT, 1},      // 11: dictionary with required
+                                         //     properties
   };
 
   const internal::PropertyNode kPropertyNodes[] = {
@@ -595,7 +595,7 @@ TEST(SchemaTest, Wrap) {
 
   Schema schema = Schema::Wrap(&kData);
   ASSERT_TRUE(schema.valid());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  EXPECT_EQ(base::Value::Type::DICT, schema.type());
 
   // Wrapped schemas have no sensitive values.
   EXPECT_FALSE(schema.IsSensitiveValue());
@@ -604,16 +604,16 @@ TEST(SchemaTest, Wrap) {
     const char* key;
     base::Value::Type type;
   } kExpectedProperties[] = {
-    { "Boolean", base::Value::Type::BOOLEAN },
-    { "DictRequired", base::Value::Type::DICTIONARY },
-    { "Integer", base::Value::Type::INTEGER },
-    { "List", base::Value::Type::LIST },
-    { "Number", base::Value::Type::DOUBLE },
-    { "String", base::Value::Type::STRING },
-    { "IntEnum", base::Value::Type::INTEGER },
-    { "RangedInt", base::Value::Type::INTEGER },
-    { "StrEnum", base::Value::Type::STRING },
-    { "StrPat", base::Value::Type::STRING },
+      {"Boolean", base::Value::Type::BOOLEAN},
+      {"DictRequired", base::Value::Type::DICT},
+      {"Integer", base::Value::Type::INTEGER},
+      {"List", base::Value::Type::LIST},
+      {"Number", base::Value::Type::DOUBLE},
+      {"String", base::Value::Type::STRING},
+      {"IntEnum", base::Value::Type::INTEGER},
+      {"RangedInt", base::Value::Type::INTEGER},
+      {"StrEnum", base::Value::Type::STRING},
+      {"StrPat", base::Value::Type::STRING},
   };
 
   Schema::Iterator it = schema.GetPropertiesIterator();
@@ -655,7 +655,7 @@ TEST(SchemaTest, Wrap) {
 
   Schema dict = schema.GetKnownProperty("DictRequired");
   ASSERT_TRUE(dict.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, dict.type());
+  ASSERT_EQ(base::Value::Type::DICT, dict.type());
 
   EXPECT_EQ(std::vector<std::string>({"String"}), dict.GetRequiredProperties());
 }
@@ -848,7 +848,7 @@ TEST(SchemaTest, Validate) {
     base::Value::List& root_list = root.GetList();
 
     // Unknown property.
-    base::Value dict_value(base::Value::Type::DICTIONARY);
+    base::Value dict_value(base::Value::Type::DICT);
     dict_value.SetBoolKey("three", true);
     root_list.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
@@ -861,7 +861,7 @@ TEST(SchemaTest, Validate) {
     root_list.erase(root_list.end() - 1);
 
     // Invalid property.
-    dict_value = base::Value(base::Value::Type::DICTIONARY);
+    dict_value = base::Value(base::Value::Type::DICT);
     dict_value.SetBoolKey("two", true);
     root_list.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
@@ -1128,7 +1128,7 @@ TEST(SchemaTest, RecursiveReferences) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   Schema parent = schema.GetKnownProperty("bookmarks");
   ASSERT_TRUE(parent.valid());
@@ -1138,7 +1138,7 @@ TEST(SchemaTest, RecursiveReferences) {
   for (int i = 0; i < 10; ++i) {
     Schema items = parent.GetItems();
     ASSERT_TRUE(items.valid());
-    ASSERT_EQ(base::Value::Type::DICTIONARY, items.type());
+    ASSERT_EQ(base::Value::Type::DICT, items.type());
 
     Schema prop = items.GetKnownProperty("name");
     ASSERT_TRUE(prop.valid());
@@ -1178,7 +1178,7 @@ TEST(SchemaTest, UnorderedReferences) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   for (char c = 'a'; c <= 'i'; ++c) {
     Schema sub = schema.GetKnownProperty(std::string(1, c));
@@ -1207,11 +1207,11 @@ TEST(SchemaTest, AdditionalPropertiesReference) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   Schema policy = schema.GetKnownProperty("policy");
   ASSERT_TRUE(policy.valid());
-  ASSERT_EQ(base::Value::Type::DICTIONARY, policy.type());
+  ASSERT_EQ(base::Value::Type::DICT, policy.type());
 
   Schema foo = policy.GetKnownProperty("foo");
   ASSERT_TRUE(foo.valid());
@@ -1244,7 +1244,7 @@ TEST(SchemaTest, ItemsReference) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
 
   Schema foo = schema.GetKnownProperty("foo");
   ASSERT_TRUE(foo.valid());
@@ -1309,7 +1309,7 @@ TEST(SchemaTest, SchemaNodeSensitiveValues) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
   EXPECT_FALSE(schema.IsSensitiveValue());
   EXPECT_TRUE(schema.HasSensitiveChildren());
 
@@ -1333,7 +1333,7 @@ TEST(SchemaTest, SchemaNodeSensitiveValues) {
 
   Schema sensitive_object = schema.GetKnownProperty(kSensitiveObjectSchema);
   ASSERT_TRUE(sensitive_object.valid());
-  EXPECT_EQ(base::Value::Type::DICTIONARY, sensitive_object.type());
+  EXPECT_EQ(base::Value::Type::DICT, sensitive_object.type());
   EXPECT_TRUE(sensitive_object.IsSensitiveValue());
   EXPECT_FALSE(sensitive_object.HasSensitiveChildren());
 
@@ -1401,7 +1401,7 @@ TEST(SchemaTest, SchemaNodeNoSensitiveValues) {
   })",
                                 &error);
   ASSERT_TRUE(schema.valid()) << error;
-  ASSERT_EQ(base::Value::Type::DICTIONARY, schema.type());
+  ASSERT_EQ(base::Value::Type::DICT, schema.type());
   EXPECT_FALSE(schema.IsSensitiveValue());
 
   Schema foo = schema.GetKnownProperty("foo");
@@ -1409,7 +1409,7 @@ TEST(SchemaTest, SchemaNodeNoSensitiveValues) {
   EXPECT_EQ(base::Value::Type::BOOLEAN, foo.type());
   EXPECT_FALSE(foo.IsSensitiveValue());
 
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetKey("foo", base::Value(true));
 
   base::Value expected_value = value.Clone();

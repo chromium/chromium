@@ -1153,7 +1153,7 @@ PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
 
   url_request_->net_log().AddEvent(
       net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-        base::Value dict(base::Value::Type::DICTIONARY);
+        base::Value dict(base::Value::Type::DICT);
         dict.SetStringKey(
             "client_address_space",
             IPAddressSpaceToStringPiece(

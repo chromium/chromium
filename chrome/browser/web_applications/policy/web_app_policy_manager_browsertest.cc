@@ -49,7 +49,7 @@ constexpr char kStartUrl[] = "https://example.com/start/?u=1";
 constexpr char kManifestUrl[] = "https://example.com/install/manifest.json";
 
 base::Value GetForceInstalledAppItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kInstallUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
@@ -64,7 +64,7 @@ base::Value GetCustomAppNameItem() {
 
 base::Value GetCustomAppIconItem() {
   base::Value item = GetForceInstalledAppItem();
-  base::Value sub_item(base::Value::Type::DICTIONARY);
+  base::Value sub_item(base::Value::Type::DICT);
   sub_item.SetKey(kCustomIconURLKey, base::Value(kDefaultCustomIconUrl));
   sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));
   item.SetKey(kCustomIconKey, std::move(sub_item));

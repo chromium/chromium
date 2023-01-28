@@ -690,8 +690,8 @@ void RuntimeApplicationServiceImpl::InnerContentsCreated(
   }
 
 #if DCHECK_IS_ON()
-  base::Value features(base::Value::Type::DICTIONARY);
-  base::Value dev_mode_config(base::Value::Type::DICTIONARY);
+  base::Value features(base::Value::Type::DICT);
+  base::Value dev_mode_config(base::Value::Type::DICT);
   dev_mode_config.SetKey(feature::kDevModeOrigin, base::Value(url));
   features.SetKey(feature::kEnableDevMode, std::move(dev_mode_config));
   inner_contents->AddRendererFeatures(std::move(features));

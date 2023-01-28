@@ -111,9 +111,9 @@ class PlatformKeysTest : public PlatformKeysTestBase {
 
     // Set up the test policy that gives |extension_| the permission to access
     // corporate keys.
-    base::Value key_permissions_policy(base::Value::Type::DICTIONARY);
+    base::Value key_permissions_policy(base::Value::Type::DICT);
     {
-      base::Value cert1_key_permission(base::Value::Type::DICTIONARY);
+      base::Value cert1_key_permission(base::Value::Type::DICT);
       cert1_key_permission.SetKey("allowCorporateKeyUsage", base::Value(true));
       key_permissions_policy.SetKey(kExtensionId,
                                     std::move(cert1_key_permission));

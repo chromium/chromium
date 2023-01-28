@@ -178,7 +178,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   DCHECK(!host_);
 
   // Store all parameters for future connect call.
-  base::Value connect_params(base::Value::Type::DICTIONARY);
+  base::Value connect_params(base::Value::Type::DICT);
 
   connect_params.SetKey(kUserName, base::Value(user_email));
   connect_params.SetKey(kAuthServiceWithToken,
@@ -193,7 +193,7 @@ void It2MeCliHost::StartCRDHostAndGetCode(OAuthTokenGetter::Status status,
   host_ = CreateNativeMessagingHost(ui_task_runner_);
   host_->Start(this);
 
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value params(base::Value::Type::DICT);
   SendMessageToHost(kHelloMessage, std::move(params));
 }
 
@@ -266,7 +266,7 @@ void It2MeCliHost::OnStateRemoteDisconnected() {
   remote_connected_ = false;
   // Remote has disconnected, time to send "disconnect" that would result
   // in shutting down the host.
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value params(base::Value::Type::DICT);
   SendMessageToHost(kDisconnectMessage, std::move(params));
 }
 
@@ -277,7 +277,7 @@ void It2MeCliHost::OnStateReceivedAccessCode(const base::Value& message) {
       // this CRD session through a remote command, and we can not send a new
       // access code. Assuming that the old access code is no longer valid, we
       // can only terminate the current CRD session.
-      base::Value params(base::Value::Type::DICTIONARY);
+      base::Value params(base::Value::Type::DICT);
       SendMessageToHost(kDisconnectMessage, std::move(params));
     }
     return;

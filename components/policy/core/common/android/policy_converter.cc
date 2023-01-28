@@ -161,7 +161,7 @@ absl::optional<base::Value> PolicyConverter::ConvertValueToSchema(
     }
 
     // Complex types have to be deserialized from JSON.
-    case base::Value::Type::DICTIONARY:
+    case base::Value::Type::DICT:
     case base::Value::Type::LIST: {
       if (value.is_string()) {
         const std::string str_value = value.GetString();

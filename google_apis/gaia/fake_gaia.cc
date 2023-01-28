@@ -934,8 +934,8 @@ void FakeGaia::HandleGetCheckConnectionInfo(const HttpRequest& request,
 
 void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
                                          BasicHttpResponse* http_response) {
-  base::Value response_dict(base::Value::Type::DICTIONARY);
-  base::Value error(base::Value::Type::DICTIONARY);
+  base::Value response_dict(base::Value::Type::DICT);
+  base::Value error(base::Value::Type::DICT);
 
   switch (next_reauth_status_) {
     case GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess:

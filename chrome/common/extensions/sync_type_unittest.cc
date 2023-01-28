@@ -44,7 +44,7 @@ class ExtensionSyncTypeTest : public testing::Test {
     if (type == APP && launch_url.is_empty())
       source.Set(keys::kApp, "true");
     if (type == THEME)
-      source.Set(keys::kTheme, base::Value(base::Value::Type::DICTIONARY));
+      source.Set(keys::kTheme, base::Value(base::Value::Type::DICT));
     if (!update_url.is_empty()) {
       source.Set(keys::kUpdateURL, update_url.spec());
     }

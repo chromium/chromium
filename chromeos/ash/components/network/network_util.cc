@@ -205,7 +205,7 @@ bool ParseCellularSIMSlotInfo(
 
 base::Value TranslateNetworkStateToONC(const NetworkState* network) {
   // Get the properties from the NetworkState.
-  base::Value shill_dictionary(base::Value::Type::DICTIONARY);
+  base::Value shill_dictionary(base::Value::Type::DICT);
   network->GetStateProperties(&shill_dictionary);
 
   // Get any Device properties required to translate state.
@@ -214,7 +214,7 @@ base::Value TranslateNetworkStateToONC(const NetworkState* network) {
         NetworkHandler::Get()->network_state_handler()->GetDeviceState(
             network->device_path());
     if (device) {
-      base::Value device_dict(base::Value::Type::DICTIONARY);
+      base::Value device_dict(base::Value::Type::DICT);
       // We need to set Device.Cellular.ProviderRequiresRoaming so that
       // Cellular.RoamingState can be set correctly for badging network icons.
       device_dict.SetKey(shill::kProviderRequiresRoamingProperty,

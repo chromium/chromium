@@ -147,7 +147,7 @@ WebsiteMetrics::UrlInfo::UrlInfo(const base::Value& value) {
 }
 
 base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
-  base::Value usage_time_dict(base::Value::Type::DICTIONARY);
+  base::Value usage_time_dict(base::Value::Type::DICT);
   usage_time_dict.SetPath(kRunningTimeKey,
                           base::TimeDeltaToValue(running_time_in_two_hours));
   usage_time_dict.SetBoolKey(kPromotableKey, promotable);

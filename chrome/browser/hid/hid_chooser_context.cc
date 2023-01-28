@@ -52,7 +52,7 @@ bool IsPolicyGrantedObject(const base::Value& object) {
 
 base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
                                        uint16_t product_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(
       kHidDeviceNameKey,
       l10n_util::GetStringFUTF16(
@@ -64,7 +64,7 @@ base::Value VendorAndProductIdsToValue(uint16_t vendor_id,
 }
 
 base::Value VendorIdToValue(uint16_t vendor_id) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(
       kHidDeviceNameKey,
       l10n_util::GetStringFUTF16(
@@ -75,7 +75,7 @@ base::Value VendorIdToValue(uint16_t vendor_id) {
 }
 
 base::Value UsagePageAndUsageToValue(uint16_t usage_page, uint16_t usage) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(
       kHidDeviceNameKey,
       l10n_util::GetStringFUTF16(
@@ -87,7 +87,7 @@ base::Value UsagePageAndUsageToValue(uint16_t usage_page, uint16_t usage) {
 }
 
 base::Value UsagePageToValue(uint16_t usage_page) {
-  base::Value object(base::Value::Type::DICTIONARY);
+  base::Value object(base::Value::Type::DICT);
   object.SetStringKey(
       kHidDeviceNameKey,
       l10n_util::GetStringFUTF16(
@@ -132,7 +132,7 @@ HidChooserContext::~HidChooserContext() {
 // static
 base::Value HidChooserContext::DeviceInfoToValue(
     const device::mojom::HidDeviceInfo& device) {
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetStringKey(
       kHidDeviceNameKey,
       base::UTF16ToUTF8(HidChooserContext::DisplayNameFromDeviceInfo(device)));
@@ -282,7 +282,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
     }
 
     if (base::Contains(policy->all_devices_policy(), origin)) {
-      base::Value object(base::Value::Type::DICTIONARY);
+      base::Value object(base::Value::Type::DICT);
       object.SetStringKey(
           kHidDeviceNameKey,
           l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));
@@ -355,7 +355,7 @@ HidChooserContext::GetAllGrantedObjects() {
       }
     }
 
-    base::Value object(base::Value::Type::DICTIONARY);
+    base::Value object(base::Value::Type::DICT);
     object.SetStringKey(
         kHidDeviceNameKey,
         l10n_util::GetStringUTF16(IDS_HID_POLICY_DESCRIPTION_FOR_ANY_DEVICE));

@@ -65,7 +65,7 @@ base::Value ToValue(const LuciTestResult::Artifact& artifact) {
   // One and only one of the two optional fields must have value.
   DCHECK(artifact.file_path.has_value() != artifact.contents.has_value());
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
 
   if (artifact.file_path.has_value()) {
     dict.SetStringKey(kKeyFilePath, artifact.file_path->AsUTF8Unsafe());
@@ -79,15 +79,15 @@ base::Value ToValue(const LuciTestResult::Artifact& artifact) {
 }
 
 base::Value ToValue(const LuciTestResult& result) {
-  base::Value test_report(base::Value::Type::DICTIONARY);
+  base::Value test_report(base::Value::Type::DICT);
 
-  base::Value* test_result = test_report.SetKey(
-      kKeyTestResult, base::Value(base::Value::Type::DICTIONARY));
+  base::Value* test_result =
+      test_report.SetKey(kKeyTestResult, base::Value(base::Value::Type::DICT));
   test_result->SetStringKey(kKeyTestPath, result.test_path());
 
   if (!result.extra_variant_pairs().empty()) {
-    base::Value* variant_dict = test_result->SetKey(
-        kKeyVariant, base::Value(base::Value::Type::DICTIONARY));
+    base::Value* variant_dict =
+        test_result->SetKey(kKeyVariant, base::Value(base::Value::Type::DICT));
     for (const auto& pair : result.extra_variant_pairs())
       variant_dict->SetStringKey(pair.first, pair.second);
   }
@@ -106,7 +106,7 @@ base::Value ToValue(const LuciTestResult& result) {
 
   if (!result.output_artifacts().empty()) {
     base::Value* artifacts_dict = test_result->SetKey(
-        kKeyOutputArtifacts, base::Value(base::Value::Type::DICTIONARY));
+        kKeyOutputArtifacts, base::Value(base::Value::Type::DICT));
     for (const auto& pair : result.output_artifacts())
       artifacts_dict->SetKey(pair.first, ToValue(pair.second));
   }
@@ -115,7 +115,7 @@ base::Value ToValue(const LuciTestResult& result) {
     base::Value* tags_list =
         test_result->SetKey(kKeyTags, base::Value(base::Value::Type::LIST));
     for (const auto& tag : result.tags()) {
-      base::Value tag_dict(base::Value::Type::DICTIONARY);
+      base::Value tag_dict(base::Value::Type::DICT);
       tag_dict.SetStringKey(kKeyKey, tag.key);
       tag_dict.SetStringKey(kKeyValue, tag.value);
       tags_list->Append(std::move(tag_dict));

@@ -36,7 +36,7 @@ void ErrorCallback(const std::string& error_name) {
 void CreateTestShillConfiguration(bool is_hidden) {
   static int guid_index = 0;
 
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
 
   properties.SetKey(shill::kGuidProperty,
                     base::Value(base::StringPrintf("guid-%i", guid_index++)));

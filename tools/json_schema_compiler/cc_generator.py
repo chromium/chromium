@@ -495,7 +495,7 @@ class _Generator(object):
     c.Append(
       'const base::Value* value = '
       '::json_schema_compiler::manifest_parse_util::FindKeyOfType('
-      'root_dict, key, base::Value::Type::DICTIONARY, error, '
+      'root_dict, key, base::Value::Type::DICT, error, '
       'error_path_reversed);'
     )
     c.Sblock('if (!value)')

@@ -29,7 +29,7 @@ base::Value HypothesisPartsToValue(
   for (auto& part : hypothesis_parts.text)
     text_value.Append(part);
 
-  base::Value hypothesis_part_value(base::Value::Type::DICTIONARY);
+  base::Value hypothesis_part_value(base::Value::Type::DICT);
   hypothesis_part_value.SetKey(kTextKey, std::move(text_value));
   hypothesis_part_value.SetIntKey(
       kOffset, hypothesis_parts.hypothesis_part_offset.InMilliseconds());
@@ -65,7 +65,7 @@ ProjectorKeyIdea::~ProjectorKeyIdea() = default;
 //   "endOffset": INT
 //   "text": STRING
 base::Value ProjectorKeyIdea::ToJson() {
-  base::Value transcript(base::Value::Type::DICTIONARY);
+  base::Value transcript(base::Value::Type::DICT);
   transcript.SetIntKey(kStartOffsetKey, start_time_.InMilliseconds());
   transcript.SetIntKey(kEndOffsetKey, end_time_.InMilliseconds());
   transcript.SetStringKey(kTextKey, text_);
@@ -108,7 +108,7 @@ ProjectorTranscript::~ProjectorTranscript() = default;
 //   "hypothesisParts": DICT LIST
 //
 base::Value ProjectorTranscript::ToJson() {
-  base::Value transcript(base::Value::Type::DICTIONARY);
+  base::Value transcript(base::Value::Type::DICT);
   transcript.SetIntKey(kStartOffsetKey, start_time_.InMilliseconds());
   transcript.SetIntKey(kEndOffsetKey, end_time_.InMilliseconds());
   transcript.SetStringKey(kTextKey, text_);
@@ -191,7 +191,7 @@ std::string ProjectorMetadata::Serialize() {
 //   "tableOfContent": LIST
 //   "recognitionStatus": INTEGER
 base::Value ProjectorMetadata::ToJson() {
-  base::Value metadata(base::Value::Type::DICTIONARY);
+  base::Value metadata(base::Value::Type::DICT);
   metadata.SetStringKey(kCaptionLanguage, caption_language_);
 
   base::Value captions_value(base::Value::Type::LIST);

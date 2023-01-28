@@ -417,7 +417,7 @@ void ExtensionInfoPrivateAsh::BindReceiver(
 void ExtensionInfoPrivateAsh::GetSystemProperties(
     const std::vector<std::string>& property_names,
     GetSystemPropertiesCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   for (const std::string& property_name : property_names) {
     std::unique_ptr<base::Value> value = GetValue(property_name);
     if (value) {

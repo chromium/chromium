@@ -195,8 +195,8 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
   const base::Value* streams_list =
       stream_dict->FindKeyOfType(kStreamsKey, base::Value::Type::LIST);
 
-  const base::Value* volume_limits = stream_dict->FindKeyOfType(
-      kVolumeLimitsKey, base::Value::Type::DICTIONARY);
+  const base::Value* volume_limits =
+      stream_dict->FindKeyOfType(kVolumeLimitsKey, base::Value::Type::DICT);
 
   return StreamPipelineDescriptor(std::move(prerender_pipeline),
                                   std::move(postrender_pipeline), streams_list,

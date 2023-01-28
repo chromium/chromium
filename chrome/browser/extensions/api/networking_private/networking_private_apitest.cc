@@ -182,13 +182,13 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
   }
 
   void GetGlobalPolicy(GetGlobalPolicyCallback callback) override {
-    std::move(callback).Run(base::Value::ToUniquePtrValue(
-        base::Value(base::Value::Type::DICTIONARY)));
+    std::move(callback).Run(
+        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
   }
 
   void GetCertificateLists(GetCertificateListsCallback callback) override {
-    std::move(callback).Run(base::Value::ToUniquePtrValue(
-        base::Value(base::Value::Type::DICTIONARY)));
+    std::move(callback).Run(
+        base::Value::ToUniquePtrValue(base::Value(base::Value::Type::DICT)));
   }
 
   // Synchronous methods
@@ -220,7 +220,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
     if (fail_) {
       std::move(failure_callback).Run(kFailure);
     } else {
-      base::Value result(base::Value::Type::DICTIONARY);
+      base::Value result(base::Value::Type::DICT);
       result.SetStringPath(::onc::network_config::kGUID, guid);
       result.SetStringPath(::onc::network_config::kType,
                            ::onc::network_config::kWiFi);
@@ -261,7 +261,7 @@ class TestNetworkingPrivateDelegate : public NetworkingPrivateDelegate {
       std::move(callback).Run(absl::nullopt, kFailure);
       return;
     }
-    base::Value result(base::Value::Type::DICTIONARY);
+    base::Value result(base::Value::Type::DICT);
     result.SetStringKey(::onc::network_config::kGUID, guid);
     result.SetStringKey(::onc::network_config::kType,
                         ::onc::network_config::kWiFi);

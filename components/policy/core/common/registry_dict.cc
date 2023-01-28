@@ -46,7 +46,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
   if (value.type() == schema.type()) {
     // Recurse for complex types.
     if (value.is_dict()) {
-      base::Value result(base::Value::Type::DICTIONARY);
+      base::Value result(base::Value::Type::DICT);
       for (auto entry : value.DictItems()) {
         absl::optional<base::Value> converted =
             ConvertRegistryValue(entry.second, schema.GetProperty(entry.first));
@@ -120,7 +120,7 @@ absl::optional<base::Value> ConvertRegistryValue(const base::Value& value,
       // Fall through in order to accept lists encoded as JSON strings.
       [[fallthrough]];
     }
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       // Dictionaries may be encoded as JSON strings.
       if (value.is_string()) {
         absl::optional<base::Value> result = base::JSONReader::Read(
@@ -287,9 +287,9 @@ void RegistryDict::ReadRegistry(HKEY hive, const std::wstring& root) {
 absl::optional<base::Value> RegistryDict::ConvertToJSON(
     const Schema& schema) const {
   base::Value::Type type =
-      schema.valid() ? schema.type() : base::Value::Type::DICTIONARY;
+      schema.valid() ? schema.type() : base::Value::Type::DICT;
   switch (type) {
-    case base::Value::Type::DICTIONARY: {
+    case base::Value::Type::DICT: {
       base::Value::Dict result;
       for (RegistryDict::ValueMap::const_iterator entry(values_.begin());
            entry != values_.end(); ++entry) {

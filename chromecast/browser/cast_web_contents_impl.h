@@ -188,7 +188,7 @@ class CastWebContentsImpl : public CastWebContents,
 
   CastWebContents* const parent_cast_web_contents_ = nullptr;
   base::flat_set<std::unique_ptr<CastWebContents>> inner_contents_;
-  base::Value renderer_features_{base::Value::Type::DICTIONARY};
+  base::Value renderer_features_{base::Value::Type::DICT};
 
   const int tab_id_;
   const int id_;

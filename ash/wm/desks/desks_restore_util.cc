@@ -299,7 +299,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   auto* desks_controller = DesksController::Get();
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
-    base::Value metrics_dict(base::Value::Type::DICTIONARY);
+    base::Value metrics_dict(base::Value::Type::DICT);
     metrics_dict.SetIntKey(
         kCreationTimeKey,
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());

@@ -68,7 +68,7 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     fake_os_user_manager()->FailFindUserBySID(user_sid.c_str(), 1);
   }
 
-  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  base::Value expected_response_value(base::Value::Type::DICT);
   expected_response_value.SetStringKey("deviceResourceId",
                                        base::WideToUTF8(device_resource_id));
   std::string expected_response;

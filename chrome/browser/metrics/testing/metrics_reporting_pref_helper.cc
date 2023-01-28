@@ -42,7 +42,7 @@ void SetMetricsReportingEnabledChromeOS(bool is_enabled,
 namespace metrics {
 
 base::FilePath SetUpUserDataDirectoryForTesting(bool is_enabled) {
-  base::Value local_state_dict(base::Value::Type::DICTIONARY);
+  base::Value local_state_dict(base::Value::Type::DICT);
   local_state_dict.SetBoolPath(metrics::prefs::kMetricsReportingEnabled,
                                is_enabled);
 

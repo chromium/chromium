@@ -21,7 +21,7 @@ namespace shared_highlighting {
 // Tests the ParseRect utility function.
 TEST_F(ParsingUtilsTest, ParseRect) {
   CGRect expected_rect = CGRectMake(1, 2, 3, 4);
-  base::Value rect_value = base::Value(base::Value::Type::DICTIONARY);
+  base::Value rect_value = base::Value(base::Value::Type::DICT);
   rect_value.SetDoubleKey("x", expected_rect.origin.x);
   rect_value.SetDoubleKey("y", expected_rect.origin.y);
   rect_value.SetDoubleKey("width", expected_rect.size.width);
@@ -35,7 +35,7 @@ TEST_F(ParsingUtilsTest, ParseRect) {
   EXPECT_FALSE(ParseRect(nil).has_value());
   base::Value string_value = base::Value(base::Value::Type::STRING);
   EXPECT_FALSE(ParseRect(&string_value).has_value());
-  base::Value empty_dict_value = base::Value(base::Value::Type::DICTIONARY);
+  base::Value empty_dict_value = base::Value(base::Value::Type::DICT);
   EXPECT_FALSE(ParseRect(&empty_dict_value).has_value());
 
   base::Value copied_value = rect_value.Clone();

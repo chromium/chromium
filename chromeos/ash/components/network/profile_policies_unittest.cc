@@ -40,7 +40,7 @@ base::Value NetworkConfigsList(
 //   "guid": <passed_guid>
 // }
 base::Value NetworkConfig(base::StringPiece guid) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   result.SetKey(::onc::network_config::kGUID, base::Value(guid));
   return result;
 }
@@ -115,10 +115,10 @@ TEST(ProfilePoliciesTest, GlobalNetworkConfigIsEmpty) {
 
 // Sets / retrieves GlobalNetworkConfig.
 TEST(ProfilePoliciesTest, SetAndOverwriteGlobalNetworkConfig) {
-  base::Value global_network_config_1(base::Value::Type::DICTIONARY);
+  base::Value global_network_config_1(base::Value::Type::DICT);
   global_network_config_1.SetKey("key1", base::Value("value1"));
 
-  base::Value global_network_config_2(base::Value::Type::DICTIONARY);
+  base::Value global_network_config_2(base::Value::Type::DICT);
   global_network_config_2.SetKey("key2", base::Value("value2"));
 
   ProfilePolicies profile_policies;

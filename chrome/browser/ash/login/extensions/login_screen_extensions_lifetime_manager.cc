@@ -160,7 +160,7 @@ LoginScreenExtensionsLifetimeManager::GetPolicyExtensionIds() const {
   const PrefService::Preference* const pref =
       prefs->FindPreference(extensions::pref_names::kInstallForceList);
   if (!pref || !pref->IsManaged() ||
-      pref->GetType() != base::Value::Type::DICTIONARY) {
+      pref->GetType() != base::Value::Type::DICT) {
     return {};
   }
   extensions::ExtensionIdList extension_ids;

@@ -44,8 +44,7 @@ void LoginScreenExtensionsStorageCleaner::
   std::vector<std::string> installed_extension_ids;
   const PrefService::Preference* const pref =
       prefs_->FindPreference(extensions::pref_names::kInstallForceList);
-  if (pref && pref->IsManaged() &&
-      pref->GetType() == base::Value::Type::DICTIONARY) {
+  if (pref && pref->IsManaged() && pref->GetType() == base::Value::Type::DICT) {
     // Each `item` contains a pair of extension ID and update URL.
     for (const auto item : pref->GetValue()->DictItems())
       installed_extension_ids.push_back(item.first);

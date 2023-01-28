@@ -294,7 +294,7 @@ struct BackgroundTabLoadingPolicy::ScoredTabComparator {
 
 base::Value BackgroundTabLoadingPolicy::DescribePageNodeData(
     const PageNode* node) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   if (base::Contains(page_nodes_load_initiated_, node)) {
     // Transient state between InitiateLoad() and OnLoadingStateChanged(),
     // shouldn't be sticking around for long.
@@ -308,7 +308,7 @@ base::Value BackgroundTabLoadingPolicy::DescribePageNodeData(
 
 base::Value BackgroundTabLoadingPolicy::DescribeSystemNodeData(
     const SystemNode* node) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   dict.SetIntKey("max_simultaneous_tab_loads",
                  base::saturated_cast<int>(max_simultaneous_tab_loads_));
   dict.SetIntKey("tab_loads_started",

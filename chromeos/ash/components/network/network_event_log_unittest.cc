@@ -84,7 +84,7 @@ class NetworkEventLogTest : public testing::Test {
     // VPN
     service_test->AddService("/service/5", "vpn5_guid", "vpn5", shill::kTypeVPN,
                              shill::kStateIdle, add_to_visible);
-    base::Value provider_properties(base::Value::Type::DICTIONARY);
+    base::Value provider_properties(base::Value::Type::DICT);
     provider_properties.SetStringKey(shill::kTypeProperty,
                                      shill::kProviderL2tpIpsec);
     service_test->SetServiceProperty("/service/5", shill::kProviderProperty,

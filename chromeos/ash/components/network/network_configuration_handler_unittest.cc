@@ -350,7 +350,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties) {
 
   bool success = false;
   std::string service_path;
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   network_configuration_handler_->GetShillProperties(
       kServicePath,
       base::BindOnce(&CopyProperties, &success, &service_path, &result));
@@ -379,7 +379,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
 
   bool success = false;
   std::string service_path;
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value result(base::Value::Type::DICT);
   network_configuration_handler_->GetShillProperties(
       // Tether networks use service path and GUID interchangeably.
       kTetherGuid,
@@ -418,7 +418,7 @@ TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
       kServicePath, std::string() /* guid */, std::string() /* name */,
       shill::kTypeWifi, std::string() /* state */, true /* visible */);
 
-  base::Value value(base::Value::Type::DICTIONARY);
+  base::Value value(base::Value::Type::DICT);
   value.SetStringKey(shill::kSSIDProperty, kNetworkName);
   network_configuration_handler_->SetShillProperties(
       kServicePath, value, base::DoNothing(), base::BindOnce(&ErrorCallback));
@@ -608,7 +608,7 @@ TEST_F(NetworkConfigurationHandlerTest, StubSetAndClearProperties) {
   const std::string test_passphrase("test_passphrase");
 
   // Set Properties
-  base::Value properties_to_set(base::Value::Type::DICTIONARY);
+  base::Value properties_to_set(base::Value::Type::DICT);
   properties_to_set.SetKey(shill::kCheckPortalProperty,
                            base::Value(test_check_portal));
   properties_to_set.SetKey(shill::kPassphraseProperty,
@@ -659,7 +659,7 @@ TEST_F(NetworkConfigurationHandlerTest, StubGetNameFromWifiHex) {
   std::string expected_name = "This is HEX SSID!";
 
   // Set Properties
-  base::Value properties_to_set(base::Value::Type::DICTIONARY);
+  base::Value properties_to_set(base::Value::Type::DICT);
   properties_to_set.SetKey(shill::kWifiHexSsid, base::Value(wifi_hex));
   network_configuration_handler_->SetShillProperties(
       service_path, properties_to_set, base::DoNothing(),
@@ -759,7 +759,7 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Updated) {
   EXPECT_FALSE(
       network_configuration_observer->HasUpdatedConfiguration(service_path));
 
-  base::Value properties(base::Value::Type::DICTIONARY);
+  base::Value properties(base::Value::Type::DICT);
   properties.SetKey(shill::kSecurityClassProperty,
                     base::Value(shill::kSecurityClassPsk));
   properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));

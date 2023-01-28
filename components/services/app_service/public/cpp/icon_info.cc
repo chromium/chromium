@@ -30,7 +30,7 @@ IconInfo& IconInfo::operator=(const IconInfo&) = default;
 IconInfo& IconInfo::operator=(IconInfo&&) noexcept = default;
 
 base::Value IconInfo::AsDebugValue() const {
-  base::Value root(base::Value::Type::DICTIONARY);
+  base::Value root(base::Value::Type::DICT);
   root.SetStringKey("url", url.spec());
   root.SetKey("square_size_px",
               square_size_px ? base::Value(*square_size_px) : base::Value());

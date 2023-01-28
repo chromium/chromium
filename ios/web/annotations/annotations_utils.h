@@ -30,7 +30,7 @@ bool IsNSTextCheckingResultEmail(NSTextCheckingResult* result);
 NSTextCheckingResult* MakeNSTextCheckingResultEmail(NSString* email,
                                                     NSRange range);
 
-// Encapsulates data into a `base::Value::Type::DICTIONARY` that can be
+// Encapsulates data into a `base::Value::Type::DICT` that can be
 // passed to JS. `data` must come from `EncodeNSTextCheckingResultData`.
 base::Value::Dict ConvertMatchToAnnotation(NSString* source,
                                            NSRange range,

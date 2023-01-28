@@ -400,7 +400,7 @@ TEST_F(PrefProviderTest, Deadlock) {
     ScopedDictPrefUpdate update(&prefs, info->pref_name());
     base::Value::Dict& mutable_settings = update.Get();
     mutable_settings.Set("www.example.com,*",
-                         base::Value(base::Value::Type::DICTIONARY));
+                         base::Value(base::Value::Type::DICT));
   }
   EXPECT_TRUE(observer.notification_received());
 

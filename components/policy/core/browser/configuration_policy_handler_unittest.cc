@@ -137,7 +137,7 @@ JsonStringHandlerForTesting() {
 
 TEST(ListPolicyHandlerTest, CheckPolicySettings) {
   base::Value::List list;
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value dict(base::Value::Type::DICT);
   policy::PolicyMap policy_map;
   policy::PolicyErrorMap errors;
   StringListPolicyHandler handler(kTestPolicy, kTestPref);

@@ -293,7 +293,7 @@ void AwMetricsServiceClient::RegisterMetricsPrefs(
     PrefRegistrySimple* registry) {
   RegisterPrefs(registry);
   registry->RegisterDictionaryPref(prefs::kMetricsAppPackageNameLoggingRule,
-                                   base::Value(base::Value::Type::DICTIONARY));
+                                   base::Value(base::Value::Type::DICT));
   registry->RegisterTimePref(prefs::kAppPackageNameLoggingRuleLastUpdateTime,
                              base::Time());
 }

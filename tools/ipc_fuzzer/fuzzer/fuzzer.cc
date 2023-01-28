@@ -490,7 +490,7 @@ template <>
 struct FuzzTraits<base::Value> {
   static bool Fuzz(base::Value* p, Fuzzer* fuzzer) {
     DCHECK(p->type() == base::Value::Type::LIST ||
-           p->type() == base::Value::Type::DICTIONARY);
+           p->type() == base::Value::Type::DICT);
 
     // TODO(mbarbella): Support mutation.
     if (!fuzzer->ShouldGenerate())
@@ -538,8 +538,8 @@ struct FuzzTraits<base::Value> {
           fuzzer->FuzzString(&random_value.GetString());
           break;
         }
-        case base::Value::Type::DICTIONARY: {
-          random_value = base::Value(base::Value::Type::DICTIONARY);
+        case base::Value::Type::DICT: {
+          random_value = base::Value(base::Value::Type::DICT);
           FuzzParam(&random_value, fuzzer);
           break;
         }

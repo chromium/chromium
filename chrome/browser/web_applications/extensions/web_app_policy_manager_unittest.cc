@@ -98,7 +98,7 @@ constexpr char kUnsecureIconUrl[] = "http://windowed.example/icon.png";
 constexpr char kDefaultCustomIconHash[] = "abcdef";
 
 base::Value GetWindowedItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
@@ -119,7 +119,7 @@ ExternalInstallOptions GetWindowedInstallOptions() {
 }
 
 base::Value GetTabbedItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kTabbedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerTabValue));
@@ -140,7 +140,7 @@ ExternalInstallOptions GetTabbedInstallOptions() {
 }
 
 base::Value GetNoContainerItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   return item;
 }
@@ -159,7 +159,7 @@ ExternalInstallOptions GetNoContainerInstallOptions() {
 }
 
 base::Value GetCreateDesktopShortcutDefaultItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   return item;
 }
@@ -178,7 +178,7 @@ ExternalInstallOptions GetCreateDesktopShortcutDefaultInstallOptions() {
 }
 
 base::Value GetCreateDesktopShortcutFalseItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   item.SetKey(kCreateDesktopShortcutKey, base::Value(false));
   return item;
@@ -198,7 +198,7 @@ ExternalInstallOptions GetCreateDesktopShortcutFalseInstallOptions() {
 }
 
 base::Value GetCreateDesktopShortcutTrueItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kNoContainerUrl));
   item.SetKey(kCreateDesktopShortcutKey, base::Value(true));
   return item;
@@ -234,7 +234,7 @@ class MockAppRegistrarObserver : public AppRegistrarObserver {
 };
 
 base::Value GetFallbackAppNameItem() {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
@@ -257,7 +257,7 @@ ExternalInstallOptions GetFallbackAppNameInstallOptions() {
 }
 
 base::Value GetCustomAppNameItem(std::string name) {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
@@ -280,11 +280,11 @@ ExternalInstallOptions GetCustomAppNameInstallOptions(std::string name) {
 }
 
 base::Value GetCustomAppIconItem(bool secure = true) {
-  base::Value item(base::Value::Type::DICTIONARY);
+  base::Value item(base::Value::Type::DICT);
   item.SetKey(kUrlKey, base::Value(kWindowedUrl));
   item.SetKey(kDefaultLaunchContainerKey,
               base::Value(kDefaultLaunchContainerWindowValue));
-  base::Value sub_item(base::Value::Type::DICTIONARY);
+  base::Value sub_item(base::Value::Type::DICT);
   sub_item.SetKey(kCustomIconURLKey, base::Value(secure ? kDefaultCustomIconUrl
                                                         : kUnsecureIconUrl));
   sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));

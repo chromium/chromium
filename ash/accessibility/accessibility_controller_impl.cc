@@ -1087,15 +1087,15 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
                                std::numeric_limits<double>::min());
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+      base::Value(base::Value::Type::DICT),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+      base::Value(base::Value::Type::DICT),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterDictionaryPref(
       prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes,
-      base::Value(base::Value::Type::DICTIONARY),
+      base::Value(base::Value::Type::DICT),
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kAccessibilitySwitchAccessAutoScanEnabled, false,

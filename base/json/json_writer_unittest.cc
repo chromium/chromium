@@ -22,7 +22,7 @@ TEST(JSONWriterTest, BasicTypes) {
   EXPECT_EQ("null", output_js);
 
   // Test empty dict.
-  EXPECT_TRUE(JSONWriter::Write(Value(Value::Type::DICTIONARY), &output_js));
+  EXPECT_TRUE(JSONWriter::Write(Value(Value::Type::DICT), &output_js));
   EXPECT_EQ("{}", output_js);
 
   // Test empty list.
