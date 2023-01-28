@@ -1,0 +1,41 @@
+diff --git a/third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc b/third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc
+index 8b1cbe7d1b139..15b1829c9af29 100644
+--- a/third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc
++++ b/third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc
+@@ -17,17 +17,34 @@
+ 
+ #include <utility>
+ 
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+ #include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
++namespace {
++
++// Invert private scalar using Fermat's Little Theorem to avoid side-channel
++// attacks. This avoids the caveat of ModInverseBlinded, namely that the
++// underlying BN_mod_inverse_blinded is not available on all platforms.
++BigNum InvertPrivateScalar(const BigNum& scalar,
++                           const ECGroup& ec_group,
++                           Context& context) {
++  const BigNum& order = ec_group.GetOrder();
++  return scalar.ModExp(order.Sub(context.Two()), order);
++}
++
++}  // namespace
+ 
+ ECCommutativeCipher::ECCommutativeCipher(std::unique_ptr<Context> context,
+-                                         ECGroup group, BigNum private_key,
++                                         ECGroup group,
++                                         BigNum private_key,
+                                          HashType hash_type)
+     : context_(std::move(context)),
+       group_(std::move(group)),
+       private_key_(std::move(private_key)),
+-      private_key_inverse_(private_key_.ModInverse(group_.GetOrder())),
++      private_key_inverse_(
++          InvertPrivateScalar(private_key_, group_, *context_)),
+       hash_type_(hash_type) {}
+ 
+ bool ECCommutativeCipher::ValidateHashType(HashType hash_type) {

@@ -18,3 +18,4 @@ dependencies.diff - removes all the dependencies on Abseil and other libraries r
 compilation.diff - fixes compilation/static analyzers in Chrome.
 fix_nulls.diff - makes the presubmit happy by replacing NULL with nullptr.
 Use-absil-statusor.diff - removes existing status/statusor library's version, and uses absl::status and absl::statusor as source of truth.
+private_key_inverse.diff - makes private key inverse use Fermat's Little Theorem instead of ModInverseBlinded
