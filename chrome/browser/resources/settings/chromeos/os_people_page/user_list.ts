@@ -20,32 +20,30 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
-import {CrScrollableBehavior, CrScrollableBehaviorInterface} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrA11yAnnouncerElement, getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './user_list.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {CrScrollableBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsUserListElementBase = mixinBehaviors(
-    [CrScrollableBehavior, I18nBehavior, RouteObserverBehavior],
-    PolymerElement);
+declare global {
+  interface HTMLElementEventMap {
+    'all-managed-users-removed': CustomEvent<void>;
+  }
+}
 
-/** @polymer */
+const SettingsUserListElementBase =
+    RouteObserverMixin(I18nMixin(CrScrollableMixin(PolymerElement)));
+
+
 class SettingsUserListElement extends SettingsUserListElementBase {
   static get is() {
-    return 'settings-user-list';
+    return 'settings-user-list' as const;
   }
 
   static get template() {
@@ -56,7 +54,6 @@ class SettingsUserListElement extends SettingsUserListElementBase {
     return {
       /**
        * Current list of allowed users.
-       * @private {!Array<!chrome.usersPrivate.User>}
        */
       users_: {
         type: Array,
@@ -69,7 +66,6 @@ class SettingsUserListElement extends SettingsUserListElementBase {
       /**
        * Whether the user list is disabled, i.e. that no modifications can be
        * made.
-       * @type {boolean}
        */
       disabled: {
         type: Boolean,
@@ -79,53 +75,46 @@ class SettingsUserListElement extends SettingsUserListElementBase {
     };
   }
 
+  disabled: boolean;
+  private users_: chrome.usersPrivate.User[];
+  private usersPrivate_: typeof chrome.usersPrivate;
+
   constructor() {
     super();
 
-    /** @private */
     this.usersPrivate_ = chrome.usersPrivate;
   }
 
-  /** @override */
-  ready() {
+  override ready(): void {
     super.ready();
 
-    chrome.settingsPrivate.onPrefsChanged.addListener(prefs => {
-      prefs.forEach(function(pref) {
-        if (pref.key === 'cros.accounts.users') {
-          this.usersPrivate_.getUsers(
-              (/** !Array<!chrome.usersPrivate.User> */ users) => {
-                this.setUsers_(users);
-              });
-        }
-      }, this);
-    });
+    chrome.settingsPrivate.onPrefsChanged.addListener(
+        (prefs: chrome.settingsPrivate.PrefObject[]) => {
+          prefs.forEach((pref: chrome.settingsPrivate.PrefObject) => {
+            if (pref.key === 'cros.accounts.users') {
+              this.usersPrivate_.getUsers().then(
+                  (users: chrome.usersPrivate.User[]) => {
+                    this.setUsers_(users);
+                  });
+            }
+          }, this);
+        });
   }
 
-  /** @protected */
-  currentRouteChanged() {
+  override currentRouteChanged(): void {
     if (Router.getInstance().getCurrentRoute() === routes.ACCOUNTS) {
-      this.usersPrivate_.getUsers(
-          (/** !Array<!chrome.usersPrivate.User> */ users) => {
+      this.usersPrivate_.getUsers().then(
+          (users: chrome.usersPrivate.User[]) => {
             this.setUsers_(users);
           });
     }
   }
 
-  /**
-   * @param {!chrome.usersPrivate.User} user
-   * @return {string}
-   * @private
-   */
-  getUserName_(user) {
+  private getUserName_(user: chrome.usersPrivate.User): string {
     return user.isOwner ? this.i18n('deviceOwnerLabel', user.name) : user.name;
   }
 
-  /**
-   * Helper function that sorts and sets the given list of allowed users.
-   * @param {!Array<!chrome.usersPrivate.User>} users List of allowed users.
-   */
-  setUsers_(users) {
+  private setUsers_(users: chrome.usersPrivate.User[]): void {
     this.users_ = users;
     this.users_.sort(function(a, b) {
       if (a.isOwner !== b.isOwner) {
@@ -137,12 +126,8 @@ class SettingsUserListElement extends SettingsUserListElementBase {
     this.requestUpdateScroll();
   }
 
-  /**
-   * @private
-   * @param {!{model: !{item: !chrome.usersPrivate.User}}} e
-   */
-  removeUser_(e) {
-    /** @type {!CrA11yAnnouncerElement} */ (getAnnouncerInstance())
+  private removeUser_(e: DomRepeatEvent<chrome.usersPrivate.User>): void {
+    (getAnnouncerInstance() as CrA11yAnnouncerElement)
         .announce(this.i18n('userRemovedMessage', e.model.item.name));
 
     // Focus the add user button since, after this removal, the only user left
@@ -153,49 +138,39 @@ class SettingsUserListElement extends SettingsUserListElementBase {
       this.dispatchEvent(event);
     }
 
-    this.usersPrivate_.removeUser(
-        e.model.item.email, /* callback */ function() {});
+    this.usersPrivate_.removeUser(e.model.item.email);
   }
 
-  /** @private */
-  shouldHideCloseButton_(disabled, isUserOwner) {
+  private shouldHideCloseButton_(disabled: boolean, isUserOwner: boolean):
+      boolean {
     return disabled || isUserOwner;
   }
 
-  /**
-   * @param {chrome.usersPrivate.User} user
-   * @private
-   */
-  getProfilePictureUrl_(user) {
+  private getProfilePictureUrl_(user: chrome.usersPrivate.User): string {
     return 'chrome://userimage/' + user.email + '?id=' + Date.now() +
         '&frame=0';
   }
 
-  /**
-   * @param {chrome.usersPrivate.User} user
-   * @private
-   */
-  shouldShowEmail_(user) {
+  private shouldShowEmail_(user: chrome.usersPrivate.User): boolean {
     return !user.isChild && user.name !== user.displayEmail;
   }
 
   /**
    * Use this function to prevent tooltips from displaying for user names. We
    * only want to display tooltips for email addresses.
-   * @param {chrome.usersPrivate.User} user
-   * @private
    */
-  getTooltip_(user) {
+  private getTooltip_(user: chrome.usersPrivate.User): string {
     return !this.shouldShowEmail_(user) ? user.displayEmail : '';
   }
 
-  /**
-   * @param {!chrome.usersPrivate.User} user
-   * @return {string}
-   * @private
-   */
-  getRemoveUserTooltip_(user) {
+  private getRemoveUserTooltip_(user: chrome.usersPrivate.User): string {
     return this.i18n('removeUserTooltip', user.name);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsUserListElement.is]: SettingsUserListElement;
   }
 }
 

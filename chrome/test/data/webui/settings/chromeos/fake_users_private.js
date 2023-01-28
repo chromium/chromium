@@ -18,19 +18,34 @@ export function FakeUsersPrivate() {}
 FakeUsersPrivate.prototype = {
   users: [],
 
-  addUser: function(user) {
+  /**
+   * @param {User} user
+   * @return {!Promise<boolean>}
+   */
+  addUser(user) {
     this.users.push(user);
+    return Promise.resolve(true);
   },
 
-  getUsers: function(callback) {
-    return callback(this.users);
+  /**
+   * @return {!Promise<User[]>}
+   */
+  getUsers() {
+    return Promise.resolve(this.users);
   },
-
-  removeUser: function(email, callback) {
+  /**
+   * @param {string} email
+   * @return {!Promise<boolean>}
+   */
+  removeUser(email) {
     this.users = this.users.filter(user => user.email !== email);
+    return Promise.resolve(true);
   },
-
-  isUserInList: function(user, callback) {
-    callback(this.users.includes(user));
+  /**
+   * @param {User} user
+   * @return {!Promise<boolean>}
+   */
+  isUserInList(user) {
+    return Promise.resolve(this.users.includes(user));
   },
 };

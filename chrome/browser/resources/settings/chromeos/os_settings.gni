@@ -18,6 +18,7 @@ ts_definition_files = [
   "//tools/typescript/definitions/settings_private.d.ts",
   "//tools/typescript/definitions/system_display.d.ts",
   "//tools/typescript/definitions/tabs.d.ts",
+  "//tools/typescript/definitions/users_private.d.ts",
 ]
 
 # TODO(crbug/1292025) Files that have their HTML wrapper file generated
@@ -196,9 +197,9 @@ web_component_files = [
   "chromeos/os_people_page/pin_autosubmit_dialog.js",
   "chromeos/os_people_page/setup_fingerprint_dialog.js",
   "chromeos/os_people_page/setup_pin_dialog.js",
-  "chromeos/os_people_page/users_add_user_dialog.js",
-  "chromeos/os_people_page/user_list.js",
-  "chromeos/os_people_page/users_page.js",
+  "chromeos/os_people_page/users_add_user_dialog.ts",
+  "chromeos/os_people_page/user_list.ts",
+  "chromeos/os_people_page/users_page.ts",
   "chromeos/os_printing_page/cups_add_print_server_dialog.ts",
   "chromeos/os_printing_page/cups_add_printer_dialog.ts",
   "chromeos/os_printing_page/cups_add_printer_manually_dialog.ts",

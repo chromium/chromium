@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {FakeUsersPrivate} from './fake_users_private.js';
 
@@ -56,7 +57,7 @@ suite('AddPersonDialog', function() {
     assertTrue(userInputBox.invalid);
   });
 
-  test('Add duplicate user', function() {
+  test('Add duplicate user', async function() {
     const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
     const addButton = dialog.shadowRoot.querySelector('.action-button');
     const duplicateUserEmail = 'duplicateUser@google.com';
@@ -64,6 +65,7 @@ suite('AddPersonDialog', function() {
     // Add user for the first time.
     userInputBox.value = duplicateUserEmail;
     addButton.click();
+    await waitAfterNextRender(userInputBox);
     assertEquals('', userInputBox.value);
     assertFalse(userInputBox.invalid);
     assertEquals('', userInputBox.errorMessage);
@@ -72,24 +74,26 @@ suite('AddPersonDialog', function() {
     // will create an error message.
     userInputBox.value = duplicateUserEmail;
     addButton.click();
+    await waitAfterNextRender(userInputBox);
     assertEquals(duplicateUserEmail, userInputBox.value);
     assertTrue(userInputBox.invalid);
     assertNotEquals('', userInputBox.errorMessage);
   });
 
-  test('Add new user', function() {
+  test('Add new user', async function() {
     const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
     const addButton = dialog.shadowRoot.querySelector('.action-button');
     const newUserEmail = 'newUser@google.com';
 
     userInputBox.value = newUserEmail;
     addButton.click();
+    await waitAfterNextRender(userInputBox);
     assertEquals('', userInputBox.value);
     assertFalse(userInputBox.invalid);
     assertEquals('', userInputBox.errorMessage);
   });
 
-  test('Add two new users', function() {
+  test('Add two new users', async function() {
     const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
     const addButton = dialog.shadowRoot.querySelector('.action-button');
     const firstUserEmail = 'firstUser@google.com';
@@ -97,12 +101,14 @@ suite('AddPersonDialog', function() {
 
     userInputBox.value = firstUserEmail;
     addButton.click();
+    await waitAfterNextRender(userInputBox);
     assertEquals('', userInputBox.value);
     assertFalse(userInputBox.invalid);
     assertEquals('', userInputBox.errorMessage);
 
     userInputBox.value = secondUserEmail;
     addButton.click();
+    await waitAfterNextRender(userInputBox);
     assertEquals('', userInputBox.value);
     assertFalse(userInputBox.invalid);
     assertEquals('', userInputBox.errorMessage);

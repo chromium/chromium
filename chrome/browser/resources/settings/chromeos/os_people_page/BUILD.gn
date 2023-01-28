@@ -22,9 +22,6 @@ js_type_check("closure_compile_module") {
     ":os_sync_controls",
     ":setup_fingerprint_dialog",
     ":setup_pin_dialog",
-    ":user_list",
-    ":users_add_user_dialog",
-    ":users_page",
   ]
 }
 
@@ -49,6 +46,7 @@ js_library("account_manager") {
 
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
 }
 
@@ -103,7 +101,10 @@ js_library("lock_screen") {
     "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list = [ "../settings_controls_types.js" ]
+  externs_list = [
+    "../settings_controls_types.js",
+    "$externs_path/settings_private.js",
+  ]
 }
 
 js_library("lock_screen_password_prompt_dialog") {
@@ -196,49 +197,6 @@ js_library("setup_pin_dialog") {
     "..:router",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/quick_unlock:setup_pin_keyboard",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("user_list") {
-  deps = [
-    "..:os_route",
-    "..:route_observer_behavior",
-    "..:router",
-    "//ash/webui/common/resources:cr_scrollable_behavior",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/settings_private.js",
-    "$externs_path/users_private.js",
-    "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js",
-  ]
-}
-
-js_library("users_add_user_dialog") {
-  deps = [
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/users_private.js",
-    "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js",
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-  ]
-}
-
-js_library("users_page") {
-  deps = [
-    ":user_list",
-    ":users_add_user_dialog",
-    "..:deep_linking_behavior",
-    "..:os_route",
-    "..:route_observer_behavior",
-    "..:router",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:focus_without_ink_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

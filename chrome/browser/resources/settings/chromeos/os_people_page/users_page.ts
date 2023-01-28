@@ -16,32 +16,32 @@ import '../../settings_shared.css.js';
 import './user_list.js';
 import './users_add_user_dialog.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
+import {SettingsUsersAddUserDialogElement} from './users_add_user_dialog.js';
 import {getTemplate} from './users_page.html.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsUsersPageElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, RouteObserverBehavior], PolymerElement);
+const SettingsUsersPageElementBase =
+    DeepLinkingMixin(RouteObserverMixin(PolymerElement));
 
-/** @polymer */
+interface SettingsUsersPageElement {
+  $: {
+    addUserDialog: SettingsUsersAddUserDialogElement,
+  };
+}
+
 class SettingsUsersPageElement extends SettingsUsersPageElementBase {
   static get is() {
-    return 'settings-users-page';
+    return 'settings-users-page' as const;
   }
 
   static get template() {
@@ -50,27 +50,21 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
       prefs: {
         type: Object,
         notify: true,
       },
 
-      /** @private */
       isOwner_: {
         type: Boolean,
         value: true,
       },
 
-      /** @private */
       isUserListManaged_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       isChild_: {
         type: Boolean,
         value() {
@@ -80,7 +74,6 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -95,32 +88,32 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
     };
   }
 
-  /** @override */
+  private isOwner_: boolean;
+  private isUserListManaged_: boolean;
+  private isChild_: boolean;
+
   constructor() {
     super();
 
-    chrome.usersPrivate.getCurrentUser(user => {
-      this.isOwner_ = user.isOwner;
-    });
+    chrome.usersPrivate.getCurrentUser().then(
+        (user: chrome.usersPrivate.User) => {
+          this.isOwner_ = user.isOwner;
+        });
 
-    chrome.usersPrivate.isUserListManaged(isUserListManaged => {
-      this.isUserListManaged_ = isUserListManaged;
-    });
+    chrome.usersPrivate.isUserListManaged().then(
+        (isUserListManaged: boolean) => {
+          this.isUserListManaged_ = isUserListManaged;
+        });
   }
 
-  ready() {
+  override ready() {
     super.ready();
 
     this.addEventListener(
         'all-managed-users-removed', this.focusAddUserButton_);
   }
 
-  /**
-   * Overridden from DeepLinkingBehavior.
-   * @param {!Setting} settingId
-   * @return {boolean}
-   */
-  beforeDeepLinkAttempt(settingId) {
+  override beforeDeepLinkAttempt(settingId: Setting): boolean {
     if (settingId !== Setting.kRemoveFromUserAllowlistV2) {
       // Continue with deep linking attempt.
       return true;
@@ -128,8 +121,9 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
 
     // Wait for element to load.
     afterNextRender(this, () => {
-      const userList = this.shadowRoot.querySelector('settings-user-list');
-      const removeButton = userList.$$('cr-icon-button');
+      const userList = this.shadowRoot!.querySelector('settings-user-list');
+      const removeButton =
+          userList!.shadowRoot!.querySelector('cr-icon-button');
       if (removeButton) {
         this.showDeepLinkElement(removeButton);
         return;
@@ -140,13 +134,7 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
     return false;
   }
 
-  /**
-   * RouteObserverBehavior
-   * @param {!Route} route
-   * @param {!Route=} oldRoute
-   * @protected
-   */
-  currentRouteChanged(route, oldRoute) {
+  override currentRouteChanged(route: Route, _oldRoute: Route): void {
     // Does not apply to this page.
     if (route !== routes.ACCOUNTS) {
       return;
@@ -155,51 +143,39 @@ class SettingsUsersPageElement extends SettingsUsersPageElementBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  openAddUserDialog_(e) {
+  private openAddUserDialog_(e: Event): void {
     e.preventDefault();
     this.$.addUserDialog.open();
   }
 
-  /** @private */
-  onAddUserDialogClose_() {
+  private onAddUserDialogClose_(): void {
     this.focusAddUserButton_();
   }
 
-  /**
-   * @param {boolean} isOwner
-   * @param {boolean} isUserListManaged
-   * @private
-   * @return {boolean}
-   */
-  isEditingDisabled_(isOwner, isUserListManaged) {
+  private isEditingDisabled_(isOwner: boolean, isUserListManaged: boolean):
+      boolean {
     return !isOwner || isUserListManaged;
   }
 
-  /**
-   * @param {boolean} isOwner
-   * @param {boolean} isUserListManaged
-   * @param {boolean} allowGuest
-   * @param {boolean} isChild
-   * @private
-   * @return {boolean}
-   */
-  isEditingUsersEnabled_(isOwner, isUserListManaged, allowGuest, isChild) {
+  private isEditingUsersEnabled_(
+      isOwner: boolean, isUserListManaged: boolean, allowGuest: boolean,
+      isChild: boolean): boolean {
     return isOwner && !isUserListManaged && !allowGuest && !isChild;
   }
 
-  /** @return {boolean} */
-  shouldHideModifiedByOwnerLabel_() {
+  private shouldHideModifiedByOwnerLabel_(): boolean {
     return this.isUserListManaged_ || this.isOwner_;
   }
 
-  /** @private */
-  focusAddUserButton_() {
+  private focusAddUserButton_(): void {
     focusWithoutInk(
-        assert(this.shadowRoot.querySelector('#add-user-button a')));
+        castExists(this.shadowRoot!.querySelector('#add-user-button a')));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsUsersPageElement.is]: SettingsUsersPageElement;
   }
 }
 
