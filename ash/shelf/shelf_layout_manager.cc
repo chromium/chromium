@@ -44,6 +44,7 @@
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -253,37 +254,60 @@ aura::Window* GetWindowForDragToHomeOrOverview(
 
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  if (mru_windows.empty())
+  if (mru_windows.empty()) {
     return nullptr;
+  }
 
-  aura::Window* window = nullptr;
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   const bool is_in_splitview = split_view_controller->InSplitViewMode();
-  const bool is_in_overview =
-      Shell::Get()->overview_controller()->InOverviewSession();
-  if (!is_in_splitview && !is_in_overview) {
-    // If split view mode is not active, use the first MRU window.
-    window = mru_windows[0];
-  } else if (is_in_splitview) {
-    // If split view mode is active, use the event location to decide which
-    // window should be the dragged window.
-    aura::Window* left_window = split_view_controller->primary_window();
-    aura::Window* right_window = split_view_controller->secondary_window();
-    const int divider_position = split_view_controller->divider_position();
-    const bool is_landscape = IsCurrentScreenOrientationLandscape();
-    const bool is_primary = IsCurrentScreenOrientationPrimary();
-    const gfx::Rect work_area =
-        screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-            split_view_controller->GetDefaultSnappedWindow());
-    if (is_landscape) {
-      if (location_in_screen.x() < work_area.x() + divider_position)
-        window = is_primary ? left_window : right_window;
-      else
-        window = is_primary ? right_window : left_window;
+  // Cannot drag anything if in non splitview overview.
+  if (!is_in_splitview &&
+      Shell::Get()->overview_controller()->InOverviewSession()) {
+    return nullptr;
+  }
+
+  // Checks for a floated window. The floated window is the dragged window if it
+  // is not tucked, magnetized to the bottom, and above the event.
+  if (aura::Window* floated_window =
+          window_util::GetFloatedWindowForActiveDesk()) {
+    if (Shell::Get()->float_controller()->IsFloatedWindowAlignedWithShelf(
+            floated_window)) {
+      const gfx::Rect floated_window_bounds =
+          floated_window->GetBoundsInScreen();
+      if (location_in_screen.x() <= floated_window_bounds.right() &&
+          location_in_screen.x() >= floated_window_bounds.x()) {
+        DCHECK(floated_window->IsVisible());
+        return floated_window;
+      }
+    }
+  }
+
+  // If split view mode is not active, use the first MRU window.
+  if (!is_in_splitview) {
+    aura::Window* window = window_util::GetTopNonFloatedWindow();
+    return window && window->IsVisible() ? window : nullptr;
+  }
+
+  aura::Window* window = nullptr;
+  // If split view mode is active, use the event location to decide which
+  // window should be the dragged window.
+  aura::Window* left_window = split_view_controller->primary_window();
+  aura::Window* right_window = split_view_controller->secondary_window();
+  const int divider_position = split_view_controller->divider_position();
+  const bool is_landscape = IsCurrentScreenOrientationLandscape();
+  const bool is_primary = IsCurrentScreenOrientationPrimary();
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          split_view_controller->GetDefaultSnappedWindow());
+  if (is_landscape) {
+    if (location_in_screen.x() < work_area.x() + divider_position) {
+      window = is_primary ? left_window : right_window;
     } else {
       window = is_primary ? right_window : left_window;
     }
+  } else {
+    window = is_primary ? right_window : left_window;
   }
   return window && window->IsVisible() ? window : nullptr;
 }

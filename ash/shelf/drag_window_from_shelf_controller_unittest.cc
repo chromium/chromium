@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -45,6 +46,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_modality_controller.h"
@@ -56,6 +58,13 @@ namespace {
 
 gfx::Rect GetShelfBounds() {
   return Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetIdealBounds();
+}
+
+// Gets the drag controller owned by the shelf.
+DragWindowFromShelfController* GetDragWindowFromShelfController() {
+  return AshTestBase::GetPrimaryShelf()
+      ->shelf_layout_manager()
+      ->window_drag_controller_for_testing();
 }
 
 }  // namespace
@@ -1516,6 +1525,149 @@ TEST_F(FloatDragWindowFromShelfControllerTest, WindowStatePreserved) {
   ExitOverview();
   EXPECT_TRUE(WindowState::Get(maximized_window.get())->IsMaximized());
   EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+}
+
+// Tests that the correct window (if any) gets chosen by the shelf layout
+// manager when there is a floated window.
+TEST_F(FloatDragWindowFromShelfControllerTest, DraggingFloatedWindow) {
+  UpdateDisplay("800x600");
+
+  auto floated_window = CreateFloatedWindow();
+
+  // Start dragging on the shelf, but not under the floated window. Verify that
+  // nothing gets dragged.
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  const gfx::Point drag_point_not_under_float(100,
+                                              shelf_bounds.CenterPoint().y());
+  GetEventGenerator()->PressTouch(drag_point_not_under_float);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  auto* drag_controller = GetDragWindowFromShelfController();
+  ASSERT_FALSE(drag_controller);
+  GetEventGenerator()->ReleaseTouch();
+
+  // Drag under the floated window. Verify that the float window gets dragged.
+  const gfx::Rect float_bounds = floated_window->GetBoundsInScreen();
+  const gfx::Point drag_point_under_float(
+      floated_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+  GetEventGenerator()->PressTouch(drag_point_under_float);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  drag_controller = GetDragWindowFromShelfController();
+  ASSERT_TRUE(drag_controller);
+  EXPECT_EQ(floated_window.get(), drag_controller->dragged_window());
+
+  // Move back towards the shelf to ensure we do not enter overview.
+  GetEventGenerator()->MoveTouchBy(0, 200);
+  GetEventGenerator()->ReleaseTouch();
+  ASSERT_FALSE(GetDragWindowFromShelfController()->drag_started());
+
+  // We need to force a layout to start dragging. Drag the window so that it is
+  // magnetized to the top edge.
+  views::test::RunScheduledLayout(
+      NonClientFrameViewAsh::Get(floated_window.get()));
+  GetEventGenerator()->PressTouch(float_bounds.top_center() +
+                                  gfx::Vector2d(0, 10));
+  GetEventGenerator()->MoveTouchBy(0, -100);
+  GetEventGenerator()->ReleaseTouch();
+  EXPECT_NE(float_bounds, floated_window->GetBoundsInScreen());
+
+  // Since the floated window is magnetized to the top, dragging on the shelf
+  // does nothing.
+  GetEventGenerator()->PressTouch(drag_point_under_float);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  EXPECT_FALSE(GetDragWindowFromShelfController()->drag_started());
+}
+
+// Tests that the correct window gets chosen by the shelf layout manager when
+// there is a floated and maximized window.
+TEST_F(FloatDragWindowFromShelfControllerTest,
+       DraggingFloatedAndMaximizedWindow) {
+  UpdateDisplay("800x600");
+
+  // Create one maximized and one floated window.
+  auto maximized_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  wm::ActivateWindow(maximized_window.get());
+
+  // Drag under the floated window. Even though the maximized window is active,
+  // the floated window is the one that is dragged.
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  const gfx::Point drag_point_under_float(
+      floated_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+
+  GetEventGenerator()->PressTouch(drag_point_under_float);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  auto* drag_controller = GetDragWindowFromShelfController();
+  ASSERT_TRUE(drag_controller);
+  EXPECT_EQ(floated_window.get(), drag_controller->dragged_window());
+
+  // Move back towards the shelf to ensure we do not enter overview.
+  GetEventGenerator()->MoveTouchBy(0, 200);
+  GetEventGenerator()->ReleaseTouch();
+
+  // Drag under the maximized window. Even though the floated window is active,
+  // the maximized window is the one that is dragged.
+  wm::ActivateWindow(floated_window.get());
+  const gfx::Point drag_point_under_maximize(100,
+                                             shelf_bounds.CenterPoint().y());
+  GetEventGenerator()->PressTouch(drag_point_under_maximize);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  drag_controller = GetDragWindowFromShelfController();
+  ASSERT_TRUE(drag_controller);
+  EXPECT_EQ(maximized_window.get(), drag_controller->dragged_window());
+}
+
+// Tests that the correct window gets chosen by the shelf layout manager when
+// there are floated and snapped windows.
+TEST_F(FloatDragWindowFromShelfControllerTest,
+       DraggingFloatedAndSnappedWindow) {
+  UpdateDisplay("800x600");
+
+  // Create two snapped and one floated window.
+  auto left_window = CreateTestWindow();
+  auto right_window = CreateTestWindow();
+  auto floated_window = CreateFloatedWindow();
+  split_view_controller()->SnapWindow(
+      left_window.get(), SplitViewController::SnapPosition::kPrimary);
+  split_view_controller()->SnapWindow(
+      right_window.get(), SplitViewController::SnapPosition::kSecondary);
+
+  // Ensure we are in a both snapped state with a floated window.
+  ASSERT_TRUE(WindowState::Get(left_window.get())->IsSnapped());
+  ASSERT_TRUE(WindowState::Get(right_window.get())->IsSnapped());
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+  wm::ActivateWindow(floated_window.get());
+
+  // Verify that the floated window by default is magnetized to the bottom right
+  // corner.
+  ASSERT_TRUE(right_window->GetBoundsInScreen().Contains(
+      floated_window->GetBoundsInScreen()));
+
+  // Drag under the floated window. It should be the dragged window.
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  const gfx::Point drag_point_under_float(
+      floated_window->GetBoundsInScreen().CenterPoint().x(),
+      shelf_bounds.CenterPoint().y());
+  GetEventGenerator()->PressTouch(drag_point_under_float);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  auto* drag_controller = GetDragWindowFromShelfController();
+  ASSERT_TRUE(drag_controller);
+  EXPECT_EQ(floated_window.get(), drag_controller->dragged_window());
+
+  // Move back towards the shelf to ensure we do not enter overview.
+  GetEventGenerator()->MoveTouchBy(0, 200);
+  GetEventGenerator()->ReleaseTouch();
+
+  // Drag under the right snapped window. It should be the dragged window.
+  const gfx::Point drag_point_under_right(
+      right_window->GetBoundsInScreen().x() + 10,
+      shelf_bounds.CenterPoint().y());
+  GetEventGenerator()->PressTouch(drag_point_under_right);
+  GetEventGenerator()->MoveTouchBy(0, -200);
+  drag_controller = GetDragWindowFromShelfController();
+  ASSERT_TRUE(drag_controller);
+  EXPECT_EQ(right_window.get(), drag_controller->dragged_window());
 }
 
 }  // namespace ash

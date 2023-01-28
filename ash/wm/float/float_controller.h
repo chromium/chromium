@@ -67,6 +67,11 @@ class ASH_EXPORT FloatController : public TabletModeObserver,
   // Checks if `floated_window` is tucked.
   bool IsFloatedWindowTuckedForTablet(const aura::Window* floated_window) const;
 
+  // Returns true if `floated_window` is not tucked and magnetized to the
+  // bottom. Used by the shelf layout manager to determine what window to use
+  // for the drag window from shelf feature.
+  bool IsFloatedWindowAlignedWithShelf(aura::Window* floated_window) const;
+
   // Gets the tuck handle for a floated and tucked window.
   views::Widget* GetTuckHandleWidget(const aura::Window* floated_window) const;
 

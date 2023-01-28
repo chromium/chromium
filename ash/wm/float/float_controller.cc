@@ -394,6 +394,19 @@ bool FloatController::IsFloatedWindowTuckedForTablet(
   return floated_window_info->is_tucked_for_tablet();
 }
 
+bool FloatController::IsFloatedWindowAlignedWithShelf(
+    aura::Window* floated_window) const {
+  auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
+  DCHECK(floated_window_info);
+  if (floated_window_info->is_tucked_for_tablet()) {
+    return false;
+  }
+
+  MagnetismCorner magnetism_corner = floated_window_info->magnetism_corner();
+  return magnetism_corner == MagnetismCorner::kBottomLeft ||
+         magnetism_corner == MagnetismCorner::kBottomRight;
+}
+
 views::Widget* FloatController::GetTuckHandleWidget(
     const aura::Window* floated_window) const {
   auto* floated_window_info = MaybeGetFloatedWindowInfo(floated_window);
