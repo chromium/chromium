@@ -397,6 +397,7 @@ crbug.com/1396451 [ linux desktop amd-0x7340 ] Pixel_WebGLSadCanvas [ RetryOnFai
 
 # Flakes on Pixel 4, Nexus 5X, and Samsung A13 due to video stream being offset vertically by 1 pixel.
 crbug.com/1410332 [ android android-chromium renderer-skia-gl ] Pixel_VideoStreamFromWebGLAlphaCanvas [ RetryOnFailure ]
+crbug.com/1410332 [ android android-chromium android-pixel-4 renderer-skia-gl ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
