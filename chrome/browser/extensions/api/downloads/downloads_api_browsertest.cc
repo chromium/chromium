@@ -1700,18 +1700,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_STREQ(errors::kNotResumable, error.c_str());
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Basic \
-  DISABLED_DownloadExtensionTest_Download_Basic
-#else
-#define MAYBE_DownloadExtensionTest_Download_Basic \
-  DownloadExtensionTest_Download_Basic
-#endif
 // Test that we can start a download and that the correct sequence of events is
 // fired for it.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Basic) {
+                       DownloadExtensionTest_Download_Basic) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
@@ -1759,18 +1751,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Redirect \
-  DISABLED_DownloadExtensionTest_Download_Redirect
-#else
-#define MAYBE_DownloadExtensionTest_Download_Redirect \
-  DownloadExtensionTest_Download_Redirect
-#endif
 // Test that we can start a download that gets redirected and that the correct
 // sequence of events is fired for it.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Redirect) {
+                       DownloadExtensionTest_Download_Redirect) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   GURL download_final_url(embedded_test_server()->GetURL("/slow?0"));
@@ -1823,16 +1807,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that we can start a download from an incognito context, and that the
 // download knows that it's incognito.
-#if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/1245173) Flaky on Win7
-#define MAYBE_DownloadExtensionTest_Download_Incognito \
-  DISABLED_DownloadExtensionTest_Download_Incognito
-#else
-#define MAYBE_DownloadExtensionTest_Download_Incognito \
-  DownloadExtensionTest_Download_Incognito
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Incognito) {
+                       DownloadExtensionTest_Download_Incognito) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   GoOffTheRecord();
@@ -2103,13 +2079,12 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
           .c_str());
 }
 
-// This test is very flaky on Win. http://crbug.com/248438
 #if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Subdirectory\
-        DISABLED_DownloadExtensionTest_Download_Subdirectory
+#define MAYBE_DownloadExtensionTest_Download_Subdirectory \
+  DISABLED_DownloadExtensionTest_Download_Subdirectory
 #else
-#define MAYBE_DownloadExtensionTest_Download_Subdirectory\
-        DownloadExtensionTest_Download_Subdirectory
+#define MAYBE_DownloadExtensionTest_Download_Subdirectory \
+  DownloadExtensionTest_Download_Subdirectory
 #endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        MAYBE_DownloadExtensionTest_Download_Subdirectory) {
@@ -2226,17 +2201,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       "  \"url\": \"javascript:return false;\"}]"));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_URLFragment \
-  DISABLED_DownloadExtensionTest_Download_URLFragment
-#else
-#define MAYBE_DownloadExtensionTest_Download_URLFragment \
-  DownloadExtensionTest_Download_URLFragment
-#endif
 // Valid URLs plus fragments are still valid URLs.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_URLFragment) {
+                       DownloadExtensionTest_Download_URLFragment) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url =
@@ -2279,17 +2246,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // conflictAction may be specified without filename.
-#if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/1245173) Flaky on Win7
-#define MAYBE_DownloadExtensionTest_Download_ConflictAction \
-  DISABLED_DownloadExtensionTest_Download_ConflictAction
-#else
-#define MAYBE_DownloadExtensionTest_Download_ConflictAction \
-  DownloadExtensionTest_Download_ConflictAction
-#endif
-
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_ConflictAction) {
+                       DownloadExtensionTest_Download_ConflictAction) {
   static char kFilename[] = "download.txt";
   LoadExtension("downloads_split");
   std::string download_url = "data:text/plain,hello";
@@ -2368,17 +2326,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_DataURL \
-  DISABLED_DownloadExtensionTest_Download_DataURL
-#else
-#define MAYBE_DownloadExtensionTest_Download_DataURL \
-  DownloadExtensionTest_Download_DataURL
-#endif
 // Valid data URLs are valid URLs.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_DataURL) {
+                       DownloadExtensionTest_Download_DataURL) {
   LoadExtension("downloads_split");
   std::string download_url = "data:text/plain,hello";
   GoOnTheRecord();
@@ -2422,16 +2372,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // Valid file URLs are valid URLs.
-#if BUILDFLAG(IS_WIN)
-// Disabled due to crbug.com/175711
-#define MAYBE_DownloadExtensionTest_Download_File \
-        DISABLED_DownloadExtensionTest_Download_File
-#else
-#define MAYBE_DownloadExtensionTest_Download_File \
-        DownloadExtensionTest_Download_File
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_File) {
+                       DownloadExtensionTest_Download_File) {
   GoOnTheRecord();
   LoadExtension("downloads_split", /*enable_file_access=*/true);
   std::string download_url = "file:///";
@@ -2511,17 +2453,9 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                          download_url.c_str())));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Headers \
-  DISABLED_DownloadExtensionTest_Download_Headers
-#else
-#define MAYBE_DownloadExtensionTest_Download_Headers \
-  DownloadExtensionTest_Download_Headers
-#endif
 // Test that DownloadsDownloadFunction propagates |headers| to the URLRequest.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Headers) {
+                       DownloadExtensionTest_Download_Headers) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url =
@@ -2577,16 +2511,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // chrome fails to propagate them back to the server.  This tests both that
 // testserver.py does not succeed when it should fail as well as how the
 // downloads extension api exposes the failure to extensions.
-// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Headers_Fail \
-  DISABLED_DownloadExtensionTest_Download_Headers_Fail
-#else
-#define MAYBE_DownloadExtensionTest_Download_Headers_Fail \
-  DownloadExtensionTest_Download_Headers_Fail
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Headers_Fail) {
+                       DownloadExtensionTest_Download_Headers_Fail) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url =
@@ -2670,16 +2596,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 
 // Test that DownloadsDownloadFunction propagates the |method| and |body|
 // parameters to the URLRequest.
-#if BUILDFLAG(IS_WIN)
-// TODO(https://crbug.com/1245173) Flaky on Win7
-#define MAYBE_DownloadExtensionTest_Download_Post \
-  DISABLED_DownloadExtensionTest_Download_Post
-#else
-#define MAYBE_DownloadExtensionTest_Download_Post \
-  DownloadExtensionTest_Download_Post
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Post) {
+                       DownloadExtensionTest_Download_Post) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()
@@ -2734,16 +2652,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
-// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Post_Get \
-  DISABLED_DownloadExtensionTest_Download_Post_Get
-#else
-#define MAYBE_DownloadExtensionTest_Download_Post_Get \
-  DownloadExtensionTest_Download_Post_Get
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Post_Get) {
+                       DownloadExtensionTest_Download_Post_Get) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()
@@ -2783,16 +2693,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 // server. This tests both that testserver.py does not succeed when it should
 // fail, and this tests how the downloads extension api exposes the failure to
 // extensions.
-// TODO(https://crbug.com/1249757): DownloadExtensionTest's are flaky
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_Download_Post_NoBody \
-  DISABLED_DownloadExtensionTest_Download_Post_NoBody
-#else
-#define MAYBE_DownloadExtensionTest_Download_Post_NoBody \
-  DownloadExtensionTest_Download_Post_NoBody
-#endif
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_Download_Post_NoBody) {
+                       DownloadExtensionTest_Download_Post_NoBody) {
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()
@@ -2874,8 +2776,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
 }
 
 // TODO(https://crbug.com/392288): Flaky on macOS
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadExtensionTest_Download_FileSystemURL \
         DISABLED_DownloadExtensionTest_Download_FileSystemURL
 #else
@@ -2945,17 +2846,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_STREQ(kPayloadData, disk_data.c_str());
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_NoChange \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_NoChange
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_NoChange \
-  DownloadExtensionTest_OnDeterminingFilename_NoChange
-#endif
-IN_PROC_BROWSER_TEST_F(
-    DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_NoChange) {
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_OnDeterminingFilename_NoChange) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3078,17 +2970,8 @@ IN_PROC_BROWSER_TEST_F(
                          result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Twice \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_Twice
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Twice \
-  DownloadExtensionTest_OnDeterminingFilename_Twice
-#endif
-IN_PROC_BROWSER_TEST_F(
-    DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_Twice) {
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_OnDeterminingFilename_Twice) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3201,19 +3084,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_FALSE(determine_result.get());  // No return value.
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride \
-  DownloadExtensionTest_OnDeterminingFilename_DangerousOverride
-#endif
 // Tests that overriding a safe file extension to a dangerous extension will not
 // trigger the dangerous prompt and will not change the extension.
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_DangerousOverride) {
+    DownloadExtensionTest_OnDeterminingFilename_DangerousOverride) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3345,17 +3220,9 @@ IN_PROC_BROWSER_TEST_F(
             item->GetTargetFilePath());
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid \
-  DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid) {
+    DownloadExtensionTest_OnDeterminingFilename_ReferencesParentInvalid) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3415,17 +3282,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename \
-  DownloadExtensionTest_OnDeterminingFilename_IllegalFilename
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilename) {
+    DownloadExtensionTest_OnDeterminingFilename_IllegalFilename) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3485,17 +3344,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension \
-  DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension) {
+    DownloadExtensionTest_OnDeterminingFilename_IllegalFilenameExtension) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3555,16 +3406,10 @@ IN_PROC_BROWSER_TEST_F(
                           "    \"current\": \"complete\"}}]",
                           result_id)));
 }
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename\
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename\
-  DownloadExtensionTest_OnDeterminingFilename_ReservedFilename
-#endif
+
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_ReservedFilename) {
+    DownloadExtensionTest_OnDeterminingFilename_ReservedFilename) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3624,17 +3469,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid \
-  DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid) {
+    DownloadExtensionTest_OnDeterminingFilename_CurDirInvalid) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3694,17 +3531,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid \
-  DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid) {
+    DownloadExtensionTest_OnDeterminingFilename_ParentDirInvalid) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   GoOnTheRecord();
   LoadExtension("downloads_split");
@@ -3764,17 +3593,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid \
-  DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid) {
+    DownloadExtensionTest_OnDeterminingFilename_AbsPathInvalid) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -3899,18 +3720,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Overwrite \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_Overwrite
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Overwrite \
-  DownloadExtensionTest_OnDeterminingFilename_Overwrite
-#endif
 // conflictAction may be specified without filename.
-IN_PROC_BROWSER_TEST_F(
-    DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_Overwrite) {
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_OnDeterminingFilename_Overwrite) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -4024,17 +3836,8 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Override \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_Override
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_Override \
-  DownloadExtensionTest_OnDeterminingFilename_Override
-#endif
-IN_PROC_BROWSER_TEST_F(
-    DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_Override) {
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_OnDeterminingFilename_Override) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
@@ -4152,8 +3955,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO test precedence rules: install_time
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_RemoveFilenameDeterminer \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_RemoveFilenameDeterminer
 #else
@@ -4212,10 +4014,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This test is flaky on Linux ASan LSan Tests bot. https://crbug.com/1114226
-// TODO(https://crbug.com/1244128): Flaky on Win7
 #if ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
-     defined(ADDRESS_SANITIZER)) ||                     \
-    BUILDFLAG(IS_WIN)
+     defined(ADDRESS_SANITIZER))
 #define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSplit \
   DISABLED_DownloadExtensionTest_OnDeterminingFilename_IncognitoSplit
 #else
@@ -4362,17 +4162,9 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning \
-  DISABLED_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning
-#else
-#define MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning \
-  DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning
-#endif
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    MAYBE_DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning) {
+    DownloadExtensionTest_OnDeterminingFilename_IncognitoSpanning) {
   LoadExtension("downloads_spanning");
   ASSERT_TRUE(StartEmbeddedTestServer());
   std::string download_url = embedded_test_server()->GetURL("/slow?0").spec();
@@ -4741,18 +4533,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   observer->WaitForFinished();
 }
 
-// TODO(https://crbug.com/1244128): Flaky on Win7
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DownloadExtensionTest_DeleteFileAfterCompletion \
-  DISABLED_DownloadExtensionTest_DeleteFileAfterCompletion
-#else
-#define MAYBE_DownloadExtensionTest_DeleteFileAfterCompletion \
-  DownloadExtensionTest_DeleteFileAfterCompletion
-#endif
 // Test that file deletion event is correctly generated after download
 // completion.
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
-                       MAYBE_DownloadExtensionTest_DeleteFileAfterCompletion) {
+                       DownloadExtensionTest_DeleteFileAfterCompletion) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   GoOnTheRecord();
   LoadExtension("downloads_split");
