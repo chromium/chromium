@@ -81,7 +81,7 @@ ts_library("build_ts") {
 
   in_files = html_wrapper_files + web_component_files + non_web_component_files
 
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
 
   extra_deps = [
     ":html_wrapper_files",

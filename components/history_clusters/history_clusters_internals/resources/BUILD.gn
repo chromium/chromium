@@ -47,7 +47,10 @@ ts_library("build_ts") {
     "history_clusters_internals_browser_proxy.ts",
     "history_clusters_internals.mojom-webui.ts",
   ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
   extra_deps = [
     ":copy_mojo",
     ":copy_ts",

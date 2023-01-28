@@ -21,7 +21,7 @@ build_webui("build") {
 
   ts_use_local_config = false
   ts_deps = [
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
 

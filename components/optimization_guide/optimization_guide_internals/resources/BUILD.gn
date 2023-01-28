@@ -56,7 +56,8 @@ ts_library("build_ts") {
     "optimization_guide_common.mojom-webui.ts",
   ]
   deps = [
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [

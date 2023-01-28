@@ -16,7 +16,7 @@ preprocess_if_expr("preprocess_ts") {
 ts_library("build") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   in_files = [ "local_state.ts" ]
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [ "//ui/webui/resources/js:build_ts" ]
   extra_deps = [ ":preprocess_ts" ]
 }
 
