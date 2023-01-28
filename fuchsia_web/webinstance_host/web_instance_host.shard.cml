@@ -35,10 +35,12 @@
   ],
   offer: [
     {
-      directory: [
-        "config-data",
-        "root-ssl-certificates",
-      ],
+      directory: "config-data",
+      from: "parent",
+      to: "#web_instances",
+    },
+    {
+      directory: "root-ssl-certificates",
       from: "parent",
       to: "#web_instances",
     },
@@ -54,6 +56,7 @@
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
+        "fuchsia.tracing.provider.Registry",
       ],
       from: "parent",
       to: "#web_instances",
@@ -71,13 +74,16 @@
 
         // Optionally used by the tracing service.
         "fuchsia.tracing.perfetto.ProducerConnector",
-
-        // Required by Vulkan when not run with --headless.
-        "fuchsia.tracing.provider.Registry",
       ],
       from: "parent",
       to: "#web_instances",
       availability: "optional",
+      source_availability: "unknown",
+    },
+    {
+      storage: "cache",
+      from: "parent",
+      to: "#web_instances",
     },
   ],
 }

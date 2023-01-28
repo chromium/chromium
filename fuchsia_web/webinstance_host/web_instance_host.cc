@@ -43,10 +43,6 @@ namespace fcdecl = ::fuchsia::component::decl;
 constexpr char kWebInstanceComponentUrl[] =
     "fuchsia-pkg://fuchsia.com/web_engine#meta/web_instance.cm";
 
-// Test-only URL for web hosting Component instances with WebUI resources.
-const char kWebInstanceWithWebUiComponentUrl[] =
-    "fuchsia-pkg://fuchsia.com/web_engine_with_webui#meta/web_instance.cm";
-
 // The name of the component collection hosting the instances.
 constexpr char kCollectionName[] = "web_instances";
 
@@ -62,8 +58,7 @@ std::string InstanceNameFromId(const base::GUID& id) {
   return base::StrCat({kCollectionName, "_", id.AsLowercaseString()});
 }
 
-void DestroyInstance(fuchsia::component::Realm& realm,
-                     const std::string& name) {
+void DestroyChild(fuchsia::component::Realm& realm, const std::string& name) {
   realm.DestroyChild(
       fcdecl::ChildRef{.name = name, .collection = kCollectionName},
       [](::fuchsia::component::Realm_DestroyChild_Result destroy_result) {
@@ -72,8 +67,8 @@ void DestroyInstance(fuchsia::component::Realm& realm,
       });
 }
 
-void DestroyInstanceDirectory(vfs::PseudoDir* instances_dir,
-                              const std::string& name) {
+void DestroyChildDirectory(vfs::PseudoDir* instances_dir,
+                           const std::string& name) {
   zx_status_t status = instances_dir->RemoveEntry(name);
   ZX_DCHECK(status == ZX_OK, status);
 }
@@ -196,7 +191,7 @@ InstanceBuilder::InstanceBuilder(fuchsia::component::Realm& realm,
 
 InstanceBuilder::~InstanceBuilder() {
   if (instance_dir_) {
-    DestroyInstanceDirectory(GetWebInstancesCollectionDir(), name_);
+    DestroyChildDirectory(GetWebInstancesCollectionDir(), name_);
   }
 }
 
@@ -268,14 +263,7 @@ Instance InstanceBuilder::Build(
 
   fcdecl::Child child_decl;
   child_decl.set_name(name_);
-  // TODO(crbug.com/1010222): Make kWebInstanceComponentUrl a relative
-  // component URL and remove this workaround.
-  // TODO(crbug.com/1395054): Better yet, replace the with_webui component with
-  // direct routing of the resources from web_engine_shell.
-  child_decl.set_url(
-      base::CommandLine::ForCurrentProcess()->HasSwitch("with-webui")
-          ? kWebInstanceWithWebUiComponentUrl
-          : kWebInstanceComponentUrl);
+  child_decl.set_url(kWebInstanceComponentUrl);
   child_decl.set_startup(fcdecl::StartupMode::LAZY);
 
   ::fuchsia::component::CreateChildArgs create_child_args;
@@ -424,7 +412,7 @@ WebInstanceHost::WebInstanceHost() {
 
 WebInstanceHost::~WebInstanceHost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Uninitialize();
+  DCHECK(instances_.empty());
 }
 
 zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
@@ -506,29 +494,28 @@ void WebInstanceHost::Initialize() {
 
 void WebInstanceHost::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Destroy all child instances and each one's outgoing directory subtree.
-  auto* const instances_dir = GetWebInstancesCollectionDir();
-  for (auto& [id, binder_ptr] : instances_) {
-    const std::string name(InstanceNameFromId(id));
-    if (realm_) {
-      DestroyInstance(*realm_, name);
-    }
-    DestroyInstanceDirectory(instances_dir, name);
-    binder_ptr.Unbind();
-  }
-  instances_.clear();
+  DCHECK(instances_.empty());
 
   realm_.Unbind();
 
   // Note: the entry in the outgoing directory for the top-level instances dir
-  // is leaked in support of having multiple hosts active in a single process.
+  // is leaked in case multiple hosts are active in the same process.
 }
 
 void WebInstanceHost::OnRealmError(zx_status_t status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ZX_LOG(ERROR, status) << "RealmBuilder channel error";
+
+  // Disconnect from all children and remove their directories.
+  auto* const instances_dir = GetWebInstancesCollectionDir();
+  for (auto& [id, binder_ptr] : instances_) {
+    DestroyChildDirectory(instances_dir, InstanceNameFromId(id));
+    binder_ptr.Unbind();
+  }
+  instances_.clear();
+
+  // Go back to the initial state.
   Uninitialize();
 }
 
@@ -538,10 +525,10 @@ void WebInstanceHost::OnComponentBinderClosed(const base::GUID& id,
 
   // Destroy the child instance.
   const std::string name(InstanceNameFromId(id));
-  DestroyInstance(*realm_, name);
+  DestroyChild(*realm_, name);
 
   // Drop the directory subtree for the child instance.
-  DestroyInstanceDirectory(GetWebInstancesCollectionDir(), name);
+  DestroyChildDirectory(GetWebInstancesCollectionDir(), name);
 
   // Drop the hold on the instance's Binder. Note: destroying the InterfacePtr
   // here also deletes the lambda into which `id` was bound, so `id` must not

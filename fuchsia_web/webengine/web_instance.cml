@@ -75,13 +75,6 @@
       path: "/config/command-line",
       availability: "optional",
     },
-    // Temporary directory specified by WebInstanceHost.set_tmp_dir.
-    {
-      directory: "tmp",
-      path: "/tmp",
-      rights: [ "rw*" ],
-      availability: "optional",
-    },
     {
       // Required capabilities for all configurations.
       protocol: [
@@ -158,6 +151,11 @@
         // Required by Frame.SetPreferredTheme(DEFAULT).
         "fuchsia.settings.Display",
       ],
+      availability: "optional",
+    },
+    {
+      storage: "cache",
+      path: "/cache",
       availability: "optional",
     },
   ]

@@ -82,8 +82,8 @@ class WebInstanceHost {
   // Connects to the fuchsia.component/Realm protocol.
   void Initialize();
 
-  // Destroys all child instances and associated resources and unbinds from the
-  // fuchsia.component/Realm protocol.
+  // Unbinds from the fuchsia.component/Realm protocol. May only be called once
+  // all web_instances have terminated.
   void Uninitialize();
 
   // Error handler for the channel to RealmBuilder.
