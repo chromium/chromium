@@ -165,39 +165,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Create a D3D11VideoDecoder, if possible, based on the current config.
   D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
 
-  enum class NotSupportedReason {
-    kVideoIsSupported = 0,
-
-    // D3D11 version 11.1 required.
-    kInsufficientD3D11FeatureLevel = 1,
-
-    // The video profile is not supported .
-    kProfileNotSupported = 2,
-
-    // GPU options: require zero copy.
-    kZeroCopyNv12Required = 3,
-
-    // GPU options: require zero copy.
-    kZeroCopyVideoRequired = 4,
-
-    // The video codec must be H264.
-    kCodecNotSupported = 5,
-
-    // The media was encrypted.
-    kEncryptedMedia = 6,
-
-    // Call to get the D3D11 device failed.
-    kCouldNotGetD3D11Device = 7,
-
-    // GPU workarounds has turned this off.
-    kOffByWorkaround = 8,
-
-    // For UMA. Must be the last entry. It should be initialized to the
-    // numerically largest value above; if you add more entries, then please
-    // update this to the last one.
-    kMaxValue = kOffByWorkaround
-  };
-
   enum class D3D11LifetimeProgression {
     kInitializeStarted = 0,
     kInitializeSucceeded = 1,
