@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"  width="800" height="600">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600">
+  <meta name="fuzzy" content="maxDifference=0-1;totalPixels=0-57" />
   <defs>
     <pattern id="pattern" width="100%" height="100%" patternUnits="userSpaceOnUse">
       <rect x="0%" y="0%"  width="100%" height="50%" fill="green"/>
