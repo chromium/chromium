@@ -30,6 +30,7 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -56,10 +57,13 @@ public class SettingsActivityUnitTest {
 
     @Mock
     public ChromeBrowserInitializer mInitializer;
+    @Mock
+    public Profile mProfile;
 
     @Before
     public void setup() {
         ChromeBrowserInitializer.setForTesting(mInitializer);
+        Profile.setLastUsedProfileForTesting(mProfile);
     }
 
     @After
@@ -69,6 +73,7 @@ public class SettingsActivityUnitTest {
             mActivityScenario = null;
         }
         ChromeBrowserInitializer.setForTesting(null);
+        Profile.setLastUsedProfileForTesting(null);
     }
 
     @Test

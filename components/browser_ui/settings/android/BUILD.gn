@@ -171,6 +171,7 @@ android_library("test_support_java") {
   deps = [
     ":java",
     ":managed_prefs_java_resources",
+    "//base:base_java",
     "//base:base_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",

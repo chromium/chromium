@@ -73,7 +73,7 @@ import java.util.Map;
  */
 public class MainSettings extends PreferenceFragmentCompat
         implements TemplateUrlService.LoadListener, SyncService.SyncStateChangedListener,
-                   SigninManager.SignInStateObserver {
+                   SigninManager.SignInStateObserver, ProfileDependentSetting {
     public static final String PREF_SYNC_PROMO = "sync_promo";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -100,6 +100,7 @@ public class MainSettings extends PreferenceFragmentCompat
     private SignInPreference mSignInPreference;
     private ChromeBasePreference mManageSync;
     private @Nullable PasswordCheck mPasswordCheck;
+    private Profile mProfile;
     private ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     public MainSettings() {
@@ -139,8 +140,7 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStart() {
         super.onStart();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         if (signinManager.isSigninSupported()) {
             signinManager.addSignInStateObserver(this);
         }
@@ -153,8 +153,7 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void onStop() {
         super.onStop();
-        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
-                Profile.getLastUsedRegularProfile());
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         if (signinManager.isSigninSupported()) {
             signinManager.removeSignInStateObserver(this);
         }
@@ -168,6 +167,11 @@ public class MainSettings extends PreferenceFragmentCompat
     public void onResume() {
         super.onResume();
         updatePreferences();
+    }
+
+    @Override
+    public void setProfile(Profile profile) {
+        mProfile = profile;
     }
 
     private void createPreferences() {
@@ -239,9 +243,7 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updatePreferences() {
-        if (IdentityServicesProvider.get()
-                        .getSigninManager(Profile.getLastUsedRegularProfile())
-                        .isSigninSupported()) {
+        if (IdentityServicesProvider.get().getSigninManager(mProfile).isSigninSupported()) {
             addPreferenceIfAbsent(PREF_SIGN_IN);
         } else {
             removePreferenceIfPresent(PREF_SIGN_IN);
@@ -283,17 +285,15 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private void updateManageSyncPreference() {
         String primaryAccountName = CoreAccountInfo.getEmailFrom(
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
+                        ConsentLevel.SIGNIN));
         boolean showManageSync = primaryAccountName != null;
         mManageSync.setVisible(showManageSync);
         if (!showManageSync) return;
 
         boolean isSyncConsentAvailable =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC)
+                IdentityServicesProvider.get().getIdentityManager(mProfile).getPrimaryAccountInfo(
+                        ConsentLevel.SYNC)
                 != null;
         mManageSync.setIcon(SyncSettingsUtils.getSyncStatusIcon(getActivity()));
         mManageSync.setSummary(SyncSettingsUtils.getSyncStatusSummary(getActivity()));
@@ -342,8 +342,7 @@ public class MainSettings extends PreferenceFragmentCompat
         }
         passwordsPreference.setOnPreferenceClickListener(preference -> {
             if (shouldShowNewLabelForPasswordsPreference()) {
-                UserPrefs.get(Profile.getLastUsedRegularProfile())
-                        .setBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED, true);
+                UserPrefs.get(mProfile).setBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED, true);
             }
             PasswordManagerLauncher.showPasswordSettings(getActivity(),
                     ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier);
@@ -353,8 +352,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private boolean shouldShowNewLabelForPasswordsPreference() {
         return usesUnifiedPasswordManagerUI() && hasChosenToSyncPasswords(SyncService.get())
-                && !UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .getBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED);
+                && !UserPrefs.get(mProfile).getBoolean(Pref.PASSWORDS_PREF_WITH_NEW_LABEL_USED);
     }
 
     // TODO(crbug.com/1217070): remove this method once UPM feature is rolled out.
@@ -424,8 +422,8 @@ public class MainSettings extends PreferenceFragmentCompat
                     return TemplateUrlServiceFactory.get().isDefaultSearchManaged();
                 }
                 if (usesUnifiedPasswordManagerUI() && PREF_PASSWORDS.equals(preference.getKey())) {
-                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                    return UserPrefs.get(mProfile).isManagedPreference(
+                            Pref.CREDENTIALS_ENABLE_SERVICE);
                 }
                 return false;
             }

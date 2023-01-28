@@ -12,6 +12,7 @@ import androidx.preference.PreferenceScreen;
 
 import org.hamcrest.Matchers;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,6 +47,20 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
      */
     public void launchPreference(Class<? extends PreferenceFragmentCompat> preferenceClass,
             @Nullable Bundle fragmentArgs) {
+        launchPreference(preferenceClass, fragmentArgs, null);
+    }
+
+    /**
+     * Ensures the activity is launched, and creates an instance of the preference class specified
+     * and attaches it.
+     * @param preferenceClass The preference type to be created.
+     * @param fragmentArgs Optional arguments to be set on the fragment.
+     * @param fragmentInitCallback An initialization callback to be called after creating the
+     *                             Fragment and before attaching it to the activity.
+     */
+    public void launchPreference(Class<? extends PreferenceFragmentCompat> preferenceClass,
+            @Nullable Bundle fragmentArgs,
+            @Nullable Callback<PreferenceFragmentCompat> fragmentInitCallback) {
         if (getActivity() == null) launchActivity(null);
 
         PreferenceFragmentCompat preference =
@@ -58,6 +73,9 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
                                             preferenceClass.getName());
                     if (fragmentArgs != null) {
                         fragment.setArguments(fragmentArgs);
+                    }
+                    if (fragmentInitCallback != null) {
+                        fragmentInitCallback.onResult(fragment);
                     }
                     return fragment;
                 });

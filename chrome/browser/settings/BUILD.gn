@@ -8,6 +8,7 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/settings/ChromeManagedPreferenceDelegate.java",
     "android/java/src/org/chromium/chrome/browser/settings/FaviconLoader.java",
+    "android/java/src/org/chromium/chrome/browser/settings/ProfileDependentSetting.java",
   ]
   deps = [
     "//base:base_java",

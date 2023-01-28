@@ -92,7 +92,6 @@ public class ThemeSettingsFragmentTest {
 
         mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mMockWebsitePreferenceBridgeJni);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Default value for feature DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING.
@@ -113,7 +112,6 @@ public class ThemeSettingsFragmentTest {
     public void tearDown() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SharedPreferencesManager.getInstance().removeKey(UI_THEME_SETTING);
-            Profile.setLastUsedProfileForTesting(null);
             TrackerFactory.setTrackerForTests(null);
         });
     }
@@ -245,7 +243,8 @@ public class ThemeSettingsFragmentTest {
     private void launchThemeSettings(@ThemeSettingsEntry Integer settingsEntry) {
         Bundle args = new Bundle();
         args.putInt(ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY, settingsEntry);
-        mSettingsTestRule.launchPreference(ThemeSettingsFragment.class, args);
+        mSettingsTestRule.launchPreference(ThemeSettingsFragment.class, args,
+                (fragment) -> ((ThemeSettingsFragment) fragment).setProfile(mProfile));
 
         mFragment = (ThemeSettingsFragment) mSettingsTestRule.getPreferenceFragment();
         mPreference = (RadioButtonGroupThemePreference) mFragment.findPreference(

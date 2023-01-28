@@ -187,8 +187,8 @@ public class LanguageSettingsTest {
         // Restore this after test.
         boolean enabledInDefault = pref.isChecked();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            boolean enabled =
-                    LanguageSettings.getPrefService().getBoolean(Pref.OFFER_TRANSLATE_ENABLED);
+            boolean enabled = mSettingsActivityTestRule.getFragment().getPrefService().getBoolean(
+                    Pref.OFFER_TRANSLATE_ENABLED);
             Assert.assertEquals("The state of switch widget is different from local preference of "
                             + "'offer to translate'.",
                     enabledInDefault, enabled);
@@ -208,7 +208,8 @@ public class LanguageSettingsTest {
             Assert.assertEquals("Preference of 'offer to translate' should be toggled when switch "
                             + "widget is clicked.",
                     !enabledInDefault,
-                    LanguageSettings.getPrefService().getBoolean(Pref.OFFER_TRANSLATE_ENABLED));
+                    mSettingsActivityTestRule.getFragment().getPrefService().getBoolean(
+                            Pref.OFFER_TRANSLATE_ENABLED));
         });
 
         TestThreadUtils.runOnUiThreadBlocking((Runnable) moreButton::performClick);
@@ -218,7 +219,7 @@ public class LanguageSettingsTest {
 
         // Reset state.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LanguageSettings.getPrefService().setBoolean(
+            mSettingsActivityTestRule.getFragment().getPrefService().setBoolean(
                     Pref.OFFER_TRANSLATE_ENABLED, enabledInDefault);
         });
     }
