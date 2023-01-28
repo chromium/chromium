@@ -48,7 +48,7 @@ class CORE_EXPORT CSSCustomIdentValue : public CSSValue {
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<const TreeScope> tree_scope_;
+  WeakMember<const TreeScope> tree_scope_;
   AtomicString string_;
   CSSPropertyID property_id_;
 };

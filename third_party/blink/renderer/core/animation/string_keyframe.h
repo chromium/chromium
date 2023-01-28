@@ -28,8 +28,9 @@ class StyleSheetContents;
 //
 class CORE_EXPORT StringKeyframe : public Keyframe {
  public:
-  StringKeyframe()
-      : presentation_attribute_map_(
+  explicit StringKeyframe(const TreeScope* tree_scope = nullptr)
+      : tree_scope_(tree_scope),
+        presentation_attribute_map_(
             MakeGarbageCollected<MutableCSSPropertyValueSet>(
                 kHTMLStandardMode)) {}
   StringKeyframe(const StringKeyframe& copy_from);
@@ -65,7 +66,9 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
           property.GetCSSProperty().PropertyID());
     }
     CHECK_GE(index, 0);
-    return css_property_map_->PropertyAt(static_cast<unsigned>(index)).Value();
+    return css_property_map_->PropertyAt(static_cast<unsigned>(index))
+        .Value()
+        .EnsureScopedValue(tree_scope_);
   }
 
   const CSSValue& PresentationAttributeValue(
@@ -74,7 +77,9 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
         presentation_attribute_map_->FindPropertyIndex(property.PropertyID());
     CHECK_GE(index, 0);
     return presentation_attribute_map_->PropertyAt(static_cast<unsigned>(index))
-        .Value();
+        .Value()
+        .EnsureScopedValue(tree_scope_);
+    ;
   }
 
   String SvgPropertyValue(const QualifiedName& attribute_name) const {
@@ -233,6 +238,11 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   void EnsureCssPropertyMap() const;
 
   bool IsStringKeyframe() const override { return true; }
+
+  // The tree scope for all the tree-scoped names and references in the
+  // keyframe. Nullptr if there's no such tree scope (e.g., the keyframe is
+  // created via JavaScript or defined by UA style sheet).
+  WeakMember<const TreeScope> tree_scope_;
 
   // Mapping of unresolved properties to a their resolvers. A resolver knows
   // how to expand shorthands to their corresponding longhand property names,
