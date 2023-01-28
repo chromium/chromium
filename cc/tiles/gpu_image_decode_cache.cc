@@ -27,6 +27,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/base/features.h"
@@ -83,6 +84,18 @@ BASE_FEATURE(kLimitImageDecodeCacheSize,
 // ImageDecodeCacheSize feature is enabled.
 constexpr base::FeatureParam<int> kCacheSizeLimitMb{&kLimitImageDecodeCacheSize,
                                                     "mb", 128};
+
+// A feature to enable enforcement of an age-based limit on the internal LRU
+// cache any time new entries are added to it. The limit is determined by the
+// kCacheAgeLimitSeconds parameter defined below.
+BASE_FEATURE(kLimitImageDecodeCacheAge,
+             "LimitImageDecodeCacheAge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The max number of seconds since an LRUCache entry has been used before we
+// will try to evict it from the cache.
+constexpr base::FeatureParam<int> kCacheAgeLimitSeconds{
+    &kLimitImageDecodeCacheAge, "seconds", 10};
 
 // The maximum number of images that we can lock simultaneously in our working
 // set. This is separate from the memory limit, as keeping very large numbers
@@ -1455,6 +1468,8 @@ void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
     EnsureCapacity(0);
   }
 
+  MaybePurgeOldCacheEntries();
+
   WillAddCacheEntry(draw_image);
   persistent_cache_memory_size_ += data->size;
   persistent_cache_.Put(draw_image.frame_key(), std::move(data));
@@ -1492,6 +1507,25 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
 
   persistent_cache_memory_size_ -= it->second->size;
   return persistent_cache_.Erase(it);
+}
+
+void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
+  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
+    return;
+  }
+
+  const base::TimeTicks min_last_use =
+      base::TimeTicks::Now() - base::Seconds(kCacheAgeLimitSeconds.Get());
+  for (auto it = persistent_cache_.rbegin();
+       it != persistent_cache_.rend() && it->second->last_use < min_last_use;) {
+    if (it->second->decode.ref_count != 0 ||
+        it->second->upload.ref_count != 0) {
+      ++it;
+      continue;
+    }
+
+    it = RemoveFromPersistentCache(it);
+  }
 }
 
 size_t GpuImageDecodeCache::GetMaximumMemoryLimitBytes() const {
@@ -3008,6 +3042,7 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
   if (found_persistent != persistent_cache_.end()) {
     ImageData* image_data = found_persistent->second.get();
     if (IsCompatible(image_data, draw_image)) {
+      image_data->last_use = base::TimeTicks::Now();
       return image_data;
     } else {
       RemoveFromPersistentCache(found_persistent);

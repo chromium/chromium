@@ -6890,6 +6890,24 @@
             ]
         }
     ],
+    "LimitImageDecodeCacheAge": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "seconds": "10"
+                    },
+                    "enable_features": [
+                        "LimitImageDecodeCacheAge"
+                    ]
+                }
+            ]
+        }
+    ],
     "LimitImageDecodeCacheSize": [
         {
             "platforms": [
