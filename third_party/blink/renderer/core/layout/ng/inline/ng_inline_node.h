@@ -191,6 +191,9 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                                    NGInlineNodeData* data);
 
   friend class NGLineBreakerTest;
+public:
+  // https://linear.app/replay/issue/RUN-1219
+  int record_replay_id_;
 };
 
 inline bool NGInlineNode::IsStickyImagesQuirkForContentSize() const {
