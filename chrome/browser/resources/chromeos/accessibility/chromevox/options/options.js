@@ -69,7 +69,7 @@ export class OptionsPage {
         Msgs.getMsg('options_hide_event_stream_filters');
     $('toggleEventStreamFilters').textContent = showEventStreamFilters;
     OptionsPage.disableEventStreamFilterCheckBoxes(
-        LocalStorage.get('enableEventStreamLogging') === false);
+        !SettingsManager.getBoolean('enableEventStreamLogging'));
 
     if (SettingsManager.get('audioStrategy')) {
       for (let i = 0, opt; opt = $('audioStrategy').options[i]; i++) {

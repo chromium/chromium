@@ -10,6 +10,7 @@ import {LocalStorage} from '../../../common/local_storage.js';
 import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {EventLog} from '../../common/log_types.js';
+import {SettingsManager} from '../../common/settings_manager.js';
 
 import {LogStore} from './log_store.js';
 
@@ -33,7 +34,7 @@ export class EventStreamLogger {
     const desktop = await AsyncUtil.getDesktop();
     EventStreamLogger.instance = new EventStreamLogger(desktop);
     EventStreamLogger.instance.updateAllFilters(
-        LocalStorage.getBoolean('enableEventStreamLogging'));
+        SettingsManager.getBoolean('enableEventStreamLogging'));
 
     BridgeHelper.registerHandler(
         TARGET, Action.NOTIFY_EVENT_STREAM_FILTER_CHANGED,

@@ -181,6 +181,10 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityChromeVoxBrailleWordWrap,
     prefs::kAccessibilityChromeVoxCapitalStrategy,
     prefs::kAccessibilityChromeVoxCapitalStrategyBackup,
+    prefs::kAccessibilityChromeVoxEnableBrailleLogging,
+    prefs::kAccessibilityChromeVoxEnableEarconLogging,
+    prefs::kAccessibilityChromeVoxEnableEventStreamLogging,
+    prefs::kAccessibilityChromeVoxEnableSpeechLogging,
     prefs::kAccessibilityChromeVoxLanguageSwitching,
     prefs::kAccessibilityChromeVoxMenuBrailleCommands,
     prefs::kAccessibilityChromeVoxNumberReadingStyle,
@@ -1005,6 +1009,14 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterStringPref(
       prefs::kAccessibilityChromeVoxCapitalStrategyBackup,
       kDefaultAccessibilityChromeVoxCapitalStrategyBackup);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityChromeVoxEnableBrailleLogging, false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityChromeVoxEnableEarconLogging, false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityChromeVoxEnableEventStreamLogging, false);
+  registry->RegisterBooleanPref(
+      prefs::kAccessibilityChromeVoxEnableSpeechLogging, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityChromeVoxLanguageSwitching,
                                 false);
   registry->RegisterBooleanPref(

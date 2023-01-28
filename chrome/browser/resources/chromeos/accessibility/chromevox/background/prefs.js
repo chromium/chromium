@@ -99,7 +99,7 @@ export class ChromeVoxPrefs {
    * @param {boolean} value The new value of the pref.
    */
   setLoggingPrefs(key, value) {
-    LocalStorage.set(key, value);
+    SettingsManager.set(key, value);
     if (key === 'enableSpeechLogging') {
       TtsBackground.console.setEnabled(value);
     } else if (key === 'enableEventStreamLogging') {
@@ -150,7 +150,7 @@ export class ChromeVoxPrefs {
 
   enableOrDisableLogUrlWatcher_() {
     for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
-      if (LocalStorage.get(pref)) {
+      if (SettingsManager.getBoolean(pref)) {
         LogUrlWatcher.create();
         return;
       }
@@ -170,11 +170,7 @@ export class ChromeVoxPrefs {
 ChromeVoxPrefs.DEFAULT_PREFS = {
   'brailleCaptions': false,
   'cvoxKey': '',
-  'enableBrailleLogging': false,
-  'enableEarconLogging': false,
-  'enableSpeechLogging': false,
   'earcons': true,
-  'enableEventStreamLogging': false,
   'focusFollowsMouse': false,
   'granularity': undefined,
   'position': {},

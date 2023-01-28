@@ -136,6 +136,14 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs->FindPreference(prefs::kAccessibilityChromeVoxCapitalStrategy));
   EXPECT_TRUE(prefs->FindPreference(
       prefs::kAccessibilityChromeVoxCapitalStrategyBackup));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxEnableBrailleLogging));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxEnableEarconLogging));
+  EXPECT_TRUE(prefs->FindPreference(
+      prefs::kAccessibilityChromeVoxEnableEventStreamLogging));
+  EXPECT_TRUE(
+      prefs->FindPreference(prefs::kAccessibilityChromeVoxEnableSpeechLogging));
   EXPECT_TRUE(
       prefs->FindPreference(prefs::kAccessibilityChromeVoxLanguageSwitching));
   EXPECT_TRUE(

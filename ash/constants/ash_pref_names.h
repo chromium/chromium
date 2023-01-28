@@ -126,6 +126,14 @@ extern const char kAccessibilityChromeVoxCapitalStrategy[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxCapitalStrategyBackup[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxEnableBrailleLogging[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxEnableEarconLogging[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxEnableEventStreamLogging[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kAccessibilityChromeVoxEnableSpeechLogging[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxLanguageSwitching[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAccessibilityChromeVoxMenuBrailleCommands[];

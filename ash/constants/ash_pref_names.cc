@@ -271,6 +271,22 @@ const char kAccessibilityChromeVoxCapitalStrategy[] =
 // A string pref which holds the current capital strategy backup for ChromeVox.
 const char kAccessibilityChromeVoxCapitalStrategyBackup[] =
     "settings.a11y.chromevox.capital_strategy_backup";
+// A boolean pref which determines whether braille logging for ChromeVox is
+// enabled.
+const char kAccessibilityChromeVoxEnableBrailleLogging[] =
+    "settings.a11y.chromevox.enable_braille_logging";
+// A boolean pref which determines whether earcon logging for ChromeVox is
+// enabled.
+const char kAccessibilityChromeVoxEnableEarconLogging[] =
+    "settings.a11y.chromevox.enable_earcon_logging";
+// A boolean pref which determines whether event stream logging for ChromeVox is
+// enabled.
+const char kAccessibilityChromeVoxEnableEventStreamLogging[] =
+    "settings.a11y.chromevox.enable_event_stream_logging";
+// A boolean pref which determines whether speech logging for ChromeVox is
+// enabled.
+const char kAccessibilityChromeVoxEnableSpeechLogging[] =
+    "settings.a11y.chromevox.enable_speech_logging";
 // A boolean pref which determines whether language switching for ChromeVox is
 // enabled.
 const char kAccessibilityChromeVoxLanguageSwitching[] =

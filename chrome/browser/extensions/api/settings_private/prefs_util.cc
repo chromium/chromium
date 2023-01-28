@@ -578,6 +578,14 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxCapitalStrategyBackup] =
       settings_api::PrefType::PREF_TYPE_STRING;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxEnableBrailleLogging] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxEnableEarconLogging] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxEnableEventStreamLogging] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxEnableSpeechLogging] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxLanguageSwitching] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxMenuBrailleCommands] =

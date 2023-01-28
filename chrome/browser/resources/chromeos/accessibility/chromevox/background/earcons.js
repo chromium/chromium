@@ -7,9 +7,9 @@
  * auditory cues.
  */
 
-import {LocalStorage} from '../../common/local_storage.js';
 import {EarconId} from '../common/earcon_id.js';
 import {LogType} from '../common/log_types.js';
+import {SettingsManager} from '../common/settings_manager.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
 import {ChromeVoxRange} from './chromevox_range.js';
@@ -58,7 +58,7 @@ export class Earcons extends AbstractEarcons {
     if (!this.enabled) {
       return;
     }
-    if (LocalStorage.get('enableEarconLogging')) {
+    if (SettingsManager.getBoolean('enableEarconLogging')) {
       LogStore.instance.writeTextLog(earcon, LogType.EARCON);
       console.log('Earcon ' + earcon);
     }
