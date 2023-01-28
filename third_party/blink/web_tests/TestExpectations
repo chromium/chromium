@@ -6937,10 +6937,6 @@ crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass
 # Sheriff 2023-01-23
 crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Failure Pass Timeout ]
 
-# Sheriff 2023-01-24
-crbug.com/1409804 [ Mac ] fast/backgrounds/repeat/negative-offset-repeat-transformed.html [ Failure ]
-crbug.com/1409804 [ Mac ] fast/borders/border-image-rotate-transform.html [ Failure ]
-
 external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure ]
 
 # Sheriff 2023-01-27
