@@ -81,9 +81,6 @@ class BLINK_EXPORT WebElement : public WebNode {
   void SetAttribute(const WebString& name, const WebString& value);
   WebString TextContent() const;
   WebString InnerHTML() const;
-  WebString AttributeLocalName(unsigned index) const;
-  WebString AttributeValue(unsigned index) const;
-  unsigned AttributeCount() const;
 
   // Returns all <label> elements associated to this element.
   WebVector<WebLabelElement> Labels() const;

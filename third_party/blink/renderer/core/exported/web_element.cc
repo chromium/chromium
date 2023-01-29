@@ -106,24 +106,6 @@ void WebElement::SetAttribute(const WebString& attr_name,
                                   IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-unsigned WebElement::AttributeCount() const {
-  if (!ConstUnwrap<Element>()->hasAttributes())
-    return 0;
-  return ConstUnwrap<Element>()->Attributes().size();
-}
-
-WebString WebElement::AttributeLocalName(unsigned index) const {
-  if (index >= AttributeCount())
-    return WebString();
-  return ConstUnwrap<Element>()->Attributes().at(index).LocalName();
-}
-
-WebString WebElement::AttributeValue(unsigned index) const {
-  if (index >= AttributeCount())
-    return WebString();
-  return ConstUnwrap<Element>()->Attributes().at(index).Value();
-}
-
 WebString WebElement::TextContent() const {
   return ConstUnwrap<Element>()->textContent();
 }
