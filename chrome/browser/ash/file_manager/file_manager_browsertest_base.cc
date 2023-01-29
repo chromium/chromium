@@ -1325,6 +1325,10 @@ class DriveFsTestVolume : public TestVolume {
     return last_dialog_result_;
   }
 
+  absl::optional<bool> IsItemPinned(const std::string& path) {
+    return fake_drivefs_helper_->fake_drivefs().IsItemPinned(path);
+  }
+
  private:
   base::RepeatingCallback<std::unique_ptr<drivefs::DriveFsBootstrapListener>()>
   CreateDriveFsBootstrapListener() {
@@ -2000,6 +2004,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
   } else {
     disabled_features.push_back(ash::features::kGoogleOneOfferFilesBanner);
+  }
+
+  if (options.enable_drive_bulk_pinning) {
+    enabled_features.push_back(ash::features::kDriveFsBulkPinning);
+  } else {
+    disabled_features.push_back(ash::features::kDriveFsBulkPinning);
   }
 
   // This is destroyed in |TearDown()|. We cannot initialize this in the
@@ -3244,6 +3254,15 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     base::JSONWriter::Write(
         base::Value(result ? static_cast<int32_t>(result.value()) : -1),
         output);
+    return;
+  }
+
+  if (name == "isItemPinned") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path) << "No supplied path to isItemPinned";
+    absl::optional<bool> is_pinned = drive_volume_->IsItemPinned(*path);
+    ASSERT_TRUE(is_pinned.has_value()) << "Supplied path is unknown: " << *path;
+    base::JSONWriter::Write(base::Value(is_pinned.value()), output);
     return;
   }
 

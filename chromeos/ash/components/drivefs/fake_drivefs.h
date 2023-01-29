@@ -82,6 +82,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   const base::FilePath& mount_path() { return mount_path_; }
 
+  absl::optional<bool> IsItemPinned(const std::string& path);
+
  private:
   struct FileMetadata;
   class SearchQuery;

@@ -199,6 +199,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableBulkPinning() {
+    options.enable_drive_bulk_pinning = true;
+    return *this;
+  }
+
   TestCase& SetDeviceMode(DeviceMode device_mode) {
     options.device_mode = device_mode;
     return *this;
@@ -260,6 +265,10 @@ struct TestCase {
 
     if (options.enable_google_one_offer_files_banner) {
       full_name += "_GoogleOneOfferFilesBanner";
+    }
+
+    if (options.enable_drive_bulk_pinning) {
+      full_name += "_DriveBulkPinning";
     }
 
     switch (options.device_mode) {
@@ -1456,7 +1465,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveOfflineInfoBanner"),
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
-        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync()
+        TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
+        TestCase("driveLocalDeleteUnpinsItem").EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

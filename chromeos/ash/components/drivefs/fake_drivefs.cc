@@ -322,6 +322,15 @@ void FakeDriveFs::DisplayConfirmDialog(
   delegate_->DisplayConfirmDialog(std::move(reason), std::move(callback));
 }
 
+absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
+  for (const auto& metadata : metadata_) {
+    if (metadata.first.value() == path) {
+      return metadata.second.pinned;
+    }
+  }
+  return absl::nullopt;
+}
+
 void FakeDriveFs::Init(
     drivefs::mojom::DriveFsConfigurationPtr config,
     mojo::PendingReceiver<drivefs::mojom::DriveFs> receiver,

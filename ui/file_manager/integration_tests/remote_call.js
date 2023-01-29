@@ -981,4 +981,21 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Wait the OPEN button to have multiple tasks.
     await this.waitAndClickElement(appId, '#tasks[multiple]');
   }
+
+  /**
+   * Check if an item is pinned on drive or not.
+   * @param {string} appId app window ID.
+   * @param {string} path Path from the drive mount point, e.g. /root/test.txt
+   * @param {boolean} status Pinned status to expect drive item to be.
+   */
+  async expectDriveItemPinnedStatus(appId, path, status) {
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    chrome.test.assertEq(
+        await sendTestMessage({
+          appId,
+          name: 'isItemPinned',
+          path,
+        }),
+        String(status));
+  }
 }

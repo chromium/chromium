@@ -159,6 +159,9 @@ class FileManagerBrowserTestBase
 
     // Whether tests should enable Google One offer Files banner.
     bool enable_google_one_offer_files_banner = false;
+
+    // Whether tests should enable the Google Drive bulk pinning feature.
+    bool enable_drive_bulk_pinning = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
