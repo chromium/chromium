@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -421,7 +422,9 @@ class BrowserAddedWaiter final : public BrowserListObserver {
   BrowserAddedWaiter() { BrowserList::AddObserver(this); }
   ~BrowserAddedWaiter() override { BrowserList::RemoveObserver(this); }
 
-  void Wait() { run_loop_.Run(); }
+  void Wait(const base::Location& location = base::Location::Current()) {
+    run_loop_.Run(location);
+  }
 
   // BrowserListObserver
   void OnBrowserAdded(Browser* browser) override {
