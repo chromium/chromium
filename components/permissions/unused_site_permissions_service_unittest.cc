@@ -223,6 +223,49 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackUnusedButDontRevoke) {
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
 }
 
+TEST_F(UnusedSitePermissionsServiceTest, SecondaryPatternAlwaysWildcard) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const ContentSettingsType types[] = {
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::AUTOMATIC_DOWNLOADS};
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  // Test combinations of a single origin |primary_pattern| and different
+  // |secondary_pattern|s: equal to primary pattern, different single origin
+  // pattern, with domain with wildcard, wildcard.
+  for (const auto type : types) {
+    hcsm()->SetContentSettingDefaultScope(
+        GURL("https://example1.com"), GURL("https://example1.com"), type,
+        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+    hcsm()->SetContentSettingDefaultScope(
+        GURL("https://example2.com"), GURL("https://example3.com"), type,
+        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+    hcsm()->SetContentSettingDefaultScope(
+        GURL("https://example3.com"), GURL("https://[*.]example1.com"), type,
+        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+    hcsm()->SetContentSettingDefaultScope(
+        GURL("https://example4.com"), GURL("*"), type,
+        ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  }
+
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel through time for 70 days so that permissions are revoked.
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 4u);
+  for (auto unused_permission : GetRevokedUnusedPermissions(hcsm())) {
+    EXPECT_EQ(unused_permission.secondary_pattern,
+              ContentSettingsPattern::Wildcard());
+  }
+}
+
 TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndEnableFeature(

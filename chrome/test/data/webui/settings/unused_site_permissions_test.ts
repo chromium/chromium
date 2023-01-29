@@ -29,10 +29,12 @@ suite('CrSettingsUnusedSitePermissionsTest', function() {
     ContentSettingsTypes.NOTIFICATIONS,
   ];
 
-  const mockData = [1, 2, 3, 4].map(i => ({
-                                      origin: `https://www.example${i}.com:443`,
-                                      permissions: permissions.slice(0, i),
-                                    }));
+  const mockData = [1, 2, 3, 4].map(
+      i => ({
+        origin: `https://www.example${i}.com:443`,
+        permissions: permissions.slice(0, i),
+        expiration: '13317004800000000',  // Represents 2023-01-01T00:00:00.
+      }));
 
   /* Asserts for each row whether or not it is animating. */
   function assertAnimation(expectedAnimation: boolean[]) {

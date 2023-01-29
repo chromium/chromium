@@ -14,6 +14,7 @@
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -90,6 +91,13 @@ class UnusedSitePermissionsService
   // the user. Does not change permissions themselves.
   void ClearRevokedPermissionsList();
 
+  // Stores revoked permissions data on HCSM.
+  void StorePermissionInRevokedPermissionSetting(
+      const std::list<ContentSettingsType> permissions,
+      const absl::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const url::Origin origin);
+
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
@@ -115,8 +123,11 @@ class UnusedSitePermissionsService
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::list<UnusedSitePermissionsService::ContentSettingEntry>&
-          recently_revoked_permissions);
+      const std::list<ContentSettingsType> permissions,
+      const absl::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;

@@ -16,6 +16,7 @@ import {ContentSettingsTypes} from './constants.js';
 export interface UnusedSitePermissions {
   origin: string;
   permissions: ContentSettingsTypes[];
+  expiration: string;
 }
 
 /**
