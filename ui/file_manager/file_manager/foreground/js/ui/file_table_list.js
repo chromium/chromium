@@ -473,26 +473,26 @@ filelist.renderFileNameLabel = (doc, entry, locationInfo) => {
 };
 
 /**
- * Renders the inline status in the detail table.
+ * Renders the drive inline status in the detail table.
  * @return {!HTMLDivElement} Created element.
  */
 filelist.renderInlineStatus = (doc) => {
-  const icon = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
-  icon.className = 'inline-status';
-  icon.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
+  const iconDiv = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  iconDiv.className = 'inline-status';
+  iconDiv.setAttribute('aria-label', str('OFFLINE_COLUMN_LABEL'));
 
   const inlineStatusIcon = doc.createElement('xf-icon');
   inlineStatusIcon.size = 'extra_small';
-  inlineStatusIcon.type = '';
-  icon.appendChild(inlineStatusIcon);
+  inlineStatusIcon.type = 'offline';
+  iconDiv.appendChild(inlineStatusIcon);
 
   if (util.isInlineSyncStatusEnabled()) {
     const syncProgress = doc.createElement('xf-pie-progress');
     syncProgress.className = 'progress';
-    icon.appendChild(syncProgress);
+    iconDiv.appendChild(syncProgress);
   }
 
-  return icon;
+  return iconDiv;
 };
 
 /**
@@ -513,11 +513,7 @@ filelist.updateListItemExternalProps = (li, externalProps, isTeamDriveRoot) => {
     }
   }
 
-  const inlineStatusIcon = li.querySelector('.inline-status xf-icon');
-  if (inlineStatusIcon) {
-    // TODO: use "XfIcon.types.OFFLINE*" instead when converting to TS.
-    inlineStatusIcon.type = externalProps.pinned ? 'offline' : '';
-  }
+  li.classList.toggle('pinned', externalProps.pinned);
 
   const iconDiv = li.querySelector('.detail-icon');
   if (!iconDiv) {

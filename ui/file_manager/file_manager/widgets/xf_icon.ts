@@ -8,7 +8,10 @@ import {classMap, css, customElement, html, property, PropertyValues, styleMap, 
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {
-  /** The icon size, can be "small" or "large" (from `XfIcon.size`). */
+  /**
+   * The icon size, can be "extra-small", "small" or "large" (from
+   * `XfIcon.size`).
+   */
   @property({type: String, reflect: true}) size: string = XfIcon.sizes.SMALL;
 
   /**
@@ -88,14 +91,13 @@ export class XfIcon extends XfBase {
       VIDEO: 'video',
       WORD: 'word',
       OFFLINE: 'offline',
-      OFFLINE_OUTLINED: 'offline_outlined',
     };
   }
 
   static get multiColor() {
     return {
-      [XfIcon.types.OFFLINE_OUTLINED]:
-          svg`<use xlink:href="foreground/images/files/ui/offline_outlined.svg#offline_outlined"></use>`,
+      [XfIcon.types.OFFLINE]:
+          svg`<use xlink:href="foreground/images/files/ui/offline.svg#offline"></use>`,
     };
   }
 

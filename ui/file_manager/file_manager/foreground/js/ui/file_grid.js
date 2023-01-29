@@ -265,8 +265,6 @@ export class FileGrid extends Grid {
           this.setGenericThumbnail_(
               assertInstanceof(box, HTMLDivElement), entry, mimeType);
         } else {
-          listItem.querySelector('xf-icon').type =
-              this.getOfflineIconForEntry(entry, true);
           FileGrid.setThumbnailImage_(
               assertInstanceof(box, HTMLDivElement), entry,
               assert(event.dataUrl), assert(event.width), assert(event.height),
@@ -745,14 +743,12 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(listItem, entry);
       this.updateSharedStatus_(listItem, entry);
       this.updateInlineSyncStatus_(listItem, entry);
-      const metadata =
-          this.metadataModel_.getCache([entry], ['availableOffline'])[0];
-      if (metadata) {
-        const {availableOffline} = metadata;
-        listItem.classList.toggle('dim-offline', availableOffline === false);
-        listItem.querySelector('xf-icon').type =
-            this.getOfflineIconForEntry(entry);
-      }
+      const {availableOffline, pinned} =
+          this.metadataModel_.getCache(
+              [entry], ['availableOffline', 'pinned'])[0] ||
+          {};
+      listItem.classList.toggle('dim-offline', availableOffline === false);
+      listItem.classList.toggle('pinned', pinned);
       listItem.toggleAttribute(
           'disabled',
           filelist.isDlpBlocked(
@@ -804,12 +800,15 @@ export class FileGrid extends Grid {
 
     const bottom = li.ownerDocument.createElement('div');
     bottom.className = 'thumbnail-bottom';
-    const mimeType =
-        this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
-            .contentMimeType;
+
+    const {contentMimeType, availableOffline, pinned} =
+        this.metadataModel_.getCache(
+            [entry], ['contentMimeType', 'availableOffline', 'pinned'])[0] ||
+        {};
+
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
     const detailIcon = filelist.renderFileTypeIcon(
-        li.ownerDocument, entry, locationInfo, mimeType);
+        li.ownerDocument, entry, locationInfo, contentMimeType);
 
     // For FilesNg we add the checkmark in the same location.
     const checkmark = li.ownerDocument.createElement('div');
@@ -821,53 +820,32 @@ export class FileGrid extends Grid {
     frame.appendChild(bottom);
     li.setAttribute('file-name', util.getEntryLabel(locationInfo, entry));
 
-    const syncStatus = li.ownerDocument.createElement('div');
-    syncStatus.className = 'inline-status';
+    // The inline status box contains both sync status indicators and available
+    // offline indicators.
+    const inlineStatus = li.ownerDocument.createElement('div');
+    inlineStatus.className = 'inline-status';
 
     const inlineStatusIcon = li.ownerDocument.createElement('xf-icon');
     inlineStatusIcon.size = 'extra_small';
-    inlineStatusIcon.type = '';
-    syncStatus.appendChild(inlineStatusIcon);
+    inlineStatusIcon.type = 'offline';
+    inlineStatus.appendChild(inlineStatusIcon);
 
     if (util.isInlineSyncStatusEnabled()) {
       const syncProgress = li.ownerDocument.createElement('xf-pie-progress');
-      syncProgress.drawBackground = true;
       syncProgress.className = 'progress';
-      syncStatus.appendChild(syncProgress);
+      inlineStatus.appendChild(syncProgress);
     }
 
-    frame.appendChild(syncStatus);
+    frame.appendChild(inlineStatus);
 
-    const metadata =
-        this.metadataModel_.getCache([entry], ['availableOffline'])[0];
-    if (metadata) {
-      const {availableOffline} = metadata;
-      li.classList.toggle('dim-offline', availableOffline === false);
-      inlineStatusIcon.type = this.getOfflineIconForEntry(entry);
-    }
+    li.classList.toggle('dim-offline', availableOffline === false);
+    li.classList.toggle('pinned', pinned);
 
     if (entry) {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
     this.updateSharedStatus_(li, entry);
     this.updateInlineSyncStatus_(li, entry);
-  }
-
-  /**
-   * @param {Entry} entry
-   * @param {boolean} useOutline Whether the icon whose identifier is returned
-   *     should have an outline around it.
-   * @returns string
-   */
-  getOfflineIconForEntry(entry, useOutline = false) {
-    const metadata = this.metadataModel_.getCache([entry], ['pinned'])[0];
-    if (!metadata) {
-      return;
-    }
-    return metadata.pinned ?
-        // TODO: use "XfIcon.types.OFFLINE*" instead when converting to TS.
-        useOutline ? 'offline_outlined' : 'offline' :
-        '';
   }
 
   /**
@@ -896,8 +874,6 @@ export class FileGrid extends Grid {
         this.metadataModel_.getCache([entry], ['contentMimeType'])[0]
             .contentMimeType;
     if (thumbnailData && thumbnailData.dataUrl) {
-      li.querySelector('xf-icon').type =
-          this.getOfflineIconForEntry(entry, true);
       FileGrid.setThumbnailImage_(
           box, entry, thumbnailData.dataUrl, (thumbnailData.width || 0),
           (thumbnailData.height || 0), mimeType);

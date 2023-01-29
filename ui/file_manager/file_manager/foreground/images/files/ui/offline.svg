@@ -1,5 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" fill="none">
-  <g fill="black">
+<svg id="offline" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" fill="none">
+  <circle cx="8" cy="8" r="6.9" fill="#fff" stroke="#fff" />
+  <g fill="var(--xf-icon-color)">
     <path
       d="M9.529 4.995a.667.667 0 11.942.943L7.805 8.605a.667.667 0 01-.943 0L5.529 7.27a.667.667 0 11.942-.942l.862.862L9.53 4.995zM5.4 9.6a.6.6 0 000 1.2h5.2a.6.6 0 000-1.2H5.4z" />
     <path fill-rule="evenodd" clip-rule="evenodd"

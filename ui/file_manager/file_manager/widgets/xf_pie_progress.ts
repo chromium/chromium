@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {css, customElement, html, nothing, property, svg, XfBase} from './xf_base.js';
+import {css, customElement, html, property, svg, XfBase} from './xf_base.js';
 
 const TWO_PI = 2.0 * Math.PI;
 const HALF_PI = 0.5 * Math.PI;
@@ -16,20 +16,15 @@ export class XfPieProgress extends XfBase {
   // This should be a number between 0 and 1.
   @property({type: Number, reflect: true}) progress = 0;
 
-  // Whether a background should be drawn around the indicator
-  // (currently used to draw it over images).
-  @property({type: Boolean, attribute: 'draw-background', reflect: true})
-  drawBackground = 0;
-
   private size = 16;  // Size of the SVG square measured by its side length.
   private center = this.size / 2.0;  // Center of the pie circle (both X and Y).
   private radius = 5.4;              // Radius of the pie circle.
 
-  private backgroundShape = svg`<circle
+  private outlineShape = svg`<circle
+    class="outline"
     cx="${this.center}"
     cy="${this.center}"
     r="${this.center}"
-    fill="#fff"
   />`;
   private queuedShape = svg`<circle
       class="queued"
@@ -99,7 +94,7 @@ export class XfPieProgress extends XfBase {
 
     return html`
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}">
-        ${this.drawBackground ? this.backgroundShape : nothing} ${contents}
+        ${this.outlineShape} ${contents}
       </svg>
     `;
   }
@@ -128,6 +123,10 @@ function getCSS() {
     .pie {
       fill: var(--cros-icon-color-prominent);
       stroke: none;
+    }
+
+    .outline {
+      fill: var(--xf-icon-color-outline, transparent);
     }
   `;
 }

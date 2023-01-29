@@ -1319,17 +1319,7 @@ body.files-ng .thumbnail-frame > .img-container {
   position: relative;
 }
 
-#list-container.thumbnail-view .inline-status {
-  align-items: center;
-  display: none;
-  height: 16px;
-  justify-content: center;
-  position: absolute;
-  right: 4px;
-  top: 4px;
-  width: 16px;
-}
-
+#list-container.thumbnail-view .inline-status,
 #list-container.thumbnail-view .inline-status .progress,
 #list-container.thumbnail-view .inline-status xf-icon {
   display: none;
@@ -1337,8 +1327,12 @@ body.files-ng .thumbnail-frame > .img-container {
   width: 16px;
 }
 
-#list-container.thumbnail-view .inline-status xf-icon[type^=offline] {
-  --xf-icon-color: var(--cros-icon-color-secondary);
+#list-container.thumbnail-view .inline-status {
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 4px;
+  top: 4px;
 }
 
 #list-container.thumbnail-view li.directory .inline-status {
@@ -1346,12 +1340,23 @@ body.files-ng .thumbnail-frame > .img-container {
   top: 0;
 }
 
-#list-container.thumbnail-view li:not([renaming]):not(.dim-offline) .inline-status:has(xf-icon[type^=offline]),
-#list-container.thumbnail-view li:not([renaming]):not(.dim-offline) .inline-status xf-icon[type^=offline],
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status,
+#list-container.thumbnail-view li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
 #list-container.thumbnail-view li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status,
 #list-container.thumbnail-view li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status .progress {
   display: flex;
 }
+
+#list-container.thumbnail-view li.pinned .inline-status xf-icon[type=offline] {
+  --xf-icon-color: var(--cros-icon-color-secondary);
+}
+
+/* Only display outlines for entries with thumbnails. */
+#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status .progress,
+#list-container.thumbnail-view li.pinned:has(.thumbnail) .inline-status xf-icon[type=offline] {
+  --xf-icon-color-outline: var(--cros-bg-color);
+}
+
 html:not(.pointer-active) body[type='full-page'] .thumbnail-frame > .img-container,
 body[type='full-page'] .thumbnail-frame > .img-container:active,
 html:not(.pointer-active) body[type='full-page'] .detail-name .detail-icon,
@@ -2253,14 +2258,7 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 32px;
 }
 
-#list-container .list .inline-status {
-  align-items: center;
-  display: none;
-  height: 16px;
-  justify-content: center;
-  width: 16px;
-}
-
+#list-container .list .inline-status,
 #list-container .list .inline-status .progress,
 #list-container .list .inline-status xf-icon {
   display: none;
@@ -2268,15 +2266,20 @@ body.files-ng #list-container li .detail-thumbnail {
   width: 16px;
 }
 
-#list-container .list .inline-status xf-icon:is([type=offline]) {
-  --xf-icon-color: var(--cros-icon-color-secondary);
+#list-container .list .inline-status {
+  align-items: center;
+  justify-content: center;
 }
 
-#list-container .list li:not([renaming]):not(.dim-offline) .inline-status:has(xf-icon[type=offline]),
-#list-container .list li:not([renaming]):not(.dim-offline) .inline-status xf-icon[type=offline],
+#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status,
+#list-container .list li.pinned:not([renaming]):not(.dim-offline) .inline-status xf-icon,
 #list-container .list li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status,
 #list-container .list li:not([renaming]):is([data-sync-status=in_progress], [data-sync-status=queued]) .inline-status .progress {
   display: flex;
+}
+
+#list-container .list li.pinned .inline-status xf-icon[type=offline] {
+  --xf-icon-color: var(--cros-icon-color-secondary);
 }
 
 #new-folder-button {

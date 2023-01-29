@@ -1,9 +1,0 @@
-<svg id="offline_outlined" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16" fill="none">
-  <circle cx="8" cy="8" r="6.9" fill="#fff" stroke="#fff" />
-  <g fill="var(--xf-icon-color)">
-    <path
-      d="M9.529 4.995a.667.667 0 11.942.943L7.805 8.605a.667.667 0 01-.943 0L5.529 7.27a.667.667 0 11.942-.942l.862.862L9.53 4.995zM5.4 9.6a.6.6 0 000 1.2h5.2a.6.6 0 000-1.2H5.4z" />
-    <path fill-rule="evenodd" clip-rule="evenodd"
-      d="M14.4 8A6.4 6.4 0 111.6 8a6.4 6.4 0 0112.8 0zm-1.6 0a4.8 4.8 0 11-9.6 0 4.8 4.8 0 019.6 0z" />
-  </g>
-</svg>
