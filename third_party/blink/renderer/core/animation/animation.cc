@@ -2164,7 +2164,7 @@ void Animation::StartAnimationOnCompositor(
 // composited and non-composited animations. The use of 'compositor' in the name
 // is confusing.
 void Animation::SetCompositorPending(bool effect_changed) {
-  recordreplay::Assert("[RUN-966] Animation::SetCompositorPending");
+  recordreplay::Assert("[RUN-966] Animation::SetCompositorPending %d", RecordReplayId());
 
   // FIXME: KeyframeEffect could notify this directly?
   if (!HasActiveAnimationsOnCompositor()) {

@@ -192,11 +192,16 @@ Animation* AnimationTimeline::Play(AnimationEffect* child,
 }
 
 void AnimationTimeline::MarkAnimationsCompositorPending(bool source_changed) {
-  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending");
+  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending %d", RecordReplayId());
 
-  for (const auto& animation : animations_) {
+  HeapVector<Member<Animation>> animations_vector(animations_);
+  std::sort(animations_vector.begin(), animations_vector.end(),
+            recordreplay::CompareMemberByRecordReplayId<Member<Animation>>());
+  for (const auto& animation : animations_vector) {
     animation->SetCompositorPending(source_changed);
   }
+
+  recordreplay::Assert("[RUN-966] AnimationTimeline::MarkAnimationsCompositorPending Done");
 }
 
 void AnimationTimeline::MarkPendingIfCompositorPropertyAnimationChanges(
