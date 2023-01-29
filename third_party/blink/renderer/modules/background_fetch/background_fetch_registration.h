@@ -80,7 +80,8 @@ class BackgroundFetchRegistration final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
 
-  ScriptPromise abort(ScriptState* script_state);
+  ScriptPromise abort(ScriptState* script_state,
+                      ExceptionState& exception_state);
 
   // EventTargetWithInlineData implementation.
   const AtomicString& InterfaceName() const override;

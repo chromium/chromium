@@ -19,7 +19,7 @@
 
     attribute EventHandler onprogress;
 
-    [CallWith=ScriptState, MeasureAs=BackgroundFetchRegistrationAbort] Promise<boolean> abort();
+    [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationAbort] Promise<boolean> abort();
     [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatch] Promise<BackgroundFetchRecord> match(RequestInfo request, optional CacheQueryOptions options = {});
     [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatchAll] Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options = {});
 };

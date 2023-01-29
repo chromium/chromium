@@ -128,16 +128,19 @@ ExecutionContext* BackgroundFetchRegistration::GetExecutionContext() const {
   return registration_->GetExecutionContext();
 }
 
-ScriptPromise BackgroundFetchRegistration::abort(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+ScriptPromise BackgroundFetchRegistration::abort(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   DCHECK(registration_);
   DCHECK(registration_service_);
 
   registration_service_->Abort(
-      WTF::BindOnce(&BackgroundFetchRegistration::DidAbort,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+          &BackgroundFetchRegistration::DidAbort, WrapPersistent(this))));
 
   return promise;
 }
@@ -310,9 +313,9 @@ void BackgroundFetchRegistration::DidAbort(
       resolver->Resolve(/* success = */ false);
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
-          "Failed to abort registration due to I/O error."));
+          "Failed to abort registration due to I/O error.");
       return;
     case mojom::blink::BackgroundFetchError::SERVICE_WORKER_UNAVAILABLE:
     case mojom::blink::BackgroundFetchError::DUPLICATED_DEVELOPER_ID:

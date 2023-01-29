@@ -71,20 +71,20 @@ class MODULES_EXPORT BackgroundFetchManager final
   void DidLoadIcons(const String& id,
                     Vector<mojom::blink::FetchAPIRequestPtr> requests,
                     mojom::blink::BackgroundFetchOptionsPtr options,
-                    ScriptPromiseResolver* resolver,
                     BackgroundFetchIconLoader* loader,
+                    ScriptPromiseResolver* resolver,
                     const SkBitmap& icon,
                     int64_t ideal_to_chosen_icon_size);
-  void DidFetch(ScriptPromiseResolver* resolver,
-                base::Time time_started,
+  void DidFetch(base::Time time_started,
+                ScriptPromiseResolver* resolver,
                 mojom::blink::BackgroundFetchError error,
                 BackgroundFetchRegistration* registration);
-  void DidGetRegistration(ScriptPromiseResolver* script_state,
-                          base::Time time_started,
+  void DidGetRegistration(base::Time time_started,
+                          ScriptPromiseResolver* resolver,
                           mojom::blink::BackgroundFetchError error,
                           BackgroundFetchRegistration* registration);
-  void DidGetDeveloperIds(ScriptPromiseResolver* script_state,
-                          base::Time time_started,
+  void DidGetDeveloperIds(base::Time time_started,
+                          ScriptPromiseResolver* resolver,
                           mojom::blink::BackgroundFetchError error,
                           const Vector<String>& developer_ids);
 

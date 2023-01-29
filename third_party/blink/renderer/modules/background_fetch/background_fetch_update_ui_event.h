@@ -60,8 +60,9 @@ class MODULES_EXPORT BackgroundFetchUpdateUIEvent final
   void Trace(Visitor* visitor) const override;
 
  private:
-  void DidGetIcon(ScriptPromiseResolver* resolver,
-                  const String& title,
+  void DidGetIcon(const String& title,
+                  ScriptPromiseResolver* resolver,
+
                   const SkBitmap& icon,
                   int64_t ideal_to_chosen_icon_size);
 

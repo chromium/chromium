@@ -227,7 +227,8 @@ ScriptPromise BackgroundFetchManager::fetch(
   UMA_HISTOGRAM_BOOLEAN("BackgroundFetch.HasDuplicateRequests",
                         kurls.size() != fetch_api_requests.size());
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   // Pick the best icon, and load it.
@@ -238,17 +239,16 @@ ScriptPromise BackgroundFetchManager::fetch(
     BackgroundFetchIconLoader* loader =
         MakeGarbageCollected<BackgroundFetchIconLoader>();
     loaders_.push_back(loader);
-    loader->Start(
-        bridge_.Get(), execution_context, options->icons(),
-        WTF::BindOnce(&BackgroundFetchManager::DidLoadIcons,
+    loader->Start(bridge_.Get(), execution_context, options->icons(),
+                  resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+                      &BackgroundFetchManager::DidLoadIcons,
                       WrapPersistent(this), id, std::move(fetch_api_requests),
-                      std::move(options_ptr), WrapPersistent(resolver),
-                      WrapWeakPersistent(loader)));
+                      std::move(options_ptr), WrapWeakPersistent(loader))));
     return promise;
   }
 
   DidLoadIcons(id, std::move(fetch_api_requests), std::move(options_ptr),
-               resolver, nullptr, SkBitmap(),
+               nullptr, resolver, SkBitmap(),
                -1 /* ideal_to_chosen_icon_size */);
   return promise;
 }
@@ -257,8 +257,8 @@ void BackgroundFetchManager::DidLoadIcons(
     const String& id,
     Vector<mojom::blink::FetchAPIRequestPtr> requests,
     mojom::blink::BackgroundFetchOptionsPtr options,
-    ScriptPromiseResolver* resolver,
     BackgroundFetchIconLoader* loader,
+    ScriptPromiseResolver* resolver,
     const SkBitmap& icon,
     int64_t ideal_to_chosen_icon_size) {
   if (loader)
@@ -266,15 +266,16 @@ void BackgroundFetchManager::DidLoadIcons(
 
   auto ukm_data = mojom::blink::BackgroundFetchUkmData::New();
   ukm_data->ideal_to_chosen_icon_size = ideal_to_chosen_icon_size;
-  bridge_->Fetch(
-      id, std::move(requests), std::move(options), icon, std::move(ukm_data),
-      WTF::BindOnce(&BackgroundFetchManager::DidFetch, WrapPersistent(this),
-                    WrapPersistent(resolver), base::Time::Now()));
+  bridge_->Fetch(id, std::move(requests), std::move(options), icon,
+                 std::move(ukm_data),
+                 resolver->WrapCallbackInScriptScope(
+                     WTF::BindOnce(&BackgroundFetchManager::DidFetch,
+                                   WrapPersistent(this), base::Time::Now())));
 }
 
 void BackgroundFetchManager::DidFetch(
-    ScriptPromiseResolver* resolver,
     base::Time time_started,
+    ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundFetchError error,
     BackgroundFetchRegistration* registration) {
   UMA_HISTOGRAM_TIMES("BackgroundFetch.Manager.FetchDuration",
@@ -311,8 +312,8 @@ void BackgroundFetchManager::DidFetch(
           "There is no service worker available to service the fetch."));
       return;
     case mojom::blink::BackgroundFetchError::QUOTA_EXCEEDED:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kQuotaExceededError, "Quota exceeded."));
+      resolver->RejectWithDOMException(DOMExceptionCode::kQuotaExceededError,
+                                       "Quota exceeded.");
       return;
     case mojom::blink::BackgroundFetchError::REGISTRATION_LIMIT_EXCEEDED:
       resolver->Reject(V8ThrowException::CreateTypeError(
@@ -351,13 +352,14 @@ ScriptPromise BackgroundFetchManager::get(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
   bridge_->GetRegistration(
-      id, WTF::BindOnce(&BackgroundFetchManager::DidGetRegistration,
-                        WrapPersistent(this), WrapPersistent(resolver),
-                        base::Time::Now()));
+      id, resolver->WrapCallbackInScriptScope(
+              WTF::BindOnce(&BackgroundFetchManager::DidGetRegistration,
+                            WrapPersistent(this), base::Time::Now())));
 
   return promise;
 }
@@ -439,8 +441,8 @@ BackgroundFetchManager::CreateFetchAPIRequestVector(
 }
 
 void BackgroundFetchManager::DidGetRegistration(
-    ScriptPromiseResolver* resolver,
     base::Time time_started,
+    ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundFetchError error,
     BackgroundFetchRegistration* registration) {
   UMA_HISTOGRAM_TIMES("BackgroundFetch.Manager.GetDuration",
@@ -460,14 +462,14 @@ void BackgroundFetchManager::DidGetRegistration(
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
       DCHECK(!registration);
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
-          "Failed to get registration due to I/O error."));
+          "Failed to get registration due to I/O error.");
       return;
     case mojom::blink::BackgroundFetchError::SERVICE_WORKER_UNAVAILABLE:
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kInvalidStateError,
-          "There's no service worker available to service the fetch."));
+          "There's no service worker available to service the fetch.");
       return;
     case mojom::blink::BackgroundFetchError::DUPLICATED_DEVELOPER_ID:
     case mojom::blink::BackgroundFetchError::INVALID_ARGUMENT:
@@ -498,19 +500,20 @@ ScriptPromise BackgroundFetchManager::getIds(ScriptState* script_state,
                                v8::Array::New(script_state->GetIsolate()));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
   ScriptPromise promise = resolver->Promise();
 
-  bridge_->GetDeveloperIds(WTF::BindOnce(
-      &BackgroundFetchManager::DidGetDeveloperIds, WrapPersistent(this),
-      WrapPersistent(resolver), base::Time::Now()));
+  bridge_->GetDeveloperIds(resolver->WrapCallbackInScriptScope(
+      WTF::BindOnce(&BackgroundFetchManager::DidGetDeveloperIds,
+                    WrapPersistent(this), base::Time::Now())));
 
   return promise;
 }
 
 void BackgroundFetchManager::DidGetDeveloperIds(
-    ScriptPromiseResolver* resolver,
     base::Time time_started,
+    ScriptPromiseResolver* resolver,
     mojom::blink::BackgroundFetchError error,
     const Vector<String>& developer_ids) {
   UMA_HISTOGRAM_TIMES("BackgroundFetch.Manager.GetIdsDuration",
@@ -524,9 +527,9 @@ void BackgroundFetchManager::DidGetDeveloperIds(
       return;
     case mojom::blink::BackgroundFetchError::STORAGE_ERROR:
       DCHECK(developer_ids.empty());
-      resolver->Reject(MakeGarbageCollected<DOMException>(
+      resolver->RejectWithDOMException(
           DOMExceptionCode::kAbortError,
-          "Failed to get registration IDs due to I/O error."));
+          "Failed to get registration IDs due to I/O error.");
       return;
     case mojom::blink::BackgroundFetchError::DUPLICATED_DEVELOPER_ID:
     case mojom::blink::BackgroundFetchError::INVALID_ARGUMENT:
