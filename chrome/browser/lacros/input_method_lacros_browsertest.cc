@@ -411,6 +411,45 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       SendBackspaceDeletesNonEmptyTextField) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id, "hello",
+                                gfx::Range(3)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "helo", gfx::Range(2)));
+
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hlo", gfx::Range(1)));
+
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyPressEvent('\b', ui::DomCode::BACKSPACE));
+  SendKeyEventSync(input_method_async_waiter,
+                   CreateKeyReleaseEvent('\b', ui::DomCode::BACKSPACE));
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "lo", gfx::Range(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        SetCompositionWhileHandlingKeyEvent) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
