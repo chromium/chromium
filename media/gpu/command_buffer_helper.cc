@@ -106,6 +106,17 @@ class CommandBufferHelperImpl
     return shared_image_stub();
   }
 
+  gpu::MemoryTypeTracker* GetMemoryTypeTracker() override {
+    return &memory_type_tracker_;
+  }
+
+  gpu::SharedImageManager* GetSharedImageManager() override {
+    if (!stub_) {
+      return nullptr;
+    }
+    return stub_->channel()->gpu_channel_manager()->shared_image_manager();
+  }
+
 #if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override {
     if (!stub_)

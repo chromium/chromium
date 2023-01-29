@@ -61,6 +61,8 @@ enum class D3D11StatusCode : StatusCodeType {
   kAcquireKeyedMutexFailed = 43,
   kReleaseKeyedMutexFailed = 44,
   kCreateSharedHandleFailed = 45,
+  kProduceVideoDecodeImageRepresentationFailed = 46,
+  kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed = 47,
 };
 
 struct D3D11StatusTraits {

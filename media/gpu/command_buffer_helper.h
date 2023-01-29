@@ -19,7 +19,9 @@
 namespace gpu {
 class CommandBufferStub;
 class DXGISharedHandleManager;
+class MemoryTypeTracker;
 class SharedImageBacking;
+class SharedImageManager;
 class SharedImageRepresentationFactoryRef;
 class SharedImageStub;
 class TextureBase;
@@ -75,6 +77,10 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
 
   // Retrieve the interface through which to create shared images.
   virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
+
+  virtual gpu::MemoryTypeTracker* GetMemoryTypeTracker() = 0;
+
+  virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
 
 #if BUILDFLAG(IS_WIN)
   virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;

@@ -318,13 +318,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // For more information, please see:
   // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf
   // https://download.microsoft.com/download/5/f/c/5fc4ec5c-bd8c-4624-8034-319c1bab7671/DXVA_H264.pdf
-  //
-  // When creating output texture with shared handle supports, we can't use a
-  // texture array. Because the keyed mutex applies on the entire texture array
-  // causing a deadlock when multiple threads try to use different slots of the
-  // array. More info here: https://crbug.com/1238943
   use_single_video_decoder_texture_ =
-      !!(dec_config.ConfigDecoderSpecific & (1 << 14)) || use_shared_handle;
+      !!(dec_config.ConfigDecoderSpecific & (1 << 14));
   if (use_single_video_decoder_texture_)
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using single textures";
   else
@@ -479,6 +474,23 @@ void D3D11VideoDecoder::ReceivePictureBufferFromClient(
 
   // Also re-start decoding in case it was waiting for more pictures.
   DoDecode();
+}
+
+void D3D11VideoDecoder::PictureBufferGPUResourceInitDone(
+    scoped_refptr<D3D11PictureBuffer> buffer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  TRACE_EVENT0("gpu", "D3D11VideoDecoder::PictureBufferGPUResourceInitDone");
+
+  buffer->remove_client_use();
+
+  // Picture buffer gpu resource may not be ready when D3D11VideoDecoder
+  // initialization finished. In that case, use PictureBuffer::in_client_use()
+  // to pause decoder through media::AcceleratedVideoDecoder::kRanOutOfSurfaces
+  // state. Then restart decoding after picture buffer gpu resource
+  // initialization finished.
+  if (state_ == State::kRunning) {
+    DoDecode();
+  }
 }
 
 void D3D11VideoDecoder::OnGpuInitComplete(
@@ -796,9 +808,25 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     picture_buffers_.push_back(
         new D3D11PictureBuffer(decoder_task_runner_, in_texture, array_slice,
                                std::move(tex_wrapper), size, i /* level */));
+
+    base::OnceCallback<void(scoped_refptr<media::D3D11PictureBuffer>)>
+        picture_buffer_gpu_resource_init_done_cb = base::DoNothing();
+    if (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle)) {
+      // WebGPU requires interop on the picture buffer to achieve zero copy.
+      // This requires a picture buffer to produce a shared image representation
+      // during initialization. Add picture buffer in_client_use count to idle
+      // the decoder until picture buffer finished gpu resource initialization
+      // in gpu thread.
+      picture_buffers_[i]->add_client_use();
+      picture_buffer_gpu_resource_init_done_cb = BindToCurrentLoop(
+          base::BindOnce(&D3D11VideoDecoder::PictureBufferGPUResourceInitDone,
+                         weak_factory_.GetWeakPtr()));
+    }
+
     D3D11Status result = picture_buffers_[i]->Init(
         gpu_task_runner_, get_helper_cb_, video_device_,
-        decoder_configurator_->DecoderGuid(), media_log_->Clone());
+        decoder_configurator_->DecoderGuid(), media_log_->Clone(),
+        std::move(picture_buffer_gpu_resource_init_done_cb));
     if (!result.is_ok()) {
       return NotifyError(std::move(result).AddHere());
     }
@@ -920,7 +948,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
                                                     : config_.hdr_metadata());
   }
-
+  frame->metadata().is_webgpu_compatible =
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle);
   output_cb_.Run(frame);
   return true;
 }

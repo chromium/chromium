@@ -49,6 +49,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
 #if BUILDFLAG(IS_WIN)
   gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
 #endif
+
+  gpu::MemoryTypeTracker* GetMemoryTypeTracker() override;
+  gpu::SharedImageManager* GetSharedImageManager() override;
   bool HasStub() override;
   bool MakeContextCurrent() override;
   std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(

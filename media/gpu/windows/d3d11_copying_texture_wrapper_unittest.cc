@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
+#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -102,18 +103,21 @@ class MockTexture2DWrapper : public Texture2DWrapper {
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
                    GetCommandBufferHelperCB get_helper_cb,
                    ComD3D11Texture2D in_texture,
-                   size_t array_slice) override {
+                   size_t array_slice,
+                   scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+                   PictureBufferGPUResourceInitDoneCB
+                       picture_buffer_gpu_resource_init_done_cb) override {
     gpu_task_runner_ = std::move(gpu_task_runner);
     return MockInit();
   }
 
-  D3D11Status AcquireKeyedMutexIfNeeded() override {
-    return MockAcquireKeyedMutexIfNeeded();
+  D3D11Status BeginSharedImageAccess() override {
+    return MockBeginSharedImageAccess();
   }
 
   MOCK_METHOD0(MockInit, D3D11Status());
-  MOCK_METHOD0(MockAcquireKeyedMutexIfNeeded, D3D11Status());
   MOCK_METHOD0(MockProcessTexture, D3D11Status());
+  MOCK_METHOD0(MockBeginSharedImageAccess, D3D11Status());
   MOCK_METHOD1(SetStreamHDRMetadata,
                void(const gfx::HDRMetadata& stream_metadata));
   MOCK_METHOD1(SetDisplayHDRMetadata,
@@ -128,7 +132,7 @@ CommandBufferHelperPtr UselessHelper() {
 
 class D3D11CopyingTexture2DWrapperTest
     : public ::testing::TestWithParam<
-          std::tuple<HRESULT, HRESULT, HRESULT, bool, bool, bool, bool, bool>> {
+          std::tuple<HRESULT, HRESULT, HRESULT, bool, bool, bool, bool>> {
  public:
 #define FIELD(TYPE, NAME, INDEX) \
   TYPE Get##NAME() { return std::get<INDEX>(GetParam()); }
@@ -139,7 +143,6 @@ class D3D11CopyingTexture2DWrapperTest
   FIELD(bool, TextureWrapperInit, 4)
   FIELD(bool, ProcessTexture, 5)
   FIELD(bool, PassthroughColorSpace, 6)
-  FIELD(bool, AcquireKeyedMutexIfNeeded, 7)
 #undef FIELD
 
   void SetUp() override {
@@ -175,12 +178,6 @@ class D3D11CopyingTexture2DWrapperTest
                        ? D3D11Status::Codes::kOk
                        : D3D11Status::Codes::kCreateVideoProcessorFailed));
 
-    ON_CALL(*result.get(), MockAcquireKeyedMutexIfNeeded())
-        .WillByDefault(
-            Return(GetAcquireKeyedMutexIfNeeded()
-                       ? D3D11Status::Codes::kOk
-                       : D3D11Status::Codes::kCreateVideoProcessorFailed));
-
     ON_CALL(*result.get(), MockProcessTexture())
         .WillByDefault(Return(
             GetProcessTexture()
@@ -199,7 +196,7 @@ class D3D11CopyingTexture2DWrapperTest
   }
 
   bool ProcessTextureSucceeds() {
-    return GetAcquireKeyedMutexIfNeeded() && GetProcessTexture() &&
+    return GetProcessTexture() &&
            SUCCEEDED(GetCreateVideoProcessorOutputView()) &&
            SUCCEEDED(GetCreateVideoProcessorInputView()) &&
            SUCCEEDED(GetVideoProcessorBlt());
@@ -214,7 +211,6 @@ INSTANTIATE_TEST_SUITE_P(CopyingTexture2DWrapperTest,
                          Combine(Values(S_OK, E_FAIL),
                                  Values(S_OK, E_FAIL),
                                  Values(S_OK, E_FAIL),
-                                 Bool(),
                                  Bool(),
                                  Bool(),
                                  Bool(),
@@ -244,7 +240,9 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
   gfx::ColorSpace output_color_space;
   EXPECT_EQ(wrapper
                 ->Init(gpu_task_runner_, CreateMockHelperCB(),
-                       /*texture_d3d=*/nullptr, /*array_slice=*/0)
+                       /*texture_d3d=*/nullptr, /*array_slice=*/0,
+                       /*picture_buffer=*/nullptr,
+                       /*gpu_resource_init_cb=*/base::DoNothing())
                 .is_ok(),
             InitSucceeds());
   task_environment_.RunUntilIdle();

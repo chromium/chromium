@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/win/mf_helpers.h"
+#include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media {
@@ -70,36 +71,27 @@ Texture2DWrapper::Texture2DWrapper() = default;
 Texture2DWrapper::~Texture2DWrapper() = default;
 
 DefaultTexture2DWrapper::DefaultTexture2DWrapper(const gfx::Size& size,
-                                                 DXGI_FORMAT dxgi_format)
-    : size_(size), dxgi_format_(dxgi_format) {}
+                                                 DXGI_FORMAT dxgi_format,
+                                                 ComD3D11Device device)
+    : size_(size),
+      dxgi_format_(dxgi_format),
+      video_device_(std::move(device)) {}
 
 DefaultTexture2DWrapper::~DefaultTexture2DWrapper() = default;
 
-D3D11Status DefaultTexture2DWrapper::AcquireKeyedMutexIfNeeded() {
-  // keyed_mutex_acquired_ should be false when calling this API.
-  // For non-shareable resource, the keyed_mutex_acquired_ should
-  // never be reset.
-  // For shareable resource, it lives behind use_single_texture flag
-  // and decoder should always follow acquire-release operation pairs.
-  DCHECK(!keyed_mutex_acquired_);
-
-  // No need to acquire key mutex for non-shared resource.
-  if (!keyed_mutex_) {
+D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
+  if (shared_image_access_) {
     return D3D11Status::Codes::kOk;
   }
 
-  // Handled shared resource with no key mutex acquired.
-  HRESULT hr =
-      keyed_mutex_->AcquireSync(gpu::kDXGIKeyedMutexAcquireKey, INFINITE);
-
-  if (FAILED(hr)) {
-    keyed_mutex_acquired_ = false;
-    DPLOG(ERROR) << "Unable to acquire the key mutex, error: " << hr;
-    return {D3D11Status::Codes::kAcquireKeyedMutexFailed, hr};
+  if (shared_image_rep_) {
+    TRACE_EVENT0("gpu", "D3D11TextureWrapper::BeginScopedWriteAccess");
+    shared_image_access_ = shared_image_rep_->BeginScopedWriteAccess();
+    if (!shared_image_access_) {
+      return D3D11Status::Codes::
+          kVideoDecodeImageRepresentationBeginScopedWriteAccessFailed;
+    }
   }
-
-  // Key mutex has been acquired for shared resource.
-  keyed_mutex_acquired_ = true;
 
   return D3D11Status::Codes::kOk;
 }
@@ -108,23 +100,13 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
     const gfx::ColorSpace& input_color_space,
     MailboxHolderArray* mailbox_dest,
     gfx::ColorSpace* output_color_space) {
-  // If the decoder acquired the key mutex before, it should be released now.
-  if (keyed_mutex_) {
-    DCHECK(keyed_mutex_acquired_);
-    HRESULT hr = keyed_mutex_->ReleaseSync(gpu::kDXGIKeyedMutexAcquireKey);
-    if (FAILED(hr)) {
-      DPLOG(ERROR) << "Unable to release the keyed mutex, error: " << hr;
-      return {D3D11Status::Codes::kReleaseKeyedMutexFailed, hr};
-    }
-
-    keyed_mutex_acquired_ = false;
-  }
-
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
   // TODO(liberato): Return the error.
-  if (received_error_)
-    return D3D11Status::Codes::kProcessTextureFailed;
+  if (shared_image_access_) {
+    TRACE_EVENT0("gpu", "D3D11TextureWrapper::EndScopedWriteAccess");
+    shared_image_access_.reset();
+  }
 
   // TODO(liberato): make sure that |mailbox_holders_| is zero-initialized in
   // case we don't use all the planes.
@@ -141,25 +123,12 @@ D3D11Status DefaultTexture2DWrapper::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11Texture2D texture,
-    size_t array_slice) {
+    size_t array_slice,
+    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
+        picture_buffer_gpu_resource_init_done_cb) {
   if (!SupportsFormat(dxgi_format_))
     return D3D11Status::Codes::kUnsupportedTextureFormatForBind;
-
-  // Init IDXGIKeyedMutex when using shared handle.
-  if (texture) {
-    // Cannot use shared handle for swap chain output texture.
-    D3D11_TEXTURE2D_DESC desc = {};
-    texture->GetDesc(&desc);
-    if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX) {
-      DCHECK(!keyed_mutex_acquired_);
-      HRESULT hr = texture.As(&keyed_mutex_);
-      if (FAILED(hr)) {
-        DPLOG(ERROR) << "Failed to get key_mutex from output resource, error "
-                     << std::hex << hr;
-        return {D3D11Status::Codes::kGetKeyedMutexFailed, hr};
-      }
-    }
-  }
 
   // Generate mailboxes and holders.
   // TODO(liberato): Verify that this is really okay off the GPU main thread.
@@ -171,6 +140,9 @@ D3D11Status DefaultTexture2DWrapper::Init(
         mailboxes[plane], gpu::SyncToken(), GL_TEXTURE_EXTERNAL_OES);
   }
 
+  picture_buffer_gpu_resource_init_done_cb_ =
+      std::move(picture_buffer_gpu_resource_init_done_cb);
+
   // Start construction of the GpuResources.
   // We send the texture itself, since we assume that we're using the angle
   // device for decoding.  Sharing seems not to work very well.  Otherwise, we
@@ -178,10 +150,15 @@ D3D11Status DefaultTexture2DWrapper::Init(
   // a handle that we get from |texture| as an IDXGIResource1.
   auto on_error_cb = BindToCurrentLoop(base::BindOnce(
       &DefaultTexture2DWrapper::OnError, weak_factory_.GetWeakPtr()));
+
+  auto gpu_resource_init_cb = BindToCurrentLoop(
+      base::BindOnce(&DefaultTexture2DWrapper::OnGPUResourceInitDone,
+                     weak_factory_.GetWeakPtr()));
   gpu_resources_ = base::SequenceBound<GpuResources>(
       std::move(gpu_task_runner), std::move(on_error_cb),
       std::move(get_helper_cb), std::move(mailboxes), size_, dxgi_format_,
-      texture, array_slice);
+      video_device_, texture, array_slice, std::move(picture_buffer),
+      std::move(gpu_resource_init_cb));
   return D3D11Status::Codes::kOk;
 }
 
@@ -196,16 +173,29 @@ void DefaultTexture2DWrapper::SetStreamHDRMetadata(
 void DefaultTexture2DWrapper::SetDisplayHDRMetadata(
     const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) {}
 
+void DefaultTexture2DWrapper::OnGPUResourceInitDone(
+    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    std::unique_ptr<gpu::VideoDecodeImageRepresentation> shared_image_rep) {
+  DCHECK(shared_image_rep);
+  shared_image_rep_ = std::move(shared_image_rep);
+  std::move(picture_buffer_gpu_resource_init_done_cb_)
+      .Run(std::move(picture_buffer));
+}
+
 DefaultTexture2DWrapper::GpuResources::GpuResources(
     OnErrorCB on_error_cb,
     GetCommandBufferHelperCB get_helper_cb,
     const std::vector<gpu::Mailbox>& mailboxes,
     const gfx::Size& size,
     DXGI_FORMAT dxgi_format,
+    ComD3D11Device video_device,
     ComD3D11Texture2D texture,
-    size_t array_slice) {
-  helper_ = get_helper_cb.Run();
+    size_t array_slice,
+    scoped_refptr<media::D3D11PictureBuffer> picture_buffer,
+    GPUResourceInitCB gpu_resource_init_cb) {
+  DCHECK(texture);
 
+  helper_ = get_helper_cb.Run();
   if (!helper_ || !helper_->MakeContextCurrent()) {
     std::move(on_error_cb)
         .Run(std::move(D3D11Status::Codes::kMakeContextCurrentFailed));
@@ -214,44 +204,42 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
   // Usage flags to allow the display compositor to draw from it, video to
   // decode, and allow webgl/canvas access.
-  constexpr uint32_t usage =
+  uint32_t usage =
       gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE | gpu::SHARED_IMAGE_USAGE_GLES2 |
       gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
-  if (texture) {
-    D3D11_TEXTURE2D_DESC desc = {};
-    texture->GetDesc(&desc);
-    // Create shared handle for shareable output texture.
-    if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
-      Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-      HRESULT hr = texture.As(&dxgi_resource);
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
-                    << std::hex << hr;
-        std::move(on_error_cb)
-            .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
-        return;
-      }
-
-      HANDLE shared_handle = nullptr;
-      hr = dxgi_resource->CreateSharedHandle(
-          nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
-          nullptr, &shared_handle);
-      if (FAILED(hr)) {
-        DLOG(ERROR) << "CreateSharedHandle failed with error " << std::hex
-                    << hr;
-        std::move(on_error_cb)
-            .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
-        return;
-      }
-
-      dxgi_shared_handle_state =
-          helper_->GetDXGISharedHandleManager()
-              ->CreateAnonymousSharedHandleState(
-                  base::win::ScopedHandle(shared_handle), texture);
+  D3D11_TEXTURE2D_DESC desc = {};
+  texture->GetDesc(&desc);
+  // Create shared handle for shareable output texture.
+  if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
+    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    HRESULT hr = texture.As(&dxgi_resource);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
+                  << std::hex << hr;
+      std::move(on_error_cb)
+          .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
+      return;
     }
+
+    usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU;
+
+    HANDLE shared_handle = nullptr;
+    hr = dxgi_resource->CreateSharedHandle(
+        nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE,
+        nullptr, &shared_handle);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "CreateSharedHandle failed with error " << std::hex << hr;
+      std::move(on_error_cb)
+          .Run(std::move(D3D11Status::Codes::kCreateSharedHandleFailed));
+      return;
+    }
+
+    dxgi_shared_handle_state =
+        helper_->GetDXGISharedHandleManager()->CreateAnonymousSharedHandleState(
+            base::win::ScopedHandle(shared_handle), texture);
   }
 
   auto shared_image_backings = gpu::D3DImageBacking::CreateFromVideoTexture(
@@ -264,8 +252,25 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
   }
   DCHECK_EQ(shared_image_backings.size(), NumPlanes(dxgi_format));
 
-  for (auto& backing : shared_image_backings)
-    shared_images_.push_back(helper_->Register(std::move(backing)));
+  auto* shared_image_manager = helper_->GetSharedImageManager();
+  auto* memory_type_tracker = helper_->GetMemoryTypeTracker();
+  for (auto& backing : shared_image_backings) {
+    shared_images_.push_back(shared_image_manager->Register(
+        std::move(backing), memory_type_tracker));
+  }
+
+  std::unique_ptr<SharedImageRep> shared_image_rep =
+      shared_image_manager->ProduceVideoDecode(video_device.Get(), mailboxes[0],
+                                               memory_type_tracker);
+  if (!shared_image_rep) {
+    std::move(on_error_cb)
+        .Run(D3D11Status::Codes::kProduceVideoDecodeImageRepresentationFailed);
+    shared_images_.clear();
+    return;
+  }
+
+  std::move(gpu_resource_init_cb)
+      .Run(std::move(picture_buffer), std::move(shared_image_rep));
 }
 
 DefaultTexture2DWrapper::GpuResources::~GpuResources() {

@@ -90,6 +90,14 @@ FakeCommandBufferHelper::GetDXGISharedHandleManager() {
 }
 #endif
 
+gpu::MemoryTypeTracker* FakeCommandBufferHelper::GetMemoryTypeTracker() {
+  return nullptr;
+}
+
+gpu::SharedImageManager* FakeCommandBufferHelper::GetSharedImageManager() {
+  return nullptr;
+}
+
 bool FakeCommandBufferHelper::HasStub() {
   return has_stub_;
 }

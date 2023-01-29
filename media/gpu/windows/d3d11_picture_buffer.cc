@@ -39,24 +39,25 @@ D3D11PictureBuffer::D3D11PictureBuffer(
       size_(size),
       picture_index_(picture_index) {}
 
-D3D11PictureBuffer::~D3D11PictureBuffer() {
-}
+D3D11PictureBuffer::~D3D11PictureBuffer() = default;
 
 D3D11Status D3D11PictureBuffer::Init(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferHelperCB get_helper_cb,
     ComD3D11VideoDevice video_device,
     const GUID& decoder_guid,
-    std::unique_ptr<MediaLog> media_log) {
+    std::unique_ptr<MediaLog> media_log,
+    PictureBufferGPUResourceInitDoneCB
+        picture_buffer_gpu_resource_init_done_cb) {
   D3D11_VIDEO_DECODER_OUTPUT_VIEW_DESC view_desc = {};
   view_desc.DecodeProfile = decoder_guid;
   view_desc.ViewDimension = D3D11_VDOV_DIMENSION_TEXTURE2D;
   view_desc.Texture2D.ArraySlice = array_slice_;
 
   media_log_ = std::move(media_log);
-  D3D11Status result =
-      texture_wrapper_->Init(std::move(gpu_task_runner),
-                             std::move(get_helper_cb), texture_, array_slice_);
+  D3D11Status result = texture_wrapper_->Init(
+      std::move(gpu_task_runner), std::move(get_helper_cb), texture_,
+      array_slice_, this, std::move(picture_buffer_gpu_resource_init_done_cb));
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log_) << "Failed to Initialize the wrapper";
     return result;
@@ -87,7 +88,7 @@ ComD3D11Texture2D D3D11PictureBuffer::Texture() const {
 
 D3D11Status::Or<ID3D11VideoDecoderOutputView*>
 D3D11PictureBuffer::AcquireOutputView() const {
-  D3D11Status result = texture_wrapper_->AcquireKeyedMutexIfNeeded();
+  D3D11Status result = texture_wrapper_->BeginSharedImageAccess();
   if (!result.is_ok()) {
     MEDIA_LOG(ERROR, media_log_)
         << "Failed to acquired key mutex for native texture resource";

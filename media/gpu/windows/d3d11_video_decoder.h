@@ -130,6 +130,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Receive |buffer|, that is now unused by the client.
   void ReceivePictureBufferFromClient(scoped_refptr<D3D11PictureBuffer> buffer);
 
+  // Picture buffer and related gpu resource initialization done.
+  void PictureBufferGPUResourceInitDone(
+      scoped_refptr<D3D11PictureBuffer> buffer);
+
   // Called when the gpu side of initialization is complete.
   void OnGpuInitComplete(
       bool success,
