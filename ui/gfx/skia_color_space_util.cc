@@ -8,6 +8,7 @@
 #include <cmath>
 #include <vector>
 
+#include "base/check.h"
 #include "base/cxx17_backports.h"
 
 namespace gfx {
