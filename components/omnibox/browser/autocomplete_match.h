@@ -687,10 +687,15 @@ struct AutocompleteMatch {
   // Additional helper text for each entry, such as a title or description.
   std::u16string description;
   ACMatchClassifications description_class;
-  // In the case of the document provider, the description includes a last
-  // updated date that may become stale. To avoid showing stale descriptions,
-  // when |description_for_shortcut| is not empty, it will be stored instead of
-  // |description| in the shortcuts provider.
+  // In the case of the document provider, `description` includes a last
+  // updated date that may become stale. Likewise for the bookmark provider,
+  // `contents` may be the path which may become stale when the bookmark is
+  // moved. To avoid showing stale text, when `description_for_shortcut`
+  // is not empty, it will be stored instead of `description` (or `contents` if
+  // `swap_contents_and_description` is true) in the shortcuts provider.
+  // TODO(manukh) This is a temporary misnomer (since it can represent both
+  //   `description` and `contents`) until `swap_contents_and_description` is
+  //   removed.
   std::u16string description_for_shortcuts;
   ACMatchClassifications description_class_for_shortcuts;
 

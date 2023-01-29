@@ -1255,6 +1255,12 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
 
 void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     AutocompleteMatch& duplicate_match) {
+  // TODO(manukh): There's some duplicate logic between `BetterDuplicate()` and
+  //   `UpgradeMatchWithPropertiesFrom()`. This is unavoidable due to having to
+  //   taking different fields from different duplicates, rather having 1 match
+  //   that's absolutely overrides all other matches. Perhaps we can avoid this
+  //   if we join the 2 functions.
+
   // For Entity Matches, absorb the duplicate match's |allowed_to_be_default|
   // and |inline_autocompletion| properties.
   if (type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
@@ -1288,6 +1294,22 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
   if (actions.empty() && !duplicate_match.actions.empty() &&
       IsActionCompatible()) {
     actions = std::move(duplicate_match.actions);
+  }
+
+  // Prefer fresh suggestion text over potentially stale shortcut text for
+  // bookmark paths and document metadata. Don't edit the omnibox text (i.e.
+  // `fill_into_edit`, `inline_autocompletion`, and `additional_text`) as the
+  // duplicate may not be `allowed_to_be_default_match`.
+  if (GetDeduplicationProviderPreferenceScore(
+          duplicate_match.provider->type()) >
+      GetDeduplicationProviderPreferenceScore(provider->type())) {
+    contents = duplicate_match.contents;
+    contents_class = duplicate_match.contents_class;
+    description = duplicate_match.description;
+    description_class = duplicate_match.description_class;
+    description_for_shortcuts = duplicate_match.description_for_shortcuts;
+    description_class_for_shortcuts =
+        duplicate_match.description_class_for_shortcuts;
   }
 
   // Copy `rich_autocompletion_triggered` for counterfactual logging.

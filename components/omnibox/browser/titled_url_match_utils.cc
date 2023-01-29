@@ -85,11 +85,14 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   // Otherwise, display the path, even if the input matches both or neither.
   // Except if kBookmarkPaths is disabled, in which case, always display the
   // URL.
-  match.contents = !base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) ||
-                           (!titled_url_match.has_ancestor_match &&
-                            !titled_url_match.url_match_positions.empty())
-                       ? formatted_url
-                       : path;
+  bool show_path = base::FeatureList::IsEnabled(omnibox::kBookmarkPaths) &&
+                   (titled_url_match.has_ancestor_match ||
+                    titled_url_match.url_match_positions.empty());
+  match.contents = show_path ? path : formatted_url;
+  // The path can become stale (when the bookmark is moved). So persist the URL
+  // instead when creating shortcuts.
+  if (show_path)
+    match.description_for_shortcuts = formatted_url;
 
   // Bookmark classification diverges from relevance scoring. Specifically,
   // 1) All occurrences of the input contribute to relevance; e.g. for the input
@@ -107,6 +110,14 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       contents_terms, match.contents.length(),
       ACMatchClassification::MATCH | ACMatchClassification::URL,
       ACMatchClassification::URL);
+
+  if (show_path) {
+    auto terms = FindTermMatches(input.text(), match.description_for_shortcuts);
+    match.description_class_for_shortcuts = ClassifyTermMatches(
+        terms, match.description_for_shortcuts.length(),
+        ACMatchClassification::MATCH | ACMatchClassification::URL,
+        ACMatchClassification::URL);
+  }
 
   match.description = title;
 

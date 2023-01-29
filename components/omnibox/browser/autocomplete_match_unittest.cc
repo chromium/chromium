@@ -443,28 +443,52 @@ TEST(AutocompleteMatchTest, DedupeDriveURLs) {
     CheckDuplicateCase(caseI);
 }
 
-TEST(AutocompleteMatchTest, UpgradeMatchPropertiesWhileMergingDuplicates) {
-  AutocompleteMatch search_history_match(nullptr, 500, true,
+TEST(AutocompleteMatchTest, UpgradeMatchWithPropertiesFrom) {
+  scoped_refptr<FakeAutocompleteProvider> bookmark_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_BOOKMARK);
+  scoped_refptr<FakeAutocompleteProvider> history_provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_HISTORY_QUICK);
+  scoped_refptr<FakeAutocompleteProvider> search_provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+
+  AutocompleteMatch search_history_match(search_provider.get(), 500, true,
                                          AutocompleteMatchType::SEARCH_HISTORY);
 
   // Entity match should get the increased score, but not change types.
-  AutocompleteMatch entity_match(nullptr, 400, false,
+  AutocompleteMatch entity_match(search_provider.get(), 400, false,
                                  AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
   entity_match.UpgradeMatchWithPropertiesFrom(search_history_match);
-  EXPECT_EQ(500, entity_match.relevance);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, entity_match.type);
+  EXPECT_EQ(entity_match.relevance, 500);
+  EXPECT_EQ(entity_match.type, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
 
   // Suggest and search-what-typed matches should get the search history type.
-  AutocompleteMatch suggest_match(nullptr, 400, true,
+  AutocompleteMatch suggest_match(search_provider.get(), 400, true,
                                   AutocompleteMatchType::SEARCH_SUGGEST);
   AutocompleteMatch search_what_you_typed(
-      nullptr, 400, true, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+      search_provider.get(), 400, true,
+      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
   suggest_match.UpgradeMatchWithPropertiesFrom(search_history_match);
   search_what_you_typed.UpgradeMatchWithPropertiesFrom(search_history_match);
-  EXPECT_EQ(500, suggest_match.relevance);
-  EXPECT_EQ(500, search_what_you_typed.relevance);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, suggest_match.type);
-  EXPECT_EQ(AutocompleteMatchType::SEARCH_HISTORY, search_what_you_typed.type);
+  EXPECT_EQ(suggest_match.relevance, 500);
+  EXPECT_EQ(search_what_you_typed.relevance, 500);
+  EXPECT_EQ(suggest_match.type, AutocompleteMatchType::SEARCH_HISTORY);
+  EXPECT_EQ(search_what_you_typed.type, AutocompleteMatchType::SEARCH_HISTORY);
+
+  // Some providers should bestow their suggestion texts even if not the primary
+  // duplicate.
+  AutocompleteMatch history_match(history_provider.get(), 800, true,
+                                  AutocompleteMatchType::HISTORY_TITLE);
+  AutocompleteMatch bookmark_match(bookmark_provider.get(), 400, true,
+                                   AutocompleteMatchType::BOOKMARK_TITLE);
+  history_match.contents = u"overwrite";
+  history_match.inline_autocompletion = u"preserve";
+  bookmark_match.contents = u"propagate";
+  bookmark_match.inline_autocompletion = u"discard";
+  history_match.UpgradeMatchWithPropertiesFrom(bookmark_match);
+  EXPECT_EQ(history_match.type, AutocompleteMatchType::HISTORY_TITLE);
+  EXPECT_EQ(history_match.contents, u"propagate");
+  EXPECT_EQ(history_match.inline_autocompletion, u"preserve");
 }
 
 TEST(AutocompleteMatchTest, MergeScoringSignals) {

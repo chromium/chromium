@@ -508,17 +508,18 @@ AutocompleteMatch ShortcutsProvider::ShortcutToACMatch(
 #else
     } else {
 #endif
-      // Try rich autocompletion first. For document suggestions,
-      // `match.contents` is the title, while `description` is something like
-      // 'Google Docs' and shouldn't be autocompleted. For all other nav
-      // suggestions, `contents` is the URL and `description` is the title.
+      // Try rich autocompletion first. For document suggestions, hide the
+      // URL from `additional_text` and don't try to inline the metadata (e.g.
+      // 'Google Docs' or '1/1/2023').
       bool autocompleted =
           match.type == AutocompleteMatch::Type::DOCUMENT_SUGGESTION
-              ? match.TryRichAutocompletion(u"", match.contents, input,
-                                            shortcut.text)
-              : match.TryRichAutocompletion(match.contents, match.description,
-                                            input, shortcut.text);
-
+              ? match.TryRichAutocompletion(
+                    u"", ShortcutsBackend::GetSwappedContents(match), input,
+                    shortcut.text)
+              : match.TryRichAutocompletion(
+                    ShortcutsBackend::GetSwappedContents(match),
+                    ShortcutsBackend::GetSwappedDescription(match), input,
+                    shortcut.text);
       if (!autocompleted) {
         const size_t inline_autocomplete_offset =
             URLPrefix::GetInlineAutocompleteOffset(
