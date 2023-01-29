@@ -23,7 +23,7 @@ namespace base {
 namespace {
 
 #if BUILDFLAG(IS_APPLE)
-bool g_use_thread_qos = false;
+bool g_use_thread_qos = true;
 #endif
 
 }  // namespace
