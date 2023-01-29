@@ -5080,6 +5080,15 @@
          {}
         ]
        ]
+      },
+      "the-textarea-element": {
+       "textarea-splittext-with-range-crash.html": [
+        "9d66a4ae05cccd10bdd851205f6312f3cedd28dd",
+        [
+         null,
+         {}
+        ]
+       ]
       }
      },
      "interactive-elements": {
@@ -630787,7 +630796,7 @@
      ]
     ],
     "RTCPeerConnection-relay-canvas.https.html": [
-     "7c3c92bc8de40f608417663844329ed19f61cea0",
+     "78df2ee82d623403f2a627b99c43051a99c96edb",
      [
       null,
       {
