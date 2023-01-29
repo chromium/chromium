@@ -104793,7 +104793,7 @@
        ]
       ],
       "descriptor-prefix.html": [
-       "ecf18420aad8be51888f21d0363f89053d7a4896",
+       "b9cf1b9bb1f19d4137a4ed0765eb1e118912e30a",
        [
         null,
         [
@@ -104896,6 +104896,19 @@
         {}
        ]
       ],
+      "fallback-cycle.html": [
+       "2e63a3f4d4445f1b57b216446f8d4474ff5808b1",
+       [
+        null,
+        [
+         [
+          "/css/css-counter-styles/counter-style-at-rule/fallback-cycle-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "fallbacks-in-shadow-dom.html": [
        "d51f70bc31c011fe9853755715a710837090a700",
        [
@@ -104974,6 +104987,19 @@
         {}
        ]
       ],
+      "suffix-fallback.html": [
+       "7684c9a10a9c09bc768cbb44a7379c1599f09eed",
+       [
+        null,
+        [
+         [
+          "/css/css-counter-styles/counter-style-at-rule/suffix-fallback-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "symbols-function-invalid.html": [
        "35aa83258726c89efc2c0e31a1e3927362c7f4e2",
        [
@@ -105014,7 +105040,7 @@
        ]
       ],
       "system-additive.html": [
-       "74568bccd183ef48f35edd1dd5cdc8cb049fdfd2",
+       "415f00a97458ee7967fa170f6caa94cd8d10e66b",
        [
         null,
         [
@@ -105040,7 +105066,7 @@
        ]
       ],
       "system-alphabetic.html": [
-       "9447eaf940401aa3304634a5ba89d48b3c465ca0",
+       "a986c54ac9f9f4c65dda9ead7ac44b8fab41e264",
        [
         null,
         [
@@ -105092,7 +105118,7 @@
        ]
       ],
       "system-extends.html": [
-       "287930d0f607c0582d2069b045dfc0f6d78b39fa",
+       "a8f95323aa41f1a933e70bd1e3df553f28e89896",
        [
         null,
         [
@@ -105170,7 +105196,7 @@
        ]
       ],
       "system-symbolic.html": [
-       "a3ab8b1a98a34ed0cbd2525c3f2b61973b45999d",
+       "99c1188c18e82e568cf32b126cf993b35e6d9737",
        [
         null,
         [
@@ -263188,11 +263214,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "f98db48d7123f6c0c32c0962cef59fad46e14145",
+     "0049f3e5247e64b948c41f5edbd906d61b954feb",
      []
     ],
     "mtime.json": [
-     "410707b980f90aefdf1b87fb31bd68b2b70e417d",
+     "0c7d29e6a9cdda61de450dcb3990409922abc5b9",
      []
     ]
    },
@@ -286820,7 +286846,11 @@
        []
       ],
       "descriptor-prefix-ref.html": [
-       "aa32f53639e99a502f8e0b53c4a8f22eeeb30d51",
+       "f106e616c5265740c73c56cbbe1fd5c42ad9a265",
+       []
+      ],
+      "descriptor-prefix.html.ini": [
+       "00b63bf55e2efe0ce9ac8f796e9c08e4b4320e78",
        []
       ],
       "descriptor-range-invalid-ref.html": [
@@ -286859,6 +286889,14 @@
        "95da656cfc89158953ad33da7757c4d86168fdd3",
        []
       ],
+      "fallback-cycle-ref.html": [
+       "22bcf8d9b4ef3963020b3e834c893756426df412",
+       []
+      ],
+      "fallback-cycle.html.ini": [
+       "912e1a676a91725be6c414790968cf6c77fd2460",
+       []
+      ],
       "fallbacks-in-shadow-dom-ref.html": [
        "53e467bb391884ec9751edfcffe85f03c8502e08",
        []
@@ -286895,6 +286933,14 @@
        "7f1af7532075c983e7fc0bcec7cd14830e0c13eb",
        []
       ],
+      "suffix-fallback-ref.html": [
+       "15cd54cb24f18b64f1bbbc900287bd9734a5f093",
+       []
+      ],
+      "suffix-fallback.html.ini": [
+       "fdd848b176ff0e3edaa2decf6a7c2ecebb3e11c0",
+       []
+      ],
       "support": {
        "counter-style-testcommon.js": [
         "a3615e92ff0678d5e7b2aad0a20076cd1ac07d6e",
@@ -286926,11 +286972,19 @@
        []
       ],
       "system-additive-ref.html": [
-       "b45ab5fcecf6774ea89eeb93bba9d41da99c9fea",
+       "993371307ae1a6b8d4d5c40014c56132c5fab5c7",
+       []
+      ],
+      "system-additive.html.ini": [
+       "5c48264eb90892cb9682e32a9fd1bad1f90a8959",
        []
       ],
       "system-alphabetic-ref.html": [
-       "331d96ea4c83a4b17c77baa1503cb4b23ca66889",
+       "b4a534beb830b6a00402235f0e839913ab2e0178",
+       []
+      ],
+      "system-alphabetic.html.ini": [
+       "51d376eacf7c009c8e70bbeebdc630993484a171",
        []
       ],
       "system-common-invalid-ref.html": [
@@ -286950,11 +287004,11 @@
        []
       ],
       "system-extends-ref.html": [
-       "c988310c25b8a251b6b302ab83d8b3f2dcd1f3ec",
+       "8105956ecb8dda46573e097ab43322416caa9449",
        []
       ],
       "system-extends.html.ini": [
-       "5e1da0edb8d17775aa5f20bec67e9763c8624759",
+       "cce2bed8622a3a0a0dd36e8fdb474eec038580dc",
        []
       ],
       "system-fixed-ref.html": [
@@ -286966,7 +287020,11 @@
        []
       ],
       "system-symbolic-ref.html": [
-       "7229c895ffc099d2f73667a5ca0abb31b40e8afd",
+       "61b743f35885acf8fa38baf7878de43ef0546dda",
+       []
+      ],
+      "system-symbolic.html.ini": [
+       "e0e2984ca6383797c6b501fde8bfc61b2453d37e",
        []
       ]
      },
@@ -291305,7 +291363,7 @@
       []
      ],
      "cjk-kerning.html.ini": [
-      "cf10f40714d0b64c83f8037bd93071a2b6b95c94",
+      "5f57054ae95563dfd924ace4a18776bd51a65c77",
       []
      ],
      "crash-large-grapheme-cluster.html.ini": [
@@ -319337,6 +319395,10 @@
        "5e9565445a693b0bac1d54974434291a0d9604d7",
        []
       ],
+      "text-transform-capitalize-024.html.ini": [
+       "d3c4f1350d08e6e26a797c54a6e2fedf01b4b429",
+       []
+      ],
       "text-transform-capitalize-026.html.ini": [
        "ff630745fc27ca4844b809a72548171a8c32ad20",
        []
@@ -325367,6 +325429,10 @@
        "cfa46fa9706127e00580cf1e1c5f022bc8563538",
        []
       ],
+      "kind-of-widget-fallback-input-reset-border-image-source-001.html.ini": [
+       "a911df1e36bb92f5c4da85931bc273900eb17c2c",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-top-color-001.html.ini": [
        "14b26723f548de962341d22594eefaf841cec560",
        []
@@ -325377,6 +325443,10 @@
       ],
       "kind-of-widget-fallback-input-search-border-bottom-color-001.html.ini": [
        "7891b7b80041c049bfdbefee4d8ea2acb35ac8ff",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-border-bottom-style-001.html.ini": [
+       "7f0c55c56c12ea30869cc5b0b212ebfbaa31640f",
        []
       ],
       "kind-of-widget-fallback-input-search-border-left-color-001.html.ini": [
@@ -328837,7 +328907,7 @@
       []
      ],
      "content-with-clip-max-texture-size.html.ini": [
-      "9adefd74cdd6b0dfc74d5b6bd340137511be6705",
+      "243c1b5ef4502506132f9ea05d027bb40cf3aa8d",
       []
      ],
      "content-with-clip-ref.html": [
@@ -329041,7 +329111,7 @@
       []
      ],
      "new-content-captures-opacity.html.ini": [
-      "bb2bfdd1762ce7a2b4b0782637bf6df588ef8e95",
+      "d7050b65f96330547518a1c4d9f4550b7cf14912",
       []
      ],
      "new-content-captures-root-ref.html": [
@@ -329077,7 +329147,7 @@
       []
      ],
      "new-content-intrinsic-aspect-ratio.html.ini": [
-      "fa18c60023d714471cc7816cca3c1a820af84951",
+      "dd8121062b36f51c0fa600189adf4b6f97f99a35",
       []
      ],
      "new-content-is-empty-div-ref.html": [
@@ -329217,7 +329287,7 @@
       []
      ],
      "old-content-captures-clip-path.html.ini": [
-      "660a6e5a4e5785bf859044663bc1a7d8e29ff691",
+      "67fc6d8cbb1b067eee03844932424475ae95b41a",
       []
      ],
      "old-content-captures-different-size-ref.html": [
@@ -329415,7 +329485,7 @@
       []
      ],
      "root-to-shared-animation-incoming.html.ini": [
-      "395fe994d6edbbad6fb9049cc2782692c3587040",
+      "af41c454f3be96f8d74b116fc11c54b40cac09e2",
       []
      ],
      "root-to-shared-animation-start-ref.html": [
@@ -361623,7 +361693,7 @@
         []
        ],
        "sandbox-top-navigation-child.tentative.sub.window.js.ini": [
-        "7ce20ab053fa6451af680a7ff5762f6dec0d70b5",
+        "805f62339e40876ba265dd79d589579a56913ab6",
         []
        ],
        "sandbox-top-navigation-escalate-privileges.tentative.sub.window.js.ini": [
@@ -375533,7 +375603,7 @@
       []
      ],
      "performance-navigation-timing-same-origin-bfcache.tentative.window.js.ini": [
-      "2faeab35f7932b2191cc0d963c0bc95d8cdfd868",
+      "a7414b2e31aaebcdf7373b5217c283682827ab56",
       []
      ],
      "performance-navigation-timing-same-origin-replace.tentative.window.js.ini": [
