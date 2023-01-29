@@ -100,7 +100,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsKnownUser(const AccountId& account_id) const override;
   const User* FindUser(const AccountId& account_id) const override;
   User* FindUserAndModify(const AccountId& account_id) override;
-  const User* GetPrimaryUser() const override;
   void SaveUserOAuthStatus(const AccountId& account_id,
                            User::OAuthTokenStatus oauth_token_status) override {
   }
@@ -165,8 +164,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void OnUserRemoved(const AccountId& account_id) override {}
 
  protected:
-  raw_ptr<User> primary_user_;
-
   // Can be set by set_local_state().
   raw_ptr<PrefService> local_state_ = nullptr;
 
