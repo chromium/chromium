@@ -8,6 +8,12 @@ PASS Partial interface MLContext[2]: original interface defined
 PASS Partial interface MLContext[2]: member names are unique
 PASS Partial interface MLContext[3]: original interface defined
 PASS Partial interface MLContext[3]: member names are unique
+PASS Partial interface MLCommandEncoder: original interface defined
+PASS Partial interface MLCommandEncoder: member names are unique
+PASS Partial interface MLCommandEncoder[2]: original interface defined
+PASS Partial interface MLCommandEncoder[2]: member names are unique
+PASS Partial interface MLCommandEncoder[3]: original interface defined
+PASS Partial interface MLCommandEncoder[3]: member names are unique
 PASS Partial interface MLGraphBuilder: original interface defined
 PASS Partial interface MLGraphBuilder: member names are unique
 PASS Partial interface MLGraphBuilder[2]: original interface defined
@@ -76,12 +82,6 @@ PASS Partial interface MLGraphBuilder[33]: original interface defined
 PASS Partial interface MLGraphBuilder[33]: member names are unique
 PASS Partial interface MLGraphBuilder[34]: original interface defined
 PASS Partial interface MLGraphBuilder[34]: member names are unique
-PASS Partial interface MLCommandEncoder: original interface defined
-PASS Partial interface MLCommandEncoder: member names are unique
-PASS Partial interface MLCommandEncoder[2]: original interface defined
-PASS Partial interface MLCommandEncoder[2]: member names are unique
-PASS Partial interface MLCommandEncoder[3]: original interface defined
-PASS Partial interface MLCommandEncoder[3]: member names are unique
 PASS Partial interface Navigator: member names are unique
 PASS Partial interface mixin NavigatorID: member names are unique
 PASS Navigator includes NavigatorML: member names are unique
@@ -124,22 +124,14 @@ PASS ML interface: navigator.ml must inherit property "createContextSync(optiona
 PASS ML interface: calling createContextSync(optional MLContextOptions) on navigator.ml with too few arguments must throw TypeError
 PASS ML interface: navigator.ml must inherit property "createContextSync(GPUDevice)" with the proper type
 PASS ML interface: calling createContextSync(GPUDevice) on navigator.ml with too few arguments must throw TypeError
-PASS MLContext interface: existence and properties of interface object
-PASS MLContext interface object length
-PASS MLContext interface object name
-PASS MLContext interface: existence and properties of interface prototype object
-PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
-PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
-FAIL MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "computeSync" missing
-FAIL MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
-FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
-PASS MLContext must be primary interface of context
-PASS Stringification of context
-FAIL MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "computeSync" not found in prototype chain
-FAIL MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "computeSync" not found in prototype chain
-FAIL MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "compute" not found in prototype chain
-FAIL MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "compute" not found in prototype chain
-FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
+PASS MLGraph interface: existence and properties of interface object
+PASS MLGraph interface object length
+PASS MLGraph interface object name
+PASS MLGraph interface: existence and properties of interface prototype object
+PASS MLGraph interface: existence and properties of interface prototype object's "constructor" property
+PASS MLGraph interface: existence and properties of interface prototype object's @@unscopables property
+FAIL MLGraph must be primary interface of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
+FAIL Stringification of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
 PASS MLOperand interface: existence and properties of interface object
 PASS MLOperand interface object length
 PASS MLOperand interface object name
@@ -158,6 +150,31 @@ FAIL MLActivation interface object name assert_own_property: self does not have 
 FAIL MLActivation interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 FAIL MLActivation interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
 FAIL MLActivation interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLActivation" expected property "MLActivation" missing
+PASS MLContext interface: existence and properties of interface object
+PASS MLContext interface object length
+PASS MLContext interface object name
+PASS MLContext interface: existence and properties of interface prototype object
+PASS MLContext interface: existence and properties of interface prototype object's "constructor" property
+PASS MLContext interface: existence and properties of interface prototype object's @@unscopables property
+FAIL MLContext interface: operation computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "computeSync" missing
+FAIL MLContext interface: operation compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) assert_own_property: interface prototype object missing non-static operation expected property "compute" missing
+FAIL MLContext interface: operation createCommandEncoder() assert_own_property: interface prototype object missing non-static operation expected property "createCommandEncoder" missing
+PASS MLContext must be primary interface of context
+PASS Stringification of context
+FAIL MLContext interface: context must inherit property "computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "computeSync" not found in prototype chain
+FAIL MLContext interface: calling computeSync(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "computeSync" not found in prototype chain
+FAIL MLContext interface: context must inherit property "compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews)" with the proper type assert_inherits: property "compute" not found in prototype chain
+FAIL MLContext interface: calling compute(MLGraph, MLNamedArrayBufferViews, MLNamedArrayBufferViews) on context with too few arguments must throw TypeError assert_inherits: property "compute" not found in prototype chain
+FAIL MLContext interface: context must inherit property "createCommandEncoder()" with the proper type assert_inherits: property "createCommandEncoder" not found in prototype chain
+FAIL MLCommandEncoder interface: existence and properties of interface object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface object length assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface object name assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: operation initializeGraph(MLGraph) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: operation dispatch(MLGraph, MLNamedGPUResources, MLNamedGPUResources) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
+FAIL MLCommandEncoder interface: operation finish(optional GPUCommandBufferDescriptor) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 PASS MLGraphBuilder interface: existence and properties of interface object
 PASS MLGraphBuilder interface object length
 PASS MLGraphBuilder interface object name
@@ -388,23 +405,6 @@ FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few a
 FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_inherits: property "tanh" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type assert_inherits: property "transpose" not found in prototype chain
 FAIL MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError assert_inherits: property "transpose" not found in prototype chain
-PASS MLGraph interface: existence and properties of interface object
-PASS MLGraph interface object length
-PASS MLGraph interface object name
-PASS MLGraph interface: existence and properties of interface prototype object
-PASS MLGraph interface: existence and properties of interface prototype object's "constructor" property
-PASS MLGraph interface: existence and properties of interface prototype object's @@unscopables property
-FAIL MLGraph must be primary interface of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
-FAIL Stringification of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
-FAIL MLCommandEncoder interface: existence and properties of interface object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface object length assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface object name assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: operation initializeGraph(MLGraph) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: operation dispatch(MLGraph, MLNamedGPUResources, MLNamedGPUResources) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
-FAIL MLCommandEncoder interface: operation finish(optional GPUCommandBufferDescriptor) assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
 PASS WorkerNavigator interface: attribute ml
 PASS WorkerNavigator interface: navigator must inherit property "ml" with the proper type
 Harness: the test ran to completion.

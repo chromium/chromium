@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 78 tests; 42 PASS, 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 70 tests; 40 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface ServiceWorkerRegistration: original interface defined
@@ -9,19 +9,11 @@ PASS Partial interface ServiceWorkerGlobalScope: member names are unique
 PASS Partial interface ServiceWorkerGlobalScope[2]: original interface defined
 PASS Partial interface ServiceWorkerGlobalScope[2]: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
-FAIL PaymentManager interface: existence and properties of interface object assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface object length assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface object name assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: existence and properties of interface prototype object assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: attribute userHint assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
-FAIL PaymentManager interface: operation enableDelegations(sequence<PaymentDelegation>) assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
+PASS PaymentManager interface: existence and properties of interface object
 FAIL PaymentManager must be primary interface of paymentManager assert_own_property: self does not have own property "PaymentManager" expected property "PaymentManager" missing
 PASS Stringification of paymentManager
-PASS PaymentManager interface: paymentManager must inherit property "userHint" with the proper type
-PASS PaymentManager interface: paymentManager must inherit property "enableDelegations(sequence<PaymentDelegation>)" with the proper type
-PASS PaymentManager interface: calling enableDelegations(sequence<PaymentDelegation>) on paymentManager with too few arguments must throw TypeError
+FAIL PaymentManager interface: paymentManager must not have property "userHint" assert_false: expected false got true
+FAIL PaymentManager interface: paymentManager must not have property "enableDelegations" assert_false: expected false got true
 PASS CanMakePaymentEvent interface: existence and properties of interface object
 FAIL CanMakePaymentEvent interface object length assert_equals: wrong value for CanMakePaymentEvent.length expected 1 but got 2
 PASS CanMakePaymentEvent interface object name

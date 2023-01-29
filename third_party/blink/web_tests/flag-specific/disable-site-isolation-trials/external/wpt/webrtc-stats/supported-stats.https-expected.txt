@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 249 tests; 241 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 249 tests; 240 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -190,7 +190,7 @@ PASS transport's dtlsState
 PASS transport's iceState
 PASS transport's selectedCandidatePairId
 PASS transport's localCertificateId
-PASS transport's remoteCertificateId
+FAIL transport's remoteCertificateId assert_true: Is remoteCertificateId present expected true got false
 PASS transport's tlsVersion
 PASS transport's dtlsCipher
 PASS transport's dtlsRole
