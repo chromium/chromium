@@ -883,18 +883,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @Override
-    public boolean supportsAction(int action) {
-        // TODO(dmazzoni): implement this.
-        return false;
-    }
-
-    @Override
-    public boolean performAction(int action, Bundle arguments) {
-        // TODO(dmazzoni): implement this.
-        return false;
-    }
-
-    @Override
     public void onProvideVirtualStructure(
             final ViewStructure structure, final boolean ignoreScrollOffset) {
         // Do not collect accessibility tree in incognito mode

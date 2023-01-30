@@ -3406,10 +3406,6 @@ public class AwContents implements SmartClipProvider {
         return mAwViewMethods.getAccessibilityNodeProvider();
     }
 
-    public boolean supportsAccessibilityAction(int action) {
-        return isDestroyed(WARN) ? false : getWebContentsAccessibility().supportsAction(action);
-    }
-
     /**
      * @see android.webkit.WebView#performAccessibilityAction(int, Bundle)
      */
@@ -4344,9 +4340,7 @@ public class AwContents implements SmartClipProvider {
 
         @Override
         public boolean performAccessibilityAction(final int action, final Bundle arguments) {
-            if (isDestroyed(NO_WARN)) return false;
-            WebContentsAccessibility wcax = getWebContentsAccessibility();
-            return wcax != null ? wcax.performAction(action, arguments) : false;
+            return false;
         }
     }
 

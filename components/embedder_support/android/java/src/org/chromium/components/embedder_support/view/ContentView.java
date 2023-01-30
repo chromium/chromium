@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.view.DragEvent;
 import android.view.KeyEvent;
@@ -155,14 +154,6 @@ public class ContentView extends FrameLayout
         WebContentsAccessibility wcax = getWebContentsAccessibility();
         if (wcax == null) return;
         wcax.setObscuredByAnotherView(mIsObscuredForAccessibility);
-    }
-
-    @Override
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
-        WebContentsAccessibility wcax = getWebContentsAccessibility();
-        return wcax != null && wcax.supportsAction(action)
-                ? wcax.performAction(action, arguments)
-                : super.performAccessibilityAction(action, arguments);
     }
 
     /**
@@ -314,9 +305,7 @@ public class ContentView extends FrameLayout
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
         WebContentsAccessibility wcax = getWebContentsAccessibility();
-        AccessibilityNodeProvider provider =
-                (wcax != null) ? wcax.getAccessibilityNodeProvider() : null;
-        return (provider != null) ? provider : super.getAccessibilityNodeProvider();
+        return (wcax != null) ? wcax.getAccessibilityNodeProvider() : null;
     }
 
     // Needed by ViewEventSink.InternalAccessDelegate

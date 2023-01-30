@@ -9,7 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.util.Size;
 import android.view.MotionEvent;
 import android.view.View;
@@ -165,13 +164,6 @@ public class PlayerFrameView extends FrameLayout {
             subFrameView.layout(
                     layoutRect.left, layoutRect.top, layoutRect.right, layoutRect.bottom);
         }
-    }
-
-    @Override
-    public boolean performAccessibilityAction(int action, Bundle arguments) {
-        return mWebContentsAccessibility != null && mWebContentsAccessibility.supportsAction(action)
-                ? mWebContentsAccessibility.performAction(action, arguments)
-                : super.performAccessibilityAction(action, arguments);
     }
 
     @Override

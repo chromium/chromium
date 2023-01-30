@@ -2118,9 +2118,6 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             });
             return ret;
         }
-        if (mAwContents.supportsAccessibilityAction(action)) {
-            return mAwContents.performAccessibilityAction(action, arguments);
-        }
         return mWebViewPrivate.super_performAccessibilityAction(action, arguments);
     }
 
