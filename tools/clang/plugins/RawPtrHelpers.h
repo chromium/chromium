@@ -5,6 +5,8 @@
 #ifndef TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_
 #define TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_
 
+#include <optional>
+
 #include "Util.h"
 #include "clang/ASTMatchers/ASTMatchers.h"
 #include "clang/ASTMatchers/ASTMatchersMacros.h"
@@ -51,11 +53,11 @@ class FilterFile {
   // be matched by the filter. The exclusion lines specify what to force exclude
   // from the filter. Lazily-constructed regex that matches strings that contain
   // any of the inclusion lines in |file_lines_|.
-  mutable llvm::Optional<llvm::Regex> inclusion_substring_regex_;
+  mutable std::optional<llvm::Regex> inclusion_substring_regex_;
 
   // Lazily-constructed regex that matches strings that contain any of the
   // exclusion lines in |file_lines_|.
-  mutable llvm::Optional<llvm::Regex> exclusion_substring_regex_;
+  mutable std::optional<llvm::Regex> exclusion_substring_regex_;
 };
 
 AST_MATCHER(clang::Type, anyCharType) {
