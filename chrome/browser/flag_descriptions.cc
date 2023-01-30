@@ -89,6 +89,10 @@ const char kAttributionReportingDebugModeDescription[] =
     "reporting delays and noise. Only works if the Attribution Reporting API "
     "is already enabled.";
 
+const char kBackgroundResourceFetchName[] = "Background Resource Fetch";
+const char kBackgroundResourceFetchDescription[] =
+    "Process resource requests in a background thread inside Blink.";
+
 const char kBlockInsecureDownloadsName[] = "Block insecure downloads";
 const char kBlockInsecureDownloadsDescription[] =
     "Enables insecure download blocking. This shows a 'blocked' message if the "

@@ -41,8 +41,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheDedicatedWorker);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBackForwardCacheNotReachedOnJavaScriptExecution);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheWithKeepaliveRequest);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundResourceFetch);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlockingDownloadsInAdFrameWithoutUserActivation);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConversionMeasurement);

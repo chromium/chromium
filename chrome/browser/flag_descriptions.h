@@ -80,6 +80,9 @@ extern const char kAttributionReportingDebugModeDescription[];
 extern const char kAppDeduplicationServiceFondueName[];
 extern const char kAppDeduplicationServiceFondueDescription[];
 
+extern const char kBackgroundResourceFetchName[];
+extern const char kBackgroundResourceFetchDescription[];
+
 extern const char kBlockInsecureDownloadsName[];
 extern const char kBlockInsecureDownloadsDescription[];
 

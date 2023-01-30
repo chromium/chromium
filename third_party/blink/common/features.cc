@@ -113,6 +113,12 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
              "BackForwardCacheWithKeepaliveRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable background resource fetch in Blink. See https://crbug.com/1379780 for
+// more details.
+BASE_FEATURE(kBackgroundResourceFetch,
+             "BackgroundResourceFetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,
