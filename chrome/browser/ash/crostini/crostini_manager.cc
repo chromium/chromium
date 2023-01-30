@@ -3036,7 +3036,8 @@ void CrostiniManager::OnCreateLxdContainer(
       LOG(ERROR) << "Failed to create container: "
                  << response->failure_reason();
       // Remove all create options and the existence of this container.
-      if (IsPendingCreation(container_id)) {
+      if (IsPendingCreation(container_id) &&
+          container_id != DefaultContainerId()) {
         RemoveLxdContainerFromPrefs(profile_, container_id);
         UnregisterContainer(container_id);
       }
@@ -3222,7 +3223,8 @@ void CrostiniManager::OnLxdContainerCreated(
   if (result != CrostiniResult::SUCCESS) {
     LOG(ERROR) << "Failed to create container. ID: " << container_id
                << " reason: " << signal.failure_reason();
-    if (IsPendingCreation(container_id)) {
+    if (IsPendingCreation(container_id) &&
+        container_id != DefaultContainerId()) {
       RemoveLxdContainerFromPrefs(profile_, container_id);
       UnregisterContainer(container_id);
     }

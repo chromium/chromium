@@ -1368,6 +1368,9 @@ TEST_F(CrostiniManagerRestartTest, RestartFinishesOnContainerCreatedError) {
       this);
   run_loop()->Run();
 
+  EXPECT_GE(
+      guest_os::GetContainers(profile_.get(), guest_os::VmType::TERMINA).size(),
+      1uL);
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
   EXPECT_GE(fake_concierge_client_->start_vm_call_count(), 1);
   EXPECT_EQ(0, restart_crostini_callback_count_);
