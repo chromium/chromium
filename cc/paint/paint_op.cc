@@ -145,8 +145,8 @@ static constexpr size_t kNumOpTypes =
 static_assert(kNumOpTypes == TYPES(M), "Missing op in list");
 #undef M
 
-#define M(T) sizeof(T),
-static const size_t g_type_to_size[kNumOpTypes] = {TYPES(M)};
+#define M(T) PaintOpBuffer::ComputeOpAlignedSize<T>(),
+static constexpr uint16_t g_type_to_aligned_size[kNumOpTypes] = {TYPES(M)};
 #undef M
 
 template <typename T, bool HasFlags>
@@ -256,7 +256,7 @@ PaintOp* Deserialize(PaintOpReader& reader, void* output, size_t output_size) {
     op->~T();
     return nullptr;
   }
-  op->skip = PaintOpBuffer::ComputeOpSkip(sizeof(T));
+  op->aligned_size = PaintOpBuffer::ComputeOpAlignedSize<T>();
   return op;
 }
 #define M(T) &Deserialize<T>,
@@ -319,7 +319,6 @@ static const AnalyzeOpFunc g_analyze_op_functions[kNumOpTypes] = {TYPES(M)};
 }  // namespace
 
 const SkRect PaintOp::kUnsetRect = {SK_ScalarInfinity, 0, 0, 0};
-const size_t PaintOp::kMaxSkip;
 
 std::string PaintOpTypeToString(PaintOpType type) {
   switch (type) {
@@ -1634,9 +1633,10 @@ size_t PaintOp::Serialize(void* memory,
                           const PaintFlags* flags_to_serialize,
                           const SkM44& current_ctm,
                           const SkM44& original_ctm) const {
-  // Need at least enough room for a skip/type header.
-  if (size < 4)
+  // Need at least enough room for the header.
+  if (size < PaintOpWriter::HeaderBytes()) {
     return 0u;
+  }
 
   DCHECK_EQ(0u,
             reinterpret_cast<uintptr_t>(memory) % PaintOpBuffer::kPaintOpAlign);
@@ -1644,22 +1644,7 @@ size_t PaintOp::Serialize(void* memory,
   PaintOpWriter writer(memory, size, options);
   g_serialize_functions[type](*this, writer, flags_to_serialize, current_ctm,
                               original_ctm);
-  size_t written = writer.size();
-  DCHECK_LE(written, size);
-  if (written < 4)
-    return 0u;
-
-  size_t aligned_written = ((written + PaintOpBuffer::kPaintOpAlign - 1) &
-                            ~(PaintOpBuffer::kPaintOpAlign - 1));
-  if (aligned_written >= kMaxSkip)
-    return 0u;
-  if (aligned_written > size)
-    return 0u;
-
-  // Update skip and type now that the size is known.
-  uint32_t bytes_to_skip = static_cast<uint32_t>(aligned_written);
-  static_cast<uint32_t*>(memory)[0] = type | bytes_to_skip << 8;
-  return bytes_to_skip;
+  return writer.Finish(type);
 }
 
 PaintOp* PaintOp::Deserialize(const volatile void* input,
@@ -1671,14 +1656,12 @@ PaintOp* PaintOp::Deserialize(const volatile void* input,
   DCHECK_GE(output_size, sizeof(LargestPaintOp));
 
   uint8_t type;
-  uint32_t skip;
   if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type,
-                                              &skip)) {
+                                              read_bytes)) {
     return nullptr;
   }
 
-  PaintOpReader reader(input, skip, options);
-  *read_bytes = skip;
+  PaintOpReader reader(input, *read_bytes, options);
   return g_deserialize_functions[type](reader, output, output_size);
 }
 
@@ -1689,25 +1672,23 @@ PaintOp* PaintOp::DeserializeIntoPaintOpBuffer(
     size_t* read_bytes,
     const DeserializeOptions& options) {
   uint8_t type;
-  uint32_t skip;
   if (!PaintOpReader::ReadAndValidateOpHeader(input, input_size, &type,
-                                              &skip)) {
+                                              read_bytes)) {
     return nullptr;
   }
 
-  PaintOpReader reader(input, skip, options);
-  size_t op_skip = PaintOpBuffer::ComputeOpSkip(g_type_to_size[type]);
+  PaintOpReader reader(input, *read_bytes, options);
+  uint16_t op_aligned_size = g_type_to_aligned_size[type];
   if (auto* op = g_deserialize_functions[type](
-          reader, buffer->AllocatePaintOp(op_skip), op_skip)) {
+          reader, buffer->AllocatePaintOp(op_aligned_size), op_aligned_size)) {
     g_analyze_op_functions[type](buffer, op);
-    *read_bytes = skip;
     return op;
   }
 
   // The last allocated op has already been destroyed if it failed to
   // deserialize. Update the buffer's op tracking to exclude it to avoid
   // access during cleanup at destruction.
-  buffer->used_ -= op_skip;
+  buffer->used_ -= op_aligned_size;
   buffer->op_count_--;
   return nullptr;
 }

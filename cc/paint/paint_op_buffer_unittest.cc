@@ -1274,9 +1274,12 @@ class SimpleSerializer {
       if (!bytes_written)
         return;
 
-      const PaintOp& written = reinterpret_cast<PaintOp&>(*current_);
-      EXPECT_EQ(op.GetType(), written.GetType());
-      EXPECT_EQ(bytes_written, written.skip);
+      uint8_t type = 0;
+      size_t bytes_to_read = 0;
+      EXPECT_TRUE(PaintOpReader::ReadAndValidateOpHeader(
+          current_, remaining_, &type, &bytes_to_read));
+      EXPECT_EQ(op.type, type);
+      EXPECT_EQ(bytes_written, bytes_to_read);
 
       bytes_written_[op_idx] = bytes_written;
       op_idx++;
@@ -2015,23 +2018,28 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
 
   size_t total_read = 0;
   for (size_t op_idx = 0; op_idx < buffer_.size(); ++op_idx) {
-    PaintOp* serialized = reinterpret_cast<PaintOp*>(current);
-    uint32_t skip = serialized->skip;
+    uint8_t serialized_type = 0;
+    size_t serialized_size = 0;
+    PaintOpReader::ReadAndValidateOpHeader(current,
+                                           PaintOpWriter::HeaderBytes(),
+                                           &serialized_type, &serialized_size);
+    EXPECT_EQ(static_cast<uint8_t>(GetParamType()), serialized_type);
 
     // Read from buffers of various sizes to make sure that having a serialized
     // op size that is larger than the input buffer provided causes a
     // deserialization failure to return nullptr.  Also test a few valid sizes
     // larger than read size.
-    for (size_t read_size = 0; read_size < skip + kAlign * 2 + 2; ++read_size) {
-      SCOPED_TRACE(
-          base::StringPrintf("%s #%zd, read_size: %zu, align: %zu, skip: %u",
-                             PaintOpTypeToString(GetParamType()).c_str(),
-                             op_idx, read_size, kAlign, skip));
-      // Because PaintOp::Deserialize early outs when the input size is < skip
-      // deliberately lie about the skip.  This op tooooootally fits.
-      // This will verify that individual op deserializing code behaves
-      // properly when presented with invalid offsets.
-      serialized->skip = read_size;
+    for (size_t read_size = 0; read_size < serialized_size + kAlign * 2 + 2;
+         ++read_size) {
+      SCOPED_TRACE(base::StringPrintf(
+          "%s #%zd, read_size: %zu, align: %zu, serialized_size: %zu",
+          PaintOpTypeToString(GetParamType()).c_str(), op_idx, read_size,
+          kAlign, serialized_size));
+      // Because PaintOp::Deserialize() early outs when the input size is <
+      // serialized_size, here deliberately lie about the serialized_size.
+      // This will verify that individual op deserializing code behaves properly
+      // when presented with invalid offsets.
+      PaintOpWriter::WriteHeaderForTesting(current, serialized_type, read_size);
       size_t bytes_read = 0;
       PaintOp* written = PaintOp::Deserialize(
           current, read_size, deserialize_buffer.get(), kOutputOpSize,
@@ -2044,12 +2052,12 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
           first, total_read + read_size,
           options_provider->deserialize_options());
 
-      // Skips are only valid if they are aligned.
-      if (read_size >= skip && read_size % kAlign == 0) {
+      // Serizlized sizes are only valid if they are aligned.
+      if (read_size >= serialized_size && read_size % kAlign == 0) {
         ASSERT_NE(nullptr, written);
-        ASSERT_LE(written->skip, kOutputOpSize);
+        ASSERT_LE(written->aligned_size, kOutputOpSize);
         EXPECT_EQ(GetParamType(), written->GetType());
-        EXPECT_EQ(serialized->skip, bytes_read);
+        EXPECT_EQ(read_size, bytes_read);
 
         ASSERT_TRUE(deserialized_buffer);
         EXPECT_EQ(deserialized_buffer->size(), op_idx + 1);
@@ -2080,25 +2088,30 @@ TEST_P(PaintOpSerializationTest, DeserializationFailures) {
         written->DestroyThis();
     }
 
-    serialized->skip = skip;
-    current += skip;
-    total_read += skip;
+    // Restore the correct serialized_size.
+    PaintOpWriter::WriteHeaderForTesting(current, serialized_type,
+                                         serialized_size);
+    current += serialized_size;
+    total_read += serialized_size;
   }
 }
 
 TEST_P(PaintOpSerializationTest, UsesOverridenFlags) {
-  if (!PaintOp::TypeHasFlags(GetParamType()))
+  if (!PaintOp::TypeHasFlags(GetParamType())) {
     return;
+  }
 
-  // TODO(crbug.com/1321150): fix the test for DrawTextBlobs
-  if (GetParamType() == PaintOpType::DrawTextBlob)
+  // See https://crbug.com/1321150#c3.
+  if (GetParamType() == PaintOpType::DrawTextBlob) {
     return;
+  }
 
   PushTestOps(GetParamType());
   ResizeOutputBuffer();
 
   TestOptionsProvider options_provider;
-  size_t deserialized_size = sizeof(LargestPaintOp) + PaintOp::kMaxSkip;
+  size_t deserialized_size =
+      sizeof(LargestPaintOp) + PaintOpWriter::kMaxSerializedSize;
   auto deserialized = AllocateBuffer(deserialized_size);
   for (const PaintOp& op : buffer_) {
     size_t bytes_written = op.Serialize(output_.get(), output_size_,
@@ -2352,7 +2365,7 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
                     nullptr, SkM44(), SkM44());
   ASSERT_GT(bytes_written, 0u);
 
-  // can deserialize from exactly the right size
+  // Can deserialize from exactly the right size.
   size_t bytes_read = 0;
   PaintOp* success =
       PaintOp::Deserialize(input.get(), bytes_written, output.get(), kSize,
@@ -2361,24 +2374,30 @@ TEST(PaintOpBufferTest, PaintOpDeserialize) {
   EXPECT_EQ(bytes_written, bytes_read);
   success->DestroyThis();
 
-  // fail to deserialize if skip goes past input size
-  // (the DeserializationFailures test above tests if the skip is lying)
-  for (size_t i = 0; i < bytes_written - 1; ++i)
+  // Fail to deserialize if serialized_size goes past input size (the
+  // DeserializationFailures test above tests if the serialized_size is lying).
+  for (size_t i = 0; i < bytes_written - 1; ++i) {
     EXPECT_FALSE(PaintOp::Deserialize(input.get(), i, output.get(), kSize,
                                       &bytes_read,
                                       options_provider.deserialize_options()));
+  }
 
-  // unaligned skips fail to deserialize
-  PaintOp* serialized = reinterpret_cast<PaintOp*>(input.get());
-  EXPECT_EQ(0u, serialized->skip % kAlign);
-  serialized->skip -= 1;
+  // Unaligned serialized_size should fail to deserialize.
+  uint8_t serialized_type = 0;
+  size_t serialized_size = 0;
+  PaintOpReader::ReadAndValidateOpHeader(input.get(), bytes_written,
+                                         &serialized_type, &serialized_size);
+  EXPECT_EQ(0u, serialized_size % kAlign);
+  PaintOpWriter::WriteHeaderForTesting(input.get(), serialized_type,
+                                       serialized_size - 1);
   EXPECT_FALSE(PaintOp::Deserialize(input.get(), bytes_written, output.get(),
                                     kSize, &bytes_read,
                                     options_provider.deserialize_options()));
-  serialized->skip += 1;
 
-  // bogus types fail to deserialize
-  serialized->type = static_cast<uint8_t>(PaintOpType::LastPaintOpType) + 1;
+  // Bogus types fail to deserialize.
+  PaintOpWriter::WriteHeaderForTesting(
+      input.get(), static_cast<uint8_t>(PaintOpType::LastPaintOpType) + 1,
+      serialized_size);
   EXPECT_FALSE(PaintOp::Deserialize(input.get(), bytes_written, output.get(),
                                     kSize, &bytes_read,
                                     options_provider.deserialize_options()));
@@ -4030,7 +4049,8 @@ TEST(IteratorTest, OffsetIterationTest) {
   const PaintOp& op2 = buffer.push<RestoreOp>();
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
 
-  std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
+  std::vector<size_t> offsets = {
+      0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
   EXPECT_THAT(PaintOpBuffer::OffsetIterator(buffer, offsets),
               PaintOpsAreEq(SaveOp(), SetMatrixOp(SkM44::Scale(1, 2))));
 }
@@ -4040,7 +4060,8 @@ TEST(IteratorTest, CompositeIterationTest) {
   const PaintOp& op1 = buffer.push<SaveOp>();
   const PaintOp& op2 = buffer.push<RestoreOp>();
   buffer.push<SetMatrixOp>(SkM44::Scale(1, 2));
-  std::vector<size_t> offsets = {0, static_cast<size_t>(op1.skip + op2.skip)};
+  std::vector<size_t> offsets = {
+      0, static_cast<size_t>(op1.aligned_size + op2.aligned_size)};
 
   EXPECT_THAT(
       PaintOpBuffer::CompositeIterator(buffer, /*offsets=*/nullptr),
@@ -4063,8 +4084,8 @@ TEST(IteratorTest, EqualityTest) {
 TEST(IteratorTest, OffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
+  offset += buffer.push<SaveOp>().aligned_size;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4089,8 +4110,8 @@ TEST(IteratorTest, CompositeEqualityTest) {
 TEST(IteratorTest, CompositeOffsetEqualityTest) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
+  offset += buffer.push<SaveOp>().aligned_size;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
   buffer.push<NoopOp>();
 
   std::vector<size_t> offsets = {0, offset};
@@ -4115,8 +4136,8 @@ TEST(IteratorTest, CompositeOffsetMixedTypeEqualityTest) {
 TEST(IteratorTest, CompositeOffsetBoolCheck) {
   PaintOpBuffer buffer;
   size_t offset = 0;
-  offset += buffer.push<SaveOp>().skip;
-  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).skip;
+  offset += buffer.push<SaveOp>().aligned_size;
+  offset += buffer.push<SetMatrixOp>(SkM44::Scale(1, 2)).aligned_size;
   buffer.push<NoopOp>();
 
   PaintOpBuffer::CompositeIterator iter(buffer, /*offsets=*/nullptr);

@@ -132,7 +132,7 @@ void PaintOpBuffer::DestroyOps() {
   if (data_) {
     for (size_t offset = 0; offset < used_;) {
       auto* op = reinterpret_cast<PaintOp*>(data_.get() + offset);
-      offset += op->skip;
+      offset += op->aligned_size;
       op->DestroyThis();
     }
   }
@@ -340,22 +340,23 @@ PaintOpBuffer::BufferDataPtr PaintOpBuffer::ReallocBuffer(size_t new_size) {
   return old_data;
 }
 
-void* PaintOpBuffer::AllocatePaintOp(size_t skip) {
-  DCHECK_LT(skip, PaintOp::kMaxSkip);
+void* PaintOpBuffer::AllocatePaintOp(uint16_t aligned_size) {
   DCHECK(is_mutable());
 
-  if (used_ + skip > reserved_) {
+  size_t required_size = used_ + aligned_size;
+  if (required_size > reserved_) {
     // Start reserved_ at kInitialBufferSize and then double.
     // ShrinkToFit() can make this smaller afterwards.
     size_t new_size = reserved_ ? reserved_ : kInitialBufferSize;
-    while (used_ + skip > new_size)
+    while (required_size > new_size) {
       new_size *= 2;
+    }
     ReallocBuffer(new_size);
   }
-  DCHECK_LE(used_ + skip, reserved_);
+  DCHECK_LE(required_size, reserved_);
 
   void* op = data_.get() + used_;
-  used_ += skip;
+  used_ = required_size;
   op_count_++;
   return op;
 }

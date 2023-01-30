@@ -56,9 +56,10 @@ class CC_PAINT_EXPORT ThreadsafePath : public SkPath {
   ThreadsafePath() { updateBoundsCache(); }
 };
 
-// See PaintOp::Serialize/Deserialize for comments.  Derived Serialize types
-// don't write the 4 byte type/skip header because they don't know how much
-// data they will need to write.  PaintOp::Serialize itself must update it.
+// See PaintOp::Serialize/Deserialize for comments.  Serialize() of derived
+// types don't write the type/serialized_size header because they don't know how
+// much data they will need to write. PaintOp::Serialize itself must update the
+// header after calling Serialize() of the derived type.
 #define HAS_SERIALIZATION_FUNCTIONS()                                         \
   void Serialize(PaintOpWriter& writer, const PaintFlags* flags_to_serialize, \
                  const SkM44& current_ctm, const SkM44& original_ctm) const;  \
@@ -102,8 +103,8 @@ CC_PAINT_EXPORT std::ostream& operator<<(std::ostream&, PaintOpType);
 
 class CC_PAINT_EXPORT PaintOp {
  public:
-  uint32_t type : 8;
-  uint32_t skip : 24;
+  uint8_t type;
+  uint16_t aligned_size;
 
   using SerializeOptions = PaintOpBuffer::SerializeOptions;
   using DeserializeOptions = PaintOpBuffer::DeserializeOptions;
@@ -148,7 +149,7 @@ class CC_PAINT_EXPORT PaintOp {
   // at most |input_size| bytes.  Returns null on any errors.
   // The PaintOp is deserialized into the |output| buffer and returned
   // if valid.  nullptr is returned if the deserialization fails.
-  // |output_size| must be at least LargestPaintOp + serialized->skip,
+  // |output_size| must be at least ComputeOpAlignedSize<LargestPaintOp>(),
   // to fit all ops.  The caller is responsible for destroying these ops.
   // After reading, it returns the number of bytes read in |read_bytes|.
   static PaintOp* Deserialize(const volatile void* input,
@@ -241,8 +242,6 @@ class CC_PAINT_EXPORT PaintOp {
 
   static constexpr bool kIsDrawOp = false;
   static constexpr bool kHasPaintFlags = false;
-  // Since skip and type fit in a uint32_t, this is the max size of skip.
-  static constexpr size_t kMaxSkip = static_cast<size_t>(1 << 24);
   static const SkRect kUnsetRect;
 
  protected:

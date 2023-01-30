@@ -68,19 +68,26 @@ void PaintOpReader::FixupMatrixPostSerialization(SkMatrix* matrix) {
 bool PaintOpReader::ReadAndValidateOpHeader(const volatile void* input,
                                             size_t input_size,
                                             uint8_t* type,
-                                            uint32_t* skip) {
-  if (input_size < 4)
+                                            size_t* bytes_to_read) {
+  static_assert(PaintOpWriter::HeaderBytes() == sizeof(uint32_t));
+  if (input_size < PaintOpWriter::HeaderBytes()) {
     return false;
-  uint32_t first_word = reinterpret_cast<const volatile uint32_t*>(input)[0];
-  *type = static_cast<uint8_t>(first_word & 0xFF);
-  *skip = first_word >> 8;
+  }
+  uint32_t header = reinterpret_cast<const volatile uint32_t*>(input)[0];
+  *type = static_cast<uint8_t>(header & 0xFF);
+  *bytes_to_read = header >> 8;
 
-  if (input_size < *skip)
+  if (input_size < *bytes_to_read) {
     return false;
-  if (*skip % PaintOpBuffer::kPaintOpAlign != 0)
+  }
+  // For now we require serialized PaintOps are aligned to kPaintOpAlign.
+  // TODO(wangxianzhu): Revisit the requirement.
+  if (*bytes_to_read % PaintOpBuffer::kPaintOpAlign != 0) {
     return false;
-  if (*type > static_cast<uint8_t>(PaintOpType::LastPaintOpType))
+  }
+  if (*type > static_cast<uint8_t>(PaintOpType::LastPaintOpType)) {
     return false;
+  }
   return true;
 }
 

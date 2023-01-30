@@ -41,11 +41,32 @@ class CC_PAINT_EXPORT PaintOpWriter {
 
   const PaintOp::SerializeOptions& options() const { return *options_; }
 
-  static size_t constexpr HeaderBytes() { return 4u; }
-  static size_t constexpr Alignment() { return 4u; }
+  // Type and serialized_size fit in HeaderBytes, using 1 byte and 3 bytes,
+  // respectively. Note that serialized_size in the header is different from
+  // PaintOp::aligned_size because serialized data may have different byte
+  // format and serialization of reference data fields may be make
+  // serialized_size much bigger than PaintOp::aligned_size.
+  static size_t constexpr HeaderBytes() { return sizeof(uint32_t); }
+  static constexpr size_t kMaxSerializedSize = (1u << 24) - 1;
+
+  // Round up each field to 4 bytes. This is not technically perfect alignment,
+  // but it is about 30% faster to post-align each write to 4 bytes than it is
+  // to pre-align memory to the correct alignment.
+  // The whole serialized PaintOp is aligned to PaintOpBuffer::kPaintOpAlign.
+  // TODO(wangxianzhu): Revisit the kPaintOpAlign requirement for serialization.
+  static size_t constexpr Alignment() { return alignof(uint32_t); }
+
   static size_t GetFlattenableSize(const SkFlattenable* flattenable);
   static size_t GetImageSize(const PaintImage& image);
   static size_t GetRecordSize(const PaintRecord* record);
+
+  // Called after serializing data of a PaintOp. Returns the serialized size
+  // of the PaintOp aligned to PaintOpBuffer::kPaintOpAlign, or 0 on any errors.
+  size_t Finish(uint8_t type);
+
+  static void WriteHeaderForTesting(void* memory,
+                                    uint8_t type,
+                                    size_t serialized_size);
 
   // Write a sequence of arbitrary bytes.
   void WriteData(size_t bytes, const void* input);

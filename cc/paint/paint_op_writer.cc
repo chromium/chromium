@@ -49,6 +49,11 @@ SkIRect MakeSrcRect(const PaintImage& image) {
   return SkIRect::MakeWH(image.width(), image.height());
 }
 
+void WriteHeader(void* memory, uint8_t type, size_t serialized_size) {
+  DCHECK_LT(serialized_size, PaintOpWriter::kMaxSerializedSize);
+  static_cast<uint32_t*>(memory)[0] = type | serialized_size << 8;
+}
+
 }  // namespace
 
 // static
@@ -107,13 +112,37 @@ PaintOpWriter::PaintOpWriter(void* memory,
 
 PaintOpWriter::~PaintOpWriter() = default;
 
+size_t PaintOpWriter::Finish(uint8_t type) {
+  if (!valid_) {
+    return 0u;
+  }
+
+  size_t written = size();
+  DCHECK_GE(written, HeaderBytes());
+
+  size_t aligned_written =
+      base::bits::AlignUp(written, PaintOpBuffer::kPaintOpAlign);
+  if (aligned_written > kMaxSerializedSize ||
+      aligned_written - written > remaining_bytes_) {
+    valid_ = false;
+    return 0u;
+  }
+
+  // Write type and skip into the header bytes.
+  WriteHeader(memory_.get() - written, type, aligned_written);
+  return aligned_written;
+}
+
+void PaintOpWriter::WriteHeaderForTesting(void* memory,
+                                          uint8_t type,
+                                          size_t serialized_size) {
+  WriteHeader(memory, type, serialized_size);
+}
+
 template <typename T>
 void PaintOpWriter::WriteSimple(const T& val) {
   static_assert(std::is_trivially_copyable_v<T>);
 
-  // Round up each write to 4 bytes.  This is not technically perfect alignment,
-  // but it is about 30% faster to post-align each write to 4 bytes than it is
-  // to pre-align memory to the correct alignment.
   DCHECK_EQ(memory_.get(), base::bits::AlignUp(memory_.get(), Alignment()));
   static constexpr size_t size = base::bits::AlignUp(sizeof(T), Alignment());
   EnsureBytes(size);

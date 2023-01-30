@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/functional/callback.h"
@@ -158,8 +159,11 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
 
   enum { kInitialBufferSize = 4096 };
   static constexpr size_t kPaintOpAlign = 8;
-  static inline size_t ComputeOpSkip(size_t sizeof_op) {
-    return MathUtil::UncheckedRoundUp(sizeof_op, kPaintOpAlign);
+  template <typename Op>
+  static constexpr uint16_t ComputeOpAlignedSize() {
+    constexpr size_t size = base::bits::AlignUp(sizeof(Op), kPaintOpAlign);
+    static_assert(size <= std::numeric_limits<uint16_t>::max());
+    return static_cast<uint16_t>(size);
   }
 
   PaintOpBuffer();
@@ -250,14 +254,12 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     DCHECK(is_mutable());
     static_assert(std::is_base_of<PaintOp, T>::value, "T not a PaintOp.");
     static_assert(alignof(T) <= kPaintOpAlign, "");
-    static_assert(sizeof(T) < std::numeric_limits<uint16_t>::max(),
-                  "Cannot fit op code in skip");
-    uint16_t skip = static_cast<uint16_t>(ComputeOpSkip(sizeof(T)));
-    T* op = reinterpret_cast<T*>(AllocatePaintOp(skip));
+    uint16_t aligned_size = ComputeOpAlignedSize<T>();
+    T* op = reinterpret_cast<T*>(AllocatePaintOp(aligned_size));
 
     new (op) T{std::forward<Args>(args)...};
-    DCHECK_EQ(op->type, static_cast<uint32_t>(T::kType));
-    op->skip = skip;
+    DCHECK_EQ(op->type, static_cast<uint8_t>(T::kType));
+    op->aligned_size = aligned_size;
     AnalyzeAddedOp(op);
     return *op;
   }
@@ -340,7 +342,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   BufferDataPtr ReallocIfNeededToFit();
 
   // Returns the allocated op.
-  void* AllocatePaintOp(size_t skip);
+  void* AllocatePaintOp(uint16_t aligned_size);
 
   void ResetRetainingBuffer();
 

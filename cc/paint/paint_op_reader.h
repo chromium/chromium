@@ -54,7 +54,7 @@ class CC_PAINT_EXPORT PaintOpReader {
   static bool ReadAndValidateOpHeader(const volatile void* input,
                                       size_t input_size,
                                       uint8_t* type,
-                                      uint32_t* skip);
+                                      size_t* bytes_to_read);
 
   bool valid() const { return valid_; }
   size_t remaining_bytes() const { return remaining_bytes_; }

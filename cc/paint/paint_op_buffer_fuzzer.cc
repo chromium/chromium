@@ -11,6 +11,7 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/test/transfer_cache_test_helper.h"
 #include "components/viz/test/test_context_provider.h"
@@ -88,11 +89,15 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
       &transfer_cache_helper, paint_cache, strike_client, &scratch_buffer,
       true /* is_privileged */, nullptr /* shared_image_provider */);
 
-  // Need 4 bytes to be able to read the type/skip.
-  while (size >= 4) {
-    const cc::PaintOp* serialized = reinterpret_cast<const cc::PaintOp*>(data);
-    if (serialized->skip > kMaxSerializedSize)
+  // Need HeaderBytes() bytes to be able to read the header.
+  while (size >= cc::PaintOpWriter::HeaderBytes()) {
+    uint8_t serialized_type = 0;
+    size_t serialized_size = 0;
+    cc::PaintOpReader::ReadAndValidateOpHeader(data, size, &serialized_type,
+                                               &serialized_size);
+    if (serialized_size > kMaxSerializedSize) {
       break;
+    }
 
     std::unique_ptr<char, base::AlignedFreeDeleter> deserialized(
         static_cast<char*>(base::AlignedAlloc(
@@ -109,8 +114,9 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
     deserialized_op->DestroyThis();
 
-    if (serialized->skip >= size)
+    if (serialized_size >= size) {
       break;
+    }
 
     size -= bytes_read;
     data += bytes_read;
