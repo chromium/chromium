@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(() => {
+  assert_not_equals(window.internals,undefined,'This test must be run from the test runner');
+  const kParseFromStringIncludeShadows = 4455; // From web_feature.mojom
+  assert_false(internals.isUseCounted(document, kParseFromStringIncludeShadows));
+  const parser = new DOMParser();
+  // None of these should be counted:
+  parser.parseFromString('<div>','text/html');
+  let result = parser.parseFromString('<div><template shadowrootmode=open></template></div>','text/html');
+  assert_true(!!result.querySelector('template'),'DSD should not be parsed without the option');
+  assert_false(internals.isUseCounted(document, kParseFromStringIncludeShadows));
+
+  // But passing the option as true should get counted:
+  parser.parseFromString('<div>','text/html',{includeShadowRoots:true});
+  assert_true(internals.isUseCounted(document, kParseFromStringIncludeShadows),'Use counter should trigger if the flag is true');
+}, 'DSD include shadows flag is use counted.');
+</script>

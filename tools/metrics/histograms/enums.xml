@@ -41973,6 +41973,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4453"
       label="ServiceWorkerFetchHandlerModifiedAfterInitialization"/>
   <int value="4454" label="OptionLabelInQuirksMode"/>
+  <int value="4455" label="ParseFromStringIncludeShadows"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
