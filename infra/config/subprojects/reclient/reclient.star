@@ -523,3 +523,46 @@ ci.builder(
     reclient_instance = reclient.instance.TEST_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
 )
+
+# TODO(b/260228493) Remove once CI backend is switched
+ci.builder(
+    name = "Windows Cross deterministic",
+    description_html = "verify artifacts. should be removed after the migration. b/260228493",
+    executable = "recipe:swarming/deterministic_build",
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "detcross",
+    ),
+    execution_timeout = 12 * time.hour,
+    service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+)
+
+# TODO(b/260228493) Remove once CI backend is switched
+ci.builder(
+    name = "Win x64 Builder (reclient compare)",
+    description_html = "verify artifacts. should be removed after the migration. b/260228493",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["use_clang_coverage", "reclient_test"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+    ),
+    builderless = True,
+    cores = 32,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "compcross",
+    ),
+    reclient_ensure_verified = True,
+    reclient_jobs = None,
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
+)
