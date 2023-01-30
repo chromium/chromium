@@ -1006,12 +1006,12 @@ ExtensionFunction::ResponseAction SocketGetJoinedGroupsFunction::Work() {
     return RespondNow(ErrorWithCode(-1, kPermissionError));
   }
 
-  base::Value values(base::Value::Type::LIST);
+  base::Value::List values;
   auto* udp_socket = static_cast<UDPSocket*>(socket);
   for (const std::string& group : udp_socket->GetJoinedGroups()) {
     values.Append(group);
   }
-  return RespondNow(OneArgument(std::move(values)));
+  return RespondNow(OneArgument(base::Value(std::move(values))));
 }
 
 SocketSecureFunction::SocketSecureFunction() = default;
