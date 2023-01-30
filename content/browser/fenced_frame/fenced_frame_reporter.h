@@ -96,6 +96,12 @@ class CONTENT_EXPORT FencedFrameReporter
       const url::Origin& request_initiator,
       std::string& error_message);
 
+  // Stores the payload that will be sent as part of the
+  // `reserved.top_navigation` automatic beacon.
+  void UpdateAutomaticBeaconData(
+      const std::string& event_data,
+      const std::vector<blink::FencedFrame::ReportingDestination>& destination);
+
  private:
   friend class base::RefCounted<FencedFrameReporter>;
   friend class FencedFrameURLMappingTestPeer;
@@ -153,6 +159,17 @@ class CONTENT_EXPORT FencedFrameReporter
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>
       reporting_metadata_;
+
+  // Stores data registered by one of the documents in a FencedFrame using
+  // the `Fence.setReportEventDataForAutomaticBeacons` API.
+  //
+  // Currently, only the `reserved.top_navigation` event exists.
+  //
+  // The data will be sent directly to the network, without going back to any
+  // renderer process, so they are not made part of the redacted properties.
+  absl::optional<std::string> automatic_beacon_data_;
+  std::vector<blink::FencedFrame::ReportingDestination>
+      automatic_beacon_destination_;
 };
 
 }  // namespace content

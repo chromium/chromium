@@ -13,6 +13,10 @@ class GURL;
 
 namespace blink {
 
+// To prevent overloading the RAM, limit the maximum automatic beacon length
+// to 64KB.
+const size_t kFencedFrameMaxBeaconLength = 64000;
+
 // Histogram names for fenced frame.
 inline constexpr char kFencedFrameCreationOrNavigationOutcomeHistogram[] =
     "Blink.FencedFrame.CreationOrNavigationOutcome";

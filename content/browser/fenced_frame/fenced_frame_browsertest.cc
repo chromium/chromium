@@ -4593,9 +4593,11 @@ class FencedFrameReportEventBrowserTest
   std::string GetConsoleWarningPattern(Step::Result result) {
     switch (result) {
       case Step::Result::kModeNotOpaque:
-        return "fence.reportEvent is only available in the 'opaque-ads' mode.";
+        return "Fenced event reporting is only available in the 'opaque-ads' "
+               "mode.";
       case Step::Result::kCrossOrigin:
-        return "fence.reportEvent is only available in same-origin subframes.";
+        return "Fenced event reporting is only available in same-origin "
+               "subframes.";
       case Step::Result::kNoMeta:
         return "This frame did not register reporting metadata.";
       case Step::Result::kNoDestination:

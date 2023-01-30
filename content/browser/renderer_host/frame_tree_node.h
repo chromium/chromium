@@ -539,6 +539,13 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // either this node or an ancestor of it.
   const absl::optional<FencedFrameProperties>& GetFencedFrameProperties();
 
+  // Called from the currently active document via the
+  // `Fence.setReportEventDataForAutomaticBeacons` JS API.
+  void SetFencedFrameAutomaticBeaconReportEventData(
+      const std::string& event_data,
+      const std::vector<blink::FencedFrame::ReportingDestination>& destination)
+      override;
+
   // Return the number of fenced frame boundaries above this frame. The
   // outermost main frame's frame tree has fenced frame depth 0, a topmost
   // fenced frame tree embedded in the outermost main frame has fenced frame
@@ -672,6 +679,8 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // should be allowed, this returns true and also clears corresponding pending
   // user activation state in the widget. Otherwise, this returns false.
   bool VerifyUserActivation();
+
+  absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing();
 
   // The next available browser-global FrameTreeNode ID.
   static int next_frame_tree_node_id_;

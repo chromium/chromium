@@ -172,6 +172,10 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const WTF::String& event_data,
       const WTF::String& event_type,
       blink::FencedFrame::ReportingDestination destination) override;
+  void SetFencedFrameAutomaticBeaconReportEventData(
+      const WTF::String& event_data,
+      const WTF::Vector<blink::FencedFrame::ReportingDestination>& destination)
+      override;
   void CreatePortal(
       mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal,
       mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client,

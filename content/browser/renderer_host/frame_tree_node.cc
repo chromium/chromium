@@ -856,26 +856,50 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
 
 const absl::optional<FencedFrameProperties>&
 FrameTreeNode::GetFencedFrameProperties() {
-  if (!IsInFencedFrameTree()) {
-    // If we might be in a urn iframe, try to find the "urn iframe root"
-    // and if it exists, return the attached `FencedFrameProperties`.
-    if (blink::features::IsAllowURNsInIframeEnabled()) {
-      FrameTreeNode* node = this;
-      while (node->parent()) {
-        CHECK(node->parent()->frame_tree_node());
-        if (node->fenced_frame_properties_.has_value()) {
-          return node->fenced_frame_properties_;
-        }
-        node = node->parent()->frame_tree_node();
-      }
-    }
-    return fenced_frame_properties_;
+  return GetFencedFramePropertiesForEditing();
+}
+
+absl::optional<FencedFrameProperties>&
+FrameTreeNode::GetFencedFramePropertiesForEditing() {
+  if (IsInFencedFrameTree()) {
+    // Because we already confirmed we're in a fenced frame tree, we know
+    // there must be a fenced frame root with properties stored.
+    CHECK(frame_tree().root()->fenced_frame_properties_.has_value());
+    return frame_tree().root()->fenced_frame_properties_;
   }
 
-  // Because we already confirmed we're in a fenced frame tree, we know
-  // there must be a fenced frame root with properties stored.
-  CHECK(frame_tree().root()->fenced_frame_properties_.has_value());
-  return frame_tree().root()->fenced_frame_properties_;
+  // If we might be in a urn iframe, try to find the "urn iframe root",
+  // and, if it exists, return the attached `FencedFrameProperties`.
+  if (blink::features::IsAllowURNsInIframeEnabled()) {
+    FrameTreeNode* node = this;
+    while (node->parent()) {
+      CHECK(node->parent()->frame_tree_node());
+      if (node->fenced_frame_properties_.has_value()) {
+        return node->fenced_frame_properties_;
+      }
+      node = node->parent()->frame_tree_node();
+    }
+  }
+
+  return fenced_frame_properties_;
+}
+
+void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
+    const std::string& event_data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+  absl::optional<FencedFrameProperties>& properties =
+      GetFencedFramePropertiesForEditing();
+  // `properties` will exist for both fenced frames as well as iframes loaded
+  // with a urn:uuid. This allows URN iframes to call this function without
+  // getting bad-messaged.
+  if (!properties || !properties->fenced_frame_reporter_) {
+    mojo::ReportBadMessage(
+        "Automatic beacon data can only be set in fenced frames or iframes "
+        "loaded with a URN.");
+    return;
+  }
+  properties->fenced_frame_reporter_->UpdateAutomaticBeaconData(event_data,
+                                                                destination);
 }
 
 size_t FrameTreeNode::GetFencedFrameDepth() {

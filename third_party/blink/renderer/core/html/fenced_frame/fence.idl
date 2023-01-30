@@ -7,5 +7,6 @@
 [Exposed=Window, RuntimeEnabled=FencedFrames]
 interface Fence {
     [CallWith=ScriptState, RaisesException] void reportEvent(FenceEvent event);
+    [CallWith=ScriptState, RaisesException] void setReportEventDataForAutomaticBeacons(FenceEvent event);
     [RaisesException] sequence<FencedFrameConfig> getNestedConfigs();
 };

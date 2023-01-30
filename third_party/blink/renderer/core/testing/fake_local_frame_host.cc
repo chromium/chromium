@@ -252,6 +252,10 @@ void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
     const WTF::String& event_type,
     blink::FencedFrame::ReportingDestination destination) {}
 
+void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
+    const WTF::String& event_data,
+    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destination) {}
+
 void FakeLocalFrameHost::CreatePortal(
     mojo::PendingAssociatedReceiver<mojom::blink::Portal> portal,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient> client,

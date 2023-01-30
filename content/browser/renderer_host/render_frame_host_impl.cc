@@ -7677,6 +7677,12 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
         "consistent between the two.");
     return;
   }
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SendFencedFrameReportingBeacon() exceeds the "
+        "maximum length, which is 64KB.");
+    return;
+  }
 
   if (destination ==
           blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl &&
@@ -7696,6 +7702,31 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeacon(
     AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
                         error_message);
   }
+}
+
+void RenderFrameHostImpl::SetFencedFrameAutomaticBeaconReportEventData(
+    const std::string& event_data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+  if (event_data.length() > blink::kFencedFrameMaxBeaconLength) {
+    mojo::ReportBadMessage(
+        "The data provided to SetFencedFrameAutomaticBeaconReportEventData() "
+        "exceeds the maximum length, which is 64KB.");
+    return;
+  }
+
+  // The call is ignored if the RenderFrameHost is not the currently active one
+  // in the FrameTreeNode. For instance, this is ignored when it is pending
+  // deletion or if it entered the BackForwardCache.
+  //
+  // Note: The renderer process already tests the document is not detached from
+  // the frame tree before sending the IPC, but this might race with frame
+  // deletion IPC sent from other processes.
+  if (!IsActive()) {
+    return;
+  }
+  CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
+
+  owner_->SetFencedFrameAutomaticBeaconReportEventData(event_data, destination);
 }
 
 void RenderFrameHostImpl::CreatePortal(

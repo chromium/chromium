@@ -124,6 +124,13 @@ class RenderFrameHostOwner {
 
   // Return the iframe.credentialless attribute value.
   virtual bool Credentialless() const = 0;
+
+  // Stores the payload that will be sent as part of an automatic beacon. Right
+  // now only the "reserved.top_navigation" beacon is supported.
+  virtual void SetFencedFrameAutomaticBeaconReportEventData(
+      const std::string& event_data,
+      const std::vector<blink::FencedFrame::ReportingDestination>&
+          destination) = 0;
 };
 
 }  // namespace content

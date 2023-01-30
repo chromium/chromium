@@ -260,4 +260,11 @@ bool FencedFrameReporter::SendReportInternal(
   return true;
 }
 
+void FencedFrameReporter::UpdateAutomaticBeaconData(
+    const std::string& event_data,
+    const std::vector<blink::FencedFrame::ReportingDestination>& destination) {
+  automatic_beacon_data_ = event_data;
+  automatic_beacon_destination_ = destination;
+}
+
 }  // namespace content
