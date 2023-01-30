@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/wallpaper/wallpaper_utils/scored_sample.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_color_extraction_result.h"
 #include "base/functional/bind.h"
@@ -18,6 +20,7 @@
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -84,8 +87,14 @@ WallpaperCalculatedColors CalculateWallpaperColor(
       *resized_image.bitmap(), resized_image.height(), kNoBounds, kNoBounds,
       /*find_closest=*/true);
 
+  // Compute result with with the improved clustering algorithm.
+  SkColor celebi_color = ash::features::IsJellyEnabled()
+                             ? ComputeWallpaperSeedColor(resized_image)
+                             : SK_ColorTRANSPARENT;
+
   DVLOG(2) << __func__ << " image_size=" << image.size().ToString()
            << " time=" << base::TimeTicks::Now() - start_time;
+
   WallpaperColorExtractionResult result = NUM_COLOR_EXTRACTION_RESULTS;
   for (size_t i = 0; i < color_profiles.size(); ++i) {
     bool is_result_transparent = prominent_colors[i] == SK_ColorTRANSPARENT;
@@ -131,7 +140,7 @@ WallpaperCalculatedColors CalculateWallpaperColor(
   }
   DCHECK_NE(NUM_COLOR_EXTRACTION_RESULTS, result);
   return WallpaperCalculatedColors(prominent_colors, k_mean_color,
-                                   SK_ColorTRANSPARENT);
+                                   celebi_color);
 }
 
 bool ShouldCalculateSync(const gfx::ImageSkia& image) {

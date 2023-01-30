@@ -7,10 +7,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,6 +146,9 @@ TEST_F(WallPaperColorCalculatorAsyncTest,
 }
 
 TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kJelly);
+
   std::vector<SkColor> colors = {kDefaultColor};
   SkColor k_mean_color = kDefaultColor;
   calculator_->set_calculated_colors_for_test(
@@ -157,6 +162,17 @@ TEST_F(WallPaperColorCalculatorAsyncTest, ColorUpdatedOnSuccessfulCalculation) {
   EXPECT_NE(kDefaultColor,
             calculator_->get_calculated_colors()->prominent_colors[0]);
   EXPECT_EQ(kGray, calculator_->get_calculated_colors()->k_mean_color);
+}
+
+TEST_F(WallPaperColorCalculatorAsyncTest, CelebiCalculatedWhenJellyEnabled) {
+  base::test::ScopedFeatureList features(features::kJelly);
+
+  base::RunLoop run_loop;
+  EXPECT_TRUE(calculator_->StartCalculation(Wrap(run_loop.QuitClosure())));
+
+  run_loop.Run();
+  ASSERT_TRUE(calculator_->get_calculated_colors());
+  EXPECT_EQ(kVibrantGreen, calculator_->get_calculated_colors()->celebi_color);
 }
 
 TEST_F(WallPaperColorCalculatorAsyncTest,
