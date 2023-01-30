@@ -44,9 +44,9 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // though the row may not exist.
   // |scope| is a serialized `RateLimitTable::Scope`.
   // |source_site| is the eTLD+1 of the impression.
-  // |source_origin| is the origin of the impression.
   // |destination_site| is the destination of the conversion.
-  // |destination_origin| is the origin of the conversion.
+  // |context_origin| is the source origin for `kSource` or the destination
+  // origin for `kAttribution`.
   // |reporting_origin| is the reporting origin of the impression/conversion.
   // |time| is the time of either the source registration or the attribution
   // trigger, depending on |scope|.
@@ -59,9 +59,8 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "scope INTEGER NOT NULL,"
       "source_id INTEGER NOT NULL,"
       "source_site TEXT NOT NULL,"
-      "source_origin TEXT NOT NULL,"
       "destination_site TEXT NOT NULL,"
-      "destination_origin TEXT NOT NULL,"
+      "context_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
       "expiry_time INTEGER NOT NULL)";
@@ -135,32 +134,34 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
     last_cleared_ = now;
   }
 
+  const attribution_reporting::SuitableOrigin* context_origin;
   base::Time expiry_time;
   switch (scope) {
     case Scope::kSource:
+      context_origin = &common_info.source_origin();
       expiry_time = common_info.expiry_time();
       break;
     case Scope::kAttribution:
+      context_origin = &common_info.destination_origin();
       expiry_time = base::Time();
       break;
   }
 
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
-      "(scope,source_id,source_site,source_origin,"
-      "destination_site,destination_origin,reporting_origin,time,expiry_time)"
-      "VALUES(?,?,?,?,?,?,?,?,?)";
+      "(scope,source_id,source_site,"
+      "destination_site,context_origin,reporting_origin,time,expiry_time)"
+      "VALUES(?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
   statement.BindInt(0, static_cast<int>(scope));
   statement.BindInt64(1, *source.source_id());
   statement.BindString(2, common_info.SourceSite().Serialize());
-  statement.BindString(3, common_info.source_origin().Serialize());
-  statement.BindString(4, common_info.DestinationSite().Serialize());
-  statement.BindString(5, common_info.destination_origin().Serialize());
-  statement.BindString(6, common_info.reporting_origin().Serialize());
-  statement.BindTime(7, common_info.source_time());
-  statement.BindTime(8, expiry_time);
+  statement.BindString(3, common_info.DestinationSite().Serialize());
+  statement.BindString(4, context_origin->Serialize());
+  statement.BindString(5, common_info.reporting_origin().Serialize());
+  statement.BindTime(6, common_info.source_time());
+  statement.BindTime(7, expiry_time);
 
   return statement.Run();
 }
