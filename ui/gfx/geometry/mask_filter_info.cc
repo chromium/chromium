@@ -10,9 +10,10 @@
 
 namespace gfx {
 
-bool MaskFilterInfo::ApplyTransform(const Transform& transform) {
-  if (rounded_corner_bounds_.IsEmpty())
-    return true;
+void MaskFilterInfo::ApplyTransform(const Transform& transform) {
+  if (rounded_corner_bounds_.IsEmpty()) {
+    return;
+  }
 
   // We want this to fail only in cases where our
   // Transform::Preserves2dAxisAlignment() returns false.  However,
@@ -31,14 +32,16 @@ bool MaskFilterInfo::ApplyTransform(const Transform& transform) {
     rounded_matrix.set(SkMatrix::kMScaleY, 0.0f);
 
   SkRRect new_rect;
-  if (!SkRRect(rounded_corner_bounds_).transform(rounded_matrix, &new_rect))
-    return false;
+  if (!SkRRect(rounded_corner_bounds_).transform(rounded_matrix, &new_rect) ||
+      !new_rect.isValid()) {
+    rounded_corner_bounds_ = RRectF();
+    return;
+  }
   rounded_corner_bounds_ = RRectF(new_rect);
 
-  if (gradient_mask_ && !gradient_mask_->IsEmpty())
+  if (gradient_mask_ && !gradient_mask_->IsEmpty()) {
     gradient_mask_->ApplyTransform(transform);
-
-  return true;
+  }
 }
 
 void MaskFilterInfo::ApplyTransform(const AxisTransform2d& transform) {
@@ -47,9 +50,14 @@ void MaskFilterInfo::ApplyTransform(const AxisTransform2d& transform) {
 
   rounded_corner_bounds_.Scale(transform.scale().x(), transform.scale().y());
   rounded_corner_bounds_.Offset(transform.translation());
+  if (!SkRRect(rounded_corner_bounds_).isValid()) {
+    rounded_corner_bounds_ = RRectF();
+    return;
+  }
 
-  if (gradient_mask_ && !gradient_mask_->IsEmpty())
+  if (gradient_mask_ && !gradient_mask_->IsEmpty()) {
     gradient_mask_->ApplyTransform(transform);
+  }
 }
 
 std::string MaskFilterInfo::ToString() const {

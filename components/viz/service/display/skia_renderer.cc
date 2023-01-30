@@ -3421,9 +3421,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // The |mask_filter_info| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
   if (!shared_quad_state->mask_filter_info.IsEmpty()) {
-    bool result = shared_quad_state->mask_filter_info.ApplyTransform(
+    shared_quad_state->mask_filter_info.ApplyTransform(
         *quad_to_target_transform_inverse);
-    DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
   const auto& viewport_size = current_frame()->device_viewport_size;

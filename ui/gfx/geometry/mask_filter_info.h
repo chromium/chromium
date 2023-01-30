@@ -58,11 +58,10 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
   // True if this contains no effective mask information.
   bool IsEmpty() const { return rounded_corner_bounds_.IsEmpty(); }
 
-  // Transform the mask filter information. Returns false if the transform
-  // cannot be applied.
-  bool ApplyTransform(const Transform& transform);
-
-  // Transform the mask filter information. This form always succeeds.
+  // Transform the mask filter information. If the transform cannot be applied
+  // (e.g. it would make rounded_corner_bounds_ invalid), rounded_corner_bounds_
+  // will be set to empty.
+  void ApplyTransform(const Transform& transform);
   void ApplyTransform(const AxisTransform2d& transform);
 
   std::string ToString() const;

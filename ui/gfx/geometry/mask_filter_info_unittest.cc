@@ -21,18 +21,18 @@ LinearGradient CreateGradient(int angle) {
 TEST(MaskFilterInfoTest, ApplyTransform) {
   MaskFilterInfo info(RRectF(1.f, 2.f, 20.f, 25.f, 5.f));
   MaskFilterInfo expected = info;
-  EXPECT_TRUE(info.ApplyTransform(Transform()));
+  info.ApplyTransform(Transform());
   EXPECT_EQ(expected, info);
 
   auto translation = Transform::MakeTranslation(-3.5f, 7.75f);
   expected = MaskFilterInfo(RRectF(-2.5f, 9.75f, 20.f, 25.f, 5.f));
-  EXPECT_TRUE(info.ApplyTransform(translation));
+  info.ApplyTransform(translation);
   EXPECT_EQ(expected, info);
 
   info = MaskFilterInfo(RRectF(1.f, 2.f, 20.f, 25.f, 5.f), CreateGradient(50));
   expected =
       MaskFilterInfo(RRectF(-2.5f, 9.75f, 20.f, 25.f, 5.f), CreateGradient(50));
-  EXPECT_TRUE(info.ApplyTransform(translation));
+  info.ApplyTransform(translation);
   EXPECT_EQ(expected, info);
 
   auto rotation_90_clock = Transform::Make90degRotation();
@@ -42,7 +42,7 @@ TEST(MaskFilterInfoTest, ApplyTransform) {
   expected = MaskFilterInfo(RRectF(RectF(-25.f, 0, 25.f, 20.f), 8.f, 7.f, 2.f,
                                    1.f, 4.f, 3.f, 6.f, 5.f),
                             CreateGradient(-40));
-  EXPECT_TRUE(info.ApplyTransform(rotation_90_clock));
+  info.ApplyTransform(rotation_90_clock);
   EXPECT_EQ(expected, info);
 
   Transform rotation_90_unrounded;
@@ -51,7 +51,7 @@ TEST(MaskFilterInfoTest, ApplyTransform) {
       RRectF(RectF(0, 0, 20.f, 25.f), 1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f),
       CreateGradient(50));
   EXPECT_TRUE(rotation_90_unrounded.Preserves2dAxisAlignment());
-  EXPECT_TRUE(info.ApplyTransform(rotation_90_unrounded));
+  info.ApplyTransform(rotation_90_unrounded);
   EXPECT_EQ(expected, info);
 
   auto scale = Transform::MakeScale(2.f, 3.f);
@@ -61,13 +61,13 @@ TEST(MaskFilterInfoTest, ApplyTransform) {
   expected = MaskFilterInfo(RRectF(RectF(0, 0, 40.f, 75.f), 2.f, 6.f, 6.f, 12.f,
                                    10.f, 18.f, 14.f, 24.f),
                             CreateGradient(61));
-  EXPECT_TRUE(info.ApplyTransform(scale));
+  info.ApplyTransform(scale);
   EXPECT_EQ(expected, info);
 
   Transform rotation;
   rotation.Rotate(45);
-  EXPECT_FALSE(info.ApplyTransform(rotation));
-  EXPECT_EQ(expected, info);
+  info.ApplyTransform(rotation);
+  EXPECT_TRUE(info.IsEmpty());
 }
 
 TEST(MaskFilterInfoTest, ApplyAxisTransform2d) {
@@ -98,6 +98,22 @@ TEST(MaskFilterInfoTest, ApplyAxisTransform2d) {
   scaled_translated_2.ApplyTransform(AxisTransform2d::FromScaleAndTranslation(
       Vector2dF(2.f, 3.f), Vector2dF(-3.5f, 7.75f)));
   EXPECT_EQ(expected, scaled_translated_2);
+
+  const float kInf = std::numeric_limits<float>::infinity();
+  const float kNan = std::numeric_limits<float>::quiet_NaN();
+  auto failure_is_empty = [&](const AxisTransform2d& transform) {
+    MaskFilterInfo transformed = info;
+    transformed.ApplyTransform(transform);
+    return transformed.IsEmpty();
+  };
+  EXPECT_TRUE(failure_is_empty(AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(kInf, 1), Vector2dF(1, 1))));
+  EXPECT_TRUE(failure_is_empty(AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(kNan, 1), Vector2dF(1, 1))));
+  EXPECT_TRUE(failure_is_empty(AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(1, 1), Vector2dF(1, kInf))));
+  EXPECT_TRUE(failure_is_empty(AxisTransform2d::FromScaleAndTranslation(
+      Vector2dF(1, 1), Vector2dF(1, kNan))));
 }
 
 }  // anonymous namespace
