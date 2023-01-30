@@ -19,7 +19,6 @@ import android.view.WindowManager;
 import android.view.animation.AccelerateInterpolator;
 
 import androidx.annotation.Px;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -35,14 +34,16 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
-            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground) {
+            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         super(activity, initialHeight, isFixedHeight, onResizedCallback, fullscreenManager,
-                isTablet, interactWithBackground);
+                isTablet, interactWithBackground, handleStrategyFactory);
 
         // TODO(crbug.com/1406104) Allow customization for the side-sheet width.
         //  For now it's half of the window.
         mUnclampedInitialWidth = mVersionCompat.getDisplayWidth() / 2;
         mPositionUpdater = this::updatePosition;
+
         setupCloseAnimation();
     }
 
@@ -78,7 +79,9 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        toolbar.setHandleStrategy(null);
+        PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
+                getStrategyType(), mActivity, this::isFullHeight, () -> 0, null);
+        toolbar.setHandleStrategy(handleStrategy);
         updateDragBarVisibility(/*dragHandlebarVisibility*/ View.GONE);
     }
 
@@ -130,6 +133,11 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         d.setCornerRadii(new float[] {radius, radius, 0, 0, 0, 0, 0, 0});
     }
 
+    @Override
+    protected void cleanupImeStateCallback() {
+        mVersionCompat.setImeStateCallback(null);
+    }
+
     private void setupCloseAnimation() {
         mCloseAnimator = new ValueAnimator();
         mCloseAnimator.addListener(new AnimatorListenerAdapter() {
@@ -151,7 +159,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void initializeSize() {
         initializeHeight();
-        mHeight = mDisplayHeight - mStatusbarHeight;
+        mHeight = mDisplayHeight - mNavbarHeight;
 
         positionOnWindow();
         setCoordinatorLayoutHeight(MATCH_PARENT);
@@ -163,18 +171,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         attrs.height = mHeight;
         attrs.width = mUnclampedInitialWidth;
-        attrs.y = mNavbarHeight;
-        attrs.x = 0;
-        attrs.gravity = Gravity.END;
+
+        attrs.y = mStatusbarHeight;
+        attrs.x = mVersionCompat.getDisplayWidth();
+        attrs.gravity = Gravity.TOP;
         mActivity.getWindow().setAttributes(attrs);
-    }
-
-    @VisibleForTesting
-    void setMockViewForTesting(View toolbar, View toolbarCoordinator) {
-        mPositionUpdater = this::updatePosition;
-        mToolbarView = toolbar;
-        mToolbarCoordinator = toolbarCoordinator;
-
-        onPostInflationStartup();
     }
 }

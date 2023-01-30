@@ -93,11 +93,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
-    private int mOrientation;
-
-    // Note: Do not use anywhere except in |onConfigurationChanged| as it might not be up-to-date.
-    private boolean mIsInMultiWindowMode;
-
     private ImageView mSpinnerView;
     private LinearLayout mNavbar;
     private CircularProgressDrawable mSpinner;
@@ -132,16 +127,15 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     public PartialCustomTabHeightStrategy(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
             ActivityLifecycleDispatcher lifecycleDispatcher, FullscreenManager fullscreenManager,
-            boolean isTablet, boolean interactWithBackground) {
+            boolean isTablet, boolean interactWithBackground,
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         super(activity, initialHeight, isFixedHeight, onResizedCallback, fullscreenManager,
-                isTablet, interactWithBackground);
+                isTablet, interactWithBackground, handleStrategyFactory);
 
         int animTime = mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime);
         mTabAnimator = new TabAnimator(this, animTime, this::onMoveEnd);
         lifecycleDispatcher.register(this);
 
-        mOrientation = mActivity.getResources().getConfiguration().orientation;
-        mIsInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
         mSpinnerFadeoutAnimatorListener = new AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {}
@@ -234,6 +228,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         if (mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeHeight();
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+            positionAtWidth(mVersionCompat.getDisplayWidth());
+        }
         updateShadowOffset();
         maybeInvokeResizeCallback();
         if (!isFixedHeight()) mRestoreAfterFindPage = false;
@@ -254,8 +251,9 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
             View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
         super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
 
-        toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(
-                mActivity, this::isFullHeight, () -> mStatus, this));
+        PartialCustomTabHandleStrategy handleStrategy = mHandleStrategyFactory.create(
+                getStrategyType(), mActivity, this::isFullHeight, () -> mStatus, this);
+        toolbar.setHandleStrategy(handleStrategy);
         updateDragBarVisibility();
     }
 
@@ -264,31 +262,10 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         // When the side-sheet implementation is enabled the configuration change will be handled
-        // by PartialCustomTabSizeStrategy.
+        // by PartialCustomTabDisplayManager.
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) return;
 
-        boolean isInMultiWindow = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
-        int orientation = newConfig.orientation;
-        int displayHeight = mVersionCompat.getDisplayHeight();
-        int displayWidth = mVersionCompat.getDisplayWidth();
-
-        if (isInMultiWindow != mIsInMultiWindowMode || orientation != mOrientation
-                || displayHeight != mDisplayHeight || displayWidth != mDisplayWidth) {
-            mIsInMultiWindowMode = isInMultiWindow;
-            mOrientation = orientation;
-            mDisplayHeight = displayHeight;
-            mDisplayWidth = displayWidth;
-            if (isFullHeight()) {
-                // We should update CCT position before Window#FLAG_LAYOUT_NO_LIMITS is set,
-                // otherwise it is not possible to get the correct content height.
-                mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
-                // Clean up the state initiated by IME so the height can be restored when
-                // rotating back to non-full-height mode later.
-                if (mVersionCompat.setImeStateCallback(null)) mStatus = HeightStatus.INITIAL_HEIGHT;
-            }
-            mPositionUpdater.run();
-        }
+        onConfigurationChanged(newConfig.orientation);
     }
 
     // ValueAnimator.AnimatorUpdateListener implementation.
@@ -296,6 +273,13 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     public void onAnimationUpdate(ValueAnimator valueAnimator) {
         int value = (int) valueAnimator.getAnimatedValue();
         updateWindowPos(value, false);
+    }
+
+    @Override
+    protected void cleanupImeStateCallback() {
+        if (mVersionCompat.setImeStateCallback(null)) {
+            mStatus = HeightStatus.INITIAL_HEIGHT;
+        }
     }
 
     @Override
@@ -400,6 +384,12 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         updateDragBarVisibility();
     }
 
+    private void positionAtWidth(int width) {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        attrs.width = width;
+        mActivity.getWindow().setAttributes(attrs);
+    }
+
     private void positionAtHeight(int height) {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
         if (isFullHeight() || isFullscreen()) {
@@ -408,6 +398,10 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         } else {
             attrs.height = height - mNavbarHeight;
             attrs.y = mDisplayHeight - attrs.height - mNavbarHeight;
+        }
+
+        if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
+            attrs.x = 0;
         }
         attrs.gravity = Gravity.TOP;
         mActivity.getWindow().setAttributes(attrs);
@@ -421,9 +415,11 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @Override
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-        ViewGroup.MarginLayoutParams lp =
-                (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
-        lp.setMargins(0, shadowOffset, 0, 0);
+        if (handleView != null) {
+            ViewGroup.MarginLayoutParams lp =
+                    (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
+            lp.setMargins(0, shadowOffset, 0, 0);
+        }
 
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
@@ -790,12 +786,14 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
-            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {
+            CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator,
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         mNavbar = navbar;
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;
         mToolbarCoordinator = toolbarCoordinator;
+        mHandleStrategyFactory = handleStrategyFactory;
 
         mPositionUpdater = this::updatePosition;
         onPostInflationStartup();

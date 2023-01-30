@@ -84,10 +84,10 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mPCCTTestRule.mActivity, 500, false, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                false);
+                false, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
-                mPCCTTestRule.mToolbarCoordinator);
+                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
         return pcct;
     }
 
@@ -99,10 +99,10 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy pcct = new PartialCustomTabHeightStrategy(
                 mPCCTTestRule.mActivity, heightPx, isFixedHeight, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
-                true);
+                true, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mNavbar, mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner, mPCCTTestRule.mToolbarView,
-                mPCCTTestRule.mToolbarCoordinator);
+                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mHandleStrategyFactory);
         return pcct;
     }
 
@@ -594,7 +594,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsFullHeight(mPCCTTestRule.mAttributeResults.get(length - 1));
         assertEquals("ResizeType.AUTO_EXPANSION should be recorded once.", 1,
                 histogramExpansion.getDelta());
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), anyInt());
     }
 
@@ -606,7 +606,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
 
         strategy.onShowSoftInput(() -> {});
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         // assertTabBelowStatusBar instead of assertTabIsFullHeight since
         // the height in mock is configured to return the device height minus
         // both navbar + status on R, which is more correct. By default on
@@ -618,7 +618,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabBelowStatusBar(getWindowAttributes());
 
         strategy.onImeStateChanged(/*imeVisible=*/false);
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
@@ -629,14 +629,14 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
 
         strategy.onShowSoftInput(() -> {});
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsFullHeight(getWindowAttributes());
 
         strategy.onImeStateChanged(/*imeVisible=*/true);
         assertTabIsFullHeight(getWindowAttributes());
 
         strategy.onImeStateChanged(/*imeVisible=*/false);
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsAtInitialPos(getWindowAttributes());
     }
 
@@ -646,7 +646,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
 
         strategy.onShowSoftInput(() -> {});
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsFullHeight(getWindowAttributes());
 
         mPCCTTestRule.configLandscapeMode();
@@ -668,7 +668,7 @@ public class PartialCustomTabHeightStrategyTest {
         assertTabIsAtInitialPos(getWindowAttributes());
 
         strategy.onFindToolbarShown();
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsFullHeight(getWindowAttributes());
 
         mPCCTTestRule.configLandscapeMode();
@@ -880,7 +880,7 @@ public class PartialCustomTabHeightStrategyTest {
 
         mFullscreen = false;
         strategy.onExitFullscreen(null);
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
         assertFalse(getWindowAttributes().isFullscreen());
         assertEquals(height, getWindowAttributes().height);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), anyInt());
@@ -900,7 +900,7 @@ public class PartialCustomTabHeightStrategyTest {
         strategy.onEnterFullscreen(null, null);
         mFullscreen = false;
         strategy.onExitFullscreen(null);
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertEquals(0, getWindowAttributes().y);
     }
@@ -923,7 +923,7 @@ public class PartialCustomTabHeightStrategyTest {
 
         mFullscreen = false;
         strategy.onExitFullscreen(null);
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertTabIsAtInitialPos(getWindowAttributes());
     }
@@ -983,7 +983,7 @@ public class PartialCustomTabHeightStrategyTest {
         int expected = PartialCustomTabHeightStrategy.ResizeType.AUTO_EXPANSION;
         HistogramDelta histogramExpansion = new HistogramDelta("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarShown();
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertTabIsFullHeight(getWindowAttributes());
         assertEquals("ResizeType.AUTO_EXPANSION should be recorded once.", 1,
@@ -995,16 +995,11 @@ public class PartialCustomTabHeightStrategyTest {
         HistogramDelta histogramMinimization =
                 new HistogramDelta("CustomTabs.ResizeType2", expected);
         strategy.onFindToolbarHidden();
-        waitForAnimationToFinish();
+        PartialCustomTabTestRule.waitForAnimationToFinish();
 
         assertTabIsAtInitialPos(getWindowAttributes());
         assertEquals("ResizeType.AUTO_MINIMIZATION should be recorded once.", 1,
                 histogramMinimization.getDelta());
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(INITIAL_HEIGHT), anyInt());
-    }
-
-    private static void waitForAnimationToFinish() {
-        shadowOf(Looper.getMainLooper()).idle();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 }

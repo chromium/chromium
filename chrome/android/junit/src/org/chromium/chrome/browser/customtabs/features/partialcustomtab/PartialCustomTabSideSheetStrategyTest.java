@@ -26,6 +26,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(Mode.PAUSED)
+@Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
@@ -42,9 +44,10 @@ public class PartialCustomTabSideSheetStrategyTest {
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(@Px int heightPx) {
-        PartialCustomTabSideSheetStrategy pcct = new PartialCustomTabSideSheetStrategy(
-                mPCCTTestRule.mActivity, heightPx, false, mPCCTTestRule.mOnResizedCallback,
-                mPCCTTestRule.mFullscreenManager, false, true);
+        PartialCustomTabSideSheetStrategy pcct =
+                new PartialCustomTabSideSheetStrategy(mPCCTTestRule.mActivity, heightPx, false,
+                        mPCCTTestRule.mOnResizedCallback, mPCCTTestRule.mFullscreenManager, false,
+                        true, mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(mPCCTTestRule.mToolbarView, mPCCTTestRule.mToolbarCoordinator);
         return pcct;
     }

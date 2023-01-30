@@ -334,18 +334,18 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     }
 
     public void setHandleStrategy(@Nullable HandleStrategy strategy) {
+        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
+                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
+            mLocationBar.showBranding();
+        }
+
         // When the (P)CCT does not need to be resized the handle strategy can be null.
         if (strategy == null) {
             mHandleStrategy = null;
             return;
         }
-
         mHandleStrategy = strategy;
         mHandleStrategy.setCloseClickHandler(mCloseButton::callOnClick);
-        if (!CustomTabsConnection.getInstance().isDynamicFeatureEnabled(
-                    ChromeFeatureList.CCT_BRAND_TRANSPARENCY)) {
-            mLocationBar.showBranding();
-        }
     }
 
     /**

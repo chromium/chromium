@@ -6,17 +6,21 @@ package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Surface;
@@ -39,15 +43,19 @@ import org.junit.runners.model.Statement;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 /**
  * A TestRule that sets up the mocks and contains helper methods for JUnit/Robolectric tests scoped
@@ -112,6 +120,12 @@ public class PartialCustomTabTestRule implements TestRule {
     View mDragHandlebar;
     @Mock
     GradientDrawable mDragBarBackground;
+    @Mock
+    CustomTabToolbar mCustomTabToolbar;
+    @Mock
+    ColorDrawable mColorDrawable;
+    @Mock
+    PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
 
     DisplayMetrics mMetrics;
     Context mContext;
@@ -147,6 +161,8 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mContentFrame.getHeight()).thenReturn(DEVICE_HEIGHT - NAVBAR_HEIGHT);
         when(mCoordinatorLayout.getLayoutParams()).thenReturn(mCoordinatorLayoutParams);
         when(mHandleView.getLayoutParams()).thenReturn(mLayoutParams);
+        when(mHandleView.getBackground()).thenReturn(mDragBarBackground);
+        when(mHandleView.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
         when(mToolbarCoordinator.getLayoutParams()).thenReturn(mLayoutParams);
         when(mNavbar.animate()).thenReturn(mViewAnimator);
         when(mViewAnimator.alpha(anyFloat())).thenReturn(mViewAnimator);
@@ -155,7 +171,16 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mSpinnerView.getLayoutParams()).thenReturn(mLayoutParams);
         when(mSpinnerView.getParent()).thenReturn(mContentFrame);
         when(mSpinnerView.animate()).thenReturn(mViewAnimator);
-
+        when(mToolbarView.getBackground()).thenReturn(mColorDrawable);
+        when(mToolbarView.getLayoutParams()).thenReturn(mLayoutParams);
+        when(mColorDrawable.getColor()).thenReturn(2);
+        when(mCustomTabToolbar.getLayoutParams()).thenReturn(mLayoutParams);
+        when(mCustomTabToolbar.getBackground()).thenReturn(mColorDrawable);
+        when(mDragBar.getBackground()).thenReturn(mDragBarBackground);
+        when(mHandleStrategyFactory.create(anyInt(), any(Context.class), any(BooleanSupplier.class),
+                     any(Supplier.class),
+                     any(PartialCustomTabHandleStrategy.DragEventCallback.class)))
+                .thenReturn(null);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
 
         mAttributeResults = new ArrayList<>();
@@ -187,6 +212,11 @@ public class PartialCustomTabTestRule implements TestRule {
     private void commonTearDown() {
         // Reset the multi-window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+    }
+
+    public static void waitForAnimationToFinish() {
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
     }
 
     public void configPortraitMode() {
