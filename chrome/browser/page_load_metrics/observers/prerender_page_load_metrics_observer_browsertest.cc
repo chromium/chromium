@@ -348,8 +348,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
           internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
-          content::PrerenderTriggerType::kEmbedder,
-          prerender_utils::kDirectUrlInputMetricSuffix),
+          content::PrerenderTriggerType::kSpeculationRule, ""),
       0);
 }
 
