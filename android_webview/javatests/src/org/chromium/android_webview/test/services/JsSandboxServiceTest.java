@@ -44,6 +44,7 @@ public class JsSandboxServiceTest {
     // larger in future. However, we don't want it too large as that will make the tests slower and
     // require more memory.
     private static final long REASONABLE_HEAP_SIZE = 100 * 1024 * 1024;
+    private static final int LARGE_NAMED_DATA_SIZE = 2 * 1024 * 1024;
 
     @Test
     @MediumTest
@@ -797,6 +798,345 @@ public class JsSandboxServiceTest {
                         throw e;
                     }
                     Assert.assertTrue(e.getCause().getMessage().contains("I should fail!"));
+                }
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testArrayBufferSizeEnforced() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        // V8 cannot sparsely allocate array buffers, so no fill required.
+        final String oomingCode = ""
+                + "const bigArray = new Float32Array(new ArrayBuffer(" + (maxHeapSize + 1) + "));"
+                + "'Unreachable'";
+        final String stableCode = ""
+                + "const smallArray = new Float32Array(new ArrayBuffer(100));"
+                + "'PASS'";
+        final String stableExpected = "PASS";
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                // Check that unserviceable large allocations fail.
+                ListenableFuture<String> resultFuture1 =
+                        jsIsolate.evaluateJavaScriptAsync(oomingCode);
+                try {
+                    resultFuture1.get(5, TimeUnit.SECONDS);
+                    Assert.fail("Should have thrown.");
+                } catch (ExecutionException e) {
+                    if (!(e.getCause() instanceof EvaluationFailedException)) {
+                        throw e;
+                    }
+                    EvaluationFailedException cause = (EvaluationFailedException) e.getCause();
+                    if (!cause.getMessage().startsWith(
+                                "Uncaught RangeError: Array buffer allocation failed")) {
+                        throw e;
+                    }
+                }
+
+                // Check that the same isolate can be used to perform a smaller allocation.
+                ListenableFuture<String> resultFuture2 =
+                        jsIsolate.evaluateJavaScriptAsync(stableCode);
+                String result = resultFuture2.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals(stableExpected, result);
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testGarbageCollection() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            final long num_doubles = 1024 * 1024;
+            // There may be additional allocation overhead beyond this value.
+            final long allocation_size = 8 * num_doubles;
+            final long memoryUseFactor = 2;
+            final long allocationsToTry = memoryUseFactor * maxHeapSize / allocation_size;
+            // This test will exercise both the V8 heap and ArrayBuffer-allocated memory. Each will
+            // have allocations totalling approximately memoryUseFactor times the available memory.
+            //
+            // Note that the configured heap limit is not precisely enforced by V8, so we need to go
+            // comfortably over our specified limit (and not just by an extra allocation).
+            //
+            // We use doubles (rather than bytes) to reduce (heap) Array overheads.
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                final String code = ""
+                        + "this.arrayLength = " + num_doubles + ";"
+                        + "this.obj = {"
+                        + " array: Array(this.arrayLength).fill(Math.random(), 0),"
+                        + " arraybuffer: new Float64Array(new ArrayBuffer(8 * this.arrayLength)),"
+                        + "};"
+                        + "'PASS'";
+                final String expected = "PASS";
+                for (int i = 0; i < allocationsToTry; i++) {
+                    ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                    // Execution time will be unstable when GC kicks in, so go with 60 seconds.
+                    String result = resultFuture.get(60, TimeUnit.SECONDS);
+                    Assert.assertEquals(expected, result);
+                }
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testNamedDataCanBeFreed() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            // There will be named data allocations of approximately memoryUseFactor times the
+            // available memory. Note that the memory usage in the Java side is constant with
+            // respect to number of allocations as we reuse the same input bytes.
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                final byte[] bytes = new byte[LARGE_NAMED_DATA_SIZE];
+                final long memoryUseFactor = 2;
+                final long allocationsToTry = memoryUseFactor * maxHeapSize / LARGE_NAMED_DATA_SIZE;
+                for (int i = 0; i < allocationsToTry; i++) {
+                    boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-" + i, bytes);
+                    Assert.assertTrue(provideNamedDataReturn);
+                    final String code = ""
+                            + "android.consumeNamedDataAsArrayBuffer('id-' + " + i + ")"
+                            + " .then((arrayBuffer) => {"
+                            + "  const len = arrayBuffer.byteLength;"
+                            + "  if (len != " + LARGE_NAMED_DATA_SIZE + ") {"
+                            + "   throw new Error('Bad length ' + len);"
+                            + "  }"
+                            + "  return 'PASS';"
+                            + " })";
+                    final String expected = "PASS";
+                    ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                    // Execution time may be unstable if the GC kicks in, so go with 60 seconds.
+                    String result = resultFuture.get(60, TimeUnit.SECONDS);
+                    Assert.assertEquals(expected, result);
+                }
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testNamedDataCanTriggerGarbageCollection() throws Throwable {
+        // Array buffers for named data are created differently to ordinary array buffers (see
+        // native service code android_webview::JsSandboxIsolate::tryAllocateArrayBuffer). The
+        // special allocation code needs to run the garbage collector if we've run out of external
+        // memory budget. We test this by using up the budget with array buffers (such that there
+        // would not be enough space to consume the named data), and then forget about (turn into
+        // garbage) enough buffer memory for the allocation to succeed. This means that when we run
+        // our own allocation code, there is only enough memory to proceed after a garbage
+        // collection (but not without one).
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        final byte[] bytes = new byte[LARGE_NAMED_DATA_SIZE];
+        final long allocationsToTry = (maxHeapSize / LARGE_NAMED_DATA_SIZE) + 1;
+        final String code = ""
+                + "const allocation_size = " + LARGE_NAMED_DATA_SIZE + ";"
+                + "this.array_buffers = new Array(" + allocationsToTry + ");"
+                + "let i;"
+                + "for (i = 0; i < this.array_buffers.length; i++) {"
+                + " try {"
+                + "  this.array_buffers[i] = new ArrayBuffer(allocation_size);"
+                + " } catch (e) {"
+                + "  if (e instanceof RangeError) {"
+                + "   break;"
+                + "  }"
+                + " }"
+                + "}"
+                + "if (i == this.array_buffers.length) {"
+                + " throw new Error('Expected to run out of memory, but did not');"
+                + "} else if (i == 0) {"
+                + " throw new Error('Could not achieve at least one allocation');"
+                + "}"
+                + "this.array_buffers[0] = null;"
+                + "android.consumeNamedDataAsArrayBuffer('test')"
+                + " .then((arrayBuffer) => {"
+                + "  const len = arrayBuffer.byteLength;"
+                + "  if (len != " + LARGE_NAMED_DATA_SIZE + ") {"
+                + "   throw new Error('Bad length ' + len);"
+                + "  }"
+                + "  return 'PASS';"
+                + " })";
+        final String expected = "PASS";
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                boolean provideNamedDataReturn = jsIsolate.provideNamedData("test", bytes);
+                Assert.assertTrue(provideNamedDataReturn);
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                // Execution time may be unstable if the GC kicks in, so go with 60 seconds.
+                String result = resultFuture.get(60, TimeUnit.SECONDS);
+                Assert.assertEquals(expected, result);
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testArrayBuffersAllocatedInPages() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            // The service code should assume that small allocations have overhead and will cost at
+            // least a 4096 byte page size. (Even if the page size was larger, that shouldn't
+            // interfere with the accuracy of the test.)
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                final long allocations = maxHeapSize / 4096 + 1;
+                // We need to use `new Uint8Array(new ArrayBuffer(1))` instead of `new
+                // Uint8Array(1)` because V8 appears to instead internalize (onto the V8 heap)
+                // smaller directly constructed typed arrays.
+                final String code = ""
+                        + "(function(){"
+                        + " const arrayLength = " + allocations + ";"
+                        + " const buffers = Array(arrayLength);"
+                        + " for (let i = 0; i < arrayLength; i++) {"
+                        + "  try {"
+                        + "   buffers[i] = new Uint8Array(new ArrayBuffer(1));"
+                        + "  } catch (e) {"
+                        + "   if (e instanceof RangeError) {"
+                        + "    return i;"
+                        + "   } else {"
+                        + "    throw e;"
+                        + "   }"
+                        + "  }"
+                        + " }"
+                        + " return 'FAIL';"
+                        + "})()";
+                final String notExpected = "FAIL";
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                String result = resultFuture.get(60, TimeUnit.SECONDS);
+                Assert.assertNotEquals(notExpected, result);
+            }
+            // Allocating one larger contiguous array buffer should not incur significant overhead.
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                // At most maxHeapSize is available to array buffers, but maybe less. Go with
+                // something less than the full limit, but which is still much more than what was
+                // logically requested by the many smaller buffers.
+                final long size = maxHeapSize / 8;
+                final String code = ""
+                        + "const buffer = new Uint8Array(new ArrayBuffer(" + size + "));"
+                        + "'PASS'";
+                final String expected = "PASS";
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                String result = resultFuture.get(10, TimeUnit.SECONDS);
+                Assert.assertEquals(expected, result);
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testOversizedNamedData() throws Throwable {
+        final long maxHeapSize = REASONABLE_HEAP_SIZE;
+        final long largeSize = (maxHeapSize + 1L);
+        Assert.assertTrue(largeSize <= Integer.MAX_VALUE);
+        final byte[] largeBytes = new byte[(int) largeSize];
+        final String provideString = "Hello World";
+        final byte[] smallBytes = provideString.getBytes(StandardCharsets.US_ASCII);
+        // Test that attempting to consume an oversized named data into a new array buffer fails
+        // with a RangeError, and a subsequent smaller request succeeds.
+        final String code = ""
+                + "function ab2str(buf) {"
+                + " return String.fromCharCode.apply(null, new Uint8Array(buf));"
+                + "}"
+                + "async function test() {"
+                + " try {"
+                + "  await android.consumeNamedDataAsArrayBuffer('large');"
+                + "  throw new Error('consumption of large named data should not have succeeded');"
+                + " } catch (e) {"
+                + "  if (!(e instanceof RangeError)) {"
+                + "   throw e;"
+                + "  }"
+                + " }"
+                + " const buffer = await android.consumeNamedDataAsArrayBuffer('small');"
+                + " return await ab2str(buffer);"
+                + "}"
+                + "test()";
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_ISOLATE_MAX_HEAP_SIZE));
+            Assume.assumeTrue(
+                    jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_PROMISE_RETURN));
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
+            isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
+            try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
+                boolean provideNamedDataLargeReturn =
+                        jsIsolate.provideNamedData("large", largeBytes);
+                Assert.assertTrue(provideNamedDataLargeReturn);
+                boolean provideNamedDataSmallReturn =
+                        jsIsolate.provideNamedData("small", smallBytes);
+                Assert.assertTrue(provideNamedDataSmallReturn);
+                ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
+                String result = resultFuture.get(5, TimeUnit.SECONDS);
+                Assert.assertEquals(provideString, result);
+            }
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testUnconsumedNamedData() throws Throwable {
+        // Ensure that creating and discarding loads of separate unconsumed named data do not result
+        // in leaks (particularly memory, file descriptors, and threads).
+        final byte[] bytes = new byte[LARGE_NAMED_DATA_SIZE];
+        final int numIsolates = 100;
+        final int numNames = 100;
+        Context context = ContextUtils.getApplicationContext();
+        ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
+                JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
+        try (JavaScriptSandbox jsSandbox = jsSandboxFuture.get(5, TimeUnit.SECONDS)) {
+            Assume.assumeTrue(jsSandbox.isFeatureSupported(
+                    JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
+            for (int i = 0; i < numIsolates; i++) {
+                try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
+                    for (int j = 0; j < numNames; j++) {
+                        boolean provideNamedDataReturn =
+                                jsIsolate.provideNamedData("id-" + j, bytes);
+                        Assert.assertTrue(provideNamedDataReturn);
+                    }
                 }
             }
         }

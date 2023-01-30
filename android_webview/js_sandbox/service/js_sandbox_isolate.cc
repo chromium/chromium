@@ -10,17 +10,21 @@
 #include <string>
 
 #include "android_webview/js_sandbox/js_sandbox_jni_headers/JsSandboxIsolate_jni.h"
+#include "android_webview/js_sandbox/service/js_sandbox_array_buffer_allocator.h"
 #include "android_webview/js_sandbox/service/js_sandbox_isolate_callback.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -37,6 +41,7 @@
 #include "gin/try_catch.h"
 #include "gin/v8_initializer.h"
 #include "js_sandbox_isolate.h"
+#include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-microtask-queue.h"
 #include "v8/include/v8-statistics.h"
@@ -52,19 +57,21 @@ namespace {
 // this once error handling is in place.
 constexpr base::StringPiece resource_name = "<expression>";
 
+size_t GetAllocatePageSize() {
+  return gin::V8Platform::Get()->GetPageAllocator()->AllocatePageSize();
+}
+
 // AdjustToValidHeapSize will either round the provided heap size up to a valid
 // allocation page size or clip the value to the maximum supported heap size.
-size_t AdjustToValidHeapSize(const uint64_t heap_size_bytes) {
-  // The value of 64K should just work on all platforms. Smaller page sizes
-  // might work in practice, although we currently don't have long-term
-  // guarantees. This value is not necessarily the same as the system's memory
-  // page size. https://bugs.chromium.org/p/v8/issues/detail?id=13172#c6
-  constexpr size_t page_size = 65536;
-  constexpr size_t max_supported_heap_size =
-      (size_t)UINT_MAX / page_size * page_size;
+size_t AdjustToValidHeapSize(const size_t heap_size_bytes) {
+  // This value is not necessarily the same as the system's memory page
+  // size. https://bugs.chromium.org/p/v8/issues/detail?id=13172#c6
+  const size_t page_size = GetAllocatePageSize();
+  const size_t max_supported_heap_size =
+      size_t{UINT_MAX} / page_size * page_size;
 
-  if (heap_size_bytes < (uint64_t)max_supported_heap_size) {
-    return ((size_t)heap_size_bytes + (page_size - 1)) / page_size * page_size;
+  if (heap_size_bytes < max_supported_heap_size) {
+    return (heap_size_bytes + (page_size - 1)) / page_size * page_size;
   } else {
     return max_supported_heap_size;
   }
@@ -140,14 +147,21 @@ FdWithLength::FdWithLength(int fd_input, ssize_t len) {
   length = len;
 }
 
-JsSandboxIsolate::JsSandboxIsolate(jlong max_heap_size_bytes)
-    : isolate_max_heap_size_bytes_(max_heap_size_bytes) {
-  CHECK_GE(isolate_max_heap_size_bytes_, 0);
-  control_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
-  isolate_task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-      {base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
-      base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+JsSandboxIsolate::JsSandboxIsolate(const size_t max_heap_size_bytes)
+    : isolate_max_heap_size_bytes_(max_heap_size_bytes),
+      array_buffer_allocator_(std::make_unique<JsSandboxArrayBufferAllocator>(
+          *gin::ArrayBufferAllocator::SharedInstance(),
+          max_heap_size_bytes > 0
+              ? max_heap_size_bytes
+              : JsSandboxArrayBufferAllocator::kUnlimitedBudget,
+          // This is a bit of an implementation detail - gin uses the same
+          // underlying allocator for pages and array buffers.
+          GetAllocatePageSize())),
+      control_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
+      isolate_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN, base::MayBlock()},
+          base::SingleThreadTaskRunnerThreadMode::DEDICATED)) {
   control_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&JsSandboxIsolate::CreateCancelableTaskTracker,
                                 base::Unretained(this)));
@@ -253,53 +267,59 @@ void JsSandboxIsolate::NotifyInitComplete() {
 // Called from control sequence.
 void JsSandboxIsolate::ConvertPromiseToArrayBufferInControlSequence(
     std::string name,
-    std::unique_ptr<v8::BackingStore> backing_store) {
+    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver) {
   cancelable_task_tracker_->PostTask(
       isolate_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &JsSandboxIsolate::ConvertPromiseToArrayBufferInIsolateSequence,
-          base::Unretained(this), std::move(name), std::move(backing_store)));
+          base::Unretained(this), std::move(name), std::move(array_buffer),
+          std::move(resolver)));
 }
 
 // Called from control sequence.
+//
+// The array_buffer's API must only be used from the isolate thread.
 void JsSandboxIsolate::ConvertPromiseToFailureInControlSequence(
     std::string name,
+    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     std::string reason) {
   cancelable_task_tracker_->PostTask(
       isolate_task_runner_.get(), FROM_HERE,
       base::BindOnce(
           &JsSandboxIsolate::ConvertPromiseToFailureInIsolateSequence,
-          base::Unretained(this), std::move(name), std::move(reason)));
+          base::Unretained(this), std::move(name), std::move(array_buffer),
+          std::move(resolver), std::move(reason)));
 }
 
 // Called from Thread pool.
+//
+// The array_buffer's API must only be used from the isolate thread, but the
+// internal data (inner_buffer) may be accessed in whatever thread is currently
+// processing the task, so long as array_buffer remains alive.
 void JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool(
     base::ScopedFD fd,
     ssize_t length,
-    std::string name) {
-  char* buffer =
-      (char*)gin::ArrayBufferAllocator::SharedInstance()->Allocate(length);
-  if (base::ReadFromFD(fd.get(), buffer, length)) {
-    auto deleter = [](void* buffer, size_t length, void* data) {
-      gin::ArrayBufferAllocator::SharedInstance()->Free(buffer, length);
-    };
-
-    std::unique_ptr<v8::BackingStore> backing_store =
-        v8::ArrayBuffer::NewBackingStore(buffer, length, deleter, nullptr);
+    std::string name,
+    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
+    void* inner_buffer) {
+  if (base::ReadFromFD(fd.get(), static_cast<char*>(inner_buffer), length)) {
     control_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &JsSandboxIsolate::ConvertPromiseToArrayBufferInControlSequence,
-            base::Unretained(this), std::move(name), std::move(backing_store)));
+            base::Unretained(this), std::move(name), std::move(array_buffer),
+            std::move(resolver)));
   } else {
-    gin::ArrayBufferAllocator::SharedInstance()->Free(buffer, length);
     std::string failure_reason = "Reading data failed.";
     control_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             &JsSandboxIsolate::ConvertPromiseToFailureInControlSequence,
-            base::Unretained(this), std::move(name),
-            std::move(failure_reason)));
+            base::Unretained(this), std::move(name), std::move(array_buffer),
+            std::move(resolver), std::move(failure_reason)));
   }
 }
 
@@ -332,6 +352,7 @@ void JsSandboxIsolate::DeleteSelf() {
 void JsSandboxIsolate::InitializeIsolateOnThread() {
   std::unique_ptr<v8::Isolate::CreateParams> params =
       gin::IsolateHolder::getDefaultIsolateParams();
+  params->array_buffer_allocator = array_buffer_allocator_.get();
   if (isolate_max_heap_size_bytes_ > 0) {
     params->constraints.ConfigureDefaultsFromHeapSize(
         0, AdjustToValidHeapSize(isolate_max_heap_size_bytes_));
@@ -466,30 +487,35 @@ void JsSandboxIsolate::PromiseRejectCallback(
 // Called from isolate thread.
 void JsSandboxIsolate::ConvertPromiseToArrayBufferInIsolateSequence(
     std::string name,
-    std::unique_ptr<v8::BackingStore> backing_store) {
+    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver) {
   v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
 
-  v8::Local<v8::ArrayBuffer> array_buffer = v8::ArrayBuffer::New(
-      isolate_holder_->isolate(), std::move(backing_store));
-  auto it = named_resolver_.find(name);
-  it->second.Get(isolate_holder_->isolate())
-      ->Resolve(context_holder_->context(), array_buffer)
+  resolver->Get(isolate_holder_->isolate())
+      ->Resolve(context_holder_->context(),
+                array_buffer->Get(isolate_holder_->isolate()))
       .ToChecked();
-  named_resolver_.erase(it);
 }
 
 // Called from isolate thread.
+//
+// We pass the array_buffer to the isolate thread so that it (or the handle)
+// only gets destructed from the isolate thread.
 void JsSandboxIsolate::ConvertPromiseToFailureInIsolateSequence(
     std::string name,
+    std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+    std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     std::string reason) {
   v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
   v8::HandleScope handle_scope(isolate_holder_->isolate());
   v8::Context::Scope scope(context_holder_->context());
 
-  named_resolver_[name]
-      .Get(isolate_holder_->isolate())
+  // Allow array buffer to be garbage collectable before further V8 calls.
+  array_buffer = nullptr;
+
+  resolver->Get(isolate_holder_->isolate())
       ->Reject(context_holder_->context(),
                v8::Exception::Error(
                    gin::StringToV8(isolate_holder_->isolate(), reason)))
@@ -520,25 +546,61 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
   {
     base::AutoLock lock(named_fd_lock_);
     auto entry = named_fd_.find(name);
-    if (entry == named_fd_.end()) {
-      std::string reason = "No NamedData available with the given name";
-      global_resolver.Get(isolate_holder_->isolate())
-          ->Reject(context_holder_->context(),
-                   v8::Exception::Error(
-                       gin::StringToV8(isolate_holder_->isolate(), reason)))
-          .ToChecked();
-      args->Return(promise);
-      return;
+    if (entry != named_fd_.end()) {
+      // When we move the fd, we invalidate the entry in the map such that it
+      // cannot be used again, even if the operation fails before we read any
+      // data from the pipe.
+      fd = std::move(entry->second.fd);
+      length = entry->second.length;
     }
-    fd = std::move(entry->second.fd);
-    length = entry->second.length;
   }
-  named_resolver_.insert({name, std::move(global_resolver)});
+  if (!fd.is_valid()) {
+    std::string reason = "No NamedData available with the given name";
+    global_resolver.Get(isolate_holder_->isolate())
+        ->Reject(context_holder_->context(),
+                 v8::Exception::Error(
+                     gin::StringToV8(isolate_holder_->isolate(), reason)))
+        .ToChecked();
+    args->Return(promise);
+    return;
+  }
+
+  // V8 only accounts for the external memory used by backing stores once they
+  // are bound to an array buffer. So we set up the whole array buffer up-front
+  // on the isolate thread. (This will prevent V8's view of external memory
+  // usage getting out of sync with our own.)
+  v8::MaybeLocal<v8::ArrayBuffer> maybe_array_buffer =
+      tryAllocateArrayBuffer(length);
+  if (maybe_array_buffer.IsEmpty()) {
+    const std::string reason =
+        "Array buffer allocation failed for consumeNamedDataAsArrayBuffer";
+    global_resolver.Get(isolate_holder_->isolate())
+        ->Reject(context_holder_->context(),
+                 v8::Exception::RangeError(
+                     gin::StringToV8(isolate_holder_->isolate(), reason)))
+        .ToChecked();
+    args->Return(promise);
+    return;
+  }
+
+  v8::Local<v8::ArrayBuffer> local_array_buffer =
+      maybe_array_buffer.ToLocalChecked();
+  void* const inner_buffer = local_array_buffer->Data();
+  // V8 documentation provides no guarantees about the thread-safety of Globals
+  // - even move construction/destruction. Wrap it in a unique_ptr so that it
+  // can be treated as an opaque pointer until it's handed back to the isolate
+  // thread.
+  std::unique_ptr<v8::Global<v8::ArrayBuffer>> global_array_buffer(
+      std::make_unique<v8::Global<v8::ArrayBuffer>>(
+          isolate, std::move(local_array_buffer)));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool,
                      base::Unretained(this), std::move(fd), length,
-                     std::move(name)));
+                     std::move(name), std::move(global_array_buffer),
+                     std::make_unique<v8::Global<v8::Promise::Resolver>>(
+                         std::move(global_resolver)),
+                     inner_buffer));
   args->Return(promise);
 }
 
@@ -561,11 +623,16 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
   // currently running evaluation.
   CHECK(current_callback_)
       << "Isolate ran out of memory outside of an evaluation.";
-  uint64_t memory_limit = static_cast<uint64_t>(isolate_max_heap_size_bytes_);
+  uint64_t memory_limit = uint64_t{isolate_max_heap_size_bytes_};
   v8::HeapStatistics heap_statistics;
   isolate_holder_->isolate()->GetHeapStatistics(&heap_statistics);
-  uint64_t heap_usage = heap_statistics.used_heap_size();
-  current_callback_->ReportMemoryLimitExceededError(memory_limit, heap_usage);
+  uint64_t v8_heap_usage = heap_statistics.used_heap_size();
+  // Note that we use our own memory accounting, and not V8's external memory
+  // accounting, for non-heap usage. These numbers can differ, particularly as
+  // our own memory accounting considers whole pages rather than just bytes.
+  uint64_t non_v8_heap_usage = uint64_t{array_buffer_allocator_->GetUsage()};
+  current_callback_->ReportMemoryLimitExceededError(memory_limit, v8_heap_usage,
+                                                    non_v8_heap_usage);
   FreezeThread();
 }
 
@@ -586,6 +653,52 @@ void JsSandboxIsolate::ConsumeNamedDataAsArrayBuffer(gin::Arguments* args) {
   base::ImmediateCrash();
 }
 
+// Called from isolate thread.
+//
+// Attempts to allocate an array buffer of given size. If unsuccessful, no array
+// is returned, instead of an OOM crash.
+//
+// The public V8 APIs don't expose native methods for trying to allocate an
+// array buffer without the risk of an OOM crash.
+//
+// The returned buffer will not be resizable.
+v8::MaybeLocal<v8::ArrayBuffer> JsSandboxIsolate::tryAllocateArrayBuffer(
+    const size_t length) {
+  void* buffer = array_buffer_allocator_->Allocate(length);
+  if (!buffer) {
+    // Encourage V8 to perform some garbage collection, which might result in
+    // previous array buffers getting deallocated. Note this won't free memory
+    // from the heap itself, but it will clean up any garbage which is keeping
+    // otherwise disused array buffers alive.
+    //
+    // Note that this may cause overly aggressive garbage collection, but is the
+    // only sensible API provided.
+    isolate_holder_->isolate()->LowMemoryNotification();
+    // Try again after GC.
+    buffer = array_buffer_allocator_->Allocate(length);
+    if (!buffer) {
+      return v8::MaybeLocal<v8::ArrayBuffer>();
+    }
+  }
+
+  std::unique_ptr<v8::BackingStore> backing_store =
+      v8::ArrayBuffer::NewBackingStore(
+          buffer, length,
+          [](void* buffer_to_delete, size_t length, void* allocator) {
+            static_cast<v8::ArrayBuffer::Allocator*>(allocator)->Free(
+                buffer_to_delete, length);
+          },
+          array_buffer_allocator_.get());
+
+  // We do not need to call AdjustAmountOfExternalAllocatedMemory ourselves. V8
+  // will automatically call AdjustAmountOfExternalAllocatedMemory with the size
+  // of the backing store involved, which may further trigger garbage
+  // collections if memory usage is being unreasonable. This is done deep within
+  // the call to v8::ArrayBuffer::New().
+  return v8::MaybeLocal<v8::ArrayBuffer>(v8::ArrayBuffer::New(
+      isolate_holder_->isolate(), std::move(backing_store)));
+}
+
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxIsolate");
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
@@ -598,7 +711,9 @@ static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
 static jlong JNI_JsSandboxIsolate_CreateNativeJsSandboxIsolateWrapper(
     JNIEnv* env,
     jlong max_heap_size_bytes) {
-  JsSandboxIsolate* processor = new JsSandboxIsolate(max_heap_size_bytes);
+  CHECK_GE(max_heap_size_bytes, 0);
+  JsSandboxIsolate* processor =
+      new JsSandboxIsolate(base::saturated_cast<size_t>(max_heap_size_bytes));
   return reinterpret_cast<intptr_t>(processor);
 }
 

@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-promise.h"
 
 namespace base {
@@ -31,18 +32,18 @@ class ContextHolder;
 }  // namespace gin
 
 namespace v8 {
-class BackingStore;
 class ObjectTemplate;
 }  // namespace v8
 
 namespace android_webview {
 
 class FdWithLength;
+class JsSandboxArrayBufferAllocator;
 class JsSandboxIsolateCallback;
 
 class JsSandboxIsolate {
  public:
-  explicit JsSandboxIsolate(jlong max_heap_size_bytes = 0);
+  explicit JsSandboxIsolate(size_t max_heap_size_bytes = 0);
   ~JsSandboxIsolate();
 
   jboolean EvaluateJavascript(
@@ -74,19 +75,31 @@ class JsSandboxIsolate {
   void PostEvaluationToIsolateThread(
       const std::string code,
       scoped_refptr<JsSandboxIsolateCallback> callback);
-  void ConvertPromiseToArrayBufferInThreadPool(base::ScopedFD fd,
-                                               ssize_t length,
-                                               std::string name);
+  void ConvertPromiseToArrayBufferInThreadPool(
+      base::ScopedFD fd,
+      ssize_t length,
+      std::string name,
+      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
+      void* inner_buffer);
   void ConvertPromiseToArrayBufferInControlSequence(
       std::string name,
-      std::unique_ptr<v8::BackingStore> backing_store);
-  void ConvertPromiseToFailureInControlSequence(std::string name,
-                                                std::string reason);
-  void ConvertPromiseToFailureInIsolateSequence(std::string name,
-                                                std::string reason);
+      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver);
+  void ConvertPromiseToFailureInControlSequence(
+      std::string name,
+      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
+      std::string reason);
+  void ConvertPromiseToFailureInIsolateSequence(
+      std::string name,
+      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
+      std::string reason);
   void ConvertPromiseToArrayBufferInIsolateSequence(
       std::string name,
-      std::unique_ptr<v8::BackingStore>);
+      std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
+      std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver);
 
   void ConsumeNamedDataAsArrayBuffer(gin::Arguments* args);
   v8::Local<v8::ObjectTemplate> CreateAndroidNamespaceTemplate(
@@ -96,9 +109,19 @@ class JsSandboxIsolate {
   [[noreturn]] static size_t NearHeapLimitCallback(void* data,
                                                    size_t current_heap_limit,
                                                    size_t initial_heap_limit);
+  v8::MaybeLocal<v8::ArrayBuffer> tryAllocateArrayBuffer(size_t length);
+
   // Must only be used from isolate thread
   [[noreturn]] void MemoryLimitExceeded();
   [[noreturn]] void FreezeThread();
+
+  // V8 heap size limit. Must be non-negative.
+  //
+  // 0 indicates no explicit limit (but use the default V8 limits).
+  const size_t isolate_max_heap_size_bytes_;
+  // Apart from construction/destruction, must only be used from the isolate
+  // thread.
+  std::unique_ptr<JsSandboxArrayBufferAllocator> array_buffer_allocator_;
 
   // Used as a control sequence to add ordering to binder threadpool requests.
   scoped_refptr<base::SequencedTaskRunner> control_task_runner_;
@@ -115,17 +138,10 @@ class JsSandboxIsolate {
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   // Should be used from isolate_task_runner_.
   std::unique_ptr<gin::ContextHolder> context_holder_;
-  // Should be used from isolate_task_runner_.
-  std::unordered_map<std::string, v8::Global<v8::Promise::Resolver>>
-      named_resolver_;
 
   base::Lock named_fd_lock_;
   std::unordered_map<std::string, FdWithLength> named_fd_
       GUARDED_BY(named_fd_lock_);
-  // V8 heap size limit. Must be non-negative.
-  //
-  // 0 indicates no explicit limit (but use the default V8 limits).
-  const jlong isolate_max_heap_size_bytes_;
 
   // The callback associated with the current evaluation, if any. Used for
   // signaling errors from V8 callbacks.

@@ -32,9 +32,12 @@ class JsSandboxIsolateCallback final
   //
   // memory_limit == 0 indicates that no explicit limit was configured.
   //
-  // heap_usage describes memory usage before the failed allocation.
+  // v8_heap_usage describes V8-internal (V8 heap) memory usage before the
+  // failed allocation. non_v8_heap_usage describes memory usage external to the
+  // V8 heap.
   void ReportMemoryLimitExceededError(uint64_t memory_limit,
-                                      uint64_t heap_usage);
+                                      uint64_t v8_heap_usage,
+                                      uint64_t non_v8_heap_usage);
 
  private:
   friend class base::RefCounted<JsSandboxIsolateCallback>;
