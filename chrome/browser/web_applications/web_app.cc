@@ -207,27 +207,27 @@ base::Value OsStatesDebugValue(
   return base::Value(std::move(debug_dict));
 }
 
-base::Value ImageResourceDebugValue(
+base::Value::Dict ImageResourceDebugDict(
     const blink::Manifest::ImageResource& icon) {
   const char* const kPurposeStrings[] = {"Any", "Monochrome", "Maskable"};
 
-  base::Value root(base::Value::Type::DICT);
-  root.SetStringKey("src", icon.src.spec());
-  root.SetStringKey("type", icon.type);
+  base::Value::Dict root;
+  root.Set("src", icon.src.spec());
+  root.Set("type", icon.type);
 
-  base::Value sizes_json(base::Value::Type::LIST);
+  base::Value::List sizes_json;
   for (const auto& size : icon.sizes) {
     std::string size_formatted = base::NumberToString(size.width()) + "x" +
                                  base::NumberToString(size.height());
     sizes_json.Append(base::Value(size_formatted));
   }
-  root.SetKey("sizes", std::move(sizes_json));
+  root.Set("sizes", std::move(sizes_json));
 
-  base::Value purpose_json(base::Value::Type::LIST);
+  base::Value::List purpose_json;
   for (const auto& purpose : icon.purpose) {
     purpose_json.Append(kPurposeStrings[static_cast<int>(purpose)]);
   }
-  root.SetKey("purpose", std::move(purpose_json));
+  root.Set("purpose", std::move(purpose_json));
   return root;
 }
 
@@ -1033,13 +1033,13 @@ base::Value WebApp::AsDebugValue() const {
                           tab_strip_.value().home_tab)));
     } else {
       base::Value::Dict home_tab_json;
-      base::Value icons_json(base::Value::Type::LIST);
+      base::Value::List icons_json;
       absl::optional<std::vector<blink::Manifest::ImageResource>> icons =
           absl::get<blink::Manifest::HomeTabParams>(tab_strip_.value().home_tab)
               .icons;
 
       for (auto& icon : *icons) {
-        icons_json.Append(ImageResourceDebugValue(icon));
+        icons_json.Append(ImageResourceDebugDict(icon));
       }
 
       home_tab_json.Set("icons", std::move(icons_json));
