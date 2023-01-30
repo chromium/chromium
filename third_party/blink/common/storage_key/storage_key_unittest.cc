@@ -1226,6 +1226,85 @@ TEST_F(StorageKeyTest, WithOrigin) {
   }
 }
 
+// Tests that FromWire() returns true/false correctly.
+// If you make a change here, you should probably make it in BlinkStorageKeyTest
+// too.
+TEST_F(StorageKeyTest, FromWireReturnValue) {
+  using AncestorChainBit = blink::mojom::AncestorChainBit;
+  const url::Origin o1 = url::Origin::Create(GURL("https://a.com"));
+  const url::Origin o2 = url::Origin::Create(GURL("https://b.com"));
+  const url::Origin o3 = url::Origin::Create(GURL("https://c.com"));
+  const url::Origin opaque = url::Origin();
+  const net::SchemefulSite site1 = net::SchemefulSite(o1);
+  const net::SchemefulSite site2 = net::SchemefulSite(o2);
+  const net::SchemefulSite site3 = net::SchemefulSite(o3);
+  base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+
+  const struct TestCase {
+    const url::Origin& origin;
+    const net::SchemefulSite& top_level_site;
+    const net::SchemefulSite& top_level_site_if_third_party_enabled;
+    const absl::optional<base::UnguessableToken>& nonce;
+    AncestorChainBit ancestor_chain_bit;
+    AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
+    bool result;
+  } test_cases[] = {
+      // Passing cases:
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, true},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, true},
+      {opaque, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, true},
+      // Failing cases:
+      // If a 3p key is indicated, the *if_third_party_enabled pieces should
+      // match their counterparts.
+      {o1, site2, site3, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site1, site1, absl::nullopt, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kSameSite, false},
+      // If the top_level_site* is cross-site to the origin, the
+      // ancestor_chain_bit* must indicate cross-site.
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      {o1, site2, site2, absl::nullopt, AncestorChainBit::kSameSite,
+       AncestorChainBit::kSameSite, false},
+      // If there is a nonce, all other values must indicate same-site to
+      // origin.
+      {o1, site2, site2, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site1, nonce1, AncestorChainBit::kCrossSite,
+       AncestorChainBit::kCrossSite, false},
+      {o1, site1, site1, nonce1, AncestorChainBit::kSameSite,
+       AncestorChainBit::kCrossSite, false},
+  };
+
+  const StorageKey starting_key;
+
+  for (const auto& test_case : test_cases) {
+    StorageKey result_key = starting_key;
+    EXPECT_EQ(
+        test_case.result,
+        StorageKey::FromWire(
+            test_case.origin, test_case.top_level_site,
+            test_case.top_level_site_if_third_party_enabled, test_case.nonce,
+            test_case.ancestor_chain_bit,
+            test_case.ancestor_chain_bit_if_third_party_enabled, result_key));
+    if (!test_case.result) {
+      // The key should not be modified for a return value of false.
+      EXPECT_TRUE(starting_key.ExactMatchForTesting(result_key));
+    }
+  }
+}
+
 TEST_F(StorageKeyTest, CreateFromOriginAndIsolationInfo) {
   const url::Origin origin = url::Origin::Create(GURL("https://foo.com"));
   const url::Origin other_origin =

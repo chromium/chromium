@@ -20,24 +20,40 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::StorageKey>::Read(
     blink::mojom::StorageKeyDataView data,
     blink::StorageKey* out) {
   url::Origin origin;
-  if (!data.ReadOrigin(&origin))
+  if (!data.ReadOrigin(&origin)) {
     return false;
+  }
 
   net::SchemefulSite top_level_site;
-  if (!data.ReadTopLevelSite(&top_level_site))
+  if (!data.ReadTopLevelSite(&top_level_site)) {
     return false;
+  }
 
   absl::optional<base::UnguessableToken> nonce;
-  if (!data.ReadNonce(&nonce))
+  if (!data.ReadNonce(&nonce)) {
     return false;
+  }
 
   blink::mojom::AncestorChainBit ancestor_chain_bit;
-  if (!data.ReadAncestorChainBit(&ancestor_chain_bit))
+  if (!data.ReadAncestorChainBit(&ancestor_chain_bit)) {
     return false;
+  }
 
-  *out = blink::StorageKey::CreateWithOptionalNonce(
-      origin, top_level_site, base::OptionalToPtr(nonce), ancestor_chain_bit);
-  return true;
+  net::SchemefulSite top_level_site_if_third_party_enabled;
+  if (!data.ReadTopLevelSiteIfThirdPartyEnabled(
+          &top_level_site_if_third_party_enabled)) {
+    return false;
+  }
+
+  blink::mojom::AncestorChainBit ancestor_chain_bit_if_third_party_enabled;
+  if (!data.ReadAncestorChainBitIfThirdPartyEnabled(
+          &ancestor_chain_bit_if_third_party_enabled)) {
+    return false;
+  }
+
+  return blink::StorageKey::FromWire(
+      origin, top_level_site, top_level_site_if_third_party_enabled, nonce,
+      ancestor_chain_bit, ancestor_chain_bit_if_third_party_enabled, *out);
 }
 
 }  // namespace mojo

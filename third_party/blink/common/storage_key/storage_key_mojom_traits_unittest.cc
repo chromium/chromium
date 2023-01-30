@@ -72,13 +72,7 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
       StorageKey copied;
       EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::StorageKey>(
           original, copied));
-      EXPECT_EQ(original, copied);
-
-      // Ensure the comparison works if `kThirdPartyStoragePartitioning` is
-      // force enabled. This verifies `top_level_site_` and
-      // `ancestor_chain_bit_`.
-      EXPECT_EQ(original.CopyWithForceEnabledThirdPartyStoragePartitioning(),
-                copied.CopyWithForceEnabledThirdPartyStoragePartitioning());
+      EXPECT_TRUE(original.ExactMatchForTesting(copied));
     }
   }
 }
