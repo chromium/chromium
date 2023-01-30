@@ -319,7 +319,8 @@ TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
 
   // Init and set ProxyPolicyProvider
   ProxyPolicyProvider proxy_policy_provider;
-  proxy_policy_provider.SetDelegate(&mock_machine_level_cloud_policy_provider);
+  proxy_policy_provider.SetUnownedDelegate(
+      &mock_machine_level_cloud_policy_provider);
   proxy_policy_provider.Init(&schema_registry_);
   g_browser_process->browser_policy_connector()
       ->SetProxyPolicyProviderForTesting(&proxy_policy_provider);

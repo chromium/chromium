@@ -288,7 +288,8 @@ void ProfilePolicyConnector::Init(
   //     BrowserPolicyConnectorBase::SetPolicyProviderForTesting.
   if (is_primary_user_ && user_policy_delegate_candidate &&
       GetDeviceWidePolicyService()->HasProvider(GetProxyPolicyProvider())) {
-    GetProxyPolicyProvider()->SetDelegate(user_policy_delegate_candidate);
+    GetProxyPolicyProvider()->SetUnownedDelegate(
+        user_policy_delegate_candidate);
 
     // When proxying primary user policies to the device-wide PolicyService,
     // delay signaling that initialization is complete until the policies have
@@ -323,7 +324,7 @@ void ProfilePolicyConnector::OverrideIsManagedForTesting(bool is_managed) {
 void ProfilePolicyConnector::Shutdown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_primary_user_)
-    GetProxyPolicyProvider()->SetDelegate(nullptr);
+    GetProxyPolicyProvider()->SetUnownedDelegate(nullptr);
 
   if (special_user_policy_provider_)
     special_user_policy_provider_->Shutdown();

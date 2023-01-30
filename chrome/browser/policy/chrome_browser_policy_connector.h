@@ -78,7 +78,7 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   }
   MachineLevelUserCloudPolicyManager*
   machine_level_user_cloud_policy_manager() {
-    return machine_level_user_cloud_policy_manager_.get();
+    return machine_level_user_cloud_policy_manager_;
   }
 
   ProxyPolicyProvider* proxy_policy_provider() {
@@ -167,10 +167,10 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   // The MachineLevelUserCloudPolicyManager is not directly included in the
   // vector of policy providers (defined in the base class). A proxy policy
-  // provider is used instead, so this class is responsible for holding
-  // ownership of this object.
-  std::unique_ptr<MachineLevelUserCloudPolicyManager>
-      machine_level_user_cloud_policy_manager_;
+  // provider allows this object to be initialized after the policy service
+  // is created. Owned by the proxy policy provider.
+  raw_ptr<MachineLevelUserCloudPolicyManager>
+      machine_level_user_cloud_policy_manager_ = nullptr;
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

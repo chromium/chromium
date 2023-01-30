@@ -12,38 +12,43 @@
 
 namespace policy {
 
-ProxyPolicyProvider::ProxyPolicyProvider() : delegate_(nullptr) {}
+ProxyPolicyProvider::ProxyPolicyProvider() = default;
 
 ProxyPolicyProvider::~ProxyPolicyProvider() {
-  DCHECK(!delegate_);
+  DCHECK(!delegate());
 }
 
-void ProxyPolicyProvider::SetDelegate(ConfigurationPolicyProvider* delegate) {
-  if (delegate_)
-    delegate_->RemoveObserver(this);
-  delegate_ = delegate;
-  if (delegate_) {
-    delegate_->AddObserver(this);
-    OnUpdatePolicy(delegate_);
-  } else {
-    UpdatePolicy(PolicyBundle());
+void ProxyPolicyProvider::SetOwnedDelegate(OwnedDelegate delegate) {
+  ResetDelegate();
+
+  if (delegate) {
+    delegate_ = std::move(delegate);
   }
+
+  OnDelegateChanged();
+}
+
+void ProxyPolicyProvider::SetUnownedDelegate(UnownedDelegate delegate) {
+  ResetDelegate();
+
+  if (delegate) {
+    delegate_ = delegate;
+  }
+
+  OnDelegateChanged();
 }
 
 void ProxyPolicyProvider::Shutdown() {
   // Note: the delegate is not owned by the proxy provider, so this call is not
   // forwarded. The same applies for the Init() call.
   // Just drop the delegate without propagating updates here.
-  if (delegate_) {
-    delegate_->RemoveObserver(this);
-    delegate_ = nullptr;
-  }
+  ResetDelegate();
   ConfigurationPolicyProvider::Shutdown();
 }
 
 void ProxyPolicyProvider::RefreshPolicies() {
-  if (delegate_) {
-    delegate_->RefreshPolicies();
+  if (delegate()) {
+    delegate()->RefreshPolicies();
   } else {
     // Subtle: if a RefreshPolicies() call comes after Shutdown() then the
     // current bundle should be served instead. This also does the right thing
@@ -53,7 +58,7 @@ void ProxyPolicyProvider::RefreshPolicies() {
 }
 
 bool ProxyPolicyProvider::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
-  return delegate_ && delegate_->IsInitializationComplete(domain);
+  return delegate() && delegate()->IsInitializationComplete(domain);
 }
 
 void ProxyPolicyProvider::OnUpdatePolicy(
@@ -61,8 +66,41 @@ void ProxyPolicyProvider::OnUpdatePolicy(
   if (block_policy_updates_for_testing_)
     return;
 
-  DCHECK_EQ(delegate_, provider);
-  UpdatePolicy(delegate_->policies().Clone());
+  DCHECK_EQ(delegate(), provider);
+  UpdatePolicy(delegate()->policies().Clone());
+}
+
+ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() {
+  return absl::holds_alternative<OwnedDelegate>(delegate_)
+             ? absl::get<OwnedDelegate>(delegate_).get()
+             : absl::get<UnownedDelegate>(delegate_).get();
+}
+
+const ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() const {
+  return absl::holds_alternative<OwnedDelegate>(delegate_)
+             ? absl::get<OwnedDelegate>(delegate_).get()
+             : absl::get<UnownedDelegate>(delegate_).get();
+}
+
+void ProxyPolicyProvider::ResetDelegate() {
+  if (absl::holds_alternative<OwnedDelegate>(delegate_)) {
+    absl::get<OwnedDelegate>(delegate_)->Shutdown();
+  }
+
+  if (delegate()) {
+    delegate()->RemoveObserver(this);
+  }
+
+  delegate_ = UnownedDelegate(nullptr);
+}
+
+void ProxyPolicyProvider::OnDelegateChanged() {
+  if (delegate()) {
+    delegate()->AddObserver(this);
+    OnUpdatePolicy(delegate());
+  } else {
+    UpdatePolicy(PolicyBundle());
+  }
 }
 
 }  // namespace policy
