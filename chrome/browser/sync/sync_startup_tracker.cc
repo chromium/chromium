@@ -5,8 +5,8 @@
 #include "chrome/browser/sync/sync_startup_tracker.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "components/sync/driver/sync_service.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -69,24 +69,30 @@ SyncStartupTracker::GetServiceStartupState(syncer::SyncService* sync_service) {
     return ServiceStartupState::kError;
   }
 
-  // If the sync engine has started up, notify the callback.
-  if (sync_service->IsEngineInitialized()) {
-    return ServiceStartupState::kComplete;
+  // Unrecoverable errors return false for CanSyncFeatureStart(), handled above.
+  DCHECK(!sync_service->HasUnrecoverableError());
+
+  switch (sync_service->GetTransportState()) {
+    case syncer::SyncService::TransportState::DISABLED:
+      NOTREACHED();
+      break;
+    case syncer::SyncService::TransportState::START_DEFERRED:
+    case syncer::SyncService::TransportState::INITIALIZING:
+      // No error detected yet, but the sync engine hasn't started up yet, so
+      // we're in the pending state.
+      return ServiceStartupState::kPending;
+    case syncer::SyncService::TransportState::PAUSED:
+      // Persistent auth errors lead to sync pausing.
+      return ServiceStartupState::kError;
+    case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
+    case syncer::SyncService::TransportState::CONFIGURING:
+    case syncer::SyncService::TransportState::ACTIVE:
+      DCHECK(sync_service->IsEngineInitialized());
+      return ServiceStartupState::kComplete;
   }
 
-  // If the sync service has some kind of error, report to the user.
-  if (sync_service->HasUnrecoverableError()) {
-    return ServiceStartupState::kError;
-  }
-
-  // If we have an auth error, exit.
-  if (sync_service->GetAuthError().state() != GoogleServiceAuthError::NONE) {
-    return ServiceStartupState::kError;
-  }
-
-  // No error detected yet, but the sync engine hasn't started up yet, so
-  // we're in the pending state.
-  return ServiceStartupState::kPending;
+  NOTREACHED();
+  return ServiceStartupState::kError;
 }
 
 namespace testing {
