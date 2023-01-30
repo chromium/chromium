@@ -152226,6 +152226,19 @@
        {}
       ]
      ],
+     "nest-containing-forgiving.html": [
+      "d399142f7efb998db7ff8dffae0770c5bcea0cc2",
+      [
+       null,
+       [
+        [
+         "/css/css-nesting/nest-containing-forgiving-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nesting-basic.html": [
       "6bc727a73195122f6f2abca1a07a289c99376f5c",
       [
@@ -308046,6 +308059,10 @@
       "006216b60e71d2d1af9c3d6c9fc81ea4c53f1d1d",
       []
      ],
+     "nest-containing-forgiving-ref.html": [
+      "36b07c92b6fdcbb9bca66a4292bd871af7e7d696",
+      []
+     ],
      "nesting-basic-ref.html": [
       "c2f7c669497d363e868cb96d2c2bb1ee315fff49",
       []
@@ -394671,10 +394688,6 @@
      "30c8c9d0add996e5e425732815f3a40f53c17655",
      []
     ],
-    "RTCRtpParameters-encodings-expected.txt": [
-     "0d37e5ed839ef42e54f575e5ff7fbb99c5b20e60",
-     []
-    ],
     "RTCRtpParameters-encodings.html.ini": [
      "2a25ea2c0e4f60d996f349f91dd4255b9be6f382",
      []
@@ -394725,10 +394738,6 @@
    "webrtc-svc": {
     "META.yml": [
      "17d93c51a9f195f5093882b1934c79f0a0635554",
-     []
-    ],
-    "RTCRtpParameters-scalability-expected.txt": [
-     "816a25344ca588a17fcd1caea0c114885cf3d0fb",
      []
     ],
     "RTCRtpParameters-scalability.html.ini": [
@@ -450762,6 +450771,13 @@
       ],
       "custom-property-animation-length.html": [
        "8849bf52d6651338444ea4b8024e4233d36f29f4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "custom-property-animation-list-type-mismatch.html": [
+       "95757445ae79121893e02d3f37153e197ac4fbd3",
        [
         null,
         {}
@@ -631974,7 +631990,7 @@
      ]
     ],
     "RTCRtpParameters-adaptivePtime.html": [
-     "a0cc989c13da0b6533faadfa3ac123e6df898862",
+     "8a7a8b6ba689c2b671e22d91a371777fde581f3a",
      [
       null,
       {}
@@ -632093,7 +632109,7 @@
      ]
     ],
     "RTCRtpParameters-encodings.html": [
-     "37c1b919b417fa03b2c9566839b529a3c0aae07c",
+     "1519ee84f736c1a4be4e87834fcf069c7c80ac7b",
      [
       null,
       {}
@@ -632198,7 +632214,7 @@
      ]
     ],
     "RTCRtpParameters-scalability.html": [
-     "d8b1c6e1350601c45b0eee62ebce7ca7ea6e9c08",
+     "ff28c2b5e95636708568cdc20c5da5fc2db0dcba",
      [
       null,
       {
