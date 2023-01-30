@@ -15,7 +15,7 @@ namespace test {
 // Display only. The contained Display can be accessed and modified via
 // TestScreen::display().
 //
-// NOTE: Adding and removing DisplayOberver's are no-ops and observers
+// NOTE: Adding and removing DisplayObserver's are no-ops and observers
 // will NOT be notified ever.
 class TestScreen : public ScreenBase {
  public:

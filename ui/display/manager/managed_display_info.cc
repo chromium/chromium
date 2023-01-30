@@ -454,7 +454,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   if (native_info.from_native_platform())
     return;
   // Update the overscan_insets_in_dip_ either if the inset should be
-  // cleared, or has non empty insts.
+  // cleared, or has non empty insets.
   if (native_info.clear_overscan_insets())
     overscan_insets_in_dip_ = gfx::Insets();
   else if (!native_info.overscan_insets_in_dip_.IsEmpty())

@@ -637,7 +637,7 @@ int ScreenWin::GetSystemMetricsForMonitor(HMONITOR monitor, int metric) {
   if (!monitor)
     monitor = MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY);
 
-  // We don't include fudge factors stemming from accessiblility features when
+  // We don't include fudge factors stemming from accessibility features when
   // dealing with system metrics associated with window elements drawn by the
   // operating system, since we will not be doing scaling of those metrics
   // ourselves.

@@ -2121,7 +2121,7 @@ TEST_F(ConfigureDisplaysTaskTest,
       log_.GetActionsAndClear());
 }
 
-// Tests a nested MST configuration in which after a successful modset on the
+// Tests a nested MST configuration in which after a successful modeset on the
 // root branch device (i.e. two external displays connected to a single MST hub)
 // one display is removed from the original MST hub, connected to a second MST
 // hub together with a third display, and then the second MST hub is connected

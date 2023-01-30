@@ -64,7 +64,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     Builder& SetType(DisplayConnectionType type);
     Builder& SetBaseConnectorId(uint64_t base_connector_id);
     Builder& SetPathTopology(const std::vector<uint64_t>& path_topology);
-    Builder& SetIsAspectPerservingScaling(bool is_aspect_preserving_scaling);
+    Builder& SetIsAspectPreservingScaling(bool is_aspect_preserving_scaling);
     Builder& SetHasOverscan(bool has_overscan);
     Builder& SetHasColorCorrectionMatrix(bool val);
     Builder& SetColorCorrectionInLinearSpace(bool val);

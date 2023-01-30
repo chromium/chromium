@@ -29,7 +29,7 @@ TEST(DisplayLayoutBuilderTest, MultiplePlacement) {
 
   ASSERT_EQ(3u, layout->placement_list.size());
 
-  // placmenets are sorted by display_id.
+  // placements are sorted by display_id.
   EXPECT_EQ(3, layout->placement_list[0].display_id);
   EXPECT_EQ(5, layout->placement_list[0].parent_display_id);
   EXPECT_EQ(20, layout->placement_list[0].offset);

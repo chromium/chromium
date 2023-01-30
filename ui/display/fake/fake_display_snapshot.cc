@@ -123,7 +123,7 @@ bool HandleOptions(FakeDisplaySnapshot::Builder* builder, StringPiece options) {
         builder->SetHasColorCorrectionMatrix(true);
         break;
       case 'a':
-        builder->SetIsAspectPerservingScaling(true);
+        builder->SetIsAspectPreservingScaling(true);
         break;
       case 'i':
         builder->SetType(DISPLAY_CONNECTION_TYPE_INTERNAL);
@@ -246,7 +246,7 @@ Builder& Builder::SetPathTopology(const std::vector<uint64_t>& path_topology) {
   return *this;
 }
 
-Builder& Builder::SetIsAspectPerservingScaling(bool val) {
+Builder& Builder::SetIsAspectPreservingScaling(bool val) {
   is_aspect_preserving_scaling_ = val;
   return *this;
 }

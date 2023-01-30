@@ -75,7 +75,7 @@ const char kMirroringDisplayCountRangesHistogram[] =
 const char kMirroringImplementationHistogram[] =
     "DisplayManager.MirroringImplementation";
 
-// The UMA historgram that logs the zoom percentage level of the intenral
+// The UMA histogram that logs the zoom percentage level of the internal
 // display.
 constexpr char kInternalDisplayZoomPercentageHistogram[] =
     "DisplayManager.InternalDisplayZoomPercentage";
@@ -1027,7 +1027,7 @@ void DisplayManager::UpdateDisplaysWith(
   }
 
   // Clear focus if the display has been removed, but don't clear focus if
-  // the destkop has been moved from one display to another
+  // the desktop has been moved from one display to another
   // (mirror -> docked, docked -> single internal).
   bool clear_focus =
       !removed_displays.empty() &&

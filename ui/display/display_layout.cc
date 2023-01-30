@@ -49,7 +49,7 @@ DisplayIdList DisplayListToDisplayIdList(const Displays& displays) {
   return list;
 }
 
-// Ruturns nullptr if display with |id| is not found.
+// Returns nullptr if display with |id| is not found.
 Display* FindDisplayById(Displays* display_list, int64_t id) {
   auto iter = base::ranges::find(*display_list, id, &Display::id);
   return iter == display_list->end() ? nullptr : &(*iter);
@@ -68,7 +68,7 @@ int GetDisplayTreeDepth(
     ++depth;
     auto iter = display_to_parent_ids_map.find(current_id);
     if (iter == display_to_parent_ids_map.end())
-      return kMaxDepth;  // Let detached diplays go to the end.
+      return kMaxDepth;  // Let detached displays go to the end.
 
     current_id = iter->second;
   }
@@ -242,7 +242,7 @@ void DeIntersectDisplays(int64_t primary_id,
   // Sort the displays first by their depth in the display hierarchy tree, and
   // then by distance of their top left points from the origin. This way we
   // process the displays starting at the root (the primary display), in the
-  // order of their decendence spanning out from the primary display.
+  // order of their descendence spanning out from the primary display.
   std::sort(sorted_displays.begin(), sorted_displays.end(), [&](Display* d1,
                                                                 Display* d2) {
     const int d1_depth =
@@ -680,7 +680,7 @@ DisplayPlacement DisplayLayout::FindPlacementById(int64_t display_id) const {
 //                 | RECTANGLE               x                       |
 //                 +-------------------------------------------------+
 //
-// The rectangle shares an egde with the reference's bottom edge, but it's
+// The rectangle shares an edge with the reference's bottom edge, but its
 // center point is in the left area.
 
 // static

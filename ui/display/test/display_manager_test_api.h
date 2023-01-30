@@ -92,11 +92,10 @@ DISPLAY_EXPORT bool SetDisplayResolution(DisplayManager* display_manager,
                                          int64_t display_id,
                                          const gfx::Size& resolution);
 
-// Creates the dislpay layout from position and offset for the current
-// display list. If you simply want to create a new layout that is
-// independent of current displays, use DisplayLayoutBuilder or simply
-// create a new DisplayLayout and set display id fields (primary, ids
-// in placement) manually.
+// Creates the display layout from position and offset for the current display
+// list. If you simply want to create a new layout that is independent of
+// current displays, use DisplayLayoutBuilder or simply create a new
+// DisplayLayout and set display id fields (primary, ids in placement) manually.
 DISPLAY_EXPORT std::unique_ptr<DisplayLayout> CreateDisplayLayout(
     DisplayManager* display_manager,
     DisplayPlacement::Position position,

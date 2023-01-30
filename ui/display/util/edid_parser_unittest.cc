@@ -77,7 +77,7 @@ constexpr unsigned char kBlockZeroSerialNumberOnlyDisplay[] =
 constexpr size_t kBlockZeroSerialNumberOnlyDisplayLength =
     std::size(kBlockZeroSerialNumberOnlyDisplay);
 
-// Serial number is unavilable. Omitted from bytes 12-15 of block zero and SN
+// Serial number is unavailable. Omitted from bytes 12-15 of block zero and SN
 // descriptor (tag: 0xff).
 constexpr unsigned char kNoSerialNumberDisplay[] =
     "\x00\xff\xff\xff\xff\xff\xff\x00\x22\xf0\x6c\x28\x00\x00\x00\x00"

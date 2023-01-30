@@ -37,7 +37,7 @@ namespace {
 // is initialized with the very first DisplayLinkMac instance, and is never
 // changed (even, e.g, in tests that re-initialize the main thread task runner).
 // https://885329
-// TODO(ccameron): crbug.com/969157 - Save this ask_runner to DisaplayLinkMac.
+// TODO(ccameron): crbug.com/969157 - Save this ask_runner to DisplayLinkMac.
 // configs += [ "//build/config/compiler:wexit_time_destructors" ] in
 // ui/display/BUILD.gn has to be removed because GetMainThreadTaskRunner()
 // causes a compiler error.

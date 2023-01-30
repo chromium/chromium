@@ -343,7 +343,7 @@ void TouchDeviceManager::AssociateInternalDevices(
   VLOG(2) << "Trying to match internal devices (" << displays->size()
           << " displays and " << devices->size() << " devices to match)";
 
-  // Internal device assocation has a couple of gotchas:
+  // Internal device association has a couple of gotchas:
   // - There can be internal devices but no internal display, or visa-versa.
   // - There can be multiple internal devices matching one internal display. We
   //   assume there is at most one internal display.

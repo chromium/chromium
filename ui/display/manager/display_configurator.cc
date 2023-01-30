@@ -623,7 +623,7 @@ void DisplayConfigurator::SetDelegateForTesting(
 void DisplayConfigurator::SetInitialDisplayPower(
     chromeos::DisplayPowerState power_state) {
   if (requested_power_state_) {
-    // A new power state has alreday been requested so ignore the initial state.
+    // A new power state has already been requested so ignore the initial state.
     return;
   }
 

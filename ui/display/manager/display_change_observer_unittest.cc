@@ -500,7 +500,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using DisplayResolutionTest = testing::Test;
 
-TEST_F(DisplayResolutionTest, CheckEffectiveResoutionUMAIndex) {
+TEST_F(DisplayResolutionTest, CheckEffectiveResolutionUMAIndex) {
   std::map<int, gfx::Size> effective_resolutions;
   for (const auto& display_config : display_configs) {
     gfx::Size size = display_config.resolution;

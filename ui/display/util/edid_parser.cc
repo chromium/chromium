@@ -200,7 +200,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   }
   product_id_ = (edid[kProductIdOffset] << 8) + edid[kProductIdOffset + 1];
 
-  //   Bytes 12-15: dislay serial number, in little-endian (LSB). This field is
+  //   Bytes 12-15: display serial number, in little-endian (LSB). This field is
   //   optional and its absence is marked by having all bytes set to 0x00.
   //   Values do not represent ASCII characters.
   constexpr size_t kSerialNumberOffset = 12;
@@ -672,13 +672,13 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
         }
 
         case kHDRStaticMetadataCapabilityTag: {
-          constexpr size_t kMaxNumHDRStaticMedatataEntries = 4;
-          const std::bitset<kMaxNumHDRStaticMedatataEntries>
+          constexpr size_t kMaxNumHDRStaticMetadataEntries = 4;
+          const std::bitset<kMaxNumHDRStaticMetadataEntries>
               supported_eotfs_bitfield(edid[data_offset + 2]);
           static_assert(
-              kMaxNumHDRStaticMedatataEntries == std::size(kTransferIDMap),
+              kMaxNumHDRStaticMetadataEntries == std::size(kTransferIDMap),
               "kTransferIDMap should describe all possible transfer entries");
-          for (size_t entry = 0; entry < kMaxNumHDRStaticMedatataEntries;
+          for (size_t entry = 0; entry < kMaxNumHDRStaticMetadataEntries;
                ++entry) {
             if (supported_eotfs_bitfield[entry])
               supported_color_transfer_ids_.insert(kTransferIDMap[entry]);

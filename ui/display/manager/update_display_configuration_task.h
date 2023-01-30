@@ -72,7 +72,7 @@ class DISPLAY_MANAGER_EXPORT UpdateDisplayConfigurationTask
   void OnEnableSoftwareMirroring(ConfigureDisplaysTask::Status status);
 
   // Starts the configuration process. |callback| is used to continue the task
-  // after |configure_taks_| finishes executing.
+  // after |configure_task_| finishes executing.
   void EnterState(ConfigureDisplaysTask::ResponseCallback callback);
 
   // Finishes display configuration and runs |callback_|.

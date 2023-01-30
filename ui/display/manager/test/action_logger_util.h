@@ -52,7 +52,7 @@ std::string SetGammaCorrectionAction(
     const std::vector<display::GammaRampRGBEntry>& degamma_lut,
     const std::vector<display::GammaRampRGBEntry>& gamma_lut);
 
-// Returns a string describing a TestNativedisplaydelegate::SetPrivacyScreen()
+// Returns a string describing a TestNativeDisplayDelegate::SetPrivacyScreen()
 // call.
 std::string SetPrivacyScreenAction(int64_t display_id, bool enabled);
 

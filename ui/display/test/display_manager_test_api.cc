@@ -119,7 +119,7 @@ void DisplayManagerTestApi::UpdateDisplay(const std::string& display_specs) {
       info.SetBounds(bounds);
     }
 
-    // Overcan and native resolution are excluded for now as they require
+    // Overscan and native resolution are excluded for now as they require
     // special handing (has_overscan flag. resolution change makes sense
     // only on external).
     display_manager_->RegisterDisplayProperty(

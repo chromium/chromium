@@ -184,7 +184,7 @@ MultipleDisplayState DisplayChangeObserver::GetStateForDisplayIds(
                               return display_state->display_id();
                             });
   return display_manager_->ShouldSetMirrorModeOn(
-             list, /*should_check_hardware_mirrorring=*/true)
+             list, /*should_check_hardware_mirroring=*/true)
              ? MULTIPLE_DISPLAY_STATE_MULTI_MIRROR
              : MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED;
 }

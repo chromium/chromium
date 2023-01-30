@@ -328,7 +328,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // configuration task.
   void RunPendingConfiguration();
 
-  // Callback for |configuration_taks_|. When the configuration process finishes
+  // Callback for |configuration_task_|. When the configuration process finishes
   // this is called with the result (|success|) and the updated display state.
   void OnConfigured(bool success,
                     const std::vector<DisplaySnapshot*>& displays,

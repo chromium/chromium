@@ -152,7 +152,7 @@ UnifiedDesktopLayoutMatrix BuildDisplayMatrix(const DisplayLayout& layout) {
   const size_t num_columns = max_column - min_column + 1;
 
   if (displays_cells.size() != num_rows * num_columns) {
-    LOG(ERROR) << "Unified Desktop layout matrix has wrong dimentions";
+    LOG(ERROR) << "Unified Desktop layout matrix has wrong dimensions";
     // Return an empty matrix, ValidateMatrix() will catch it as invalid.
     return matrix;
   }
@@ -227,7 +227,7 @@ bool BuildUnifiedDesktopMatrix(const DisplayIdList& ids_list,
   }
 
   // This map is used to validate that each display has no more than one child
-  // on eithr of its sides.
+  // on either of its sides.
   std::map<int64_t, std::set<DisplayPlacement::Position>> displays_filled_sides;
 
   // This map is used to validate that all displays has a path to the primary
