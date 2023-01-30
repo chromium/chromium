@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/css/property_registration.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -124,7 +123,7 @@ void CSSVarCycleInterpolationType::Apply(
   StyleBuilder::ApplyProperty(
       GetProperty().GetCSSPropertyName(),
       To<CSSInterpolationEnvironment>(environment).GetState(),
-      ScopedCSSValue(*cssvalue::CSSUnsetValue::Create(), nullptr));
+      *cssvalue::CSSUnsetValue::Create());
 }
 
 }  // namespace blink

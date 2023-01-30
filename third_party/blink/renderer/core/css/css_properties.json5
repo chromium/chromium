@@ -621,14 +621,6 @@
       valid_type: "bool",
     },
 
-    // - tree_scoped_value: true
-    // Whether the property takes a tree-scoped reference as its value.
-    // https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
-    tree_scoped_value: {
-      default: false,
-      valid_type: "bool",
-    },
-
     // Whether changing this property is so independent that we can apply
     // a change to them incrementally on top of the old style. This happens
     // only when inline style is changed. Conceptually, this could be a blocklist,

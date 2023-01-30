@@ -48,42 +48,40 @@
 #include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
 
 void StyleBuilder::ApplyProperty(const CSSPropertyName& name,
                                  StyleResolverState& state,
-                                 const ScopedCSSValue& scoped_value) {
+                                 const CSSValue& value) {
   CSSPropertyRef ref(name, state.GetDocument());
   DCHECK(ref.IsValid());
 
-  ApplyProperty(ref.GetProperty(), state, scoped_value);
+  ApplyProperty(ref.GetProperty(), state, value);
 }
 
 void StyleBuilder::ApplyProperty(const CSSProperty& property,
                                  StyleResolverState& state,
-                                 const ScopedCSSValue& scoped_value) {
+                                 const CSSValue& value) {
   const CSSProperty* physical = &property;
   if (property.IsSurrogate()) {
     physical = property.SurrogateFor(state.StyleBuilder().Direction(),
                                      state.StyleBuilder().GetWritingMode());
     DCHECK(physical);
   }
-  ApplyPhysicalProperty(*physical, state, scoped_value);
+  ApplyPhysicalProperty(*physical, state, value);
 }
 
 void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
                                          StyleResolverState& state,
-                                         const ScopedCSSValue& scoped_value) {
+                                         const CSSValue& value) {
   DCHECK(!Variable::IsStaticInstance(property))
       << "Please use a CustomProperty instance to apply custom properties";
   DCHECK(!property.IsSurrogate())
       << "Please use ApplyProperty for surrogate properties";
 
   CSSPropertyID id = property.PropertyID();
-  const CSSValue& value = scoped_value.GetCSSValue();
 
   // These values must be resolved by StyleCascade before application:
   DCHECK(!value.IsVariableReferenceValue());
@@ -122,7 +120,7 @@ void StyleBuilder::ApplyPhysicalProperty(const CSSProperty& property,
   } else if (is_inherit) {
     To<Longhand>(property).ApplyInherit(state);
   } else {
-    To<Longhand>(property).ApplyValue(state, scoped_value);
+    To<Longhand>(property).ApplyValue(state, value);
   }
 }
 

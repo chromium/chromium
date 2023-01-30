@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
@@ -354,7 +353,7 @@ void CSSInterpolationType::ApplyCustomPropertyValue(
   const CSSValue* value = MakeGarbageCollected<CSSCustomPropertyDeclaration>(
       std::move(variable_data), /* parser_context */ nullptr);
   StyleBuilder::ApplyProperty(GetProperty().GetCSSPropertyName(), state,
-                              ScopedCSSValue(*value, nullptr));
+                              *value);
 }
 
 }  // namespace blink

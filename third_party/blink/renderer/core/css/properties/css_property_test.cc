@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -52,8 +51,7 @@ class CSSPropertyTest : public PageTestBase {
     state.StyleBuilder().SetBorderRightStyle(EBorderStyle::kSolid);
     state.StyleBuilder().SetBorderTopStyle(EBorderStyle::kSolid);
 
-    StyleBuilder::ApplyProperty(property, state,
-                                ScopedCSSValue(value, &GetDocument()));
+    StyleBuilder::ApplyProperty(property, state, value);
     return state.TakeStyle();
   }
 

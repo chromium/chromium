@@ -84,7 +84,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsBackground() const { return flags_ & kBackground; }
   bool IsBorder() const { return flags_ & kBorder; }
   bool IsBorderRadius() const { return flags_ & kBorderRadius; }
-  bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
   bool IsInLogicalPropertyGroup() const {
     return flags_ & kInLogicalPropertyGroup;
   }
@@ -168,41 +167,39 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kBackground = 1 << 15,
     kBorder = 1 << 16,
     kBorderRadius = 1 << 17,
-    // Set if the property values are tree-scoped references.
-    kTreeScopedValue = 1 << 18,
     // Similar to the list at
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling, with some
     // differences for compatibility reasons.
-    kValidForHighlightLegacy = 1 << 19,
+    kValidForHighlightLegacy = 1 << 18,
     // https://drafts.csswg.org/css-logical/#logical-property-group
-    kInLogicalPropertyGroup = 1 << 20,
+    kInLogicalPropertyGroup = 1 << 19,
     // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-    kValidForFirstLine = 1 << 21,
+    kValidForFirstLine = 1 << 20,
     // The property participates in paired cascade, such that when encountered
     // in highlight styles, we make all other highlight color properties default
     // to initial, rather than the UA default.
     // https://drafts.csswg.org/css-pseudo-4/#highlight-cascade
-    kHighlightColors = 1 << 22,
-    kVisitedHighlightColors = 1 << 23,
+    kHighlightColors = 1 << 21,
+    kVisitedHighlightColors = 1 << 22,
     // See supports_incremental_style in css_properties.json5.
-    kSupportsIncrementalStyle = 1 << 24,
+    kSupportsIncrementalStyle = 1 << 23,
     // See idempotent in css_properties.json5.
-    kIdempotent = 1 << 25,
+    kIdempotent = 1 << 24,
     // Set if the css property can apply to the experiemental canvas
     // formatted text API to render multiline text in canvas.
     // https://github.com/WICG/canvas-formatted-text
-    kValidForFormattedText = 1 << 26,
-    kValidForFormattedTextRun = 1 << 27,
+    kValidForFormattedText = 1 << 25,
+    kValidForFormattedTextRun = 1 << 26,
     // See overlapping in css_properties.json5.
-    kOverlapping = 1 << 28,
+    kOverlapping = 1 << 27,
     // See legacy_overlapping in css_properties.json5.
-    kLegacyOverlapping = 1 << 29,
+    kLegacyOverlapping = 1 << 28,
     // See valid_for_keyframes in css_properties.json5
-    kValidForKeyframe = 1 << 30,
+    kValidForKeyframe = 1 << 29,
     // See valid_for_position_fallback in css_properties.json5
-    kValidForPositionFallback = 1ull << 31,
+    kValidForPositionFallback = 1 << 30,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1ull << 32,
+    kValidForHighlight = 1ull << 31,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

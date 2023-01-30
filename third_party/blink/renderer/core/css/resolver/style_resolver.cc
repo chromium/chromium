@@ -72,7 +72,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -1542,12 +1541,9 @@ void StyleResolver::ApplyBaseStyle(
            ++property_idx) {
         CSSPropertyValueSet::PropertyReference property =
             inline_style->PropertyAt(property_idx);
-        // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
-        // properties are converted to use CSSValue directly.
         StyleBuilder::ApplyProperty(
             property.Name(), state,
-            ScopedCSSValue(property.Value().EnsureScopedValue(&GetDocument()),
-                           &GetDocument()));
+            property.Value().EnsureScopedValue(&GetDocument()));
       }
     }
 
@@ -2229,12 +2225,8 @@ FilterOperations StyleResolver::ComputeFilterOperations(
 
   state.SetStyle(ComputedStyle::Clone(*parent));
 
-  // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
-  // properties are converted to use CSSValue directly.
-  StyleBuilder::ApplyProperty(
-      GetCSSPropertyFilter(), state,
-      ScopedCSSValue(filter_value.EnsureScopedValue(&GetDocument()),
-                     &GetDocument()));
+  StyleBuilder::ApplyProperty(GetCSSPropertyFilter(), state,
+                              filter_value.EnsureScopedValue(&GetDocument()));
 
   state.LoadPendingResources();
 
@@ -2419,14 +2411,11 @@ Font StyleResolver::ComputeFont(Element& element,
   for (const CSSProperty* property : properties) {
     // TODO(futhark): If we start supporting fonts on ShadowRoot.fonts in
     // addition to Document.fonts, we need to pass the correct TreeScope instead
-    // of GetDocument() in the ScopedCSSValue below.
-    // TODO(crbug.com/1395026): Get rid of ScopedCSSValue when all
-    // properties are converted to use CSSValue directly.
+    // of GetDocument() in the EnsureScopedValue below.
     StyleBuilder::ApplyProperty(
         *property, state,
-        ScopedCSSValue(property_set.GetPropertyCSSValue(property->PropertyID())
-                           ->EnsureScopedValue(&GetDocument()),
-                       &GetDocument()));
+        property_set.GetPropertyCSSValue(property->PropertyID())
+            ->EnsureScopedValue(&GetDocument()));
   }
   state.UpdateFont();
   scoped_refptr<const ComputedStyle> font_style = state.TakeStyle();

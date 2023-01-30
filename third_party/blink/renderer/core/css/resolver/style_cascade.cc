@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css/resolver/cascade_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -715,12 +714,8 @@ void StyleCascade::LookupAndApplyDeclaration(const CSSProperty& property,
   } else if (origin == CascadeOrigin::kAuthorPresentationalHint) {
     tree_scope = &GetDocument();
   }
-  // TODO(crbug.com/1395026): Convert properties to use CSSValues (with tree
-  // scope populated) directly instead of ScopedCSSValue, and get rid of
-  // ScopedCSSValue class when all properties are converted.
-  StyleBuilder::ApplyPhysicalProperty(
-      property, state_,
-      ScopedCSSValue(value->EnsureScopedValue(tree_scope), tree_scope));
+  StyleBuilder::ApplyPhysicalProperty(property, state_,
+                                      value->EnsureScopedValue(tree_scope));
 }
 
 void StyleCascade::LookupAndApplyInterpolation(const CSSProperty& property,

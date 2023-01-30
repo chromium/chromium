@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
-#include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -47,8 +46,7 @@ TEST_F(StyleBuilderTest, WritingModeChangeDirtiesFont) {
       state.StyleBuilder().SetWritingMode(WritingMode::kVerticalLr);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
-      StyleBuilder::ApplyProperty(*property, state,
-                                  ScopedCSSValue(*value, &GetDocument()));
+      StyleBuilder::ApplyProperty(*property, state, *value);
       EXPECT_TRUE(state.GetFontBuilder().FontDirty());
     }
   }
@@ -81,8 +79,7 @@ TEST_F(StyleBuilderTest, TextOrientationChangeDirtiesFont) {
       state.StyleBuilder().SetTextOrientation(ETextOrientation::kUpright);
 
       ASSERT_FALSE(state.GetFontBuilder().FontDirty());
-      StyleBuilder::ApplyProperty(*property, state,
-                                  ScopedCSSValue(*value, &GetDocument()));
+      StyleBuilder::ApplyProperty(*property, state, *value);
       EXPECT_TRUE(state.GetFontBuilder().FontDirty());
     }
   }
@@ -97,7 +94,7 @@ TEST_F(StyleBuilderTest, HasExplicitInheritance) {
   state.SetStyle(style);
   EXPECT_FALSE(style->HasExplicitInheritance());
 
-  ScopedCSSValue inherited(*CSSInheritedValue::Create(), &GetDocument());
+  const CSSValue& inherited = *CSSInheritedValue::Create();
 
   // Flag should not be set for properties which are inherited.
   StyleBuilder::ApplyProperty(GetCSSPropertyColor(), state, inherited);
@@ -136,28 +133,22 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
 
   // grid-template-areas applied first.
   state.SetStyle(ComputedStyle::Clone(*parent_style));
-  StyleBuilder::ApplyProperty(
-      grid_template_areas, state,
-      ScopedCSSValue(*grid_template_areas_value, nullptr));
-  StyleBuilder::ApplyProperty(
-      grid_template_columns, state,
-      ScopedCSSValue(*grid_template_columns_value, nullptr));
-  StyleBuilder::ApplyProperty(
-      grid_template_rows, state,
-      ScopedCSSValue(*grid_template_rows_value, nullptr));
+  StyleBuilder::ApplyProperty(grid_template_areas, state,
+                              *grid_template_areas_value);
+  StyleBuilder::ApplyProperty(grid_template_columns, state,
+                              *grid_template_columns_value);
+  StyleBuilder::ApplyProperty(grid_template_rows, state,
+                              *grid_template_rows_value);
   style1 = state.TakeStyle();
 
   // grid-template-areas applied last.
   state.SetStyle(ComputedStyle::Clone(*parent_style));
-  StyleBuilder::ApplyProperty(
-      grid_template_columns, state,
-      ScopedCSSValue(*grid_template_columns_value, nullptr));
-  StyleBuilder::ApplyProperty(
-      grid_template_rows, state,
-      ScopedCSSValue(*grid_template_rows_value, nullptr));
-  StyleBuilder::ApplyProperty(
-      grid_template_areas, state,
-      ScopedCSSValue(*grid_template_areas_value, nullptr));
+  StyleBuilder::ApplyProperty(grid_template_columns, state,
+                              *grid_template_columns_value);
+  StyleBuilder::ApplyProperty(grid_template_rows, state,
+                              *grid_template_rows_value);
+  StyleBuilder::ApplyProperty(grid_template_areas, state,
+                              *grid_template_areas_value);
   style2 = state.TakeStyle();
 
   ASSERT_TRUE(style1);
