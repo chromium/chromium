@@ -263,73 +263,74 @@ bool IsNewFrame(H264SliceHeader* prev_slice,
 
 int H264DPB::CountRefPics() {
   int ret = 0;
-  for (const auto& pic : *this) {
-    if (pic->ref) {
-      ++ret;
+  for (auto& i : *this) {
+    if (i.second.ref) {
+      ret++;
     }
   }
-
   return ret;
 }
 
-void H264DPB::Delete(H264SliceMetadata* pic) {
-  for (auto it = this->begin(); it != this->end(); ++it) {
-    if ((*it).get() == pic) {
-      this->erase(it);
-      break;
-    }
-  }
+void H264DPB::Delete(const H264SliceMetadata& pic) {
+  erase(pic.ref_ts_nsec);
 }
 
 void H264DPB::DeleteUnused() {
-  this->erase(std::remove_if(this->begin(), this->end(),
-                            [](const std::unique_ptr<H264SliceMetadata>& pic) {
-                              return (pic->outputted && !pic->ref);
-                            }),
-             this->end());
+  std::vector<uint64_t> keys;
+  for (auto& i : *this) {
+    if (i.second.outputted && !i.second.ref) {
+      keys.push_back(i.first);
+    }
+  }
+  for (auto i : keys) {
+    erase(i);
+  }
 }
 
 void H264DPB::UnmarkLowestFrameNumWrapShortRefPic() {
-  H264SliceMetadata* ret = nullptr;
-  for (const auto& pic : *this) {
-    if (pic->ref && (!ret || pic->frame_num_wrap < ret->frame_num_wrap)) {
-      ret = pic.get();
+  int key = -1;
+  for (auto& i : *this) {
+    H264SliceMetadata pic = i.second;
+    if (pic.ref &&
+        (key < 0 || pic.frame_num_wrap < this->at(key).frame_num_wrap)) {
+      key = i.first;
     }
   }
-  ret->ref = false;
+
+  if (key >= 0) {
+    this->at(key).ref = false;
+  }
 }
 
 std::vector<H264SliceMetadata*> H264DPB::GetNotOutputtedPicsAppending() {
   std::vector<H264SliceMetadata*> data;
-  for (const auto& pic : *this) {
-    if (!pic->outputted) {
-      data.push_back(pic.get());
+  for (auto& i : *this) {
+    H264SliceMetadata pic = i.second;
+    if (!pic.outputted) {
+      data.push_back(&pic);
     }
   }
+
   return data;
 }
 
 void H264DPB::MarkAllUnusedRef() {
-  for (const auto& pic : *this) {
-    pic->ref = false;
+  for (auto& i : *this) {
+    i.second.ref = false;
   }
-}
-
-void H264DPB::StorePic(H264SliceMetadata* pic) {
-  this->push_back(std::make_unique<H264SliceMetadata>(*pic));
 }
 
 void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
                                  const int max_frame_num) {
-  for (auto& pic : *this) {
-    if (pic->ref) {
+  for (auto& i : *this) {
+    if (i.second.ref) {
       continue;
     }
 
-    if (pic->frame_num > curr_frame_num) {
-      pic->frame_num_wrap = pic->frame_num - max_frame_num;
+    if (i.second.frame_num > curr_frame_num) {
+      i.second.frame_num_wrap = i.second.frame_num - max_frame_num;
     } else {
-      pic->frame_num_wrap = pic->frame_num;
+      i.second.frame_num_wrap = i.second.frame_num;
     }
   }
 }
@@ -339,12 +340,11 @@ void H264DPB::UpdateFrameNumWrap(const int curr_frame_num,
 VideoDecoder::Result H264Decoder::InitializeSliceMetadata(
     const H264SliceHeader& slice_hdr,
     const H264SPS* sps,
-    std::unique_ptr<H264SliceMetadata>& slice_metadata) const {
+    H264SliceMetadata* slice_metadata) const {
   if (!sps) {
     return VideoDecoder::kError;
   }
 
-  slice_metadata = std::make_unique<H264SliceMetadata>();
   slice_metadata->slice_header = slice_hdr;
   slice_metadata->ref_ts_nsec = global_pic_count_;
   slice_metadata->ref = slice_hdr.nal_ref_idc != 0;
@@ -413,7 +413,7 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
     const int sps_id,
     const int pps_id,
     H264SliceHeader* slice_hdr,
-    std::unique_ptr<H264SliceMetadata>& slice_metadata,
+    H264SliceMetadata* slice_metadata,
     v4l2_ctrl_h264_decode_params* v4l2_decode_param) {
   const H264SPS* sps = parser_->GetSPS(sps_id);
   const H264PPS* pps = parser_->GetPPS(pps_id);
@@ -459,15 +459,14 @@ VideoDecoder::Result H264Decoder::StartNewFrame(
   constexpr size_t kTimestampToNanoSecs = 1000;
   for (const auto& element : dpb_) {
     struct v4l2_h264_dpb_entry& entry = v4l2_decode_param->dpb[i++];
-    entry = {
-      .reference_ts = element->ref_ts_nsec * kTimestampToNanoSecs,
-      .frame_num = static_cast<unsigned short>(element->frame_num),
-      .fields = V4L2_H264_FRAME_REF,
-      .top_field_order_cnt = element->top_field_order_cnt,
-      .bottom_field_order_cnt = element->bottom_field_order_cnt,
-      .flags = static_cast<uint32_t>(V4L2_H264_DPB_ENTRY_FLAG_VALID |
-               (element->ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0))
-    };
+    entry = {.reference_ts = element.second.ref_ts_nsec * kTimestampToNanoSecs,
+             .frame_num = static_cast<unsigned short>(element.second.frame_num),
+             .fields = V4L2_H264_FRAME_REF,
+             .top_field_order_cnt = element.second.top_field_order_cnt,
+             .bottom_field_order_cnt = element.second.bottom_field_order_cnt,
+             .flags = static_cast<uint32_t>(
+                 V4L2_H264_DPB_ENTRY_FLAG_VALID |
+                 (element.second.ref ? V4L2_H264_DPB_ENTRY_FLAG_ACTIVE : 0))};
   }
 
   return VideoDecoder::kOk;
@@ -486,7 +485,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
 
   // TODO(bchoobineh): Incorporate slice_metadata with Frame Finish
   // logic in this function.
-  std::unique_ptr<H264SliceMetadata> slice_metadata;
+  H264SliceMetadata slice_metadata = {};
 
   // TODO(bchoobineh): Incorporate v4l2_decode_params with Frame Finish
   // logic in this function.
@@ -519,7 +518,7 @@ H264Parser::Result H264Decoder::ProcessNextFrame(
 
         if (!pending_slice_header_) {
           if (StartNewFrame(sps_id, pps_id, curr_slice_header.get(),
-                            slice_metadata,
+                            &slice_metadata,
                             &v4l2_decode_param) != VideoDecoder::kOk) {
             return H264Parser::kInvalidStream;
           }

@@ -6,6 +6,7 @@
 
 #include <linux/media/h264-ctrls-upstream.h>
 
+#include <map>
 #include <set>
 
 #include "base/files/memory_mapped_file.h"
@@ -26,9 +27,9 @@ struct PreviousRefPicOrder {
 };
 
 // H264DPB is a class representing a Decoded Picture Buffer (DPB).
-// The DPB is a vector of H264 picture slice metadata objects that
+// The DPB is a map of H264 picture slice metadata objects that
 // describe the pictures used in the H.264 decoding process.
-class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
+class H264DPB : public std::map<uint64_t, H264SliceMetadata> {
  public:
   H264DPB() = default;
   ~H264DPB() = default;
@@ -40,7 +41,7 @@ class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
   // in the DPB.
   int CountRefPics();
   // Deletes input H264SliceMetadata object from the DPB.
-  void Delete(H264SliceMetadata* pic);
+  void Delete(const H264SliceMetadata& pic);
   // Deletes any H264SliceMetadata object from DPB that is considered
   // to be unused by the decoder.
   // An H264SliceMetadata is unused if it has been outputted and is not a
@@ -56,7 +57,6 @@ class H264DPB : public std::vector<std::unique_ptr<H264SliceMetadata>> {
   // Updates every H264SliceMetadata object in the DPB to indicate that they are
   // not reference elements.
   void MarkAllUnusedRef();
-  void StorePic(H264SliceMetadata* pic);
   // Updates each H264SliceMetadata object in DPB's frame num wrap
   // based on the max frame num.
   void UpdateFrameNumWrap(const int curr_frame_num, const int max_frame_num);
@@ -99,7 +99,7 @@ class H264Decoder : public VideoDecoder {
       int sps_id,
       int pps_id,
       H264SliceHeader* slice_hdr,
-      std::unique_ptr<H264SliceMetadata>& slice_metadata,
+      H264SliceMetadata* slice_metadata,
       v4l2_ctrl_h264_decode_params* v4l2_decode_param);
 
   // Transmits each H264 Slice associated with the current frame to the
@@ -112,7 +112,7 @@ class H264Decoder : public VideoDecoder {
   VideoDecoder::Result InitializeSliceMetadata(
       const H264SliceHeader& slice_hdr,
       const H264SPS* sps,
-      std::unique_ptr<H264SliceMetadata>& slice_metadata) const;
+      H264SliceMetadata* slice_metadata) const;
 
   // Returns all CAPTURE buffer indexes that can be reused for a
   // VIDIOC_QBUF ioctl call.
