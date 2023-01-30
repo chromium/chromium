@@ -490,6 +490,7 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
     return;
   }
 
+  const gfx::Range new_selection_range(offsets[1], offsets[0]);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Cursor position may be wrong on Lacros due to timing issue for some
   // scenario when surrounding text is longer than wayland message size
@@ -505,15 +506,14 @@ void WaylandInputMethodContext::OnCursorPosition(int32_t index,
   //
   // This timing issue will be fixed by sending whole surrounding text instead
   // of trimmed text.
-  if (selection == gfx::Range(offsets[0], offsets[1])) {
+  if (selection == new_selection_range) {
     pending_keep_selection_ = true;
   } else {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 #endif
 
-  surrounding_text_tracker_.OnSetEditableSelectionRange(
-      gfx::Range(offsets[0], offsets[1]));
+  surrounding_text_tracker_.OnSetEditableSelectionRange(new_selection_range);
 }
 
 void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,

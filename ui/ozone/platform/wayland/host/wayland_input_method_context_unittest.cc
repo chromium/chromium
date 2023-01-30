@@ -920,7 +920,7 @@ TEST_F(WaylandInputMethodContextTest, MAYBE(OnConfirmCompositionText)) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    zwp_text_input_v1_send_cursor_position(text_input->resource(), 7, 10);
+    zwp_text_input_v1_send_cursor_position(text_input->resource(), 10, 7);
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
                                          "ab😀cあdef");
   });
@@ -968,8 +968,8 @@ TEST_F(WaylandInputMethodContextTest,
     Mock::VerifyAndClearExpectations(text_input);
 
     zwp_text_input_v1_send_cursor_position(text_input->resource(),
-                                           kExpectedSentRange.start(),
-                                           kExpectedSentRange.end());
+                                           kExpectedSentRange.end(),
+                                           kExpectedSentRange.start());
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
                                          kExpectedSentText.c_str());
   });
