@@ -66,7 +66,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
 
   // Get colors used throughout various popup UIs, based on the current native
   // theme.
-  SkColor GetBackgroundColor() const;
   SkColor GetForegroundColor() const;
   SkColor GetSelectedBackgroundColor() const;
   SkColor GetSelectedForegroundColor() const;

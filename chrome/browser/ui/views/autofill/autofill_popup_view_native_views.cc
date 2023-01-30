@@ -372,7 +372,6 @@ class AutofillPopupItemView : public AutofillPopupRowView {
   // AutofillPopupRowView:
   void CreateContent() override;
   void RefreshStyle() override;
-  std::unique_ptr<views::Background> CreateBackground() final;
 
   int GetFrontendId() const;
 
@@ -554,8 +553,6 @@ class AutofillPopupSeparatorView : public AutofillPopupRowView {
  protected:
   // AutofillPopupRowView:
   void CreateContent() override;
-  void RefreshStyle() override;
-  std::unique_ptr<views::Background> CreateBackground() override;
 
  private:
   AutofillPopupSeparatorView(AutofillPopupViewNativeViews* popup_view,
@@ -586,7 +583,6 @@ class AutofillPopupWarningView : public AutofillPopupRowView {
   // AutofillPopupRowView:
   void CreateContent() override;
   void RefreshStyle() override {}
-  std::unique_ptr<views::Background> CreateBackground() override;
 
  private:
   AutofillPopupWarningView(AutofillPopupViewNativeViews* popup_view,
@@ -783,15 +779,13 @@ void AutofillPopupItemView::CreateContent() {
 }
 
 void AutofillPopupItemView::RefreshStyle() {
-  SetBackground(CreateBackground());
-  SkColor bk_color = GetSelected() ? popup_view()->GetSelectedBackgroundColor()
-                                   : popup_view()->GetBackgroundColor();
+  SetBackground(views::CreateThemedSolidBackground(GetBackgroundColorId()));
 
   // Set style for each label in this view depending on current state since the
   // style isn't automatically adjusted after creation of the label.
   for (views::Label* label : inner_labels_) {
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetBackgroundColor(bk_color);
+    label->SetBackgroundColorId(GetBackgroundColorId());
 
     if (!label->GetEnabled()) {
       label->SetEnabledColor(views::style::GetColor(
@@ -807,12 +801,6 @@ void AutofillPopupItemView::RefreshStyle() {
         GetSelected() ? views::style::STYLE_SELECTED : label->GetTextStyle()));
   }
   SchedulePaint();
-}
-
-std::unique_ptr<views::Background> AutofillPopupItemView::CreateBackground() {
-  return views::CreateSolidBackground(
-      GetSelected() ? popup_view()->GetSelectedBackgroundColor()
-                    : popup_view()->GetBackgroundColor());
 }
 
 std::unique_ptr<views::Label> AutofillPopupItemView::CreateMainTextView() {
@@ -1218,16 +1206,7 @@ void AutofillPopupSeparatorView::GetAccessibleNodeData(
 void AutofillPopupSeparatorView::CreateContent() {
   SetUseDefaultFillLayout(true);
   AddChildView(std::make_unique<PopupSeparator>(popup_view()));
-}
-
-void AutofillPopupSeparatorView::RefreshStyle() {
-  SetBackground(CreateBackground());
-  SchedulePaint();
-}
-
-std::unique_ptr<views::Background>
-AutofillPopupSeparatorView::CreateBackground() {
-  return views::CreateSolidBackground(popup_view()->GetBackgroundColor());
+  SetBackground(views::CreateThemedSolidBackground(GetBackgroundColorId()));
 }
 
 AutofillPopupSeparatorView::AutofillPopupSeparatorView(
@@ -1274,11 +1253,6 @@ void AutofillPopupWarningView::CreateContent() {
 
   AddChildView(std::make_unique<SuggestionLabel>(
       controller->GetSuggestionMainTextAt(GetLineNumber()), popup_view()));
-}
-
-std::unique_ptr<views::Background>
-AutofillPopupWarningView::CreateBackground() {
-  return nullptr;
 }
 
 }  // namespace
@@ -1345,6 +1319,11 @@ bool AutofillPopupRowView::GetSelected() const {
   return selected_;
 }
 
+ui::ColorId AutofillPopupRowView::GetBackgroundColorId() const {
+  return GetSelected() ? ui::kColorDropdownBackgroundSelected
+                       : ui::kColorDropdownBackground;
+}
+
 bool AutofillPopupRowView::HandleAccessibleAction(
     const ui::AXActionData& action_data) {
   base::WeakPtr<AutofillPopupController> controller =
@@ -1391,11 +1370,12 @@ void AutofillPopupViewNativeViews::GetAccessibleNodeData(
 
 void AutofillPopupViewNativeViews::OnThemeChanged() {
   AutofillPopupBaseView::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetBackgroundColor()));
-  // |scroll_view_| and |footer_container_| will be null if there is no body
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  // `scroll_view_` and `footer_container_` will be null if there is no body
   // or footer content, respectively.
   if (scroll_view_) {
-    scroll_view_->SetBackgroundColor(GetBackgroundColor());
+    scroll_view_->SetBackgroundThemeColorId(ui::kColorDropdownBackground);
   }
   if (footer_container_) {
     footer_container_->SetBackground(

@@ -25,6 +25,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -135,12 +136,12 @@ class PasswordGenerationPopupViewViews::GeneratedPasswordBox
     password_label_->SetText(password);
   }
 
-  void UpdateBackground(SkColor color) {
-    SetBackground(views::CreateSolidBackground(color));
+  void UpdateBackground(ui::ColorId color) {
+    SetBackground(views::CreateThemedSolidBackground(color));
     // Setting a background color on the labels may change the text color to
     // improve contrast.
-    password_label_->SetBackgroundColor(color);
-    suggestion_label_->SetBackgroundColor(color);
+    password_label_->SetBackgroundColorId(color);
+    suggestion_label_->SetBackgroundColorId(color);
   }
 
   void reset_controller() { controller_ = nullptr; }
@@ -296,12 +297,14 @@ void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
     return;
 
   password_view_->UpdateBackground(controller_->password_selected()
-                                       ? GetSelectedBackgroundColor()
-                                       : GetBackgroundColor());
+                                       ? ui::kColorDropdownBackgroundSelected
+                                       : ui::kColorDropdownBackground);
   SchedulePaint();
 }
 
 void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
   if (controller_->IsStateMinimized()) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
     auto warning_icon = std::make_unique<views::ImageView>();
@@ -367,12 +370,6 @@ bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
 
 void PasswordGenerationPopupViewViews::OnThemeChanged() {
   autofill::AutofillPopupBaseView::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(GetBackgroundColor()));
-  if (FullPopupVisible()) {
-    password_view_->UpdateBackground(controller_->password_selected()
-                                         ? GetSelectedBackgroundColor()
-                                         : GetBackgroundColor());
-  }
   if (help_styled_label_) {
     help_styled_label_->SetDisplayedOnBackgroundColor(
         GetFooterBackgroundColor());
