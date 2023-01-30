@@ -319,6 +319,8 @@ bool StyleColor::IsSystemColorIncludingDeprecated(CSSValueID id) {
 
 bool StyleColor::IsSystemColor(CSSValueID id) {
   switch (id) {
+    case CSSValueID::kAccentcolor:
+    case CSSValueID::kAccentcolortext:
     case CSSValueID::kActivetext:
     case CSSValueID::kButtonborder:
     case CSSValueID::kButtonface:

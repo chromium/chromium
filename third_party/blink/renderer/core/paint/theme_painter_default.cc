@@ -181,7 +181,7 @@ absl::optional<SkColor> GetAccentColor(const ComputedStyle& style) {
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   LayoutTheme& layout_theme = LayoutTheme::GetTheme();
   if (layout_theme.IsAccentColorCustomized(color_scheme)) {
-    return layout_theme.GetAccentColor(color_scheme).Rgb();
+    return layout_theme.GetSystemAccentColor(color_scheme).Rgb();
   }
 
   return absl::nullopt;
