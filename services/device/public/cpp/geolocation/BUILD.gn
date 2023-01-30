@@ -4,7 +4,6 @@
 
 component("geolocation") {
   sources = [
-    "geolocation_manager.cc",
     "geolocation_manager.h",
     "geoposition.cc",
     "geoposition.h",
@@ -14,19 +13,27 @@ component("geolocation") {
   defines = [ "IS_GEOLOCATION_IMPL=1" ]
   output_name = "geolocation_service"
 
+  if (is_chromeos || is_mac) {
+    sources += [
+      "geolocation_manager.cc",
+      "system_geolocation_source.h",
+    ]
+  }
   if (is_mac) {
     frameworks = [
       "CoreLocation.framework",
       "Foundation.framework",
     ]
     sources += [
-      "geolocation_manager_impl_mac.h",
-      "geolocation_manager_impl_mac.mm",
+      "geolocation_manager_mac.cc",
+      "system_geolocation_source_mac.h",
+      "system_geolocation_source_mac.mm",
     ]
   }
 
   public_deps = [
     "//base",
     "//services/device/public/mojom",
+    "//third_party/abseil-cpp:absl",
   ]
 }

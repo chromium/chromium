@@ -29,6 +29,7 @@ specific_include_rules = {
     "+components/prefs",
     "+components/pref_registry",
     "+components/keyed_service/content",
+    "+services/device/public/cpp/geolocation/system_geolocation_source_mac.h",
   ],
   "headless_browser_context_impl.cc": [
     "+components/keyed_service/content",

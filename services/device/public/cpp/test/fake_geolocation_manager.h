@@ -11,22 +11,12 @@ namespace device {
 
 class FakeGeolocationManager : public GeolocationManager {
  public:
-  FakeGeolocationManager() = default;
+  FakeGeolocationManager();
   ~FakeGeolocationManager() override = default;
 
-  // GeolocationManager implementation.
-  LocationSystemPermissionStatus GetSystemPermission() const override;
-  void StartWatchingPosition(bool high_accuracy) override;
-  void StopWatchingPosition() override;
-
   void SetSystemPermission(LocationSystemPermissionStatus status);
-  bool watching_position() { return watching_position_; }
+  bool watching_position();
   void FakePositionUpdated(const device::mojom::Geoposition& position);
-
- private:
-  LocationSystemPermissionStatus status_ =
-      LocationSystemPermissionStatus::kDenied;
-  bool watching_position_ = false;
 };
 
 }  // namespace device

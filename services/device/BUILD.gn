@@ -206,6 +206,11 @@ source_set("tests") {
     ]
   }
 
+  if (is_chromeos || is_mac) {
+    sources +=
+        [ "public/cpp/geolocation/geolocation_system_permissions_unittest.cc" ]
+  }
+
   if (is_chromeos && use_iioservice) {
     sources += [
       "generic_sensor/platform_sensor_chromeos_unittest.cc",

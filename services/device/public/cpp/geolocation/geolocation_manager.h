@@ -6,18 +6,35 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_GEOLOCATION_GEOLOCATION_MANAGER_H_
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "services/device/public/cpp/geolocation/location_system_permission_status.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/mojom/geoposition.mojom.h"
+#endif
 
 namespace device {
 
-#if BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)
+// Default empty implementation of Geolocation Manager. It is used on operation
+// systems for which we don't support system-level geolocation. A separate class
+// (as opposed to nullptr) makes sure no unsupported calls are made in such
+// context.
+class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {};
 
-// This class is owned by the browser process and keeps track of the macOS
-// location permissions for the browser.
+#else
+
+// This class is owned by the browser process and provides access to location
+// information on the supported OSs.
 class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
  public:
   class PermissionObserver : public base::CheckedObserver {
@@ -25,53 +42,80 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {
     virtual void OnSystemPermissionUpdated(
         LocationSystemPermissionStatus new_status) = 0;
   };
+
+  using PermissionObserverList =
+      base::ObserverListThreadSafe<PermissionObserver>;
+
+#if BUILDFLAG(IS_MAC)
   class PositionObserver : public base::CheckedObserver {
    public:
     virtual void OnPositionUpdated(const mojom::Geoposition& position) = 0;
   };
 
-  using PermissionObserverList =
-      base::ObserverListThreadSafe<PermissionObserver>;
   using PositionObserverList = base::ObserverListThreadSafe<PositionObserver>;
+#endif
 
-  GeolocationManager();
+  explicit GeolocationManager(
+      std::unique_ptr<SystemGeolocationSource> system_geolocation_source);
   GeolocationManager(const GeolocationManager&) = delete;
   GeolocationManager& operator=(const GeolocationManager&) = delete;
   virtual ~GeolocationManager();
 
   // Synchronously retrieves the current system permission status.
-  virtual LocationSystemPermissionStatus GetSystemPermission() const = 0;
+  LocationSystemPermissionStatus GetSystemPermission() const;
+
+  // Adds a permission observer.
+  void AddObserver(PermissionObserver* observer);
+  // Removes a permission observer.
+  void RemoveObserver(PermissionObserver* observer);
+  // Returns the list of permission observers.
+  scoped_refptr<PermissionObserverList> GetObserverList() const;
+
+#if BUILDFLAG(IS_MAC)
   // Starts the system level process for watching position updates. These
   // updates will trigger a call to and observers in the |position_observers_|
   // list. Upon call the |position_observers_| will be notified of the current
   // position.
-  virtual void StartWatchingPosition(bool high_accuracy) = 0;
+  void StartWatchingPosition(bool high_accuracy);
   // Stops the system level process for watching position updates. Observers
   // in the |position_observers_| list will stop receiving updates until
   // StartWatchingPosition is called again.
-  virtual void StopWatchingPosition() = 0;
+  void StopWatchingPosition();
 
-  void AddObserver(PermissionObserver* observer);
-  void RemoveObserver(PermissionObserver* observer);
-  scoped_refptr<PermissionObserverList> GetObserverList() const;
+  // Returns the list of position observers.
   scoped_refptr<PositionObserverList> GetPositionObserverList() const;
+  // Returns the last position
   mojom::Geoposition GetLastPosition() const;
+#endif
 
  protected:
-  void NotifyPermissionObservers(LocationSystemPermissionStatus status);
-  void NotifyPositionObservers(const mojom::Geoposition& position);
+  SystemGeolocationSource& SystemGeolocationSourceForTest();
 
  private:
+  void UpdateSystemPermission(LocationSystemPermissionStatus status);
+  void NotifyPermissionObservers();
+#if BUILDFLAG(IS_MAC)
+  void NotifyPositionObservers(const mojom::Geoposition& position);
+#endif
+
+  // Using scoped_refptr so objects can hold a reference and ensure this list
+  // is not destroyed on shutdown before it had a chance to remove itself from
+  // the list
+  std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
+  scoped_refptr<PermissionObserverList> observers_;
+  LocationSystemPermissionStatus permission_cache_ =
+      LocationSystemPermissionStatus::kNotDetermined;
+
+#if BUILDFLAG(IS_MAC)
   mojom::Geoposition last_position_;
   // Using scoped_refptr so objects can hold a reference and ensure this list
   // is not destroyed on shutdown before it had a chance to remove itself from
   // the list
-  scoped_refptr<PermissionObserverList> observers_;
   scoped_refptr<PositionObserverList> position_observers_;
-};
+#endif
 
-#else
-class COMPONENT_EXPORT(GEOLOCATION) GeolocationManager {};
+  base::WeakPtrFactory<GeolocationManager> weak_factory_{this};
+};
 
 #endif
 

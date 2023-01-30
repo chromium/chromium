@@ -6,6 +6,7 @@ include_rules = [
   "+services/device/usb/jni_headers",
   "+services/network/public/cpp",
   "+services/network/test",
+  "+testing/gmock/include/gmock/gmock.h",
   "+ui/gfx/native_widget_types.h",
 ]
 

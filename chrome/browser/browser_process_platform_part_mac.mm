@@ -12,7 +12,7 @@
 #include "chrome/browser/apps/app_shim/web_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#include "services/device/public/cpp/geolocation/geolocation_manager_impl_mac.h"
+#include "services/device/public/cpp/geolocation/system_geolocation_source_mac.h"
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart() {
 }
@@ -73,7 +73,8 @@ void BrowserProcessPlatformPart::PreMainMessageLoopRun() {
   app_shim_listener_ = new AppShimListener;
 
   if (!geolocation_manager_) {
-    geolocation_manager_ = device::GeolocationManagerImpl::Create();
+    geolocation_manager_ =
+        device::SystemGeolocationSourceMac::CreateGeolocationManagerOnMac();
   }
 }
 

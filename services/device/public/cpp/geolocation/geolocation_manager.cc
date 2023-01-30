@@ -3,13 +3,29 @@
 // found in the LICENSE file.
 
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "location_system_permission_status.h"
 
 namespace device {
 
+GeolocationManager::GeolocationManager(
+    std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
+    : system_geolocation_source_(std::move(system_geolocation_source)),
+      observers_(base::MakeRefCounted<PermissionObserverList>())
 #if BUILDFLAG(IS_MAC)
-GeolocationManager::GeolocationManager()
-    : observers_(base::MakeRefCounted<PermissionObserverList>()),
-      position_observers_(base::MakeRefCounted<PositionObserverList>()) {}
+      ,
+      position_observers_(base::MakeRefCounted<PositionObserverList>())
+#endif
+{
+  DCHECK(system_geolocation_source_);
+  system_geolocation_source_->RegisterPermissionUpdateCallback(
+      base::BindRepeating(&GeolocationManager::UpdateSystemPermission,
+                          weak_factory_.GetWeakPtr()));
+#if BUILDFLAG(IS_MAC)
+  system_geolocation_source_->RegisterPositionUpdateCallback(
+      base::BindRepeating(&GeolocationManager::NotifyPositionObservers,
+                          weak_factory_.GetWeakPtr()));
+#endif
+}
 
 GeolocationManager::~GeolocationManager() = default;
 
@@ -21,32 +37,28 @@ void GeolocationManager::RemoveObserver(PermissionObserver* observer) {
   observers_->RemoveObserver(observer);
 }
 
-void GeolocationManager::NotifyPermissionObservers(
+LocationSystemPermissionStatus GeolocationManager::GetSystemPermission() const {
+  return permission_cache_;
+}
+
+void GeolocationManager::UpdateSystemPermission(
     LocationSystemPermissionStatus status) {
+  permission_cache_ = status;
+  NotifyPermissionObservers();
+}
+
+void GeolocationManager::NotifyPermissionObservers() {
   observers_->Notify(FROM_HERE, &PermissionObserver::OnSystemPermissionUpdated,
-                     status);
-}
-
-void GeolocationManager::NotifyPositionObservers(
-    const device::mojom::Geoposition& position) {
-  last_position_ = position;
-  position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
-                              position);
-}
-
-device::mojom::Geoposition GeolocationManager::GetLastPosition() const {
-  return last_position_;
-}
-
-scoped_refptr<GeolocationManager::PositionObserverList>
-GeolocationManager::GetPositionObserverList() const {
-  return position_observers_;
+                     GetSystemPermission());
 }
 
 scoped_refptr<GeolocationManager::PermissionObserverList>
 GeolocationManager::GetObserverList() const {
   return observers_;
 }
-#endif
+
+SystemGeolocationSource& GeolocationManager::SystemGeolocationSourceForTest() {
+  return *system_geolocation_source_;
+}
 
 }  // namespace device
