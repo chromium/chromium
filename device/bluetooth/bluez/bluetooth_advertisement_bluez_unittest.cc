@@ -19,6 +19,7 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertisement_service_provider.h"
 #include "device/bluetooth/dbus/fake_bluetooth_le_advertising_manager_client.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/test_bluetooth_advertisement_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,6 +33,10 @@ namespace bluez {
 class BluetoothAdvertisementBlueZTest : public testing::Test {
  public:
   void SetUp() override {
+    // TODO(b/266989920) Remove when Floss fake implementation is completed.
+    if (floss::features::IsFlossEnabled()) {
+      GTEST_SKIP();
+    }
     bluez::BluezDBusManager::GetSetterForTesting();
 
     callback_count_ = 0;
@@ -46,6 +51,9 @@ class BluetoothAdvertisementBlueZTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (floss::features::IsFlossEnabled()) {
+      return;
+    }
     observer_.reset();
     // The adapter should outlive the advertisement.
     advertisement_ = nullptr;

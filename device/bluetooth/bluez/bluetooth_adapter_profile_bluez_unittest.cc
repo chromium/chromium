@@ -21,6 +21,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_profile_manager_client.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,6 +43,10 @@ class BluetoothAdapterProfileBlueZTest : public testing::Test {
         profile_user_ptr_(nullptr) {}
 
   void SetUp() override {
+    // TODO(b/266989920) Remove when Floss fake implementation is completed.
+    if (floss::features::IsFlossEnabled()) {
+      GTEST_SKIP();
+    }
     std::unique_ptr<bluez::BluezDBusManagerSetter> dbus_setter =
         bluez::BluezDBusManager::GetSetterForTesting();
 
@@ -73,6 +78,9 @@ class BluetoothAdapterProfileBlueZTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (floss::features::IsFlossEnabled()) {
+      return;
+    }
     profile_.reset();
     adapter_ = nullptr;
     bluez::BluezDBusManager::Shutdown();
