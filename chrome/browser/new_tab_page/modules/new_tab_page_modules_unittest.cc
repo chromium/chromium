@@ -19,6 +19,22 @@
 
 namespace ntp {
 
+TEST(NewTabPageModulesTest, MakeModuleIdNames) {
+  const std::vector<base::test::FeatureRef>& module_features = {
+      ntp_features::kNtpRecipeTasksModule, ntp_features::kNtpChromeCartModule,
+      ntp_features::kNtpFeedModule, ntp_features::kNtpHistoryClustersModule};
+  for (auto& feature : module_features) {
+    base::test::ScopedFeatureList features;
+    features.InitWithFeatures(
+        /*enabled_features=*/{feature},
+        /*disabled_features=*/{});
+
+    const std::vector<std::pair<const std::string, int>> module_id_names =
+        MakeModuleIdNames(false);
+    ASSERT_EQ(1u, module_id_names.size());
+  }
+}
+
 TEST(NewTabPageModulesTest, MakeModuleIdNames_NoDriveModule) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(

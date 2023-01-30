@@ -17,6 +17,7 @@ import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 import {dummyV2Descriptor, dummyV2Descriptor02, dummyV2Descriptor03, dummyV2Descriptor04, dummyV2Descriptor05, dummyV2Descriptor06, dummyV2Descriptor07, dummyV2Descriptor08, dummyV2Descriptor09, dummyV2Descriptor10, dummyV2Descriptor11, dummyV2Descriptor12} from './dummy_v2/module.js';
 // </if>
 import {feedDescriptor, feedV2Descriptor} from './feed/module.js';
+import {historyClustersDescriptor} from './history_clusters/module.js';
 import {ModuleDescriptor} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {photosDescriptor} from './photos/module.js';
@@ -34,6 +35,7 @@ descriptors.push(
     modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);
 descriptors.push(photosDescriptor);
 descriptors.push(modulesRedesignedEnabled ? feedV2Descriptor : feedDescriptor);
+descriptors.push(historyClustersDescriptor);
 
 // <if expr="not is_official_build">
 if (modulesRedesignedEnabled) {

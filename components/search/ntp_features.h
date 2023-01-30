@@ -62,6 +62,7 @@ BASE_DECLARE_FEATURE(kNtpRemoveScrim);
 BASE_DECLARE_FEATURE(kNtpSafeBrowsingModule);
 BASE_DECLARE_FEATURE(kNtpShortcuts);
 BASE_DECLARE_FEATURE(kNtpHandleMostVisitedNavigationExplicitly);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModule);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

@@ -18,6 +18,7 @@
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/strings/grit/components_strings.h"
 
 namespace ntp {
 
@@ -55,6 +56,11 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpFeedModule)) {
     details.emplace_back("feed", IDS_NTP_MODULES_FEED_TITLE);
+  }
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
+    details.emplace_back("history-clusters",
+                         IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
   }
 
 #if !defined(OFFICIAL_BUILD)
