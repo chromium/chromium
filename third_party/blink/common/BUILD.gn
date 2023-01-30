@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/rust.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -316,6 +317,10 @@ source_set("common") {
     "//ui/events:events_base",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
+
+  if (build_rust_crash) {
+    deps += [ "//third_party/blink/common/rust_crash" ]
+  }
 
   # iOS doesn't use and must not depend on //media
   if (!is_ios) {

@@ -22,6 +22,9 @@ declare_args() {
   # The base::JSONReader implementation.
   enable_rust_json = true
 
+  # Support for chrome://crash-rust to check crash dump collection works.
+  enable_rust_crash = true
+
   # Use experimental Rust toolchain built in-tree. See //tools/rust. For now,
   # only use it for linux targets. The package only has prebuilt libs for linux.
   # More targets will be added later.
@@ -106,6 +109,9 @@ toolchain_has_rust =
 # them as a dylib and put them into an APK. We should reuse all the same logic
 # for gtests from the `//testing/test:test` template.
 can_build_rust_unit_tests = toolchain_has_rust && !is_android
+
+# Whether to build chrome://crash/rust support.
+build_rust_crash = toolchain_has_rust && enable_rust_crash
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might

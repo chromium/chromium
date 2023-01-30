@@ -820,10 +820,17 @@ const size_t kNumberOfChromeInternalsPathURLs =
     std::size(kChromeInternalsPathURLs);
 
 const char* const kChromeDebugURLs[] = {
+    // TODO(crbug/1407149): make this list comprehensive
     blink::kChromeUIBadCastCrashURL,
     blink::kChromeUIBrowserCrashURL,
     blink::kChromeUIBrowserDcheckURL,
     blink::kChromeUICrashURL,
+#if BUILDFLAG(BUILD_RUST_CRASH)
+    blink::kChromeUICrashRustURL,
+#if defined(ADDRESS_SANITIZER)
+    blink::kChromeUICrashRustOverflowURL,
+#endif
+#endif  // BUILDFLAG(BUILD_RUST_CRASH)
     blink::kChromeUIDumpURL,
     blink::kChromeUIKillURL,
     blink::kChromeUIHangURL,

@@ -8,6 +8,7 @@
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/common/common_export.h"
 
 class GURL;
@@ -27,6 +28,9 @@ BLINK_COMMON_EXPORT extern const char kChromeUIBrowserCrashURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserDcheckURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIBrowserUIHang[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashURL[];
+#if BUILDFLAG(BUILD_RUST_CRASH)
+BLINK_COMMON_EXPORT extern const char kChromeUICrashRustURL[];
+#endif
 BLINK_COMMON_EXPORT extern const char kChromeUIDelayedBrowserUIHang[];
 BLINK_COMMON_EXPORT extern const char kChromeUIDumpURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUIGpuCleanURL[];
@@ -57,6 +61,9 @@ BLINK_COMMON_EXPORT extern const char kChromeUICrashUseAfterFreeURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashCorruptHeapBlockURL[];
 BLINK_COMMON_EXPORT extern const char kChromeUICrashCorruptHeapURL[];
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(BUILD_RUST_CRASH)
+BLINK_COMMON_EXPORT extern const char kChromeUICrashRustOverflowURL[];
+#endif  // BUILDFLAG(BUILD_RUST_CRASH)
 #endif  // ADDRESS_SANITIZER
 
 #if DCHECK_IS_ON()
