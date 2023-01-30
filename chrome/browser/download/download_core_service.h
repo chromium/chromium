@@ -81,10 +81,6 @@ class DownloadCoreService : public KeyedService {
   // Returns false if at least one extension has disabled the UI, true
   // otherwise.
   virtual bool IsDownloadUiEnabled() = 0;
-
-  // Returns true if at least one extension is observing download events, false
-  // otherwise.
-  virtual bool IsDownloadObservedByExtension() = 0;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_CORE_SERVICE_H_

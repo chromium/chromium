@@ -161,15 +161,6 @@ bool DownloadCoreServiceImpl::IsDownloadUiEnabled() {
 #endif
 }
 
-bool DownloadCoreServiceImpl::IsDownloadObservedByExtension() {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return extension_event_router_ &&
-         extension_event_router_->IsDownloadObservedByExtension();
-#endif
-}
-
 void DownloadCoreServiceImpl::Shutdown() {
   if (download_manager_created_) {
     // Normally the DownloadManager would be shutdown later, after the Profile

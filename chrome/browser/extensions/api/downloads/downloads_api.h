@@ -393,8 +393,6 @@ class ExtensionDownloadsEventRouter
   void SetUiEnabled(const extensions::Extension* extension, bool enabled);
   bool IsUiEnabled() const;
 
-  bool IsDownloadObservedByExtension() const;
-
   // Called by ChromeDownloadManagerDelegate during the filename determination
   // process, allows extensions to change the item's target filename. If no
   // extension wants to change the target filename, then |filename_changed| will
