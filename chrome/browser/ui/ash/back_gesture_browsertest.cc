@@ -19,7 +19,6 @@
 #include "content/public/test/hit_test_region_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/aura/window.h"
-#include "ui/base/test/ui_controls_aura.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 

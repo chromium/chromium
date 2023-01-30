@@ -24,7 +24,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
@@ -294,8 +293,6 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
 #define MAYBE_CloseDialogOnEscapeEnabled CloseDialogOnEscapeEnabled
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_CloseDialogOnEscapeEnabled) {
-  ui_controls::EnableUIControls();
-
   // Open a second browser window so we don't trigger shutdown.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
@@ -312,8 +309,6 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_CloseDialogOnEscapeEnabled) {
 
 // Tests the Escape key behavior when ShouldCloseDialogOnEscape() is disabled.
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
-  ui_controls::EnableUIControls();
-
   // Open a second browser window so we don't trigger shutdown.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::NEW_WINDOW,
