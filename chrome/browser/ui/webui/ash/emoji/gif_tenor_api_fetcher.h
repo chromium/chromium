@@ -58,26 +58,29 @@ class GifTenorApiFetcher {
       const std::vector<std::string>& ids);
 
  private:
-  std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
   const EndpointFetcherCreator endpoint_fetcher_creator_;
   base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
 
   void FetchCategoriesResponseHandler(
       emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
   void OnCategoriesJsonParsed(
       emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
 
-  void TenorGifsApiResponseHandler(TenorGifsApiCallback callback,
-                                   std::unique_ptr<EndpointResponse> response);
+  void TenorGifsApiResponseHandler(
+      TenorGifsApiCallback callback,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<EndpointResponse> response);
 
   void OnGifsJsonParsed(TenorGifsApiCallback callback,
                         data_decoder::DataDecoder::ValueOrError result);
 
   void FetchGifsByIdsResponseHandler(
       emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
+      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       std::unique_ptr<EndpointResponse> response);
 
   void OnGifsByIdsJsonParsed(
