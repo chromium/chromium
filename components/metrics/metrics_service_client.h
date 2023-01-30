@@ -141,8 +141,8 @@ class MetricsServiceClient {
   // shown during first-run.
   virtual EnableMetricsDefault GetMetricsReportingDefaultState();
 
-  // Returns whether cellular logic is enabled for metrics reporting.
-  virtual bool IsUMACellularUploadLogicEnabled();
+  // Return true iff the system is currently on a cellular connection.
+  virtual bool IsOnCellularConnection();
 
   // Returns whether the allowlist for external experiment ids is enabled. Some
   // embedders like WebLayer disable it. For Chrome, it should be enabled.

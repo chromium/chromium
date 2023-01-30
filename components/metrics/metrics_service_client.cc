@@ -122,7 +122,7 @@ EnableMetricsDefault MetricsServiceClient::GetMetricsReportingDefaultState() {
   return EnableMetricsDefault::DEFAULT_UNKNOWN;
 }
 
-bool MetricsServiceClient::IsUMACellularUploadLogicEnabled() {
+bool MetricsServiceClient::IsOnCellularConnection() {
   return false;
 }
 

@@ -110,7 +110,7 @@ class ChromeMetricsServiceClient
   void LoadingStateChanged(bool is_loading) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
-  bool IsUMACellularUploadLogicEnabled() override;
+  bool IsOnCellularConnection() override;
   bool IsUkmAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetAppPackageNameIfLoggable() override;

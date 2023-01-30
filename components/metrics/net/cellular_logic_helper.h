@@ -16,8 +16,7 @@ namespace metrics {
 base::TimeDelta GetUploadInterval(bool use_cellular_upload_interval);
 
 // Returns true if current connection type is cellular and the platform supports
-// using a separate interval for cellular connections (at the moment, this is
-// supported for OS_ANDROID and OS_IOS).
+// using a separate interval for cellular connections (Android only).
 bool ShouldUseCellularUploadInterval();
 
 }  // namespace metrics

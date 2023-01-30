@@ -1147,7 +1147,7 @@ void ChromeMetricsServiceClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   metrics_service_->OnApplicationNotIdle();
 }
 
-bool ChromeMetricsServiceClient::IsUMACellularUploadLogicEnabled() {
+bool ChromeMetricsServiceClient::IsOnCellularConnection() {
   return metrics::ShouldUseCellularUploadInterval();
 }
 

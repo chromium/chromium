@@ -142,7 +142,7 @@ void ReportingService::SendNextLog() {
   // Proceed to stage the log for upload if log size satisfies cellular log
   // upload constrains.
   bool upload_canceled = false;
-  bool is_cellular_logic = client_->IsUMACellularUploadLogicEnabled();
+  bool is_cellular_logic = client_->IsOnCellularConnection();
   if (is_cellular_logic && data_use_tracker_ &&
       !data_use_tracker_->ShouldUploadLogOnCellular(
           log_store()->staged_log().size())) {
