@@ -3667,7 +3667,7 @@
   {
     "name": "fast-checkout",
     "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 118
   },
   {
     "name": "fast-pair",
@@ -3901,7 +3901,7 @@
   {
     "name": "force-enable-fast-checkout-capabilities",
     "owners": [ "vizcay@google.com", "bwolfgang@google.com", "jkeitel@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 118
   },
   {
     "name": "force-gpu-main-thread-to-normal-priority-drdc",
