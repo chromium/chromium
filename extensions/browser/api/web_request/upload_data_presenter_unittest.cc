@@ -26,7 +26,7 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   net::UploadBytesElementReader element(block, sizeof(block) - 1);
 
   // Expected output.
-  base::Value values(base::Value::Type::LIST);
+  base::Value::List values;
   values.Append("value");
   base::Value::Dict expected_form;
   expected_form.Set("key.with.dots", std::move(values));
