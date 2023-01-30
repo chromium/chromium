@@ -277,6 +277,55 @@ TEST_P(ConnectorsServiceExemptURLsTest, ThirdPartyExtensions) {
   }
 }
 
+TEST_P(ConnectorsServiceExemptURLsTest, BlobAndFilesystem) {
+  auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
+
+  // Test against wildcard policy.
+  for (const char* url_string :
+       {"blob:https://foo.com", "blob:ftp://foo.com/with/path",
+        "filesystem:http://foo.com/with.extension",
+        "filesystem:http://foo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+
+  // Test against a specific pattern policy to validate the correct inner URL is
+  // used.
+  profile_->GetPrefs()->Set(ConnectorPref(connector()),
+                            *base::JSONReader::Read(R"([
+        {
+          "service_provider": "google",
+          "enable": [
+            {"url_list": ["foo.com"], "tags": ["dlp", "malware"]}
+          ]
+        }
+      ])"));
+
+  for (const char* url_string :
+       {"blob:https://foo.com", "blob:ftp://foo.com/with/path",
+        "filesystem:http://foo.com/with.extension",
+        "filesystem:http://foo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_TRUE(settings.has_value());
+  }
+  for (const char* url_string :
+       {"blob:https://notfoo.com", "blob:ftp://notfoo.com/with/path",
+        "filesystem:http://notfoo.com/with.extension",
+        "filesystem:http://notfoo.com/with/path"}) {
+    GURL url(url_string);
+    ASSERT_TRUE(url.is_valid());
+    ASSERT_TRUE(url.SchemeIsFileSystem() || url.SchemeIsBlob());
+    auto settings = service->GetAnalysisSettings(GURL(url), connector());
+    ASSERT_FALSE(settings.has_value());
+  }
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_P(ConnectorsServiceExemptURLsTest, FirstPartyExtensions) {
   auto* service = ConnectorsServiceFactory::GetForBrowserContext(profile_);
@@ -291,11 +340,10 @@ TEST_P(ConnectorsServiceExemptURLsTest, FirstPartyExtensions) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-INSTANTIATE_TEST_SUITE_P(,
-                         ConnectorsServiceExemptURLsTest,
-                         testing::Values(FILE_ATTACHED,
-                                         FILE_DOWNLOADED,
-                                         BULK_DATA_ENTRY));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ConnectorsServiceExemptURLsTest,
+    testing::Values(FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY, PRINT));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

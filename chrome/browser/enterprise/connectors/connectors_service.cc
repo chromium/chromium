@@ -203,6 +203,12 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   if (IsURLExemptFromAnalysis(url))
     return absl::nullopt;
 
+  if (url.SchemeIsBlob() || url.SchemeIsFileSystem()) {
+    GURL inner = url.inner_url() ? *url.inner_url() : GURL(url.path());
+    return GetCommonAnalysisSettings(
+        connectors_manager_->GetAnalysisSettings(inner, connector), connector);
+  }
+
   return GetCommonAnalysisSettings(
       connectors_manager_->GetAnalysisSettings(url, connector), connector);
 }
