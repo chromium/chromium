@@ -224,7 +224,7 @@ constexpr base::FeatureParam<base::TimeDelta> kAddToCartButtonActiveTime{
     base::Seconds(5)};
 
 constexpr base::FeatureParam<bool> kAddToCartProductImage{
-    &kChromeCartDomBasedHeuristics, "add-to-cart-product-image", false};
+    &kChromeCartDomBasedHeuristics, "add-to-cart-product-image", true};
 
 constexpr base::FeatureParam<std::string> kSkipHeuristicsDomainPattern{
     &kChromeCartDomBasedHeuristics, "skip-heuristics-domain-pattern",

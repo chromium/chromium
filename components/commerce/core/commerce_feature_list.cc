@@ -44,6 +44,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
 
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
 
     return map;
   }());

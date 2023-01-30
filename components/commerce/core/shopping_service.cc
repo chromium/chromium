@@ -41,6 +41,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -381,12 +382,15 @@ void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
 }
 
 bool ShoppingService::IsProductInfoApiEnabled() {
-  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList) ||
-                      commerce::kAddToCartProductImage.Get();
+  bool flag_enabled = base::FeatureList::IsEnabled(kShoppingList);
+
   bool region_launched =
-      base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
-      IsEnabledForCountryAndLocale(kShoppingListRegionLaunched,
-                                   country_on_startup_, locale_on_startup_);
+      (base::FeatureList::IsEnabled(kShoppingListRegionLaunched) &&
+       IsEnabledForCountryAndLocale(kShoppingListRegionLaunched,
+                                    country_on_startup_, locale_on_startup_)) ||
+      (base::FeatureList::IsEnabled(ntp_features::kNtpChromeCartModule) &&
+       IsEnabledForCountryAndLocale(ntp_features::kNtpChromeCartModule,
+                                    country_on_startup_, locale_on_startup_));
 
   return flag_enabled || region_launched;
 }
