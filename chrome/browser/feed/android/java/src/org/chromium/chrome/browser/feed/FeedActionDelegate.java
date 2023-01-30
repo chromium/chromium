@@ -50,6 +50,12 @@ public interface FeedActionDelegate {
      */
     void openCrow(String url);
 
+    /**
+     * Opens a specific WebFeed by name.
+     * @param webFeedName the relevant web feed name.
+     */
+    void openWebFeed(String webFeedName);
+
     //
     // Optional methods for handing events.
     //

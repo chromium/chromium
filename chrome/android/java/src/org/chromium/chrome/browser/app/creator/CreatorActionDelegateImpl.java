@@ -87,6 +87,11 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
+    public void openWebFeed(String webFeedName) {
+        // Unused; the Creator feed does not need to navigate to another feed.
+    }
+
+    @Override
     public void onContentsChanged() {
         // Not sure if this needs to be implemented.
     }
