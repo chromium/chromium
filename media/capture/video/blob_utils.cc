@@ -98,16 +98,29 @@ mojom::BlobPtr RotateAndBlobify(const uint8_t* buffer,
   }
 
   uint32_t src_format;
-  if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_YUY2)
-    src_format = libyuv::FOURCC_YUY2;
-  else if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_I420)
-    src_format = libyuv::FOURCC_I420;
-  else if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_RGB24)
-    src_format = libyuv::FOURCC_24BG;
-  else if (pixel_format == VideoPixelFormat::PIXEL_FORMAT_NV12)
-    src_format = libyuv::FOURCC_NV12;
-  else
-    return nullptr;
+  switch (pixel_format) {
+    case VideoPixelFormat::PIXEL_FORMAT_YUY2:
+      src_format = libyuv::FOURCC_YUY2;
+      break;
+    case VideoPixelFormat::PIXEL_FORMAT_I420:
+      src_format = libyuv::FOURCC_I420;
+      break;
+    case VideoPixelFormat::PIXEL_FORMAT_RGB24:
+      src_format = libyuv::FOURCC_24BG;
+      break;
+    case VideoPixelFormat::PIXEL_FORMAT_ARGB:
+      src_format = libyuv::FOURCC_ARGB;
+      break;
+    case VideoPixelFormat::PIXEL_FORMAT_NV12:
+      src_format = libyuv::FOURCC_NV12;
+      break;
+    case VideoPixelFormat::PIXEL_FORMAT_UYVY:
+      src_format = libyuv::FOURCC_UYVY;
+      break;
+    default:
+      NOTREACHED() << "Unsuported pixel format passed to RotateAndBlobify";
+      return nullptr;
+  }
 
   const gfx::Size frame_size = capture_format.frame_size;
   // PNGCodec does not support YUV formats, convert to a temporary ARGB buffer.
