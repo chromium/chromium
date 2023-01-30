@@ -2641,4 +2641,16 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
   return mojom::blink::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
 }
 
+bool ServiceWorkerGlobalScope::SetAttributeEventListener(
+    const AtomicString& event_type,
+    EventListener* listener) {
+  // Count the modification of fetch handlers after the initial evaluation.
+  if (did_evaluate_script_ && event_type == event_type_names::kFetch) {
+    UseCounter::Count(
+        this,
+        WebFeature::kServiceWorkerFetchHandlerModifiedAfterInitialization);
+  }
+  return WorkerGlobalScope::SetAttributeEventListener(event_type, listener);
+}
+
 }  // namespace blink

@@ -168,8 +168,8 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   bool dispatchEventForBindings(Event*, ExceptionState&);
 
   // Used for legacy "onEvent" attribute APIs.
-  bool SetAttributeEventListener(const AtomicString& event_type,
-                                 EventListener*);
+  virtual bool SetAttributeEventListener(const AtomicString& event_type,
+                                         EventListener*);
   EventListener* GetAttributeEventListener(const AtomicString& event_type);
 
   bool HasEventListeners() const;
