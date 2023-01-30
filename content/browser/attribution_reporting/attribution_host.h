@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -24,9 +25,18 @@ namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
 
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
+
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 struct AttributionInputEvent;
+class RenderFrameHostImpl;
 class WebContents;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -57,6 +67,17 @@ class CONTENT_EXPORT AttributionHost
     return input_event_tracker_android_.get();
   }
 #endif
+
+  // This should be called at the start of navigation for a navigation beacon.
+  void NotifyFencedFrameReportingBeaconSent(
+      BeaconId beacon_id,
+      RenderFrameHostImpl* initiator_frame_host);
+
+  void NotifyFencedFrameReportingBeaconData(
+      BeaconId beacon_id,
+      const url::Origin& reporting_origin,
+      const net::HttpResponseHeaders* headers,
+      bool is_final_response);
 
  private:
   friend class AttributionHostTestPeer;

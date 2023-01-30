@@ -23,13 +23,17 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_attestation.h"
 #include "components/attribution_reporting/trigger_registration.h"
+#include "content/browser/attribution_reporting/attribution_beacon_id.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_header_utils.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom.h"
 #include "url/origin.h"
@@ -221,6 +225,37 @@ struct AttributionDataHostManagerImpl::NavigationRedirectSourceRegistrations {
   bool is_within_fenced_frame;
 };
 
+struct AttributionDataHostManagerImpl::BeaconSourceRegistrations {
+  // Source origin to use for all registrations on a beacon. Will not
+  // change over the course of the beacon.
+  SuitableOrigin source_origin;
+
+  // Number of source data we are waiting to be decoded/received.
+  size_t pending_source_data = 0;
+
+  // Navigation source data that has been received as part of this beacon.
+  // Navigation sources cannot be processed until `navigation_complete` is set
+  // to true.
+  std::vector<StorableSource> sources;
+
+  // True if navigation has completed. `absl::nullopt` if it's an event beacon.
+  absl::optional<bool> navigation_complete;
+
+  // True if the beacon has completed. If true, no further calls will be made to
+  // `NotifyFencedFrameReportingBeaconData()`.
+  bool beacon_complete = false;
+
+  // The time the beacon was sent. Will not change over the course of the
+  // beacon.
+  base::TimeTicks register_time;
+
+  // Whether the beacon was initiated within a fenced frame.
+  bool is_within_fenced_frame;
+
+  // Input event associated with the navigation.
+  absl::optional<AttributionInputEvent> input_event;
+};
+
 AttributionDataHostManagerImpl::AttributionDataHostManagerImpl(
     AttributionManager* attribution_manager)
     : attribution_manager_(attribution_manager) {
@@ -358,29 +393,62 @@ void AttributionDataHostManagerImpl::NotifyNavigationForDataHost(
 }
 
 void AttributionDataHostManagerImpl::NotifyNavigationFailure(
-    const blink::AttributionSrcToken& attribution_src_token) {
-  auto it = navigation_data_host_map_.find(attribution_src_token);
-  if (it != navigation_data_host_map_.end()) {
-    base::TimeTicks register_time = it->second.register_time;
-    navigation_data_host_map_.erase(it);
-    OnSourceEligibleDataHostFinished(register_time);
-    RecordNavigationDataHostStatus(NavigationDataHostStatus::kNavigationFailed);
-  }
+    const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
+    int64_t navigation_id) {
+  if (attribution_src_token) {
+    auto it = navigation_data_host_map_.find(*attribution_src_token);
+    if (it != navigation_data_host_map_.end()) {
+      base::TimeTicks register_time = it->second.register_time;
+      navigation_data_host_map_.erase(it);
+      OnSourceEligibleDataHostFinished(register_time);
+      RecordNavigationDataHostStatus(
+          NavigationDataHostStatus::kNavigationFailed);
+    }
 
-  // We are not guaranteed to be processing redirect registrations for a given
-  // navigation.
-  auto redirect_it = redirect_registrations_.find(attribution_src_token);
-  if (redirect_it != redirect_registrations_.end()) {
-    NavigationRedirectSourceRegistrations& registrations = redirect_it->second;
+    // We are not guaranteed to be processing redirect registrations for a given
+    // navigation.
+    auto redirect_it = redirect_registrations_.find(*attribution_src_token);
+    if (redirect_it != redirect_registrations_.end()) {
+      NavigationRedirectSourceRegistrations& registrations =
+          redirect_it->second;
 
-    DCHECK(!registrations.navigation_complete);
-    registrations.navigation_complete = true;
+      DCHECK(!registrations.navigation_complete);
+      registrations.navigation_complete = true;
 
-    if (registrations.pending_source_data == 0u) {
-      OnSourceEligibleDataHostFinished(redirect_it->second.register_time);
-      redirect_registrations_.erase(redirect_it);
+      if (registrations.pending_source_data == 0u) {
+        OnSourceEligibleDataHostFinished(redirect_it->second.register_time);
+        redirect_registrations_.erase(redirect_it);
+      }
     }
   }
+
+  auto beacon_it =
+      beacon_registrations_.find(BeaconId(NavigationBeaconId(navigation_id)));
+  if (beacon_it != beacon_registrations_.end()) {
+    OnSourceEligibleDataHostFinished(beacon_it->second.register_time);
+    beacon_registrations_.erase(beacon_it);
+  }
+}
+
+void AttributionDataHostManagerImpl::NotifyNavigationSuccess(
+    int64_t navigation_id) {
+  NavigationBeaconId beacon_id(navigation_id);
+
+  auto it = beacon_registrations_.find(BeaconId(beacon_id));
+  if (it == beacon_registrations_.end()) {
+    return;
+  }
+
+  BeaconSourceRegistrations& registrations = it->second;
+  DCHECK(registrations.navigation_complete == false);
+  registrations.navigation_complete = true;
+
+  for (StorableSource& source : registrations.sources) {
+    attribution_manager_->HandleSource(std::move(source));
+  }
+  registrations.sources.clear();
+
+  MaybeOnBeaconRegistrationsFinished(beacon_id);
 }
 
 void AttributionDataHostManagerImpl::SourceDataAvailable(
@@ -590,30 +658,16 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   NavigationRedirectSourceRegistrations& registrations = it->second;
   registrations.pending_source_data--;
 
-  base::expected<StorableSource, SourceRegistrationError> source =
-      base::unexpected(SourceRegistrationError::kInvalidJson);
-  if (result.has_value()) {
-    if (result->is_dict()) {
-      source = ParseSourceRegistration(
-          std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
-          reporting_origin, registrations.source_origin,
-          AttributionSourceType::kNavigation,
-          registrations.is_within_fenced_frame);
-    } else {
-      source = base::unexpected(SourceRegistrationError::kRootWrongType);
-    }
-  }
+  absl::optional<StorableSource> source = ParseStorableSource(
+      std::move(result), header_value, reporting_origin,
+      registrations.source_origin, AttributionSourceType::kNavigation,
+      registrations.is_within_fenced_frame);
 
   if (source.has_value()) {
     base::UmaHistogramEnumeration(
         "Conversions.SourceRegistration.NavigationType.Foreground",
         registrations.nav_type);
     attribution_manager_->HandleSource(std::move(*source));
-  } else {
-    attribution_manager_->NotifyFailedSourceRegistration(
-        header_value, registrations.source_origin, reporting_origin,
-        source.error());
-    attribution_reporting::RecordSourceRegistrationError(source.error());
   }
 
   if (registrations.pending_source_data == 0u &&
@@ -622,6 +676,160 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
     // the map.
     OnSourceEligibleDataHostFinished(registrations.register_time);
     redirect_registrations_.erase(it);
+  }
+}
+
+void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconSent(
+    BeaconId beacon_id,
+    SuitableOrigin source_origin,
+    bool is_within_fenced_frame,
+    absl::optional<AttributionInputEvent> input_event) {
+  bool is_navigation = absl::holds_alternative<NavigationBeaconId>(beacon_id);
+  DCHECK_EQ(is_navigation, input_event.has_value());
+
+  auto [it, inserted] = beacon_registrations_.try_emplace(
+      beacon_id, BeaconSourceRegistrations{
+                     .source_origin = std::move(source_origin),
+                     .register_time = base::TimeTicks::Now(),
+                     .is_within_fenced_frame = is_within_fenced_frame,
+                     .input_event = input_event});
+
+  if (!inserted) {
+    return;
+  }
+
+  if (is_navigation) {
+    it->second.navigation_complete.emplace(false);
+  }
+
+  // Treat ongoing beacon registrations as a data host for the purpose of
+  // trigger queuing.
+  data_hosts_in_source_mode_++;
+}
+
+void AttributionDataHostManagerImpl::NotifyFencedFrameReportingBeaconData(
+    BeaconId beacon_id,
+    url::Origin reporting_origin,
+    const net::HttpResponseHeaders* headers,
+    bool is_final_response) {
+  auto it = beacon_registrations_.find(beacon_id);
+
+  // The registration may no longer be tracked in the event the navigation
+  // failed.
+  if (it == beacon_registrations_.end()) {
+    return;
+  }
+
+  DCHECK(!it->second.beacon_complete);
+  it->second.beacon_complete = is_final_response;
+
+  absl::optional<SuitableOrigin> suitable_reporting_origin =
+      SuitableOrigin::Create(std::move(reporting_origin));
+  if (!suitable_reporting_origin) {
+    MaybeOnBeaconRegistrationsFinished(beacon_id);
+    return;
+  }
+
+  if (!headers) {
+    MaybeOnBeaconRegistrationsFinished(beacon_id);
+    return;
+  }
+
+  std::string source_header;
+  if (!headers->GetNormalizedHeader(kAttributionReportingRegisterSourceHeader,
+                                    &source_header)) {
+    MaybeOnBeaconRegistrationsFinished(beacon_id);
+    return;
+  }
+
+  it->second.pending_source_data++;
+
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      source_header,
+      base::BindOnce(&AttributionDataHostManagerImpl::OnBeaconSourceParsed,
+                     weak_factory_.GetWeakPtr(), beacon_id,
+                     std::move(*suitable_reporting_origin), source_header));
+}
+
+void AttributionDataHostManagerImpl::OnBeaconSourceParsed(
+    BeaconId beacon_id,
+    const SuitableOrigin& reporting_origin,
+    const std::string& header_value,
+    data_decoder::DataDecoder::ValueOrError result) {
+  auto it = beacon_registrations_.find(beacon_id);
+
+  // The registration may no longer be tracked in the event the navigation
+  // failed.
+  if (it == beacon_registrations_.end()) {
+    return;
+  }
+
+  BeaconSourceRegistrations& registrations = it->second;
+  DCHECK_GT(registrations.pending_source_data, 0u);
+  registrations.pending_source_data--;
+
+  absl::optional<StorableSource> source =
+      ParseStorableSource(std::move(result), header_value, reporting_origin,
+                          registrations.source_origin,
+                          absl::holds_alternative<NavigationBeaconId>(beacon_id)
+                              ? AttributionSourceType::kNavigation
+                              : AttributionSourceType::kEvent,
+                          registrations.is_within_fenced_frame);
+
+  if (source.has_value()) {
+    if (registrations.navigation_complete.value_or(true)) {
+      attribution_manager_->HandleSource(std::move(*source));
+    } else {
+      registrations.sources.push_back(std::move(*source));
+    }
+  }
+
+  MaybeOnBeaconRegistrationsFinished(beacon_id);
+}
+
+absl::optional<StorableSource>
+AttributionDataHostManagerImpl::ParseStorableSource(
+    data_decoder::DataDecoder::ValueOrError result,
+    const std::string& header_value,
+    const attribution_reporting::SuitableOrigin& reporting_origin,
+    const attribution_reporting::SuitableOrigin& source_origin,
+    AttributionSourceType source_type,
+    bool is_within_fenced_frame) {
+  base::expected<StorableSource, SourceRegistrationError> source =
+      base::unexpected(SourceRegistrationError::kInvalidJson);
+  if (result.has_value()) {
+    if (result->is_dict()) {
+      source = ParseSourceRegistration(
+          std::move(*result).TakeDict(), /*source_time=*/base::Time::Now(),
+          reporting_origin, source_origin, source_type, is_within_fenced_frame);
+    } else {
+      source = base::unexpected(SourceRegistrationError::kRootWrongType);
+    }
+  }
+
+  if (!source.has_value()) {
+    attribution_manager_->NotifyFailedSourceRegistration(
+        header_value, source_origin, reporting_origin, source.error());
+    attribution_reporting::RecordSourceRegistrationError(source.error());
+    return absl::nullopt;
+  }
+
+  return std::move(*source);
+}
+
+void AttributionDataHostManagerImpl::MaybeOnBeaconRegistrationsFinished(
+    BeaconId beacon_id) {
+  auto it = beacon_registrations_.find(beacon_id);
+  if (it == beacon_registrations_.end()) {
+    return;
+  }
+
+  BeaconSourceRegistrations& registrations = it->second;
+  if (registrations.pending_source_data == 0u &&
+      registrations.navigation_complete.value_or(true) &&
+      registrations.beacon_complete) {
+    OnSourceEligibleDataHostFinished(registrations.register_time);
+    beacon_registrations_.erase(it);
   }
 }
 

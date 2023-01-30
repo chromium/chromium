@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_support.mojom.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -491,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader(
-      "Attribution-Reporting-Register-Source",
+      kAttributionReportingRegisterSourceHeader,
       R"({"source_event_id":"1","destination":"https://c.test"})");
 
   http_response->AddCustomHeader(
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response->AddCustomHeader(
-      "Attribution-Reporting-Register-Source",
+      kAttributionReportingRegisterSourceHeader,
       R"({"source_event_id":"1","destination":"https://c.test"})");
 
   http_response->AddCustomHeader(
@@ -575,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   auto http_response2 = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response2->set_code(net::HTTP_MOVED_PERMANENTLY);
   http_response2->AddCustomHeader(
-      "Attribution-Reporting-Register-Source",
+      kAttributionReportingRegisterSourceHeader,
       R"({"source_event_id":"2","destination":"https://c.test"})");
 
   http_response2->AddCustomHeader(

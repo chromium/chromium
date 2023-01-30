@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/attribution_reporting/registration_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
@@ -50,8 +51,10 @@ namespace {
 
 using ::attribution_reporting::SuitableOrigin;
 
-using testing::_;
-using testing::Return;
+using ::testing::_;
+using ::testing::Optional;
+using ::testing::Return;
+using ::testing::VariantWith;
 
 using ::attribution_reporting::mojom::RegistrationType;
 using ::blink::mojom::AttributionNavigationType;
@@ -99,9 +102,32 @@ class MockDataHostManager : public AttributionDataHostManager {
                bool is_within_fenced_frame),
               (override));
 
+  MOCK_METHOD(
+      void,
+      NotifyNavigationFailure,
+      (const absl::optional<blink::AttributionSrcToken>& attribution_src_token,
+       int64_t navigation_id),
+      (override));
+
   MOCK_METHOD(void,
-              NotifyNavigationFailure,
-              (const blink::AttributionSrcToken& attribution_src_token),
+              NotifyNavigationSuccess,
+              (int64_t navigation_id),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyFencedFrameReportingBeaconSent,
+              (BeaconId beacon_id,
+               SuitableOrigin source_origin,
+               bool is_within_fenced_frame,
+               absl::optional<AttributionInputEvent> input_event),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyFencedFrameReportingBeaconData,
+              (BeaconId beacon_id,
+               url::Origin reporting_origin,
+               const net::HttpResponseHeaders* headers,
+               bool is_final_response),
               (override));
 };
 
@@ -255,8 +281,9 @@ TEST_F(AttributionHostTest,
        AttributionSrcNavigationCommitsToErrorPage_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationFailure(impression.attribution_src_token));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationFailure(Optional(impression.attribution_src_token), _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -283,8 +310,9 @@ TEST_F(AttributionHostTest, ImpressionNavigationAborts_Ignored) {
 TEST_F(AttributionHostTest, AttributionSrcNavigationAborts_Ignored) {
   blink::Impression impression;
 
-  EXPECT_CALL(*mock_data_host_manager(),
-              NotifyNavigationFailure(impression.attribution_src_token));
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyNavigationFailure(Optional(impression.attribution_src_token), _));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
@@ -531,6 +559,60 @@ TEST_F(AttributionHostTest, DataHost_RegisteredWithFencedFrame) {
   // triggered.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconSent) {
+  const struct {
+    const char* source_origin;
+    bool expected_valid;
+  } kTestCases[] = {
+      {kLocalHost, true},
+      {"http://127.0.0.1", true},
+      {"http://insecure.com", false},
+      {"https:/secore.com", true},
+  };
+
+  NavigationBeaconId navigation_id(123);
+
+  for (const auto& test_case : kTestCases) {
+    if (test_case.expected_valid) {
+      EXPECT_CALL(*mock_data_host_manager(),
+                  NotifyFencedFrameReportingBeaconSent(
+                      VariantWith<NavigationBeaconId>(navigation_id),
+                      *SuitableOrigin::Deserialize(test_case.source_origin),
+                      /*is_within_fenced_frame=*/true, _));
+    } else {
+      EXPECT_CALL(*mock_data_host_manager(),
+                  NotifyFencedFrameReportingBeaconSent)
+          .Times(0);
+    }
+
+    contents()->NavigateAndCommit(GURL(test_case.source_origin));
+    RenderFrameHost* fenced_frame =
+        RenderFrameHostTester::For(main_rfh())
+            ->AppendFencedFrame(blink::mojom::FencedFrameMode::kOpaqueAds);
+    fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+        GURL("https://fencedframe.example"), fenced_frame);
+
+    conversion_host()->NotifyFencedFrameReportingBeaconSent(
+        navigation_id, static_cast<RenderFrameHostImpl*>(fenced_frame));
+  }
+}
+
+TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconData) {
+  NavigationBeaconId navigation_id(123);
+
+  auto reporting_origin = url::Origin::Create(GURL("https://report.test"));
+
+  EXPECT_CALL(
+      *mock_data_host_manager(),
+      NotifyFencedFrameReportingBeaconData(
+          VariantWith<NavigationBeaconId>(navigation_id), reporting_origin,
+          /*headers=*/nullptr, /*is_final_response=*/true));
+
+  conversion_host()->NotifyFencedFrameReportingBeaconData(
+      navigation_id, reporting_origin, /*headers=*/nullptr,
+      /*is_final_response=*/true);
 }
 
 }  // namespace

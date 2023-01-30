@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -594,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   http_response->set_code(net::HTTP_OK);
   http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
   http_response->AddCustomHeader(
-      "Attribution-Reporting-Register-Source",
+      kAttributionReportingRegisterSourceHeader,
       R"({"source_event_id":"5", "destination":"https://d.test"})");
   register_response->Send(http_response->ToResponseString());
   register_response->Done();
