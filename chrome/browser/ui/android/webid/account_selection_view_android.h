@@ -22,7 +22,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   void Show(
       const std::string& rp_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
-      Account::SignInMode sign_in_mode) override;
+      Account::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox) override;
   void ShowFailureDialog(const std::string& rp_for_display,
                          const std::string& idp_for_display) override;
 

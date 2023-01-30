@@ -262,24 +262,6 @@ std::unique_ptr<FedCmMetrics> CreateFedCmMetrics(
                                         base::RandInt(1, 1 << 30), is_disabled);
 }
 
-bool HasSingleReturningAccount(const std::vector<IdentityProviderData>& idps) {
-  bool has_single_returning_account = false;
-  for (const auto& idp : idps) {
-    for (const auto& account : idp.accounts) {
-      if (account.login_state != LoginState::kSignIn) {
-        continue;
-      }
-
-      if (has_single_returning_account) {
-        // More than one returning account
-        return false;
-      }
-      has_single_returning_account = true;
-    }
-  }
-  return has_single_returning_account;
-}
-
 }  // namespace
 
 FederatedAuthRequestImpl::IdentityProviderGetInfo::IdentityProviderGetInfo(
@@ -835,19 +817,39 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
 
-  // Auto signs in returning users if they have a single returning account and
-  // are signing in.
-  // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
-  // https://crbug.com/1236678.
-  bool is_auto_sign_in =
-      prefer_auto_signin && HasSingleReturningAccount(idp_data_for_display);
+  bool maybe_proceed_with_auto_signin =
+      prefer_auto_signin && IsFedCmAutoSigninEnabled();
+
+  if (maybe_proceed_with_auto_signin) {
+    const IdentityProviderData* auto_signin_idp = nullptr;
+    const IdentityRequestAccount* auto_signin_account = nullptr;
+    // Auto signs in returning users if they have a single returning account and
+    // are signing in.
+    // TODO(crbug.com/1408520): add user's preference for auto sign-in.
+    maybe_proceed_with_auto_signin &=
+        GetSingleReturningAccount(&auto_signin_idp, &auto_signin_account);
+
+    if (maybe_proceed_with_auto_signin) {
+      IdentityRequestAccount account{*auto_signin_account};
+      IdentityProviderData idp{*auto_signin_idp};
+      idp.accounts = {account};
+      idp_data_for_display = {idp};
+    }
+  }
+
+  // TODO(crbug.com/1408520): we should only show the checkbox when the user has
+  // not seen it before. This condition should be added once the user preference
+  // is correctly stored.
+  bool show_auto_signin_checkbox = prefer_auto_signin;
 
   // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   request_dialog_controller_->ShowAccountsDialog(
       WebContents::FromRenderFrameHost(&render_frame_host()),
       rp_url_for_display, idp_data_for_display,
-      is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
+      maybe_proceed_with_auto_signin ? SignInMode::kAuto
+                                     : SignInMode::kExplicit,
+      show_auto_signin_checkbox,
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
@@ -1482,6 +1484,38 @@ void FederatedAuthRequestImpl::OnRejectRequest() {
     CompleteRequestWithError(FederatedAuthRequestResult::kError, absl::nullopt,
                              /*should_delay_callback=*/false);
   }
+}
+
+bool FederatedAuthRequestImpl::GetSingleReturningAccount(
+    const IdentityProviderData** out_idp_data,
+    const IdentityRequestAccount** out_account) {
+  for (const auto& idp_info : idp_infos_) {
+    for (const auto& account : idp_info.second->data->accounts) {
+      if (account.login_state == LoginState::kSignUp) {
+        continue;
+      }
+      // account.login_state could be set to kSignIn if the client is on the
+      // `approved_clients` list provided by IDP. However, in this case we have
+      // to trust the browser observed sign-in.
+      if (!permission_delegate_->HasSharingPermission(
+              origin(), GetEmbeddingOrigin(),
+              url::Origin::Create(idp_info.first), account.id)) {
+        continue;
+      }
+
+      if (*out_account) {
+        return false;
+      }
+      *out_idp_data = &(*idp_info.second->data);
+      *out_account = &account;
+    }
+  }
+
+  if (*out_account) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace content

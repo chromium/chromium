@@ -99,7 +99,8 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& rp_etld_plus_one,
       const absl::optional<std::u16string>& idp_title,
-      blink::mojom::RpContext rp_context) override {
+      blink::mojom::RpContext rp_context,
+      bool show_auto_signin_checkbox) override {
     return widget_;
   }
 
@@ -166,7 +167,8 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
 
   std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShow(
       const std::vector<content::IdentityRequestAccount>& accounts,
-      SignInMode mode) {
+      SignInMode mode,
+      bool show_auto_signin_checkbox = false) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
 
@@ -175,7 +177,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn}},
-        mode);
+        mode, show_auto_signin_checkbox);
 
     // In tests, use a MockInputEventActivationProtector that will not block any
     // input. This can be overridden by a specific test.
@@ -301,21 +303,6 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AutoSigninSingleAccountFlow) {
   EXPECT_FALSE(bubble_view_->show_back_button_);
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
-}
-
-TEST_F(FedCmAccountSelectionViewDesktopTest,
-       AutoSigninMultipleAccountsOneReturning) {
-  const char kAccountId1[] = "account_id1";
-  const char kAccountId2[] = "account_id2";
-  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData(
-      {{kAccountId1, LoginState::kSignIn}, {kAccountId2, LoginState::kSignUp}});
-  const std::vector<Account>& accounts = idp_data.accounts;
-  std::unique_ptr<TestFedCmAccountSelectionView> controller =
-      CreateAndShow(accounts, SignInMode::kAuto);
-
-  EXPECT_FALSE(bubble_view_->show_back_button_);
-  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
-  EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId1));
 }
 
 namespace {

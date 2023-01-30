@@ -27,6 +27,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       const std::string& rp_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismmiss_callback) override;
 

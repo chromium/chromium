@@ -142,6 +142,7 @@ class TestDialogController
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {

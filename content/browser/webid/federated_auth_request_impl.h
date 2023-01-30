@@ -230,6 +230,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   url::Origin GetEmbeddingOrigin() const;
 
+  // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
+  // the only returning account. Returns false if there are multiple returning
+  // accounts or no returning account.
+  bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
+                                 const IdentityRequestAccount** out_account);
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
 

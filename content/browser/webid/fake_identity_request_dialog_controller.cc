@@ -18,6 +18,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     IdentityRequestAccount::SignInMode sign_in_mode,
+    bool show_auto_signin_checkbox,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
   // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to

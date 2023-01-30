@@ -108,6 +108,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox,
       AccountSelectionCallback on_selected,
       DismissCallback dismiss_callback);
 

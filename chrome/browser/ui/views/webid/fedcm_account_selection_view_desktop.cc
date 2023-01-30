@@ -16,31 +16,6 @@
 
 using DismissReason = content::IdentityRequestDialogController::DismissReason;
 
-namespace {
-
-// Returns `IdentityProviderData` and `IdentityRequestAccount` for first account
-// with Account::LoginState::kSignIn.
-void FindFirstReturningAccount(
-    const std::vector<IdentityProviderDisplayData>& idp_display_data_list,
-    const IdentityProviderDisplayData** out_idp_display_data,
-    const Account** out_account) {
-  for (const auto& idp_display_data : idp_display_data_list) {
-    for (const Account& account : idp_display_data.accounts) {
-      if (account.login_state != Account::LoginState::kSignIn) {
-        continue;
-      }
-      *out_idp_display_data = &idp_display_data;
-      *out_account = &account;
-      return;
-    }
-  }
-
-  *out_idp_display_data = nullptr;
-  *out_account = nullptr;
-}
-
-}  // anonymous namespace
-
 // static
 std::unique_ptr<AccountSelectionView> AccountSelectionView::Create(
     AccountSelectionView::Delegate* delegate) {
@@ -78,7 +53,8 @@ void FedCmAccountSelectionView::Show(
     const std::string& rp_etld_plus_one,
     const std::vector<content::IdentityProviderData>&
         identity_provider_data_list,
-    Account::SignInMode sign_in_mode) {
+    Account::SignInMode sign_in_mode,
+    bool show_auto_signin_checkbox) {
   // Either Show or ShowFailureDialog has already been called for other IDPs
   // from the same token request. This could happen when accounts fetch fails
   // for some IDPs. We have yet to support the multi IDP case where not all IDPs
@@ -107,19 +83,20 @@ void FedCmAccountSelectionView::Show(
   rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
 
   bubble_widget_ =
-      CreateBubbleWithAccessibleTitle(rp_for_display_, idp_title, rp_context)
+      CreateBubbleWithAccessibleTitle(rp_for_display_, idp_title, rp_context,
+                                      show_auto_signin_checkbox)
           ->GetWeakPtr();
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
     state_ = State::VERIFYING;
 
-    // When auto sign-in UX flow is triggered, there will be one and only one
-    // account that's returning with LoginStatus::kSignIn.
-    const IdentityProviderDisplayData* returning_idp_display_data = nullptr;
-    const Account* returning_account = nullptr;
-    FindFirstReturningAccount(idp_display_data_list_,
-                              &returning_idp_display_data, &returning_account);
-    ShowVerifyingSheet(*returning_account, *returning_idp_display_data,
+    // When auto sign-in flow is triggered, the parameter
+    // |identity_provider_data_list| would only include the single returning
+    // account and its IDP.
+    DCHECK_EQ(idp_display_data_list_.size(), 1u);
+    DCHECK_EQ(idp_display_data_list_[0].accounts.size(), 1u);
+    ShowVerifyingSheet(idp_display_data_list_[0].accounts[0],
+                       idp_display_data_list_[0],
                        /*auto_signin=*/true);
   } else if (accounts_size == 1u) {
     state_ = State::PERMISSION;
@@ -157,7 +134,8 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   bubble_widget_ =
       CreateBubbleWithAccessibleTitle(base::UTF8ToUTF16(rp_etld_plus_one),
                                       base::UTF8ToUTF16(idp_etld_plus_one),
-                                      blink::mojom::RpContext::kSignIn)
+                                      blink::mojom::RpContext::kSignIn,
+                                      /*show_auto_signin_checkbox=*/false)
           ->GetWeakPtr();
 
   GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
@@ -220,7 +198,8 @@ void FedCmAccountSelectionView::SetInputEventActivationProtectorForTesting(
 views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
     const std::u16string& rp_etld_plus_one,
     const absl::optional<std::u16string>& idp_title,
-    blink::mojom::RpContext rp_context) {
+    blink::mojom::RpContext rp_context,
+    bool show_auto_signin_checkbox) {
   Browser* browser =
       chrome::FindBrowserWithWebContents(delegate_->GetWebContents());
   browser->tab_strip_model()->AddObserver(this);
@@ -230,7 +209,7 @@ views::Widget* FedCmAccountSelectionView::CreateBubbleWithAccessibleTitle(
 
   views::Widget* bubble_widget = views::BubbleDialogDelegateView::CreateBubble(
       new AccountSelectionBubbleView(rp_etld_plus_one, idp_title, rp_context,
-                                     anchor_view,
+                                     show_auto_signin_checkbox, anchor_view,
                                      SystemNetworkContextManager::GetInstance()
                                          ->GetSharedURLLoaderFactory(),
                                      this));

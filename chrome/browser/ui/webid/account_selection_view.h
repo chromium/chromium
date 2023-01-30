@@ -53,12 +53,16 @@ class AccountSelectionView {
   // `rp_for_display` is the relying party URL to display in the prompt. All
   // IDP-specific information, including user accounts, is stored in
   // `idps_for_display`. `sign_in_mode` represents whether this is an auto sign
-  // in flow. After user interaction either OnAccountSelected() or OnDismiss()
-  // gets invoked.
+  // in flow. If it is the auto sign-in flow, `idps_for_display` will only
+  // include the single returning account and its IDP.
+  // `show_auto_signin_checkbox` represents whether we should show a checkbox
+  // for users to opt out of auto sign-in. After user interaction either
+  // OnAccountSelected() or OnDismiss() gets invoked.
   virtual void Show(
       const std::string& rp_for_display,
       const std::vector<content::IdentityProviderData>& identity_provider_data,
-      Account::SignInMode sign_in_mode) = 0;
+      Account::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox) = 0;
 
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is

@@ -34,7 +34,7 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         {{"idp-example.com", accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL::EmptyGURL(), GURL::EmptyGURL()),
           blink::mojom::RpContext::kSignIn}},
-        Account::SignInMode::kExplicit);
+        Account::SignInMode::kExplicit, /*show_auto_signin_checkbox=*/false);
   }
 
   void Show() {

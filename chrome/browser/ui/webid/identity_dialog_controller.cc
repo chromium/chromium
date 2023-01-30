@@ -27,6 +27,7 @@ void IdentityDialogController::ShowAccountsDialog(
     const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
     content::IdentityRequestAccount::SignInMode sign_in_mode,
+    bool show_auto_signin_checkbox,
     AccountSelectionCallback on_selected,
     DismissCallback dismiss_callback) {
   rp_web_contents_ = rp_web_contents;
@@ -34,7 +35,8 @@ void IdentityDialogController::ShowAccountsDialog(
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
-  account_view_->Show(rp_for_display, identity_provider_data, sign_in_mode);
+  account_view_->Show(rp_for_display, identity_provider_data, sign_in_mode,
+                      show_auto_signin_checkbox);
 }
 
 void IdentityDialogController::ShowFailureDialog(

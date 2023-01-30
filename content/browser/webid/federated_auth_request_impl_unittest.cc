@@ -501,6 +501,7 @@ class TestDialogController
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       IdentityRequestAccount::SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
@@ -1295,7 +1296,8 @@ TEST_F(FederatedAuthRequestImplTest,
       *test_permission_delegate_,
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull), kAccountId))
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
@@ -1316,6 +1318,28 @@ TEST_F(FederatedAuthRequestImplTest,
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoSignin);
 
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdNicolas))
+      .WillOnce(Return(false));
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdPeter))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdZach))
+      .WillOnce(Return(false));
+
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
 
@@ -1323,7 +1347,8 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
   RunAuthTest(request_parameters, kExpectationSuccess, configuration);
 
-  ASSERT_EQ(displayed_accounts().size(), 3u);
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].id, kAccountIdPeter);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kAuto);
 }
@@ -1334,6 +1359,29 @@ TEST_F(FederatedAuthRequestImplTest,
        AutoSigninForMultipleReturningUsersMultipleAccounts) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmAutoSignin);
+
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), kAccountIdNicolas))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdPeter))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountIdZach))
+      .WillOnce(Return(false));
 
   RequestParameters request_parameters = kDefaultRequestParameters;
   request_parameters.prefer_auto_sign_in = true;
@@ -1346,6 +1394,83 @@ TEST_F(FederatedAuthRequestImplTest,
 
   ASSERT_EQ(displayed_accounts().size(), 3u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 2);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that auto sign-in with single non-returning account sets the sign-in
+// mode to explicit.
+TEST_F(FederatedAuthRequestImplTest, AutoSigninForZeroReturningUsers) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+
+  // Pretend the sharing permission has not been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillOnce(Return(false));
+
+  for (const auto& idp_info : kConfigurationValid.idp_info) {
+    ASSERT_EQ(idp_info.second.accounts.size(), 1u);
+  }
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.prefer_auto_sign_in = true;
+  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(displayed_accounts()[0].login_state, LoginState::kSignUp);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that auto sign-in with multiple accounts and a single returning user
+// sets the sign-in mode to kExplicit if `preferAutoSignin` is not specified.
+TEST_F(FederatedAuthRequestImplTest,
+       AutoSigninForSingleReturningUserWithoutSettingPreferAutoSignin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .WillOnce(Return(true));
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  // request_parameters.prefer_auto_sign_in is default to false;
+  RunAuthTest(request_parameters, kExpectationSuccess, kConfigurationValid);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that if browser has not observed sign-in in the past, the sign-in mode
+// is set to explicit regardless the account's login state.
+TEST_F(FederatedAuthRequestImplTest, AutoSigninBrowserNotObservedSigninBefore) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoSignin);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull), kAccountId))
+      .Times(2)
+      .WillRepeatedly(Return(false));
+
+  RequestParameters request_parameters = kDefaultRequestParameters;
+  request_parameters.prefer_auto_sign_in = true;
+
+  // Set IDP claims user is signed in.
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].accounts[0].login_state =
+      LoginState::kSignIn;
+
+  RunAuthTest(request_parameters, kExpectationSuccess, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
   EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
@@ -1844,6 +1969,7 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
       const std::string& rp_for_display,
       const std::vector<IdentityProviderData>& identity_provider_data,
       SignInMode sign_in_mode,
+      bool show_auto_signin_checkbox,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::DismissCallback dismiss_callback)
       override {
@@ -1854,7 +1980,8 @@ class DisableApiWhenDialogShownDialogController : public TestDialogController {
     // Call parent class method in order to store callback parameters.
     TestDialogController::ShowAccountsDialog(
         rp_web_contents, rp_for_display, std::move(identity_provider_data),
-        sign_in_mode, std::move(on_selected), std::move(dismiss_callback));
+        sign_in_mode, show_auto_signin_checkbox, std::move(on_selected),
+        std::move(dismiss_callback));
   }
 
  private:

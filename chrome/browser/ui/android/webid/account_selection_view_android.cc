@@ -114,7 +114,8 @@ AccountSelectionViewAndroid::~AccountSelectionViewAndroid() {
 void AccountSelectionViewAndroid::Show(
     const std::string& rp_for_display,
     const std::vector<content::IdentityProviderData>& identity_provider_data,
-    Account::SignInMode sign_in_mode) {
+    Account::SignInMode sign_in_mode,
+    bool show_auto_signin_checkbox) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
