@@ -134,15 +134,13 @@ class FontRenderParamsTest : public testing::Test {
 
   ~FontRenderParamsTest() override {
     OverrideGlobalFontConfigForTesting(original_config_);
-    FcConfigDestroy(override_config_);
-
+    FcConfigDestroy(override_config_.ExtractAsDangling());
     ui::LinuxUi::SetInstance(old_linux_ui_);
   }
 
  protected:
   TestFontDelegate test_font_delegate_;
   raw_ptr<ui::LinuxUi> old_linux_ui_ = nullptr;
-
   raw_ptr<FcConfig> override_config_ = nullptr;
   raw_ptr<FcConfig> original_config_ = nullptr;
 };

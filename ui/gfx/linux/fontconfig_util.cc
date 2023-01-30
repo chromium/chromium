@@ -45,7 +45,7 @@ class GFX_EXPORT GlobalFontConfig {
   GlobalFontConfig(const GlobalFontConfig&) = delete;
   GlobalFontConfig& operator=(const GlobalFontConfig&) = delete;
 
-  ~GlobalFontConfig() { FcConfigDestroy(fc_config_); }
+  ~GlobalFontConfig() { FcConfigDestroy(fc_config_.ExtractAsDangling()); }
 
   // Retrieve the native font-config FcConfig pointer.
   FcConfig* Get() const {
