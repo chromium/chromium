@@ -26,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -55,9 +54,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
 #endif
 
@@ -448,13 +448,11 @@ absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
   Profile* profile = Profile::FromBrowserContext(context_);
   if (profile->IsMainProfile()) {
     return GetBrowserDmToken();
-  } else
-#endif
-  {
-    return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
-               ? GetProfileDmToken()
-               : GetBrowserDmToken();
   }
+#endif
+  return GetPolicyScope(scope_pref) == policy::POLICY_SCOPE_USER
+             ? GetProfileDmToken()
+             : GetBrowserDmToken();
 #endif
 }
 
@@ -616,9 +614,14 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
   if (context && !context->IsOffTheRecord() &&
       !Profile::FromBrowserContext(context)->AsTestingProfile()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-    if (primary_profile)
-      return primary_profile;
+    auto* user_manager = user_manager::UserManager::Get();
+    if (auto* primary_user = user_manager->GetPrimaryUser()) {
+      if (auto* primary_browser_context =
+              ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
+                  primary_user)) {
+        return primary_browser_context;
+      }
+    }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     Profile* profile = Profile::FromBrowserContext(context);
     if (profile)
