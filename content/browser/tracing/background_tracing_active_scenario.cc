@@ -15,6 +15,7 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/background_tracing_rule.h"
@@ -571,8 +572,14 @@ void BackgroundTracingActiveScenario::GenerateMetadataProto(
   if (!last_triggered_rule_) {
     return;
   }
-  auto* triggered_rule =
-      metadata->set_background_tracing_metadata()->set_triggered_rule();
+
+  auto* background_tracing_metadata =
+      metadata->set_background_tracing_metadata();
+
+  uint32_t scenario_name_hash = variations::HashName(config_->scenario_name());
+  background_tracing_metadata->set_scenario_name_hash(scenario_name_hash);
+
+  auto* triggered_rule = background_tracing_metadata->set_triggered_rule();
   last_triggered_rule_->GenerateMetadataProto(triggered_rule);
 }
 
