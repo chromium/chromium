@@ -9,6 +9,7 @@ import './emoji_search.js';
 import './emoji_category_button.js';
 import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
