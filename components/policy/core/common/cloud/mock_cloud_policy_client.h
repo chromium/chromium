@@ -27,6 +27,11 @@ ACTION_P(ScheduleStatusCallback, status) {
       FROM_HERE, base::BindOnce(std::move(arg0), status));
 }
 
+ACTION_P(ScheduleResultCallback, result) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(arg0), result));
+}
+
 class MockCloudPolicyClient : public CloudPolicyClient {
  public:
   MockCloudPolicyClient();
@@ -60,7 +65,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
       const enterprise_management::DeviceStatusReportRequest* device_status,
       const enterprise_management::SessionStatusReportRequest* session_status,
       const enterprise_management::ChildStatusReportRequest* child_status,
-      StatusCallback callback) override {
+      ResultCallback callback) override {
     UploadDeviceStatus_(device_status, session_status, child_status, callback);
   }
 
@@ -68,7 +73,7 @@ class MockCloudPolicyClient : public CloudPolicyClient {
                void(const enterprise_management::DeviceStatusReportRequest*,
                     const enterprise_management::SessionStatusReportRequest*,
                     const enterprise_management::ChildStatusReportRequest*,
-                    StatusCallback&));
+                    ResultCallback&));
   MOCK_METHOD0(CancelAppInstallReportUpload, void(void));
   MOCK_METHOD0(CancelExtensionInstallReportUpload, void(void));
   void UpdateGcmId(const std::string& id, StatusCallback callback) override {
@@ -84,34 +89,34 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   void UploadChromeDesktopReport(
       std::unique_ptr<enterprise_management::ChromeDesktopReportRequest>
           request,
-      StatusCallback callback) override {
+      ResultCallback callback) override {
     UploadChromeDesktopReportProxy(request.get(), callback);
   }
   // Use Proxy function because unique_ptr can't be used in mock function.
   MOCK_METHOD2(UploadChromeDesktopReportProxy,
                void(enterprise_management::ChromeDesktopReportRequest*,
-                    StatusCallback&));
+                    ResultCallback&));
 
   void UploadChromeOsUserReport(
       std::unique_ptr<enterprise_management::ChromeOsUserReportRequest> request,
-      StatusCallback callback) override {
+      ResultCallback callback) override {
     UploadChromeOsUserReportProxy(request.get(), callback);
   }
   // Use Proxy function because unique_ptr can't be used in mock function.
   MOCK_METHOD2(UploadChromeOsUserReportProxy,
                void(enterprise_management::ChromeOsUserReportRequest*,
-                    StatusCallback&));
+                    ResultCallback&));
 
   void UploadChromeProfileReport(
       std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
           request,
-      StatusCallback callback) override {
+      ResultCallback callback) override {
     UploadChromeProfileReportProxy(request.get(), callback);
   }
   // Use Proxy function because unique_ptr can't be used in mock function.
   MOCK_METHOD2(UploadChromeProfileReportProxy,
                void(enterprise_management::ChromeProfileReportRequest*,
-                    StatusCallback&));
+                    ResultCallback&));
 
   void UploadEuiccInfo(
       std::unique_ptr<enterprise_management::UploadEuiccInfoRequest> request,

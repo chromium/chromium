@@ -111,7 +111,7 @@ class StatusUploaderTest : public testing::Test {
 
     // Running the status collected callback should trigger
     // CloudPolicyClient::UploadDeviceStatus.
-    CloudPolicyClient::StatusCallback callback;
+    CloudPolicyClient::ResultCallback callback;
     EXPECT_CALL(client_, UploadDeviceStatus_).WillOnce(MoveArg<3>(&callback));
 
     // Send some "valid" (read: non-nullptr) device/session data to the
@@ -129,7 +129,9 @@ class StatusUploaderTest : public testing::Test {
         .Times(upload_success ? 1 : 0);
 
     // Now invoke the response.
-    std::move(callback).Run(upload_success);
+    std::move(callback).Run(
+        upload_success ? CloudPolicyClient::Result(DM_STATUS_SUCCESS)
+                       : CloudPolicyClient::Result(DM_STATUS_REQUEST_FAILED));
 
     // Now that the previous request was satisfied, a task to do the next
     // upload should be queued.
@@ -255,14 +257,26 @@ TEST_F(StatusUploaderTest, ResetTimerAfterUnregisteredClient) {
 
   StatusCollectorCallback status_callback = CollectStatusCallback();
 
+  // Running the status collected callback should trigger
+  // CloudPolicyClient::UploadDeviceStatus.
+  CloudPolicyClient::ResultCallback callback;
+  EXPECT_CALL(client_, UploadDeviceStatus_).WillOnce(MoveArg<3>(&callback));
+
+  // Send some "valid" (read: non-nullptr) device/session data to the
+  // callback in order to simulate valid status data.
+  StatusCollectorParams status_params;
+  std::move(status_callback).Run(std::move(status_params));
+
   // Make sure no status upload is queued up yet (since an upload is in
   // progress).
   EXPECT_FALSE(task_runner_->HasPendingTask());
 
-  // StatusUploader should not try to upload using an unregistered client
-  EXPECT_CALL(client_, UploadDeviceStatus_).Times(0);
-  StatusCollectorParams status_params;
-  std::move(status_callback).Run(std::move(status_params));
+  // No successful submit will happen if not registered.
+  EXPECT_CALL(*collector_ptr_, OnSubmittedSuccessfully()).Times(0);
+
+  // Now invoke the response.
+  std::move(callback).Run(
+      CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
 
   // A task to try again should be queued.
   ASSERT_EQ(1U, task_runner_->NumPendingTasks());

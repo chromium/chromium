@@ -83,16 +83,21 @@ void ReportUploader::Upload() {
       break;
     }
   }
-}  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
-void ReportUploader::OnRequestFinished(bool status) {
-  if (status) {
+void ReportUploader::OnRequestFinished(
+    policy::CloudPolicyClient::Result result) {
+  // Crash if the client is not registered, this should not happen.
+  // TODO(b/256553070) Handle unregistered case without crashing.
+  CHECK(!result.IsClientNotRegisteredError());
+
+  if (result.IsSuccess()) {
     NextRequest();
     RecordReportResponseMetrics(ReportResponseMetricsStatus::kSuccess);
     return;
   }
 
-  switch (client_->last_dm_status()) {
+  switch (result.GetDMServerError()) {
     case policy::DM_STATUS_REQUEST_FAILED:  // network error
       RecordReportResponseMetrics(ReportResponseMetricsStatus::kNetworkError);
       Retry();

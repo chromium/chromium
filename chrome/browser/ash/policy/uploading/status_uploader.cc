@@ -202,15 +202,6 @@ void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {
     ScheduleNextStatusUpload();
     return;
   }
-  if (!client_->is_registered()) {
-    // This can happen when the DM Token is missing (crbug.com/705607).
-    VLOG(1) << "Skipping status upload because the client is not registered";
-    // Reset the timer to avoid log spamming.
-    last_upload_ = base::Time::NowFromSystemTime();
-    status_upload_in_progress_ = false;
-    ScheduleNextStatusUpload();
-    return;
-  }
 
   SYSLOG(INFO) << "Starting status upload: has_device_status = "
                << has_device_status;
@@ -222,23 +213,26 @@ void StatusUploader::OnStatusReceived(StatusCollectorParams callback_params) {
                                              weak_factory_.GetWeakPtr()));
 }
 
-void StatusUploader::OnUploadCompleted(bool success) {
+void StatusUploader::OnUploadCompleted(CloudPolicyClient::Result result) {
   // Set the last upload time, regardless of whether the upload was successful
   // or not (we don't change the time of the next upload based on whether this
   // upload succeeded or not - if a status upload fails, we just skip it and
   // wait until it's time to try again.
-  if (success) {
-    SYSLOG(INFO) << "Status upload successful";
-  } else {
-    SYSLOG(ERROR) << "Error uploading status: " << client_->last_dm_status();
-  }
   last_upload_ = base::Time::NowFromSystemTime();
   status_upload_in_progress_ = false;
 
-  // If the upload was successful, tell the collector so it can clear its cache
-  // of pending items.
-  if (success)
+  if (result.IsClientNotRegisteredError()) {
+    // This can happen when the DM Token is missing (crbug.com/705607).
+    VLOG(1) << "Skipping status upload because the client is not registered";
+  } else if (result.IsSuccess()) {
+    SYSLOG(INFO) << "Status upload successful";
+    // Tell the collector so it can clear its cache of pending items.
     collector_->OnSubmittedSuccessfully();
+  } else if (result.IsDMServerError()) {
+    SYSLOG(ERROR) << "Error uploading status: " << result.GetDMServerError();
+  } else {
+    NOTREACHED();
+  }
 
   ScheduleNextStatusUpload();
 }

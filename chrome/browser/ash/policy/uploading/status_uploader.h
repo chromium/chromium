@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
@@ -23,7 +24,6 @@ class SequencedTaskRunner;
 
 namespace policy {
 
-class CloudPolicyClient;
 class StatusCollector;
 struct StatusCollectorParams;
 
@@ -74,7 +74,7 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   void OnStatusReceived(StatusCollectorParams callback_params);
 
   // Invoked once a status upload has completed.
-  void OnUploadCompleted(bool success);
+  void OnUploadCompleted(CloudPolicyClient::Result result);
 
   // Helper method that figures out when the next status upload should
   // be scheduled. Returns true if the next status upload has been scheduled

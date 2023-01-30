@@ -62,8 +62,10 @@ class POLICY_EXPORT CloudPolicyClient {
   using ResponseMap = std::map<std::pair<std::string, std::string>,
                                enterprise_management::PolicyFetchResponse>;
 
-  // A callback which receives boolean status of an operation.  If the operation
-  // succeeded, |status| is true.
+  // A callback which receives boolean status of an operation. If the
+  // operation succeeded, |status| is true.
+  // TODO(b/256553070) Use `ResultCallback` instead of `StatusCallback`
+  // everywhere.
   using StatusCallback = base::OnceCallback<void(bool status)>;
 
   // A callback which receives fetched remote commands.
@@ -115,6 +117,30 @@ class POLICY_EXPORT CloudPolicyClient {
     virtual void OnServiceAccountSet(CloudPolicyClient* client,
                                      const std::string& account_email) {}
   };
+
+  using NotRegistered = absl::monostate;
+
+  class POLICY_EXPORT Result {
+   public:
+    explicit Result(DeviceManagementStatus);
+    explicit Result(NotRegistered);
+
+    bool IsSuccess() const;
+    bool IsClientNotRegisteredError() const;
+    bool IsDMServerError() const;
+
+    DeviceManagementStatus GetDMServerError() const;
+
+    bool operator==(const Result& other) const {
+      return this->result_ == other.result_;
+    }
+
+   private:
+    absl::variant<NotRegistered, DeviceManagementStatus> result_;
+  };
+
+  // A callback which receives the operations result.
+  using ResultCallback = base::OnceCallback<void(Result)>;
 
   struct POLICY_EXPORT RegistrationParameters {
    public:
@@ -303,7 +329,7 @@ class POLICY_EXPORT CloudPolicyClient {
       const enterprise_management::DeviceStatusReportRequest* device_status,
       const enterprise_management::SessionStatusReportRequest* session_status,
       const enterprise_management::ChildStatusReportRequest* child_status,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Uploads Chrome Desktop report to the server. As above, the client must be
   // in a registered state. |chrome_desktop_report| will be included in the
@@ -311,7 +337,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadChromeDesktopReport(
       std::unique_ptr<enterprise_management::ChromeDesktopReportRequest>
           chrome_desktop_report,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Uploads Chrome OS User report to the server. The user's DM token must be
   // set. |chrome_os_user_report| will be included in the upload request. The
@@ -319,7 +345,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadChromeOsUserReport(
       std::unique_ptr<enterprise_management::ChromeOsUserReportRequest>
           chrome_os_user_report,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Uploads Chrome profile report to the server. The user's DM token must be
   // set. |chrome_profile_report| will be included in the upload request. The
@@ -327,7 +353,7 @@ class POLICY_EXPORT CloudPolicyClient {
   virtual void UploadChromeProfileReport(
       std::unique_ptr<enterprise_management::ChromeProfileReportRequest>
           chrome_profile_report,
-      StatusCallback callback);
+      ResultCallback callback);
 
   // Uploads a report containing enterprise connectors real-time security
   // events for |context|. As above, the client must be in a registered state.
@@ -599,7 +625,7 @@ class POLICY_EXPORT CloudPolicyClient {
                                     DMServerJobResult result);
 
   // Callback for several types of status/report upload requests.
-  void OnReportUploadCompleted(StatusCallback callback,
+  void OnReportUploadCompleted(ResultCallback callback,
                                DMServerJobResult result);
 
   // Callback for realtime report upload requests.
@@ -751,6 +777,11 @@ class POLICY_EXPORT CloudPolicyClient {
   // Creates a job config to upload a certificate.
   std::unique_ptr<DMServerJobConfiguration> CreateCertUploadJobConfiguration(
       CloudPolicyClient::StatusCallback callback);
+
+  // Creates a job config to upload a report.
+  std::unique_ptr<DMServerJobConfiguration> CreateReportUploadJobConfiguration(
+      DeviceManagementService::JobConfiguration::JobType type,
+      CloudPolicyClient::ResultCallback callback);
 
   // Executes a job to upload a certificate. Onwership of the job is
   // retained by this method.
