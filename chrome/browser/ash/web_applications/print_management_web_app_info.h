@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PRINT_MANAGEMENT_WEB_APP_INFO_H_
 
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "ui/gfx/geometry/size.h"
 
 struct WebAppInstallInfo;
