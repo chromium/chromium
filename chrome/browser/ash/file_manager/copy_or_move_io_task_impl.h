@@ -13,14 +13,11 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_error_or.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/file_manager/file_manager_copy_or_move_hook_delegate.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/file_manager/speedometer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "components/drive/file_errors.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -107,9 +104,6 @@ class CopyOrMoveIOTaskImpl {
   ProgressCallback progress_callback_;
 
  private:
-  friend class CopyOrMoveIOTaskTest;
-  FRIEND_TEST_ALL_PREFIXES(CopyOrMoveIOTaskTest, DriveQuota);
-
   // Verifies the transfer, e.g., by using enterprise connectors for checking
   // whether a transfer is allowed.
   virtual void VerifyTransfer();
@@ -126,9 +120,6 @@ class CopyOrMoveIOTaskImpl {
                    base::File::Error error,
                    const base::File::Info& file_info);
   void GotFreeDiskSpace(int64_t free_space);
-  void GotDrivePooledQuota(int64_t required_bytes,
-                           drive::FileError error,
-                           drivefs::mojom::PooledQuotaUsagePtr usage);
   void GenerateDestinationURL(size_t idx);
   void CopyOrMoveFile(
       size_t idx,

@@ -304,18 +304,10 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
     // Destination is a virtual filesystem, so skip checking free space.
     GenerateDestinationURL(0);
   } else {
-    // For Drive, check we have enough local disk first, then check quota.
-    base::FilePath path = progress_.destination_folder.path();
-    auto* drive_integration_service =
-        drive::util::GetIntegrationServiceByProfile(profile_);
-    if (drive_integration_service && drive_integration_service->IsMounted() &&
-        drive_integration_service->GetMountPointPath().IsParent(
-            progress_.destination_folder.path())) {
-      path = drive_integration_service->GetDriveFsHost()->GetDataPath();
-    }
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, path),
+        base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                       progress_.destination_folder.path()),
         base::BindOnce(&CopyOrMoveIOTaskImpl::GotFreeDiskSpace,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -325,13 +317,11 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
 void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   auto* drive_integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
-  bool is_drive = drive_integration_service &&
-                  drive_integration_service->IsMounted() &&
-                  drive_integration_service->GetMountPointPath().IsParent(
-                      progress_.destination_folder.path());
   if (progress_.destination_folder.filesystem_id() ==
           util::GetDownloadsMountPointName(profile_) ||
-      is_drive) {
+      (drive_integration_service &&
+       drive_integration_service->GetMountPointPath().IsParent(
+           progress_.destination_folder.path()))) {
     free_space -= cryptohome::kMinFreeSpaceInBytes;
   }
 
@@ -353,42 +343,6 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
     LOG(ERROR) << "Insufficient free space in destination";
     Complete(State::kError);
     return;
-  }
-
-  if (is_drive) {
-    drive_integration_service->GetPooledQuotaUsage(base::BindOnce(
-        base::BindOnce(&CopyOrMoveIOTaskImpl::GotDrivePooledQuota,
-                       weak_ptr_factory_.GetWeakPtr(), required_bytes)));
-    return;
-  }
-
-  GenerateDestinationURL(0);
-}
-
-void CopyOrMoveIOTaskImpl::GotDrivePooledQuota(
-    int64_t required_bytes,
-    drive::FileError error,
-    drivefs::mojom::PooledQuotaUsagePtr usage) {
-  if (error != drive::FileError::FILE_ERROR_OK) {
-    // Log the error if we couldn't fetch the quota (probably because we are
-    // offline), but continue the operation and we will show an error later
-    // when we come back online and try to sync.
-    LOG(ERROR) << "Error fetching drive quota: "
-               << drive::FileErrorToString(error);
-  } else {
-    bool org_exceeded =
-        usage->user_type == drivefs::mojom::UserType::kOrganization &&
-        usage->organization_limit_exceeded;
-    bool user_exceeded =
-        usage->total_user_bytes != -1 &&
-        (usage->total_user_bytes - usage->used_user_bytes) < required_bytes;
-    if (org_exceeded || user_exceeded) {
-      progress_.outputs.emplace_back(progress_.destination_folder,
-                                     base::File::FILE_ERROR_NO_SPACE);
-      LOG(ERROR) << "Insufficient drive quota";
-      Complete(State::kError);
-      return;
-    }
   }
 
   GenerateDestinationURL(0);
