@@ -20,8 +20,7 @@ class WebAppRegistrar;
 
 class ProtocolHandlingSubManager : public OsIntegrationSubManager {
  public:
-  explicit ProtocolHandlingSubManager(Profile* profile,
-                                      WebAppRegistrar& registrar);
+  ProtocolHandlingSubManager(Profile* profile, WebAppRegistrar& registrar);
   ~ProtocolHandlingSubManager() override;
   void Start() override;
   void Shutdown() override;

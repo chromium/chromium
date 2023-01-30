@@ -21,8 +21,8 @@ class WebAppRegistrar;
 // are changed.
 class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
  public:
-  explicit ShortcutMenuHandlingSubManager(WebAppIconManager& icon_manager,
-                                          WebAppRegistrar& registrar);
+  ShortcutMenuHandlingSubManager(WebAppIconManager& icon_manager,
+                                 WebAppRegistrar& registrar);
   ~ShortcutMenuHandlingSubManager() override;
   void Start() override;
   void Shutdown() override;

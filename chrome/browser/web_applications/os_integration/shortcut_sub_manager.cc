@@ -16,7 +16,6 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -27,6 +26,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/time.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/app_shim_registry_mac.h"
+#endif
 
 namespace web_app {
 namespace {
