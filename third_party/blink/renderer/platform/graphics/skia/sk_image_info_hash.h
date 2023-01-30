@@ -23,13 +23,13 @@ struct HashTraits<SkImageInfo> : GenericHashTraits<SkImageInfo> {
   }
 
   static const bool kEmptyValueIsZero = true;
-  static SkImageInfo EmptyValue() {
-    return SkImageInfo::Make(0, 0, kUnknown_SkColorType, kUnknown_SkAlphaType,
-                             nullptr);
+  static SkImageInfo EmptyValue() { return SkImageInfo::MakeUnknown(); }
+  static void ConstructDeletedValue(SkImageInfo& slot) {
+    new (NotNullTag::kNotNull, &slot)
+        SkImageInfo(SkImageInfo::MakeUnknown(-1, -1));
   }
-  static SkImageInfo DeletedValue() {
-    return SkImageInfo::Make(-1, -1, kUnknown_SkColorType, kUnknown_SkAlphaType,
-                             nullptr);
+  static bool IsDeletedValue(const SkImageInfo& value) {
+    return value == SkImageInfo::MakeUnknown(-1, -1);
   }
 };
 

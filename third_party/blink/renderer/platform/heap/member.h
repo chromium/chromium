@@ -114,11 +114,6 @@ struct BaseMemberHashTraits : SimpleClassHashTraits<MemberType> {
 
   static PeekOutType Peek(const MemberType& value) { return value; }
 
-  template <typename U>
-  static void Store(const U& value, MemberType& storage) {
-    storage = value;
-  }
-
   static void ConstructDeletedValue(MemberType& slot) {
     slot = cppgc::kSentinelPointer;
   }

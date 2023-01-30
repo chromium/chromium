@@ -549,7 +549,7 @@ class IdentityHashTranslator {
     return KeyTraits::Equal(a, b);
   }
   template <typename T, typename U, typename V>
-  static void Translate(T& location, U&&, V&& value) {
+  static void Store(T& location, U&&, V&& value) {
     location = std::forward<V>(value);
   }
 };
@@ -710,12 +710,12 @@ class HashTable final
   // HashTranslator must have the following function members:
   //   static unsigned GetHash(const T&);
   //   static bool Equal(const ValueType&, const T&);
-  //   static void Translate(T& location, KeyType&&, ValueType&&);
+  //   static void Store(T& location, KeyType&&, ValueType&&);
   template <typename HashTranslator, typename T, typename Extra>
   AddResult insert(T&& key, Extra&&);
   // Similar to the above, but passes additional `unsigned hash_code`, which
   // is computed from `HashTranslator::GetHash(key)`, to HashTranslator method
-  //   static Translate(T&, KeyType&&, ValueType&&, unsigned hash_code);
+  //   static Store(T&, KeyType&&, ValueType&&, unsigned hash_code);
   // to avoid recomputation of the hash code when needed in the method.
   template <typename HashTranslator, typename T, typename Extra>
   AddResult InsertPassingHashCode(T&& key, Extra&&);
@@ -840,7 +840,6 @@ class HashTable final
   ValueType* Rehash(unsigned new_table_size, ValueType* entry);
   ValueType* Reinsert(ValueType&&);
 
-  static void InitializeBucket(ValueType& bucket);
   static void ReinitializeBucket(ValueType& bucket);
   static void DeleteBucket(ValueType& bucket) {
     bucket.~ValueType();
@@ -1133,13 +1132,11 @@ struct HashTableBucketInitializer {
   STATIC_ONLY(HashTableBucketInitializer);
   static_assert(!Traits::kEmptyValueIsZero);
 
-  static void Initialize(Value& bucket) {
+  static void Reinitialize(Value& bucket) {
     ConstructTraits<Value, Traits, Allocator>::ConstructAndNotifyElement(
         &bucket, Traits::EmptyValue());
     DCHECK(IsHashTraitsEmptyValue<Traits>(bucket));
   }
-
-  static void Reinitialize(Value& bucket) { Initialize(bucket); }
 
   template <typename HashTable>
   static Value* AllocateTable(unsigned size, size_t alloc_size) {
@@ -1152,7 +1149,7 @@ struct HashTableBucketInitializer {
 
   static void InitializeTable(Value* table, unsigned size) {
     for (unsigned i = 0; i < size; i++) {
-      Initialize(table[i]);
+      Reinitialize(table[i]);
     }
   }
 };
@@ -1162,15 +1159,6 @@ struct HashTableBucketInitializer {
 template <typename Traits, typename Allocator, typename Value>
 struct HashTableBucketInitializer<Traits, Allocator, Value, true> {
   STATIC_ONLY(HashTableBucketInitializer);
-  static void Initialize(Value& bucket) {
-    // The memset to 0 looks like a slow operation but is optimized by the
-    // compilers.
-    //
-    // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-    memset(&bucket, 0, sizeof(bucket));
-    CheckEmptyValues(&bucket, 1);
-  }
-
   static void Reinitialize(Value& bucket) {
     // The memset to 0 looks like a slow operation but is optimized by the
     // compilers.
@@ -1206,17 +1194,6 @@ struct HashTableBucketInitializer<Traits, Allocator, Value, true> {
 #endif
   }
 };
-
-template <typename Key,
-          typename Value,
-          typename Extractor,
-          typename Traits,
-          typename KeyTraits,
-          typename Allocator>
-inline void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
-    InitializeBucket(ValueType& bucket) {
-  HashTableBucketInitializer<Traits, Allocator, Value>::Initialize(bucket);
-}
 
 template <typename Key,
           typename Value,
@@ -1303,8 +1280,8 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
     --deleted_count_;
   }
 
-  HashTranslator::Translate(*entry, std::forward<T>(key),
-                            std::forward<Extra>(extra));
+  HashTranslator::Store(*entry, std::forward<T>(key),
+                        std::forward<Extra>(extra));
   DCHECK(!IsEmptyOrDeletedBucket(*entry));
   // Translate constructs an element so we need to notify using the trait. Avoid
   // doing that in the translator so that they can be easily customized.
@@ -1362,8 +1339,8 @@ typename HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::
     --deleted_count_;
   }
 
-  HashTranslator::Translate(*entry, std::forward<T>(key),
-                            std::forward<Extra>(extra), lookup_result.hash);
+  HashTranslator::Store(*entry, std::forward<T>(key),
+                        std::forward<Extra>(extra), lookup_result.hash);
   DCHECK(!IsEmptyOrDeletedBucket(*entry));
   // Translate constructs an element so we need to notify using the trait. Avoid
   // doing that in the translator so that they can be easily customized.
@@ -1659,7 +1636,8 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::ExpandBuffer(
       new_entry = &temporary_table[i];
     if (IsEmptyOrDeletedBucket(table_[i])) {
       DCHECK_NE(&table_[i], entry);
-      InitializeBucket(temporary_table[i]);
+      // All entries are initially empty. See AllocateTable().
+      DCHECK(IsEmptyBucket(temporary_table[i]));
     } else {
       Mover<ValueType, Allocator, Traits,
             Traits::template NeedsToForbidGCOnMove<>::value>::

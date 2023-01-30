@@ -119,7 +119,7 @@ class HashSet {
   // following function members:
   //   static unsigned GetHash(const T&);
   //   static bool Equal(const ValueType&, const T&);
-  //   static Translate(ValueType&, T&&, unsigned hash_code);
+  //   static Store(ValueType&, T&&, unsigned hash_code);
   template <typename HashTranslator, typename T>
   AddResult AddWithTranslator(T&&);
 
@@ -184,8 +184,8 @@ struct HashSetTranslatorAdapter {
     return Translator::Equal(a, b);
   }
   template <typename T, typename U, typename V>
-  static void Translate(T& location, U&& key, const V&, unsigned hash_code) {
-    Translator::Translate(location, std::forward<U>(key), hash_code);
+  static void Store(T& location, U&& key, const V&, unsigned hash_code) {
+    Translator::Store(location, std::forward<U>(key), hash_code);
   }
 };
 

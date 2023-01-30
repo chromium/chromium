@@ -59,9 +59,9 @@ struct QNameComponentsTranslator {
            data.components_.local_name_ == name->local_name_.Impl() &&
            data.components_.namespace_ == name->namespace_.Impl();
   }
-  static void Translate(QualifiedName::QualifiedNameImpl*& location,
-                        const QualifiedNameData& data,
-                        unsigned) {
+  static void Store(QualifiedName::QualifiedNameImpl*& location,
+                    const QualifiedNameData& data,
+                    unsigned) {
     const QualifiedNameComponents& components = data.components_;
     auto name = QualifiedName::QualifiedNameImpl::Create(
         components.prefix_, components.local_name_, components.namespace_,

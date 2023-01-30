@@ -82,6 +82,7 @@ struct GenericHashTraitsBase {
   using TraitType = T;
 
   // Type for functions that do not take ownership, such as contains.
+  // If overridden, the type must be assignable to T.
   using PeekInType = const T&;
 
   // Types for iterators.
@@ -89,11 +90,6 @@ struct GenericHashTraitsBase {
   using IteratorConstGetType = const T*;
   using IteratorReferenceType = T&;
   using IteratorConstReferenceType = const T&;
-
-  template <typename IncomingValueType>
-  static void Store(IncomingValueType&& value, T& storage) {
-    storage = std::forward<IncomingValueType>(value);
-  }
 
   // Type for return value of functions that do not transfer ownership, such
   // as get.
@@ -156,10 +152,13 @@ struct GenericHashTraitsBase {
   // Checks if a given value is a deleted value. If this is defined, the hash
   // table will call this function (through IsHashTraitsDeletedValue()) to check
   // if a slot is deleted. Otherwise `v == DeletedValue()` will be used.
-  // This is for key typess only.
+  // This is for key types only.
   static bool IsDeletedValue(const T& v) = delete;
 
   // Constructs a deleted value in-place in the given memory space.
+  // When this is called, T's destructor on the slot has been called, so this
+  // function should not call destructor again (e.g. by assigning a value
+  // to `slot`), unless T is trivially destructible.
   // This must be defined if IsDeletedValue() is defined, and will be called
   // through ConstructHashTraitsDeletedValue(). Otherwise
   // `slot = DeletedValue()` will be used.
@@ -332,10 +331,6 @@ struct GenericHashTraits<scoped_refptr<P>>
   typedef scoped_refptr<P>& IteratorReferenceType;
   typedef const scoped_refptr<P>& IteratorConstReferenceType;
 
-  static void Store(scoped_refptr<P> value, scoped_refptr<P>& storage) {
-    storage = std::move(value);
-  }
-
   typedef P* PeekOutType;
   static PeekOutType Peek(const scoped_refptr<P>& value) { return value.get(); }
 
@@ -367,10 +362,6 @@ struct GenericHashTraits<std::unique_ptr<T>>
   static bool IsEmptyValue(const std::unique_ptr<T>& value) { return !value; }
 
   using PeekInType = T*;
-
-  static void Store(std::unique_ptr<T>&& value, std::unique_ptr<T>& storage) {
-    storage = std::move(value);
-  }
 
   using PeekOutType = T*;
   static PeekOutType Peek(const std::unique_ptr<T>& value) {
@@ -434,8 +425,7 @@ namespace internal {
 
 template <typename Traits, typename Enabled = void>
 struct HashTraitsEmptyValueChecker {
-  template <typename T>
-  static bool IsEmptyValue(const T& value) {
+  static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return value == Traits::EmptyValue();
   }
 };
@@ -446,20 +436,18 @@ struct HashTraitsEmptyValueChecker<
         std::is_same_v<decltype(Traits::IsEmptyValue(
                            std::declval<typename Traits::TraitType>())),
                        bool>>> {
-  template <typename T>
-  static bool IsEmptyValue(const T& value) {
+  static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return Traits::IsEmptyValue(value);
   }
 };
 
 template <typename Traits, typename Enabled = void>
 struct HashTraitsDeletedValueHelper {
-  template <typename T>
-  static bool IsDeletedValue(const T& value) {
+  static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return value == Traits::DeletedValue();
   }
-  template <typename T>
-  static void ConstructDeletedValue(T& slot) {
+  static void ConstructDeletedValue(typename Traits::TraitType& slot) {
+    static_assert(std::is_trivially_destructible_v<typename Traits::TraitType>);
     slot = Traits::DeletedValue();
   }
 };
@@ -470,14 +458,12 @@ struct HashTraitsDeletedValueHelper<
         std::is_same_v<decltype(Traits::IsDeletedValue(
                            std::declval<typename Traits::TraitType>())),
                        bool>>> {
-  template <typename T>
-  static bool IsDeletedValue(const T& value) {
+  static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return Traits::IsDeletedValue(value);
   }
   // Traits must also define ConstructDeletedValue() if it defines
   // IsDeletedValue().
-  template <typename T>
-  static void ConstructDeletedValue(T& slot) {
+  static void ConstructDeletedValue(typename Traits::TraitType& slot) {
     Traits::ConstructDeletedValue(slot);
   }
 };

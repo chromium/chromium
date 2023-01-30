@@ -324,9 +324,9 @@ struct HashMapTranslator {
     return KeyTraits::Equal(a, b);
   }
   template <typename T, typename U, typename V>
-  static void Translate(T& location, U&& key, V&& mapped) {
+  static void Store(T& location, U&& key, V&& mapped) {
     location.key = std::forward<U>(key);
-    ValueTraits::ValueTraits::Store(std::forward<V>(mapped), location.value);
+    location.value = std::forward<V>(mapped);
   }
 };
 
@@ -445,8 +445,7 @@ typename HashMap<T, U, V, W, X>::AddResult HashMap<T, U, V, W, X>::Set(
     //
     // It's safe to call std::forward again, because |mapped| isn't moved if
     // there's an existing entry.
-    MappedTraits::Store(std::forward<IncomingMappedType>(mapped),
-                        result.stored_value->value);
+    result.stored_value->value = std::forward<IncomingMappedType>(mapped);
   }
   return result;
 }

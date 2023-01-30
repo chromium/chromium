@@ -54,9 +54,9 @@ struct UCharBufferTranslator {
     return WTF::Equal(str, buf.characters(), buf.length());
   }
 
-  static void Translate(StringImpl*& location,
-                        const UCharBuffer& buf,
-                        unsigned hash) {
+  static void Store(StringImpl*& location,
+                    const UCharBuffer& buf,
+                    unsigned hash) {
     location = buf.CreateStringImpl().release();
     location->SetHash(hash);
     location->SetIsAtomic();
@@ -133,9 +133,9 @@ struct HashAndUTF8CharactersTranslator {
     return true;
   }
 
-  static void Translate(StringImpl*& location,
-                        const HashAndUTF8Characters& buffer,
-                        unsigned hash) {
+  static void Store(StringImpl*& location,
+                    const HashAndUTF8Characters& buffer,
+                    unsigned hash) {
     scoped_refptr<StringImpl> new_string;
     // If buffer contains only ASCII characters, the UTF-8 and UTF-16 lengths
     // are the same.
@@ -326,9 +326,9 @@ struct LCharBufferTranslator {
     return WTF::Equal(str, buf.characters(), buf.length());
   }
 
-  static void Translate(StringImpl*& location,
-                        const LCharBuffer& buf,
-                        unsigned hash) {
+  static void Store(StringImpl*& location,
+                    const LCharBuffer& buf,
+                    unsigned hash) {
     auto string = StringImpl::Create(buf.characters(), buf.length());
     location = string.release();
     location->SetHash(hash);
