@@ -393,9 +393,12 @@ function _makeSizeTextGetter() {
       };
 
     } else {
+      const isLeaf = node.children && node.children.length === 0;
       const bytes = node.size;
       const descriptionToks = [];
-      if ('beforeSize' in node) {
+      // Show "before → after" only for leaf nodes, since group nodes'
+      // |beforeSize| would miss contributions from unchanged symbols.
+      if (isLeaf && ('beforeSize' in node)) {
         const before = formatNumber(node.beforeSize);
         const after = formatNumber(node.beforeSize + bytes);
         descriptionToks.push(`(${before} → ${after})`);  // '→' is '\u2192'.
