@@ -8,7 +8,9 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/singleton.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/firewall_hole/nearby_connections_firewall_hole_factory.h"
@@ -22,6 +24,8 @@
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -60,12 +64,55 @@ class P2PTrustedSocketManagerClientImpl
   mojo::Remote<network::mojom::P2PTrustedSocketManager> socket_manager_;
 };
 
+// Allows observers to be notified when NearbyDependenciesProvider is shut down.
+class NearbyDependenciesProviderShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  static NearbyDependenciesProviderShutdownNotifierFactory* GetInstance() {
+    return base::Singleton<
+        NearbyDependenciesProviderShutdownNotifierFactory>::get();
+  }
+
+  NearbyDependenciesProviderShutdownNotifierFactory(
+      const NearbyDependenciesProviderShutdownNotifierFactory&) = delete;
+  NearbyDependenciesProviderShutdownNotifierFactory& operator=(
+      const NearbyDependenciesProviderShutdownNotifierFactory&) = delete;
+
+ private:
+  friend struct base::DefaultSingletonTraits<
+      NearbyDependenciesProviderShutdownNotifierFactory>;
+
+  NearbyDependenciesProviderShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory(
+            "NearbyDependenciesProvider") {
+    DependsOn(NearbyDependenciesProviderFactory::GetInstance());
+  }
+  ~NearbyDependenciesProviderShutdownNotifierFactory() override = default;
+};
+
 class MdnsResponderFactory : public sharing::mojom::MdnsResponderFactory {
  public:
-  explicit MdnsResponderFactory(Profile* profile) : profile_(profile) {}
+  explicit MdnsResponderFactory(Profile* profile) : profile_(profile) {
+    // Subscribe to be notified when NearbyDependenciesProvider shuts down.
+    // NearbyDependenciesProvider is a KeyedService bound to |profile_|, so the
+    // destruction of NearbyDependenciesProvider means that |profile_| is
+    // invalid. This lets us return early from CreateMdnsResponder() to avoid
+    // the risk of using |profile_| after it has been destroyed. Using
+    // base::Unretained() is safe here because the MdnsResponderFactory is
+    // guaranteed to outlive |shutdown_subscription_|.
+    shutdown_subscription_ =
+        NearbyDependenciesProviderShutdownNotifierFactory::GetInstance()
+            ->Get(profile_)
+            ->Subscribe(base::BindRepeating(&MdnsResponderFactory::Shutdown,
+                                            base::Unretained(this)));
+  }
 
   void CreateMdnsResponder(mojo::PendingReceiver<network::mojom::MdnsResponder>
                                responder_receiver) override {
+    if (is_shutdown_) {
+      return;
+    }
+
     auto* partition = profile_->GetDefaultStoragePartition();
     if (!partition) {
       LOG(ERROR) << "MdnsResponderFactory::" << __func__
@@ -86,7 +133,11 @@ class MdnsResponderFactory : public sharing::mojom::MdnsResponderFactory {
   }
 
  private:
+  void Shutdown() { is_shutdown_ = true; }
+
+  bool is_shutdown_ = false;
   Profile* profile_;
+  base::CallbackListSubscription shutdown_subscription_;
 };
 
 }  // namespace
@@ -105,15 +156,17 @@ NearbyDependenciesProvider::~NearbyDependenciesProvider() = default;
 
 sharing::mojom::NearbyDependenciesPtr
 NearbyDependenciesProvider::GetDependencies() {
-  if (shut_down_)
+  if (shut_down_) {
     return nullptr;
+  }
 
   auto dependencies = sharing::mojom::NearbyDependencies::New();
 
-  if (device::BluetoothAdapterFactory::IsBluetoothSupported())
+  if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
     dependencies->bluetooth_adapter = GetBluetoothAdapterPendingRemote();
-  else
+  } else {
     dependencies->bluetooth_adapter = mojo::NullRemote();
+  }
 
   dependencies->webrtc_dependencies = GetWebRtcDependencies();
   dependencies->wifilan_dependencies = GetWifiLanDependencies();
@@ -190,8 +243,9 @@ NearbyDependenciesProvider::GetWebRtcDependencies() {
 
 sharing::mojom::WifiLanDependenciesPtr
 NearbyDependenciesProvider::GetWifiLanDependencies() {
-  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan))
+  if (!base::FeatureList::IsEnabled(features::kNearbySharingWifiLan)) {
     return nullptr;
+  }
 
   MojoPipe<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config;
