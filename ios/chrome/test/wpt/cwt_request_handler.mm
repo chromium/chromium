@@ -466,12 +466,12 @@ base::Value CWTRequestHandler::GetTargetTabId() {
 }
 
 base::Value CWTRequestHandler::GetAllTabIds() {
-  base::Value id_list(base::Value::Type::LIST);
+  base::Value::List id_list;
   NSArray* tab_ids = [CWTWebDriverAppInterface tabIDs];
   for (NSString* tab_id in tab_ids) {
     id_list.Append(base::Value(base::SysNSStringToUTF8(tab_id)));
   }
-  return id_list;
+  return base::Value(std::move(id_list));
 }
 
 base::Value CWTRequestHandler::SwitchToTabWithId(const base::Value* tab_id) {
