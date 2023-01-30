@@ -35,6 +35,8 @@ const char kAppFullscreenAllowed[] = "apps.fullscreen.allowed";
 const char kBlockExternalExtensions[] = "extensions.block_external_extensions";
 const char kExtensions[] = "extensions.settings";
 const char kExtensionManagement[] = "extensions.management";
+const char kExtensionUnpublishedAvailability[] =
+    "extensions.unpublished_availability";
 const char kInstallAllowList[] = "extensions.install.allowlist";
 const char kInstallDenyList[] = "extensions.install.denylist";
 const char kInstallForceList[] = "extensions.install.forcelist";

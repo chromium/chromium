@@ -2521,6 +2521,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(
       std::make_unique<extensions::ExtensionSettingsPolicyHandler>(
           chrome_schema));
+#if !BUILDFLAG(IS_FUCHSIA)
+  handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
+      key::kExtensionUnpublishedAvailability,
+      extensions::pref_names::kExtensionUnpublishedAvailability,
+      /*min=*/0, /*max=*/2, /*clamp=*/false));
+#endif  // !BUILDFLAG(IS_FUCHSIA)
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kExtensionManifestV2Availability,
       extensions::pref_names::kManifestV2Availability, /*min=*/0, /*max=*/3,

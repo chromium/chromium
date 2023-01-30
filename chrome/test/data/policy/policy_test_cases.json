@@ -3935,6 +3935,55 @@
       }
     ]
   },
+  "ExtensionUnpublishedAvailability": {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "crhomeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionUnpublishedAvailability": 0
+        },
+        "prefs": {
+          "extensions.unpublished_availability": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionUnpublishedAvailability": 1
+        },
+        "prefs": {
+          "extensions.unpublished_availability": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionUnpublishedAvailability": 2
+        },
+        "prefs": {
+          "extensions.unpublished_availability": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.unpublished_availability": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  },
   "BlockExternalExtensions": {
     "os": [
       "win",

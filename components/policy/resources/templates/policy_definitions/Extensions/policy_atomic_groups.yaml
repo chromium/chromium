@@ -9,3 +9,4 @@ Extensions:
   - ExtensionAllowInsecureUpdates
   - ExtensionSettings
   - ExtensionManifestV2Availability
+  - ExtensionUnpublishedAvailability

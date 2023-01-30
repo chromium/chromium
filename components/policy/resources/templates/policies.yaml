@@ -1069,6 +1069,7 @@ policies:
   1068: WindowManagementAllowedForUrls
   1069: WindowManagementBlockedForUrls
   1070: OutOfProcessSystemDnsResolutionEnabled
+  1071: ExtensionUnpublishedAvailability
 atomic_groups:
   1: Homepage
   2: RemoteAccess

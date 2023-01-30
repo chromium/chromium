@@ -1,0 +1,43 @@
+owners:
+- anunoy@chromium.org
+- file://components/policy/OWNERS
+caption: Control availability of extensions unpublished on the Chrome Web Store.
+desc: |-
+  If this policy is enabled, extensions that are unpublished on the Chrome Web
+  Store will be disabled on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+  This policy will ignore developer-mode, command-line installed and other
+  extensions that are not installed from Chrome Web Store (eg. self-hosting).
+
+  If the policy is set to <ph name="ALLOW_UNPUBLISHED">AllowUnpublished</ph> (0) or not set, unpublished extensions are allowed.
+  If the policy is set to <ph name="DISABLE_UNPUBLISHED_EXCEPT_FORCED_OR_VERSION_PINNED">DisableUnpublishedExceptForcedOrVersionPinned</ph> (1), extensions that are unpublished on the Chrome Wesb Store will be disabled, but not if the extension is force-installed or version-pinned by enterprise policy (See Note).
+  If the policy is set to <ph name="DISABLE_UNPUBLISHED">DisableUnpublished</ph> (2), extensions that are unpublished on the Chrome Web Store will be disabled, even if the extension is force-installed or version-pinned by enterprise policy (See Note).
+
+  Note: Force-installation and version-pinning are configured using the <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME">ExtensionInstallForcelist</ph> and
+  <ph name="EXTENSION_SETTINGS_POLICY_NAME">ExtensionSettings</ph> policies.
+
+future_on:
+- chrome.*
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+   type: integer
+   enum:
+   - 0
+   - 1
+   - 2
+items:
+- caption: Allow unpublished extensions
+  name: AllowUnpublished
+  value: 0
+- caption: Disable unpublished extensions except force-installed or version-pinned
+  name: DisableUnpublishedExceptForcedOrVersionPinned
+  value: 1
+- caption: Disable unpublished extensions including force-installed or version-pinned
+  name: DisableUnpublished
+  value: 2
+default: 0
+example_value: 1
+tags: []
