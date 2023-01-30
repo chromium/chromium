@@ -17,7 +17,7 @@
 namespace ui {
 struct TouchscreenDevice;
 struct TouchDeviceTransform;
-}
+}  // namespace ui
 
 namespace display {
 
@@ -28,7 +28,7 @@ class TouchTransformSetter;
 namespace test {
 class TouchTransformControllerTest;
 class TouchTransformControllerTestApi;
-}
+}  // namespace test
 
 // TouchTransformController matches touchscreen displays with touch
 // input-devices and computes the coordinate transforms between display space

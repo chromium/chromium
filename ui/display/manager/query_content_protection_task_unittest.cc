@@ -18,8 +18,7 @@
 #include "ui/display/manager/test/test_display_layout_manager.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 namespace {
 
@@ -279,5 +278,4 @@ TEST_F(QueryContentProtectionTaskTest, QueryAnalogDisplayMirror) {
   EXPECT_EQ(CONTENT_PROTECTION_METHOD_NONE, response_->protection_mask);
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

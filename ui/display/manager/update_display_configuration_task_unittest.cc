@@ -17,8 +17,7 @@
 #include "ui/display/manager/test/test_native_display_delegate.h"
 #include "ui/display/types/display_constants.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 namespace {
 
@@ -574,5 +573,4 @@ TEST_F(UpdateDisplayConfigurationTaskTest,
       log_.GetActionsAndClear());
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

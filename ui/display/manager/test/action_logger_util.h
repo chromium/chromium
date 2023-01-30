@@ -63,6 +63,7 @@ std::string SetPrivacyScreenAction(int64_t display_id, bool enabled);
 std::string JoinActions(const char* action, ...);
 
 }  // namespace test
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_MANAGER_TEST_ACTION_LOGGER_UTIL_H_

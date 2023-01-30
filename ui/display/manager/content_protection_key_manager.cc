@@ -7,7 +7,10 @@
 #include "ui/display/display_features.h"
 #include "ui/display/manager/display_manager_util.h"
 
+namespace display {
+
 namespace {
+
 std::vector<display::DisplaySnapshot*> GetHdcpCapableDisplays(
     const std::vector<display::DisplaySnapshot*>& displays_states) {
   std::vector<display::DisplaySnapshot*> hdcp_capable_displays;
@@ -20,9 +23,8 @@ std::vector<display::DisplaySnapshot*> GetHdcpCapableDisplays(
   }
   return hdcp_capable_displays;
 }
-}  // namespace
 
-namespace display {
+}  // namespace
 
 ContentProtectionKeyManager::ContentProtectionKeyManager() = default;
 ContentProtectionKeyManager::~ContentProtectionKeyManager() = default;

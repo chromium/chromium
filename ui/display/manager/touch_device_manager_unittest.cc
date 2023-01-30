@@ -20,7 +20,9 @@
 #include "ui/events/devices/touchscreen_device.h"
 
 namespace display {
+
 namespace {
+
 ui::TouchscreenDevice CreateTouchscreenDevice(int id,
                                               ui::InputDeviceType type,
                                               const gfx::Size& size) {

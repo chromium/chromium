@@ -13,10 +13,10 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 namespace {
+
 constexpr std::size_t kNumOfZoomFactors = 9;
 using ZoomListBucket = std::pair<int, std::array<float, kNumOfZoomFactors>>;
 
@@ -25,6 +25,7 @@ bool WithinEpsilon(float a, float b) {
 }
 
 }  // namespace
+
 using DisplayManagerUtilTest = testing::Test;
 
 TEST_F(DisplayManagerUtilTest, DisplayZooms) {
@@ -80,5 +81,4 @@ TEST_F(DisplayManagerUtilTest, DisplayZoomsWithInternal) {
   }
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

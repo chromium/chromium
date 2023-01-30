@@ -22,6 +22,7 @@
 #include "ui/events/devices/touchscreen_device.h"
 
 namespace display {
+
 namespace {
 
 using ManagedDisplayInfoList = std::vector<ManagedDisplayInfo*>;

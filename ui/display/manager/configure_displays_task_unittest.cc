@@ -18,8 +18,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 namespace {
 
@@ -2583,5 +2582,4 @@ TEST_F(ConfigureDisplaysTaskTest, CloseLidThenOpenLid) {
             log_.GetActionsAndClear());
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

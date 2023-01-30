@@ -11,7 +11,7 @@
 
 namespace ui {
 struct TouchDeviceTransform;
-}
+}  // namespace ui
 
 namespace display {
 

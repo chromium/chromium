@@ -13,6 +13,7 @@ struct TouchscreenDevice;
 }  // namespace ui
 
 namespace display {
+
 class ManagedDisplayInfo;
 
 namespace test {
@@ -54,5 +55,7 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManagerTestApi {
 };
 
 }  // namespace test
+
 }  // namespace display
+
 #endif  // UI_DISPLAY_MANAGER_TEST_TOUCH_DEVICE_MANAGER_TEST_API_H_

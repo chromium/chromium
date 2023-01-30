@@ -42,6 +42,7 @@ class Rect;
 }  // namespace gfx
 
 namespace display {
+
 class DisplayChangeObserver;
 class DisplayLayoutStore;
 class DisplayObserver;
@@ -50,7 +51,7 @@ class Screen;
 
 namespace test {
 class DisplayManagerTestApi;
-}
+}  // namespace test
 
 // DisplayManager maintains the current display configurations,
 // and notifies observers when configuration changes.

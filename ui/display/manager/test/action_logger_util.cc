@@ -15,8 +15,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 std::string GetCrtcAction(
     const display::DisplayConfigurationParams& display_config_params) {
@@ -88,5 +87,4 @@ std::string JoinActions(const char* action, ...) {
   return actions;
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

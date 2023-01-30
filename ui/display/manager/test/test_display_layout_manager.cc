@@ -8,8 +8,7 @@
 
 #include "ui/display/types/display_snapshot.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 TestDisplayLayoutManager::TestDisplayLayoutManager(
     std::vector<std::unique_ptr<DisplaySnapshot>> displays,
@@ -60,5 +59,4 @@ bool TestDisplayLayoutManager::IsMirroring() const {
   return display_state_ == MULTIPLE_DISPLAY_STATE_MULTI_MIRROR;
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

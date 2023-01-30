@@ -147,6 +147,7 @@ class TestNativeDisplayDelegate : public NativeDisplayDelegate {
 };
 
 }  // namespace test
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_MANAGER_TEST_TEST_NATIVE_DISPLAY_DELEGATE_H_

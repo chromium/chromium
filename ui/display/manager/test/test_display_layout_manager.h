@@ -11,8 +11,7 @@
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_layout_manager.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 class TestDisplayLayoutManager : public DisplayLayoutManager {
  public:
@@ -53,7 +52,6 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   MultipleDisplayState display_state_;
 };
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test
 
 #endif  // UI_DISPLAY_MANAGER_TEST_TEST_DISPLAY_LAYOUT_MANAGER_H_

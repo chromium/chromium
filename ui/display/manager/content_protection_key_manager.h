@@ -72,6 +72,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
 
   int pending_displays_to_configure_ = 0;
 };
+
 }  // namespace display
 
 #endif  // UI_DISPLAY_MANAGER_CONTENT_PROTECTION_KEY_MANAGER_H_

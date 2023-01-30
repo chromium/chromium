@@ -14,8 +14,7 @@
 #include "ui/display/types/native_display_observer.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 std::string GetModesetFlag(uint32_t flag) {
   std::string flags_str;
@@ -244,5 +243,4 @@ FakeDisplayController* TestNativeDisplayDelegate::GetFakeDisplayController() {
   return nullptr;
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

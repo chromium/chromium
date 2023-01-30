@@ -15,9 +15,10 @@
 namespace gfx {
 class Rect;
 class Size;
-}
+}  // namespace gfx
 
 namespace display {
+
 class ManagedDisplayInfo;
 class ManagedDisplayMode;
 using DisplayInfoList = std::vector<ManagedDisplayInfo>;

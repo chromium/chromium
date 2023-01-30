@@ -16,7 +16,9 @@
 #include "ui/display/types/native_display_delegate.h"
 
 namespace display {
+
 namespace {
+
 bool InternalDisplayThrottled(
     const std::vector<DisplaySnapshot*>& cached_displays) {
   for (const DisplaySnapshot* display : cached_displays) {

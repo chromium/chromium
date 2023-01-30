@@ -21,8 +21,7 @@
 #include "ui/display/util/display_util.h"
 #include "ui/ozone/public/ozone_switches.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 namespace {
 
@@ -2143,5 +2142,4 @@ TEST_F(DisplayConfiguratorMultiMirroringTest,
   TestHardwareMirrorModeNotExist();
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

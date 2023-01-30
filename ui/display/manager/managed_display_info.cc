@@ -32,6 +32,7 @@
 #include "ui/gfx/geometry/size_f.h"
 
 namespace display {
+
 namespace {
 
 // Use larger than max int to catch overflow early.

@@ -35,6 +35,7 @@
 #include "ui/strings/grit/ui_strings.h"
 
 namespace display {
+
 namespace {
 
 // TODO(crbug/1262970): Delete when we can read radius from command line.

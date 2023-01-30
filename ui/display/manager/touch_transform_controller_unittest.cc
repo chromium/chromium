@@ -17,8 +17,8 @@
 #include "ui/display/screen_base.h"
 #include "ui/events/devices/device_data_manager.h"
 
-namespace display {
-namespace test {
+namespace display::test {
+
 namespace {
 
 constexpr int kDisplayId1 = 1;
@@ -900,5 +900,4 @@ TEST_F(TouchTransformControllerTest, PillarBoxingUserTouchCalibration) {
   EXPECT_NEAR(0.0f, y, 0.01f);
 }
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test

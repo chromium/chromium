@@ -23,7 +23,7 @@
 
 namespace gfx {
 class Size;
-}
+}  // namespace gfx
 
 namespace display {
 
@@ -38,7 +38,7 @@ struct GammaRampRGBEntry;
 
 namespace test {
 class DisplayManagerTestApi;
-}
+}  // namespace test
 
 // This class interacts directly with the system display configurator.
 class DISPLAY_MANAGER_EXPORT DisplayConfigurator

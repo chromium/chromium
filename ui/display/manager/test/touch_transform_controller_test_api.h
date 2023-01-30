@@ -7,8 +7,7 @@
 
 #include "ui/display/manager/touch_transform_controller.h"
 
-namespace display {
-namespace test {
+namespace display::test {
 
 class TouchTransformControllerTestApi {
  public:
@@ -30,7 +29,6 @@ class TouchTransformControllerTestApi {
   TouchTransformController* controller_ = nullptr;
 };
 
-}  // namespace test
-}  // namespace display
+}  // namespace display::test
 
 #endif  // UI_DISPLAY_MANAGER_TEST_TOUCH_TRANSFORM_CONTROLLER_TEST_API_H_

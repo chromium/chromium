@@ -9,6 +9,7 @@
 #include "ui/display/manager/display_manager_export.h"
 
 namespace display {
+
 class DisplayLayout;
 
 DISPLAY_MANAGER_EXPORT bool JsonToDisplayLayout(const base::Value::Dict& dict,
