@@ -4348,12 +4348,12 @@
   {
     "name": "intent-chip-app-icon",
     "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "intent-chip-skips-intent-picker",
     "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "intents-on-email",
@@ -4650,17 +4650,17 @@
   {
     "name": "link-capturing-auto-display-intent-picker",
     "owners": [ "tsergeant", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "link-capturing-infobar",
     "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "link-capturing-ui-update",
     "owners": ["tsergeant", "chromeos-apps-foundation-team@google.com"],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "list-all-display-modes",
