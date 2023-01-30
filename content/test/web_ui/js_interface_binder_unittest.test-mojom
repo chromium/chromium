@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module mojo.test.js_interface_binder.mojom;
+module content.mojom;
 
-import "mojo/public/cpp/bindings/tests/js_interface_binder_secondary_unittest.test-mojom";
+import "content/test/web_ui/js_interface_binder_secondary_unittest.test-mojom";
 
 [JsInterfaceBinder]
 interface FooJsInterfaceBinder {
@@ -18,7 +18,7 @@ interface FooJsInterfaceBinder {
 [JsInterfaceBinder]
 interface Interface1InterfaceBinder {
   BindSecondaryInterface(
-    pending_receiver<mojo.test.js_interface_binder.secondary.mojom.SecondaryInterface> receiver);
+    pending_receiver<content.secondary.mojom.SecondaryInterface> receiver);
 };
 
 interface FooPageHandler {};

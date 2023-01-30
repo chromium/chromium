@@ -1,0 +1,21 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("test_js_interface_binder") {
+  testonly = true
+  sources = [ "js_interface_binder_unittest.test-mojom" ]
+  public_deps = [
+    ":test_js_interface_binder_secondary",
+    "//mojo/public/mojom/base",
+  ]
+  js_interface_binder = true
+}
+
+mojom("test_js_interface_binder_secondary") {
+  testonly = true
+  sources = [ "js_interface_binder_secondary_unittest.test-mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

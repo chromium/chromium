@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "content/test/web_ui/js_interface_binder_unittest.test-mojom-js-interface-binder-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
-#include "mojo/public/cpp/bindings/tests/js_interface_binder_unittest.test-mojom-js-interface-binder-impl.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
-namespace mojo::test::js_interface_binder {
+namespace content {
 
 namespace {
 
@@ -76,15 +77,18 @@ class BarObserver : public mojom::BarObserver {
 
 }  // namespace
 
-class JsInterfaceBinderTest : public BindingsTestBase {
+class JsInterfaceBinderTest : public testing::Test {
  public:
   JsInterfaceBinderTest() = default;
   ~JsInterfaceBinderTest() override = default;
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests binder methods are overridden and can be called. Calling them does
 // nothing for now.
-TEST_P(JsInterfaceBinderTest, Bind) {
+TEST_F(JsInterfaceBinderTest, Bind) {
   std::unique_ptr<FooPageHandler> page_handler;
   auto page_handler_binder = base::BindLambdaForTesting(
       [&page_handler](mojo::PendingReceiver<mojom::FooPageHandler> receiver,
@@ -121,13 +125,11 @@ TEST_P(JsInterfaceBinderTest, Bind) {
 
 // Tests we correctly generate a JsInterfaceBinderImpl for a interface that
 // binds interfaces in a separate mojom.
-TEST_P(JsInterfaceBinderTest, CrossModule) {
+TEST_F(JsInterfaceBinderTest, CrossModule) {
   mojom::Interface1InterfaceBinderImpl binder(base::BindRepeating(
       [](mojo::PendingReceiver<secondary::mojom::SecondaryInterface> receiver) {
       }));
   binder.BindSecondaryInterface(mojo::NullReceiver());
 }
 
-INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(JsInterfaceBinderTest);
-
-}  // namespace mojo::test::js_interface_binder
+}  // namespace content
