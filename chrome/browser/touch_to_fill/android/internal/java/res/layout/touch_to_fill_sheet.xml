@@ -56,13 +56,14 @@ found in the LICENSE file.
 
       <TextView
           android:id="@+id/touch_to_fill_sheet_manage_passwords"
-          android:layout_width="wrap_content"
+          android:layout_width="match_parent"
           android:layout_height="@dimen/ttf_buttons_height"
           android:paddingHorizontal="@dimen/ttf_sheet_padding"
           android:minHeight="48dp"
           android:gravity="center_vertical|start"
           android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-          android:background="?android:attr/selectableItemBackground"/>
-
+          android:background="?android:attr/selectableItemBackground"
+          android:textDirection="locale"
+          android:textAlignment="viewStart"/>
     </LinearLayout>
 </RelativeLayout>
