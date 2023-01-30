@@ -184,6 +184,7 @@
 <translation id="1161575384898972166">クライアント証明書をエクスポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
 <translation id="116173250649946226">デフォルトのテーマは管理者が設定しており、変更できません。</translation>
 <translation id="1162213688509394031">タイトルバーを非表示</translation>
+<translation id="1162479191445552288">起動時に開く</translation>
 <translation id="1163931534039071049">フレームのソースを表示(&amp;V)</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1165039591588034296">エラー</translation>
@@ -560,6 +561,7 @@
     ネットワーク管理者に問い合わせてプロキシ サーバーが正常に動作
     しているかどうかを確認してください。プロキシ サーバーを使用していない
     場合は、<ph name="LINK_START" />プロキシ設定<ph name="LINK_END" />を調整してください。</translation>
+<translation id="1510882959204224895">ウィンドウで開く</translation>
 <translation id="1511997356770098059">このセキュリティ キーにはログインデータを保存できません</translation>
 <translation id="1512210426710821809">この設定を元に戻すには、<ph name="IDS_SHORT_PRODUCT_OS_NAME" /> の再インストールが必要になります</translation>
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> は暗号化されています。所有者に復号するよう依頼してください。</translation>
@@ -1262,6 +1264,7 @@
 <translation id="2114820389966440614">「最近のハイライト」や他の思い出をここで見ることができます</translation>
 <translation id="2114896190328250491">撮影者: <ph name="NAME" /></translation>
 <translation id="2114995631896158695">SIM カードが挿入されていません</translation>
+<translation id="2116020356255810305">起動時にアプリを開く</translation>
 <translation id="2116619964159595185">Bluetooth Low Energy ビーコン、ヘルス トラッカー、フィットネス トラッカー、スマート電球の設定や同期などの機能に対応するために、多くのサイトは Bluetooth デバイスに接続します</translation>
 <translation id="2117655453726830283">次のスライド</translation>
 <translation id="2119349053129246860"><ph name="APP" /> で開く</translation>
@@ -5007,6 +5010,7 @@
 <translation id="5555639311269196631">アクセス ポイントをオフにする</translation>
 <translation id="5556459405103347317">再読み込み</translation>
 <translation id="5558129378926964177">拡大(&amp;I)</translation>
+<translation id="5558247502209241936">ウィンドウでアプリを開く</translation>
 <translation id="55601339223879446">ディスプレイ内のデスクトップの境界線を調整します</translation>
 <translation id="5561162485081632007">危険なイベントの発生を検出して警告します</translation>
 <translation id="5562781907504170924">このタブは Bluetooth デバイスに接続しています。</translation>
@@ -5302,6 +5306,7 @@
 <translation id="5836999627049108525">翻訳元の言語</translation>
 <translation id="583756221537636748">ケース</translation>
 <translation id="5839524803417937122"><ph name="SEARCH_ENGINE" /> で画像内を検索</translation>
+<translation id="5840318881868981258">保存先の Google アカウント: <ph name="ACCOUNT" /></translation>
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
@@ -5903,6 +5908,7 @@
 <translation id="6400360390396538896"><ph name="ORIGIN" /> では常に許可</translation>
 <translation id="6401458660421980302">このタブを別のデバイスに送信するには、送信先のデバイスで Chrome にログインしてください</translation>
 <translation id="6401597285454423070">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
+<translation id="6402624310818737708">保存先の Google アカウント: <ph name="ACCOUNT" /></translation>
 <translation id="6404187344102273690">Chromebook のゲームプレイ</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
 <translation id="6406303162637086258">ブラウザ再起動のシミュレート</translation>

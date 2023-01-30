@@ -1239,7 +1239,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4088981014127559358">Y-forskyvning av bilde på side 1</translation>
 <translation id="4089152113577680600">Skuff 14</translation>
 <translation id="4096237801206588987">11 x 15 tommer</translation>
-<translation id="4097288585054919042">Slå av varsler</translation>
 <translation id="4098354747657067197">Villedende nettsted i sikte</translation>
 <translation id="4099048595830172239">Administratorreglene anbefaler ikke at du deler skjermen med <ph name="APPLICATION_TITLE" /> når konfidensielt innhold er synlig:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å tilpasse skriftstørrelser og -typer i Chrome</translation>
@@ -1793,7 +1792,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5396631636586785122">Kantstifting høyre</translation>
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
-<translation id="540630185148148480">Slå på varsler</translation>
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
 <translation id="5412040515238827314">Ugyldig format: Forventet en liste over mønstre.</translation>
 <translation id="5412236728747081950">Dette nettstedet mottar interessene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>

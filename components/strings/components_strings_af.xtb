@@ -1106,6 +1106,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3713662424819367124">Parfuums en reukwaters</translation>
 <translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Mobiele data of Wi-Fi aanskakel</translation>
+<translation id="3715545959749027023">Wanneer sekuriteitsgevalle deur Chrome gevlag word, word relevante data oor die gevalle aan jou administrateur gestuur. Dit kan insluit: URL’e van bladsye wat jy in Chrome besoek, lêername of metadata, blaaier- of oortjie-omvalle, en die gebruikernaam wat jy gebruik om by webgegronde apps, jou toestel en Chrome aan te meld.</translation>
 <translation id="3715597595485130451">Koppel aan Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Die instaanbediener, brandmuur en DNS-opstelling nagaan<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Programme wat hierdie fout kan veroorsaak, sluit in teenvirus-, brandmuur- en webfiltrering- of instaanbedienersagteware.</translation>
@@ -1239,7 +1240,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4088981014127559358">Skuif prent langs Y-as op kant 1</translation>
 <translation id="4089152113577680600">Laai 14</translation>
 <translation id="4096237801206588987">11x15 dm.</translation>
-<translation id="4097288585054919042">Skakel opletberigte af</translation>
 <translation id="4098354747657067197">Misleidende werf voor</translation>
 <translation id="4099048595830172239">Administrateursbeleid beveel aan dat jy nie jou skerm met <ph name="APPLICATION_TITLE" /> deel wanneer vertroulike inhoud sigbaar is nie:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om lettertipegroottes en lettersoorte in Chrome te pasmaak</translation>
@@ -1793,7 +1793,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5396631636586785122">Randhegting regs</translation>
 <translation id="5398772614898833570">Advertensies is geblokkeer</translation>
 <translation id="5400836586163650660">Grys</translation>
-<translation id="540630185148148480">Skakel opletberigte aan</translation>
 <translation id="540969355065856584">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is nie op die oomblik geldig nie. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="5412040515238827314">Ongeldige formaat: ’n lys patrone word verwag.</translation>
 <translation id="5412236728747081950">Hierdie werf kry jou belangstellings van Chrome af om vir jou relevanter advertensies te wys</translation>

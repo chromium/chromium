@@ -3171,6 +3171,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3823310065043511710">Er wordt ten minste <ph name="INSTALL_SIZE" /> vrije opslagruimte aanbevolen voor Linux.</translation>
 <translation id="3824621460022590830">Token voor apparaatinschrijving is ongeldig. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mijn keuze onthouden voor dit bestandstype: <ph name="FILE_TYPES" />}other{Mijn keuze onthouden voor deze bestandstypen: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Stip op app-icoon tonen voor app-meldingen</translation>
 <translation id="3826071569074535339">Toestemming om bewegingssensoren te gebruiken</translation>
 <translation id="3826440694796503677">Je beheerder heeft het toevoegen van meer Google-accounts uitgezet</translation>
 <translation id="3827774300009121996">&amp;Volledig scherm</translation>
@@ -4488,6 +4489,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Beveiligde DNS beheren in de instellingen van Chrome OS</translation>
+<translation id="5066160542186949327">Naar een andere map verplaatsen</translation>
 <translation id="5067399438976153555">Altijd aan</translation>
 <translation id="5067867186035333991">Vragen of <ph name="HOST" /> toegang wil tot je microfoon</translation>
 <translation id="5068553687099139861">wachtwoorden tonen</translation>

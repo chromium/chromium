@@ -303,7 +303,6 @@
 <translation id="2656405586795711023">ვებ-აპები</translation>
 <translation id="2669454659051515572">ჩამოტვირთული ფაილების ნახვას შეძლებს ამ მოწყობილობის ნებისმიერი მომხმარებელი</translation>
 <translation id="2702516483241149200">სიახლე: გააზიარეთ ბმული, რომელიც ამ ტექსტზე გადავა</translation>
-<translation id="2704606927547763573">დაკოპირდა</translation>
 <translation id="2707726405694321444">გვერდის განახლება</translation>
 <translation id="2709516037105925701">ავტომატური შევსება</translation>
 <translation id="271033894570825754">ახალი</translation>
@@ -392,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_LINK3" />კონფიდენციალურობის დებულება<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">გაცვლის ბუფერის შიგთავსის ჩვენება</translation>
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
+<translation id="3104179992611025423">თქვენს ბრაუზერს მართავენ თქვენი მშობლები</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">მიბმულია შემდეგთან:</translation>
 <translation id="3123734510202723619">განცხადებები</translation>
@@ -401,6 +401,7 @@
 <translation id="3157931365184549694">აღდგენა</translation>
 <translation id="3166827708714933426">ჩანართებისა და ფანჯრების მალსახმობები</translation>
 <translation id="316694332262407393">Chrome აქ უკვე გაშვებულია.</translation>
+<translation id="3167258285411721858">შეგიძლიათ მოითხოვოთ მობილური საიტი <ph name="HOST_NAME" />-ისთვის</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">რეკლამის ეფექტურობის გაზომვა</translation>
 <translation id="3207960819495026254">ჩანიშნულია</translation>
@@ -1467,6 +1468,7 @@
 <translation id="8849001918648564819">დამალული</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ჩანართი</translation>
 <translation id="8854223127042600341">ხაზგარეშე ფაილების ნახვა</translation>
+<translation id="885480114717186641">შეგიძლიათ მოითხოვოთ დესკტოპის საიტი <ph name="HOST_NAME" />-ისთვის</translation>
 <translation id="8856607253650333758">აღწერილობების მიღება</translation>
 <translation id="8856931513242997049">შეტყობინების ნებართვის ნაკადი დახურულია</translation>
 <translation id="8873817150012960745">დასაწყებად შეეხეთ აქ</translation>

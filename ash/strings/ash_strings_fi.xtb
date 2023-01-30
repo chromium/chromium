@@ -733,6 +733,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="492453977506755176">Tallennustilan painike</translation>
 <translation id="4925542575807923399">Tämän tilin järjestelmänvalvoja edellyttää, että tämä tili on ensimmäinen sisään kirjautuva tili useiden tilien istunnossa.</translation>
 <translation id="4929163402621253029">Yritätkö puhua? Mykistys on päällä. Lue lisää</translation>
+<translation id="4936329710968938986">Kaikki, pois päältä</translation>
 <translation id="4938176435186993759">Piilota kaikki ehdotukset</translation>
 <translation id="4945196315133970626">Laita ilmoitukset pois päältä</translation>
 <translation id="4946376291507881335">Kuvakaappaus</translation>
@@ -1387,6 +1388,7 @@ Uusi asennus</translation>
 <translation id="8477270416194247200">Peru painamalla Alt+haku tai vaihto.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ei tue resoluutiota <ph name="SPECIFIED_RESOLUTION" />. Resoluutioksi vaihdettiin <ph name="FALLBACK_RESOLUTION" />. Pidä muutokset valitsemalla Vahvista. Aiempi asetus palautetaan <ph name="TIMEOUT_SECONDS" /> päästä.</translation>
 <translation id="8496402167048257517">Näytä lähijakamisen asetukset</translation>
+<translation id="8507563469658346379">Kaikki, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Chromebookisi Bluetooth on poissa päältä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
 <translation id="8513108775083588393">Autom. kääntö</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>

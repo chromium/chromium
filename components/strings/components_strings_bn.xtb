@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">নিরাপদ পেমেন্ট ক্রেডেনশিয়াল যাচাই করার শিট</translation>
 <translation id="1386623374109090026">টিকা</translation>
 <translation id="1391289752476847787">স্টক ও বন্ড</translation>
+<translation id="1391625539203220400">এই ডিভাইসে IBAN সেভ করবেন?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> কোনো তথ্য পাঠায়নি।</translation>
 <translation id="1396259464226642517">এই ফলাফলটি কি প্রত্যাশিত ছিল? <ph name="BEGIN_LINK" />মতামত পাঠান<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">হালকা সবুজ</translation>
@@ -1239,7 +1240,6 @@
 <translation id="4088981014127559358">সাইড 1 ছবি Y শিফ্ট</translation>
 <translation id="4089152113577680600">ট্রে ১৪</translation>
 <translation id="4096237801206588987">১১ x ১৫ ইঞ্চি</translation>
-<translation id="4097288585054919042">সতর্কতা বন্ধ করুন</translation>
 <translation id="4098354747657067197">সামনে ধোঁকাবাজ সাইট</translation>
 <translation id="4099048595830172239">গোপনীয় কন্টেন্ট দেখা গেলে, অ্যাডমিনিস্ট্রেটরের নীতি <ph name="APPLICATION_TITLE" />-এর সাথে আপনার স্ক্রিন শেয়ার করার জন্য সাজেস্ট করবে না:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
@@ -1793,7 +1793,6 @@
 <translation id="5396631636586785122">ডানদিকে ধারের দিকে সেলাই</translation>
 <translation id="5398772614898833570">বিজ্ঞাপন ব্লক করা হয়েছে</translation>
 <translation id="5400836586163650660">ধূসর</translation>
-<translation id="540630185148148480">সতর্কতা চালু করুন</translation>
 <translation id="540969355065856584">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট এই সময়ে বৈধ নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="5412040515238827314">ভুল ফর্ম্যাট: প্রত্যাশিত প্যাটার্নের তালিকা।</translation>
 <translation id="5412236728747081950">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>

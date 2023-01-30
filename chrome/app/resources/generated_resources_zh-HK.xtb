@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">正在顯示您的 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />密碼</translation>
+<translation id="1022669824195822609">您的裝置由 <ph name="DOMAIN" /> 管理。管理員可以存取此裝置上任何設定檔中的資料。</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1028604629594230522">Chrome 會預先載入您可能瀏覽的頁面，以便在您瀏覽時更快載入。</translation>
@@ -1881,6 +1882,7 @@
 <translation id="2643064289437760082">只要刪除瀏覽資料，即可隨時刪除廣告評估資料</translation>
 <translation id="2643698698624765890">如要管理擴充功能，只需按一下 [視窗] 選單中的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">您的裝置由 <ph name="PROFILE_NAME" /> 管理</translation>
+<translation id="2645388244376970260">正在將此分頁投放至<ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
@@ -2753,6 +2755,7 @@
 <translation id="3446274660183028131">請啟動 Parallels Desktop 以安裝 Windows。</translation>
 <translation id="344630545793878684">讀取您在部分網站上的資料</translation>
 <translation id="3447644283769633681">封鎖所有第三方 Cookie</translation>
+<translation id="3447797901512053632">正在將 <ph name="TAB_NAME" /> 分頁投放至<ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">更新帳戶</translation>
 <translation id="3449393517661170867">新分頁視窗</translation>
 <translation id="3449839693241009168">按下「<ph name="SEARCH_KEY" />」即可將指令傳送給 <ph name="EXTENSION_NAME" /></translation>
@@ -2907,6 +2910,7 @@
 <translation id="3590295622232282437">正在進入受管理的工作階段</translation>
 <translation id="3591057288287063271">保留 <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">瞭解詳情(&amp;L)</translation>
+<translation id="3592344177526089979">正在將其他分頁投放至<ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">啟用近似拼音輸入模式</translation>
 <translation id="3593965109698325041">憑證名稱限制</translation>
 <translation id="3596012367874587041">應用程式設定</translation>
@@ -3182,7 +3186,7 @@
 <translation id="3823310065043511710">Linux 需要至少 <ph name="INSTALL_SIZE" /> 的空間。</translation>
 <translation id="3824621460022590830">裝置註冊憑證無效。請聯絡您的裝置擁有者或管理員。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{記住我對以下檔案類型的選擇：<ph name="FILE_TYPES" />}other{記住我對下列檔案類型的選擇：<ph name="FILE_TYPES" />}}</translation>
-<translation id="3825635794653163640">在應用程式圖示上顯示代表快訊的圓點</translation>
+<translation id="3825635794653163640">在應用程式圖示上顯示代表警示的圓點</translation>
 <translation id="3826071569074535339">已允許使用動作感應器</translation>
 <translation id="3826440694796503677">您的管理員已停用新增更多 Google 帳戶的功能</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>

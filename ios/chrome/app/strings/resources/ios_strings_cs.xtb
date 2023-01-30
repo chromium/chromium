@@ -18,6 +18,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1066060668811609597">Správa synchronizace</translation>
 <translation id="1076421457278169141">Kód byl naskenován</translation>
 <translation id="1076785341346483463">Synchronizace se spravovaným účtem</translation>
+<translation id="1080365971383768617">Hesla ve všech vašich zařízeních</translation>
 <translation id="1084365883616172403">Příspěvek na Facebook byl odeslán.</translation>
 <translation id="1085696779717592361">Používejte Chrome ve výchozím nastavení</translation>
 <translation id="1103523840287552314">Vždy překládat jazyk <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5056446788882570708">Byly zjištěny problémy (<ph name="TIME" />).</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalace Disku Google</translation>
+<translation id="50641035439563602">Hesla se teď ukládají do vašeho účtu Google (<ph name="ACCOUNT" />). Můžete je používat, když jste přihlášeni. Tuto funkci můžete vypnout v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Velikost souboru nelze zjistit.</translation>
 <translation id="5090832849094901128">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet byl odeslán.</translation>
@@ -595,6 +597,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5520466080178053306">Klepněte na Správce hesel a poté na Přidat.</translation>
 <translation id="5525095647255982834">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do Chromu.</translation>
 <translation id="5525269841082836315">Vytvořit heslovou frázi</translation>
+<translation id="5530084793407600786">Vyhledat na obrázku pomocí Googlu</translation>
 <translation id="5542540507657872337">Nalezeno: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff umožňuje začít web procházet v tomto zařízení a poté snadno pokračovat na počítači Mac. Akutální otevřený web se zobrazí v doku vašeho počítače Mac.
 

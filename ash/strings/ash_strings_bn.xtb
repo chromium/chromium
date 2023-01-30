@@ -733,6 +733,7 @@
 <translation id="492453977506755176">'ক্যাপচার মোড' কী</translation>
 <translation id="4925542575807923399">এই অ্যাকাউন্টের অ্যাডমিনিস্ট্রেটর অ্যাকাউন্টটিকে একাধিক সাইন-ইন সেশনের প্রথম সাইন-ইন করে থাকা অ্যাকাউন্ট হিসেবে রাখতে চায়৷</translation>
 <translation id="4929163402621253029">আপনি কি কথা বলছেন? আপনি মিউট করে রেখেছেন। আরও জানুন</translation>
+<translation id="4936329710968938986">প্রত্যেকে, বন্ধ আছে</translation>
 <translation id="4938176435186993759">সব সাজেশন লুকান</translation>
 <translation id="4945196315133970626">বিজ্ঞপ্তি বন্ধ করুন</translation>
 <translation id="4946376291507881335">ক্যাপচার করুন</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">Alt+Search টিপুন বা বাতিল করতে Shift টিপুন</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> রেজোলিউশনে চলতে পারে না। এই রেজোলিউশন পরিবর্তন করে <ph name="FALLBACK_RESOLUTION" /> করা হয়েছে। পরিবর্তিত সেটিংস বজায় রাখতে, 'কনফার্ম করুন' বোতামে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="8496402167048257517">'নিয়ারবাই শেয়ার' সেটিংস দেখুন</translation>
+<translation id="8507563469658346379">প্রত্যেকে, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">আপনার Chromebook-এর ব্লুটুথ বন্ধ আছে। Chromebook আনলক করতে, পাসওয়ার্ড লিখুন।</translation>
 <translation id="8513108775083588393">অটো রোটেট</translation>
 <translation id="851458219935658693">বর্তমান ডেস্ক থেকে উইন্ডো দেখুন, রেডিও বোতাম বেছে নেওয়া হয়েছে</translation>

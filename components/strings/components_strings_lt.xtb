@@ -1107,6 +1107,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3713662424819367124">Kvepalai ir aromatai</translation>
 <translation id="3714633008798122362">žiniatinklio kalendorius</translation>
 <translation id="3714780639079136834">Įjungti mobiliojo ryšio duomenis arba „Wi-Fi“</translation>
+<translation id="3715545959749027023">Kai saugos įvykius pažymi „Chrome“, atitinkami įvykių duomenys išsiunčiami administratoriui. Tai gali būti naršyklėje „Chrome“ lankomų puslapių URL, failų pavadinimai ar metaduomenys, naršyklės ar skirtukų strigtys ir naudotojo vardas, kurį naudodami prisijungiate prie žiniatinklio programų, įrenginio ir „Chrome“.</translation>
 <translation id="3715597595485130451">Prisijungimas prie „Wi-Fi“</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Patikrinti tarpinio serverio, užkardos ir DNS konfigūraciją<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Ši klaida galėjo įvykti dėl antivirusinės, užkardos ar žiniatinklio filtravimo programos arba tarpinio serverio programinės įrangos.</translation>
@@ -1240,7 +1241,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4088981014127559358">1 pusė: sukti vaizdą pagal Y ašį</translation>
 <translation id="4089152113577680600">Keturioliktas dėklas</translation>
 <translation id="4096237801206588987">11 x 15 col.</translation>
-<translation id="4097288585054919042">Išjungti įspėjimus</translation>
 <translation id="4098354747657067197">Ketinate apsilankyti apgaulingoje svetainėje</translation>
 <translation id="4099048595830172239">Pagal administratoriaus politiką nerekomenduojama bendrinti ekrano su <ph name="APPLICATION_TITLE" />, kai matomas konfidencialus turinys.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad galėtumėte tinkinti šriftų dydį ir šriftų šeimas naršyklėje „Chrome“.</translation>
@@ -1794,7 +1794,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5396631636586785122">Kraštų sukabinimas dešinėje</translation>
 <translation id="5398772614898833570">Skelbimai užblokuoti</translation>
 <translation id="5400836586163650660">Pilka spalva</translation>
-<translation id="540630185148148480">Įjungti įspėjimus</translation>
 <translation id="540969355065856584">Šiam serveriui nepavyko patvirtinti, kad jis yra <ph name="DOMAIN" />; šiuo metu jo saugos sertifikatas negalioja. Tai gali būti dėl netinkamos konfigūracijos arba dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="5412040515238827314">Netinkamas formatas: numatytas šablonų sąrašas.</translation>
 <translation id="5412236728747081950">Ši svetainė gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>

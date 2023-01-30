@@ -3182,6 +3182,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3823310065043511710">Sekurang-kurangnya <ph name="INSTALL_SIZE" /> ruang disyorkan untuk Linux.</translation>
 <translation id="3824621460022590830">Token pendaftaran peranti tidak sah. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}other{Ingat pilihan saya untuk jenis fail ini: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Tunjukkan titik pada ikon apl untuk makluman apl</translation>
 <translation id="3826071569074535339">Dibenarkan untuk menggunakan penderia gerakan</translation>
 <translation id="3826440694796503677">Pentadbir anda telah melumpuhkan penambahan lebih banyak Akaun Google</translation>
 <translation id="3827774300009121996">&amp;Skrin Penuh</translation>
@@ -4502,6 +4503,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Urus DNS selamat dalam tetapan Chrome OS</translation>
+<translation id="5066160542186949327">Alihkan ke folder lain</translation>
 <translation id="5067399438976153555">Sentiasa dihidupkan</translation>
 <translation id="5067867186035333991">Tanya jika <ph name="HOST" /> mahu mengakses mikrofon anda</translation>
 <translation id="5068553687099139861">tunjukkan kata laluan</translation>

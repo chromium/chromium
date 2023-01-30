@@ -182,6 +182,7 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="1995884366040846621">Untuk melanjutkan, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> akan membagikan nama, alamat email, dan foto profil Anda ke situs ini. Lihat <ph name="BEGIN_LINK1" />kebijakan privasi<ph name="END_LINK1" /> situs ini.</translation>
 <translation id="2000419248597011803">Mengirimkan beberapa cookie dan penelusuran dari kolom URL dan kotak penelusuran ke mesin telusur default</translation>
 <translation id="200114059308480249">Sertakan teks di sekitar dalam penelusuran Google?</translation>
+<translation id="2009341475524975924">Untuk mengukur performa iklan, jenis data tertentu dapat dibagikan antar-situs, seperti waktu iklan ditampilkan kepada Anda.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# File}other{# File}}</translation>
 <translation id="2021896219286479412">Kontrol situs layar penuh</translation>
 <translation id="2038563949887743358">Aktifkan Ubah situs desktop</translation>
@@ -301,7 +302,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="2656405586795711023">Aplikasi web</translation>
 <translation id="2669454659051515572">Siapa pun yang menggunakan perangkat ini dapat melihat file yang didownload</translation>
 <translation id="2702516483241149200">Baru: bagikan link yang mengarah ke teks ini</translation>
-<translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Segarkan halaman</translation>
 <translation id="2709516037105925701">Isi otomatis</translation>
 <translation id="271033894570825754">Baru</translation>
@@ -652,6 +652,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4616150815774728855">Buka <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4634124774493850572">Gunakan sandi</translation>
+<translation id="4637420359569396807">Dengan pengukuran iklan, jenis data tertentu dapat dibagikan antar-situs dan aplikasi untuk mengukur performa iklan situs dan aplikasi tersebut, seperti waktu iklan ditampilkan kepada Anda.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol}other{# sandi telah dibobol}}</translation>
 <translation id="4650364565596261010">Default sistem</translation>
 <translation id="465657074423018424">Safe Browsing melindungi Anda dari situs yang menipu. Jika dinonaktifkan, Anda harus lebih berhati-hati saat menjelajah, terutama sebelum memasukkan sandi.</translation>

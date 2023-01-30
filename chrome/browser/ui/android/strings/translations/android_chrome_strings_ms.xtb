@@ -236,6 +236,7 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
 <translation id="2323763861024343754">Storan tapak</translation>
 <translation id="2328985652426384049">Tidak dapat log masuk</translation>
+<translation id="2341410551640223969">Tidak dapat memasang <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Tidak dapat membuka kamera anda. Kesilapan telah berlaku.</translation>
 <translation id="2349710944427398404">Jumlah data yang digunakan oleh Chrome, termasuk akaun, penanda halaman dan tetapan yang disimpan</translation>
 <translation id="235789365079050412">Dasar Privasi Google</translation>
@@ -301,7 +302,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2656405586795711023">Apl web</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
-<translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Muat semula halaman</translation>
 <translation id="2709516037105925701">Autoisi</translation>
 <translation id="271033894570825754">Baharu</translation>
@@ -344,6 +344,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2909615210195135082">Platform Pemberitahuan Google</translation>
 <translation id="2912296070571964914">Urus topik yang anda minati</translation>
 <translation id="2912345083818861431">Gunakan kunci skrin untuk melihat tab Inkognito yang terbuka</translation>
+<translation id="2922568440285376746">Cari dalam imej dengan Google <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Nama tidak sah</translation>
 <translation id="2932150158123903946">Storan Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Papan kekunci anda tidak akan berubah</translation>
@@ -664,6 +665,7 @@ Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain s
 <translation id="4684427112815847243">Segerakkan semua</translation>
 <translation id="4685741273709472646">Pilih daripada senarai lungsur</translation>
 <translation id="4687718960473379118">Iklan yang dicadangkan laman</translation>
+<translation id="4689792375321623175">Cari imej dengan Google <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> lagi}}</translation>
 <translation id="4699172675775169585">Imej dan fail dicache</translation>
 <translation id="4719927025381752090">Tawaran untuk menterjemah</translation>
@@ -810,6 +812,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5438292632479953702">Muat turun sekali lagi</translation>
 <translation id="5441466871879044658">Terjemah kepada bahasa ini</translation>
 <translation id="5441522332038954058">Lompat ke bar alamat</translation>
+<translation id="5444999712122199445">Kembali ke laman</translation>
 <translation id="544776284582297024">Untuk membuka tab dan melawat halaman yang berlainan pada masa yang sama, ketik butang buka tab</translation>
 <translation id="5454166040603940656">dengan <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Muat turun halaman</translation>

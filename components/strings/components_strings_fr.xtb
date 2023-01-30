@@ -1238,7 +1238,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4088981014127559358">Décalage Y de l'image côté 1</translation>
 <translation id="4089152113577680600">Bac 14</translation>
 <translation id="4096237801206588987">11 x 15 pouces</translation>
-<translation id="4097288585054919042">Désactiver les alertes</translation>
 <translation id="4098354747657067197">Le site Web que vous allez ouvrir est trompeur</translation>
 <translation id="4099048595830172239">Une règle de l'administrateur déconseille de partager votre écran avec <ph name="APPLICATION_TITLE" /> lorsque du contenu confidentiel est visible :</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour personnaliser la taille des polices et des polices de caractères dans Chrome</translation>
@@ -1792,7 +1791,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5396631636586785122">Agrafage par le bord droit</translation>
 <translation id="5398772614898833570">Annonces bloquées</translation>
 <translation id="5400836586163650660">Gris</translation>
-<translation id="540630185148148480">Activer les alertes</translation>
 <translation id="540969355065856584">Impossible de vérifier que ce serveur est bien <ph name="DOMAIN" />, car son certificat de sécurité actuel n'est pas valide. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="5412040515238827314">Format non valide : liste de formats attendue.</translation>
 <translation id="5412236728747081950">Ce site obtient vos centres d'intérêt via Chrome pour afficher des annonces plus pertinentes</translation>

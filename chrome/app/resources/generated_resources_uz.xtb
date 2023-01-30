@@ -2908,6 +2908,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3602290021589620013">Razm solish</translation>
 <translation id="3602870520245633055">Chop etish va skanerlash</translation>
 <translation id="3603622770190368340">Tarmoq sertifikatini qabul qilish</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} ta hisob bir xil parolga ega}other{{COUNT} ta hisob bir xil parolga ega}}</translation>
 <translation id="3605780360466892872">Ishbilarmon</translation>
 <translation id="3609277884604412258">Tezkor qidiruv</translation>
 <translation id="3610241585790874201">Qurilmangizga maʼlumotlarni saqlashga ruxsat berilmagan</translation>

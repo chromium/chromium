@@ -303,7 +303,6 @@
 <translation id="2656405586795711023">เว็บแอป</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
-<translation id="2704606927547763573">คัดลอกแล้ว</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
 <translation id="2709516037105925701">ป้อนอัตโนมัติ</translation>
 <translation id="271033894570825754">ใหม่</translation>
@@ -392,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> จะเปิดใน Chrome การดำเนินการต่อหมายความว่า คุณยอมรับ<ph name="BEGIN_LINK1" />ข้อกำหนดในการให้บริการของ Google<ph name="END_LINK1" /> และ<ph name="BEGIN_LINK2" />ข้อกำหนดในการให้บริการเพิ่มเติมของ Google Chrome และ Chrome OS<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />นโยบายความเป็นส่วนตัว<ph name="END_LINK3" />จะมีผลด้วย</translation>
 <translation id="3091010850649238832">แสดงเนื้อหาในคลิปบอร์ด</translation>
 <translation id="3098745985164956033">ระบบจะส่งรูปภาพบางส่วนไปยัง Google เพื่อปรับปรุงคำอธิบายสำหรับคุณ</translation>
+<translation id="3104179992611025423">ผู้ปกครองของคุณเป็นผู้จัดการเบราว์เซอร์</translation>
 <translation id="3114507951000454849">อ่านข่าววันนี้ <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">ลิงก์กับ</translation>
 <translation id="3123734510202723619">ประกาศ</translation>
@@ -401,6 +401,7 @@
 <translation id="3157931365184549694">คืนค่า</translation>
 <translation id="3166827708714933426">แป้นพิมพ์ลัดสำหรับแท็บและหน้าต่าง</translation>
 <translation id="316694332262407393">Chrome ทำงานอยู่แล้วที่นี่</translation>
+<translation id="3167258285411721858">คุณขอเว็บไซต์ในอุปกรณ์เคลื่อนที่สำหรับ <ph name="HOST_NAME" /> ได้</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">การวัดผลโฆษณา</translation>
 <translation id="3207960819495026254">บุ๊กมาร์กแล้ว</translation>
@@ -1467,6 +1468,7 @@
 <translation id="8849001918648564819">ซ่อน</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" /> เป็นแท็บ</translation>
 <translation id="8854223127042600341">ดูไฟล์ออฟไลน์</translation>
+<translation id="885480114717186641">คุณขอเว็บไซต์เวอร์ชันเดสก์ท็อปสำหรับ <ph name="HOST_NAME" /> ได้</translation>
 <translation id="8856607253650333758">รับคำอธิบาย</translation>
 <translation id="8856931513242997049">ขั้นตอนการให้สิทธิ์การแจ้งเตือนปิดอยู่</translation>
 <translation id="8873817150012960745">แตะที่นี่เพื่อเริ่มต้นใช้งาน</translation>

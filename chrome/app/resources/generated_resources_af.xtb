@@ -2921,6 +2921,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3602870520245633055">Druk en skandeer</translation>
 <translation id="3603622770190368340">Kry netwerksertifikaat</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} rekening gebruik dieselfde wagwoord}other{{COUNT} rekeninge gebruik dieselfde wagwoord}}</translation>
 <translation id="3605780360466892872">Toegeknoop</translation>
 <translation id="3609277884604412258">Kitssoektog</translation>
 <translation id="3610241585790874201">Mag nie data op jou toestel stoor nie</translation>

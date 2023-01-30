@@ -110,6 +110,7 @@ Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph
 <translation id="1079801999187584280">Nutzung der Entwicklertools nicht zulassen</translation>
 <translation id="1082802595100075771">Zulassen, dass Nutzer einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="1087057100912843460">Updates zulassen</translation>
+<translation id="1087187152710800704">Die Berechtigung für die Fensterverwaltung wird standardmäßig auf allen Websites verweigert</translation>
 <translation id="1087437665304381368">Mit dieser Richtlinie wird nur der <ph name="PRODUCT_OS_NAME" />-Entwicklermodus gesteuert. Wenn du den Zugriff auf Android-Entwickleroptionen verhindern möchtest, musst du die Richtlinie "<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />" konfigurieren.</translation>
 <translation id="1087707496788636333">Die Adresse der Chrome Enterprise-Richtlinienliste wird geändert. Bitte ändere sie in deinen Lesezeichen zu <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Nutzername auf der SAML-IdP-Seite automatisch ausfüllen lassen</translation>
@@ -307,6 +308,13 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
 
       Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain sind, auf denen Windows 10 Pro läuft oder die über <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet werden.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
+<translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+Wenn die Richtlinie auf <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 3) gesetzt ist, wird dem Nutzer eine Benachrichtigung angezeigt, wenn standardmäßig die Berechtigung für die Fensterverwaltung angefragt wird. Wenn Nutzer die Berechtigung gewähren, können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.
+
+Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Dadurch werden alle asynchronen Methoden von <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> deaktiviert.</translation>
 <translation id="129392056654547767">Das von der VM verwendete UEFI-Firmware-Image. Dieses stellt eine vorübergehende Lösung dar, während wir ein ChromeOS-DLC-Paket erstellen.</translation>
 <translation id="1294263471858445589">Aktiviert die passive Authentifizierung für Inkognito- und reguläre Sitzungen.</translation>
@@ -459,6 +467,7 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Funktion nur bei Instanzen zur Verf�
       Wenn du die Richtlinie auf „Fast“ setzt, vermeidet <ph name="PRODUCT_NAME" /> das Rastern, wenn möglich. Wenn weniger gerastert wird, können die Größe der Druckaufträge reduziert und die Druckgeschwindigkeit erhöht werden.
 
       Wird sie nicht konfiguriert, befindet sich <ph name="PRODUCT_NAME" /> im Modus „Full“.</translation>
+<translation id="1451597482289285597">Zeitlimit bei Inaktivität bis zum Start des Bildschirmschoners auf dem Gerät.</translation>
 <translation id="1455351936334569779">Druckertypen auf der Verweigerungsliste können nicht gefunden und die entsprechenden Eigenschaften nicht abgerufen werden.
 
       Wenn alle Druckertypen auf die Verweigerungsliste gesetzt werden, sind keine Druckziele mehr verfügbar und es kann daher nicht mehr gedruckt werden.
@@ -697,8 +706,10 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wird diese Richtlinie nicht festgelegt, wird die Standardgröße verwendet und der Nutzer kann diese mit dem Parameter "--media-cache-size" ändern.</translation>
 <translation id="1648816843164517573">Liste der Namen, die vom HSTS-Richtliniencheck ausgenommen sind</translation>
 <translation id="1651197070942919276">Ausführung von virtuellen Maschinen auf dem Gerät nicht zulassen</translation>
+<translation id="1651810147727432656">Berechtigung für die Fensterverwaltung auf diesen Websites blockieren</translation>
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
+<translation id="1655518801232583832">DNS-Auflösung des Systems außerhalb des Netzwerkdienstes aktivieren</translation>
 <translation id="165769015320654523">Websites automatisch die Berechtigung erteilen, eine Verbindung zu HID-Geräten mit den angegebenen Anbieter- und Produkt-IDs herzustellen.</translation>
 <translation id="1659406551862245683">Das Standardverhalten der Bildschirmtastatur wird geändert, um die Größe des Layout-Darstellungsbereichs anzupassen</translation>
 <translation id="166427968280387991">Proxyserver</translation>
@@ -810,6 +821,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 
        Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1767673020408652620">App-Empfehlungen bei Nullstatus des Suchfelds aktivieren</translation>
+<translation id="1768225118528727376">Berechtigung für die Fensterverwaltung auf diesen Websites zulassen</translation>
 <translation id="1770071413238151235">12-Stunden-Format</translation>
 <translation id="1771024053220392089">Unterstützung älterer Browser deaktivieren</translation>
 <translation id="1781356041596378058">Diese Richtlinie steuert zudem den Zugriff auf Android-Entwickleroptionen. Wenn du diese Richtlinie auf "true" setzt, können Nutzer nicht auf die Entwickleroptionen zugreifen. Wenn du diese Richtlinie auf "false" setzt oder nicht konfigurierst, können Nutzer auf die Entwickleroptionen zugreifen, indem sie siebenmal auf die Build-Nummer in der Android-App "Einstellungen" tippen.</translation>
@@ -1087,6 +1099,11 @@ Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bes
 <translation id="2018425641414671849">Nicht zulassen, dass Nutzer Medien abspielen, wenn das Gerät gesperrt ist</translation>
 <translation id="2021087124402050619">Chrome Cleanup Tool darf regelmäßig Scans ausführen und manuelle Scans sind erlaubt</translation>
 <translation id="2024476116966025075">Erforderlichen Domainnamen für Remotezugriff-Clients konfigurieren</translation>
+<translation id="2027764364653772586">Mit dieser Richtlinie wird festgelegt, wie viele Sekunden das Gerät inaktiv sein muss, bevor der Bildschirmschoner auf dem Anmeldebildschirm angezeigt wird.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 7 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="2029985289397958781">Kameragestützte Suche mit <ph name="GOOGLE_LENS_PRODUCT_NAME" /> für Unternehmensnutzer deaktivieren</translation>
 <translation id="2030905906517501646">Suchbegriff der Standardsuchmaschine</translation>
 <translation id="203096360153626918">Diese Richtlinie hat keine Auswirkungen auf die Android-Apps. Der Vollbildmodus kann aktiviert werden, auch wenn diese Richtlinie auf <ph name="FALSE" /> gesetzt ist.</translation>
@@ -1444,6 +1461,15 @@ Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Va
 <translation id="2366301887862414321">Native Nachrichtenhosts sowohl auf Nutzer- als auch auf Systemebene zulassen</translation>
 <translation id="2373014700224092497">Zulassen, dass Nutzer Kerberos-Konten hinzufügen</translation>
 <translation id="2376134474855349829">Bildschirmtastatur auf dem Anmeldebildschirm deaktivieren und dem Nutzer erlauben, sie vorübergehend zu aktivieren</translation>
+<translation id="2377822335794178310">Mit dieser Richtlinie wird der Bildschirmschoner auf Geräteebene für den Anmeldebildschirm konfiguriert.
+
+Wenn die Richtlinie auf „true“ gesetzt ist, wird auf dem <ph name="PRODUCT_OS_NAME" />-Gerät bei Inaktivität auf dem Anmeldebildschirm ein Bildschirmschoner angezeigt.
+
+Ist die Richtlinie auf „false“ gesetzt oder nicht konfiguriert, wird kein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
+
+Der Bildschirmschoner auf dem Gerät zeigt die Bilder an, auf die in der Richtlinie <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> verwiesen wird. Wenn <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> nicht konfiguriert oder auf eine leere Liste bzw. eine Liste ohne gültige Bilder festgelegt ist, wird kein Bildschirmschoner auf dem Anmeldebildschirm angezeigt.
+
+Das Zeitlimit bei Inaktivität bis zum Start des Bildschirmschoners und das Intervall, in dem ein Bild angezeigt wird, können jeweils mit den Richtlinien <ph name="DEVICE_SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> und <ph name="DEVICE_SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> geändert werden. Wenn eine dieser Richtlinien nicht konfiguriert ist, werden stattdessen die Standardwerte verwendet.</translation>
 <translation id="2382672620906337383">Die JavaScript-Funktion „setTimeout()“ wird nach Überschreiten eines höheren Verschachtelungsgrenzwerts verzögert.</translation>
 <translation id="2384233438419344179">Wenn diese Richtlinie aktiviert ist, können Websiteelemente, die nicht von der Domain in der Adressleiste des Browsers stammen, keine Cookies setzen. Wenn die Richtlinie deaktiviert ist, können diese Elemente Cookies setzen und Nutzer können diese Einstellung nicht ändern.
 
@@ -1815,6 +1841,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 
       Für diese Richtlinie sind zusätzliche Einrichtungen nötig. Weitere Informationen dazu findest du unter https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting.</translation>
 <translation id="2731627323327011390">Verwendung von <ph name="PRODUCT_OS_NAME" />-Zertifikaten für ARC-Apps deaktivieren</translation>
+<translation id="273678600057164019">Die DNS-Auflösung des Systems wird im Netzwerkprozess ausgeführt.</translation>
 <translation id="2737917415184832294">HTTPS für Updatedownloads verwenden</translation>
 <translation id="2742843273354638707">Hiermit werden die Chrome Web Store App und der zugehörige Fußzeilenlink auf der "Neuer Tab"-Seite und im App Launcher von <ph name="PRODUCT_OS_NAME" /> ausgeblendet.
 
@@ -1896,6 +1923,11 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, umfasst der generierte Kerberos-SPN keinen Port.</translation>
 <translation id="2834965199373338033">Hintergrundmodus aktivieren</translation>
+<translation id="2835648603076938116">Mit dieser Richtlinie wird festgelegt, für wie viele Sekunden Bilder jeweils angezeigt werden, wenn für den Bildschirmschoner auf dem Anmeldebildschirm mehrere Bilder verwendet werden.
+
+Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 60 Sekunden.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
 <translation id="2835686964326214400">Benutzerdefinierten Zeitplan für den Neustart von Geräten festlegen</translation>
 <translation id="2838830882081735096">Datenmigration und ARC nicht zulassen</translation>
 <translation id="2839294585867804686">Einstellungen für Netzwerkfreigaben</translation>
@@ -2474,6 +2506,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
 
       Ist sie deaktiviert, senden registrierte Geräte keine Informationen zur Kiosksitzung.</translation>
+<translation id="3303770131697159224">Standardeinstellung für die Berechtigung „Fensterverwaltung“</translation>
 <translation id="3303911765031636277">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileAttached"</translation>
 <translation id="3304662785258434098">Mit dieser Richtlinie kannst du festlegen, ob Nutzer mithilfe von Ausnahmen gemischte Inhalte auf bestimmten Websites zulassen dürfen.
 
@@ -3173,6 +3206,7 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3973371701361892765">Ablage nie automatisch ausblenden</translation>
 <translation id="3977304360459208438">Standardeinstellung für Cipher Suites von 3DES in TLS verwenden</translation>
 <translation id="3979738908158213640">URLs, die während der SAML-Authentifizierung Zugriff zur Durchführung der Geräteattestierung erhalten</translation>
+<translation id="3983162212222338509">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="3984028218719007910">Legt fest, ob lokale Kontodaten nach der Abmeldung in <ph name="PRODUCT_OS_NAME" /> gespeichert werden. Bei Einstellung auf "true" werden Konten nicht dauerhaft in <ph name="PRODUCT_OS_NAME" /> gespeichert und alle Daten der Nutzersitzung werden nach der Abmeldung verworfen. Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, können (verschlüsselte) lokale Nutzerdaten auf dem Gerät verbleiben.</translation>
 <translation id="3986700049001404598">Nutzern erlauben, Prozesse mit dem Task-Manager von Chrome zu beenden</translation>
 <translation id="398884292557092447">Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, können Nutzer die Vorschläge zum automatischen Ausfüllen von Kreditkartendaten in der UI steuern.
@@ -3291,6 +3325,7 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="4098920079809952737">Drucken mit und ohne Hintergrundgrafiken zulassen</translation>
+<translation id="410061592404122032">Jedes Mal nachfragen, wenn eine Website um die Berechtigung für die Fensterverwaltung bittet</translation>
 <translation id="410068710490553233">Anmeldung in zusätzlichen Google-Konten zulassen</translation>
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
 <translation id="4102347680024644994">Ereignisse vom Typ „Extended Detection and Response“ (XDR) melden</translation>
@@ -3424,6 +3459,11 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
           Ist die Richtlinie nicht konfiguriert, ist "Automatisch klicken" anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="4212181786686887763">URL, über die das Hintergrundbild heruntergeladen werden kann.</translation>
 <translation id="4224610387358583899">Verzögerungen für die Bildschirmsperre</translation>
+<translation id="42267415200641481">Wenn diese Richtlinie auf „true“ gesetzt ist, kann die System-DNS-Auflösung (getaddrinfo()) je nach Systemkonfiguration und Funktions-Flags möglicherweise außerhalb des Netzwerkprozesses ausgeführt werden.
+
+      Ist sie auf „false“ gesetzt, wird die DNS-Auflösung des Systems (getaddrinfo()) im Netzwerkprozess und nicht im Browserprozess ausgeführt. Dadurch kann die Deaktivierung der Netzwerkdienst-Sandbox erzwungen werden, wodurch die Sicherheit von <ph name="PRODUCT_NAME" /> beeinträchtigt wird.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, kann die DNS-Auflösung des Systems je nach Systemkonfiguration und Funktions-Flags innerhalb, außerhalb oder teils innerhalb, teils außerhalb des Netzwerkprozesses erfolgen.</translation>
 <translation id="4228745249339680042">Mit dieser Richtlinie werden URLs und Domains angegeben, für die keine Eingabeaufforderung angezeigt wird, wenn Nachweiszertifikate von Sicherheitsschlüsseln angefordert werden. Zusätzlich wird ein Signal an den Sicherheitsschlüssel gesendet, das angibt, dass individuelle Nachweise verwendet werden können. Andernfalls erhalten Nutzer in <ph name="PRODUCT_NAME" /> ab Version 65 eine Eingabeaufforderung, wenn Websites einen Nachweis für Sicherheitsschlüssel anfordern.
 
       URLs werden nur als U2F-AppIDs interpretiert, Domains nur als Webauthn-RP-IDs. Damit sowohl U2F- als auch Webauthn-APIs genutzt werden können, müssen deshalb die AppID-URL und die Domain für eine bestimmte Website angegeben werden.</translation>
@@ -3497,6 +3537,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 
 Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es Nutzern nur, sich mit den angegebenen Bluetooth-Diensten zu verbinden. Falls die Liste jedoch leer ist, darf jeder Dienst verwendet werden. Von Bluetooth SIG reservierte UUIDs können als <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> oder <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" /> dargestellt werden. Benutzerdefinierte UUIDs können als <ph name="BLUETOOTH_CUSTOM_UUID" /> dargestellt werden. Bei UUIDs muss die Groß- und Kleinschreibung nicht berücksichtigt werden. Wird die Richtlinie nicht konfiguriert, können Nutzer sich mit jedem Bluetooth-Dienst verbinden.</translation>
 <translation id="4332177773549877617">Ereignisse für Android-App-Installationen protokollieren</translation>
+<translation id="4340809889556703745">Bildquelle für den Bildschirmschoner auf dem Gerät.</translation>
 <translation id="4341199399451274159">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" die Zeichencodierungen an, die vom Suchanbieter unterstützt werden. Dazu werden Codeseiten-Namen wie "UTF-8", "GB2312" oder "ISO-8859-1" verwendet. Sie werden in der angegebenen Reihenfolge ausprobiert
 
       Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />" nicht konfiguriert ist, wird "UTF-8" verwendet.</translation>
@@ -4069,6 +4110,7 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
           Wenn du diese Richtlinie konfigurierst, kann sie vom Nutzer nicht geändert oder überschrieben werden.
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Mono-Audio" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
+<translation id="4933079174563348731">Anzeigeintervall für Bilder des Bildschirmschoners auf dem Gerät.</translation>
 <translation id="4933301190614090397">Steuert die Dauer in Sekunden, die für Keepalive-Anfragen beim Schließen des Browsers zugelassen ist.
 
       Wenn die Richtlinie festgelegt ist, kann das Schließen des Browsers während der angegebenen Dauer in Sekunden blockiert werden, um Keepalive-Anfragen zu verarbeiten (https://fetch.spec.whatwg.org/#request-keepalive-flag).
@@ -4399,6 +4441,7 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist die Übersetzung über die Funktion „Schnellinfo“ aktiviert.
       Wenn die Richtlinie deaktiviert ist, ist die Übersetzung über „Schnellinfo“ deaktiviert.</translation>
+<translation id="5252745944062824150">Bildschirmschoner auf Gerät aktiviert.</translation>
 <translation id="5252995168844634755">Wenn die Richtlinie auf "True" gesetzt ist, wird Unified Desktop aktiviert. So können sich Apps über mehrere Bildschirme erstrecken. Nutzer können Unified Desktop für einzelne Displays deaktivieren.
 
       Ist diese Richtlinie auf "False" gesetzt oder nicht konfiguriert, wird Unified Desktop deaktiviert und kann vom Nutzer nicht aktiviert werden.</translation>
@@ -4700,6 +4743,13 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="5535256585099022933">Zeitintervall für den Neustart festlegen</translation>
 <translation id="553806128266843748">Boolescher Parameter, der angibt, ob die Drosselung aktiviert ist.</translation>
 <translation id="5540885720415375851">Erkennung lokaler Geräte zulassen</translation>
+<translation id="5545132877693005604">Mit dieser Richtlinie wird die Liste der Bilder konfiguriert, die als Bildschirmschoner auf dem Anmeldebildschirm angezeigt werden sollen.
+
+Jedes Listenelement verweist auf ein Bild, das als Bildschirmschoner erscheint. Das Element selbst muss eine URL zum Bild und den SHA-256-Hashwert der Bilddatei zur Bestätigung enthalten. Das Bildformat muss JPEG sein. Das <ph name="PRODUCT_OS_NAME" />-Gerät lädt diese Bilder herunter und legt einen lokalen Cache dieser Verweise an.
+
+Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.
+
+Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bildverweise enthält, wird der Bildschirmschoner nicht auf dem Anmeldebildschirm angezeigt, unabhängig von dem in der Richtlinie <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> festgelegten Wert.</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">Hohen Kontrast auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="555077880566103058">Automatische Ausführung des Plug-ins "<ph name="FLASH_PLUGIN_NAME" />" für alle Websites zulassen</translation>
@@ -5425,6 +5475,7 @@ Wenn die Richtlinie deaktiviert ist, verwendet der Browser die alte Implementier
 <translation id="6287128640500683781">Anmeldung für alle Nutzer zulassen</translation>
 <translation id="6287310684159482272">Cookie-Einstellungen</translation>
 <translation id="6299147100249359151">Lässt die Erkennung des Anwendungsbereichs von Richtlinien zu.</translation>
+<translation id="6299554629216555326">Einstellungen für die Fensterverwaltung</translation>
 <translation id="6300871921951390976">Nutzer dürfen die Release-Version des Geräts nur ändern, wenn diese Richtlinie auf „True“ gesetzt ist. Wenn diese Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, dürfen Nutzer die Version nicht ändern.
 
       Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirksam, wenn <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
@@ -6094,6 +6145,13 @@ Ist sie auf „false“ gesetzt oder nicht festgelegt, ist das Layout nicht verf
       Wenn die Richtlinie nicht konfiguriert ist, werden dadurch die Apps, die Nutzer auf dem Sperrbildschirm aktivieren können, nicht durch die Richtlinie eingeschränkt.</translation>
 <translation id="6882028194958060206">Einstellung für Flash-Inhalt auf alle Inhalte anwenden (wird nicht länger unterstützt)</translation>
 <translation id="6889123056995503704">Nutzer entscheiden über das Verhalten zum Versionsdowngrade</translation>
+<translation id="6889617338886728275">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterverwaltung automatisch gewährt wird. Dadurch können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
+
+Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.
+
+Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
 <translation id="6897730193187922386">Nachrichten zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> unterdrücken</translation>
 <translation id="6899705656741990703">Proxy-Einstellungen automatisch erkennen</translation>
@@ -6465,6 +6523,7 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
       Wenn die Richtlinie auf <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (Wert 3) gesetzt ist, wird dem Nutzer eine Benachrichtigung angezeigt, wenn standardmäßig die Berechtigung für die Fensterpositionierung angefragt wird. Wenn Nutzer die Berechtigung gewähren, können Websites Informationen zum Bildschirm des Geräts abrufen und nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird die Richtlinie <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> angewandt, aber Nutzer können diese Einstellung ändern.</translation>
+<translation id="7238955809343698945">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
 <translation id="7244600351241637530">Durch Aktivieren dieser Einstellung können Nutzer, die der Verwendung von Phone Hub zugestimmt haben, Fotos und Videos, die kürzlich mit ihrem Smartphone aufgenommen wurden, auf einem Chrome OS-Gerät abrufen und herunterladen.
 
       Wenn diese Einstellung deaktiviert ist, können Nutzer die Funktion nicht verwenden. Ist die Richtlinie <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> deaktiviert, können Nutzer die Funktion ebenfalls nicht verwenden.
@@ -6551,6 +6610,13 @@ Wenn diese Richtlinie nicht festgelegt ist oder absichtlich leer gelassen wird, 
 <translation id="731208205557053914">VPD-Informationen melden</translation>
 <translation id="7313672174502374994">SHA-256-Hash des Hintergrundbilds.</translation>
 <translation id="7322825363493984512">Passwort zur Authentifizierung der Systemdienste für den Remote-Web-Proxy.</translation>
+<translation id="7323855063560306712">Mit dieser Richtlinie kannst du eine Liste mit URL-Mustern festlegen, die angeben, auf welchen Websites die Berechtigung für die Fensterverwaltung automatisch verweigert wird. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
+
+Genaue Informationen zu gültigen URL-Mustern für Websites findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig. Diese Richtlinie gleicht nur anhand des Ursprungs ab, daher werden alle Pfade des URL-Musters ignoriert.
+
+Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.
+
+Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="7323896582714668701">Zusätzliche Befehlszeilenparameter für <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome daran hindern, das Aufrufen externer Protokolle in einem Sandbox-iFrame zu blockieren</translation>
 <translation id="7326394567531622570">Ähnlich wie bei den Werkseinstellungen (Wert 2); hier wird jedoch versucht, die Log-in-Tokens zu übernehmen, sodass der Nutzer sich nicht noch einmal anmelden muss.</translation>
@@ -7731,6 +7797,7 @@ Wenn eine der folgenden Richtlinien konfiguriert ist, muss diese Richtlinie deak
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird dem Nutzer Root-Zugriff auf Crostini-Container gewährt.
       Wenn sie auf "false" gesetzt ist, wird dem Nutzer weder auf vorhandene noch auf neue Crostini-Container Root-Zugriff gewährt.</translation>
+<translation id="8409672666693526293">Bildschirmschoner auf dem Anmeldebildschirm nicht aktivieren.</translation>
 <translation id="8410477879938914253">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet.
       Wenn die Richtlinie auf „True“ gesetzt oder nicht konfiguriert ist, wird ein Dialogfeld angezeigt, über das der Nutzer dazu aufgefordert wird, die Abmeldung zu bestätigen oder abzulehnen, wenn das letzte Fenster geschlossen wird.
       Ist die Richtlinie auf „False“ gesetzt, wird das Dialogfeld nicht angezeigt und dadurch auch die automatische Abmeldung nach dem Schließen des letzten Fensters deaktiviert.</translation>
@@ -8587,6 +8654,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="943865157632139008">Mit dieser Richtlinie kannst du den standardmäßigen HTML-Renderer konfigurieren, wenn <ph name="PRODUCT_FRAME_NAME" /> installiert ist.
       Bei der Standardeinstellung übernimmt der Host-Browser das Rendering. Du kannst dies jedoch wahlweise überschreiben und festlegen, dass HTML-Seiten standardmäßig mithilfe von <ph name="PRODUCT_FRAME_NAME" /> gerendert werden sollen.</translation>
 <translation id="944817693306670849">Datenträger-Cache-Größe festlegen</translation>
+<translation id="957322141096206402">Die DNS-Auflösung des Systems kann je nach Systemkonfiguration und Funktions-Flags innerhalb oder außerhalb des Netzwerkprozesses ausgeführt werden.</translation>
 <translation id="957778406002650056">URL, über die das <ph name="PLUGIN_VM_NAME" />-Image heruntergeladen werden kann.</translation>
 <translation id="957920984193041197">Zulassen, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
 <translation id="958285142322823422">Eine Kiosk-Webanwendung daran hindern, ein weiteres Browserfenster zu öffnen</translation>

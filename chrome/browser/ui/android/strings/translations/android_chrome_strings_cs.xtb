@@ -236,6 +236,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2321086116217818302">Příprava hesel…</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2328985652426384049">Přihlášení se nezdařilo</translation>
+<translation id="2341410551640223969">Instalace balíčku <ph name="WEBAPK_NAME" /> se nezdařila.</translation>
 <translation id="234265804618409743">Kameru nelze otevřít. Něco se pokazilo.</translation>
 <translation id="2349710944427398404">Celkové množství dat využívané prohlížečem Chrome, včetně účtů, záložek a uložených nastavení</translation>
 <translation id="235789365079050412">Zásady ochrany soukromí Google</translation>
@@ -301,7 +302,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2656405586795711023">Webové aplikace</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
-<translation id="2704606927547763573">Zkopírováno</translation>
 <translation id="2707726405694321444">Obnovit stránku</translation>
 <translation id="2709516037105925701">Automatické vyplňování</translation>
 <translation id="271033894570825754">Nové</translation>
@@ -344,6 +344,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Správa témat, která vás zajímají</translation>
 <translation id="2912345083818861431">K zobrazení otevřených anonymních karet vyžadovat zámek obrazovky</translation>
+<translation id="2922568440285376746">Vyhledat na obrázku <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Název je neplatný</translation>
 <translation id="2932150158123903946">Úložiště aplikace Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Klávesnice se nezmění</translation>
@@ -664,6 +665,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4684427112815847243">Synchronizovat vše</translation>
 <translation id="4685741273709472646">Vyberte z rozbalovacího seznamu</translation>
 <translation id="4687718960473379118">Reklamy navrhované weby</translation>
+<translation id="4689792375321623175">Vyhledat obrázek <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}few{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}many{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> další}other{<ph name="SHIPPING_OPTION_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> dalších}}</translation>
 <translation id="4699172675775169585">Obrázky a soubory v mezipaměti</translation>
 <translation id="4719927025381752090">Nabízet překlad</translation>
@@ -810,6 +812,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5438292632479953702">Stáhnout znovu</translation>
 <translation id="5441466871879044658">Přeložit do tohoto jazyka</translation>
 <translation id="5441522332038954058">Přejít na adresní řádek</translation>
+<translation id="5444999712122199445">Zpět na web</translation>
 <translation id="544776284582297024">Pokud chcete otevřít karty a prohlížet si několik různých stránek najednou, klepněte na tlačítko otevření karet</translation>
 <translation id="5454166040603940656">(<ph name="PROVIDER" />)</translation>
 <translation id="5456381639095306749">Stáhnout stránku</translation>

@@ -1239,7 +1239,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4088981014127559358">Pildi nihe Y-teljel 1. poolel</translation>
 <translation id="4089152113577680600">Salv 14</translation>
 <translation id="4096237801206588987">11 × 15 tolli</translation>
-<translation id="4097288585054919042">Teatiste väljalülitamine</translation>
 <translation id="4098354747657067197">Avatav sait on petturlik</translation>
 <translation id="4099048595830172239">Administraatori reegel ei soovita teil ekraani rakendusega <ph name="APPLICATION_TITLE" /> jagada, kui nähtaval on konfidentsiaalne sisu:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'is fondi suuruste ja kirjatüüpide kohandamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
@@ -1793,7 +1792,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5396631636586785122">Õmblus paremas servas</translation>
 <translation id="5398772614898833570">Reklaamid on blokeeritud</translation>
 <translation id="5400836586163650660">Hall</translation>
-<translation id="540630185148148480">Lülita teavitused sisse</translation>
 <translation id="540969355065856584">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />; selle turvasertifikaat pole praegu kehtiv. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="5412040515238827314">Vale vorming: oodati mustrite loendit.</translation>
 <translation id="5412236728747081950">See sait hangib Chrome'ist teie huvid, et näidata teile asjakohasemaid reklaame</translation>

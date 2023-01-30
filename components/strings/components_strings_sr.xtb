@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">Табела за потврду акредитива за безбедно плаћање</translation>
 <translation id="1386623374109090026">Напомене</translation>
 <translation id="1391289752476847787">Акције и обвезнице</translation>
+<translation id="1391625539203220400">Желите да сачувате IBAN на овом уређају?</translation>
 <translation id="139305205187523129">Хост <ph name="HOST_NAME" /> није послао никакве податке.</translation>
 <translation id="1396259464226642517">Да ли је ово неочекиван резултат? <ph name="BEGIN_LINK" />Пошаљите повратне информације<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Светлозелена</translation>
@@ -1238,7 +1239,6 @@
 <translation id="4088981014127559358">Померање слике 1. стране по Y оси</translation>
 <translation id="4089152113577680600">14. фиока</translation>
 <translation id="4096237801206588987">11×15 in</translation>
-<translation id="4097288585054919042">Искључите обавештења</translation>
 <translation id="4098354747657067197">Пред вама је обмањујући сајт</translation>
 <translation id="4099048595830172239">Смернице администратора не препоручују дељење екрана са <ph name="APPLICATION_TITLE" /> када се види поверљив садржај:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили величине и изглед фонтова у Chrome-у</translation>
@@ -1792,7 +1792,6 @@
 <translation id="5396631636586785122">Спајање ивица шавом на десној страни</translation>
 <translation id="5398772614898833570">Огласи су блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
-<translation id="540630185148148480">Укључите обавештења</translation>
 <translation id="540969355065856584">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат тренутно није важећи. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="5412040515238827314">Неважећи формат: Очекивана је листа образаца.</translation>
 <translation id="5412236728747081950">Овај сајт прима податке о вашим интересовањима из Chrome-а да би вам приказивао релевантније огласе</translation>

@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">보안 결제 사용자 인증 정보 승인 시트</translation>
 <translation id="1386623374109090026">주석</translation>
 <translation id="1391289752476847787">주식 및 채권</translation>
+<translation id="1391625539203220400">이 기기에 IBAN을 저장하시겠습니까?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" />에서 전송한 데이터가 없습니다.</translation>
 <translation id="1396259464226642517">예상하지 못한 결과인가요? <ph name="BEGIN_LINK" />의견 보내기<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">연한 녹색</translation>
@@ -1238,7 +1239,6 @@
 <translation id="4088981014127559358">첫 번째 면 이미지 Y 시프트</translation>
 <translation id="4089152113577680600">트레이 14</translation>
 <translation id="4096237801206588987">11x15인치</translation>
-<translation id="4097288585054919042">알림 사용 중지</translation>
 <translation id="4098354747657067197">사기성 사이트 주의</translation>
 <translation id="4099048595830172239">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 <ph name="APPLICATION_TITLE" /> 앱과 화면을 공유하지 않는 것이 좋습니다.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome의 글꼴 크기와 서체 맞춤설정</translation>
@@ -1792,7 +1792,6 @@
 <translation id="5396631636586785122">오른쪽 에지 스티치</translation>
 <translation id="5398772614898833570">광고 차단됨</translation>
 <translation id="5400836586163650660">그레이</translation>
-<translation id="540630185148148480">알림 사용 설정</translation>
 <translation id="540969355065856584">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버의 보안 인증서가 현재 유효하지 않습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="5412040515238827314">잘못된 형식: 패턴 목록이 필요합니다.</translation>
 <translation id="5412236728747081950">이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시합니다.</translation>

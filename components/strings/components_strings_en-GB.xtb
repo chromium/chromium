@@ -1243,7 +1243,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4088981014127559358">Side 1 image Y shift</translation>
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4096237801206588987">11 in x 15 in</translation>
-<translation id="4097288585054919042">Turn off alerts</translation>
 <translation id="4098354747657067197">Deceptive site ahead</translation>
 <translation id="4099048595830172239">Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE" /> when confidential content is visible:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to customise font sizes and typefaces in Chrome</translation>
@@ -1801,7 +1800,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5396631636586785122">Edge stitch right</translation>
 <translation id="5398772614898833570">Ads blocked</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="540630185148148480">Turn on alerts</translation>
 <translation id="540969355065856584">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not valid at this time. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="5412040515238827314">Invalid format: Expected a list of patterns.</translation>
 <translation id="5412236728747081950">This site gets your interests from Chrome to show you more relevant ads</translation>

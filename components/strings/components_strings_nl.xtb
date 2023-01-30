@@ -188,6 +188,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1384725838384960382">Blad voor beveiligde verificatie van betalingsgegevens</translation>
 <translation id="1386623374109090026">Annotaties</translation>
 <translation id="1391289752476847787">Aandelen en obligaties</translation>
+<translation id="1391625539203220400">IBAN opslaan op dit apparaat?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> heeft geen gegevens verzonden.</translation>
 <translation id="1396259464226642517">Was dit resultaat onverwacht? <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Lichtgroen</translation>
@@ -1233,7 +1234,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4088981014127559358">Beeldverschuiving Y van zijde 1</translation>
 <translation id="4089152113577680600">Lade 14</translation>
 <translation id="4096237801206588987">11 x 15 inch</translation>
-<translation id="4097288585054919042">Meldingen uitzetten</translation>
 <translation id="4098354747657067197">Misleidende site gedetecteerd</translation>
 <translation id="4099048595830172239">Op basis van het beheerdersbeleid wordt afgeraden dat je je scherm met <ph name="APPLICATION_TITLE" /> deelt als er vertrouwelijke content zichtbaar is:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je lettertypen en lettergrootten aan te passen in Chrome</translation>
@@ -1787,7 +1787,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5396631636586785122">Inbinden met nietjes rechts</translation>
 <translation id="5398772614898833570">Advertenties geblokkeerd</translation>
 <translation id="5400836586163650660">Grijs</translation>
-<translation id="540630185148148480">Meldingen aanzetten</translation>
 <translation id="540969355065856584">Deze server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat is momenteel niet geldig. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="5412040515238827314">Ongeldige indeling: er wordt een lijst met patronen verwacht.</translation>
 <translation id="5412236728747081950">Deze site krijgt je interesses van Chrome zodat de site je relevantere advertenties kan laten zien</translation>

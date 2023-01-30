@@ -586,6 +586,7 @@
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2361263712565360498">275 x 395 మి.మీ.</translation>
+<translation id="2362083820973145409"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="236340516568226369">టోగుల్ మెనూ పరిమాణాన్ని మార్చండి</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
@@ -1241,7 +1242,6 @@
 <translation id="4088981014127559358">1 వైపు ప్రింట్‌లో చిత్రాన్ని Y అక్షంలో జరపు</translation>
 <translation id="4089152113577680600">ట్రే 14</translation>
 <translation id="4096237801206588987">11 x 15 అంగుళాలు</translation>
-<translation id="4097288585054919042">అలర్ట్‌లను ఆఫ్ చేయాలా?</translation>
 <translation id="4098354747657067197">ముందున్న సైట్ మోసపూరితమైనది</translation>
 <translation id="4099048595830172239">గోప్యమైన కంటెంట్ కనిపిస్తునప్పుడు, మీ స్క్రీన్‌ను <ph name="APPLICATION_TITLE" />తో షేర్ చేయడాన్ని అడ్మినిస్ట్రేటర్ పాలసీ సిఫార్సు చేయదు:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో ఫాంట్ సైజ్‌లను, టైప్‌ఫేస్‌లను అనుకూలంగా మార్చడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
@@ -1795,7 +1795,6 @@
 <translation id="5396631636586785122">కుడివైపు కుట్టిన అంచు</translation>
 <translation id="5398772614898833570">ప్రకటనలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="5400836586163650660">బూడిద రంగు</translation>
-<translation id="540630185148148480">అలర్ట్‌లను ఆన్ చేయండి</translation>
 <translation id="540969355065856584">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ప్రస్తుతం చెల్లదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడి చేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="5412040515238827314">చెల్లని ఫార్మాట్: ఈ ఆకృతుల లిస్ట్‌లో ఒకటి అయి ఉంటుందని ఊహించాము.</translation>
 <translation id="5412236728747081950">మీకు మరింత సందర్భోచితమైన యాడ్‌లను చూపడానికి ఈ సైట్ మీ ఆసక్తులను Chrome నుండి పొందుతుంది</translation>
@@ -1931,6 +1930,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ఈ కార్డ్‌కు ఒక వర్చువల్ నంబర్‌ను ఉపయోగించండి}other{ఒక కార్డ్‌ను ఎంచుకోండి}}</translation>
 <translation id="5752552348183096912">యాంటీపెర్స్పిరెంట్స్, డియోడరెంట్స్ &amp; బాడీ స్ప్రేలు</translation>
 <translation id="5754400531489347219">పెంపుడు జంతువులు &amp; ఇతర జంతువులు</translation>
+<translation id="5755162682436943950">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయడం కోసం డైలాగ్ తెరవబడుతుంది.</translation>
 <translation id="5759751709240058861">మీ కెమెరాను ఉపయోగించండి, తరలించండి</translation>
 <translation id="5763042198335101085">చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="5764725887548570807">చెల్లని ఆరిజిన్ ఫార్మాట్.</translation>
@@ -2337,6 +2337,7 @@
 <translation id="6826993739343257035">ARను అనుమతించాలా?</translation>
 <translation id="6828866289116430505">జన్యుశాస్త్రం</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
+<translation id="683108308100148227">ఐటెమ్‌ను దాచండి</translation>
 <translation id="6832753933931306326">ఫారమ్ ఫిల్ చేయబడింది</translation>
 <translation id="6842196666980060516">184 x 260 మి.మీ.</translation>
 <translation id="6846340164947227603">వర్చువల్ కార్డ్ నంబర్‌ను ఉపయోగించండి...</translation>
@@ -2473,6 +2474,7 @@
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
 <translation id="7163295244162773898">{0,plural, =1{గోప్యమైన ఫైల్‌ను కాపీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను కాపీ చేయాలా?}}</translation>
+<translation id="7168323970702333693"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>

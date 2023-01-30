@@ -188,6 +188,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1384725838384960382">Sheet para sa pag-authenticate ng kredensyal sa secure na pagbabayad</translation>
 <translation id="1386623374109090026">Mga Anotasyon</translation>
 <translation id="1391289752476847787">Mga stock at bond</translation>
+<translation id="1391625539203220400">I-save ang IBAN sa device na ito?</translation>
 <translation id="139305205187523129">Hindi nagpadala ng anumang data ang <ph name="HOST_NAME" />.</translation>
 <translation id="1396259464226642517">Hindi ba inaasahan ang resultang ito? <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Light Green</translation>
@@ -1238,7 +1239,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4088981014127559358">Pag-shift ng gilid 1 larawan Y</translation>
 <translation id="4089152113577680600">Tray 14</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
-<translation id="4097288585054919042">I-off ang mga alerto</translation>
 <translation id="4098354747657067197">Mapupunta sa nakakapanlinlang na site</translation>
 <translation id="4099048595830172239">Hindi inirerekomenda ng patakaran ng administrator na ibahagi ang iyong screen sa <ph name="APPLICATION_TITLE" /> kapag nakikita ang kumpidensyal na content:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang tab at pagkatapos ay ang Enter para i-customize ang mga laki ng font at typeface sa Chrome</translation>
@@ -1792,7 +1792,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5396631636586785122">Edge stitch right</translation>
 <translation id="5398772614898833570">Na-block ang mga ad</translation>
 <translation id="5400836586163650660">Grey</translation>
-<translation id="540630185148148480">I-on ang mga alerto</translation>
 <translation id="540969355065856584">Hindi mapatunayan ng server na ito ay ang <ph name="DOMAIN" />; walang bisa ang certificate sa seguridad nito sa pagkakataong ito. Maaaring dahil ito sa isang maling pag-configure o may isang attacker na humahadlang sa iyong koneksyon.</translation>
 <translation id="5412040515238827314">Invalid na format: May inaasahang listahan ng mga pattern.</translation>
 <translation id="5412236728747081950">Kinukuha ng site na ito ang iyong mga interes mula sa Chrome para makapagpakita sa iyo ng higit pang nauugnay na ad</translation>

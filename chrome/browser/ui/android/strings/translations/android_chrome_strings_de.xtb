@@ -182,6 +182,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Lies die <ph name="BEGIN_LINK1" />Datenschutzerklärung<ph name="END_LINK1" /> dieser Website.</translation>
 <translation id="2000419248597011803">Suchanfragen, die in die Adressleiste und das Suchfeld eingegeben wurden, sowie einige Cookies werden an deine Standardsuchmaschine gesendet</translation>
 <translation id="200114059308480249">Umgebenden Text in Google-Suchanfragen einschließen?</translation>
+<translation id="2009341475524975924">Zur Messung der Leistung einer Werbeanzeige können nur manche Datentypen zwischen Websites geteilt werden, beispielsweise die Tageszeit, zu der dir eine Werbeanzeige präsentiert wurde.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Datei}other{# Dateien}}</translation>
 <translation id="2021896219286479412">Vollbild-Steuerelemente</translation>
 <translation id="2038563949887743358">"Desktopversion ansehen" aktivieren</translation>
@@ -236,6 +237,7 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2321086116217818302">Passwörter werden zum Exportieren vorbereitet…</translation>
 <translation id="2323763861024343754">Websitespeicher</translation>
 <translation id="2328985652426384049">Anmeldung nicht möglich</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> konnte nicht installiert werden.</translation>
 <translation id="234265804618409743">Die Kamera kann nicht geöffnet werden. Ein Fehler ist aufgetreten.</translation>
 <translation id="2349710944427398404">Gesamtdaten, die von Chrome verwendet werden, wie Konten, Lesezeichen und gespeicherte Einstellungen</translation>
 <translation id="235789365079050412">Datenschutzerklärung von Google</translation>
@@ -301,7 +303,6 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2656405586795711023">Web-Apps</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
 <translation id="2702516483241149200">Neu: Link teilen, der direkt zu diesem Text führt</translation>
-<translation id="2704606927547763573">Kopiert</translation>
 <translation id="2707726405694321444">Seite aktualisieren</translation>
 <translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">Neu</translation>
@@ -344,6 +345,7 @@ Private Stake Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
 <translation id="2912296070571964914">Themen verwalten, an denen du interessiert bist</translation>
 <translation id="2912345083818861431">Displaysperre verwenden, um geöffnete Inkognitotabs zu sehen</translation>
+<translation id="2922568440285376746">Mit Google im Bild suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Der Name ist ungültig</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-Speicher</translation>
 <translation id="2932222164150889403">Deine Tastaturbelegung ändert sich nicht</translation>
@@ -652,6 +654,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> öffnen</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4634124774493850572">Passwort verwenden</translation>
+<translation id="4637420359569396807">Bei der Anzeigenanalyse können nur manche Datentypen zwischen Websites und Apps geteilt werden, beispielsweise die Tageszeit, zu der dir Werbung präsentiert wurde.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gehacktes Passwort}other{# gehackte Passwörter}}</translation>
 <translation id="4650364565596261010">Systemstandard</translation>
 <translation id="465657074423018424">Safe Browsing schützt dich vor betrügerischen Websites. Wenn du Safe Browsing deaktivierst, solltest du besonders vorsichtig sein, wenn du im Internet surfst, besonders wenn du Passwörter eingibst.</translation>
@@ -664,6 +667,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4684427112815847243">Alles synchronisieren</translation>
 <translation id="4685741273709472646">Wähle eine Option aus der Drop-down-Liste aus</translation>
 <translation id="4687718960473379118">Von Websites vorgeschlagene Werbung</translation>
+<translation id="4689792375321623175">Bild mit Google suchen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
 <translation id="4699172675775169585">Bilder und Dateien im Cache</translation>
 <translation id="4719927025381752090">Übersetzung anbieten</translation>
@@ -810,6 +814,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5438292632479953702">Noch einmal herunterladen</translation>
 <translation id="5441466871879044658">In diese Sprache übersetzen</translation>
 <translation id="5441522332038954058">Zur Adressleiste wechseln</translation>
+<translation id="5444999712122199445">Zurück zur Website</translation>
 <translation id="544776284582297024">Auf die Schaltfläche "Tabs öffnen" tippen, um Tabs zu öffnen und mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="5454166040603940656">mit <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Seite herunterladen</translation>

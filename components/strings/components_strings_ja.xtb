@@ -602,6 +602,7 @@
 <translation id="2430968933669123598">[Google アカウントを管理] ボタンです。Enter キーを押すと、Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
 <translation id="2436186046335138073">すべての <ph name="PROTOCOL" /> リンクを <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2438874542388153331">4 穴パンチ（右）</translation>
+<translation id="2441854154602066476">タップ操作で入力できるお支払い方法が表示されています。キーボードは非表示です。</translation>
 <translation id="2448295565072560657">ログイン中にこのデバイスに接続された周辺機器</translation>
 <translation id="2450021089947420533">ジャーニー</translation>
 <translation id="2463739503403862330">入力する</translation>
@@ -1237,7 +1238,6 @@
 <translation id="4088981014127559358">1 面の画像の Y 軸移動</translation>
 <translation id="4089152113577680600">トレイ 14</translation>
 <translation id="4096237801206588987">11x15 インチ</translation>
-<translation id="4097288585054919042">アラートをオフにする</translation>
 <translation id="4098354747657067197">偽のサイトにアクセスしようとしています</translation>
 <translation id="4099048595830172239">機密コンテンツが表示されているときに <ph name="APPLICATION_TITLE" /> で画面を共有することは、管理者が設定したポリシーで推奨されていません。</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome のフォントサイズと書体をカスタマイズします</translation>
@@ -1578,6 +1578,7 @@
 <translation id="4880827082731008257">履歴を検索</translation>
 <translation id="4881695831933465202">開く</translation>
 <translation id="4881808915112408168">24x31.5 インチ</translation>
+<translation id="4882314601499260499">ユーザー ポリシーが適用されていません。ユーザー ポリシーを追加するには、組織で<ph name="LINK_BEGIN" />ドメインの所有権を確認する<ph name="LINK_END" />必要があります。</translation>
 <translation id="4885256590493466218">ご購入手続きの際に <ph name="CARD_DETAIL" /> で支払います</translation>
 <translation id="4887406273302438710">Windows Hello でパスワードを保護</translation>
 <translation id="4888600795924685526">外国語学習</translation>
@@ -1790,7 +1791,6 @@
 <translation id="5396631636586785122">端綴じ（右）</translation>
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
-<translation id="540630185148148480">アラートをオンにする</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
 <translation id="5412040515238827314">無効な形式です。パターンのリストを指定する必要があります。</translation>
 <translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
@@ -2461,6 +2461,7 @@
 <translation id="7136009930065337683">シークレット モードの詳細</translation>
 <translation id="7138472120740807366">配達方法</translation>
 <translation id="7139892792842608322">メイントレイ</translation>
+<translation id="7140087718106278457">お支払い方法のリストが閉じられています。</translation>
 <translation id="714064300541049402">2 面の画像の X 軸移動</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}other{<ph name="PAYMENT_METHOD_PREVIEW" />（他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件）}}</translation>
@@ -2984,6 +2985,7 @@
 <translation id="8381674639488873545">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。<ph name="BEGIN_LINK" />理解したうえで表示する<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> から <ph name="VM_NAME" /> への貼り付けは管理者が設定したポリシーによってブロックされています</translation>
 <translation id="8396522675989118466"><ph name="SIDE_OF_CARD" /> の <ph name="NUMBER_OF_DIGITS" /> 桁のコードです</translation>
+<translation id="8398335999901363925">タップ操作で入力できるお支払い方法が画面全体に表示されています。</translation>
 <translation id="8398790343843005537">スマートフォンを検出</translation>
 <translation id="8405579342203358118">Chrome の設定で同期する情報を管理します</translation>
 <translation id="8406071103346257942">パスワード入力で画面ロックを使用するのをやめようとしています</translation>
@@ -3145,6 +3147,7 @@
 <translation id="8830320733681313421">はがき</translation>
 <translation id="8834380158646307944">[シークレット ウィンドウを閉じる] ボタンです。Enter キーを押すと、現在開いているすべてのシークレット ウィンドウを閉じます</translation>
 <translation id="883848425547221593">その他のブックマーク</translation>
+<translation id="8842351563145134519">タップ操作で入力できるお支払い方法が画面の下半分に表示されています。</translation>
 <translation id="884264119367021077">配送先住所</translation>
 <translation id="8849231003559822746">130x180 mm</translation>
 <translation id="884923133447025588">取り消し機構が見つかりません。</translation>

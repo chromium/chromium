@@ -733,6 +733,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="492453977506755176">Klávesa režimu nahrávání</translation>
 <translation id="4925542575807923399">Správce tohoto účtu vyžaduje, aby se tento účet v relaci multiprofilu přihlásil jako první.</translation>
 <translation id="4929163402621253029">Mluvíte? Nejste slyšet. Další informace</translation>
+<translation id="4936329710968938986">Všichni, vypnuto</translation>
 <translation id="4938176435186993759">Skrýt všechny návrhy</translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
@@ -1387,6 +1388,7 @@ Nová instalace</translation>
 <translation id="8477270416194247200">Vypnete jej stisknutím kombinace kláves Alt + Hledat nebo klávesy Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> rozlišení <ph name="SPECIFIED_RESOLUTION" /> nepodporuje. Rozlišení bylo změněno na <ph name="FALLBACK_RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Zobrazit nastavení sdílení nablízko</translation>
+<translation id="8507563469658346379">Všichni, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth v Chromebooku je vypnuté. Pokud chcete odemknout Chromebook, zadejte heslo.</translation>
 <translation id="8513108775083588393">Autom. otáčení</translation>
 <translation id="851458219935658693">Zobrazit okna z aktuální plochy, je vybrán přepínač</translation>

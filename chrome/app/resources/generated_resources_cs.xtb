@@ -3169,6 +3169,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3823310065043511710">Pro Linux je doporučeno alespoň <ph name="INSTALL_SIZE" /> místa.</translation>
 <translation id="3824621460022590830">Token registrace zařízení není platný. Kontaktujte vlastníka nebo administrátora zařízení. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamatovat moji volbu pro tento typ souboru: <ph name="FILE_TYPES" />}few{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}many{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}other{Zapamatovat moji volbu pro tyto typy souborů: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Zobrazovat puntík na ikoně aplikace jako upozornění</translation>
 <translation id="3826071569074535339">Povolení používat senzory pohybu</translation>
 <translation id="3826440694796503677">Váš administrátor přidávání dalších účtů Google zakázal</translation>
 <translation id="3827774300009121996">&amp;Celá obrazovka</translation>
@@ -3831,6 +3832,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4441147046941420429">Chcete-li pokračovat, vyjměte ze zařízení bezpečnostní klíč a poté ho znovu vložte a dotkněte se ho</translation>
 <translation id="444134486829715816">Rozbalit...</translation>
 <translation id="4441928470323187829">Připnuto administrátorem</translation>
+<translation id="4442863809158514979">Zobrazit webová oprávnění</translation>
 <translation id="4443536555189480885">&amp;Nápověda</translation>
 <translation id="4444304522807523469">Přístup ke skenerům dokumentů připojeným přes USB nebo v místní síti</translation>
 <translation id="4444512841222467874">Pokud neuvolníte místo, může dojít k automatickému odebrání uživatelů a dat.</translation>
@@ -4487,6 +4489,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5063480226653192405">Použití</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Spravovat zabezpečené DNS v nastavení systému ChromeOS</translation>
+<translation id="5066160542186949327">Přesunout do jiné složky</translation>
 <translation id="5067399438976153555">Vždy zapnuto</translation>
 <translation id="5067867186035333991">Zobrazit dotaz, pokud bude chtít web <ph name="HOST" /> používat mikrofon</translation>
 <translation id="5068553687099139861">zobrazovat hesla</translation>
@@ -7460,6 +7463,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="779308894558717334">Světle zelená</translation>
 <translation id="7793098747275782155">Tmavě modrá</translation>
 <translation id="7797571222998226653">Vypnuto</translation>
+<translation id="7798504574384119986">Zobrazit webová oprávnění</translation>
 <translation id="7798844538707273832">Automaticky zablokované oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Otočit &amp;proti směru hodinových ručiček</translation>
 <translation id="7801679634091975683">Zde provedené změny se vztahují pouze na prohlížeč Chrome Lacros. Pokud chcete provést změny nastavení prohlížeče Chrome, otevřete prohlížeč Chrome a přejděte na nastavení.</translation>

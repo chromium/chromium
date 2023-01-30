@@ -188,6 +188,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1384725838384960382">Helaian pengesahan bukti kelayakan pembayaran selamat</translation>
 <translation id="1386623374109090026">Anotasi</translation>
 <translation id="1391289752476847787">Saham &amp; bon</translation>
+<translation id="1391625539203220400">Simpan IBAN pada peranti ini?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> tidak menghantar sebarang data.</translation>
 <translation id="1396259464226642517">Adakah hasil ini tidak dijangka? <ph name="BEGIN_LINK" />Hantar maklum balas<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Hijau Cerah</translation>
@@ -1239,7 +1240,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4088981014127559358">Anjakan Y sisi 1 imej</translation>
 <translation id="4089152113577680600">Dulang 14</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
-<translation id="4097288585054919042">Matikan makluman</translation>
 <translation id="4098354747657067197">Tapak menipu di hadapan</translation>
 <translation id="4099048595830172239">Dasar pentadbir tidak mengesyorkan anda berkongsi skrin dengan <ph name="APPLICATION_TITLE" /> semasa kandungan sulit kelihatan:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk menyesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
@@ -1793,7 +1793,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5396631636586785122">Jahitan tepi kanan</translation>
 <translation id="5398772614898833570">Iklan disekat</translation>
 <translation id="5400836586163650660">Kelabu</translation>
-<translation id="540630185148148480">Hidupkan makluman</translation>
 <translation id="540969355065856584">Pelayan ini tidak dapat membuktikan bahawa pelayan adalah <ph name="DOMAIN" />; sijil keselamatan pelayan tidak sah pada masa ini. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda.</translation>
 <translation id="5412040515238827314">Format tidak sah: Menjangkakan senarai pola.</translation>
 <translation id="5412236728747081950">Laman ini mendapat minat anda daripada Chrome untuk memaparkan iklan yang lebih berkaitan kepada anda</translation>

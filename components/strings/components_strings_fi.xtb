@@ -188,6 +188,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1384725838384960382">Suojatun maksun kirjautumistietojen todennuspaneeli</translation>
 <translation id="1386623374109090026">Kommentit</translation>
 <translation id="1391289752476847787">Osakkeet ja joukkolainat</translation>
+<translation id="1391625539203220400">Tallennetaanko IBAN tälle laitteelle?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ei lähettänyt tietoja.</translation>
 <translation id="1396259464226642517">Etkö odottanut tätä tulosta? <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Vaaleanvihreä</translation>
@@ -1239,7 +1240,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4088981014127559358">1. puolen kuvan Y vaihto</translation>
 <translation id="4089152113577680600">Lokero 14</translation>
 <translation id="4096237801206588987">11 x 15 tuumaa</translation>
-<translation id="4097288585054919042">Laita ilmoitukset pois päältä</translation>
 <translation id="4098354747657067197">Seuraava sivusto on petollinen</translation>
 <translation id="4099048595830172239">Järjestelmänvalvojakäytännössä ei suositella näytön jakamista (<ph name="APPLICATION_TITLE" />) luottamuksellisen sisällön ollessa näkyvissä:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, muokkaa fonttien kokoja ja kirjasimia Chromessa painamalla sarkainta ja sitten Enter</translation>
@@ -1793,7 +1793,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5396631636586785122">Reunasidonta oikealla</translation>
 <translation id="5398772614898833570">Mainokset estetty</translation>
 <translation id="5400836586163650660">Harmaa</translation>
-<translation id="540630185148148480">Ota ilmoitukset käyttöön</translation>
 <translation id="540969355065856584">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />, sillä sen suojausvarmenne ei tällä hetkellä ole kelvollinen. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="5412040515238827314">Virheellinen muoto: odotettu malliluettelo.</translation>
 <translation id="5412236728747081950">Tämä sivusto saa kiinnostuksen kohteesi Chromesta, jotta voit nähdä osuvampia mainoksia</translation>

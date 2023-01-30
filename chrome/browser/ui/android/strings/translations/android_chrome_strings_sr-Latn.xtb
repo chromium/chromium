@@ -237,6 +237,7 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2321086116217818302">Pripremaju se lozinke...</translation>
 <translation id="2323763861024343754">Memorijski prostor za sajt</translation>
 <translation id="2328985652426384049">Ne mogu da se prijavim</translation>
+<translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspelo.</translation>
 <translation id="234265804618409743">Ne možemo da otvorimo kameru. Došlo je do greške.</translation>
 <translation id="2349710944427398404">Svi podaci koje koristi Chrome, uključujući naloge, obeleživače i sačuvana podešavanja</translation>
 <translation id="235789365079050412">Google politika privatnosti</translation>
@@ -302,7 +303,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2656405586795711023">Veb-aplikacije</translation>
 <translation id="2669454659051515572">Svako ko koristi ovaj uređaj može da vidi preuzete fajlove</translation>
 <translation id="2702516483241149200">Novo: Delite link koji skroluje do ovog teksta</translation>
-<translation id="2704606927547763573">Kopirano</translation>
 <translation id="2707726405694321444">Osveži stranicu</translation>
 <translation id="2709516037105925701">Automatsko popunjavanje</translation>
 <translation id="271033894570825754">Novo</translation>
@@ -345,6 +345,7 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="2909615210195135082">Google platforma za obaveštenja</translation>
 <translation id="2912296070571964914">Upravljajte temama koje vas zanimaju u</translation>
 <translation id="2912345083818861431">Koristite zaključavanje ekrana da biste videli otvorene kartice bez arhiviranja</translation>
+<translation id="2922568440285376746">Pretraži sliku uz Google <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Naziv je nevažeći</translation>
 <translation id="2932150158123903946">Memorijski prostor za Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tastatura se neće promeniti</translation>
@@ -666,6 +667,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4684427112815847243">Sinhronizuj sve</translation>
 <translation id="4685741273709472646">Izaberite sa padajuće liste</translation>
 <translation id="4687718960473379118">Oglasi koje predlažu sajtovi</translation>
+<translation id="4689792375321623175">Pretraži sliku uz Google <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Keširane slike i fajlovi</translation>
 <translation id="4719927025381752090">Ponudi prevod</translation>
@@ -812,6 +814,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5438292632479953702">Preuzmi ponovo</translation>
 <translation id="5441466871879044658">Prevodite na ovaj jezik</translation>
 <translation id="5441522332038954058">Prelazak na traku za adresu</translation>
+<translation id="5444999712122199445">Nazad na sajt</translation>
 <translation id="544776284582297024">Da biste otvarali kartice i istovremeno posećivali različite stranice, dodirnite dugme Otvori kartice</translation>
 <translation id="5454166040603940656">sa dobavljačem <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Preuzmi stranicu</translation>

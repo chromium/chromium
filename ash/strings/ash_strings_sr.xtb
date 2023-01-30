@@ -734,6 +734,7 @@
 <translation id="492453977506755176">Тастер за режим снимања</translation>
 <translation id="4925542575807923399">Администратор за овај налог захтева да овај налог буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
 <translation id="4929163402621253029">Да ли говорите? Звук је искључен. Сазнајте више</translation>
+<translation id="4936329710968938986">Сви, искључено</translation>
 <translation id="4938176435186993759">Сакриј све предлоге</translation>
 <translation id="4945196315133970626">Искључи обавештења</translation>
 <translation id="4946376291507881335">Сними</translation>
@@ -1388,6 +1389,7 @@
 <translation id="8477270416194247200">Притисните Alt + тастер за претрагу или Shift да бисте отказали.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не подржава резолуцију <ph name="SPECIFIED_RESOLUTION" />. Резолуција је промењена у <ph name="FALLBACK_RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Прикажите подешавања Дељења у близини</translation>
+<translation id="8507563469658346379">Сви, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth на Chromebook-у је искључен. Да бисте откључали Chromebook, унесите лозинку.</translation>
 <translation id="8513108775083588393">Аутом. ротир.</translation>
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>

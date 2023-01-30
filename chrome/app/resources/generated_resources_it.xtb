@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Aggiungi al dizionario</translation>
 <translation id="1018656279737460067">Operazione annullata</translation>
 <translation id="1022489261739821355">Mostra password dal tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Il dispositivo è gestito da <ph name="DOMAIN" />. Gli amministratori possono accedere ai dati in qualsiasi profilo su questo dispositivo.</translation>
 <translation id="1026655690966755180">Aggiungi porta</translation>
 <translation id="1026822031284433028">Carica immagine</translation>
 <translation id="1028604629594230522">Chrome precarica le pagine che è probabile che visiterai, in modo che vengano caricate più rapidamente quando lo farai.</translation>
@@ -1866,6 +1867,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2643064289437760082">Puoi eliminare in qualsiasi momento i dati di misurazione degli annunci eliminando i dati di navigazione</translation>
 <translation id="2643698698624765890">Gestisci le tue estensioni facendo clic su Estensioni nel menu Finestra.</translation>
 <translation id="2645047101481282803">Il dispositivo è gestito da <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Trasmissione di questa scheda a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII con codifica Base64, catena di certificati</translation>
 <translation id="265156376773362237">Precaricamento standard</translation>
@@ -2738,6 +2740,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3446274660183028131">Avvia Parallels Desktop per installare Windows.</translation>
 <translation id="344630545793878684">Lettura dei dati su una serie di siti web</translation>
 <translation id="3447644283769633681">Blocca tutti i cookie di terze parti</translation>
+<translation id="3447797901512053632">Trasmissione di <ph name="TAB_NAME" /> a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="3448492834076427715">Aggiorna account</translation>
 <translation id="3449393517661170867">Nuova finestra a schede</translation>
 <translation id="3449839693241009168">Premi <ph name="SEARCH_KEY" /> per inviare comandi a <ph name="EXTENSION_NAME" /></translation>
@@ -2892,6 +2895,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3590295622232282437">Accesso a una sessione gestita.</translation>
 <translation id="3591057288287063271">Conserva il file <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Ulteriori informazioni</translation>
+<translation id="3592344177526089979">Trasmissione di una scheda a <ph name="DEVICE_NAME" /> in corso…</translation>
 <translation id="3593152357631900254">Abilita modalità Fuzzy pinyin</translation>
 <translation id="3593965109698325041">Vincoli nomi certificati</translation>
 <translation id="3596012367874587041">Impostazioni app</translation>

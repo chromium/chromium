@@ -1243,7 +1243,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4088981014127559358">Turno Y da imagem 1 lateral</translation>
 <translation id="4089152113577680600">Tabuleiro 14</translation>
 <translation id="4096237801206588987">11 x 15 pol.</translation>
-<translation id="4097288585054919042">Desativar alertas</translation>
 <translation id="4098354747657067197">O site seguinte é fraudulento</translation>
 <translation id="4099048595830172239">A política do administrador não recomenda a partilha do seu ecrã com a app <ph name="APPLICATION_TITLE" /> quando está visível conteúdo confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para personalizar os tipos de letra e os respetivos tamanhos no Chrome</translation>
@@ -1801,7 +1800,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5396631636586785122">Coser extremidade direita</translation>
 <translation id="5398772614898833570">Anúncios bloqueados</translation>
 <translation id="5400836586163650660">Cinzento</translation>
-<translation id="540630185148148480">Ativar alertas</translation>
 <translation id="540969355065856584">Este servidor não conseguiu provar que é <ph name="DOMAIN" />; de momento, o respetivo certificado de segurança não é válido. Isto pode ser provocado por uma configuração incorreta ou por um atacante que esteja a intercetar a sua ligação.</translation>
 <translation id="5412040515238827314">Formato inválido: esperava-se uma lista de padrões.</translation>
 <translation id="5412236728747081950">Este site obtém os seus interesses do Chrome para lhe mostrar anúncios mais relevantes</translation>

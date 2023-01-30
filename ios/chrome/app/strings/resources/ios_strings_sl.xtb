@@ -18,6 +18,7 @@ Vaš iskalnik je <ph name="DSE_NAME" />. Oglejte si navodila iskalnika za brisan
 <translation id="1066060668811609597">Upravljanje sinhronizacije</translation>
 <translation id="1076421457278169141">Koda je bila optično prebrana</translation>
 <translation id="1076785341346483463">Sinhronizacija z upravljanim računom</translation>
+<translation id="1080365971383768617">Gesla v vseh napravah</translation>
 <translation id="1084365883616172403">Objava v Facebooku je dokončana.</translation>
 <translation id="1085696779717592361">Privzeto uporabljajte Chrome</translation>
 <translation id="1103523840287552314">Vedno prevedi ta jezik: <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5056446788882570708">Težave so bile najdene: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">V redu</translation>
 <translation id="5062321486222145940">Namesti Google Drive</translation>
+<translation id="50641035439563602">Gesla so shranjena v računu Google (<ph name="ACCOUNT" />). Uporabljate jih lahko, kjer koli ste prijavljeni. Če želite to izklopiti, odprite <ph name="BEGIN_LINK" />nastavitve<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Velikost datoteke ni mogoče določiti.</translation>
 <translation id="5090832849094901128">Če izbrišete to geslo, ne izbrišete računa na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tvit je dokončan.</translation>
@@ -595,6 +597,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="5520466080178053306">Dotaknite se »Upravitelj gesel« in nato »Dodaj«.</translation>
 <translation id="5525095647255982834">Če želite ta zavihek poslati v drugo napravo, se v njej prijavite v Chrome.</translation>
 <translation id="5525269841082836315">Ustvarjanje gesla</translation>
+<translation id="5530084793407600786">Išči po sliki z Googlom</translation>
 <translation id="5542540507657872337">Št. najdenih: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff lets you start browsing a website on this device and then easily continue on your Mac. The current open website will appear in the Dock of your Mac.
 

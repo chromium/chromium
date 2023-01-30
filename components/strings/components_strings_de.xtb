@@ -188,6 +188,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1384725838384960382">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen</translation>
 <translation id="1386623374109090026">Anmerkungen</translation>
 <translation id="1391289752476847787">Aktien und Anleihen</translation>
+<translation id="1391625539203220400">IBAN auf diesem Gerät speichern?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hat keine Daten gesendet.</translation>
 <translation id="1396259464226642517">War dieses Ergebnis unerwartet? <ph name="BEGIN_LINK" />Feedback geben<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Hellgrün</translation>
@@ -1236,7 +1237,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4088981014127559358">Seite 1 – Y-Verschiebung des Bilds</translation>
 <translation id="4089152113577680600">Fach 14</translation>
 <translation id="4096237801206588987">11 × 15 Zoll</translation>
-<translation id="4097288585054919042">Benachrichtigungen deaktivieren</translation>
 <translation id="4098354747657067197">Bei der aufgerufenen Website besteht Phishing-Verdacht!</translation>
 <translation id="4099048595830172239">Gemäß Administratorrichtlinie wird nicht empfohlen, deinen Bildschirm mit <ph name="APPLICATION_TITLE" /> zu teilen, wenn vertrauliche Inhalte zu sehen sind:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
@@ -1790,7 +1790,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5396631636586785122">Mehrere Heftklammern rechts</translation>
 <translation id="5398772614898833570">Werbung blockiert</translation>
 <translation id="5400836586163650660">Grau</translation>
-<translation id="540630185148148480">Benachrichtigungen aktivieren</translation>
 <translation id="540969355065856584">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat ist zurzeit ungültig. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="5412040515238827314">Ungültiges Format: Es wurde eine Liste mit Mustern erwartet.</translation>
 <translation id="5412236728747081950">Diese Website ruft deine Interessen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann</translation>

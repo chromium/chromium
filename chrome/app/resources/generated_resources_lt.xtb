@@ -2924,6 +2924,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3602290021589620013">Peržiūra</translation>
 <translation id="3602870520245633055">Spausdinimas ir nuskaitymas</translation>
 <translation id="3603622770190368340">Gauti tinklo sertifikatą</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} paskyroje naudojamas toks pat slaptažodis}one{{COUNT} paskyroje naudojamas toks pat slaptažodis}few{{COUNT} paskyrose naudojamas toks pat slaptažodis}many{{COUNT} paskyros naudojamas toks pat slaptažodis}other{{COUNT} paskyrų naudojamas toks pat slaptažodis}}</translation>
 <translation id="3605780360466892872">Konservatyvusis</translation>
 <translation id="3609277884604412258">Sparčioji paieška</translation>
 <translation id="3610241585790874201">Neleidžiama išsaugoti duomenų įrenginyje</translation>

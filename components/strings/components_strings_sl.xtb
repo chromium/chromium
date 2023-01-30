@@ -188,6 +188,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1384725838384960382">Preglednica za preverjanje pristnosti poverilnice za varno plačilo</translation>
 <translation id="1386623374109090026">Pripisi</translation>
 <translation id="1391289752476847787">Delnice in obveznice</translation>
+<translation id="1391625539203220400">Želite shraniti IBAN v tej napravi?</translation>
 <translation id="139305205187523129">Spletno mesto <ph name="HOST_NAME" /> ni poslalo nobenih podatkov.</translation>
 <translation id="1396259464226642517">Je bil ta rezultat nepričakovan? <ph name="BEGIN_LINK" />Pošljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Svetlo zelena</translation>
@@ -1238,7 +1239,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4088981014127559358">Pomik slike na 1. strani v Y</translation>
 <translation id="4089152113577680600">Pladenj 14</translation>
 <translation id="4096237801206588987">11 x 15 palcev</translation>
-<translation id="4097288585054919042">Izklopi opozorila</translation>
 <translation id="4098354747657067197">Zavajajoče spletno mesto</translation>
 <translation id="4099048595830172239">Pravilnik skrbnika ne priporoča deljenja zaslona z aplikacijo <ph name="APPLICATION_TITLE" />, kadar je vidna zaupna vsebina:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite prilagoditi velikost pisav in tipografije v Chromu</translation>
@@ -1792,7 +1792,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5396631636586785122">Robni šiv na desni</translation>
 <translation id="5398772614898833570">Oglasi blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="540630185148148480">Vklop obvestil</translation>
 <translation id="540969355065856584">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo trenutno ni veljavno. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="5412040515238827314">Neveljavna oblika: Pričakovan je seznam vzorcev.</translation>
 <translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>

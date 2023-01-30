@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">ਸਿੰਕ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1076421457278169141">ਕੋਡ ਸਕੈਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1076785341346483463">ਪ੍ਰਬੰਧਿਤ ਕੀਤੇ ਖਾਤੇ ਨਾਲ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="1080365971383768617">ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="1084365883616172403">ਫੇਸਬੁੱਕ ਪੋਸਟ ਪੂਰੀ ਕੀਤੀ।</translation>
 <translation id="1085696779717592361">Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਵਰਤੋ</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> ਦਾ ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> ਸਮੱਸਿਆਵਾਂ ਮਿਲੀਆਂ।</translation>
 <translation id="5059136629401106827">ਠੀਕ ਹੈ</translation>
 <translation id="5062321486222145940">Google Drive ਸਥਾਪਤ ਕਰੋ</translation>
+<translation id="50641035439563602">ਪਾਸਵਰਡਾਂ ਨੂੰ ਹੁਣ ਤੁਹਾਡੇ Google ਖਾਤੇ (<ph name="ACCOUNT" />) 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਤੁਸੀਂ ਹੁਣ ਸਾਈਨ-ਇਨ ਹੋ ਕੇ ਕਿਤੇ ਵੀ ਉਨ੍ਹਾਂ ਨੂੰ ਵਰਤ ਸਕਦੇ ਹੋ। ਇਸਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="5083464117946352670">ਫਾਈਲ ਦਾ ਆਕਾਰ ਨਿਰਧਾਰਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="5090832849094901128">ਇਸ ਪਾਸਵਰਡ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ <ph name="WEBSITE" /> 'ਤੇ ਤੁਹਾਡੇ ਖਾਤੇ ਨੂੰ ਮਿਟਾਇਆ ਨਹੀਂ ਜਾਵੇਗਾ।</translation>
 <translation id="5094827893301452931">Tweet ਪੂਰਾ ਕੀਤਾ ਗਿਆ।</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Passwords Manager 'ਤੇ ਟੈਪ ਕਰ ਕੇ 'ਸ਼ਾਮਲ ਕਰੋ' 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5525095647255982834">ਇਸ ਟੈਬ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਭੇਜਣ ਲਈ ਉਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="5525269841082836315">ਪਾਸਫਰੇਜ਼ ਬਣਾਓ</translation>
+<translation id="5530084793407600786">Google ਨਾਲ ਚਿੱਤਰ ਵਿੱਚ ਖੋਜੋ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ਮਿਲੀਆਂ</translation>
 <translation id="5548760955356983418">Handoff ਤੁਹਾਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਵੈੱਬਸਾਈਟ ਬ੍ਰਾਊਜ਼ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰਨ ਅਤੇ ਫਿਰ ਆਸਾਨੀ ਨਾਲ ਤੁਹਾਡੇ Mac 'ਤੇ ਜਾਰੀ ਰੱਖਣ ਦਿੰਦਾ ਹੈ। ਮੌਜੂਦਾ ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਤੁਹਾਡੇ Mac ਦੇ 'ਡੌਕ' ਵਿੱਚ ਦਿਖਾਈ ਦੇਵੇਗੀ।
 

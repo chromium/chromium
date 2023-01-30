@@ -188,7 +188,7 @@
 <translation id="1384725838384960382">安全付款憑證驗證工作表</translation>
 <translation id="1386623374109090026">註解</translation>
 <translation id="1391289752476847787">股票和債券</translation>
-<translation id="1391625539203220400">要將 IBAN 儲存到這部裝置嗎？</translation>
+<translation id="1391625539203220400">要將 IBAN 儲存至此裝置嗎？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 沒有傳送任何資料。</translation>
 <translation id="1396259464226642517">結果未如預期嗎？<ph name="BEGIN_LINK" />傳送意見<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">淺綠色</translation>
@@ -1238,7 +1238,6 @@
 <translation id="4088981014127559358">側邊 1 圖片 Y 軸移動</translation>
 <translation id="4089152113577680600">紙匣 14</translation>
 <translation id="4096237801206588987">11 x 15 吋</translation>
-<translation id="4097288585054919042">閂通知</translation>
 <translation id="4098354747657067197">前往的是欺詐網站</translation>
 <translation id="4099048595830172239">當螢幕上出現機密內容時，管理員政策不建議您與 <ph name="APPLICATION_TITLE" /> 分享螢幕畫面：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂 Chrome 嘅字型大小同字體</translation>
@@ -1792,7 +1791,6 @@
 <translation id="5396631636586785122">邊緣釘裝 (右側)</translation>
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
-<translation id="540630185148148480">開啟通知</translation>
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="5412040515238827314">格式無效：輸入的值需要是模式清單。</translation>
 <translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>

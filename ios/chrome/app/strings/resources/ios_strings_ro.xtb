@@ -18,6 +18,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1066060668811609597">Gestionează sincronizarea</translation>
 <translation id="1076421457278169141">Codul a fost scanat</translation>
 <translation id="1076785341346483463">Sincronizează cu contul gestionat</translation>
+<translation id="1080365971383768617">Parole disponibile pe toate dispozitivele</translation>
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
 <translation id="1085696779717592361">Folosește Chrome în mod prestabilit</translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5056446788882570708">S-au găsit mai multe probleme <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Instalează Google Drive</translation>
+<translation id="50641035439563602">Parolele au fost salvate în Contul tău Google (<ph name="ACCOUNT" />). Le poți folosi oriunde te conectezi. Pentru a dezactiva opțiunea, accesează <ph name="BEGIN_LINK" />setările<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet finalizat.</translation>
@@ -595,6 +597,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5520466080178053306">Atinge Manager de parole, apoi Adaugă</translation>
 <translation id="5525095647255982834">Pentru a trimite fila pe alt dispozitiv, conectează-te la Chrome pe dispozitivul respectiv.</translation>
 <translation id="5525269841082836315">Creează o expresie de acces</translation>
+<translation id="5530084793407600786">Caută în imagine cu Google</translation>
 <translation id="5542540507657872337">S-au găsit <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Cu Handoff, începi să navighezi pe un site de pe acest dispozitiv, apoi continui cu ușurință de pe Mac. Site-ul deschis actual va apărea în Dock pe Mac.
 

@@ -3565,7 +3565,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4175737294868205930">Туруктуу сактагыч</translation>
 <translation id="4176463684765177261">Өчүк</translation>
 <translation id="4176864026061939326">Бул түзмөктү ишкана тескейт. <ph name="USER_EMAIL_ADDRESS" /> аккаунту үчүн түзмөктүн администраторунан жаңы профилди түзүү талап кылынат</translation>
-<translation id="4177501066905053472">Жарнама темалары</translation>
+<translation id="4177501066905053472">Жарнамалардын темалары</translation>
 <translation id="4180788401304023883">"<ph name="CERTIFICATE_NAME" />" ТБ тастыктамасы жок кылынсынбы?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Тилдер</translation>
@@ -4438,7 +4438,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4992458225095111526">Жууп салууну ырастоо</translation>
 <translation id="4992473555164495036">Администратор айрым киргизүү ыкмаларын колдонууга тыюу салды.</translation>
 <translation id="4994754230098574403">Орнотулууда</translation>
-<translation id="4995293419989417004">Жарнама темалары тууралуу кеңири маалымат</translation>
+<translation id="4995293419989417004">Жарнамалардын темалары тууралуу кеңири маалымат</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{<ph name="VM_TYPE" /> виртуалдык машиналары табылган жок}=1{1 <ph name="VM_TYPE" /> виртуалдык машинасы табылды: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} <ph name="VM_TYPE" /> виртуалдык машинасы табылды: <ph name="VM_NAME_LIST" />}}</translation>
 <translation id="4997086284911172121">Интернет жок.</translation>
 <translation id="4998430619171209993">Күйүк</translation>

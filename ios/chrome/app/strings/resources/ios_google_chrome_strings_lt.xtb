@@ -3,6 +3,7 @@
 <translationbundle lang="lt">
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1282031177488366470">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
+<translation id="1352919863522755794">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="1462727070346936664">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
 <translation id="1479202195792305274">„Chrome“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="1493827051843127077">Nustatykite „Chrome“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="2732745070297234559">„Chrome“ nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
+<translation id="2767464022270041271">Nėra išsaugotų slaptažodžių. „Google“ slaptažodžių tvarkyklė gali tikrinti slaptažodžius, kai juos išsaugote.</translation>
 <translation id="2869959624320573933">Prisijunkite prie „Chrome“</translation>
 <translation id="2957447865124070833">Pasirinkite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chrome“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
@@ -59,6 +61,7 @@
 <translation id="4698415050768537821">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
+<translation id="4840404732697892756">„Google“ slaptažodžių tvarkyklė gali patikrinti slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="5030102366287574140">„Chrome“ gali padėti apsisaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir pan.</translation>
 <translation id="5108659628347594808">„Chrome“ tobulinimas</translation>
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
@@ -68,6 +71,7 @@
 <translation id="5552137475244467770">„Chrome“ periodiškai tikrina, ar jūsų slaptažodžiai nebuvo įtraukti į internete paskelbtus sąrašus. Tai atliekant, slaptažodžiai ir naudotojų vardai užšifruojami, kad niekas negalėtų jų perskaityti, įskaitant „Google“.</translation>
 <translation id="5639704535586432836">Atidarykite „Nustatymai“ &gt; „Privatumas“ &gt; „Fotoaparatas“ &gt; „Google Chrome“ ir įjunkite fotoaparatą.</translation>
 <translation id="5642200033778930880">„Google Chrome“ negali naudoti fotoaparato padalyto rodinio režimu</translation>
+<translation id="5661521615548540542">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Vėliau bandykite dar kartą.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Neprisijungta, todėl „Chrome“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="5716154293141027663">Bet kada palietus nuorodas kitose programose, bus atidaroma „Chrome“</translation>
@@ -120,9 +124,11 @@
   2. Palieskite „Numatytoji naršyklės programa“.
   3. Pasirinkite „Chrome“.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Saugos užtikrinimas naudojant „Google Chrome“</translation>
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="8788269841521769222">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="8897749957032330183">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje.</translation>
 <translation id="8969290730818637510">Kai įjungta
 <ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />

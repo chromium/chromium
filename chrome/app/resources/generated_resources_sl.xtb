@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Dodaj v slovar</translation>
 <translation id="1018656279737460067">Preklicano</translation>
 <translation id="1022489261739821355">Prikaz gesel iz <ph name="BEGIN_LINK" />računa Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Napravo upravlja domena <ph name="DOMAIN" />. Skrbniki lahko dostopajo do podatkov v katerem koli profilu v tej napravi.</translation>
 <translation id="1026655690966755180">Dodajanje vrat</translation>
 <translation id="1026822031284433028">Naloži sliko</translation>
 <translation id="1028604629594230522">Chrome vnaprej naloži strani, ki jih boste verjetno obiskali, da se ob obisku naložijo še hitreje.</translation>
@@ -1884,6 +1885,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2643064289437760082">Podatke merjenja oglasov lahko kadar koli izbrišete tako, da izbrišete podatke brskanja.</translation>
 <translation id="2643698698624765890">Razširitve lahko upravljate tako, da v meniju »Windows« kliknete »Extensions«.</translation>
 <translation id="2645047101481282803">Napravo upravlja <ph name="PROFILE_NAME" />.</translation>
+<translation id="2645388244376970260">Predvajanje tega zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64 kodiran ASCII, veriga potrdil</translation>
 <translation id="265156376773362237">Standardno vnaprejšnje nalaganje</translation>
@@ -2756,6 +2758,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3446274660183028131">Zaženite program Parallels Desktop, če želite namestiti sistem Windows.</translation>
 <translation id="344630545793878684">Branje vaših podatkov na več spletnih mestih</translation>
 <translation id="3447644283769633681">Blokiraj vse piškotke drugih spletnih mest</translation>
+<translation id="3447797901512053632">Predvajanje zavihka <ph name="TAB_NAME" /> v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="3448492834076427715">Posodobi račun</translation>
 <translation id="3449393517661170867">Novo okno z zavihki</translation>
 <translation id="3449839693241009168">Pritisnite <ph name="SEARCH_KEY" />, če želite poslati ukaze v <ph name="EXTENSION_NAME" /></translation>
@@ -2910,6 +2913,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3590295622232282437">Prijava v upravljano sejo.</translation>
 <translation id="3591057288287063271">Ohranitev datoteke <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">Več o tem</translation>
+<translation id="3592344177526089979">Predvajanje zavihka v napravi <ph name="DEVICE_NAME" />.</translation>
 <translation id="3593152357631900254">Omogoči način enakozvočnega pinjina</translation>
 <translation id="3593965109698325041">Omejitve imena potrdila</translation>
 <translation id="3596012367874587041">Nastavitve aplikacije</translation>
@@ -3185,6 +3189,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3823310065043511710">Za Linux priporočamo najmanj <ph name="INSTALL_SIZE" /> prostora.</translation>
 <translation id="3824621460022590830">Žeton za včlanitev naprave je neveljaven. Obrnite se na lastnika ali skrbnika naprave. Koda napake: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapomni si mojo izbiro za to vrsto podatkov: <ph name="FILE_TYPES" />}one{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}two{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}few{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}other{Zapomni si mojo izbiro za te vrste podatkov: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Prikaz pike na ikoni aplikacije za opozorila glede aplikacij</translation>
 <translation id="3826071569074535339">Dovoljena je uporaba tipal gibanja</translation>
 <translation id="3826440694796503677">Skrbnik je onemogočil dodajanje več računov Google</translation>
 <translation id="3827774300009121996">&amp;Celozaslonsko</translation>
@@ -4505,6 +4510,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5063480226653192405">Uporaba</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljanje varnega DNS-ja v nastavitvah sistema Chrome OS</translation>
+<translation id="5066160542186949327">Premik v drugo mapo</translation>
 <translation id="5067399438976153555">Vedno vklopljeno</translation>
 <translation id="5067867186035333991">Vprašaj, ali <ph name="HOST" /> zahteva dostop do mikrofona</translation>
 <translation id="5068553687099139861">pokazati gesla</translation>

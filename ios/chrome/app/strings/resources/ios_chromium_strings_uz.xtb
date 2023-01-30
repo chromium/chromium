@@ -6,6 +6,7 @@
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
 <translation id="1289216811211435351">Chromiumga almashish</translation>
+<translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1361748954329991663">Chromium versiyasi eskirdi. Agar <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> orqali chiqmasa, demak qurilmangizda yangi versiyadagi Chromium nashrlari ishlamasligi mumkin.</translation>
 <translation id="1431818719585918472">Chromium bilan Inkognito varaqlarni himoyalang.</translation>
 <translation id="1472013873724362412">Hisobingiz Chromium tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
@@ -35,6 +36,7 @@
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="2684230048001240293">Chromium brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="2730884209570016437">Chromium kamerangizdan foydalana olmaydi, chunki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
+<translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2915596697727466327">Parollaringizga tezkor ruxsat olish uchun Chromium – Face ID tekshiruvini ishlatadi.</translation>
 <translation id="2918709798697875261">Tashkilotingiz Chromium hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="2942241131342758843">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chromium birlamchi ilova sifatida ishlatilsin</translation>
@@ -57,6 +59,7 @@
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
 <translation id="4736424910885271643">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi</translation>
 <translation id="4828317641996116749">Chromium barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
+<translation id="4840404732697892756">Google Parollar menejeri parollarni Google hisobiga kirish vaqtida tekshirishi mumkin.</translation>
 <translation id="4985291216379576555">Oflayn, Chromium yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="4996471330284142407">Oddiy, xavfsiz va har qachongidan tezkor Chromium brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="4999538639245140991">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chromium maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizdagi axborotlar saqlanib qoladi.</translation>
@@ -67,6 +70,7 @@
 <translation id="5521125884468363740">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun hisobga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="5522297504975449419">Ayrim Chromium funksiyalari endi ishlamaydi.</translation>
 <translation id="5573014823074921752">Chromium maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
+<translation id="5661521615548540542">Google Parollar menejeri barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="5700709190537129682">Chromium parollaringizni tekshira olmadi</translation>
 <translation id="5777187867430702742">Chromium sahifasi</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chromium ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chromium ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
@@ -114,6 +118,7 @@
 <translation id="8409374867500149834">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="858114650497379505">Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
+<translation id="8603022514504485810">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
 <translation id="8663480472502753423">Chromium brauzerini yangilab boring</translation>
 <translation id="8685813584220679697">Bu sayt va Chromium hisoblariga kiring.</translation>
@@ -127,6 +132,7 @@ Bularni hisobga olish kerak:
 
   • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromiumdan olib tashlanadi.</translation>
+<translation id="8857676124663337448">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="894437814105052438">Hisobingizdan chiqsangiz, Chromium yangi maʼlumotlarni Google hisobingizga sinxronlamaydi. Oldin sinxronlangan maʼlumotlar hisobingizda qoladi.</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
 <translation id="9059693977935746710">Bu parolni eslab qolishingiz shart emas. U Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>

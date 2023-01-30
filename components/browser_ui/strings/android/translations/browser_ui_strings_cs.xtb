@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Vyberte kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Zvětšit nebo zmenšit text a obrázky na všech navštívených webech</translation>
 <translation id="1984937141057606926">Povoleno, s výjimkou souborů cookie třetí strany</translation>
 <translation id="1989112275319619282">Procházet</translation>
 <translation id="1994173015038366702">Adresa URL webu</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="216989819110952009">I přestože měli oči chráněné zelenými brýlemi, Dorotka a její přátelé byli oslněni</translation>
+<translation id="2176704795966505152">Zobrazovat v hlavní nabídce možnost přiblížení</translation>
 <translation id="2182457891543959921">Předtím, než webům bude povoleno vytvořit 3D mapu vašeho okolí nebo sledovat polohu kamery, se zeptat (doporučeno)</translation>
 <translation id="2212565012507486665">Povolit cookies</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
@@ -93,7 +95,6 @@
 <translation id="2653659639078652383">Odeslat</translation>
 <translation id="2677748264148917807">Odejít</translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
-<translation id="2704606927547763573">Zkopírováno</translation>
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
@@ -166,6 +167,7 @@
 <translation id="4008040567710660924">Povolit soubory cookie pro konkrétní web.</translation>
 <translation id="4046123991198612571">Další skladba</translation>
 <translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
+<translation id="4151930093518524179">Výchozí přiblížení</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
 <translation id="4169549551965910670">Připojeno k zařízení USB</translation>
 <translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
@@ -189,6 +191,7 @@
 <translation id="4534723447064627427">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k mikrofonu, zapněte mikrofon také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Vypnout mikrofon</translation>
 <translation id="4570913071927164677">Podrobnosti</translation>
+<translation id="4575264539271661854">Usnadnit přiblížení textu a obrázků na navštíveném webu</translation>
 <translation id="4598549027014564149">V anonymním režimu weby nemohou používat soubory cookie ke sledování vaší aktivity prohlížení na webech, a to ani na souvisejících webech. Vaše aktivita prohlížení se nepoužívá například k personalizaci reklam. Některé weby mohou přestat fungovat.</translation>
 <translation id="4645575059429386691">Spravováno vaším rodičem</translation>
 <translation id="4670064810192446073">Virtuální realita</translation>

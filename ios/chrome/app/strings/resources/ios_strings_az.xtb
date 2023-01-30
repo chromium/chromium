@@ -18,6 +18,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="1066060668811609597">Sinxronizasiyanı İdarə Edin</translation>
 <translation id="1076421457278169141">Kod skan olundu</translation>
 <translation id="1076785341346483463">İdarə olunan hesabla sinxronizasiya edin</translation>
+<translation id="1080365971383768617">Bütün cihazlarınızda parollar</translation>
 <translation id="1084365883616172403">Facebook paylaşımı tamamlandı.</translation>
 <translation id="1085696779717592361">Defolt olaraq Chrome istifadə edin</translation>
 <translation id="1103523840287552314">Həmişə <ph name="LANGUAGE" /> dilinə tərcümə edin</translation>
@@ -545,6 +546,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5056446788882570708">Problemlər tapıldı: <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Diski quraşdırın</translation>
+<translation id="50641035439563602">Parollar indi Google Hesabınızda saxlanılır (<ph name="ACCOUNT" />). Daxil olduğunuz yerdə onlardan istifadə edə bilərsiniz. Bunu deaktiv etmək üçün <ph name="BEGIN_LINK" />ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="5083464117946352670">Fayl ölçüsünü müəyyənləşdirmək olmur.</translation>
 <translation id="5090832849094901128">Bu parolu sildikdə <ph name="WEBSITE" /> saytında hesabınız silinməyəcək.</translation>
 <translation id="5094827893301452931">Tweet tamamlandı.</translation>
@@ -595,6 +597,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="5520466080178053306">Parol Meneceri, sonra "Əlavə et" seçiminə toxunun</translation>
 <translation id="5525095647255982834">Bu tabı başqa cihaza göndərmək üçün orada Chrome'a daxil olun.</translation>
 <translation id="5525269841082836315">Parol söz yaradın</translation>
+<translation id="5530084793407600786">Google ilə şəklin içərisində axtarın</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> tapıldı</translation>
 <translation id="5548760955356983418">Handoff bu cihazda asanlıqla veb sayt açıb Mac cihazınızda davam etməyə imkan verir. Cari açıq veb sayt Mac cihazınızda görünəcək.
 

@@ -734,6 +734,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="492453977506755176">Taster za režim snimanja</translation>
 <translation id="4925542575807923399">Administrator za ovaj nalog zahteva da ovaj nalog bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="4929163402621253029">Da li govorite? Zvuk je isključen. Saznajte više</translation>
+<translation id="4936329710968938986">Svi, isključeno</translation>
 <translation id="4938176435186993759">Sakrij sve predloge</translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
@@ -1388,6 +1389,7 @@ Novo instaliranje</translation>
 <translation id="8477270416194247200">Pritisnite Alt + taster za pretragu ili Shift da biste otkazali.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava rezoluciju <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promenjena u <ph name="FALLBACK_RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Prikažite podešavanja Deljenja u blizini</translation>
+<translation id="8507563469658346379">Svi, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth na Chromebook-u je isključen. Da biste otključali Chromebook, unesite lozinku.</translation>
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>

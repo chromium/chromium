@@ -1237,7 +1237,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4088981014127559358">1. oldali kép Y-eltolása</translation>
 <translation id="4089152113577680600">14. tálca</translation>
 <translation id="4096237801206588987">11 × 15 hüvelyk</translation>
-<translation id="4097288585054919042">Értesítések kikapcsolása</translation>
 <translation id="4098354747657067197">Megtévesztő webhely megnyitására készül</translation>
 <translation id="4099048595830172239">A rendszergazda által beállított házirend nem javasolja a képernyő <ph name="APPLICATION_TITLE" /> alkalmazással való megosztását, ha bizalmas tartalom látható a képernyőn:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban megjelenő betűméretek és betűképek személyre szabásához.</translation>
@@ -1791,7 +1790,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5396631636586785122">Éltűzés a jobb oldalon</translation>
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
-<translation id="540630185148148480">Értesítések bekapcsolása</translation>
 <translation id="540969355065856584">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa jelenleg nem érvényes. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
 <translation id="5412040515238827314">Érvénytelen formátum: A rendszer mintalistát várt.</translation>
 <translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>

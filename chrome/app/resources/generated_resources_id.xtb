@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Tambahkan ke kamus</translation>
 <translation id="1018656279737460067">Dibatalkan</translation>
 <translation id="1022489261739821355">Menampilkan sandi dari <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /> Anda</translation>
+<translation id="1022669824195822609">Perangkat Anda dikelola oleh <ph name="DOMAIN" />. Administrator dapat mengakses data di profil mana pun di perangkat ini.</translation>
 <translation id="1026655690966755180">Tambahkan Port</translation>
 <translation id="1026822031284433028">Muat Gambar</translation>
 <translation id="1028604629594230522">Chrome melakukan pramuat halaman yang mungkin akan Anda buka, agar halaman tersebut dimuat lebih cepat saat Anda membukanya.</translation>
@@ -1881,6 +1882,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2643064289437760082">Anda dapat menghapus data pengukuran iklan kapan saja dengan menghapus data penjelajahan</translation>
 <translation id="2643698698624765890">Kelola ekstensi Anda dengan mengklik Ekstensi pada menu Window.</translation>
 <translation id="2645047101481282803">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Mentransmisikan tab ini ke <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
 <translation id="265156376773362237">Pramuat standar</translation>
@@ -2753,6 +2755,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3446274660183028131">Luncurkan Parallels Desktop untuk menginstal Windows.</translation>
 <translation id="344630545793878684">Membaca data Anda di sejumlah situs</translation>
 <translation id="3447644283769633681">Cekal semua cookie pihak ketiga</translation>
+<translation id="3447797901512053632">Mentransmisikan <ph name="TAB_NAME" /> ke <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Perbarui akun</translation>
 <translation id="3449393517661170867">Jendela dengan tab baru</translation>
 <translation id="3449839693241009168">Tekan <ph name="SEARCH_KEY" /> untuk mengirimkan perintah ke <ph name="EXTENSION_NAME" /></translation>
@@ -2907,6 +2910,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3590295622232282437">Memasuki sesi terkelola.</translation>
 <translation id="3591057288287063271">Simpan <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Pelajari lebih lanjut</translation>
+<translation id="3592344177526089979">Mentransmisikan tab ke <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktifkan mode Pinyin Fuzi</translation>
 <translation id="3593965109698325041">Kendala Nama Sertifikat</translation>
 <translation id="3596012367874587041">Setelan aplikasi</translation>

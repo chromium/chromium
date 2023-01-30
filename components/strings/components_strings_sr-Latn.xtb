@@ -188,6 +188,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1384725838384960382">Tabela za potvrdu akreditiva za bezbedno plaćanje</translation>
 <translation id="1386623374109090026">Napomene</translation>
 <translation id="1391289752476847787">Akcije i obveznice</translation>
+<translation id="1391625539203220400">Želite da sačuvate IBAN na ovom uređaju?</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
 <translation id="1396259464226642517">Da li je ovo neočekivan rezultat? <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Svetlozelena</translation>
@@ -1238,7 +1239,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4088981014127559358">Pomeranje slike 1. strane po Y osi</translation>
 <translation id="4089152113577680600">14. fioka</translation>
 <translation id="4096237801206588987">11×15 in</translation>
-<translation id="4097288585054919042">Isključite obaveštenja</translation>
 <translation id="4098354747657067197">Pred vama je obmanjujući sajt</translation>
 <translation id="4099048595830172239">Smernice administratora ne preporučuju deljenje ekrana sa <ph name="APPLICATION_TITLE" /> kada se vidi poverljiv sadržaj:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste prilagodili veličine i izgled fontova u Chrome-u</translation>
@@ -1792,7 +1792,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5396631636586785122">Spajanje ivica šavom na desnoj strani</translation>
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
-<translation id="540630185148148480">Uključite obaveštenja</translation>
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
 <translation id="5412040515238827314">Nevažeći format: Očekivana je lista obrazaca.</translation>
 <translation id="5412236728747081950">Ovaj sajt prima podatke o vašim interesovanjima iz Chrome-a da bi vam prikazivao relevantnije oglase</translation>

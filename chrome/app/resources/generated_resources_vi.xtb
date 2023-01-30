@@ -3182,6 +3182,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3823310065043511710">Linux nên có dung lượng tối thiểu là <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Mã đăng ký thiết bị là không hợp lệ. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Ghi nhớ lựa chọn của tôi cho loại tệp này: <ph name="FILE_TYPES" />}other{Ghi nhớ lựa chọn của tôi cho những loại tệp này: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Hiện dấu chấm trên biểu tượng ứng dụng khi ứng dụng có thông báo</translation>
 <translation id="3826071569074535339">Được phép sử dụng cảm biến chuyển động</translation>
 <translation id="3826440694796503677">Quản trị viên đã tắt tính năng thêm Tài khoản Google khác</translation>
 <translation id="3827774300009121996">&amp;Toàn Màn hình</translation>
@@ -4502,6 +4503,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Quản lý tính năng DNS bảo mật trong phần cài đặt ChromeOS</translation>
+<translation id="5066160542186949327">Chuyển đến một thư mục khác</translation>
 <translation id="5067399438976153555">Luôn bật</translation>
 <translation id="5067867186035333991">Hỏi nếu <ph name="HOST" /> muốn truy cập micrô của bạn</translation>
 <translation id="5068553687099139861">hiển thị mật khẩu</translation>

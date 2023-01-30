@@ -183,6 +183,7 @@
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
 <translation id="200114059308480249">要在使用 Google 搜尋時納入前後文嗎？</translation>
+<translation id="2009341475524975924">為評估廣告成效，網站間可分享特定類型的資料，例如在一天中向使用者放送廣告的時段。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「要求電腦版網站」</translation>
@@ -303,7 +304,6 @@
 <translation id="2656405586795711023">網頁應用程式</translation>
 <translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
-<translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="271033894570825754">全新</translation>
@@ -653,6 +653,7 @@
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
+<translation id="4637420359569396807">透過廣告評估，網站和應用程式間可分享特定類型的資料，以評估廣告成效，例如在一天中向使用者放送廣告的時段。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 組密碼遭外洩}other{有 # 組密碼遭外洩}}</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="af">
 <translation id="1143896152279775643">Jou wagwoord sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
+<translation id="1352919863522755794">Google Wagwoordbestuurder kon nie jou wagwoorde nagaan nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1462727070346936664">Meld aan om Chrome ten beste te benut.</translation>
 <translation id="1479202195792305274">Chrome kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496"><ph name="BEGIN_LINK" />Meld af by Chrome<ph name="END_LINK" /> om op alle webwerwe by jou Google-rekening af te meld.</translation>
 <translation id="2695886661449553974">Chrome kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
 <translation id="2732745070297234559">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
+<translation id="2767464022270041271">Geen gestoorde wagwoorde nie. Google Wagwoordbestuurder kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
 <translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2957447865124070833">Kies <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Omdat jy afmeld uit 'n rekening wat deur <ph name="SIGNOUT_MANAGED_DOMAIN" /> bestuur word, sal jou Chrome-data op hierdie toestel uitgevee word. Jou data sal in jou Google-rekening bly.</translation>
@@ -59,6 +61,7 @@
 <translation id="4698415050768537821">Chrome kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_LINK" />Bestuur<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nie op Chrome Beta gesteun nie</translation>
+<translation id="4840404732697892756">Google Wagwoordbestuurder kan jou wagwoorde nagaan wanneer jy met jou Google-rekening aanmeld.</translation>
 <translation id="5030102366287574140">Chrome kan help om jou teen dataskendings, onveilige webwerwe en meer te beskerm.</translation>
 <translation id="5108659628347594808">Maak Chrome beter</translation>
 <translation id="5119391094379141756">Kies Chrome</translation>
@@ -68,6 +71,7 @@
 <translation id="5552137475244467770">Chrome vergelyk jou wagwoorde van tyd tot tyd met lyste wat aanlyn gepubliseer is. Wanneer dit gedoen word, word jou wagwoorde en gebruikername geënkripteer sodat niemand, insluitend Google, hulle kan lees nie.</translation>
 <translation id="5639704535586432836">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Google Chrome oop en skakel die kamera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan nie jou kamera in deelaansigmodus gebruik nie</translation>
+<translation id="5661521615548540542">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Chrome kan nie vanlyn vir opdaterings kyk nie</translation>
 <translation id="5716154293141027663">Maak Chrome oop elke keer wanneer jy op skakels in ander programme tik</translation>
@@ -120,9 +124,11 @@
   2. Tik op Verstekblaaierprogram
   3. Kies Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Bly veilig met Google Chrome</translation>
 <translation id="8772179140489533211">Wys porboodskappe om by Chrome aan te meld.</translation>
 <translation id="8788269841521769222">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Google Wagwoordbestuurder gestoor word</translation>
+<translation id="8857676124663337448">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
 <translation id="8897749957032330183">Wagwoorde word op hierdie toestel in Google Wagwoordbestuurder gestoor.</translation>
 <translation id="8969290730818637510">Wanneer dit aan is:
 <ph name="BEGIN_INDENT" />  • Help dit om Chrome beter te maak vir mense wat dit gebruik soos wat jy dit gebruik.<ph name="END_INDENT" />

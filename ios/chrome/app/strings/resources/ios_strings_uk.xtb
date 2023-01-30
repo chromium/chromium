@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Керуйте синхронізацією</translation>
 <translation id="1076421457278169141">Код зіскановано</translation>
 <translation id="1076785341346483463">Синхронізувати з керованим обліковим записом</translation>
+<translation id="1080365971383768617">Паролі на всіх ваших пристроях</translation>
 <translation id="1084365883616172403">Опубліковано у Facebook</translation>
 <translation id="1085696779717592361">Використовувати Chrome за умовчанням</translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708">Проблеми виявлено <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Установити Google Диск</translation>
+<translation id="50641035439563602">Тепер паролі зберігаються у вашому обліковому записі Google (<ph name="ACCOUNT" />). Їх можна використовувати на всіх пристроях, де ви ввійшли в обліковий запис. Щоб вимкнути цю функцію, перейдіть у <ph name="BEGIN_LINK" />налаштування<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Невідомий розмір файлу.</translation>
 <translation id="5090832849094901128">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="WEBSITE" /> залишиться.</translation>
 <translation id="5094827893301452931">Твіт опубліковано.</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Натисніть "Менеджер паролів", а потім – "Додати"</translation>
 <translation id="5525095647255982834">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome.</translation>
 <translation id="5525269841082836315">Створити парол.фразу</translation>
+<translation id="5530084793407600786">Пошук на зображенні через Google</translation>
 <translation id="5542540507657872337">Знайдено <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">За допомогою Handoff можна почати переглядати веб-сайт на цьому пристрої, а потім легко продовжити на пристрої Mac. Відкритий веб-сайт з’явиться на панелі Dock на пристрої Mac.
 

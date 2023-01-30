@@ -131,7 +131,7 @@
 <translation id="1123650965531933634">默认情况下拒绝向所有网站授予窗口放置权限</translation>
 <translation id="112496019059412872">控制“记住密码”功能在 Kerberos 身份验证对话框中是否处于启用状态。密码会以加密方式存储在磁盘上，只可在用户会话期间由 Kerberos 系统守护程序访问。
 
-          如果此政策已启用或未设置，用户可以决定是否记住 Kerberos 密码，记住密码后就不需要重新输入密码。除非需要进行额外的身份验证（双重身份验证），否则系统会自动获取 Kerberos 凭据。
+          如果此政策已启用或未设置，用户可以决定是否记住 Kerberos 密码，记住密码后就不需要重新输入密码。除非需要进行额外的身份验证（双重身份验证），否则系统会自动获取 Kerberos 票据。
 
           如果此政策已停用，系统永远不会记住密码，并会移除之前存储的所有密码。每当需要向 Kerberos 系统验证身份时，用户都必须输入密码。这种情况通常每 8 小时到数月时间就会发生一次，具体取决于服务器设置。</translation>
 <translation id="1133622335785078255">允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
@@ -459,6 +459,7 @@
       当此政策设为 Fast 时，<ph name="PRODUCT_NAME" /> 会尽量避免执行光栅化。减少光栅化操作有助于缩小打印任务的规模并提高打印速度。
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 将处于 Full 模式。</translation>
+<translation id="1451597482289285597">用于启动屏保的设备闲置状态超时时限。</translation>
 <translation id="1455351936334569779">已在拒绝列表中的各类打印机将被停用，因此用户将无法发现或使用它们。
 
       将所有打印机类型都添加到拒绝列表中相当于停用打印功能，因为没有任何可用来接收要打印的文档的目的地。
@@ -1082,6 +1083,11 @@
 <translation id="2018425641414671849">不允许用户在设备锁定时播放媒体</translation>
 <translation id="2021087124402050619">允许 Chrome 清理功能定期扫描系统并启用人工扫描</translation>
 <translation id="2024476116966025075">为远程访问客户端配置必要的域名</translation>
+<translation id="2027764364653772586">配置要让系统等到设备闲置多久（以秒为单位）之后在登录屏幕上显示屏保。
+
+有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（7 秒）。
+
+如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="2029985289397958781">为企业用户停用由 <ph name="GOOGLE_LENS_PRODUCT_NAME" />提供支持的摄像头辅助搜索功能</translation>
 <translation id="2030905906517501646">默认搜索服务提供商关键字</translation>
 <translation id="203096360153626918">此政策对 Android 应用没有任何影响。即使此政策设为 <ph name="FALSE" />，这些应用也将能够进入全屏模式。</translation>
@@ -1440,6 +1446,15 @@
 <translation id="2366301887862414321">允许使用用户级和系统级原生消息传递主机</translation>
 <translation id="2373014700224092497">允许用户添加 Kerberos 帐号</translation>
 <translation id="2376134474855349829">为登录屏幕停用屏幕键盘，并允许用户暂时启用它</translation>
+<translation id="2377822335794178310">为登录屏幕配置设备级屏保。
+
+如果此政策设为 true，当 <ph name="PRODUCT_OS_NAME" /> 设备在登录屏幕中处于闲置状态时，系统会显示屏保。
+
+如果此政策设为 false 或未设置，系统不会在登录屏幕中显示屏保。
+
+设备屏保会显示 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 政策引用的图片。如果 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 未设置，或者设为空列表或不含任何有效图片的列表，系统不会在登录屏幕中显示屏保。
+
+如需修改用于启动屏保的闲置状态超时时限设置，请使用 <ph name="DEVICE_SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 政策；如需修改图片的显示时间间隔设置，请使用 <ph name="DEVICE_SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 政策。如果未设置上述任一政策，系统将改用相应的默认值。</translation>
 <translation id="2382672620906337383">在达到某个更高的嵌套阈值之后，JavaScript setTimeout() 才会被强制设为下限值。</translation>
 <translation id="2384233438419344179">如果此政策已启用，系统会阻止来自浏览器地址栏所含网域之外的网页元素设置 Cookie。如果此政策已停用，系统会允许这些元素设置 Cookie，并会阻止用户更改此设置。
 
@@ -1890,6 +1905,11 @@
 
       如果您停用或不设置此政策，生成的 Kerberos SPN 便不会包含端口。</translation>
 <translation id="2834965199373338033">启用后台模式</translation>
+<translation id="2835648603076938116">当为登录屏幕设定的屏保有多张可显示的图片时，此政策可用于指定图片的显示时间间隔（以秒为单位）。
+
+有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（60 秒）。
+
+如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="2835686964326214400">设置自定义时间表以指定应于何时重新启动设备</translation>
 <translation id="2838830882081735096">禁止数据迁移和 ARC</translation>
 <translation id="2839294585867804686">网络文件共享功能设置</translation>
@@ -2146,6 +2166,7 @@
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="305106159605171619">“用户代理字符串缩短”功能已停用，且未通过现场试验或源试用启用。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3060177910182947411">用于启动用户屏保的空闲超时值。</translation>
 <translation id="3063302084011279315">停用“屏幕录制”功能</translation>
 <translation id="3064530882228745118">在 Kerberos 身份验证期间使用 CNAME 查找功能</translation>
 <translation id="3066446511111537292">允许此设备的关联用户使用 ADB 旁加载</translation>
@@ -2188,6 +2209,7 @@
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
 <translation id="309885424548342662">启用 Microsoft® 云身份验证</translation>
+<translation id="310020160141550490">用户屏保图片的显示时间间隔。</translation>
 <translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
 <translation id="3101709781009526431">日期和时间</translation>
@@ -2763,6 +2785,13 @@
 <translation id="3589193811812796052">禁止跨源发送 WebAssembly 模块</translation>
 <translation id="3591527072193107424">启用“旧版浏览器支持”功能。</translation>
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
+<translation id="359203136434560942">以列表形式配置锁屏状态时显示的屏保图片。
+
+每个列表项都会引用要在屏保中显示的某张图片。每个列表项都必须包含以下内容：相应图片的网址，以及用于进行验证的图片文件 SHA-256 哈希值。图片格式必须是 JPEG。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并保留上述引用的本地缓存。
+
+如果 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
+
+如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为锁定屏幕显示屏保。</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
 <translation id="3596112486106491038">启用虚拟机命令行访问权限</translation>
 <translation id="3603469950773500315">在新版 <ph name="CORS" /> 实现方案中启用 <ph name="CORS" /> 检查缓解功能，从而允许扩展程序保持兼容的行为，并允许 <ph name="PRODUCT_NAME" /> 无需进行 <ph name="CORS" /> 检查便可发送指定标头。
@@ -3061,6 +3090,16 @@
 <translation id="3891175633496805812">停用 Wilco 诊断和遥测控制器</translation>
 <translation id="3891357445869647828">启用 JavaScript</translation>
 <translation id="3891769546914233112">提供“以图片形式打印 PDF 文件”选项</translation>
+<translation id="389527805641080362">此政策旨在控制打印任务中<ph name="CLIENT_INFO_IPP_ATTRIBUTE" /><ph name="INTERNET_PRINTING_PROTOCOL" /> (<ph name="IPP_PROTOCOL" />) <ph name="IPP_ATTRIBUTE" />的值。
+
+ 设置此政策后，系统会将一个额外的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />值发送给已提交至 <ph name="IPP_PROTOCOL" /> 打印机的打印任务。所添加的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />值的<ph name="CLIENT_TYPE_IPP_ATTRIBUTE" />成员会被设为<ph name="CLIENT_TYPE_OTHER" />。替换占位变量后，所添加的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />值的<ph name="CLIENT_NAME_IPP_ATTRIBUTE" />成员将被设为此政策的值。支持的占位变量包括 <ph name="DIRECTORY_ID_PLACEHOLDER" />、<ph name="SERIAL_NUMBER_PLACEHOLDER" />、<ph name="ASSET_ID_PLACEHOLDER" />、<ph name="ANNOTATED_LOCATION_PLACEHOLDER" />。不支持的占位变量不会被替换。
+
+ 如果替换占位变量后得到的值不超过 127 个字符，且仅包含以下字符，该值将被视为有效：大小写英文字母、数字、短划线（“-”）、点（“.”）和下划线（“_”）。
+
+ 请注意，为了保护隐私，仅当与打印机的连接处于安全状态（<ph name="IPPS_SCHEME" /> URI 架构）且提交打印任务的用户已被关联时，此政策才会生效。另请注意，此政策仅适用于支持<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />的打印机。
+
+ 如果此政策未设置或设为空值/无效值，系统将不会向打印任务请求中添加额外的<ph name="CLIENT_INFO_IPP_ATTRIBUTE" />值。
+</translation>
 <translation id="3897218615484393758">限制通过 SAML 验证身份的用户可在锁定屏幕上离线登录的时长</translation>
 <translation id="3897860452756794695">系统将使用新的 offsetParent 行为。</translation>
 <translation id="3898345958122666461">开启 NTLMv2</translation>
@@ -3461,6 +3500,7 @@
 
 如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会仅允许用户连接到指定蓝牙服务，但列表为空（这意味着允许使用任何服务）时例外。蓝牙 SIG 预留的 UUID 可以表示为<ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" />或<ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />。自定义 UUID 可以表示为<ph name="BLUETOOTH_CUSTOM_UUID" />。UUID 不区分大小写。如果您未设置此政策，用户便可连接到任何蓝牙服务。</translation>
 <translation id="4332177773549877617">记录 Android 应用安装事件</translation>
+<translation id="4340809889556703745">设备屏保图片来源。</translation>
 <translation id="4341199399451274159">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 来指定搜索服务提供商支持的字符编码。编码是 UTF-8、GB2312 和 ISO-8859-1 之类的代码页名称。系统会按照您指定的顺序尝试这些编码。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" />，系统将使用 UTF-8。</translation>
@@ -3739,6 +3779,11 @@
       如果此政策未设置，系统将不会为任何网站自动选择证书。</translation>
 <translation id="4611983465824842867">不在不安全的表单中显示警告，也不停用自动填充功能</translation>
 <translation id="4615003180013429835">Sitelist 解析模式</translation>
+<translation id="4616586760991368127">当为锁定屏幕设定的屏保有多张可显示的图片时，此政策可用于指定图片显示的间隔时间（以秒为单位）。
+
+有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（60 秒）。
+
+如果 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="4617338332148204752">跳过“<ph name="PRODUCT_FRAME_NAME" />”中的元标记检查</translation>
 <translation id="461901491675418689">可使用 NewBaseUrlInheritanceBehavior 功能</translation>
 <translation id="4624006912948309924">设置此政策可确定 <ph name="PRODUCT_OS_NAME" /> 会将哪些应用标识符显示为启动器栏中的固定应用，而且用户无法更改相应列表。
@@ -3874,6 +3919,7 @@
           如果未设置此政策，则“单声道音频”最初会处于停用状态，但用户可以随时启用该功能。</translation>
 <translation id="4768446404233019970">在传输层安全协议 (TLS) 中启用 3DES 加密套件</translation>
 <translation id="4770334626033858263">用于生成和验证家长访问码的配置。</translation>
+<translation id="4772431363738215349">可供下载相应屏保图片的网址。</translation>
 <translation id="4773997835955617342">旨在为手动创建的新票据更改建议的 <ph name="KRB5_CONFIG" /> 配置。
 
       如果此政策已启用，系统会使用“KerberosCustomPrefilledConfig”政策的值作为建议的配置，并会将其显示在 Kerberos 身份验证对话框内的“高级”部分中。
@@ -4025,6 +4071,7 @@
           如果您设置了此政策，用户将无法更改或覆盖它。
 
           如果此政策未设置，“单声道音频”在登录屏幕上最初会处于停用状态，但用户可以随时启用它。</translation>
+<translation id="4933079174563348731">设备屏保图片的显示时间间隔。</translation>
 <translation id="4933301190614090397">控制在浏览器关闭时系统对 keepalive 请求的处理时长（以秒为单位）。
 
       如果您指定了此政策，系统在关闭浏览器时便可延迟所设秒数之久，以处理 keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) 请求。
@@ -4162,6 +4209,7 @@
 如果此政策设为 true 或未设置，系统会按照 <ph name="PRODUCT_NAME" /> 的 MetricsReportingEnabled 行为或 <ph name="PRODUCT_OS_NAME" /> 的 DeviceMetricsReportingEnabled 行为执行网域可靠性诊断数据报告功能。</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
 <translation id="5091315650312105069">允许通过 HTTP 进行<ph name="BASIC_AUTH" />身份验证</translation>
+<translation id="5093603777978346818">不为锁定屏幕启用屏保。</translation>
 <translation id="5099239365323299669">从 M106 开始，永久配额将不再受支持。此政策用于重新启用永久配额功能，直至 M107。
 
       如果此政策已启用，设有“永久”类型的 webkitRequestFileSystem 将使用永久配额运行。
@@ -4346,6 +4394,7 @@
       如果此政策未设置，系统将不会应用任何限制，并且无论使用的是哪个 <ph name="PRODUCT_NAME" /> 版本，用户都能登录。
 
       此处的“Version”既可以是确切版本（如“61.0.3163.120”），也可以是版本前缀（如“61.0”）。  </translation>
+<translation id="5247584184349816217">为锁定屏幕启用屏保。</translation>
 <translation id="5247973380763021389">禁止用户级云政策覆盖计算机级云政策。</translation>
 <translation id="5249453807420671499">用户可以添加 Kerberos 帐号</translation>
 <translation id="5249555581286638799">启用高效模式</translation>
@@ -4353,6 +4402,7 @@
 
       如果此政策已启用或未设置，系统将启用快速解答翻译功能。
       如果此政策已停用，系统将停用快速解答翻译功能。</translation>
+<translation id="5252745944062824150">已启用设备屏保。</translation>
 <translation id="5252995168844634755">如果此政策设为 True，系统会开启“统一桌面”功能，使应用能够跨多个显示屏进行显示。用户可为单个显示屏关闭“统一桌面”功能。
 
       如果此政策设为 False 或未设置，系统将关闭“统一桌面”，而且用户无法开启该功能。</translation>
@@ -4449,6 +4499,7 @@
 
       如果此政策设为 False，系统会禁止将端口转发到 Crostini 容器。</translation>
 <translation id="538108065117008131">允许“<ph name="PRODUCT_FRAME_NAME" />”处理以下内容类型。</translation>
+<translation id="5382211603538487131">相应图片的 SHA-256 哈希值。</translation>
 <translation id="538768040137709073">启用“共享剪贴板”功能，以允许已启用同步的已登录用户在 Chrome 桌面版和 Android 设备之间发送文字。
 
           如果此政策设为 true，面向 Chrome 用户提供的跨设备发送文字的功能将处于启用状态。
@@ -4651,6 +4702,13 @@
 <translation id="5535256585099022933">设置重新启动时间间隔</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
+<translation id="5545132877693005604">以列表形式配置要在为登录屏幕设定的屏保中显示的图片。
+
+每个列表项都会引用要在屏保中显示的某张图片。每个列表项都必须包含以下元素：相应图片的网址，以及用于进行验证的图片文件 SHA-256 哈希值。图片格式必须是 JPEG。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并保留所涉引用的本地缓存。
+
+如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
+
+如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为登录屏幕显示屏保。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
@@ -4754,6 +4812,15 @@
       您可通过在 <ph name="CLIPBOARD_ALLOWED_FOR_URLS_POLICY_NAME" /> 和 <ph name="CLIPBOARD_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中设置特定网址格式来覆盖此政策。
 
       此政策仅影响由剪贴板网站权限控制的剪贴板操作，不影响已清理的剪贴板写入操作或受信任的复制和粘贴操作。</translation>
+<translation id="565149060065571736">为锁定屏幕配置用户屏保。
+
+如果此政策设为 true，当 <ph name="PRODUCT_OS_NAME" /> 设备处于锁屏状态时，系统会显示屏保。
+
+如果此政策设为 false 或未设置，则系统不会在锁屏状态下显示屏保。
+
+用户屏保会显示 <ph name="SCREENSAVER_IMAGES_POLICY_NAME" /> 政策引用的图片。如果 <ph name="SCREENSAVER_IMAGES_POLICY_NAME" /> 未设置，或者设为空列表或不含任何有效图片的列表，则系统不会在锁屏状态下显示屏保。
+
+如需修改用于启动屏保的空闲超时设置，请使用 <ph name="SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 政策；如需修改图片显示的间隔时间，请使用 <ph name="SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 政策。如果未设置上述任一政策，系统将改用相应的默认值。</translation>
 <translation id="5652250453612826983">控制仅应用于未成年人帐号的家长监管政策。
       这些政策不是在管理控制台中设置的，而是通过 Kids API 服务器直接配置的。</translation>
 <translation id="5654682237531873653">如果此政策已启用，系统会开启拼写检查，但用户无法关闭该功能。由于在 <ph name="MS_WIN_NAME" />、<ph name="PRODUCT_OS_NAME" />和 <ph name="LINUX_OS_NAME" /> 中，拼写检查功能的状态（开启/关闭）可因具体语言而异，因此若有语言开启了该功能，用户仍能通过关闭针对每种所涉语言的拼写检查来停用该功能。为避免这种情况，请使用 <ph name="SPELLCHECK_LANGUAGE_POLICY_NAME" /> 为特定语言强制启用拼写检查。
@@ -5444,6 +5511,7 @@
         如果您向 |url_list| 中添加网址正则表达式，与该列表中任一正则表达式匹配的网址即可不受应用级使用时限的约束。
         如果您向 |app_list| 中添加某个应用及其 |app_id| 和 |app_type|，该应用便可不受应用级使用时限的约束。
        </translation>
+<translation id="6334522128949184555">已启用用户屏保。</translation>
 <translation id="6337782882143073193">此政策已被弃用，请改用 <ph name="URL_BLOCKLIST_POLICY_NAME" />。
 
       此政策让您能够以列表形式指定要在 <ph name="PRODUCT_NAME" /> 中停用的协议。
@@ -6406,6 +6474,7 @@
       如果您将此政策设为 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />（值 3），默认情况下，当网站请求获取窗口放置权限时，系统会提示用户。如果用户同意授予这项权限，则会扩展网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
       如果您未设置此政策，则系统会应用 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> 政策，但用户可以更改此设置。</translation>
+<translation id="7238955809343698945">为登录屏幕启用屏保。</translation>
 <translation id="7244600351241637530">如果启用此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统中查看和下载其手机上近期拍摄的照片和视频。
 
       如果停用此设置，用户将无法使用该功能。如果停用 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策，用户也将无法使用该功能。
@@ -7092,6 +7161,7 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="7919665519909231619">允许启用购物清单功能</translation>
 <translation id="7922358664346625612">使 Chrome 中仅剩的那个标签页保持打开状态。</translation>
+<translation id="7923734850959347297">屏保设置</translation>
 <translation id="7924321157669251966">使用电池供电时的屏幕亮度百分比</translation>
 <translation id="7925224837072026018">通过设置此政策，您可以授权扩展程序或 Android 应用使用企业密钥。在受管理的帐号中使用 chrome.enterprise.platformKeys API 生成的密钥会被指定为仅供企业使用。用户无法授权/取消授权扩展程序或 Android 应用使用此类密钥。
 
@@ -7175,6 +7245,11 @@
 <translation id="7992613144342460685">向这些网站授予窗口放置权限</translation>
 <translation id="7994034037344330969">以列表形式指定允许哪些第三方 Web 应用网域使用 Desk API 控制 ChromeOS 桌面。这些网址格式应遵循 https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference 页面中为“matches”属性定义的格式</translation>
 <translation id="7995610550667275367">扫描（自 87 版起受支持）</translation>
+<translation id="799688680472213098">配置设备的空闲时间，也就是等到设备闲置多久（以秒为单位）之后系统才会在锁定屏幕上显示屏保。
+
+有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（7 秒）。
+
+如果 <ph name="SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。</translation>
 <translation id="7999023147219236247">此政策用于向应用授予所请求的权限。PERMISSION_POLICY_UNSPECIFIED：未指定此政策。如果在任何等级都未针对相应权限指定政策，系统便会默认使用“PROMPT”行为。PROMPT：提示用户授予相应权限。GRANT：自动授予相应权限。DENY：自动拒绝授予相应权限。</translation>
 <translation id="7999336306414770162">停用设备 VPD 信息报告功能</translation>
 <translation id="7999818120028621358">启用关于数据泄露预防事件的报告</translation>
@@ -7623,6 +7698,7 @@
 
       如果此政策设为 true 或未设置，用户会获得对 Crostini 容器的 root 权限。
       如果此政策设为 false，用户将不会获得对现有以及新的 Crostini 容器的 root 权限。</translation>
+<translation id="8409672666693526293">不为登录屏幕启用屏保。</translation>
 <translation id="8410477879938914253">此政策仅适用于受管理的访客会话。
       如果此政策设为 True 或未设置，系统会在用户关闭最后一个窗口时显示一个对话框，让用户确认或否认退出登录。
       将此政策设为 False 会阻止系统显示该对话框，因而亦会停用在用户关闭最后一个窗口时自动退出登录的功能。</translation>
@@ -8082,6 +8158,7 @@
 <translation id="8854571659927427063">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入书签。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入任何书签。
 
       用户可以触发导入对话框，系统将会根据此政策的值选中或不选中“书签”复选框。</translation>
+<translation id="8855929790177853633">用户屏保图片来源。</translation>
 <translation id="8858642179038618439">强制启用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">对于指定的一系列 subjectPublicKeyInfo 哈希，不强制执行证书透明化要求</translation>
 <translation id="8860894781631833477">用户可以配置 <ph name="PRODUCT_OS_NAME" /> 发布渠道</translation>
@@ -8167,6 +8244,7 @@
 
       在 Chrome 84 之后，此政策将被移除。</translation>
 <translation id="8940173892071872775">控制在浏览器闲置时运行的操作。</translation>
+<translation id="8941673774841510404">控制设备登录界面和用户锁定屏幕的屏保设置。</translation>
 <translation id="8942616385591203339">此政策控制是否可在用户首次登录时向其显示同步同意声明。如果用户从不需要查看同步同意声明，则应将此政策设为 false。
       如果此政策设为 false，系统将不会显示同步同意声明。
       如果此政策设为 true 或未设置，则可以显示同步同意声明。</translation>

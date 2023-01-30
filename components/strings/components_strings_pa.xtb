@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">ਸੁਰੱਖਿਅਤ ਭੁਗਤਾਨ ਕ੍ਰੀਡੈਂਸ਼ੀਅਲ ਪ੍ਰਮਾਣੀਕਰਨ ਸ਼ੀਟ</translation>
 <translation id="1386623374109090026">ਐਨੋਟੇਸ਼ਨਾਂ</translation>
 <translation id="1391289752476847787">ਸਟਾਕ ਅਤੇ ਬਾਂਡ</translation>
+<translation id="1391625539203220400">ਕੀ IBAN ਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ਨੇ ਕੋਈ ਵੀ  ਡਾਟਾ  ਨਹੀਂ ਭੇਜਿਆ।</translation>
 <translation id="1396259464226642517">ਕੀ ਇਸ ਨਤੀਜੇ ਦੀ ਉਮੀਦ ਨਹੀਂ ਸੀ? <ph name="BEGIN_LINK" />ਵਿਚਾਰ ਭੇਜੋ<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">ਹਲਕਾ ਹਰਾ</translation>
@@ -1236,7 +1237,6 @@
 <translation id="4088981014127559358">ਸਾਈਡ 1 ਚਿੱਤਰ Y ਸ਼ਿਫਟ</translation>
 <translation id="4089152113577680600">ਟ੍ਰੇਅ 14</translation>
 <translation id="4096237801206588987">11 x 15 ਇੰਚ</translation>
-<translation id="4097288585054919042">ਸੁਚੇਤਨਾਵਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4098354747657067197">ਅੱਗੇ ਧੋਖੇਬਾਜ਼ ਸਾਈਟ ਹੈ</translation>
 <translation id="4099048595830172239">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ <ph name="APPLICATION_TITLE" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ਵਿੱਚ ਫ਼ੌਂਟ ਦੇ ਆਕਾਰਾਂ ਅਤੇ ਟਾਈਪਫੇਸਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ</translation>
@@ -1790,7 +1790,6 @@
 <translation id="5396631636586785122">ਸੱਜੇ ਕਿਨਾਰੇ ਤੋਂ ਸਿਲਾਈ</translation>
 <translation id="5398772614898833570">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
-<translation id="540630185148148480">ਸੁਚੇਤਨਾਵਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="540969355065856584">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇਸ ਸਮੇਂ ਵੈਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5412040515238827314">ਅਵੈਧ ਫਾਰਮੈਟ: ਪੈਟਰਨਾਂ ਦੀ ਸੂਚੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="5412236728747081950">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ</translation>
@@ -2741,6 +2740,7 @@
 <translation id="7755287808199759310">ਤੁਹਾਡਾ ਮਾਤਾ-ਪਿਤਾ ਇਸ ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਅਣਬਲੌਕ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="7755624218968747854">ਪ੍ਰਾਇਮਰੀ ਰੋਲ</translation>
 <translation id="7758069387465995638">ਫਾਇਰਵਾਲ ਜਾਂ ਐਂਟੀਵਾਇਰਸ ਸਾਫਟਵੇਅਰ ਵੱਲੋਂ ਕਨੈਕਸ਼ਨ ਬਲਾਕ ਕੀਤਾ ਹੋ ਸਕਦਾ ਹੈ।</translation>
+<translation id="7759809451544302770">ਵਿਕਲਪਿਕ</translation>
 <translation id="7760497246331667482">ਰੇਗੇ ਅਤੇ ਕੈਰੇਬੀਅਨ ਸੰਗੀਤ</translation>
 <translation id="776110834126722255">ਨਾਪਸੰਦ ਕੀਤੀ</translation>
 <translation id="7761159795823346334">ਕੀ ਕੈਮਰੇ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੋ?</translation>

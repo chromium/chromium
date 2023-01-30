@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">সিঙ্ক পরিচালনা করুন</translation>
 <translation id="1076421457278169141">কোড স্ক্যান করা হয়েছে</translation>
 <translation id="1076785341346483463">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সিঙ্ক করুন</translation>
+<translation id="1080365971383768617">আপনার সমস্ত ডিভাইসে পাসওয়ার্ড</translation>
 <translation id="1084365883616172403">Facebook পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
 <translation id="1085696779717592361">ডিফল্ট হিসেবে Chrome ব্যবহার করুন</translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> যে সমস্যাগুলি পাওয়া গেছে।</translation>
 <translation id="5059136629401106827">ঠিক আছে</translation>
 <translation id="5062321486222145940">Google ড্রাইভ ইনস্টল করুন</translation>
+<translation id="50641035439563602">পাসওয়ার্ড এখন আপনার Google অ্যাকাউন্টে (<ph name="ACCOUNT" />) সেভ হয়। আপনি সাইন-ইন করার সময় সেগুলি ব্যবহার করতে পারেন। এটি বন্ধ করার জন্য, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্পে যান।</translation>
 <translation id="5083464117946352670">ফাইলের আকার নির্ধারণ করা যাচ্ছে না।</translation>
 <translation id="5090832849094901128">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="WEBSITE" />-এ আপনার অ্যাকাউন্ট মুছে যাবে না।</translation>
 <translation id="5094827893301452931">Tweet সম্পূর্ণ হয়েছে৷</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">প্রথমে Password Manager এবং তারপরে 'যোগ করুন' বিকল্পে ট্যাপ করুন</translation>
 <translation id="5525095647255982834">অন্য ডিভাইসে এই ট্যাবটি পাঠাতে, সেখানে Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="5525269841082836315">পাসফ্রেজ তৈরি করুন</translation>
+<translation id="5530084793407600786">Google ব্যবহার করে ছবির মধ্যে সার্চ করুন</translation>
 <translation id="5542540507657872337"><ph name="COUNT" />টি ট্যাব পাওয়া গেছে</translation>
 <translation id="5548760955356983418">Handoff এই ডিভাইসে একটি ওয়েবসাইট ব্রাউজ করা শুরু করতে দেয় এবং পরে সহজেই আপনার Mac-এ অবিরত করতে দেয়৷ সাম্প্রতিক খোলা ওয়েবসাইটটি আপনার Mac-এ ডক-এ প্রদর্শিত হবে৷
 

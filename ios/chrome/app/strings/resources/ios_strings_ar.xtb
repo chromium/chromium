@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">إدارة المزامنة</translation>
 <translation id="1076421457278169141">تم مسح الرمز ضوئيًا</translation>
 <translation id="1076785341346483463">المزامنة مع الحساب المُدار</translation>
+<translation id="1080365971383768617">كلمات المرور على جميع أجهزتك</translation>
 <translation id="1084365883616172403">‏اكتمل النشر على Facebook.</translation>
 <translation id="1085696779717592361">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="1103523840287552314">ترجمة اللغة <ph name="LANGUAGE" /> دائمًا</translation>
@@ -548,6 +549,7 @@
 <translation id="5056446788882570708">تم العثور على مشاكل <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">حسنًا</translation>
 <translation id="5062321486222145940">‏تثبيت Google Drive</translation>
+<translation id="50641035439563602">‏تم الآن حفظ كلمات المرور في حسابك على Google (<ph name="ACCOUNT" />)، ويمكنك استخدامها على أي جهاز تسجِّل الدخول عليه. لإيقاف هذا الإعداد، انتقِل إلى <ph name="BEGIN_LINK" />الإعدادات<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">تعذر تحديد حجم الملف.</translation>
 <translation id="5090832849094901128">لن يؤدي حذف كلمة المرور هذه إلى حذف حسابك على <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">‏اكتملت مشاركة Tweet.</translation>
@@ -598,6 +600,7 @@
 <translation id="5520466080178053306">انقر على "مدير كلمات المرور"، ثم على "إضافة".</translation>
 <translation id="5525095647255982834">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على ذلك الجهاز.</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
+<translation id="5530084793407600786">‏البحث داخل الصور باستخدام Google</translation>
 <translation id="5542540507657872337">تم العثور على <ph name="COUNT" /> علامة تبويب مفتوحة.</translation>
 <translation id="5548760955356983418">‏يتيح لك Handoff بدء تصفح موقع على هذا الجهاز ثم متابعة التصفح بسهولة على جهاز Mac. سيظهر الموقع المفتوح حاليًا على Dock بـ Mac.
 

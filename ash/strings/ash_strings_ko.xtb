@@ -214,7 +214,7 @@
 <translation id="2023558322300866873">언제든지 패킷 캡처를 중단할 수 있습니다.</translation>
 <translation id="2034971124472263449">무시하고 저장</translation>
 <translation id="2049240716062114887">데스크 이름이 <ph name="DESK_NAME" />(으)로 변경되었습니다.</translation>
-<translation id="2050339315714019657">인물</translation>
+<translation id="2050339315714019657">세로 방향</translation>
 <translation id="2064048859448024834">동영상 카메라 미리보기 켜짐</translation>
 <translation id="2067602449040652523">키보드 밝기</translation>
 <translation id="2078034614700056995">다음 데스크로 전환하려면 네 손가락을 사용해 오른쪽으로 스와이프하세요.</translation>
@@ -733,6 +733,7 @@
 <translation id="492453977506755176">캡처 모드 키</translation>
 <translation id="4925542575807923399">이 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되도록 계정 관리자가 요청합니다.</translation>
 <translation id="4929163402621253029">말씀하셨나요? 음소거되어 있습니다. 자세히 알아보기</translation>
+<translation id="4936329710968938986">모든 사용자, 사용 안 함</translation>
 <translation id="4938176435186993759">모든 추천 숨기기</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">취소하려면 Alt+검색 또는 Shift 키를 누르세요.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />에서 <ph name="SPECIFIED_RESOLUTION" />을(를) 지원하지 않습니다. 해상도가 <ph name="FALLBACK_RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="8496402167048257517">Nearby Share 설정 표시</translation>
+<translation id="8507563469658346379">모든 사용자, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Chromebook의 블루투스가 꺼져 있습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
 <translation id="8513108775083588393">자동 회전</translation>
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>

@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;ଅଭିଧାନ ସହ ଯୋଡନ୍ତୁ</translation>
 <translation id="1018656279737460067">ବାତିଲ୍‌ କରାଗଲା</translation>
 <translation id="1022489261739821355">ଆପଣଙ୍କ <ph name="BEGIN_LINK" />Google ଆକାଉଣ୍ଟ<ph name="END_LINK" />ରେ ଷ୍ଟୋର୍‍ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ଦେଖାଯାଉଛି</translation>
+<translation id="1022669824195822609">ଆପଣଙ୍କ ଡିଭାଇସ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି। ଆଡମିନିଷ୍ଟ୍ରେଟରମାନେ ଏହି ଡିଭାଇସରେ ଥିବା ଯେ କୌଣସି ପ୍ରୋଫାଇଲରେ ଡାଟା ଆକ୍ସେସ କରିପାରିବେ।</translation>
 <translation id="1026655690966755180">ପୋର୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="1026822031284433028">ଛବିକୁ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1028604629594230522">ଆପଣ ଭିଜିଟ କରିବାର ସମ୍ଭାବନା ଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ Chrome ପ୍ରିଲୋଡ କରେ, ଯାହା ଫଳରେ ଆପଣ ସେହି ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଭିଜିଟ କରିବା ବେଳେ ସେଗୁଡ଼ିକ ଖୁବ ଶୀଘ୍ର ଲୋଡ ହୁଏ।</translation>
@@ -1864,6 +1865,7 @@
 <translation id="2643064289437760082">ଆପଣ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କରି ବିଜ୍ଞାପନ-ପରିମାପ ଡାଟାକୁ ସର୍ବଦା ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="2643698698624765890">ୱିଣ୍ଡୋ ମେନ୍ୟୁରେ ଥିବା ଏକ୍ସଟେନସନ୍ କ୍ଲିକ୍ କରି ନିଜର ଏକ୍ସଟେନସନ୍‌ଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ।</translation>
 <translation id="2645047101481282803">ଆପଣଙ୍କ ଡିଭାଇସ୍ <ph name="PROFILE_NAME" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" />ରେ ଏହି ଟାବକୁ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-ଏନ୍‌କୋଡ୍ ହୋଇଥିବା ASCII, ସାର୍ଟିଫିକେଟ୍ ଚେନ୍</translation>
 <translation id="265156376773362237">ଷ୍ଟାଣ୍ଡାର୍ଡ ପ୍ରିଲୋଡିଂ</translation>
@@ -2736,6 +2738,7 @@
 <translation id="3446274660183028131">ଦୟାକରି Windows ଇନଷ୍ଟଲ୍ କରିବାକୁ Parallels Desktop ଲଞ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="344630545793878684">ଅନେକଗୁଡ଼ିଏ ୱେବ୍‌ସାଇଟ୍‌ରେ ଆପଣଙ୍କର ଡାଟା ପଢ଼ନ୍ତୁ</translation>
 <translation id="3447644283769633681">ସମସ୍ତ ତୃତୀୟ-ପକ୍ଷ କୁକୀକୁ ବ୍ଲକ କରନ୍ତୁ</translation>
+<translation id="3447797901512053632"><ph name="DEVICE_NAME" />ରେ <ph name="TAB_NAME" /> କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="3448492834076427715">ଆକାଉଣ୍ଟ ଅପ୍‌ଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="3449393517661170867">ନୂଆ ଟାବ୍ କରାଯାଇଥିବା ୱିଣ୍ଡୋ</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" />କୁ ନିର୍ଦ୍ଦେଶ ପଠାଇବାକୁ <ph name="SEARCH_KEY" /> ଦବାନ୍ତୁ</translation>
@@ -2890,6 +2893,7 @@
 <translation id="3590295622232282437">ପରିଚାଳିତ ଅବଧି ଲେଖୁଛନ୍ତି</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" />କୁ ରଖନ୍ତୁ</translation>
 <translation id="3592260987370335752">&amp;ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" />ରେ ଏକ ଟାବ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="3593152357631900254">ଫଜି-ପିନୟିନ୍ ମୋଡ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="3593965109698325041">ସାର୍ଟିଫିକେଟ୍ ନାମ ସୀମାବଦ୍ଧତା</translation>
 <translation id="3596012367874587041">ଆପ ସେଟିଂସ</translation>

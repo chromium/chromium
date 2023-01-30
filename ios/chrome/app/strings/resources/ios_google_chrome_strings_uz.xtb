@@ -3,6 +3,7 @@
 <translationbundle lang="uz">
 <translation id="1143896152279775643">Parolingiz Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="1282031177488366470">Chrome funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
+<translation id="1352919863522755794">Google Parollar menejeri parollarni tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="1462727070346936664">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring.</translation>
 <translation id="1479202195792305274">Google hisobingizga kirsangiz, Chrome parollaringizni tekshira oladi.</translation>
 <translation id="1493827051843127077">Chrome brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chrome brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="2732745070297234559">Chrome barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
+<translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2869959624320573933">Chrome hisobiga kirish</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
@@ -59,6 +61,7 @@
 <translation id="4698415050768537821">Chrome barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta nashrida ishlamaydi</translation>
+<translation id="4840404732697892756">Google Parollar menejeri parollarni Google hisobiga kirish vaqtida tekshirishi mumkin.</translation>
 <translation id="5030102366287574140">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
 <translation id="5108659628347594808">Chromeni yaxshilash</translation>
 <translation id="5119391094379141756">Chrome brauzerini tanlang</translation>
@@ -68,6 +71,7 @@
 <translation id="5552137475244467770">Vaqti-vaqti bilan Chrome internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5639704535586432836">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Google Chrome” bandini oching.</translation>
 <translation id="5642200033778930880">Google Chrome kamerangizdan Split View rejimida foydalana olmaydi.</translation>
+<translation id="5661521615548540542">Google Parollar menejeri barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Oflayn, Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="5716154293141027663">Chromeni istalgan vaqt boshqa ilovalardagi havolalarni bosib ochish</translation>
@@ -120,9 +124,11 @@
   2. Asosiy brauzer ilovasi ustiga bosing
   3. Chrome brauzerini tanlang.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome bilan himoyalaning</translation>
 <translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
 <translation id="8788269841521769222">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
+<translation id="8857676124663337448">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="8969290730818637510">Yoniq boʻlsa:
 <ph name="BEGIN_INDENT" />  • Chromeni siz kabi ishlatadigan odamlar uchun yaxshilashga yordam beradi<ph name="END_INDENT" />

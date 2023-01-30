@@ -18,6 +18,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="1066060668811609597">Synchronisierung verwalten</translation>
 <translation id="1076421457278169141">Code gescannt</translation>
 <translation id="1076785341346483463">Mit verwaltetem Konto synchronisieren</translation>
+<translation id="1080365971383768617">Deine Passwörter auf allen deinen Geräten abrufen</translation>
 <translation id="1084365883616172403">Facebook-Beitrag gepostet</translation>
 <translation id="1085696779717592361">Standardmäßig Chrome verwenden</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> immer übersetzen</translation>
@@ -545,6 +546,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5056446788882570708">Probleme <ph name="TIME" /> gefunden.</translation>
 <translation id="5059136629401106827">Ok</translation>
 <translation id="5062321486222145940">Google Drive installieren</translation>
+<translation id="50641035439563602">Passwörter werden jetzt in deinem Google-Konto (<ph name="ACCOUNT" />) gespeichert. Du kannst sie überall verwenden, wo du angemeldet bist. Du kannst dies in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
 <translation id="5090832849094901128">Durch das Entfernen dieses Passworts wird dein <ph name="WEBSITE" />-Konto nicht gelöscht.</translation>
 <translation id="5094827893301452931">Tweet gepostet</translation>
@@ -595,6 +597,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5520466080178053306">Auf „Passwortmanager“ und dann auf „Hinzufügen“ tippen</translation>
 <translation id="5525095647255982834">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an.</translation>
 <translation id="5525269841082836315">Passphrase erstellen</translation>
+<translation id="5530084793407600786">Mit Google im Bild suchen</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gefunden</translation>
 <translation id="5548760955356983418">Mit Handoff kannst du auf diesem Gerät auf einer Website stöbern und dann einfach auf deinem Mac an derselben Stelle weitermachen. Die aktuell geöffnete Website wird im Dock deines Macs angezeigt.
 

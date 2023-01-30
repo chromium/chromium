@@ -3,6 +3,7 @@
 <translationbundle lang="mk">
 <translation id="1143896152279775643">Лозинката ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
+<translation id="1352919863522755794">Google Password Manager не можеше да ги провери вашите лозинки. Проверете ја интернет-врската.</translation>
 <translation id="1462727070346936664">Најавете се за да извадите максимум од Chrome.</translation>
 <translation id="1479202195792305274">Chrome може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="1493827051843127077">Поставете го Chrome како стандарден прелистувач за синхронизирање на картичките, лозинките и податоците за плаќање на сите ваши уреди</translation>
@@ -31,6 +32,7 @@
 <translation id="2689064829982324496">За да се одјавите од вашата сметка на Google на сите веб-сајтови, <ph name="BEGIN_LINK" />одјавете се од Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome не може да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
 <translation id="2732745070297234559">Chrome не може да ги провери сите лозинки. Обидете се повторно утре.</translation>
+<translation id="2767464022270041271">Немате зачувани лозинки. Google Password Manager може да ги проверува вашите лозинки кога ги зачувувате.</translation>
 <translation id="2869959624320573933">Најавете се на Chrome</translation>
 <translation id="2957447865124070833">Изберете <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Бидејќи се одјавувате од сметка управувана од <ph name="SIGNOUT_MANAGED_DOMAIN" />, вашите податоци на Chrome ќе се избришат од уредов. Податоците ќе останат на сметката на Google.</translation>
@@ -59,6 +61,7 @@
 <translation id="4698415050768537821">Chrome не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">За да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_LINK" />Управувајте<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Не е поддржана на Chrome Beta</translation>
+<translation id="4840404732697892756">Google Password Manager може да ги проверува вашите лозинки кога ќе се најавите со вашата сметка на Google.</translation>
 <translation id="5030102366287574140">Chrome може да ве штити од упад во податоците, небезбедни веб-сајтови и друго.</translation>
 <translation id="5108659628347594808">Подобрете го Chrome</translation>
 <translation id="5119391094379141756">Изберете Chrome</translation>
@@ -68,6 +71,7 @@
 <translation id="5552137475244467770">Chrome повремено ги споредува лозинките со списоци објавени онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани, па нив не може да ги прочита никој, вклучително и Google.</translation>
 <translation id="5639704535586432836">Отворете „Поставки“ &gt; „Приватност“ &gt; „Камера“ &gt; Google Chrome и вклучете ја камерата.</translation>
 <translation id="5642200033778930880">Google Chrome не може да ја користи камерата во режимот „Поделен приказ“</translation>
+<translation id="5661521615548540542">Google Password Manager не можеше да ги провери сите лозинки. Обидете се повторно подоцна.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Офлајн сте. Chrome не може да провери дали има ажурирања</translation>
 <translation id="5716154293141027663">Линковите од други апликации секогаш ќе се отвораат во Chrome</translation>
@@ -120,9 +124,11 @@
   2. Допрете „Стандардна апликација за прелистување“
   3. Изберете Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager не можеше да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Останете безбедни со Google Chrome</translation>
 <translation id="8772179140489533211">Прикажува prompt за најава на Chrome.</translation>
 <translation id="8788269841521769222">Не треба да ја помните лозинкава. Ќе се зачува во „Управникот со лозинки на Google“ за <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google Password Manager не можеше да ги провери сите лозинки. Обидете се повторно утре.</translation>
 <translation id="8897749957032330183">Лозинките се зачувуваат во Google Password Manager на уредов.</translation>
 <translation id="8969290730818637510">Кога е вклучено:
 <ph name="BEGIN_INDENT" />  • Помага да се подобри Chrome за луѓето што го користат исто како и вие.<ph name="END_INDENT" />

@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">Lüğətə əlavə edin</translation>
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google Hesabınızdakı<ph name="END_LINK" /> parolların göstərilməsi</translation>
+<translation id="1022669824195822609">Cihazınız <ph name="DOMAIN" /> tərəfindən idarə olunur. Administratorlar bu cihazda istənilən profildəki dataya giriş edə bilərlər.</translation>
 <translation id="1026655690966755180">Port əlavə edin</translation>
 <translation id="1026822031284433028">Şəkli Yükləyin</translation>
 <translation id="1028604629594230522">Chrome ziyarət edə biləcəyiniz səhifələri əvvəlcədən yükləyir ki, onları ziyarət etdiyiniz zaman daha tez yüklənsinlər.</translation>
@@ -1865,6 +1866,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2643064289437760082">Baxış datanızı silməklə reklam ölçmə datasını hər zaman silə bilərsiniz</translation>
 <translation id="2643698698624765890">Pəncərə menyusunda artırmalara klikləməklə artırmalarınızı idarə edin.</translation>
 <translation id="2645047101481282803">Cihazınız <ph name="PROFILE_NAME" /> tərəfindən idarə olunur</translation>
+<translation id="2645388244376970260">Bu tab <ph name="DEVICE_NAME" /> cihazında yayımlanır</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-şifrələnmiş ASCII, sertifikat zənciri</translation>
 <translation id="265156376773362237">Standart əvvəlcədən yükləmə</translation>
@@ -2737,6 +2739,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3446274660183028131">Windows'u quraşdırmaq üçün Parallels Desktop'u işə salın.</translation>
 <translation id="344630545793878684">Datanızı çoxsaylı vebsaytda oxuyun</translation>
 <translation id="3447644283769633681">Bütün üçüncü tərəf kukilərini bloklayın</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> <ph name="DEVICE_NAME" /> üzərinə yayımlanır</translation>
 <translation id="3448492834076427715">Hesabı yeniləyin</translation>
 <translation id="3449393517661170867">Yeni tablı pəncərə</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> artırmasına əmr göndərmək üçün <ph name="SEARCH_KEY" /> düyməsini basın</translation>
@@ -2891,6 +2894,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3590295622232282437">İdarə edilən sessiya daxil edilir.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> faylını saxlayın</translation>
 <translation id="3592260987370335752">Əlavə məlumat</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" /> cihazında tab yayımlanır</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin rejimini aktiv edin</translation>
 <translation id="3593965109698325041">Sertifikat adları limitləri</translation>
 <translation id="3596012367874587041">Tətbiq ayarları</translation>
@@ -3166,6 +3170,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3823310065043511710">Linux üçün minimum <ph name="INSTALL_SIZE" /> boş yerin olması tövsiyə edilir.</translation>
 <translation id="3824621460022590830">Cihaz qeydiyyat nişanı yanlışdır. Cihazın sahibi və ya administrator ilə əlaqə saxlayın. Xəta kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Bu növ fayllar üçün seçimimi yadda saxlayın: <ph name="FILE_TYPES" />}other{Bu növ fayllar üçün seçimimi yadda saxlayın: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Tətbiq xəbərdarlıqları üçün tətbiq ikonasında nöqtə göstərin</translation>
 <translation id="3826071569074535339">Hərəkət sensorlarından istifadəyə icazə verilib</translation>
 <translation id="3826440694796503677">Administrator daha çox Google Hesabın əlavə edilməsini deaktiv edib</translation>
 <translation id="3827774300009121996">Tam ekran</translation>
@@ -4483,6 +4488,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5063480226653192405">Istifadə</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ayarlarında güvənli DNS'i idarə edin</translation>
+<translation id="5066160542186949327">Başqa qovluğa keçin</translation>
 <translation id="5067399438976153555">Həmişə aktivdir</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> mikforonu işlətmək istəyəndə icazə alsın</translation>
 <translation id="5068553687099139861">parolları göstərin</translation>

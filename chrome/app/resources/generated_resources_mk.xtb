@@ -2922,6 +2922,7 @@
 <translation id="3602290021589620013">Преглед</translation>
 <translation id="3602870520245633055">Печатење и скенирање</translation>
 <translation id="3603622770190368340">Набави сертификат на мрежа</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} сметка ја користи истата лозинка}one{{COUNT} сметка ја користат истата лозинка}other{{COUNT} сметки ја користат истата лозинка}}</translation>
 <translation id="3605780360466892872">Закопчан</translation>
 <translation id="3609277884604412258">Брзо пребарување</translation>
 <translation id="3610241585790874201">Не е дозволено зачувување податоци на вашиот уред</translation>

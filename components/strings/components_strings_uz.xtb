@@ -1104,6 +1104,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3713662424819367124">Parfyumeriya va atirlar</translation>
 <translation id="3714633008798122362">veb-taqvim</translation>
 <translation id="3714780639079136834">Mobil internet yoki Wi-Fi tarmoqlarini yoqish</translation>
+<translation id="3715545959749027023">Xavfsizlikka oid hodisalarni Chrome aniqlasa, bunga aloqador hodisalar haqidagi maʼlumotlar administratorga yuboriladi. Bu ochilgan sahifalarning URL manzillari, fayl nomlari yoki meta-axborotlar, brauzer yoki varaqlarning ishdan chiqishi hamda qurilma va Chrome foydalanuvchilari nomlaridan iborat boʻlishi mumkin.</translation>
 <translation id="3715597595485130451">Wi-Fi‘ga ulanish</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proksi-server, himoya devori va DNS sozlamalarini tekshirish<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Bu xatoga odatda antivirus, himoya devori, internet filterlari yoki proksi-server dasturlari sabab bo‘ladi.</translation>
@@ -1237,7 +1238,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4088981014127559358">Tasvirning old tomondagi Y oʻqidagi siljish</translation>
 <translation id="4089152113577680600">Tarnov 14</translation>
 <translation id="4096237801206588987">11 x 15 in</translation>
-<translation id="4097288585054919042">Ogohlantirishlarni oʻchirish</translation>
 <translation id="4098354747657067197">Ehtiyot bo‘ling, qalbaki sayt!</translation>
 <translation id="4099048595830172239">Administrator siyosatida ekranda maxfiy kontent borligida <ph name="APPLICATION_TITLE" /> ilovasiga ulashish tavsiya etilmaydi:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeda shrift oʻlchami va yozuvlarini moslash uchun avval Tab, keyin Enter tugmasini bosing</translation>
@@ -1795,7 +1795,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5396631636586785122">Oʻng chekkasini tikish</translation>
 <translation id="5398772614898833570">Reklamalar bloklandi</translation>
 <translation id="5400836586163650660">Kulrang</translation>
-<translation id="540630185148148480">Ogohlantirishlarni yoqish</translation>
 <translation id="540969355065856584">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning sertifikati ayni paytda yaroqsiz bo‘lishi mumkin. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="5412040515238827314">Xato format: namunalar roʻyxati koʻrsatilishi kerak.</translation>
 <translation id="5412236728747081950">Bu sayt mos reklamalarni chiqarish uchun qiziqishlaringiz haqidagi Chrome maʼlumotlaridan foydalanadi.</translation>

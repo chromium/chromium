@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">صفحة مصادقة بيانات اعتماد الدفع الآمن</translation>
 <translation id="1386623374109090026">تعليقات توضيحية</translation>
 <translation id="1391289752476847787">أسهم وسندات</translation>
+<translation id="1391625539203220400">‏هل تريد حفظ رقم الحساب بصيغة IBAN على هذا الجهاز؟</translation>
 <translation id="139305205187523129">لم يرسل <ph name="HOST_NAME" /> أي بيانات.</translation>
 <translation id="1396259464226642517">هل كانت هذه النتيجة غير متوقعة؟ <ph name="BEGIN_LINK" />إرسال تعليقات<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">أخضر فاتح</translation>
@@ -602,6 +603,7 @@
 <translation id="2430968933669123598">‏إدارة حساب Google: اضغط على مفتاح Enter لإدارة المعلومات والخصوصية والأمان في حسابك على Google.</translation>
 <translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="2438874542388153331">عمل أربعة ثقوب يمينًا</translation>
+<translation id="2441854154602066476">تم فتح قائمة طرق الدفع التي يمكن ملء بياناتها باللمس. لوحة المفاتيح مخفية.</translation>
 <translation id="2448295565072560657">الأجهزة الملحقة المُرفقة بهذا الجهاز عند تسجيل الدخول</translation>
 <translation id="2450021089947420533">رحلات البحث</translation>
 <translation id="2463739503403862330">ملء</translation>
@@ -1239,7 +1241,6 @@
 <translation id="4088981014127559358">‏طباعة جانب واحد image Y shift</translation>
 <translation id="4089152113577680600">الدُرج 14</translation>
 <translation id="4096237801206588987">11 × 15 بوصة</translation>
-<translation id="4097288585054919042">إيقاف التنبيهات</translation>
 <translation id="4098354747657067197">أنت بصدد الانتقال إلى موقع إلكتروني مخادع</translation>
 <translation id="4099048595830172239">تحظر سياسة المشرف مشاركة الشاشة مع تطبيق <ph name="APPLICATION_TITLE" /> عند عرض محتوى سري:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أحجام الخطوط وأنماطها في Chrome.</translation>
@@ -1581,6 +1582,7 @@
 <translation id="4880827082731008257">سجلّ البحث</translation>
 <translation id="4881695831933465202">فتح</translation>
 <translation id="4881808915112408168">24 × 31.5 بوصة</translation>
+<translation id="4882314601499260499">لم يتم تطبيق أي سياسات مستخدِم. لإضافة سياسات المستخدِم، على مؤسستك <ph name="LINK_BEGIN" />إثبات ملكية نطاقك<ph name="LINK_END" />.</translation>
 <translation id="4885256590493466218">الدفع باستخدام <ph name="CARD_DETAIL" />.</translation>
 <translation id="4887406273302438710">‏حماية كلمات المرور باستخدام Windows Hello</translation>
 <translation id="4888600795924685526">دراسة لغات أجنبية</translation>
@@ -1793,7 +1795,6 @@
 <translation id="5396631636586785122">خزم الحواف يمينًا</translation>
 <translation id="5398772614898833570">تم حظر الإعلانات</translation>
 <translation id="5400836586163650660">رمادي</translation>
-<translation id="540630185148148480">تفعيل التنبيهات</translation>
 <translation id="540969355065856584">لم يتمكن هذا الخادم من إثبات أنه <ph name="DOMAIN" />؛ بل إن شهادة الأمان الخاصة به غير صالحة حاليًا. وربما يكون السبب في ذلك وجود خطأ في التكوين أو اعترض أحد المهاجمين للاتصال.</translation>
 <translation id="5412040515238827314">تنسيق غير صالح: كان من المتوقّع ظهور قائمة بالأنماط.</translation>
 <translation id="5412236728747081950">‏يتعرّف هذا الموقع الإلكتروني على اهتماماتك من خلال متصفّح Chrome ويعرض لك إعلانات تناسبك أكثر.</translation>
@@ -2464,6 +2465,7 @@
 <translation id="7136009930065337683">مزيد من المعلومات حول وضع التصفُّح المتخفي</translation>
 <translation id="7138472120740807366">طريقة التسليم</translation>
 <translation id="7139892792842608322">الدُرج الأساسي</translation>
+<translation id="7140087718106278457">تم إغلاق قائمة طرق الدفع.</translation>
 <translation id="714064300541049402">‏طباعة الجانب الثاني image X shift</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقة دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخرى}two{<ph name="PAYMENT_METHOD_PREVIEW" /> وطريقتا دفع <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> أخريان}few{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طرق دفع أخرى}many{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و<ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> طريقة دفع أخرى}}</translation>
@@ -2989,6 +2991,7 @@
 <translation id="8381674639488873545">قد يتم تحصيل هذه الرسوم لمرة واحدة أو بشكل متكرِّر، وقد تكون غير واضحة. <ph name="BEGIN_LINK" />عرض على أي حال<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">تحظر سياسة المشرف إمكانية المشاركة من <ph name="ORIGIN_NAME" /> إلى <ph name="VM_NAME" />.</translation>
 <translation id="8396522675989118466">يمكنك العثور على هذا الرمز المكوَّن من <ph name="NUMBER_OF_DIGITS" /> رقم في <ph name="SIDE_OF_CARD" />.</translation>
+<translation id="8398335999901363925">تم فتح قائمة طرق الدفع بطول الشاشة والتي يمكن ملء بياناتها باللمس.</translation>
 <translation id="8398790343843005537">العثور على هاتفك</translation>
 <translation id="8405579342203358118">‏إدارة نوع المعلومات التي تريد مزامنتها في إعدادات متصفّح Chrome</translation>
 <translation id="8406071103346257942">إيقاف استخدام ميزة "قفل الشاشة" لملء كلمات المرور.</translation>
@@ -3150,6 +3153,7 @@
 <translation id="8830320733681313421">‏بطاقة بريدية Hagaki</translation>
 <translation id="8834380158646307944">‏زر إغلاق نوافذ التصفُّح المتخفي: اضغط على مفتاح Enter لإغلاق جميع النوافذ المفتوحة حاليًا في وضع التصفُّح المتخفي</translation>
 <translation id="883848425547221593">إشارات أخرى</translation>
+<translation id="8842351563145134519">تم فتح قائمة طرق الدفع في النصف السفلي من الشاشة والتي يمكن ملء بياناتها باللمس.</translation>
 <translation id="884264119367021077">عنوان الشحن</translation>
 <translation id="8849231003559822746">130 × 180 ملم</translation>
 <translation id="884923133447025588">لم يتمّ العثور على أي آلبة إبطال.</translation>

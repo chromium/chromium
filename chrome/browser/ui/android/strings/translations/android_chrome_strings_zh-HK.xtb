@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="200114059308480249">要加入上下文來執行 Google 搜尋嗎？</translation>
+<translation id="2009341475524975924">為評估廣告效益，網站之間可以分享特定類型的資料，例如系統向您顯示廣告的時段。</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# 個檔案}other{# 個檔案}}</translation>
 <translation id="2021896219286479412">全螢幕網站控制</translation>
 <translation id="2038563949887743358">開啟「切換為電腦版網站」</translation>
@@ -302,7 +303,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2656405586795711023">網絡應用程式</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享捲動至此段文字的連結</translation>
-<translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理網頁</translation>
 <translation id="2709516037105925701">自動填入</translation>
 <translation id="271033894570825754">全新</translation>
@@ -345,7 +345,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2912296070571964914">管理您感興趣的主題</translation>
 <translation id="2912345083818861431">透過螢幕鎖定查看開啟的無痕式分頁</translation>
-<translation id="2922568440285376746">使用 Google 搜尋圖片內容 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="2922568440285376746">使用 Google 搜尋圖片內容 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">名稱無效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存空間</translation>
 <translation id="2932222164150889403">這不會影響您的鍵盤設定</translation>
@@ -654,6 +654,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4634124774493850572">使用密碼</translation>
+<translation id="4637420359569396807">廣告評估功能讓各網站只可分享特定類型的資料，以評估廣告成效，例如一天中向使用者放送廣告的時段。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 個密碼被盜用}other{# 個密碼被盜用}}</translation>
 <translation id="4650364565596261010">系統預設</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可保護您免受欺詐網站的威脅。如果您停用此功能，在瀏覽及輸入密碼時請提高警覺。</translation>
@@ -666,7 +667,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4684427112815847243">同步處理所有資料</translation>
 <translation id="4685741273709472646">由下拉式選單入面揀</translation>
 <translation id="4687718960473379118">網站建議的廣告</translation>
-<translation id="4689792375321623175">使用 Google 搜尋圖片 <ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="4689792375321623175">使用 Google 搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> 種運送方式}}</translation>
 <translation id="4699172675775169585">快取圖片和檔案</translation>
 <translation id="4719927025381752090">提供翻譯</translation>

@@ -733,6 +733,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="492453977506755176">Tipka za način zajema</translation>
 <translation id="4925542575807923399">Skrbnik tega računa zahteva, da je ta račun v seji prijave z več računi prvi prijavljeni račun.</translation>
 <translation id="4929163402621253029">Ali govorite? Vaš zvok je izklopljen. Več o tem.</translation>
+<translation id="4936329710968938986">Vsi, izklopljeno</translation>
 <translation id="4938176435186993759">Skrij vse predloge</translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
 <translation id="4946376291507881335">Zajemi</translation>
@@ -1387,6 +1388,7 @@ Nova namestitev</translation>
 <translation id="8477270416194247200">Za preklic pritisnite Alt in tipko za iskanje ali Shift.</translation>
 <translation id="8492573885090281069">Zaslon <ph name="DISPLAY_NAME" /> ne podpira te ločljivosti: <ph name="SPECIFIED_RESOLUTION" />. Ločljivost je bila spremenjena na: <ph name="FALLBACK_RESOLUTION" />. Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Prikaz nastavitev deljenja v bližini</translation>
+<translation id="8507563469658346379">Vsi, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth v Chromebooku je izklopljen. Če želite odkleniti Chromebook, vnesite geslo.</translation>
 <translation id="8513108775083588393">Samodej. zasuk</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>

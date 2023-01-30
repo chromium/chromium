@@ -188,6 +188,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1384725838384960382">Sannvottunarsíða fyrir skilríki öruggrar greiðslu</translation>
 <translation id="1386623374109090026">Skýringar</translation>
 <translation id="1391289752476847787">Hlutabréf og skuldabréf</translation>
+<translation id="1391625539203220400">Vista IBAN í þessu tæki?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> sendi engin gögn.</translation>
 <translation id="1396259464226642517">Var þetta óvænt niðurstaða? <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Ljósgrænn</translation>
@@ -1238,7 +1239,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4088981014127559358">Y-færsla myndar á hlið 1</translation>
 <translation id="4089152113577680600">Bakki 14</translation>
 <translation id="4096237801206588987">11 x 15 to.</translation>
-<translation id="4097288585054919042">Slökkva á tilkynningum</translation>
 <translation id="4098354747657067197">Villandi vefsvæði framundan</translation>
 <translation id="4099048595830172239">Regla kerfisstjóra ræður gegn því að deila skjánum þínum með <ph name="APPLICATION_TITLE" /> þegar trúnaðarupplýsingar eru sýnlegar:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að sérsníða leturstæðir og leturgerðir í Chrome</translation>
@@ -1792,7 +1792,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5396631636586785122">Saumur hægra megin</translation>
 <translation id="5398772614898833570">Lokað á auglýsingar</translation>
 <translation id="5400836586163650660">Grár</translation>
-<translation id="540630185148148480">Kveikja á tilkynningum</translation>
 <translation id="540969355065856584">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er ekki gilt eins og er. Þetta kann að orsakast af vanstillingu eða þá að tölvuþrjótur er að reyna að komast inn í tenginguna þína.</translation>
 <translation id="5412040515238827314">Ógilt snið: Búist var við lista yfir mynstur.</translation>
 <translation id="5412236728747081950">Þetta vefsvæði fær upplýsingar um áhugasvið þín frá Chrome til að birta þér viðeigandi auglýsingar</translation>

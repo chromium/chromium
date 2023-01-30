@@ -182,6 +182,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1995884366040846621">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo nome, il tuo indirizzo email e l'immagine del tuo profilo con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> del sito.</translation>
 <translation id="2000419248597011803">Invia al tuo motore di ricerca predefinito alcune ricerche dalla barra degli indirizzi e dalla casella di ricerca, nonché alcuni cookie</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
+<translation id="2009341475524975924">Per misurare il rendimento di un annuncio, tra i siti vengono condivisi tipi di dati limitati, ad esempio l'ora del giorno in cui ti è stato mostrato l'annuncio.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# file}other{# file}}</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
 <translation id="2038563949887743358">Attiva Richiedi sito desktop</translation>
@@ -301,7 +302,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="2656405586795711023">App web</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
-<translation id="2704606927547763573">Copiata</translation>
 <translation id="2707726405694321444">Aggiorna la pagina</translation>
 <translation id="2709516037105925701">Compilazione automatica</translation>
 <translation id="271033894570825754">Nuovo</translation>
@@ -652,6 +652,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4616150815774728855">Apri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4634124774493850572">Utilizza password</translation>
+<translation id="4637420359569396807">Per misurare il rendimento dei loro annunci, tra i siti e le app possono essere condivisi tipi di dati limitati, ad esempio l'ora del giorno in cui ti è stato mostrato un annuncio.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 password compromessa}other{# password compromesse}}</translation>
 <translation id="4650364565596261010">Predefinito</translation>
 <translation id="465657074423018424">Navigazione sicura ti protegge da siti web ingannevoli. Se la disattivi, fai molta attenzione quando navighi su Internet, soprattutto prima di inserire delle password.</translation>
