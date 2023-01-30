@@ -727,14 +727,6 @@ std::vector<std::string> GetRequiredStringList(const base::Value* dict,
 
 void SetString(const char* key,
                const absl::optional<std::string>& property,
-               base::Value* dict) {
-  if (!property)
-    return;
-  dict->SetStringKey(key, *property);
-}
-
-void SetString(const char* key,
-               const absl::optional<std::string>& property,
                base::Value::Dict* dict) {
   if (!property)
     return;
@@ -751,17 +743,6 @@ void SetStringIfNotEmpty(const char* key,
 
 void SetStringList(const char* key,
                    const absl::optional<std::vector<std::string>>& property,
-                   base::Value* dict) {
-  if (!property)
-    return;
-  base::Value list(base::Value::Type::LIST);
-  for (const std::string& s : *property)
-    list.Append(base::Value(s));
-  dict->SetKey(key, std::move(list));
-}
-
-void SetStringList(const char* key,
-                   const absl::optional<std::vector<std::string>>& property,
                    base::Value::Dict* dict) {
   if (!property)
     return;
@@ -774,8 +755,8 @@ void SetStringList(const char* key,
 void SetSubjectAltNameMatch(
     const char* key,
     const std::vector<mojom::SubjectAltNamePtr>* property,
-    base::Value* dict) {
-  base::Value subject_alt_name_list(base::Value::Type::LIST);
+    base::Value::Dict* dict) {
+  base::Value::List subject_alt_name_list;
   for (const auto& ptr : *property) {
     std::string type;
     switch (ptr->type) {
@@ -789,13 +770,12 @@ void SetSubjectAltNameMatch(
         type = ::onc::eap_subject_alternative_name_match::kURI;
         break;
     }
-    base::Value entry(base::Value::Type::DICT);
-    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kType, type);
-    entry.SetStringKey(::onc::eap_subject_alternative_name_match::kValue,
-                       ptr->value);
+    base::Value::Dict entry;
+    entry.Set(::onc::eap_subject_alternative_name_match::kType, type);
+    entry.Set(::onc::eap_subject_alternative_name_match::kValue, ptr->value);
     subject_alt_name_list.Append(std::move(entry));
   }
-  dict->SetKey(key, std::move(subject_alt_name_list));
+  dict->Set(key, std::move(subject_alt_name_list));
 }
 
 // GetManagedDictionary() returns a ManagedDictionary representing the active
@@ -2025,7 +2005,7 @@ bool NetworkTypeCanBeDisabled(mojom::NetworkType type) {
 }
 
 base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
-  base::Value eap_dict(base::Value::Type::DICT);
+  base::Value::Dict eap_dict;
 
   SetString(::onc::eap::kAnonymousIdentity, eap.anonymous_identity, &eap_dict);
   SetString(::onc::client_cert::kClientCertPKCS11Id, eap.client_cert_pkcs11_id,
@@ -2038,14 +2018,14 @@ base::Value GetEAPProperties(const mojom::EAPConfigProperties& eap) {
   SetString(::onc::eap::kInner, eap.inner, &eap_dict);
   SetString(::onc::eap::kOuter, eap.outer, &eap_dict);
   SetString(::onc::eap::kPassword, eap.password, &eap_dict);
-  eap_dict.SetBoolKey(::onc::eap::kSaveCredentials, eap.save_credentials);
+  eap_dict.Set(::onc::eap::kSaveCredentials, eap.save_credentials);
   SetStringList(::onc::eap::kServerCAPEMs, eap.server_ca_pems, &eap_dict);
   SetSubjectAltNameMatch(::onc::eap::kSubjectAlternativeNameMatch,
                          &eap.subject_alt_name_match, &eap_dict);
   SetString(::onc::eap::kSubjectMatch, eap.subject_match, &eap_dict);
-  eap_dict.SetBoolKey(::onc::eap::kUseSystemCAs, eap.use_system_cas);
+  eap_dict.Set(::onc::eap::kUseSystemCAs, eap.use_system_cas);
 
-  return eap_dict;
+  return base::Value(std::move(eap_dict));
 }
 
 base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
