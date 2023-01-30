@@ -3862,7 +3862,7 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "crhomeos_lacros",
+      "chromeos_lacros",
       "fuchsia"
     ],
     "policy_pref_mapping_tests": [
@@ -3941,7 +3941,7 @@
       "linux",
       "mac",
       "chromeos_ash",
-      "crhomeos_lacros"
+      "chromeos_lacros"
     ],
     "policy_pref_mapping_tests": [
       {
