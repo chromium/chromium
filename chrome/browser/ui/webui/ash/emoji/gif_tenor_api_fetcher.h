@@ -16,7 +16,17 @@ namespace ash {
 
 class GifTenorApiFetcher {
  public:
+  // Used in tests to mock a creation of the endpoint_fetcher
+  using EndpointFetcherCreator =
+      base::RepeatingCallback<std::unique_ptr<EndpointFetcher>(
+          const scoped_refptr<network::SharedURLLoaderFactory>
+              url_loader_factory,
+          const GURL& url,
+          const net::NetworkTrafficAnnotationTag& annotation_tag)>;
+
   GifTenorApiFetcher();
+
+  explicit GifTenorApiFetcher(EndpointFetcherCreator endpoint_fetcher_creator);
 
   ~GifTenorApiFetcher();
 
@@ -49,8 +59,8 @@ class GifTenorApiFetcher {
 
  private:
   std::unique_ptr<EndpointFetcher> endpoint_fetcher_;
+  const EndpointFetcherCreator endpoint_fetcher_creator_;
   base::WeakPtrFactory<GifTenorApiFetcher> weak_ptr_factory_{this};
-  GURL GetURL(const char* endpoint, const absl::optional<std::string>& pos);
 
   void FetchCategoriesResponseHandler(
       emoji_picker::mojom::PageHandler::GetCategoriesCallback callback,
@@ -73,18 +83,6 @@ class GifTenorApiFetcher {
   void OnGifsByIdsJsonParsed(
       emoji_picker::mojom::PageHandler::GetGifsByIdsCallback callback,
       data_decoder::DataDecoder::ValueOrError result);
-
-  std::vector<emoji_picker::mojom::GifResponsePtr> ParseGifs(
-      const base::Value::List* results);
-
-  const base::Value::List* FindList(
-      data_decoder::DataDecoder::ValueOrError& result,
-      const std::string& key);
-
-  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& url,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
 };
 }  // namespace ash
 
