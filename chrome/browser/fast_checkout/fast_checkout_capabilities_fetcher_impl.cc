@@ -8,7 +8,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
-#include "chrome/browser/fast_checkout/fast_checkout_funnels.pb.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -150,18 +149,31 @@ void FastCheckoutCapabilitiesFetcherImpl::OnFetchComplete(
 
   for (const ::fast_checkout::FastCheckoutFunnels_FastCheckoutFunnel&
            funnel_proto : funnels.funnels()) {
-    FastCheckoutFunnel funnel;
-    for (uint64_t form_signature : funnel_proto.trigger()) {
-      funnel.trigger.emplace(form_signature);
-    }
-    for (uint64_t form_signature : funnel_proto.fill()) {
-      funnel.fill.emplace(form_signature);
-    }
-    for (const std::string& domain : funnel_proto.domains()) {
-      GURL url = GURL(domain);
-      if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
-        cache_.emplace(url::Origin::Create(url), funnel);
-      }
+    AddFunnelToCache(funnel_proto);
+  }
+}
+
+void FastCheckoutCapabilitiesFetcherImpl::AddFunnelToCache(
+    const ::fast_checkout::FastCheckoutFunnels_FastCheckoutFunnel&
+        funnel_proto) {
+  // There has to be at least one trigger form signature for a funnel. Otherwise
+  // a run could never be triggered successfully.
+  if (funnel_proto.trigger().empty()) {
+    return;
+  }
+
+  FastCheckoutFunnel funnel;
+  for (uint64_t form_signature : funnel_proto.trigger()) {
+    funnel.trigger.emplace(form_signature);
+  }
+  for (uint64_t form_signature : funnel_proto.fill()) {
+    funnel.fill.emplace(form_signature);
+  }
+
+  for (const std::string& domain : funnel_proto.domains()) {
+    GURL url = GURL(domain);
+    if (url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
+      cache_.emplace(url::Origin::Create(url), funnel);
     }
   }
 }
@@ -190,4 +202,18 @@ bool FastCheckoutCapabilitiesFetcherImpl::IsTriggerFormSupported(
           : CacheStateForIsTriggerFormSupported::
                 kEntryAvailableAndFormNotSupported);
   return is_supported;
+}
+
+base::flat_set<autofill::FormSignature>
+FastCheckoutCapabilitiesFetcherImpl::GetFormsToFill(const url::Origin& origin) {
+  if (!cache_.contains(origin)) {
+    return {};
+  }
+  const FastCheckoutFunnel& funnel = cache_.at(origin);
+  // All `FastCheckoutFunnel::trigger` and `FastCheckoutFunnel::fill` forms
+  // should be attempted to be filled, in any order. For that reason, merge the
+  // two sets into one set (`forms_to_fill`) and return it.
+  base::flat_set<autofill::FormSignature> forms_to_fill = funnel.trigger;
+  forms_to_fill.insert(funnel.fill.begin(), funnel.fill.end());
+  return forms_to_fill;
 }

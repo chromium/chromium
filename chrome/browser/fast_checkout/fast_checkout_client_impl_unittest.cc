@@ -15,8 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
+#include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -178,6 +180,11 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
         GetBrowserContext(),
         base::BindRepeating(&BuildTestPersonalDataManager));
+    FastCheckoutCapabilitiesFetcherFactory::GetInstance()
+        ->SetTestingSubclassFactoryAndUse(
+            profile(), base::BindRepeating([](content::BrowserContext*) {
+              return std::make_unique<MockFastCheckoutCapabilitiesFetcher>();
+            }));
 
     test_client_ =
         TestFastCheckoutClientImpl::CreateForWebContents(web_contents());
@@ -445,4 +452,45 @@ TEST_F(FastCheckoutClientImplTest,
 
   // Expect this `Stop(..)` call to not crash the test.
   fast_checkout_client()->Stop(/*allow_further_runs=*/true);
+}
+
+TEST_F(FastCheckoutClientImplTest,
+       OnOptionsSelected_SavesFormsAndAutofillDataSelections) {
+  auto autofill_profile = std::make_unique<autofill::AutofillProfile>(
+      autofill::test::GetFullProfile());
+  auto credit_card =
+      std::make_unique<autofill::CreditCard>(autofill::test::GetCreditCard());
+  autofill::AutofillProfile* autofill_profile_ptr = autofill_profile.get();
+  autofill::CreditCard* credit_card_ptr = credit_card.get();
+  autofill::FormSignature signature_1 = autofill::FormSignature(72322UL);
+  autofill::FormSignature signature_2 = autofill::FormSignature(1154UL);
+  base::flat_set<autofill::FormSignature> forms_to_fill{signature_1,
+                                                        signature_2};
+  const base::flat_map<autofill::FormSignature,
+                       FastCheckoutClientImpl::FillingState>
+      expected_forms_to_fill_map{
+          {signature_1, FastCheckoutClientImpl::FillingState::kNotFilled},
+          {signature_2, FastCheckoutClientImpl::FillingState::kNotFilled}};
+
+  MockFastCheckoutCapabilitiesFetcher* fetcher =
+      static_cast<MockFastCheckoutCapabilitiesFetcher*>(
+          FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
+              profile()));
+  EXPECT_TRUE(fetcher);
+
+  EXPECT_CALL(*fetcher, GetFormsToFill(url::Origin::Create(GURL(kUrl))))
+      .WillOnce(Return(forms_to_fill));
+  EXPECT_TRUE(fast_checkout_client()->TryToStart(
+      GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
+      autofill_manager()->GetWeakPtr()));
+
+  fast_checkout_client()->OnOptionsSelected(std::move(autofill_profile),
+                                            std::move(credit_card));
+
+  EXPECT_EQ(*fast_checkout_client()->get_autofill_profile_for_test(),
+            *autofill_profile_ptr);
+  EXPECT_EQ(*fast_checkout_client()->get_credit_card_for_test(),
+            *credit_card_ptr);
+  EXPECT_EQ(fast_checkout_client()->get_forms_to_fill_for_test(),
+            expected_forms_to_fill_map);
 }

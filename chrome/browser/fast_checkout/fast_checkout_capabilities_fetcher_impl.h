@@ -7,6 +7,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 
+#include "chrome/browser/fast_checkout/fast_checkout_funnels.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -79,13 +80,21 @@ class FastCheckoutCapabilitiesFetcherImpl
   void FetchCapabilities() override;
   bool IsTriggerFormSupported(const url::Origin& origin,
                               autofill::FormSignature form_signature) override;
+  base::flat_set<autofill::FormSignature> GetFormsToFill(
+      const url::Origin& origin) override;
 
  private:
   struct FastCheckoutFunnel {
     FastCheckoutFunnel();
     ~FastCheckoutFunnel();
     FastCheckoutFunnel(const FastCheckoutFunnel&);
+    // `trigger` form signatures allow a fast checkout run to start by showing
+    // the bottomsheet if an input field of their forms got focused by the user.
+    // They will also be attempted to be autofilled, just like `fill` form
+    // signatures.
     base::flat_set<autofill::FormSignature> trigger;
+    // `fill` form signatures don't trigger a fast checkout run but are
+    // attempted to be autofilled.
     base::flat_set<autofill::FormSignature> fill;
   };
   // Called when the request's response arrives.
@@ -94,6 +103,16 @@ class FastCheckoutCapabilitiesFetcherImpl
   // Returns if the cache is stale, i.e. if `kCacheTimeout` minutes since the
   // last successful request have passed or if no request was done yet.
   bool IsCacheStale() const;
+  // Converts funnel proto message to `FastCheckoutFunnel` and adds it to
+  // `cache_`.
+  void AddFunnelToCache(
+      const ::fast_checkout::FastCheckoutFunnels_FastCheckoutFunnel&
+          funnel_proto);
+  // Converts `trigger` and `fill` fields from the funnel proto message to
+  // `FastCheckoutFunnel`
+  FastCheckoutFunnel ConvertToFunnel(
+      const ::google::protobuf::RepeatedField<uint64_t>& trigger,
+      const ::google::protobuf::RepeatedField<uint64_t>& fill) const;
   // URL loader object for the gstatic request. If `url_loader_` is not null, a
   // request is currently ongoing.
   std::unique_ptr<network::SimpleURLLoader> url_loader_ = nullptr;

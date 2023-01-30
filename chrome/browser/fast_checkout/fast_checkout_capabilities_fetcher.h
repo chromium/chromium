@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_H_
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_H_
 
+#include "base/containers/flat_set.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace autofill {
@@ -29,6 +30,10 @@ class FastCheckoutCapabilitiesFetcher : public KeyedService {
   virtual bool IsTriggerFormSupported(
       const url::Origin& origin,
       autofill::FormSignature form_signature) = 0;
+  // Returns form signatures cached for `origin` if present. Otherwise returns
+  // an empty set.
+  virtual base::flat_set<autofill::FormSignature> GetFormsToFill(
+      const url::Origin& origin) = 0;
 };
 
 #endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CAPABILITIES_FETCHER_H_

@@ -21,12 +21,13 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
     : content::WebContentsUserData<FastCheckoutClientImpl>(*web_contents),
       autofill_client_(
           autofill::ChromeAutofillClient::FromWebContents(web_contents)),
+      fetcher_(FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())),
       personal_data_helper_(
           std::make_unique<FastCheckoutPersonalDataHelperImpl>(web_contents)),
       trigger_validator_(std::make_unique<FastCheckoutTriggerValidatorImpl>(
           autofill_client_,
-          FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
-              web_contents->GetBrowserContext()),
+          fetcher_,
           personal_data_helper_.get())) {}
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() {
@@ -51,11 +52,12 @@ bool FastCheckoutClientImpl::TryToStart(
   }
 
   autofill_manager_ = autofill_manager;
-  url_ = url;
+  origin_ = url::Origin::Create(url);
   is_running_ = true;
   personal_data_manager_observation_.Observe(
       personal_data_helper_->GetPersonalDataManager());
 
+  SetFormsToFill();
   SetShouldSuppressKeyboard(true);
 
   fast_checkout_controller_ = CreateFastCheckoutController();
@@ -88,6 +90,9 @@ void FastCheckoutClientImpl::OnRunComplete() {
 
 void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   if (allow_further_runs) {
+    forms_to_fill_.clear();
+    selected_autofill_profile_.reset();
+    selected_credit_card_.reset();
     fast_checkout_ui_state_ = FastCheckoutUIState::kNotShownYet;
   } else if (IsShowing()) {
     fast_checkout_ui_state_ = FastCheckoutUIState::kWasShown;
@@ -125,13 +130,26 @@ void FastCheckoutClientImpl::OnHidden() {
 void FastCheckoutClientImpl::OnOptionsSelected(
     std::unique_ptr<autofill::AutofillProfile> selected_profile,
     std::unique_ptr<autofill::CreditCard> selected_credit_card) {
-  // TODO(crbug.com/1334642): Signal that FC options have been selected.
   OnHidden();
+  selected_autofill_profile_ = std::move(selected_profile);
+  selected_credit_card_ = std::move(selected_credit_card);
+}
+
+void FastCheckoutClientImpl::SetFormsToFill() {
+  if (!fetcher_) {
+    return;
+  }
+  DCHECK(forms_to_fill_.empty());
+  for (autofill::FormSignature form_signature :
+       fetcher_->GetFormsToFill(origin_)) {
+    forms_to_fill_.emplace(form_signature, FillingState::kNotFilled);
+  }
 }
 
 void FastCheckoutClientImpl::OnDismiss() {
   OnHidden();
   Stop(/*allow_further_runs=*/false);
+  forms_to_fill_.clear();
 }
 
 void FastCheckoutClientImpl::OnPersonalDataChanged() {

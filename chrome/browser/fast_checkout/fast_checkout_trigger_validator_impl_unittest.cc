@@ -6,9 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
+#include "chrome/browser/fast_checkout/mock_fast_checkout_capabilities_fetcher.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -28,23 +28,13 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
       : autofill::TestBrowserAutofillManager(driver, client) {}
   ~MockBrowserAutofillManager() override = default;
 
-  MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
 };
 
 class MockAutofillClient : public autofill::TestAutofillClient {
  public:
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
-};
-
-class MockCapabilitiesFetcher : public FastCheckoutCapabilitiesFetcher {
- public:
-  MOCK_METHOD(void, FetchCapabilities, (), ());
-  MOCK_METHOD(bool,
-              IsTriggerFormSupported,
-              (const url::Origin& origin,
-               autofill::FormSignature form_signature),
-              ());
 };
 
 class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
@@ -55,23 +45,23 @@ class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
   MOCK_METHOD(std::vector<autofill::CreditCard*>,
               GetValidCreditCards,
               (),
-              (const));
+              (const override));
   MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
               GetValidAddressProfiles,
               (),
-              (const));
+              (const override));
   MOCK_METHOD(autofill::PersonalDataManager*,
               GetPersonalDataManager,
               (),
-              (const));
+              (const override));
   MOCK_METHOD(std::vector<autofill::AutofillProfile*>,
               GetProfilesToSuggest,
               (),
-              (const));
+              (const override));
   MOCK_METHOD(std::vector<autofill::CreditCard*>,
               GetCreditCardsToSuggest,
               (),
-              (const));
+              (const override));
 };
 
 class MockPersonalDataManager : public autofill::PersonalDataManager {
@@ -79,8 +69,8 @@ class MockPersonalDataManager : public autofill::PersonalDataManager {
   MockPersonalDataManager() : PersonalDataManager("en-US") {}
   ~MockPersonalDataManager() override = default;
 
-  MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const));
-  MOCK_METHOD(bool, IsAutofillCreditCardEnabled, (), (const));
+  MOCK_METHOD(bool, IsAutofillProfileEnabled, (), (const override));
+  MOCK_METHOD(bool, IsAutofillCreditCardEnabled, (), (const override));
 };
 
 class FastCheckoutTriggerValidatorTest
@@ -98,7 +88,8 @@ class FastCheckoutTriggerValidatorTest
 
     pdm_ = std::make_unique<MockPersonalDataManager>();
     autofill_client_ = std::make_unique<MockAutofillClient>();
-    capabilities_fetcher_ = std::make_unique<MockCapabilitiesFetcher>();
+    capabilities_fetcher_ =
+        std::make_unique<MockFastCheckoutCapabilitiesFetcher>();
     personal_data_helper_ = std::make_unique<MockPersonalDataHelper>();
     autofill_driver_ = std::make_unique<autofill::TestAutofillDriver>();
     autofill_manager_ = std::make_unique<MockBrowserAutofillManager>(
@@ -126,7 +117,7 @@ class FastCheckoutTriggerValidatorTest
 
   MockPersonalDataManager* pdm() { return pdm_.get(); }
   MockAutofillClient* autofill_client() { return autofill_client_.get(); }
-  MockCapabilitiesFetcher* capabilities_fetcher() {
+  MockFastCheckoutCapabilitiesFetcher* capabilities_fetcher() {
     return capabilities_fetcher_.get();
   }
   MockPersonalDataHelper* personal_data_helper() {
@@ -156,7 +147,7 @@ class FastCheckoutTriggerValidatorTest
   std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
   std::unique_ptr<FastCheckoutTriggerValidatorImpl> validator_;
   std::unique_ptr<MockAutofillClient> autofill_client_;
-  std::unique_ptr<MockCapabilitiesFetcher> capabilities_fetcher_;
+  std::unique_ptr<MockFastCheckoutCapabilitiesFetcher> capabilities_fetcher_;
   std::unique_ptr<MockBrowserAutofillManager> autofill_manager_;
   std::unique_ptr<MockPersonalDataHelper> personal_data_helper_;
   std::unique_ptr<MockPersonalDataManager> pdm_;

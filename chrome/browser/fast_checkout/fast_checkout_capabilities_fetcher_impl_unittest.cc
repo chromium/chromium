@@ -10,12 +10,14 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 constexpr char kFastCheckoutFunnelsUrl[] =
     "https://www.gstatic.com/autofill/fast_checkout/funnels.binarypb";
 constexpr char kInvalidResponseBody[] = "invalid response body";
 constexpr char kDomain[] = "https://www.example.com";
+constexpr char kDomainWithoutTriggerForm[] = "https://www.example3.com";
 constexpr char kUnsupportedDomain[] = "https://www.example2.com";
 constexpr char kInvalidDomain[] = "invaliddomain";
 constexpr char kNonHttpSDomain[] = "file://path/to/a/file";
@@ -44,6 +46,11 @@ std::string CreateBinaryProtoResponse() {
     funnel->add_trigger(kTriggerFormSignature.value());
     funnel->add_fill(kFillFormSignature.value());
   }
+  // Add one additional funnel with empty `trigger` field.
+  ::fast_checkout::FastCheckoutFunnels_FastCheckoutFunnel* funnel =
+      funnels.add_funnels();
+  funnel->add_domains(kDomainWithoutTriggerForm);
+  funnel->add_fill(kFillFormSignature.value());
   return funnels.SerializeAsString();
 }
 }  // namespace
@@ -58,6 +65,8 @@ class FastCheckoutCapabilitiesFetcherImplTest
     unsupported_origin_ = url::Origin::Create(GURL(kUnsupportedDomain));
     invalid_origin_ = url::Origin::Create(GURL(kInvalidDomain));
     non_http_s_origin_ = url::Origin::Create(GURL(kNonHttpSDomain));
+    origin_without_trigger_form_ =
+        url::Origin::Create(GURL(kDomainWithoutTriggerForm));
   }
 
  protected:
@@ -90,6 +99,9 @@ class FastCheckoutCapabilitiesFetcherImplTest
   const url::Origin& GetUnsupportedOrigin() { return unsupported_origin_; }
   const url::Origin& GetInvalidOrigin() { return invalid_origin_; }
   const url::Origin& GetNonHttpSOrigin() { return non_http_s_origin_; }
+  const url::Origin& GetOriginWithoutTriggerForm() {
+    return origin_without_trigger_form_;
+  }
 
   bool FetchCapabilitiesAndSimulateResponse(
       net::HttpStatusCode status = net::HTTP_OK) {
@@ -113,6 +125,7 @@ class FastCheckoutCapabilitiesFetcherImplTest
   url::Origin unsupported_origin_;
   url::Origin invalid_origin_;
   url::Origin non_http_s_origin_;
+  url::Origin origin_without_trigger_form_;
 };
 
 TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
@@ -267,6 +280,37 @@ TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
   EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
   fetcher()->IsTriggerFormSupported(GetInvalidOrigin(), kTriggerFormSignature);
 
+  histogram_tester().ExpectUniqueSample(
+      kUmaKeyCacheStateIsTriggerFormSupported,
+      FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
+          kEntryNotAvailable,
+      1u);
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       GetFormsToFill_InvalidDomain_ReturnsEmptySet) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+  EXPECT_THAT(fetcher()->GetFormsToFill(GetInvalidOrigin()),
+              testing::IsEmpty());
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest,
+       GetFormsToFill_ValidDomain_ReturnsTriggerAndFillForms) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+
+  base::flat_set<autofill::FormSignature> forms_to_fill =
+      fetcher()->GetFormsToFill(GetOrigin());
+  EXPECT_THAT(forms_to_fill, testing::UnorderedElementsAre(
+                                 kTriggerFormSignature, kFillFormSignature));
+}
+
+TEST_F(FastCheckoutCapabilitiesFetcherImplTest, NoTriggerForm) {
+  EXPECT_TRUE(FetchCapabilitiesAndSimulateResponse());
+
+  EXPECT_FALSE(fetcher()->IsTriggerFormSupported(GetOriginWithoutTriggerForm(),
+                                                 kTriggerFormSignature));
+  EXPECT_THAT(fetcher()->GetFormsToFill(GetOriginWithoutTriggerForm()),
+              testing::IsEmpty());
   histogram_tester().ExpectUniqueSample(
       kUmaKeyCacheStateIsTriggerFormSupported,
       FastCheckoutCapabilitiesFetcherImpl::CacheStateForIsTriggerFormSupported::
