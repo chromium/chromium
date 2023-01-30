@@ -31,7 +31,7 @@ const ANOTHER_TARGET_ID = 'TargetB';
 
 describe('CdpClient tests.', () => {
   it(`given CdpClient, when some command is called, then cdpBindings should be
-      called with proper values`, async () => {
+      called with proper values`, () => {
     const expectedMessageStr = JSON.stringify({
       id: 0,
       method: 'Target.activateTarget',

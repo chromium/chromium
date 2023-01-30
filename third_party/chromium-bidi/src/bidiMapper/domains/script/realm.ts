@@ -184,7 +184,7 @@ export class Realm {
       origin: this.origin,
       type: this.type,
       context: this.browsingContextId,
-      ...(this.#sandbox !== undefined ? {sandbox: this.#sandbox} : {}),
+      ...(this.#sandbox === undefined ? {} : {sandbox: this.#sandbox}),
     };
   }
 
@@ -293,6 +293,6 @@ export class Realm {
   async stringifyObject(
     cdpObject: Protocol.Runtime.RemoteObject
   ): Promise<string> {
-    return stringifyObject(cdpObject, this);
+    return await stringifyObject(cdpObject, this);
   }
 }

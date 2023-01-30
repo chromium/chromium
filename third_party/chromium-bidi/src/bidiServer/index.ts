@@ -56,7 +56,7 @@ function parseArguments() {
   return args[0];
 }
 
-(async () => {
+(() => {
   try {
     console.log('Launching BiDi server.');
 

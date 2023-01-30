@@ -224,7 +224,7 @@ export class BrowsingContextProcessor {
 
     return await context.navigate(
       params.url,
-      params.wait !== undefined ? params.wait : 'none'
+      params.wait === undefined ? 'none' : params.wait
     );
   }
 

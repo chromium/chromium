@@ -1,8 +1,13 @@
 module.exports = {
   root: true,
   env: {
-    node: true,
+    browser: true,
     es6: true,
+    mocha: true,
+    node: true,
+  },
+  globals: {
+    globalThis: false,
   },
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'import', 'mocha'],
@@ -21,8 +26,13 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-this-alias': 'off',
+    'func-names': 'error',
+    'no-duplicate-imports': 'error',
     'no-else-return': 'error',
     'no-empty': ['error', {allowEmptyCatch: true}],
+    'no-implicit-coercion': 'error',
+    'no-negated-condition': 'error',
+    'no-undef': 'error',
     'prefer-promise-reject-errors': 'error',
     'prefer-template': 'error',
     eqeqeq: 'error',

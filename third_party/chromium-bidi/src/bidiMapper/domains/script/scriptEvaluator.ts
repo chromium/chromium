@@ -112,7 +112,7 @@ async function deserializeToCdpArg(
       };
     }
     case 'boolean': {
-      return {value: !!argumentValue.value};
+      return {value: Boolean(argumentValue.value)};
     }
     case 'bigint': {
       return {
@@ -146,15 +146,15 @@ async function deserializeToCdpArg(
       const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
-          functionDeclaration: String(function (
-            ...args: Protocol.Runtime.CallArgument[]
-          ) {
-            const result = new Map();
-            for (let i = 0; i < args.length; i += 2) {
-              result.set(args[i], args[i + 1]);
+          functionDeclaration: String(
+            (...args: Protocol.Runtime.CallArgument[]) => {
+              const result = new Map();
+              for (let i = 0; i < args.length; i += 2) {
+                result.set(args[i], args[i + 1]);
+              }
+              return result;
             }
-            return result;
-          }),
+          ),
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
@@ -176,21 +176,21 @@ async function deserializeToCdpArg(
       const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
-          functionDeclaration: String(function (
-            ...args: Protocol.Runtime.CallArgument[]
-          ) {
-            const result: Record<
-              string | number | symbol,
-              Protocol.Runtime.CallArgument
-            > = {};
+          functionDeclaration: String(
+            (...args: Protocol.Runtime.CallArgument[]) => {
+              const result: Record<
+                string | number | symbol,
+                Protocol.Runtime.CallArgument
+              > = {};
 
-            for (let i = 0; i < args.length; i += 2) {
-              // Key should be either `string`, `number`, or `symbol`.
-              const key = args[i] as string | number | symbol;
-              result[key] = args[i + 1]!;
+              for (let i = 0; i < args.length; i += 2) {
+                // Key should be either `string`, `number`, or `symbol`.
+                const key = args[i] as string | number | symbol;
+                result[key] = args[i + 1]!;
+              }
+              return result;
             }
-            return result;
-          }),
+          ),
           awaitPromise: false,
           arguments: keyValueArray,
           returnByValue: false,
@@ -209,7 +209,7 @@ async function deserializeToCdpArg(
       const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
-          functionDeclaration: String(function (...args: unknown[]) {
+          functionDeclaration: String((...args: unknown[]) => {
             return args;
           }),
           awaitPromise: false,
@@ -230,7 +230,7 @@ async function deserializeToCdpArg(
       const argEvalResult = await realm.cdpClient.sendCommand(
         'Runtime.callFunctionOn',
         {
-          functionDeclaration: String(function (...args: unknown[]) {
+          functionDeclaration: String((...args: unknown[]) => {
             return new Set(args);
           }),
           awaitPromise: false,
@@ -350,9 +350,7 @@ export async function stringifyObject(
   const stringifyResult = await realm.cdpClient.sendCommand(
     'Runtime.callFunctionOn',
     {
-      functionDeclaration: String(function (
-        obj: Protocol.Runtime.RemoteObject
-      ) {
+      functionDeclaration: String((obj: Protocol.Runtime.RemoteObject) => {
         return String(obj);
       }),
       awaitPromise: false,

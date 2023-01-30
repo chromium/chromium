@@ -29,7 +29,7 @@ const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
 
 describe('CdpConnection', () => {
-  it('can send a command message for a CdpClient', async () => {
+  it('can send a command message for a CdpClient', () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
 
@@ -155,7 +155,7 @@ describe('CdpConnection', () => {
     otherSessionCallback.resetHistory();
   });
 
-  it('closes the transport connection when closed', async () => {
+  it('closes the transport connection when closed', () => {
     const mockCdpServer = new StubTransport();
     const cdpConnection = new CdpConnection(mockCdpServer);
     cdpConnection.close();

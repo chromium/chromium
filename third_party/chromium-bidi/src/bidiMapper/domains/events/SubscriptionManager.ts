@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-import type {CommonDataTypes} from '../../../protocol/protocol.js';
 import {
   BrowsingContext,
+  CommonDataTypes,
   CDP,
   Log,
   Session,
