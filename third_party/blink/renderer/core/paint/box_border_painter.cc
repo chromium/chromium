@@ -443,23 +443,32 @@ Color CalculateBorderStyleColor(const EBorderStyle& style,
   bool is_darken = (side == BoxSide::kTop || side == BoxSide::kLeft) ==
                    (style == EBorderStyle::kInset);
 
+  Color dark_color = color.Dark();
   // Inset, outset, ridge, and groove paint a darkened or "shadow" edge:
   // https://w3c.github.io/csswg-drafts/css-backgrounds/#border-style. By
   // default, darken |color| for the darker edge and use |color| for the lighter
   // edge.
   if (is_darken) {
-    return color.Dark();
+    return dark_color;
   }
-  // This constant is used to determine if there is enough contrast between
-  // the darkened edge and |color|. If not, also lighten |color| for the
-  // lighter edge.
-  constexpr float kMinimumBorderEdgeContrastRatio = 1.75f;
-  if (color_utils::GetContrastRatio(color.toSkColor4f(),
-                                    color.Dark().toSkColor4f()) <
-      kMinimumBorderEdgeContrastRatio) {
-    return color.Light();
+
+  auto should_lighten_color = [color, dark_color]() -> bool {
+    // This constant is used to determine if there is enough contrast between
+    // the darkened edge and |color|. If not, also lighten |color| for the
+    // lighter edge.
+    constexpr float kMinimumBorderEdgeContrastRatio = 1.75f;
+    return color_utils::GetContrastRatio(color.toSkColor4f(),
+                                         dark_color.toSkColor4f()) <
+           kMinimumBorderEdgeContrastRatio;
+  };
+  // The following condition skips should_lighten_color() when the result is
+  // know to be false. The values came from a brute force search of r, b, g
+  // values, see https://crrev.com/c/4200827/3.
+  if (color.Red() >= 150 || color.Green() >= 92) {
+    DCHECK(!should_lighten_color());
+    return color;
   }
-  return color;
+  return should_lighten_color() ? color.Light() : color;
 }
 
 void DrawDoubleBoxSide(GraphicsContext& context,
@@ -1895,32 +1904,6 @@ void BoxBorderPainter::DrawBoxSide(GraphicsContext& context,
   DrawLineForBoxSide(context, snapped_edge_rect.x(), snapped_edge_rect.y(),
                      snapped_edge_rect.right(), snapped_edge_rect.bottom(),
                      side, color, style, 0, 0, true, auto_dark_mode);
-}
-
-Color BoxBorderPainter::CalculateBorderStyleColor(const EBorderStyle& style,
-                                                  const BoxSide& side,
-                                                  const Color& color) {
-  bool is_darken = (side == BoxSide::kTop || side == BoxSide::kLeft) ==
-                   (style == EBorderStyle::kInset);
-
-  // Inset, outset, ridge, and groove paint a darkened or "shadow" edge:
-  // https://w3c.github.io/csswg-drafts/css-backgrounds/#border-style. By
-  // default, darken |color| for the darker edge and use |color| for the lighter
-  // edge.
-  if (is_darken) {
-    return color.Dark();
-  } else {
-    // This constant is used to determine if there is enough contrast between
-    // the darkened edge and |color|. If not, also lighten |color| for the
-    // lighter edge.
-    constexpr float kMinimumBorderEdgeContrastRatio = 1.75f;
-    if (color_utils::GetContrastRatio(color.toSkColor4f(),
-                                      color.Dark().toSkColor4f()) <
-        kMinimumBorderEdgeContrastRatio) {
-      return color.Light();
-    }
-  }
-  return color;
 }
 
 }  // namespace blink
