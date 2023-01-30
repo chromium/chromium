@@ -75,7 +75,31 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   // Internal implementation of gfx::VSyncProvider.
   class VSyncProvider;
 
-  void ProcessUnsubmittedBuffers();
+  struct PendingFrame {
+    PendingFrame(uint32_t frame_id,
+                 const gfx::Size& surface_size,
+                 SwapBuffersCallback callback,
+                 gfx::FrameData frame_data,
+                 SharedMemoryBuffer* frame_buffer);
+    ~PendingFrame();
+
+    // Unique identifier of the frame within this AcceleratedWidget.
+    const uint32_t frame_id;
+
+    // Current surface size. This is required for the |swap_ack_callback|.
+    const gfx::Size surface_size;
+
+    SwapBuffersCallback swap_ack_callback;
+    gfx::FrameData data;
+
+    // Buffer associated with this frame. If null, the frame is invalid and
+    // requires execution of the |swap_ack_callback| as viz may still request
+    // to swap buffers without calling GetCanvas first. In that case, it skips
+    // drawing a root render pass and there is nothing to present.
+    const raw_ptr<SharedMemoryBuffer, DanglingUntriaged> frame_buffer;
+  };
+
+  void MaybeProcessUnsubmittedFrames();
 
   // WaylandSurfaceGpu overrides:
   void OnSubmission(uint32_t frame_id,
@@ -94,16 +118,16 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   float viewport_scale_ = 1.f;
   std::vector<std::unique_ptr<SharedMemoryBuffer>> buffers_;
 
-  // Contains pending to be submitted buffers. The vector is processed as FIFO.
-  std::vector<SharedMemoryBuffer*> unsubmitted_buffers_;
+  // Contains pending to be submitted frames. The vector is processed as FIFO.
+  std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
+
+  // Currently submitted frame that waits OnSubmission. Set on OnSwapBuffers and
+  // release on OnSubmission() call.
+  std::unique_ptr<PendingFrame> submitted_frame_;
 
   // Pending buffer that is to be placed into the |unsubmitted_buffers_| to be
   // processed.
   raw_ptr<SharedMemoryBuffer, DanglingUntriaged> pending_buffer_ = nullptr;
-
-  // Currently used buffer. Set on PresentCanvas() and released on
-  // OnSubmission() call.
-  raw_ptr<SharedMemoryBuffer, DanglingUntriaged> current_buffer_ = nullptr;
 
   // Previously used buffer. Set on OnSubmission().
   raw_ptr<SharedMemoryBuffer, DanglingUntriaged> previous_buffer_ = nullptr;
