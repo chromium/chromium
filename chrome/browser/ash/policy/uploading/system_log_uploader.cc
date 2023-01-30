@@ -33,7 +33,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/prefs/pref_service.h"
@@ -111,7 +111,7 @@ std::string ZipFiles(
   return compressed_logs;
 }
 
-std::string ReadAndRedactLogFile(feedback::RedactionTool* redactor,
+std::string ReadAndRedactLogFile(redaction::RedactionTool* redactor,
                                  const base::FilePath& file_path) {
   std::string data;
   if (!base::ReadFileToStringWithMaxSize(file_path, &data, kLogCutoffSize) &&
@@ -133,7 +133,7 @@ std::string ReadAndRedactLogFile(feedback::RedactionTool* redactor,
 // as pairs (file name, data) and returns. Called on blocking thread.
 std::unique_ptr<SystemLogUploader::SystemLogs> ReadFiles() {
   auto system_logs = std::make_unique<SystemLogUploader::SystemLogs>();
-  feedback::RedactionTool redactor(
+  redaction::RedactionTool redactor(
       extension_misc::kBuiltInFirstPartyExtensionIds);
   for (const char* file_path : kSystemLogFileNames) {
     if (!base::PathExists(base::FilePath(file_path)))
@@ -396,7 +396,7 @@ void SystemLogUploader::OnFailure(UploadJob::ErrorCode error_code) {
 
 // static
 std::string SystemLogUploader::RemoveSensitiveData(
-    feedback::RedactionTool* redactor,
+    redaction::RedactionTool* redactor,
     const std::string& data) {
   return redactor->Redact(data);
 }

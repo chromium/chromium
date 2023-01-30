@@ -27,8 +27,8 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -46,9 +46,9 @@ constexpr std::array<const char*, 2> kExcludeList = {
 
 // Adds the contents of `map_to_merge` into `target_map` and returns a set of
 // keys in `map_to_merge`.
-std::set<feedback::PIIType> MergePIIMapsAndGetPIITypes(PIIMap& target_map,
+std::set<redaction::PIIType> MergePIIMapsAndGetPIITypes(PIIMap& target_map,
                                                        PIIMap& map_to_merge) {
-  std::set<feedback::PIIType> keys;
+  std::set<redaction::PIIType> keys;
   for (auto& pii_data : map_to_merge) {
     target_map[pii_data.first].insert(pii_data.second.begin(),
                                       pii_data.second.end());
@@ -81,7 +81,7 @@ std::string GetErrorMessage(const std::vector<std::string>& errors) {
 
 SystemStateDataCollector::SystemLog::SystemLog(
     std::string log,
-    std::set<feedback::PIIType> detected_pii_types)
+    std::set<redaction::PIIType> detected_pii_types)
     : log(log), detected_pii_types(std::move(detected_pii_types)) {}
 SystemStateDataCollector::SystemLog::~SystemLog() = default;
 SystemStateDataCollector::SystemLog::SystemLog(const SystemLog& other) =
@@ -111,7 +111,7 @@ const PIIMap& SystemStateDataCollector::GetDetectedPII() {
 void SystemStateDataCollector::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_collector_done_callback_ = std::move(on_data_collected_callback);
 
@@ -149,7 +149,7 @@ void SystemStateDataCollector::OnGetLog(base::RepeatingClosure barrier_closure,
 
 void SystemStateDataCollector::OnGotAllExtraLogs(
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ash::DebugDaemonClient* debugd_client = ash::DebugDaemonClient::Get();
@@ -184,7 +184,7 @@ void SystemStateDataCollector::OnGotAllExtraLogs(
 
 void SystemStateDataCollector::OnGetFeedbackLogs(
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     bool success,
     const std::map<std::string, std::string>& logs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -223,10 +223,10 @@ void SystemStateDataCollector::OnPIIDetected(
 }
 
 void SystemStateDataCollector::ExportCollectedDataWithPII(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FilePath target_path =
@@ -270,8 +270,8 @@ void SystemStateDataCollector::OnFilesWritten(
 std::pair<PIIMap, std::map<std::string, SystemStateDataCollector::SystemLog>>
 SystemStateDataCollector::DetectPII(
     std::map<std::string, SystemStateDataCollector::SystemLog> system_logs,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   PIIMap detected_pii;
   // Detect PII in all entries in `logs` and add the detected
   // PII to `detected_pii`.
@@ -285,9 +285,9 @@ SystemStateDataCollector::DetectPII(
 
 std::map<std::string, std::string> SystemStateDataCollector::RedactPII(
     std::map<std::string, SystemStateDataCollector::SystemLog> system_logs,
-    std::set<feedback::PIIType> pii_types_to_keep,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+    std::set<redaction::PIIType> pii_types_to_keep,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   std::map<std::string, std::string> redacted_logs;
   for (auto [log_name, system_log] : system_logs) {
     redacted_logs[log_name] =

@@ -23,8 +23,8 @@
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -62,8 +62,8 @@ const FakeUserLog kFakeUserLogs[] = {
      /*redacted_contents=*/"Sample logs with PII <URL: 1>"}};
 
 const PIIMap kExpectedPIIMap = {
-    {feedback::PIIType::kEmail, {"fakeusername@example.com"}},
-    {feedback::PIIType::kURL, {"chrome://resources/f?user=bar"}}};
+    {redaction::PIIType::kEmail, {"fakeusername@example.com"}},
+    {redaction::PIIType::kURL, {"chrome://resources/f?user=bar"}}};
 
 class ChromeUserLogsDataCollectorTest : public ::testing::Test {
  public:
@@ -89,7 +89,7 @@ class ChromeUserLogsDataCollectorTest : public ::testing::Test {
     task_runner_for_redaction_tool_ =
         base::ThreadPool::CreateSequencedTaskRunner({});
     redaction_tool_container_ =
-        base::MakeRefCounted<feedback::RedactionToolContainer>(
+        base::MakeRefCounted<redaction::RedactionToolContainer>(
             task_runner_for_redaction_tool_, nullptr);
   }
 
@@ -150,7 +150,7 @@ class ChromeUserLogsDataCollectorTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
-  scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container_;
+  scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
 };
 
 }  // namespace

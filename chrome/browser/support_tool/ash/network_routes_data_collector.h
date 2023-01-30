@@ -16,8 +16,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 // Collects network routing tables data for both IPv4 and IPv6 and writes it
 // into "network_routes.txt" file.
@@ -36,14 +36,14 @@ class NetworkRoutesDataCollector : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
@@ -58,7 +58,7 @@ class NetworkRoutesDataCollector : public DataCollector {
   void OnAllGetRoutesDone(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container);
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container);
 
   // Merges `detected_pii` into `pii_map_` and runs
   // `on_data_collected_callback`.

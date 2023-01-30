@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <set>
 #include <utility>
@@ -16,17 +16,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
-#include "components/feedback/pii_types.h"
-#include "net/base/ip_address.h"
+#include "components/feedback/redaction_tool/ip_address.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #ifdef USE_SYSTEM_RE2
 #include <re2/re2.h>
 #else
 #include "third_party/re2/src/re2/re2.h"
-#endif //USE_SYSTEM_RE2
+#endif  // USE_SYSTEM_RE2
 
 using re2::RE2;
+using redaction_internal::IPAddress;
 
-namespace feedback {
+namespace redaction {
 
 namespace {
 
@@ -135,87 +136,91 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     {"IPP Address", R"xxx((ipp:\/\/)(.+?)(\/ipp))xxx", PIIType::kIPPAddress},
 };
 
-bool MaybeUnmapAddress(net::IPAddress* addr) {
-  if (!addr->IsIPv4MappedIPv6())
+bool MaybeUnmapAddress(IPAddress* addr) {
+  if (!addr->IsIPv4MappedIPv6()) {
     return false;
+  }
 
-  *addr = net::ConvertIPv4MappedIPv6ToIPv4(*addr);
+  *addr = ConvertIPv4MappedIPv6ToIPv4(*addr);
   return true;
 }
 
-bool MaybeUntranslateAddress(net::IPAddress* addr) {
-  if (!addr->IsIPv6())
+bool MaybeUntranslateAddress(IPAddress* addr) {
+  if (!addr->IsIPv6()) {
     return false;
+  }
 
-  static const net::IPAddress kTranslated6To4(0, 0x64, 0xff, 0x9b, 0, 0, 0, 0,
-                                              0, 0, 0, 0, 0, 0, 0, 0);
-  if (!IPAddressMatchesPrefix(*addr, kTranslated6To4, 96))
+  static const IPAddress kTranslated6To4(0, 0x64, 0xff, 0x9b, 0, 0, 0, 0, 0, 0,
+                                         0, 0, 0, 0, 0, 0);
+  if (!IPAddressMatchesPrefix(*addr, kTranslated6To4, 96)) {
     return false;
+  }
 
   const auto bytes = addr->bytes();
-  *addr = net::IPAddress(bytes[12], bytes[13], bytes[14], bytes[15]);
+  *addr = IPAddress(bytes[12], bytes[13], bytes[14], bytes[15]);
   return true;
 }
 
 // If |addr| points to a valid IPv6 address, this function truncates it at /32.
-bool MaybeTruncateIPv6(net::IPAddress* addr) {
-  if (!addr->IsIPv6())
+bool MaybeTruncateIPv6(IPAddress* addr) {
+  if (!addr->IsIPv6()) {
     return false;
+  }
 
   const auto bytes = addr->bytes();
-  *addr = net::IPAddress(bytes[0], bytes[1], bytes[2], bytes[3], 0, 0, 0, 0, 0,
-                         0, 0, 0, 0, 0, 0, 0);
+  *addr = IPAddress(bytes[0], bytes[1], bytes[2], bytes[3], 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0);
   return true;
 }
 
 // Returns an appropriately scrubbed version of |addr| if applicable.
 std::string MaybeScrubIPAddress(const std::string& addr) {
   struct {
-    net::IPAddress ip_addr;
+    IPAddress ip_addr;
     int prefix_length;
     bool scrub;
   } static const kNonIdentifyingIPRanges[] = {
       // Private.
-      {net::IPAddress(10, 0, 0, 0), 8, true},
-      {net::IPAddress(172, 16, 0, 0), 12, true},
-      {net::IPAddress(192, 168, 0, 0), 16, true},
+      {IPAddress(10, 0, 0, 0), 8, true},
+      {IPAddress(172, 16, 0, 0), 12, true},
+      {IPAddress(192, 168, 0, 0), 16, true},
       // Chrome OS containers and VMs.
-      {net::IPAddress(100, 115, 92, 0), 24, false},
+      {IPAddress(100, 115, 92, 0), 24, false},
       // Loopback.
-      {net::IPAddress(127, 0, 0, 0), 8, true},
+      {IPAddress(127, 0, 0, 0), 8, true},
       // Any.
-      {net::IPAddress(0, 0, 0, 0), 8, true},
+      {IPAddress(0, 0, 0, 0), 8, true},
       // DNS.
-      {net::IPAddress(8, 8, 8, 8), 32, false},
-      {net::IPAddress(8, 8, 4, 4), 32, false},
-      {net::IPAddress(1, 1, 1, 1), 32, false},
+      {IPAddress(8, 8, 8, 8), 32, false},
+      {IPAddress(8, 8, 4, 4), 32, false},
+      {IPAddress(1, 1, 1, 1), 32, false},
       // Multicast.
-      {net::IPAddress(224, 0, 0, 0), 4, true},
+      {IPAddress(224, 0, 0, 0), 4, true},
       // Link local.
-      {net::IPAddress(169, 254, 0, 0), 16, true},
-      {net::IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
+      {IPAddress(169, 254, 0, 0), 16, true},
+      {IPAddress(0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 10,
        true},
       // Broadcast.
-      {net::IPAddress(255, 255, 255, 255), 32, false},
+      {IPAddress(255, 255, 255, 255), 32, false},
       // IPv6 loopback, unspecified and non-address strings.
-      {net::IPAddress::IPv6AllZeros(), 112, false},
+      {IPAddress::IPv6AllZeros(), 112, false},
       // IPv6 multicast all nodes and routers.
-      {net::IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-       128, false},
-      {net::IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
-       128, false},
-      {net::IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1),
-       128, false},
-      {net::IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2),
-       128, false},
+      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
+       false},
+      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
+       false},
+      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), 128,
+       false},
+      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2), 128,
+       false},
       // IPv6 other multicast (link and interface local).
-      {net::IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
+      {IPAddress(0xff, 0x01, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
        true},
-      {net::IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
+      {IPAddress(0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), 16,
        true},
 
   };
-  net::IPAddress input_addr;
+  IPAddress input_addr;
   if (input_addr.AssignFromIPLiteral(addr) && input_addr.IsValid()) {
     bool mapped = MaybeUnmapAddress(&input_addr);
     bool translated = !mapped ? MaybeUntranslateAddress(&input_addr) : false;
@@ -242,8 +247,9 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
     // it's really just an arbitrary part of a sentence. If the string is the
     // same as the coarsely truncated address then keep it because even if
     // it happens to be a real address, there is no leak.
-    if (MaybeTruncateIPv6(&input_addr) && input_addr.ToString() == addr)
+    if (MaybeTruncateIPv6(&input_addr) && input_addr.ToString() == addr) {
       return addr;
+    }
   }
   return "";
 }
@@ -506,8 +512,9 @@ RedactionTool::RedactionTool(const char* const* first_party_extension_ids)
     : first_party_extension_ids_(first_party_extension_ids) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // Identity-map these, so we don't mangle them.
-  for (const char* mac : kUnredactedMacAddresses)
+  for (const char* mac : kUnredactedMacAddresses) {
     mac_addresses_[mac] = mac;
+  }
 }
 
 RedactionTool::~RedactionTool() {
@@ -710,16 +717,16 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   // These data paths are preceded by "/home/root/<user_hash>/android-data" in
   // 'android_app_storage' output, and preceded by "path=" or "exe=" in
   // 'audit_log' output.
-  RE2* path_re = GetRegExp(
-      R"((?m)((path=|exe=|/home/root/[\da-f]+/android-data))"
-      R"(/data/(data|app|user_de/\d+)/[^/\n]+)(/[^\n\s]+))");
+  RE2* path_re =
+      GetRegExp(R"((?m)((path=|exe=|/home/root/[\da-f]+/android-data))"
+                R"(/data/(data|app|user_de/\d+)/[^/\n]+)(/[^\n\s]+))");
 
   // Keep consuming, building up a result string as we go.
   re2::StringPiece text(input);
   re2::StringPiece skipped;
-  re2::StringPiece path_prefix;  // path before app_specific;
-  re2::StringPiece pre_data;  // (path=|exe=|/home/root/<hash>/android-data)
-  re2::StringPiece post_data;  // (data|app|user_de/\d+)
+  re2::StringPiece path_prefix;   // path before app_specific;
+  re2::StringPiece pre_data;      // (path=|exe=|/home/root/<hash>/android-data)
+  re2::StringPiece post_data;     // (data|app|user_de/\d+)
   re2::StringPiece app_specific;  // (/[^\n\s]+)
   while (FindAndConsumeAndGetSkipped(&text, *path_re, &skipped, &path_prefix,
                                      &pre_data, &post_data, &app_specific)) {
@@ -743,8 +750,9 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
       DCHECK(!component.empty());
       result += '/';
       result += (base::IsStringASCII(component) ? component[0] : '*');
-      if (component.length() > 1)
+      if (component.length() > 1) {
         result += '_';
+      }
     }
     if (detected != nullptr) {
       (*detected)[PIIType::kAndroidAppStoragePath].insert(
@@ -833,45 +841,53 @@ std::string RedactionTool::RedactCustomPatternWithContext(
 bool IsUrlExempt(re2::StringPiece url,
                  const char* const* first_party_extension_ids) {
   // We do not exempt anything with a query parameter.
-  if (url.contains("?"))
+  if (url.contains("?")) {
     return false;
+  }
 
   // Last part of an SELinux context is misdetected as a URL.
   // e.g. "u:object_r:system_data_file:s0:c512,c768"
-  if (url.starts_with("file:s0"))
+  if (url.starts_with("file:s0")) {
     return true;
+  }
 
   // Check for chrome:// URLs that are exempt.
   if (url.starts_with("chrome://")) {
     // We allow everything in chrome://resources/.
-    if (url.starts_with("chrome://resources/"))
+    if (url.starts_with("chrome://resources/")) {
       return true;
+    }
 
     // We allow chrome://*/crisper.js.
-    if (url.ends_with("/crisper.js"))
+    if (url.ends_with("/crisper.js")) {
       return true;
+    }
 
     return false;
   }
 
-  if (!first_party_extension_ids)
+  if (!first_party_extension_ids) {
     return false;
+  }
 
   // Exempt URLs of the format chrome-extension://<first-party-id>/*.js
-  if (!url.starts_with("chrome-extension://"))
+  if (!url.starts_with("chrome-extension://")) {
     return false;
+  }
 
   // These must end with a .js extension.
-  if (!url.ends_with(".js"))
+  if (!url.ends_with(".js")) {
     return false;
+  }
 
   int i = 0;
   const char* test_id = first_party_extension_ids[i];
   const re2::StringPiece url_sub =
       url.substr(sizeof("chrome-extension://") - 1);
   while (test_id) {
-    if (url_sub.starts_with(test_id))
+    if (url_sub.starts_with(test_id)) {
       return true;
+    }
     test_id = first_party_extension_ids[++i];
   }
   return false;
@@ -953,4 +969,4 @@ RedactionTool* RedactionToolContainer::Get() {
   return redactor_.get();
 }
 
-}  // namespace feedback
+}  // namespace redaction

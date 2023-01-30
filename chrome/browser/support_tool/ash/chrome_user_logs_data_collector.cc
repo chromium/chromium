@@ -29,8 +29,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -98,13 +98,13 @@ std::pair<base::FilePath, std::string> ReadUserLogAndCopyContents(
 
 PIIMap DetectPII(
     std::string log_contents,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   return redaction_tool->Detect(log_contents);
 }
 
-std::set<feedback::PIIType> GetPIITypesInMap(const PIIMap& pii_map) {
-  std::set<feedback::PIIType> pii_types;
+std::set<redaction::PIIType> GetPIITypesInMap(const PIIMap& pii_map) {
+  std::set<redaction::PIIType> pii_types;
   for (const auto& pii_map_entry : pii_map)
     pii_types.insert(pii_map_entry.first);
   return pii_types;
@@ -132,9 +132,9 @@ absl::optional<std::string> ReadLogFromFile(base::FilePath log_file) {
 
 std::string RedactPII(
     std::string log_contents,
-    std::set<feedback::PIIType> pii_types_to_keep,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+    std::set<redaction::PIIType> pii_types_to_keep,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   return redaction_tool->RedactAndKeepSelected(log_contents, pii_types_to_keep);
 }
 
@@ -180,7 +180,7 @@ const PIIMap& ChromeUserLogsDataCollector::GetDetectedPII() {
 void ChromeUserLogsDataCollector::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   on_data_collector_done_callback_ = std::move(on_data_collected_callback);
@@ -288,10 +288,10 @@ void ChromeUserLogsDataCollector::OnAllUserLogFilesReadAndDetected() {
 }
 
 void ChromeUserLogsDataCollector::ExportCollectedDataWithPII(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   on_data_collector_done_callback_ = std::move(on_exported_callback);
@@ -336,9 +336,9 @@ void ChromeUserLogsDataCollector::OnReadLogFromFile(
     base::RepeatingClosure barrier_closure,
     std::string file_name,
     base::FilePath target_directory,
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     absl::optional<std::string> log_contents) {
   if (!log_contents) {
     errors_.push_back(base::StringPrintf("Couldn't read logs from %s log file",

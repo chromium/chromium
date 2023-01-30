@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_H_
-#define COMPONENTS_FEEDBACK_REDACTION_TOOL_H_
+#ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_REDACTION_TOOL_H_
+#define COMPONENTS_FEEDBACK_REDACTION_TOOL_REDACTION_TOOL_H_
 
 #include <map>
 #include <memory>
@@ -14,13 +14,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 
 namespace re2 {
 class RE2;
 }
 
-namespace feedback {
+namespace redaction {
 
 struct CustomPatternWithAlias {
   // A string literal used in redaction tests. Matches to the |pattern| are
@@ -176,6 +176,6 @@ class RedactionToolContainer
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-}  // namespace feedback
+}  // namespace redaction
 
-#endif  // COMPONENTS_FEEDBACK_REDACTION_TOOL_H_
+#endif  // COMPONENTS_FEEDBACK_REDACTION_TOOL_REDACTION_TOOL_H_

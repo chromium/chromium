@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 class SystemStateDataCollector : public DataCollector {
  public:
@@ -37,36 +37,36 @@ class SystemStateDataCollector : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
   struct SystemLog {
-    SystemLog(std::string log, std::set<feedback::PIIType> detected_pii_types);
+    SystemLog(std::string log, std::set<redaction::PIIType> detected_pii_types);
     ~SystemLog();
     SystemLog(const SystemLog& other);
 
     // Contents of the system log.
     std::string log;
     // Set of PII types detected in the logs.
-    std::set<feedback::PIIType> detected_pii_types;
+    std::set<redaction::PIIType> detected_pii_types;
   };
 
   static std::pair<PIIMap, std::map<std::string, SystemLog>> DetectPII(
       std::map<std::string, SystemLog> system_logs,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container);
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container);
 
   static std::map<std::string, std::string> RedactPII(
       std::map<std::string, SystemLog> system_logs,
-      std::set<feedback::PIIType> pii_types_to_keep,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container);
+      std::set<redaction::PIIType> pii_types_to_keep,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container);
 
   void OnGetLog(base::RepeatingClosure barrier_closure,
                 std::string log_name,
@@ -74,11 +74,11 @@ class SystemStateDataCollector : public DataCollector {
 
   void OnGotAllExtraLogs(
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_containe);
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_containe);
 
   void OnGetFeedbackLogs(
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       bool success,
       const std::map<std::string, std::string>& logs);
 

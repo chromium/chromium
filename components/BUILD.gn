@@ -554,6 +554,7 @@ test("components_unittests") {
 
   if (!is_android) {
     deps += [ "//components/feedback:unit_tests" ]
+    deps += [ "//components/feedback/redaction_tool:unit_tests" ]
   }
 
   if (!is_android) {

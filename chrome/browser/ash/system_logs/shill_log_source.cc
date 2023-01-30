@@ -49,7 +49,7 @@ void ScrubDictionary(base::Value* dict) {
       ScrubDictionary(&entry.second);
     } else if (base::Contains(system_logs::kShillPIIMaskedMap, entry.first) &&
                system_logs::kShillPIIMaskedMap.at(entry.first) !=
-                   feedback::PIIType::kNone &&
+                   redaction::PIIType::kNone &&
                (!value.is_string() || !value.GetString().empty())) {
       entry.second = base::Value(kMaskedString);
     }

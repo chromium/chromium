@@ -61,9 +61,9 @@ void GetLogLinesFromSystemLogsResponse(const SystemLogsResponse& response,
 
 // Redacts the strings in |result|.
 void RedactResults(
-    scoped_refptr<feedback::RedactionToolContainer> redactor_container,
+    scoped_refptr<redaction::RedactionToolContainer> redactor_container,
     ReadLogSourceResult* result) {
-  feedback::RedactionTool* redactor = redactor_container->Get();
+  redaction::RedactionTool* redactor = redactor_container->Get();
   for (std::string& line : result->log_lines)
     line = redactor->Redact(line);
 }
@@ -79,7 +79,7 @@ LogSourceAccessManager::LogSourceAccessManager(content::BrowserContext* context)
           {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       redactor_container_(
-          base::MakeRefCounted<feedback::RedactionToolContainer>(
+          base::MakeRefCounted<redaction::RedactionToolContainer>(
               task_runner_for_redactor_,
               /* first_party_extension_ids= */ nullptr)) {}
 

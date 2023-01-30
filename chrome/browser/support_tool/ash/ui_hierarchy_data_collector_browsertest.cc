@@ -16,7 +16,7 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -89,10 +89,10 @@ IN_PROC_BROWSER_TEST_F(UiHierarchyDataCollectorBrowserTest,
 
   // Check the returned map of detected PII inside the collected data.
   PIIMap pii_map = data_collector.GetDetectedPII();
-  EXPECT_THAT(pii_map[feedback::PIIType::kUIHierarchyWindowTitles],
+  EXPECT_THAT(pii_map[redaction::PIIType::kUIHierarchyWindowTitles],
               Not(IsEmpty()));
   std::set<std::string> window_titles =
-      pii_map[feedback::PIIType::kUIHierarchyWindowTitles];
+      pii_map[redaction::PIIType::kUIHierarchyWindowTitles];
   // The detected window titles should contain `browser_window_title` as it's
   // the title of the browser we created for the test.
   EXPECT_THAT(window_titles, Contains(browser_window_title));

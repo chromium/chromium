@@ -22,7 +22,7 @@
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "net/base/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -67,39 +67,39 @@ const char kUrlGenerationResultErrorMessage[] = "errorMessage";
 namespace {
 
 // Returns the human readable name corresponding to `data_collector_type`.
-std::string GetPIITypeDescription(feedback::PIIType type_enum) {
+std::string GetPIITypeDescription(redaction::PIIType type_enum) {
   // This function will return translatable strings in future. For now, return
   // string constants until we have the translatable strings ready.
   switch (type_enum) {
-    case feedback::PIIType::kAndroidAppStoragePath:
+    case redaction::PIIType::kAndroidAppStoragePath:
       // App storage path is part of information about an Android app.
       return support_tool_ui::kAndroidAppInfo;
-    case feedback::PIIType::kEmail:
+    case redaction::PIIType::kEmail:
       return support_tool_ui::kEmail;
-    case feedback::PIIType::kGaiaID:
+    case redaction::PIIType::kGaiaID:
       return support_tool_ui::kGAIA;
-    case feedback::PIIType::kIPPAddress:
+    case redaction::PIIType::kIPPAddress:
       return support_tool_ui::kIPPAddress;
-    case feedback::PIIType::kIPAddress:
+    case redaction::PIIType::kIPAddress:
       return support_tool_ui::kIPAddress;
-    case feedback::PIIType::kLocationInfo:
+    case redaction::PIIType::kLocationInfo:
       return support_tool_ui::kLocationInfo;
-    case feedback::PIIType::kMACAddress:
+    case redaction::PIIType::kMACAddress:
       return support_tool_ui::kMACAddress;
-    case feedback::PIIType::kUIHierarchyWindowTitles:
+    case redaction::PIIType::kUIHierarchyWindowTitles:
       return support_tool_ui::kWindowTitle;
-    case feedback::PIIType::kURL:
+    case redaction::PIIType::kURL:
       return support_tool_ui::kURL;
-    case feedback::PIIType::kSerial:
+    case redaction::PIIType::kSerial:
       return support_tool_ui::kSerial;
-    case feedback::PIIType::kSSID:
+    case redaction::PIIType::kSSID:
       return support_tool_ui::kSSID;
-    case feedback::PIIType::kStableIdentifier:
+    case redaction::PIIType::kStableIdentifier:
       return support_tool_ui::kStableIdentifier;
-    case feedback::PIIType::kVolumeLabel:
+    case redaction::PIIType::kVolumeLabel:
       // Volume labels are a part of removable storage paths in various logs.
       return support_tool_ui::kRemovableStorage;
-    case feedback::PIIType::kEAP:
+    case redaction::PIIType::kEAP:
       return support_tool_ui::kEAP;
     default:
       return "Error: Undefined";
@@ -276,16 +276,16 @@ base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii) {
   return detected_pii_data_items;
 }
 
-std::set<feedback::PIIType> GetPIITypesToKeep(
+std::set<redaction::PIIType> GetPIITypesToKeep(
     const base::Value::List* pii_items) {
-  std::set<feedback::PIIType> pii_to_keep;
+  std::set<redaction::PIIType> pii_to_keep;
   for (const auto& item : *pii_items) {
     const base::Value::Dict* item_as_dict = item.GetIfDict();
     DCHECK(item_as_dict);
     absl::optional<bool> keep =
         item_as_dict->FindBool(support_tool_ui::kPiiItemKeepKey);
     if (keep && keep.value()) {
-      pii_to_keep.insert(static_cast<feedback::PIIType>(
+      pii_to_keep.insert(static_cast<redaction::PIIType>(
           item_as_dict->FindInt(support_tool_ui::kPiiItemPIITypeKey).value()));
     }
   }

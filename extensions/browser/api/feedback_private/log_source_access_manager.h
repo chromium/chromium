@@ -16,7 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/feedback_private/access_rate_limiter.h"
@@ -160,7 +160,7 @@ class LogSourceAccessManager {
 
   // For removing PII from log strings from log sources.
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redactor_;
-  scoped_refptr<feedback::RedactionToolContainer> redactor_container_;
+  scoped_refptr<redaction::RedactionToolContainer> redactor_container_;
 
   base::WeakPtrFactory<LogSourceAccessManager> weak_factory_{this};
 };

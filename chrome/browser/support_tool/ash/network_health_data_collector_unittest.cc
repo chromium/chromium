@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -84,11 +84,11 @@ constexpr char kRedactedNetworkHealthSnapshot[] =
     "\n";
 
 const PIIMap kExpectedPIIMap = {
-    {feedback::PIIType::kIPAddress,
+    {redaction::PIIType::kIPAddress,
      {"255.255.155.2", "::0101:ffff:c0a8:640a", "::ffff:cb0c:10ea"}},
-    {feedback::PIIType::kMACAddress,
+    {redaction::PIIType::kMACAddress,
      {"aa:aa:aa:aa:aa:aa", "aa:bb:cc:dd:ee:ff"}},
-    {feedback::PIIType::kStableIdentifier,
+    {redaction::PIIType::kStableIdentifier,
      {"test_ethernet", "test_wifi", "ethernet_guid", "wifi_guid"}}};
 
 class TestLogSource : public system_logs::SystemLogsSource {
@@ -122,7 +122,7 @@ class NetworkHealthDataCollectorTest : public ::testing::Test {
     task_runner_for_redaction_tool_ =
         base::ThreadPool::CreateSequencedTaskRunner({});
     redaction_tool_container_ =
-        base::MakeRefCounted<feedback::RedactionToolContainer>(
+        base::MakeRefCounted<redaction::RedactionToolContainer>(
             task_runner_for_redaction_tool_, nullptr);
   }
 
@@ -187,7 +187,7 @@ class NetworkHealthDataCollectorTest : public ::testing::Test {
   ash::NetworkHandlerTestHelper network_handler_test_helper_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
-  scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container_;
+  scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
 };
 
 TEST_F(NetworkHealthDataCollectorTest, CollectAndExportData) {

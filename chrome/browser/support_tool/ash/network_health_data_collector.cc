@@ -16,7 +16,7 @@
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
 #include "chromeos/ash/components/network/network_event_log.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/stringpiece.h"
@@ -30,7 +30,7 @@ constexpr char kRegexPattern[] =
     "(?s)(.*?)Name: (?-s)(.+)\\nGUID: (?-s)(.+)\\n";
 
 // Looks for network names and GUID in `network_health_data` and adds the found
-// ones to `out_pii_map` under feedback::PIIType::kStableIdentifier category.
+// ones to `out_pii_map` under redaction::PIIType::kStableIdentifier category.
 void FindNetworkNamesAndAddToPIIMap(const std::string& network_health_data,
                                     PIIMap& out_pii_map) {
   // `network_health_data` stores every component in a new line. Network names
@@ -46,10 +46,10 @@ void FindNetworkNamesAndAddToPIIMap(const std::string& network_health_data,
   while (re2::RE2::Consume(&input, regex_pattern, &skipped_part,
                            &matched_network_name, &matched_guid)) {
     if (matched_network_name != "N/A")
-      out_pii_map[feedback::PIIType::kStableIdentifier].emplace(
+      out_pii_map[redaction::PIIType::kStableIdentifier].emplace(
           matched_network_name);
     if (matched_guid != "N/A")
-      out_pii_map[feedback::PIIType::kStableIdentifier].emplace(matched_guid);
+      out_pii_map[redaction::PIIType::kStableIdentifier].emplace(matched_guid);
   }
 }
 
@@ -99,7 +99,7 @@ NetworkHealthDataCollector::~NetworkHealthDataCollector() = default;
 void NetworkHealthDataCollector::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   SystemLogSourceDataCollectorAdaptor::CollectDataAndDetectPII(
       base::BindOnce(&NetworkHealthDataCollector::
                          OnSystemLogSourceDataCollectorAdaptorCollectedData,
@@ -123,13 +123,13 @@ void NetworkHealthDataCollector::
 }
 
 void NetworkHealthDataCollector::ExportCollectedDataWithPII(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   if (!base::Contains(pii_types_to_keep,
-                      feedback::PIIType::kStableIdentifier)) {
+                      redaction::PIIType::kStableIdentifier)) {
     // `system_logs::kNetworkHealthSnapshotEntry` contains network names and
     // they should be anonymised specially since
     // `SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII()` can't

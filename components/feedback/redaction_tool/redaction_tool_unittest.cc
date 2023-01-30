@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <gtest/gtest.h>
 #include <set>
@@ -10,9 +10,9 @@
 
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 
-namespace feedback {
+namespace redaction {
 
 const char kFakeFirstPartyID[] = "nkoccljplnhpfnfiajclkommnmllphnl";
 const char* const kFakeFirstPartyExtensionIDs[] = {kFakeFirstPartyID, nullptr};
@@ -189,7 +189,7 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "/root/<HASH:2754 1>/foo", PIIType::kStableIdentifier},  // Hash string.
     {"B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", "<UID: 1>",
      PIIType::kStableIdentifier},
-#if BUILDFLAG(IS_CHROMEOS_ASH)    // We only redact Android paths on Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)  // We only redact Android paths on Chrome OS.
     // Allowed android storage path.
     {"112K\t/home/root/deadbeef1234/android-data/data/system_de",
      "112K\t/home/root/deadbeef1234/android-data/data/system_de",
@@ -728,7 +728,7 @@ TEST_F(RedactionToolTest, DetectPII) {
         {PIIType::kMACAddress, {"aa:aa:aa:aa:aa:aa"}}, {
       PIIType::kStableIdentifier, {
         "27540283740a0897ab7c8de0f809add2bacde78f",
-        "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
+            "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=",
       }
     }
   };
@@ -824,4 +824,4 @@ TEST_F(RedactionToolTest, RedactBlockDevices) {
   }
 }
 
-}  // namespace feedback
+}  // namespace redaction

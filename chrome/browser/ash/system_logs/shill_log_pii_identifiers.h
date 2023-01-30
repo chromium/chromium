@@ -7,7 +7,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 
 namespace system_logs {
 
@@ -16,7 +16,7 @@ namespace system_logs {
 // replacements for IP and MAC addresses and BSSID in
 // components/feedback/anonymizer_tool.cc.
 extern const base::
-    fixed_flat_map<base::StringPiece, feedback::PIIType, 19, std::less<>>
+    fixed_flat_map<base::StringPiece, redaction::PIIType, 19, std::less<>>
         kShillPIIMaskedMap;
 
 }  // namespace system_logs

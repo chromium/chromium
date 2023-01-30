@@ -18,7 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_common.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace system_logs {
@@ -95,7 +95,7 @@ class SystemLogsFetcher {
   size_t num_pending_requests_;  // The number of callbacks it should get.
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redactor_;
-  std::unique_ptr<feedback::RedactionTool> redactor_;
+  std::unique_ptr<redaction::RedactionTool> redactor_;
 
   base::WeakPtrFactory<SystemLogsFetcher> weak_ptr_factory_{this};
 };

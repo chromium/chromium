@@ -24,7 +24,7 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace feedback {
+namespace redaction {
 class RedactionTool;
 }
 
@@ -40,7 +40,7 @@ class SystemLogUploader : public UploadJob::Delegate {
 
   // Remove lines from |data| that contain common PII (IP addresses, BSSIDs,
   // SSIDs, URLs, e-mail addresses).
-  static std::string RemoveSensitiveData(feedback::RedactionTool* redactor,
+  static std::string RemoveSensitiveData(redaction::RedactionTool* redactor,
                                          const std::string& data);
 
   // Refresh constants.

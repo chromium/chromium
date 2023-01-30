@@ -11,7 +11,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzedDataProvider provider(data, size);
@@ -40,7 +40,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     first_party_extension_ids[first_party_extension_id_count] = nullptr;
   }
 
-  feedback::RedactionTool redactor(first_party_extension_ids.get());
+  redaction::RedactionTool redactor(first_party_extension_ids.get());
   redactor.Redact(provider.ConsumeRemainingBytesAsString());
   return 0;
 }

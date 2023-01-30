@@ -19,8 +19,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "third_party/re2/src/re2/stringpiece.h"
@@ -58,8 +58,8 @@ UIHierarchyData::UIHierarchyData(UIHierarchyData&& ui_hierarchy_data) = default;
 bool UiHierarchyDataCollector::WriteOutputFile(
     std::string ui_hierarchy_data,
     base::FilePath target_directory,
-    std::set<feedback::PIIType> pii_types_to_keep) {
-  if (pii_types_to_keep.count(feedback::PIIType::kUIHierarchyWindowTitles) ==
+    std::set<redaction::PIIType> pii_types_to_keep) {
+  if (pii_types_to_keep.count(redaction::PIIType::kUIHierarchyWindowTitles) ==
       0) {
     ui_hierarchy_data = RemoveWindowTitles(ui_hierarchy_data);
   }
@@ -109,7 +109,7 @@ const PIIMap& UiHierarchyDataCollector::GetDetectedPII() {
 void UiHierarchyDataCollector::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UIHierarchyData ui_hierarchy_data = CollectUiHierarchyData();
   InsertIntoPIIMap(ui_hierarchy_data.window_titles);
@@ -120,10 +120,10 @@ void UiHierarchyDataCollector::CollectDataAndDetectPII(
 }
 
 void UiHierarchyDataCollector::ExportCollectedDataWithPII(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -151,7 +151,7 @@ void UiHierarchyDataCollector::OnDataExportDone(
 void UiHierarchyDataCollector::InsertIntoPIIMap(
     const std::vector<std::string>& window_titles) {
   std::set<std::string>& pii_window_titles =
-      pii_map_[feedback::PIIType::kUIHierarchyWindowTitles];
+      pii_map_[redaction::PIIType::kUIHierarchyWindowTitles];
   for (auto const& title : window_titles)
     pii_window_titles.insert(title);
 }

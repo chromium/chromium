@@ -11,12 +11,12 @@
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "url/gurl.h"
 
 namespace support_tool_ui {
 
-// Strings that contain the human readable description of feedback::PIIType
+// Strings that contain the human readable description of redaction::PIIType
 // enums.
 extern const char kAndroidAppInfo[];
 extern const char kSSID[];
@@ -67,7 +67,7 @@ extern const char kUrlGenerationResultErrorMessage[];
 base::Value::List GetDetectedPIIDataItems(const PIIMap& detected_pii);
 
 // Returns the set of PIITypes that has their `keep` field true in `pii_items`.
-std::set<feedback::PIIType> GetPIITypesToKeep(
+std::set<redaction::PIIType> GetPIITypesToKeep(
     const base::Value::List* pii_items);
 
 // Returns the support case ID that's extracted from `url` with query

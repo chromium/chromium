@@ -25,7 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -61,17 +61,17 @@ class TestDataCollector : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override {
     // Add fake PII for testing and return error to the callback if required.
     PrepareDataCollectionOutput(std::move(on_data_collected_callback));
   }
 
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override {
     on_exported_callback =
         base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -92,7 +92,7 @@ class TestDataCollector : public DataCollector {
       std::move(callback).Run(SupportToolError(
           SupportToolErrorCode::kDataCollectorError, /*error_message=*/""));
     } else {
-      pii_map_[feedback::PIIType::kUIHierarchyWindowTitles].insert(name_);
+      pii_map_[redaction::PIIType::kUIHierarchyWindowTitles].insert(name_);
       std::move(callback).Run(absl::nullopt);
     }
   }
@@ -223,8 +223,8 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
       FILE_PATH_LITERAL("support-tool-export-success"));
   base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
       test_future;
-  std::set<feedback::PIIType> pii_types{
-      feedback::PIIType::kUIHierarchyWindowTitles};
+  std::set<redaction::PIIType> pii_types{
+      redaction::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
   // handler should return the exported path on success.
@@ -302,8 +302,8 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
   // Export collected data into the target temporary directory.
   base::test::TestFuture<base::FilePath, std::set<SupportToolError>>
       test_future;
-  std::set<feedback::PIIType> pii_types{
-      feedback::PIIType::kUIHierarchyWindowTitles};
+  std::set<redaction::PIIType> pii_types{
+      redaction::PIIType::kUIHierarchyWindowTitles};
   handler->ExportCollectedData(pii_types, target_path,
                                test_future.GetCallback());
   // Check the error message.

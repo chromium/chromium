@@ -34,7 +34,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/support_tool_resources.h"
 #include "chrome/grit/support_tool_resources_map.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
@@ -125,7 +125,7 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
 
   bool include_screenshot_ = false;
   std::unique_ptr<ScreenshotDataCollector> screenshot_data_collector_;
-  std::set<feedback::PIIType> selected_pii_to_keep_;
+  std::set<redaction::PIIType> selected_pii_to_keep_;
   base::FilePath data_path_;
   std::unique_ptr<SupportToolHandler> handler_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;

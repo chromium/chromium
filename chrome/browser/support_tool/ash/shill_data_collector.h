@@ -19,13 +19,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // ShillDataCollector collects support debug data from shill. It detects
-// shill-specific PII and it also uses feedback::RedactionTool to further remove
+// shill-specific PII and it also uses redaction::RedactionTool to further remove
 // other common types of PII. This class originates from
 // system_logs::ShillLogSource.
 class ShillDataCollector : public DataCollector {
@@ -45,13 +45,13 @@ class ShillDataCollector : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
@@ -98,14 +98,14 @@ class ShillDataCollector : public DataCollector {
                                      const base::Value& properties);
 
   // Check whether all property requests have been completed. If so, runs
-  // feedback::RedactionTool on the collected log.
+  // redaction::RedactionTool on the collected log.
   void CheckIfDone();
 
   SEQUENCE_CHECKER(sequence_checker_);
   // Store the parameters passed in with `CollectDataAndDetectPII`.
   DataCollectorDoneCallback data_collector_done_callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
-  scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container_;
+  scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
   // Contains the retrieved shill log.
   base::Value::Dict shill_log_;
   PIIMap pii_map_;

@@ -22,7 +22,7 @@
 #include "chrome/browser/support_tool/policy_data_collector.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
@@ -55,9 +55,9 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The set of PII types that can be found in policy status.
-const std::set<feedback::PIIType> kExpectedPIITypesInPolicyStatus = {
-    feedback::PIIType::kStableIdentifier, feedback::PIIType::kLocationInfo,
-    feedback::PIIType::kGaiaID, feedback::PIIType::kEmail};
+const std::set<redaction::PIIType> kExpectedPIITypesInPolicyStatus = {
+    redaction::PIIType::kStableIdentifier, redaction::PIIType::kLocationInfo,
+    redaction::PIIType::kGaiaID, redaction::PIIType::kEmail};
 
 // The set of pairs with policy status keys which are considered as PII. These
 // are the common keys between user and device policy status.
@@ -180,8 +180,8 @@ class PolicyDataCollectorBrowserTestAsh
   }
 
  protected:
-  std::set<feedback::PIIType> GetSetOfPIITypesInPIIMap(const PIIMap& pii_map) {
-    std::set<feedback::PIIType> pii_types;
+  std::set<redaction::PIIType> GetSetOfPIITypesInPIIMap(const PIIMap& pii_map) {
+    std::set<redaction::PIIType> pii_types;
     for (const auto& map_entry : pii_map) {
       pii_types.insert(map_entry.first);
     }

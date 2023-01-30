@@ -28,8 +28,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/support_packet_metadata.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "data_collector_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
@@ -72,7 +72,7 @@ SupportToolHandler::SupportToolHandler(std::string case_id,
               {base::TaskPriority::USER_VISIBLE,
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       redaction_tool_container_(
-          base::MakeRefCounted<feedback::RedactionToolContainer>(
+          base::MakeRefCounted<redaction::RedactionToolContainer>(
               task_runner_for_redaction_tool_,
               nullptr)) {}
 
@@ -175,7 +175,7 @@ void SupportToolHandler::OnMetadataContentsPopulated() {
 }
 
 void SupportToolHandler::ExportCollectedData(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_path,
     SupportToolDataExportedCallback on_data_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -193,7 +193,7 @@ void SupportToolHandler::ExportCollectedData(
 }
 
 void SupportToolHandler::ExportIntoTempDir(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_path,
     base::FilePath tmp_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -238,7 +238,7 @@ void SupportToolHandler::OnDataCollectorDoneExporting(
 void SupportToolHandler::OnAllDataCollectorsDoneExporting(
     base::FilePath tmp_path,
     base::FilePath target_path,
-    std::set<feedback::PIIType> pii_types_to_keep) {
+    std::set<redaction::PIIType> pii_types_to_keep) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metadata_.InsertErrors(collected_errors_);
   metadata_.WriteMetadataFile(

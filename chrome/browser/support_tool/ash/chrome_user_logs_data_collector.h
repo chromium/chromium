@@ -17,8 +17,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 // Collects logs in primary user's profile directory. Please note that
 // `ChromeUserLogsDataCollector` won't work on sign-in screen.
@@ -37,14 +37,14 @@ class ChromeUserLogsDataCollector : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
@@ -68,9 +68,9 @@ class ChromeUserLogsDataCollector : public DataCollector {
       base::RepeatingClosure barrier_closure,
       std::string file_name,
       base::FilePath target_directory,
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       absl::optional<std::string> log_contents);
 
   void OnPIIRedacted(base::RepeatingClosure barrier_closure,
@@ -87,11 +87,11 @@ class ChromeUserLogsDataCollector : public DataCollector {
   SEQUENCE_CHECKER(sequence_checker_);
   PIIMap pii_map_;
   base::FilePath temp_dir_;
-  std::map<base::FilePath, std::set<feedback::PIIType>> pii_in_log_files_;
+  std::map<base::FilePath, std::set<redaction::PIIType>> pii_in_log_files_;
   std::vector<std::string> errors_;
   DataCollectorDoneCallback on_data_collector_done_callback_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
-  scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container_;
+  scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container_;
   base::WeakPtrFactory<ChromeUserLogsDataCollector> weak_ptr_factory_{this};
 };
 

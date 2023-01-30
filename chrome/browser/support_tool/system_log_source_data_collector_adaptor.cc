@@ -20,8 +20,8 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/feedback_common.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 #include "data_collector_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -34,9 +34,9 @@ namespace {
 // returned pair.
 std::pair<std::unique_ptr<system_logs::SystemLogsResponse>, PIIMap> DetectPII(
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK(system_logs_response);
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   PIIMap detected_pii;
   // Detect PII in all entries in `system_logs_response` and add the detected
   // PII to `detected_pii`.
@@ -53,11 +53,11 @@ std::pair<std::unique_ptr<system_logs::SystemLogsResponse>, PIIMap> DetectPII(
 // redacted versions. Takes the ownership of `system_logs_response` and returns
 // it back.
 std::unique_ptr<system_logs::SystemLogsResponse> RedactAndKeepSelectedPII(
-    const std::set<feedback::PIIType>& pii_types_to_keep,
+    const std::set<redaction::PIIType>& pii_types_to_keep,
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK(system_logs_response);
-  feedback::RedactionTool* redaction_tool = redaction_tool_container->Get();
+  redaction::RedactionTool* redaction_tool = redaction_tool_container->Get();
   for (auto& entry : *system_logs_response) {
     (*system_logs_response)[entry.first] =
         redaction_tool->RedactAndKeepSelected(entry.second, pii_types_to_keep);
@@ -108,7 +108,7 @@ const PIIMap& SystemLogSourceDataCollectorAdaptor::GetDetectedPII() {
 void SystemLogSourceDataCollectorAdaptor::CollectDataAndDetectPII(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container) {
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   log_source_->Fetch(base::BindOnce(
       &SystemLogSourceDataCollectorAdaptor::OnDataFetched,
@@ -119,7 +119,7 @@ void SystemLogSourceDataCollectorAdaptor::CollectDataAndDetectPII(
 void SystemLogSourceDataCollectorAdaptor::OnDataFetched(
     DataCollectorDoneCallback on_data_collected_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   system_logs_response_ = std::move(system_logs_response);
@@ -143,10 +143,10 @@ void SystemLogSourceDataCollectorAdaptor::OnPIIDetected(
 }
 
 void SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII(
-    std::set<feedback::PIIType> pii_types_to_keep,
+    std::set<redaction::PIIType> pii_types_to_keep,
     base::FilePath target_directory,
     scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-    scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+    scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
     DataCollectorDoneCallback on_exported_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_for_redaction_tool->PostTaskAndReplyWithResult(

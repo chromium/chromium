@@ -29,10 +29,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "components/policy/core/browser/webui/json_generation.h"
 
-using feedback::PIIType;
+using redaction::PIIType;
 
 namespace {
 
@@ -51,7 +51,7 @@ const char kSerialNumberKey[] = "Serial Number";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 const char kErrorMessagesKey[] = "Support Tool Errors";
 
-const std::pair<const char* const, feedback::PIIType> kMetadataKeys[] = {
+const std::pair<const char* const, redaction::PIIType> kMetadataKeys[] = {
     {kTimestampKey, PIIType::kNone},
     {kIssueDescriptionKey, PIIType::kNone},
     {kSupportCaseIdKey, PIIType::kNone},
@@ -68,7 +68,7 @@ const std::pair<const char* const, feedback::PIIType> kMetadataKeys[] = {
     {kErrorMessagesKey, PIIType::kNone}};
 
 void WriteContentsOnFile(base::FilePath metadata_file,
-                         std::set<feedback::PIIType> pii_to_keep,
+                         std::set<redaction::PIIType> pii_to_keep,
                          std::map<std::string, std::string> metadata_contents) {
   // Create the file with write permissions.
   base::WriteFile(metadata_file, "");
@@ -197,7 +197,7 @@ void SupportPacketMetadata::AddErrorMessagesToMetadata() {
 
 void SupportPacketMetadata::WriteMetadataFile(
     base::FilePath target_path,
-    std::set<feedback::PIIType> pii_to_keep,
+    std::set<redaction::PIIType> pii_to_keep,
     base::OnceClosure on_metadata_file_written) {
   AddErrorMessagesToMetadata();
   base::FilePath metadata_file =

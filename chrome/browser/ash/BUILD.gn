@@ -3523,6 +3523,7 @@ source_set("ash") {
     "//components/drive",
     "//components/exo",
     "//components/feedback",
+    "//components/feedback/redaction_tool",
     "//components/file_access",
     "//components/flags_ui",
     "//components/gcm_driver",

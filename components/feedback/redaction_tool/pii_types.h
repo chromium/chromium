@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_FEEDBACK_PII_TYPES_H_
-#define COMPONENTS_FEEDBACK_PII_TYPES_H_
+#ifndef COMPONENTS_FEEDBACK_REDACTION_TOOL_PII_TYPES_H_
+#define COMPONENTS_FEEDBACK_REDACTION_TOOL_PII_TYPES_H_
 
-namespace feedback {
+namespace redaction {
 
 // PII (Personally Identifiable Information) types that can be detected in the
 // debug data.
@@ -67,6 +67,6 @@ enum class PIIType {
   kEAP,
 };
 
-}  // namespace feedback
+}  // namespace redaction
 
-#endif  // COMPONENTS_FEEDBACK_PII_TYPES_H_
+#endif  // COMPONENTS_FEEDBACK_REDACTION_TOOL_PII_TYPES_H_

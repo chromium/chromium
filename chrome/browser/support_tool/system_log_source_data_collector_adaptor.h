@@ -15,15 +15,15 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 // SystemLogSourceDataCollectorAdaptor is an adaptor class from
 // system_logs::SystemLogsSource to DataCollector. It will take a
 // system_logs::SystemLogsSource instance and will use its functions in
 // DataCollector interface. SystemLogSourceDataCollectorAdaptor will use
-// feedback::RedactionTool for detection and removal of PII sensitive data.
+// redaction::RedactionTool for detection and removal of PII sensitive data.
 // Since this is an adaptor DataCollector, it will have many instances and the
 // caller of the class needs to give `description` as parameter to describe what
 // each SystemLogSourceDataCollector instance does in detail.
@@ -45,14 +45,14 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
 
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
   void SetLogSourceForTesting(
@@ -69,7 +69,7 @@ class SystemLogSourceDataCollectorAdaptor : public DataCollector {
   void OnDataFetched(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       std::unique_ptr<system_logs::SystemLogsResponse> system_logs_response);
 
   void OnPIIDetected(DataCollectorDoneCallback on_data_collected_callback,

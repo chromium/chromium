@@ -15,8 +15,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The error code that a Support Tool component can return.
@@ -48,7 +48,7 @@ struct SupportToolError {
   }
 };
 
-using PIIMap = std::map<feedback::PIIType, std::set<std::string>>;
+using PIIMap = std::map<redaction::PIIType, std::set<std::string>>;
 
 // Returns a SupportToolError if an error occurs to the callback.
 using DataCollectorDoneCallback =
@@ -71,7 +71,7 @@ class DataCollector {
   virtual const PIIMap& GetDetectedPII() = 0;
 
   // Collects all data that can be collected and detects the PII in the
-  // collected data. DataCollector may use feedback::RedactionTool of
+  // collected data. DataCollector may use redaction::RedactionTool of
   // `redaction_tool_container` on `task_runner_for_redaction_tool` for PII
   // detection or implement their own PII detection functions.
   // `on_data_collected_callback` won't be run if the DataCollector instance is
@@ -79,7 +79,7 @@ class DataCollector {
   virtual void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer>
+      scoped_refptr<redaction::RedactionToolContainer>
           redaction_tool_container) = 0;
 
   // Masks all PII found in the collected data except `pii_types_to_keep`.
@@ -87,10 +87,10 @@ class DataCollector {
   // `on_exported_callback` when done. `on_exported_callback` won't be called
   // if the DataCollector instance is deleted.
   virtual void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) = 0;
 };
 

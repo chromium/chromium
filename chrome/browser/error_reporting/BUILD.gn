@@ -27,7 +27,7 @@ static_library("error_reporting") {
     "//chrome/common:constants",
     "//components/crash/content/browser/error_reporting",
     "//components/crash/core/app",
-    "//components/feedback",
+    "//components/feedback/redaction_tool",
     "//components/startup_metric_utils/browser",
     "//components/upload_list",
     "//components/variations",

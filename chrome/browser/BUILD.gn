@@ -4405,6 +4405,7 @@ static_library("browser") {
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/feedback",
       "//components/feedback/content:factory",
+      "//components/feedback/redaction_tool",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
       "//components/live_caption",

@@ -15,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
-#include "components/feedback/pii_types.h"
-#include "components/feedback/redaction_tool.h"
+#include "components/feedback/redaction_tool/pii_types.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 
 // Collects network health snapshot and diagnostic through
 // `system_log::NetworkHealthSource`.
@@ -32,19 +32,19 @@ class NetworkHealthDataCollector : public SystemLogSourceDataCollectorAdaptor {
   void CollectDataAndDetectPII(
       DataCollectorDoneCallback on_data_collected_callback,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container)
       override;
 
   // Anonymises the network names in the collected data if `pii_types_to_keep`
-  // doesn't contain feedback::PIIType::kStableIdentifiers as network names are
+  // doesn't contain redaction::PIIType::kStableIdentifiers as network names are
   // categorised under it and RedactionTool can't remove them. Calls
   // `SystemLogSourceDataCollectorAdaptor::ExportCollectedDataWithPII` function
   // after removing network names.
   void ExportCollectedDataWithPII(
-      std::set<feedback::PIIType> pii_types_to_keep,
+      std::set<redaction::PIIType> pii_types_to_keep,
       base::FilePath target_directory,
       scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
-      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container,
+      scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container,
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:

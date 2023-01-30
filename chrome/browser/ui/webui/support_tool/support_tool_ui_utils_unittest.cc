@@ -14,7 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
-#include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool/pii_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -36,16 +36,16 @@ namespace {
 
 // The PIIMap for testing.
 const PIIMap kPIIMap = {
-    {feedback::PIIType::kIPAddress, {"0.255.255.255", "::ffff:cb0c:10ea"}},
-    {feedback::PIIType::kURL,
+    {redaction::PIIType::kIPAddress, {"0.255.255.255", "::ffff:cb0c:10ea"}},
+    {redaction::PIIType::kURL,
      {"chrome-extension://nkoccljplnhpfnfiajclkommnmllphnl/foobar.js?bar=x"}},
-    {feedback::PIIType::kStableIdentifier,
+    {redaction::PIIType::kStableIdentifier,
      {"123e4567-e89b-12d3-a456-426614174000",
       "27540283740a0897ab7c8de0f809add2bacde78f"}}};
 
-const feedback::PIIType kPIITypes[] = {feedback::PIIType::kIPAddress,
-                                       feedback::PIIType::kURL,
-                                       feedback::PIIType::kStableIdentifier};
+const redaction::PIIType kPIITypes[] = {redaction::PIIType::kIPAddress,
+                                        redaction::PIIType::kURL,
+                                        redaction::PIIType::kStableIdentifier};
 
 // PII strings with the definition strings.
 const auto kPIIStringsWithDefinition = base::MakeFixedFlatMap<
@@ -128,7 +128,7 @@ TEST_F(SupportToolUiUtilsTest, PiiItems) {
     pii_item.Set(support_tool_ui::kPiiItemKeepKey, true);
   }
 
-  const std::set<feedback::PIIType>& pii_to_keep_result =
+  const std::set<redaction::PIIType>& pii_to_keep_result =
       GetPIITypesToKeep(&detected_pii_items);
   // Check if the returned PII type set is as expected.
   EXPECT_THAT(pii_to_keep_result, UnorderedElementsAreArray(kPIITypes));

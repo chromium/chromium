@@ -22,6 +22,7 @@ source_set("feedback_private") {
     "//build:chromeos_buildflags",
     "//components/feedback",
     "//components/feedback/content",
+    "//components/feedback/redaction_tool",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
     "//extensions/common",
