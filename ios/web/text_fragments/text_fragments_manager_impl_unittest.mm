@@ -68,17 +68,17 @@ class MockJSFeature : public web::TextFragmentsJavaScriptFeature {
 };
 
 base::Value ValueForTestURL() {
-  base::Value val(base::Value::Type::LIST);
+  base::Value::List list;
 
-  base::Value text1(base::Value::Type::DICT);
-  text1.SetStringKey("textStart", "text 1");
-  base::Value text2(base::Value::Type::DICT);
-  text2.SetStringKey("textStart", "text 2");
+  base::Value::Dict text1;
+  text1.Set("textStart", "text 1");
+  base::Value::Dict text2;
+  text2.Set("textStart", "text 2");
 
-  val.Append(std::move(text1));
-  val.Append(std::move(text2));
+  list.Append(std::move(text1));
+  list.Append(std::move(text2));
 
-  return val;
+  return base::Value(std::move(list));
 }
 
 }  // namespace
