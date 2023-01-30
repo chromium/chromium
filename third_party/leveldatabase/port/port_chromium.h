@@ -46,18 +46,23 @@ class CondVar {
   CondVar(const CondVar&) = delete;
   CondVar& operator=(const CondVar&) = delete;
 
-  void Wait() { cv_.Wait(); }
+  void Wait() {
+    // This is an allowed use of base-sync-primitives.
+    // LevelDB has a different I/O model than Chromium - it uses condition
+    // variables to coordinate batch writes for efficiency, among other things.
+    // Since use of base::ConditionVariable is an implementation detail of
+    // Chromium's port, this is a better option than annotating all upstream
+    // call sites with a ScopedAllow, which would leave us vulnerable to
+    // upstream changes adding a Wait(). See https://crbug.com/1330845.
+    base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+    cv_.Wait();
+  }
   void Signal() { cv_.Signal(); }
   void SignalAll() { cv_.Broadcast(); }
 
  private:
-  // The ConditionVariable is used to coordinate a batch write for efficiency.
-  // This is an allowed use of base-sync-primitives.
   base::ConditionVariable cv_;
 };
-
-// Thinly wraps base::ScopedAllowBaseSyncPrimitives.
-class ScopedAllowWait : base::ScopedAllowBaseSyncPrimitives {};
 
 bool Snappy_Compress(const char* input, size_t input_length,
                      std::string* output);

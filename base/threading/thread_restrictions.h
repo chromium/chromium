@@ -291,7 +291,7 @@ namespace ios_web_view {
 class WebViewBrowserState;
 }
 namespace leveldb::port {
-class ScopedAllowWait;
+class CondVar;
 }  // namespace leveldb::port
 namespace nearby::chrome {
 class ScheduledExecutor;
@@ -354,10 +354,7 @@ class DrmThreadProxy;
 class DrmDisplayHostManager;
 class SelectFileDialogLinux;
 class ScopedAllowBlockingForGbmSurface;
-}
-namespace value_store {
-class LeveldbValueStore;
-}
+}  // namespace ui
 namespace weblayer {
 class BrowserContextImpl;
 class ContentBrowserClientImpl;
@@ -734,7 +731,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
   friend class history_report::HistoryReportJniBridge;
   friend class internal::TaskTracker;
-  friend class leveldb::port::ScopedAllowWait;
+  friend class leveldb::port::CondVar;
   friend class nearby::chrome::ScheduledExecutor;
   friend class nearby::chrome::SubmittableExecutor;
   friend class media::AudioOutputDevice;
@@ -758,7 +755,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class ::ash::system::
       StatisticsProviderImpl;                      // http://crbug.com/125385
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
-  friend class value_store::LeveldbValueStore;     // http://crbug.com/1330845
 
   ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
   ~ScopedAllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
