@@ -1357,7 +1357,7 @@
   {
     "name": "destroy-profile-on-browser-close",
     "owners": [ "nicolaso", "droger" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "destroy-system-profiles",
