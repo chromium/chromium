@@ -6,8 +6,8 @@
 
 #include <vector>
 
-#include "cc/layers/layer.h"
-#include "cc/layers/nine_patch_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/nine_patch_resource.h"
@@ -45,15 +45,15 @@ void TabGroupTabContentLayer::SetProperties(
   layer_->SetBounds(front_border_inner_shadow_->bounds());
 }
 
-scoped_refptr<cc::Layer> TabGroupTabContentLayer::layer() {
+scoped_refptr<cc::slim::Layer> TabGroupTabContentLayer::layer() {
   return layer_;
 }
 
 TabGroupTabContentLayer::TabGroupTabContentLayer(
     TabContentManager* tab_content_manager)
-    : layer_(cc::Layer::Create()),
+    : layer_(cc::slim::Layer::Create()),
       content_(ContentLayer::Create(tab_content_manager)),
-      front_border_inner_shadow_(cc::NinePatchLayer::Create()) {
+      front_border_inner_shadow_(cc::slim::NinePatchLayer::Create()) {
   layer_->AddChild(content_->layer());
   layer_->AddChild(front_border_inner_shadow_);
 

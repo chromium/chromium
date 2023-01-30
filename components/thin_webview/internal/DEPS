@@ -1,5 +1,5 @@
 include_rules = [
-  "+cc/layers",
+  "+cc/slim",
   "+components/permissions",
   "+content/public",
   "+third_party/skia/include",

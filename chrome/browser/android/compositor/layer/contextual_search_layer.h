@@ -6,16 +6,13 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_CONTEXTUAL_SEARCH_LAYER_H_
 
 #include "chrome/browser/android/compositor/layer/overlay_panel_layer.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class SolidColorLayer;
 class UIResourceLayer;
-}
-
-namespace cc {
-class Layer;
-}
+}  // namespace cc::slim
 
 namespace ui {
 class ResourceManager;
@@ -49,7 +46,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                      int progress_bar_tint,
                      int search_promo_resource_id,
                      float dp_to_px,
-                     const scoped_refptr<cc::Layer>& content_layer,
+                     const scoped_refptr<cc::slim::Layer>& content_layer,
                      bool search_promo_visible,
                      float search_promo_height,
                      float search_promo_opacity,
@@ -97,7 +94,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
  protected:
   explicit ContextualSearchLayer(ui::ResourceManager* resource_manager);
   ~ContextualSearchLayer() override;
-  scoped_refptr<cc::Layer> GetIconLayer() override;
+  scoped_refptr<cc::slim::Layer> GetIconLayer() override;
 
  private:
   // Sets up |icon_layer_|, which displays an icon or thumbnail at the start
@@ -109,7 +106,7 @@ class ContextualSearchLayer : public OverlayPanelLayer {
                       float custom_image_visibility_percentage);
 
   void SetCustomImageProperties(
-      scoped_refptr<cc::UIResourceLayer> custom_image_layer,
+      scoped_refptr<cc::slim::UIResourceLayer> custom_image_layer,
       float top_margin,
       float side_margin,
       float visibility_percentage);
@@ -131,17 +128,17 @@ class ContextualSearchLayer : public OverlayPanelLayer {
   float thumbnail_side_margin_;
   float thumbnail_top_margin_;
 
-  scoped_refptr<cc::UIResourceLayer> search_context_;
-  scoped_refptr<cc::Layer> icon_layer_;
-  scoped_refptr<cc::UIResourceLayer> search_provider_icon_layer_;
-  scoped_refptr<cc::UIResourceLayer> thumbnail_layer_;
-  scoped_refptr<cc::UIResourceLayer> quick_action_icon_layer_;
-  scoped_refptr<cc::UIResourceLayer> search_promo_;
-  scoped_refptr<cc::SolidColorLayer> search_promo_container_;
-  scoped_refptr<cc::UIResourceLayer> related_searches_in_bar_;
-  scoped_refptr<cc::UIResourceLayer> search_caption_;
-  scoped_refptr<cc::UIResourceLayer> text_layer_;
-  scoped_refptr<cc::SolidColorLayer> touch_highlight_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> search_context_;
+  scoped_refptr<cc::slim::Layer> icon_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> search_provider_icon_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> thumbnail_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> quick_action_icon_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> search_promo_;
+  scoped_refptr<cc::slim::SolidColorLayer> search_promo_container_;
+  scoped_refptr<cc::slim::UIResourceLayer> related_searches_in_bar_;
+  scoped_refptr<cc::slim::UIResourceLayer> search_caption_;
+  scoped_refptr<cc::slim::UIResourceLayer> text_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> touch_highlight_layer_;
 };
 
 }  //  namespace android

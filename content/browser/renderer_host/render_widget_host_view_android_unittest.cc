@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/layers/deadline_policy.h"
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -132,8 +132,8 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
   std::unique_ptr<MockRenderProcessHost> process_;
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
-  scoped_refptr<cc::Layer> parent_layer_;
-  scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> parent_layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
   ui::ViewAndroid parent_view_;
   ui::ViewAndroid native_view_;
   // TestRenderViewHost
@@ -215,9 +215,9 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
       web_contents_.get(), process_->GetNextRoutingID(),
       process_->GetNextRoutingID(), nullptr,
       CreateRenderViewHostCase::kDefault);
-  parent_layer_ = cc::Layer::Create();
+  parent_layer_ = cc::slim::Layer::Create();
   parent_view_.SetLayer(parent_layer_);
-  layer_ = cc::Layer::Create();
+  layer_ = cc::slim::Layer::Create();
   native_view_.SetLayer(layer_);
   parent_view_.AddChild(&native_view_);
   EXPECT_EQ(&parent_view_, native_view_.parent());

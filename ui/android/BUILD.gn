@@ -57,7 +57,7 @@ component("android") {
     ":java_enums_srcjar",
     ":ui_android_jni_headers",
     "//base",
-    "//cc",
+    "//cc/slim",
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",

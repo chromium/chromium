@@ -17,10 +17,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/layer_collections.h"
-#include "cc/layers/solid_color_layer.h"
-#include "cc/layers/texture_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
@@ -73,7 +71,7 @@ CompositorView::CompositorView(JNIEnv* env,
                                ui::WindowAndroid* window_android,
                                TabContentManager* tab_content_manager)
     : tab_content_manager_(tab_content_manager),
-      root_layer_(cc::SolidColorLayer::Create()),
+      root_layer_(cc::slim::SolidColorLayer::Create()),
       scene_layer_(nullptr),
       current_surface_format_(0),
       content_width_(0),

@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
 #include "components/thin_webview/internal/jni_headers/ThinWebViewImpl_jni.h"
 #include "components/thin_webview/thin_webview_initializer.h"

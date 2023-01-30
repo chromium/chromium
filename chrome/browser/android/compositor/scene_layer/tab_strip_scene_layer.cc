@@ -8,6 +8,9 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/solid_color_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/android/chrome_jni_headers/TabStripSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
@@ -26,15 +29,15 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
                                        const JavaRef<jobject>& jobj,
                                        jboolean is_tab_strip_redesign_enabled)
     : SceneLayer(env, jobj),
-      tab_strip_layer_(cc::SolidColorLayer::Create()),
-      scrollable_strip_layer_(cc::Layer::Create()),
-      scrim_layer_(cc::SolidColorLayer::Create()),
-      new_tab_button_(cc::UIResourceLayer::Create()),
-      new_tab_button_background_(cc::UIResourceLayer::Create()),
-      left_fade_(cc::UIResourceLayer::Create()),
-      right_fade_(cc::UIResourceLayer::Create()),
-      model_selector_button_(cc::UIResourceLayer::Create()),
-      model_selector_button_background_(cc::UIResourceLayer::Create()),
+      tab_strip_layer_(cc::slim::SolidColorLayer::Create()),
+      scrollable_strip_layer_(cc::slim::Layer::Create()),
+      scrim_layer_(cc::slim::SolidColorLayer::Create()),
+      new_tab_button_(cc::slim::UIResourceLayer::Create()),
+      new_tab_button_background_(cc::slim::UIResourceLayer::Create()),
+      left_fade_(cc::slim::UIResourceLayer::Create()),
+      right_fade_(cc::slim::UIResourceLayer::Create()),
+      model_selector_button_(cc::slim::UIResourceLayer::Create()),
+      model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
       write_index_(0),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);

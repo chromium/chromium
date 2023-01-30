@@ -9,15 +9,16 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/resources/ui_resource_bitmap.h"
-#include "cc/trees/layer_tree_host_client.h"
+#include "cc/slim/layer.h"
 #include "content/common/content_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/presentation_feedback.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -65,7 +66,7 @@ class CONTENT_EXPORT Compositor {
   virtual void SetRootWindow(gfx::NativeWindow root_window) = 0;
 
   // Attaches the layer tree.
-  virtual void SetRootLayer(scoped_refptr<cc::Layer> root) = 0;
+  virtual void SetRootLayer(scoped_refptr<cc::slim::Layer> root) = 0;
 
   // Set the output surface bounds.
   virtual void SetWindowBounds(const gfx::Size& size) = 0;

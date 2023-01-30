@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/android/content_ui_event_handler.h"
 #include "content/browser/android/drop_data_android.h"
@@ -120,7 +121,7 @@ WebContentsViewAndroid::WebContentsViewAndroid(
       delegate_(std::move(delegate)),
       view_(ui::ViewAndroid::LayoutType::NORMAL),
       synchronous_compositor_client_(nullptr) {
-  view_.SetLayer(cc::Layer::Create());
+  view_.SetLayer(cc::slim::Layer::Create());
   view_.set_event_handler(this);
 }
 

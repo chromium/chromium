@@ -7,15 +7,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "cc/layers/nine_patch_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/resource_manager.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
+class NinePatchLayer;
 class SolidColorLayer;
 class UIResourceLayer;
-}
+}  // namespace cc::slim
 
 namespace android {
 
@@ -28,7 +28,7 @@ class ToolbarLayer : public Layer {
   ToolbarLayer& operator=(const ToolbarLayer&) = delete;
 
   // Implements Layer
-  scoped_refptr<cc::Layer> layer() override;
+  scoped_refptr<cc::slim::Layer> layer() override;
 
   void PushResource(int toolbar_resource_id,
                     int toolbar_background_color,
@@ -58,17 +58,17 @@ class ToolbarLayer : public Layer {
   ~ToolbarLayer() override;
 
  private:
-  int GetIndexOfLayer(scoped_refptr<cc::Layer> layer);
+  int GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer);
 
   raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
 
-  scoped_refptr<cc::Layer> layer_;
-  scoped_refptr<cc::SolidColorLayer> toolbar_background_layer_;
-  scoped_refptr<cc::NinePatchLayer> url_bar_background_layer_;
-  scoped_refptr<cc::UIResourceLayer> bitmap_layer_;
-  scoped_refptr<cc::SolidColorLayer> progress_bar_layer_;
-  scoped_refptr<cc::SolidColorLayer> progress_bar_background_layer_;
-  scoped_refptr<cc::SolidColorLayer> debug_layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> toolbar_background_layer_;
+  scoped_refptr<cc::slim::NinePatchLayer> url_bar_background_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> bitmap_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> progress_bar_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> progress_bar_background_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> debug_layer_;
 };
 
 }  //  namespace android

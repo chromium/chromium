@@ -8,11 +8,11 @@
 
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/layer_collections.h"
-#include "cc/layers/nine_patch_layer.h"
-#include "cc/layers/solid_color_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/slim/filter.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer/tabgroup_content_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
@@ -64,12 +64,13 @@ void TabLayer::ComputePaddingPositions(const gfx::Size& content_size,
   }
 }
 
-static void PositionPadding(scoped_refptr<cc::SolidColorLayer> padding_layer,
-                            gfx::Rect padding_rect,
-                            float content_scale,
-                            float alpha,
-                            gfx::PointF content_position,
-                            gfx::RectF descaled_local_content_area) {
+static void PositionPadding(
+    scoped_refptr<cc::slim::SolidColorLayer> padding_layer,
+    gfx::Rect padding_rect,
+    float content_scale,
+    float alpha,
+    gfx::PointF content_position,
+    gfx::RectF descaled_local_content_area) {
   if (padding_rect.IsEmpty()) {
     padding_layer->SetHideLayerAndSubtree(true);
     return;
@@ -461,14 +462,16 @@ void TabLayer::SetProperties(int id,
   // than 1.
   if (brightness != brightness_) {
     brightness_ = brightness;
-    cc::FilterOperations filters;
-    if (brightness_ < 1.f)
-      filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
-    layer_->SetFilters(filters);
+
+    std::vector<cc::slim::Filter> filters;
+    if (brightness_ < 1.f) {
+      filters.push_back(cc::slim::Filter::CreateBrightness(brightness_));
+    }
+    layer_->SetFilters(std::move(filters));
   }
 }
 
-scoped_refptr<cc::Layer> TabLayer::layer() {
+scoped_refptr<cc::slim::Layer> TabLayer::layer() {
   return layer_;
 }
 
@@ -478,15 +481,15 @@ TabLayer::TabLayer(bool incognito,
     : incognito_(incognito),
       resource_manager_(resource_manager),
       tab_content_manager_(tab_content_manager),
-      layer_(cc::Layer::Create()),
+      layer_(cc::slim::Layer::Create()),
       toolbar_layer_(ToolbarLayer::Create(resource_manager)),
       content_(ContentLayer::Create(tab_content_manager)),
-      side_padding_(cc::SolidColorLayer::Create()),
-      bottom_padding_(cc::SolidColorLayer::Create()),
-      front_border_(cc::NinePatchLayer::Create()),
-      front_border_inner_shadow_(cc::NinePatchLayer::Create()),
-      contour_shadow_(cc::NinePatchLayer::Create()),
-      shadow_(cc::NinePatchLayer::Create()),
+      side_padding_(cc::slim::SolidColorLayer::Create()),
+      bottom_padding_(cc::slim::SolidColorLayer::Create()),
+      front_border_(cc::slim::NinePatchLayer::Create()),
+      front_border_inner_shadow_(cc::slim::NinePatchLayer::Create()),
+      contour_shadow_(cc::slim::NinePatchLayer::Create()),
+      shadow_(cc::slim::NinePatchLayer::Create()),
       brightness_(1.f) {
   layer_->AddChild(shadow_);
   layer_->AddChild(contour_shadow_);

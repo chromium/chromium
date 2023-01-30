@@ -20,7 +20,7 @@ namespace blink {
 class WebGestureEvent;
 }
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -67,7 +67,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   // Returns true if the effect still needs animation ticks.
   // Note: The effect will detach itself when no further animation is required.
-  bool Animate(base::TimeTicks current_time, cc::Layer* parent_layer);
+  bool Animate(base::TimeTicks current_time, cc::slim::Layer* parent_layer);
 
   // To be called whenever the content frame has been updated.
   void OnFrameMetadataUpdated(float page_scale_factor,

@@ -10,9 +10,9 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/touch_selection/touch_handle.h"
 
-namespace cc {
+namespace cc::slim {
 class UIResourceLayer;
-}  // namespace cc
+}  // namespace cc::slim
 
 namespace content {
 
@@ -46,7 +46,7 @@ class CompositedTouchHandleDrawable : public ui::TouchHandleDrawable {
   float drawable_horizontal_padding_ratio_;
   ui::TouchHandleOrientation orientation_;
   gfx::PointF origin_position_;
-  scoped_refptr<cc::UIResourceLayer> layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> layer_;
 };
 
 }  // namespace content

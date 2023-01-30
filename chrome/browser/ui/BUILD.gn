@@ -887,6 +887,7 @@ static_library("ui") {
     }
 
     deps += [
+      "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
       "//chrome/app:chromium_strings",

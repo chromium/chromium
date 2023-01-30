@@ -4,7 +4,8 @@
 
 #include "chrome/browser/android/compositor/scene_layer/status_indicator_scene_layer.h"
 
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/android/chrome_jni_headers/StatusIndicatorSceneLayer_jni.h"
 
 using base::android::JavaParamRef;
@@ -16,8 +17,8 @@ StatusIndicatorSceneLayer::StatusIndicatorSceneLayer(
     JNIEnv* env,
     const JavaRef<jobject>& jobj)
     : SceneLayer(env, jobj),
-      view_container_(cc::Layer::Create()),
-      view_layer_(cc::UIResourceLayer::Create()) {
+      view_container_(cc::slim::Layer::Create()),
+      view_layer_(cc::slim::UIResourceLayer::Create()) {
   layer()->SetIsDrawable(true);
 
   view_container_->SetIsDrawable(true);

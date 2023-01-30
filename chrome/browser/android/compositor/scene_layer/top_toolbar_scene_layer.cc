@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "cc/layers/solid_color_layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 #include "chrome/browser/ui/android/toolbar/jni_headers/TopToolbarSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
@@ -22,7 +22,7 @@ TopToolbarSceneLayer::TopToolbarSceneLayer(JNIEnv* env,
     : SceneLayer(env, jobj),
       should_show_background_(false),
       background_color_(SK_ColorWHITE),
-      content_container_(cc::Layer::Create()) {
+      content_container_(cc::slim::Layer::Create()) {
   layer()->AddChild(content_container_);
   layer()->SetIsDrawable(true);
 }

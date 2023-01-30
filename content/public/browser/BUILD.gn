@@ -562,7 +562,10 @@ source_set("browser_sources") {
   }
 
   if (is_android) {
-    deps += [ "//ui/android" ]
+    deps += [
+      "//cc/slim",
+      "//ui/android",
+    ]
     sources += [
       "android/android_overlay_provider.h",
       "android/browser_context_handle.h",

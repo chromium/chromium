@@ -4,11 +4,11 @@
 
 #include "chrome/browser/android/compositor/layer/contextual_search_layer.h"
 
-#include "cc/layers/layer.h"
-#include "cc/layers/nine_patch_layer.h"
-#include "cc/layers/solid_color_layer.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
@@ -48,7 +48,7 @@ void ContextualSearchLayer::SetProperties(
     int progress_bar_tint,
     int search_promo_resource_id,
     float dp_to_px,
-    const scoped_refptr<cc::Layer>& content_layer,
+    const scoped_refptr<cc::slim::Layer>& content_layer,
     bool search_promo_visible,
     float search_promo_height,
     float search_promo_opacity,
@@ -249,7 +249,7 @@ void ContextualSearchLayer::SetProperties(
                  custom_image_visibility_percentage);
 }
 
-scoped_refptr<cc::Layer> ContextualSearchLayer::GetIconLayer() {
+scoped_refptr<cc::slim::Layer> ContextualSearchLayer::GetIconLayer() {
   return icon_layer_;
 }
 
@@ -261,8 +261,6 @@ void ContextualSearchLayer::SetupIconLayer(
     float custom_image_visibility_percentage) {
   icon_layer_->SetBounds(gfx::Size(bar_image_size_, bar_image_size_));
   icon_layer_->SetMasksToBounds(true);
-
-  scoped_refptr<cc::UIResourceLayer> custom_image_layer;
 
   if (quick_action_icon_visible) {
     if (quick_action_icon_layer_->parent() != icon_layer_)
@@ -323,7 +321,7 @@ void ContextualSearchLayer::SetupIconLayer(
 }
 
 void ContextualSearchLayer::SetCustomImageProperties(
-    scoped_refptr<cc::UIResourceLayer> custom_image_layer,
+    scoped_refptr<cc::slim::UIResourceLayer> custom_image_layer,
     float top_margin,
     float side_margin,
     float visibility_percentage) {
@@ -401,7 +399,7 @@ int ContextualSearchLayer::SetupTextLayer(float content_top,
 
   // The Term might not be visible or initialized yet, so set up main_text with
   // whichever main bar text seems appropriate.
-  scoped_refptr<cc::UIResourceLayer> main_text =
+  scoped_refptr<cc::slim::UIResourceLayer> main_text =
       (bar_text_visible ? bar_text_ : search_context_);
 
   // The search_caption_ may not have had it's resource set by this point, if so
@@ -560,17 +558,17 @@ void ContextualSearchLayer::SetThumbnail(const SkBitmap* thumbnail) {
 ContextualSearchLayer::ContextualSearchLayer(
     ui::ResourceManager* resource_manager)
     : OverlayPanelLayer(resource_manager),
-      search_context_(cc::UIResourceLayer::Create()),
-      icon_layer_(cc::Layer::Create()),
-      search_provider_icon_layer_(cc::UIResourceLayer::Create()),
-      thumbnail_layer_(cc::UIResourceLayer::Create()),
-      quick_action_icon_layer_(cc::UIResourceLayer::Create()),
-      search_promo_(cc::UIResourceLayer::Create()),
-      search_promo_container_(cc::SolidColorLayer::Create()),
-      related_searches_in_bar_(cc::UIResourceLayer::Create()),
-      search_caption_(cc::UIResourceLayer::Create()),
-      text_layer_(cc::UIResourceLayer::Create()),
-      touch_highlight_layer_(cc::SolidColorLayer::Create()) {
+      search_context_(cc::slim::UIResourceLayer::Create()),
+      icon_layer_(cc::slim::Layer::Create()),
+      search_provider_icon_layer_(cc::slim::UIResourceLayer::Create()),
+      thumbnail_layer_(cc::slim::UIResourceLayer::Create()),
+      quick_action_icon_layer_(cc::slim::UIResourceLayer::Create()),
+      search_promo_(cc::slim::UIResourceLayer::Create()),
+      search_promo_container_(cc::slim::SolidColorLayer::Create()),
+      related_searches_in_bar_(cc::slim::UIResourceLayer::Create()),
+      search_caption_(cc::slim::UIResourceLayer::Create()),
+      text_layer_(cc::slim::UIResourceLayer::Create()),
+      touch_highlight_layer_(cc::slim::SolidColorLayer::Create()) {
   // Search Bar Text
   search_context_->SetIsDrawable(true);
 

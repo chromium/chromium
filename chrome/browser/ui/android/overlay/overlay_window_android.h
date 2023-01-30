@@ -15,9 +15,9 @@
 #include "ui/android/window_android_observer.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace cc {
+namespace cc::slim {
 class SurfaceLayer;
-}  // namespace cc
+}
 
 namespace thin_webview {
 namespace android {
@@ -93,7 +93,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   JavaObjectWeakGlobalRef java_ref_;
   raw_ptr<ui::WindowAndroid> window_android_;
   raw_ptr<thin_webview::android::CompositorView> compositor_view_;
-  scoped_refptr<cc::SurfaceLayer> surface_layer_;
+  scoped_refptr<cc::slim::SurfaceLayer> surface_layer_;
   gfx::Rect bounds_;
   gfx::Size video_size_;
 

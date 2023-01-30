@@ -4,12 +4,16 @@
 
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/field_trial_params.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/solid_color_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/slim/filter.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -64,12 +68,11 @@ void TabHandleLayer::SetProperties(
     if (is_tab_strip_redesign_enabled) {
       tab_->SetOpacity(brightness_);
     } else {
-      cc::FilterOperations filters;
+      std::vector<cc::slim::Filter> filters;
       if (brightness_ != 1.0f) {
-        filters.Append(
-            cc::FilterOperation::CreateBrightnessFilter(brightness_));
+        filters.push_back(cc::slim::Filter::CreateBrightness(brightness_));
       }
-      layer_->SetFilters(filters);
+      layer_->SetFilters(std::move(filters));
       tab_outline_->SetIsDrawable(true);
     }
   }
@@ -243,18 +246,18 @@ void TabHandleLayer::SetProperties(
   }
 }
 
-scoped_refptr<cc::Layer> TabHandleLayer::layer() {
+scoped_refptr<cc::slim::Layer> TabHandleLayer::layer() {
   return layer_;
 }
 
 TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
     : layer_title_cache_(layer_title_cache),
-      layer_(cc::Layer::Create()),
-      tab_(cc::Layer::Create()),
-      close_button_(cc::UIResourceLayer::Create()),
-      divider_(cc::UIResourceLayer::Create()),
-      decoration_tab_(cc::NinePatchLayer::Create()),
-      tab_outline_(cc::NinePatchLayer::Create()),
+      layer_(cc::slim::Layer::Create()),
+      tab_(cc::slim::Layer::Create()),
+      close_button_(cc::slim::UIResourceLayer::Create()),
+      divider_(cc::slim::UIResourceLayer::Create()),
+      decoration_tab_(cc::slim::NinePatchLayer::Create()),
+      tab_outline_(cc::slim::NinePatchLayer::Create()),
       brightness_(1.0f),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);

@@ -124,6 +124,7 @@ static_library("view") {
   deps = [
     ":view_jni_headers",
     "//base",
+    "//cc/slim",
     "//content/public/browser",
     "//ui/android",
     "//ui/base",

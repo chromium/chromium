@@ -12,7 +12,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/event_forwarder.h"
@@ -385,8 +385,12 @@ const ScopedJavaLocalRef<jobject> ViewAndroid::GetViewAndroidDelegate()
   return parent_ ? parent_->GetViewAndroidDelegate() : delegate;
 }
 
-cc::Layer* ViewAndroid::GetLayer() const {
+cc::slim::Layer* ViewAndroid::GetLayer() const {
   return layer_.get();
+}
+
+void ViewAndroid::SetLayer(scoped_refptr<cc::slim::Layer> layer) {
+  layer_ = std::move(layer);
 }
 
 bool ViewAndroid::HasFocus() {
@@ -403,10 +407,6 @@ void ViewAndroid::RequestFocus() {
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ViewAndroidDelegate_requestFocus(env, delegate);
-}
-
-void ViewAndroid::SetLayer(scoped_refptr<cc::Layer> layer) {
-  layer_ = layer;
 }
 
 bool ViewAndroid::StartDragAndDrop(const JavaRef<jobject>& jshadow_image,

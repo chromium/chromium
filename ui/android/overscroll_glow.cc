@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "ui/android/edge_effect.h"
 #include "ui/android/window_android_compositor.h"
 
@@ -120,7 +120,7 @@ bool OverscrollGlow::OnOverscrolled(base::TimeTicks current_time,
 }
 
 bool OverscrollGlow::Animate(base::TimeTicks current_time,
-                             cc::Layer* parent_layer) {
+                             cc::slim::Layer* parent_layer) {
   DCHECK(parent_layer);
   if (!CheckNeedsAnimate())
     return false;
@@ -169,7 +169,7 @@ bool OverscrollGlow::CheckNeedsAnimate() {
   return false;
 }
 
-void OverscrollGlow::UpdateLayerAttachment(cc::Layer* parent) {
+void OverscrollGlow::UpdateLayerAttachment(cc::slim::Layer* parent) {
   DCHECK(parent);
   if (!root_layer_.get())
     return;
@@ -197,7 +197,7 @@ bool OverscrollGlow::InitializeIfNecessary() {
     return false;
 
   DCHECK(!root_layer_.get());
-  root_layer_ = cc::Layer::Create();
+  root_layer_ = cc::slim::Layer::Create();
   for (size_t i = 0; i < EDGE_COUNT; ++i) {
     edge_effects_[i] = client_->CreateEdgeEffect();
     DCHECK(edge_effects_[i]);

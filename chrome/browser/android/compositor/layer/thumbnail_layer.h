@@ -8,15 +8,15 @@
 #include <stddef.h>
 
 #include "base/memory/ref_counted.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/ui_resource_client.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class Thumbnail;
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -38,11 +38,11 @@ class ThumbnailLayer : public Layer {
   void ClearClip();
   // Add self to |parent| or replace self at |index| if there already is an
   // instance with the same ID at |index|.
-  void AddSelfToParentOrReplaceAt(scoped_refptr<cc::Layer> parent,
+  void AddSelfToParentOrReplaceAt(scoped_refptr<cc::slim::Layer> parent,
                                   size_t index);
 
   // Implements Layer.
-  scoped_refptr<cc::Layer> layer() override;
+  scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
   ThumbnailLayer();
@@ -52,7 +52,7 @@ class ThumbnailLayer : public Layer {
   void UpdateSizes(const gfx::SizeF& content_size,
                    const gfx::SizeF& resource_size);
 
-  scoped_refptr<cc::UIResourceLayer> layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> layer_;
   gfx::SizeF content_size_;
   gfx::Rect last_clipping_;
   bool clipped_ = false;

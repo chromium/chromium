@@ -24,10 +24,9 @@
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/android/ui_android_export.h"
 
-namespace cc {
+namespace cc::slim {
 class SurfaceLayer;
-enum class SurfaceDrawStatus;
-}  // namespace cc
+}
 
 namespace viz {
 class HostFrameSinkManager;
@@ -98,7 +97,9 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   bool HasDelegatedContent() const;
 
-  cc::SurfaceLayer* content_layer_for_testing() { return content_layer_.get(); }
+  cc::slim::SurfaceLayer* content_layer_for_testing() {
+    return content_layer_.get();
+  }
 
   const viz::FrameSinkId& GetFrameSinkId() const;
 
@@ -192,7 +193,7 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   float top_controls_visible_height_ = 0.f;
 
-  scoped_refptr<cc::SurfaceLayer> content_layer_;
+  scoped_refptr<cc::slim::SurfaceLayer> content_layer_;
 
   // Whether we've received a frame from the renderer since navigating.
   // Only used when surface synchronization is on.

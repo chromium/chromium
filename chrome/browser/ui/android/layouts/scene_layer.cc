@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "chrome/browser/ui/android/layouts/layouts_jni_headers/SceneLayer_jni.h"
 
 using base::android::JavaParamRef;
@@ -22,12 +22,12 @@ SceneLayer* SceneLayer::FromJavaObject(JNIEnv* env,
 }
 
 SceneLayer::SceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
-    : SceneLayer(env, jobj, cc::Layer::Create()) {}
+    : SceneLayer(env, jobj, cc::slim::Layer::Create()) {}
 
 SceneLayer::SceneLayer(JNIEnv* env,
                        const JavaRef<jobject>& jobj,
-                       scoped_refptr<cc::Layer> layer)
-    : weak_java_scene_layer_(env, jobj), layer_(layer) {
+                       scoped_refptr<cc::slim::Layer> layer)
+    : weak_java_scene_layer_(env, jobj), layer_(std::move(layer)) {
   Java_SceneLayer_setNativePtr(env, jobj, reinterpret_cast<intptr_t>(this));
 }
 

@@ -25,7 +25,7 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
       resource_manager_(nullptr),
       tab_content_manager_(nullptr),
       background_color_(SK_ColorWHITE),
-      own_tree_(cc::Layer::Create()) {
+      own_tree_(cc::slim::Layer::Create()) {
   layer()->AddChild(own_tree_);
 }
 
@@ -169,7 +169,7 @@ void TabListSceneLayer::PutBackgroundLayer(
     return;
 
   if (!background_layer_) {
-    background_layer_ = cc::UIResourceLayer::Create();
+    background_layer_ = cc::slim::UIResourceLayer::Create();
     background_layer_->SetIsDrawable(true);
     own_tree_->AddChild(background_layer_);
   }

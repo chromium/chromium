@@ -11,10 +11,10 @@
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class UIResourceLayer;
-}  // namespace cc
+}  // namespace cc::slim
 
 namespace android {
 
@@ -48,8 +48,8 @@ class StatusIndicatorSceneLayer : public SceneLayer {
  private:
   bool should_show_background_;
   SkColor background_color_;
-  scoped_refptr<cc::Layer> view_container_;
-  scoped_refptr<cc::UIResourceLayer> view_layer_;
+  scoped_refptr<cc::slim::Layer> view_container_;
+  scoped_refptr<cc::slim::UIResourceLayer> view_layer_;
 };
 
 }  // namespace android

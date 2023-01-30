@@ -5,7 +5,8 @@
 #include "ui/android/edge_effect.h"
 
 #include "base/notreached.h"
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "ui/android/animation_utils.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/resources/system_ui_resource_type.h"
@@ -98,7 +99,7 @@ gfx::SizeF ComputeOrientedSize(EdgeEffect::Edge edge,
 
 EdgeEffect::EdgeEffect(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager),
-      glow_(cc::UIResourceLayer::Create()),
+      glow_(cc::slim::UIResourceLayer::Create()),
       glow_alpha_(0),
       glow_scale_y_(0),
       glow_alpha_start_(0),
@@ -332,7 +333,7 @@ void EdgeEffect::ApplyToLayers(Edge edge,
   glow_->SetOpacity(Clamp(glow_alpha_, 0.f, 1.f));
 }
 
-void EdgeEffect::SetParent(cc::Layer* parent) {
+void EdgeEffect::SetParent(cc::slim::Layer* parent) {
   if (glow_->parent() != parent)
     parent->AddChild(glow_);
 }

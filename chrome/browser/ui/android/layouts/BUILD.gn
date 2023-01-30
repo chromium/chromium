@@ -40,7 +40,7 @@ source_set("android") {
   ]
   deps = [
     ":layouts_jni_headers",
-    "//cc",
+    "//cc/slim",
     "//skia",
   ]
 }

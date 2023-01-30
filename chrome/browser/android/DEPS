@@ -2,7 +2,7 @@ include_rules = [
   "-components/devtools_bridge",
   "+components/resources/android",
   "+cc/input/browser_controls_state.h",
-  "+cc/layers/layer.h",
+  "+cc/slim/layer.h",
   "+chrome/android",
   "+chrome/browser/web_share_target",
   "+chrome_jni_registration/chrome_jni_registration.h",

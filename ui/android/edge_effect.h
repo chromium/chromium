@@ -14,10 +14,10 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class UIResourceLayer;
-}
+}  // namespace cc::slim
 
 namespace ui {
 class ResourceManager;
@@ -57,12 +57,12 @@ class UI_ANDROID_EXPORT EdgeEffect {
   float GetAlpha() const;
 
   void ApplyToLayers(Edge edge, const gfx::SizeF& viewport_size, float offset);
-  void SetParent(cc::Layer* parent);
+  void SetParent(cc::slim::Layer* parent);
 
  private:
   const raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
 
-  scoped_refptr<cc::UIResourceLayer> glow_;
+  scoped_refptr<cc::slim::UIResourceLayer> glow_;
 
   float glow_alpha_;
   float glow_scale_y_;

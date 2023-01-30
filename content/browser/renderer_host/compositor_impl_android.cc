@@ -19,7 +19,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -40,6 +39,9 @@
 #include "cc/metrics/web_vital_metrics.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/resources/ui_resource_manager.h"
+#include "cc/slim/frame_sink.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/layer_tree.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/viz/common/features.h"
@@ -406,14 +408,14 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
   // to register one on the new window.
   DCHECK(!window_);
 
-  scoped_refptr<cc::Layer> root_layer;
+  scoped_refptr<cc::slim::Layer> root_layer;
   if (root_window_) {
     root_layer = root_window_->GetLayer();
     DetachRootWindow();
   }
 
   root_window_ = root_window;
-  root_window_->SetLayer(root_layer ? root_layer : cc::Layer::Create());
+  root_window_->SetLayer(root_layer ? root_layer : cc::slim::Layer::Create());
   root_window_->GetLayer()->SetBounds(size_);
   root_window->AttachCompositor(this);
   if (!host_) {
@@ -421,17 +423,17 @@ void CompositorImpl::SetRootWindow(gfx::NativeWindow root_window) {
     resource_manager_.Init(host_->GetUIResourceManager());
   }
   OnUpdateOverlayTransform();
-  host_->SetRootLayer(root_window_->GetLayer());
+  host_->SetRoot(root_window_->GetLayer());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
 }
 
-void CompositorImpl::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
-  if (subroot_layer_.get()) {
+void CompositorImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> root_layer) {
+  if (subroot_layer_) {
     subroot_layer_->RemoveFromParent();
     subroot_layer_ = nullptr;
   }
-  if (root_layer.get() && root_window_->GetLayer()) {
+  if (root_layer && root_window_->GetLayer()) {
     subroot_layer_ = root_window_->GetLayer();
     subroot_layer_->AddChild(root_layer);
   }
@@ -470,31 +472,13 @@ void CompositorImpl::SetBackgroundColor(int color) {
 void CompositorImpl::CreateLayerTreeHost() {
   DCHECK(!host_);
 
-  cc::LayerTreeSettings settings;
-  settings.use_zero_copy = true;
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  settings.initial_debug_state.SetRecordRenderingStats(
-      command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking));
-  settings.initial_debug_state.show_fps_counter =
-      command_line->HasSwitch(cc::switches::kUIShowFPSCounter);
-  if (command_line->HasSwitch(cc::switches::kUIShowCompositedLayerBorders)) {
-    settings.initial_debug_state.show_debug_borders.set();
-  }
-  settings.single_thread_proxy_scheduler = true;
-  settings.use_painted_device_scale_factor = true;
-
-  animation_host_ = cc::AnimationHost::CreateMainInstance();
-
-  cc::LayerTreeHost::InitParams params;
-  params.client = this;
-  params.task_graph_runner =
+  cc::slim::LayerTree::InitParams init_params;
+  init_params.client = this;
+  init_params.cc_task_graph_runner =
       CompositorDependenciesAndroid::Get().GetTaskGraphRunner();
-  params.main_task_runner =
+  init_params.task_runner =
       content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-  params.settings = &settings;
-  params.mutator_host = animation_host_.get();
-  host_ = cc::LayerTreeHost::CreateSingleThreaded(this, std::move(params));
+  host_ = cc::slim::LayerTree::Create(std::move(init_params));
   DCHECK(!host_->IsVisible());
   host_->SetViewportRectAndScale(gfx::Rect(size_), root_window_->GetDipScale(),
                                  GenerateLocalSurfaceId());
@@ -606,10 +590,10 @@ void CompositorImpl::SetNeedsComposite() {
 }
 
 void CompositorImpl::SetNeedsRedraw() {
-  host_->SetNeedsRedrawRect(host_->device_viewport_rect());
+  host_->SetNeedsRedraw();
 }
 
-void CompositorImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
+void CompositorImpl::BeginFrame(const viz::BeginFrameArgs& args) {
   client_->UpdateLayerTreeHost();
   if (needs_animate_) {
     needs_animate_ = false;
@@ -617,7 +601,7 @@ void CompositorImpl::BeginMainFrame(const viz::BeginFrameArgs& args) {
   }
 }
 
-void CompositorImpl::RequestNewLayerTreeFrameSink() {
+void CompositorImpl::RequestNewFrameSink() {
   DCHECK(!layer_tree_frame_sink_request_pending_)
       << "LayerTreeFrameSink request is already pending?";
 
@@ -632,7 +616,7 @@ void CompositorImpl::DidInitializeLayerTreeFrameSink() {
 void CompositorImpl::DidFailToInitializeLayerTreeFrameSink() {
   layer_tree_frame_sink_request_pending_ = false;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&CompositorImpl::RequestNewLayerTreeFrameSink,
+      FROM_HERE, base::BindOnce(&CompositorImpl::RequestNewFrameSink,
                                 weak_factory_.GetWeakPtr()));
 }
 
@@ -743,8 +727,7 @@ std::unique_ptr<ui::CompositorLock> CompositorImpl::GetCompositorLock(
     return nullptr;
   }
   return lock_manager_.GetCompositorLock(
-      /*client=*/nullptr, timeout,
-      base::DoNothingWithBoundArgs(host_->DeferMainFrameUpdate()));
+      /*client=*/nullptr, timeout, host_->DeferBeginFrame());
 }
 
 void CompositorImpl::PostRequestPresentationTimeForNextFrame(
@@ -770,15 +753,6 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
   client_->DidSwapFrame(0);
 }
 
-std::unique_ptr<cc::BeginMainFrameMetrics>
-CompositorImpl::GetBeginMainFrameMetrics() {
-  return nullptr;
-}
-
-std::unique_ptr<cc::WebVitalMetrics> CompositorImpl::GetWebVitalMetrics() {
-  return nullptr;
-}
-
 std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
 CompositorImpl::TakeReadbackRef() {
   ++pending_readbacks_;
@@ -787,7 +761,7 @@ CompositorImpl::TakeReadbackRef() {
 
 void CompositorImpl::RequestCopyOfOutputOnRootLayer(
     std::unique_ptr<viz::CopyOutputRequest> request) {
-  root_window_->GetLayer()->RequestCopyOfOutput(std::move(request));
+  host_->RequestCopyOfOutput(std::move(request));
 }
 
 void CompositorImpl::SetNeedsAnimate() {
@@ -946,17 +920,11 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
       root_window_->GetSupportedRefreshRates());
   MaybeUpdateObserveBeginFrame();
 
-  // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
-  cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
-  params.compositor_task_runner = task_runner;
-  params.gpu_memory_buffer_manager =
-      BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager();
-  params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
-  params.pipes.client_receiver = std::move(client_receiver);
-  auto layer_tree_frame_sink =
-      std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
-          std::move(context_provider), nullptr, &params);
-  host_->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink));
+  auto frame_sink = cc::slim::FrameSink::Create(
+      std::move(sink_remote), std::move(client_receiver),
+      std::move(context_provider), std::move(task_runner),
+      BrowserGpuChannelHostFactory::instance()->GetGpuMemoryBufferManager());
+  host_->SetFrameSink(std::move(frame_sink));
 }
 
 viz::LocalSurfaceId CompositorImpl::GenerateLocalSurfaceId() {

@@ -10,8 +10,8 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
@@ -114,14 +114,14 @@ class TabListSceneLayer : public SceneLayer {
   TabMap tab_map_;
   std::set<int> visible_tabs_this_frame_;
 
-  scoped_refptr<cc::UIResourceLayer> background_layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> background_layer_;
 
   bool content_obscures_self_;
   raw_ptr<ui::ResourceManager> resource_manager_;
   raw_ptr<TabContentManager> tab_content_manager_;
   SkColor background_color_;
 
-  scoped_refptr<cc::Layer> own_tree_;
+  scoped_refptr<cc::slim::Layer> own_tree_;
 };
 
 }  // namespace android

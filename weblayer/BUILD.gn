@@ -396,7 +396,6 @@ source_set("weblayer_lib_base") {
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
-    "//cc",
     "//components/autofill/content/browser",
     "//components/autofill/content/renderer",
     "//components/autofill/core/browser",
@@ -707,6 +706,7 @@ source_set("weblayer_lib_base") {
       "common/crash_reporter/crash_reporter_client.h",
     ]
     deps += [
+      "//cc/slim",
       "//components/android_autofill/browser",
       "//components/android_autofill/browser:android",
       "//components/android_system_error_page",

@@ -12,11 +12,11 @@
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class NinePatchLayer;
 class SolidColorLayer;
-}
+}  // namespace cc::slim
 
 namespace gfx {
 class Size;
@@ -88,7 +88,7 @@ class TabLayer : public Layer {
 
   bool is_incognito() const { return incognito_; }
 
-  scoped_refptr<cc::Layer> layer() override;
+  scoped_refptr<cc::slim::Layer> layer() override;
 
   static void ComputePaddingPositions(const gfx::Size& content_size,
                                       const gfx::Size& desired_size,
@@ -124,18 +124,18 @@ class TabLayer : public Layer {
   //         +-[padding]
   //         +-[contour_shadow]
   //         +-[shadow]
-  scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
   scoped_refptr<ToolbarLayer> toolbar_layer_;
   scoped_refptr<ContentLayer> content_;
-  scoped_refptr<cc::SolidColorLayer> side_padding_;
-  scoped_refptr<cc::SolidColorLayer> bottom_padding_;
+  scoped_refptr<cc::slim::SolidColorLayer> side_padding_;
+  scoped_refptr<cc::slim::SolidColorLayer> bottom_padding_;
 
-  scoped_refptr<cc::NinePatchLayer> front_border_;
-  scoped_refptr<cc::NinePatchLayer> front_border_inner_shadow_;
+  scoped_refptr<cc::slim::NinePatchLayer> front_border_;
+  scoped_refptr<cc::slim::NinePatchLayer> front_border_inner_shadow_;
 
-  scoped_refptr<cc::NinePatchLayer> contour_shadow_;
+  scoped_refptr<cc::slim::NinePatchLayer> contour_shadow_;
 
-  scoped_refptr<cc::NinePatchLayer> shadow_;
+  scoped_refptr<cc::slim::NinePatchLayer> shadow_;
   float brightness_;
 };
 

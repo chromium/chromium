@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/memory/ptr_util.h"
-#include "cc/layers/surface_layer.h"
+#include "cc/slim/surface_layer.h"
 #include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/thin_webview/compositor_view.h"
@@ -27,7 +27,7 @@ OverlayWindowAndroid::OverlayWindowAndroid(
     content::VideoPictureInPictureWindowController* controller)
     : window_android_(nullptr),
       compositor_view_(nullptr),
-      surface_layer_(cc::SurfaceLayer::Create()),
+      surface_layer_(cc::slim::SurfaceLayer::Create()),
       bounds_(gfx::Rect(0, 0)),
       update_action_timer_(std::make_unique<base::OneShotTimer>()),
       controller_(controller) {

@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/tabgroup_tab_content_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/android/resources/nine_patch_resource.h"

@@ -10,27 +10,27 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/ref_counted.h"
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace android {
 
-// A native-side, cc::Layer based representation of how a scene should be drawn.
-// Basically, this is a wrapper around cc::Layer and bridge with its Java
-// counterpart.
+// A native-side, cc::slim::Layer based representation of how a scene should be
+// drawn. Basically, this is a wrapper around cc::slim::Layer and bridge with
+// its Java counterpart.
 class SceneLayer {
  public:
   static SceneLayer* FromJavaObject(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jobj);
 
-  // Create SceneLayer and creates an empty cc::Layer.
+  // Create SceneLayer and creates an empty cc::slim::Layer.
   SceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
   // Create SceneLayer with the already-instantiated |layer|.
 
   SceneLayer(JNIEnv* env,
              const base::android::JavaRef<jobject>& jobj,
-             scoped_refptr<cc::Layer> layer);
+             scoped_refptr<cc::slim::Layer> layer);
 
   SceneLayer(const SceneLayer&) = delete;
   SceneLayer& operator=(const SceneLayer&) = delete;
@@ -50,8 +50,8 @@ class SceneLayer {
   virtual void Destroy(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jobj);
 
-  // Returns cc::Layer object that this SceneLayer contains.
-  scoped_refptr<cc::Layer> layer() { return layer_; }
+  // Returns cc::slim::Layer object that this SceneLayer contains.
+  scoped_refptr<cc::slim::Layer> layer() { return layer_; }
 
   // Returns whether we should show background when we draw this SceneLayer.
   virtual bool ShouldShowBackground();
@@ -61,7 +61,7 @@ class SceneLayer {
 
  protected:
   JavaObjectWeakGlobalRef weak_java_scene_layer_;
-  scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
 };
 
 }  // namespace android

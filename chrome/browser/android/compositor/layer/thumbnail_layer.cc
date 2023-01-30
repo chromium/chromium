@@ -4,7 +4,7 @@
 
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
@@ -43,19 +43,20 @@ void ThumbnailLayer::ClearClip() {
   clipped_ = false;
 }
 
-void ThumbnailLayer::AddSelfToParentOrReplaceAt(scoped_refptr<cc::Layer> parent,
-                                                size_t index) {
+void ThumbnailLayer::AddSelfToParentOrReplaceAt(
+    scoped_refptr<cc::slim::Layer> parent,
+    size_t index) {
   if (index >= parent->children().size())
     parent->AddChild(layer_);
   else if (parent->children()[index]->id() != layer_->id())
     parent->ReplaceChild(parent->children()[index].get(), layer_);
 }
 
-scoped_refptr<cc::Layer> ThumbnailLayer::layer() {
+scoped_refptr<cc::slim::Layer> ThumbnailLayer::layer() {
   return layer_;
 }
 
-ThumbnailLayer::ThumbnailLayer() : layer_(cc::UIResourceLayer::Create()) {
+ThumbnailLayer::ThumbnailLayer() : layer_(cc::slim::UIResourceLayer::Create()) {
   layer_->SetIsDrawable(true);
 }
 

@@ -6,16 +6,14 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TAB_HANDLE_LAYER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "cc/layers/nine_patch_layer.h"
-#include "cc/layers/solid_color_layer.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/resource_manager.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class NinePatchLayer;
-}
+class UIResourceLayer;
+}  // namespace cc::slim
 
 namespace ui {
 class NinePatchResource;
@@ -57,7 +55,7 @@ class TabHandleLayer : public Layer {
                      float brightness,
                      float opacity,
                      bool is_tab_strip_redesign_enabled);
-  scoped_refptr<cc::Layer> layer() override;
+  scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
   explicit TabHandleLayer(LayerTitleCache* layer_title_cache);
@@ -66,13 +64,13 @@ class TabHandleLayer : public Layer {
  private:
   raw_ptr<LayerTitleCache> layer_title_cache_;
 
-  scoped_refptr<cc::Layer> layer_;
-  scoped_refptr<cc::Layer> tab_;
-  scoped_refptr<cc::UIResourceLayer> close_button_;
-  scoped_refptr<cc::UIResourceLayer> divider_;
-  scoped_refptr<cc::NinePatchLayer> decoration_tab_;
-  scoped_refptr<cc::NinePatchLayer> tab_outline_;
-  scoped_refptr<cc::Layer> title_layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> tab_;
+  scoped_refptr<cc::slim::UIResourceLayer> close_button_;
+  scoped_refptr<cc::slim::UIResourceLayer> divider_;
+  scoped_refptr<cc::slim::NinePatchLayer> decoration_tab_;
+  scoped_refptr<cc::slim::NinePatchLayer> tab_outline_;
+  scoped_refptr<cc::slim::Layer> title_layer_;
 
   float brightness_;
   float opacity_;

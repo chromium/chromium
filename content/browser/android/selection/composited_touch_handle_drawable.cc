@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/no_destructor.h"
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "ui/android/handle_view_resources.h"
 #include "ui/android/view_android.h"
@@ -30,7 +30,7 @@ CompositedTouchHandleDrawable::CompositedTouchHandleDrawable(
     const JavaRef<jobject>& context)
     : view_(view),
       orientation_(ui::TouchHandleOrientation::UNDEFINED),
-      layer_(cc::UIResourceLayer::Create()) {
+      layer_(cc::slim::UIResourceLayer::Create()) {
   GetSelectionResources().LoadIfNecessary(context);
   drawable_horizontal_padding_ratio_ =
       GetSelectionResources().GetDrawableHorizontalPaddingRatio();

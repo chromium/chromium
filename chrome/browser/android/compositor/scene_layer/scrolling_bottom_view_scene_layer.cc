@@ -6,7 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "cc/layers/ui_resource_layer.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/ui/android/toolbar/jni_headers/ScrollingBottomViewSceneLayer_jni.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
@@ -21,8 +22,8 @@ ScrollingBottomViewSceneLayer::ScrollingBottomViewSceneLayer(
     : SceneLayer(env, jobj),
       should_show_background_(false),
       background_color_(SK_ColorWHITE),
-      view_container_(cc::Layer::Create()),
-      view_layer_(cc::UIResourceLayer::Create()) {
+      view_container_(cc::slim::Layer::Create()),
+      view_layer_(cc::slim::UIResourceLayer::Create()) {
   layer()->SetIsDrawable(true);
 
   view_container_->SetIsDrawable(true);

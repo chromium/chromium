@@ -3277,6 +3277,7 @@ static_library("browser") {
       ":fast_checkout_funnels_proto",
       ":profile_token",
       ":usage_stats_proto",
+      "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/browser/android/httpclient:android",
       "//chrome/browser/android/httpclient:jni_headers",

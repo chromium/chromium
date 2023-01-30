@@ -4,10 +4,11 @@
 
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 
+#include <vector>
+
 #include "base/lazy_instance.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/layer_collections.h"
-#include "cc/paint/filter_operations.h"
+#include "cc/slim/filter.h"
+#include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,8 +21,9 @@ scoped_refptr<ContentLayer> ContentLayer::Create(
   return base::WrapRefCounted(new ContentLayer(tab_content_manager));
 }
 
-static void SetOpacityOnLeaf(scoped_refptr<cc::Layer> layer, float alpha) {
-  const cc::LayerList& children = layer->children();
+static void SetOpacityOnLeaf(scoped_refptr<cc::slim::Layer> layer,
+                             float alpha) {
+  const auto& children = layer->children();
   if (children.size() > 0) {
     layer->SetOpacity(1.0f);
     for (uint i = 0; i < children.size(); ++i)
@@ -31,7 +33,8 @@ static void SetOpacityOnLeaf(scoped_refptr<cc::Layer> layer, float alpha) {
   }
 }
 
-static cc::Layer* GetDrawsContentLeaf(scoped_refptr<cc::Layer> layer) {
+static cc::slim::Layer* GetDrawsContentLeaf(
+    scoped_refptr<cc::slim::Layer> layer) {
   if (!layer.get())
     return nullptr;
 
@@ -45,9 +48,9 @@ static cc::Layer* GetDrawsContentLeaf(scoped_refptr<cc::Layer> layer) {
   if (layer->draws_content())
     return layer.get();
 
-  const cc::LayerList& children = layer->children();
+  const auto& children = layer->children();
   for (unsigned i = 0; i < children.size(); i++) {
-    cc::Layer* leaf = GetDrawsContentLeaf(children[i]);
+    cc::slim::Layer* leaf = GetDrawsContentLeaf(children[i]);
     if (leaf)
       return leaf;
   }
@@ -62,7 +65,8 @@ void ContentLayer::SetProperties(int id,
                                  float saturation,
                                  bool should_clip,
                                  const gfx::Rect& clip) {
-  scoped_refptr<cc::Layer> live_layer = tab_content_manager_->GetLiveLayer(id);
+  scoped_refptr<cc::slim::Layer> live_layer =
+      tab_content_manager_->GetLiveLayer(id);
   if (live_layer)
     live_layer->SetHideLayerAndSubtree(!can_use_live_layer);
   bool live_layer_draws = GetDrawsContentLeaf(live_layer);
@@ -95,13 +99,11 @@ void ContentLayer::SetProperties(int id,
         static_layer->ClearClip();
       SetOpacityOnLeaf(static_layer->layer(), static_opacity);
 
-      cc::FilterOperations static_filter_operations;
+      std::vector<cc::slim::Filter> filters;
       if (saturation < 1.0f) {
-        static_filter_operations.Append(
-            cc::FilterOperation::CreateSaturateFilter(saturation));
+        filters.push_back(cc::slim::Filter::CreateSaturation(saturation));
       }
-      static_layer->layer()->SetFilters(static_filter_operations);
-
+      static_layer->layer()->SetFilters(std::move(filters));
       layer_->AddChild(static_layer->layer());
     }
   }
@@ -110,8 +112,9 @@ void ContentLayer::SetProperties(int id,
 gfx::Size ContentLayer::ComputeSize(int id) const {
   gfx::Size size;
 
-  scoped_refptr<cc::Layer> live_layer = tab_content_manager_->GetLiveLayer(id);
-  cc::Layer* leaf_that_draws = GetDrawsContentLeaf(live_layer);
+  scoped_refptr<cc::slim::Layer> live_layer =
+      tab_content_manager_->GetLiveLayer(id);
+  cc::slim::Layer* leaf_that_draws = GetDrawsContentLeaf(live_layer);
   if (leaf_that_draws)
     size.SetToMax(leaf_that_draws->bounds());
 
@@ -123,12 +126,12 @@ gfx::Size ContentLayer::ComputeSize(int id) const {
   return size;
 }
 
-scoped_refptr<cc::Layer> ContentLayer::layer() {
+scoped_refptr<cc::slim::Layer> ContentLayer::layer() {
   return layer_;
 }
 
 ContentLayer::ContentLayer(TabContentManager* tab_content_manager)
-    : layer_(cc::Layer::Create()),
+    : layer_(cc::slim::Layer::Create()),
       tab_content_manager_(tab_content_manager) {}
 
 ContentLayer::~ContentLayer() {

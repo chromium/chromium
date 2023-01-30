@@ -22,7 +22,7 @@
 #include "ui/android/view_android_observer.h"
 #include "ui/gfx/geometry/rect_f.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -125,9 +125,8 @@ class UI_ANDROID_EXPORT ViewAndroid {
   // Virtual for testing.
   virtual float GetDipScale();
 
-  // Used to return and set the layer for this view. May be |null|.
-  cc::Layer* GetLayer() const;
-  void SetLayer(scoped_refptr<cc::Layer> layer);
+  cc::slim::Layer* GetLayer() const;
+  void SetLayer(scoped_refptr<cc::slim::Layer> layer);
 
   void SetDelegate(const base::android::JavaRef<jobject>& delegate);
 
@@ -313,7 +312,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   std::list<ViewAndroid*> children_;
   base::ObserverList<ViewAndroidObserver>::Unchecked observer_list_;
-  scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
   JavaObjectWeakGlobalRef delegate_;
 
   raw_ptr<EventHandlerAndroid> event_handler_ = nullptr;  // Not owned

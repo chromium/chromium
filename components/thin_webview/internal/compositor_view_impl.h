@@ -9,13 +9,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "cc/layers/layer.h"
 #include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/android/compositor_client.h"
 
-namespace cc {
+namespace cc::slim {
+class Layer;
 class SolidColorLayer;
-}  // namespace cc
+}  // namespace cc::slim
 
 namespace content {
 class Compositor;
@@ -59,7 +59,7 @@ class CompositorViewImpl : public CompositorView,
                       const base::android::JavaParamRef<jobject>& surface);
 
   // CompositorView implementation.
-  void SetRootLayer(scoped_refptr<cc::Layer> layer) override;
+  void SetRootLayer(scoped_refptr<cc::slim::Layer> layer) override;
 
   // CompositorClient implementation.
   void RecreateSurface() override;
@@ -68,7 +68,7 @@ class CompositorViewImpl : public CompositorView,
  private:
   base::android::ScopedJavaGlobalRef<jobject> obj_;
   std::unique_ptr<content::Compositor> compositor_;
-  scoped_refptr<cc::SolidColorLayer> root_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> root_layer_;
 
   int current_surface_format_;
 };

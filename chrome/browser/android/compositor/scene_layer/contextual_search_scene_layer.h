@@ -15,19 +15,19 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class SolidColorLayer;
-}
+}  // namespace cc::slim
 
 namespace android {
 
 class ContextualSearchLayer;
 
-// A native-side, cc::Layer-based representation of how a Contextual Search
-// scene should be drawn.
-// This class delegates to the ContextualSearchLayer
-// that does the actual rendering of the Contextual Search Bar and content.
+// A native-side, cc::slim::Layer-based representation of how a Contextual
+// Search scene should be drawn. This class delegates to the
+// ContextualSearchLayer that does the actual rendering of the Contextual Search
+// Bar and content.
 class ContextualSearchSceneLayer : public SceneLayer,
                                    public BitmapFetcherDelegate {
  public:
@@ -138,8 +138,8 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   scoped_refptr<ContextualSearchLayer> contextual_search_layer_;
   // Responsible for fading the base page content.
-  scoped_refptr<cc::SolidColorLayer> color_overlay_;
-  scoped_refptr<cc::Layer> content_container_;
+  scoped_refptr<cc::slim::SolidColorLayer> color_overlay_;
+  scoped_refptr<cc::slim::Layer> content_container_;
 };
 
 }  // namespace android

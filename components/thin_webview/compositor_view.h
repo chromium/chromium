@@ -7,10 +7,11 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/scoped_refptr.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
-}  // namespace cc
+}  // namespace cc::slim
 
 namespace thin_webview {
 namespace android {
@@ -22,7 +23,7 @@ class CompositorView {
       const base::android::JavaRef<jobject>& jcompositor_view);
 
   // Called to set the root layer of the view.
-  virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;
+  virtual void SetRootLayer(scoped_refptr<cc::slim::Layer> layer) = 0;
 };
 
 }  // namespace android

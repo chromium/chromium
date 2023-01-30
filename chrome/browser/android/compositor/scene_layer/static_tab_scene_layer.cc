@@ -4,7 +4,10 @@
 
 #include "chrome/browser/android/compositor/scene_layer/static_tab_scene_layer.h"
 
-#include "cc/layers/layer.h"
+#include <vector>
+
+#include "cc/slim/filter.h"
+#include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/StaticTabSceneLayer_jni.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
@@ -29,7 +32,7 @@ StaticTabSceneLayer::~StaticTabSceneLayer() {
 }
 
 bool StaticTabSceneLayer::ShouldShowBackground() {
-  scoped_refptr<cc::Layer> root = layer_->RootLayer();
+  scoped_refptr<cc::slim::Layer> root = layer_->RootLayer();
   return root && root->bounds() != layer_->bounds();
 }
 
@@ -75,10 +78,12 @@ void StaticTabSceneLayer::UpdateTabLayer(
   // than 1.
   if (brightness != brightness_) {
     brightness_ = brightness;
-    cc::FilterOperations filters;
-    if (brightness_ < 1.f)
-      filters.Append(cc::FilterOperation::CreateBrightnessFilter(brightness_));
-    layer_->SetFilters(filters);
+
+    std::vector<cc::slim::Filter> filters;
+    if (brightness_ < 1.f) {
+      filters.push_back(cc::slim::Filter::CreateBrightness(brightness_));
+    }
+    layer_->SetFilters(std::move(filters));
   }
 }
 

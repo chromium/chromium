@@ -15,10 +15,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class UIResourceLayer;
-}
+}  // namespace cc::slim
 
 namespace ui {
 class ResourceManager;
@@ -60,14 +60,14 @@ class DecorationTitle {
   void setBounds(const gfx::Size& bounds);
   void setOpacity(float opacity);
 
-  scoped_refptr<cc::Layer> layer();
+  scoped_refptr<cc::slim::Layer> layer();
   const gfx::Size& size() { return size_; }
 
  private:
-  scoped_refptr<cc::Layer> layer_;
-  scoped_refptr<cc::UIResourceLayer> layer_opaque_;
-  scoped_refptr<cc::UIResourceLayer> layer_fade_;
-  scoped_refptr<cc::UIResourceLayer> layer_favicon_;
+  scoped_refptr<cc::slim::Layer> layer_;
+  scoped_refptr<cc::slim::UIResourceLayer> layer_opaque_;
+  scoped_refptr<cc::slim::UIResourceLayer> layer_fade_;
+  scoped_refptr<cc::slim::UIResourceLayer> layer_favicon_;
 
   int title_resource_id_;
   int favicon_resource_id_;

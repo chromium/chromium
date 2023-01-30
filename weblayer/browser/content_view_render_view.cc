@@ -15,8 +15,8 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
-#include "cc/layers/layer.h"
-#include "cc/layers/picture_layer.h"
+#include "base/trace_event/trace_event.h"
+#include "cc/slim/layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -83,7 +83,7 @@ void ContentViewRenderView::SetCurrentWebContents(
 
   web_contents_ = web_contents;
   web_contents_layer_ = web_contents ? web_contents->GetNativeView()->GetLayer()
-                                     : scoped_refptr<cc::Layer>();
+                                     : scoped_refptr<cc::slim::Layer>();
 
   UpdateWebContentsBaseBackgroundColor();
   if (web_contents_layer_)
@@ -220,7 +220,7 @@ void ContentViewRenderView::InitCompositor() {
     return;
 
   compositor_.reset(content::Compositor::Create(this, root_window_));
-  root_container_layer_ = cc::Layer::Create();
+  root_container_layer_ = cc::slim::Layer::Create();
   root_container_layer_->SetIsDrawable(false);
   compositor_->SetRootLayer(root_container_layer_);
   UpdateBackgroundColor(base::android::AttachCurrentThread());

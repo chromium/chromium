@@ -1,6 +1,5 @@
 include_rules = [
-  "+cc/base",
+  "+cc/slim",
   "+cc/layers",
-  "+cc/output",
   "+cc/resources",
 ]

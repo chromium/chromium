@@ -8,12 +8,12 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class NinePatchLayer;
 class SolidColorLayer;
 class UIResourceLayer;
-}
+}  // namespace cc::slim
 
 namespace ui {
 class ResourceManager;
@@ -39,7 +39,7 @@ class OverlayPanelLayer : public Layer {
                       int close_icon_resource_id);
 
   void SetProperties(float dp_to_px,
-                     const scoped_refptr<cc::Layer>& content_layer,
+                     const scoped_refptr<cc::slim::Layer>& content_layer,
                      float content_offset_y,
                      float panel_x,
                      float panel_y,
@@ -70,32 +70,32 @@ class OverlayPanelLayer : public Layer {
                       float progress_bar_completion,
                       float panel_width);
 
-  scoped_refptr<cc::Layer> layer() override;
+  scoped_refptr<cc::slim::Layer> layer() override;
 
  protected:
   explicit OverlayPanelLayer(ui::ResourceManager* resource_manager);
   ~OverlayPanelLayer() override;
 
-  virtual scoped_refptr<cc::Layer> GetIconLayer();
-  void AddBarTextLayer(scoped_refptr<cc::Layer> text_layer);
+  virtual scoped_refptr<cc::slim::Layer> GetIconLayer();
+  void AddBarTextLayer(scoped_refptr<cc::slim::Layer> text_layer);
 
   raw_ptr<ui::ResourceManager> resource_manager_;
-  scoped_refptr<cc::Layer> layer_;
+  scoped_refptr<cc::slim::Layer> layer_;
 
-  scoped_refptr<cc::NinePatchLayer> panel_shadow_;
-  scoped_refptr<cc::NinePatchLayer> rounded_bar_top_;
-  scoped_refptr<cc::SolidColorLayer> bar_background_;
-  scoped_refptr<cc::UIResourceLayer> bar_text_;
-  scoped_refptr<cc::UIResourceLayer> bar_shadow_;
-  scoped_refptr<cc::UIResourceLayer> panel_icon_;
-  scoped_refptr<cc::UIResourceLayer> drag_handlebar_;
-  scoped_refptr<cc::UIResourceLayer> open_tab_icon_;
-  scoped_refptr<cc::UIResourceLayer> close_icon_;
-  scoped_refptr<cc::Layer> content_container_;
-  scoped_refptr<cc::Layer> text_container_;
-  scoped_refptr<cc::SolidColorLayer> bar_border_;
-  scoped_refptr<cc::NinePatchLayer> progress_bar_;
-  scoped_refptr<cc::NinePatchLayer> progress_bar_background_;
+  scoped_refptr<cc::slim::NinePatchLayer> panel_shadow_;
+  scoped_refptr<cc::slim::NinePatchLayer> rounded_bar_top_;
+  scoped_refptr<cc::slim::SolidColorLayer> bar_background_;
+  scoped_refptr<cc::slim::UIResourceLayer> bar_text_;
+  scoped_refptr<cc::slim::UIResourceLayer> bar_shadow_;
+  scoped_refptr<cc::slim::UIResourceLayer> panel_icon_;
+  scoped_refptr<cc::slim::UIResourceLayer> drag_handlebar_;
+  scoped_refptr<cc::slim::UIResourceLayer> open_tab_icon_;
+  scoped_refptr<cc::slim::UIResourceLayer> close_icon_;
+  scoped_refptr<cc::slim::Layer> content_container_;
+  scoped_refptr<cc::slim::Layer> text_container_;
+  scoped_refptr<cc::slim::SolidColorLayer> bar_border_;
+  scoped_refptr<cc::slim::NinePatchLayer> progress_bar_;
+  scoped_refptr<cc::slim::NinePatchLayer> progress_bar_background_;
 
   int panel_icon_resource_id_;
   int bar_text_resource_id_;

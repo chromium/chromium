@@ -5,9 +5,9 @@
 #include "ui/android/overscroll_refresh.h"
 #include "base/android/scoped_java_ref.h"
 #include "cc/input/overscroll_behavior.h"
-#include "cc/layers/layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/overscroll_refresh_handler.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 

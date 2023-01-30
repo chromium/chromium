@@ -14,13 +14,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/thumbnail/cc/thumbnail_cache.h"
 #include "content/public/browser/render_widget_host_view.h"
 
 using base::android::ScopedJavaLocalRef;
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -59,7 +58,7 @@ class TabContentManager : public ThumbnailCacheObserver {
       base::WeakPtr<ui::UIResourceProvider> ui_resource_provider);
 
   // Get the live layer from the cache.
-  scoped_refptr<cc::Layer> GetLiveLayer(int tab_id);
+  scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
 
   scoped_refptr<ThumbnailLayer> GetStaticLayer(int tab_id);
 
@@ -129,7 +128,7 @@ class TabContentManager : public ThumbnailCacheObserver {
   class TabReadbackRequest;
   // TODO(crbug/714384) check sizes and consider using base::flat_map if these
   // layer maps are small.
-  using LayerMap = std::map<int, scoped_refptr<cc::Layer>>;
+  using LayerMap = std::map<int, scoped_refptr<cc::slim::Layer>>;
   using ThumbnailLayerMap = std::map<int, scoped_refptr<ThumbnailLayer>>;
   using TabReadbackRequestMap =
       base::flat_map<int, std::unique_ptr<TabReadbackRequest>>;

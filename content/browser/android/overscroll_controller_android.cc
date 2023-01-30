@@ -245,7 +245,7 @@ void OverscrollControllerAndroid::OnOverscrolled(
 }
 
 bool OverscrollControllerAndroid::Animate(base::TimeTicks current_time,
-                                          cc::Layer* parent_layer) {
+                                          cc::slim::Layer* parent_layer) {
   DCHECK(parent_layer);
   if (!enabled_ || !glow_effect_)
     return false;

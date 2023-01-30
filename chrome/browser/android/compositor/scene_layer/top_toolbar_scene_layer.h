@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -70,7 +70,7 @@ class TopToolbarSceneLayer : public SceneLayer {
  private:
   bool should_show_background_;
   SkColor background_color_;
-  scoped_refptr<cc::Layer> content_container_;
+  scoped_refptr<cc::slim::Layer> content_container_;
   scoped_refptr<ToolbarLayer> toolbar_layer_;
 };
 

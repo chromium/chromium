@@ -11,17 +11,16 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "cc/layers/layer_collections.h"
 #include "cc/resources/ui_resource_client.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/gpu_feature_checker.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 class SolidColorLayer;
-}  // namespace cc
+}  // namespace cc::slim
 
 namespace content {
 class Compositor;
@@ -142,9 +141,9 @@ class CompositorView : public content::CompositorClient,
   std::unique_ptr<content::Compositor> compositor_;
   raw_ptr<TabContentManager> tab_content_manager_;
 
-  scoped_refptr<cc::SolidColorLayer> root_layer_;
+  scoped_refptr<cc::slim::SolidColorLayer> root_layer_;
   raw_ptr<SceneLayer> scene_layer_;
-  scoped_refptr<cc::Layer> scene_layer_layer_;
+  scoped_refptr<cc::slim::Layer> scene_layer_layer_;
 
   int current_surface_format_;
   int content_width_;

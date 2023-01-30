@@ -19,7 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
-#include "cc/layers/layer.h"
+#include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabContentManager_jni.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/tab_android.h"
@@ -151,7 +151,7 @@ void TabContentManager::SetUIResourceProvider(
   thumbnail_cache_->SetUIResourceProvider(ui_resource_provider);
 }
 
-scoped_refptr<cc::Layer> TabContentManager::GetLiveLayer(int tab_id) {
+scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
   return live_layer_list_[tab_id];
 }
 
@@ -187,12 +187,12 @@ void TabContentManager::AttachTab(JNIEnv* env,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  scoped_refptr<cc::Layer> layer = tab->GetContentLayer();
+  scoped_refptr<cc::slim::Layer> layer = tab->GetContentLayer();
   if (!layer.get()) {
     return;
   }
 
-  scoped_refptr<cc::Layer> cached_layer = live_layer_list_[tab_id];
+  scoped_refptr<cc::slim::Layer> cached_layer = live_layer_list_[tab_id];
   if (cached_layer != layer) {
     live_layer_list_[tab_id] = layer;
   }
@@ -202,14 +202,14 @@ void TabContentManager::DetachTab(JNIEnv* env,
                                   const JavaParamRef<jobject>& obj,
                                   const JavaParamRef<jobject>& jtab,
                                   jint tab_id) {
-  scoped_refptr<cc::Layer> current_layer = live_layer_list_[tab_id];
+  scoped_refptr<cc::slim::Layer> current_layer = live_layer_list_[tab_id];
   if (!current_layer.get()) {
     // Empty cached layer should not exist but it is ok if it happens.
     return;
   }
 
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
-  scoped_refptr<cc::Layer> layer = tab->GetContentLayer();
+  scoped_refptr<cc::slim::Layer> layer = tab->GetContentLayer();
   // We need to remove if we're getting a detach for our current layer or we're
   // getting a detach with NULL and we have a current layer, which means remove
   //  all layers.

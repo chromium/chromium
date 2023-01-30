@@ -5,10 +5,11 @@
 #include "chrome/browser/android/compositor/layer/toolbar_layer.h"
 
 #include "base/feature_list.h"
-#include "cc/layers/nine_patch_layer.h"
-#include "cc/layers/solid_color_layer.h"
-#include "cc/layers/ui_resource_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "cc/slim/layer.h"
+#include "cc/slim/nine_patch_layer.h"
+#include "cc/slim/solid_color_layer.h"
+#include "cc/slim/ui_resource_layer.h"
 #include "chrome/browser/android/compositor/resources/toolbar_resource.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -23,7 +24,7 @@ scoped_refptr<ToolbarLayer> ToolbarLayer::Create(
   return base::WrapRefCounted(new ToolbarLayer(resource_manager));
 }
 
-scoped_refptr<cc::Layer> ToolbarLayer::layer() {
+scoped_refptr<cc::slim::Layer> ToolbarLayer::layer() {
   return layer_;
 }
 
@@ -114,7 +115,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   layer_->SetPosition(gfx::PointF(x_offset, y_offset));
 }
 
-int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::Layer> layer) {
+int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer) {
   for (unsigned int i = 0; i < layer_->children().size(); ++i) {
     if (layer_->children()[i] == layer)
       return i;
@@ -171,13 +172,13 @@ void ToolbarLayer::SetOpacity(float opacity) {
 
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
     : resource_manager_(resource_manager),
-      layer_(cc::Layer::Create()),
-      toolbar_background_layer_(cc::SolidColorLayer::Create()),
-      url_bar_background_layer_(cc::NinePatchLayer::Create()),
-      bitmap_layer_(cc::UIResourceLayer::Create()),
-      progress_bar_layer_(cc::SolidColorLayer::Create()),
-      progress_bar_background_layer_(cc::SolidColorLayer::Create()),
-      debug_layer_(cc::SolidColorLayer::Create()) {
+      layer_(cc::slim::Layer::Create()),
+      toolbar_background_layer_(cc::slim::SolidColorLayer::Create()),
+      url_bar_background_layer_(cc::slim::NinePatchLayer::Create()),
+      bitmap_layer_(cc::slim::UIResourceLayer::Create()),
+      progress_bar_layer_(cc::slim::SolidColorLayer::Create()),
+      progress_bar_background_layer_(cc::slim::SolidColorLayer::Create()),
+      debug_layer_(cc::slim::SolidColorLayer::Create()) {
   toolbar_background_layer_->SetIsDrawable(true);
   layer_->AddChild(toolbar_background_layer_);
 

@@ -24,7 +24,7 @@
 class GURL;
 class Profile;
 
-namespace cc {
+namespace cc::slim {
 class Layer;
 }
 
@@ -75,8 +75,8 @@ class TabAndroid : public base::SupportsUserData {
   // Return the WebContents, if any, currently owned by this TabAndroid.
   content::WebContents* web_contents() const { return web_contents_.get(); }
 
-  // Return the cc::Layer that represents the content for this TabAndroid.
-  scoped_refptr<cc::Layer> GetContentLayer() const;
+  // Return the cc::slim::Layer that represents the content for this TabAndroid.
+  scoped_refptr<cc::slim::Layer> GetContentLayer() const;
 
   // Return specific id information regarding this TabAndroid.
   const SessionID& window_id() const { return session_window_id_; }
@@ -168,7 +168,7 @@ class TabAndroid : public base::SupportsUserData {
   // Identifier of the window the tab is in.
   SessionID session_window_id_;
 
-  scoped_refptr<cc::Layer> content_layer_;
+  scoped_refptr<cc::slim::Layer> content_layer_;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<android::TabWebContentsDelegateAndroid>
