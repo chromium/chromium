@@ -20,7 +20,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -34,6 +33,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "chrome/updater/policy/service.h"
 #include "components/update_client/network.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -69,8 +69,9 @@ struct LibcurlFunctionPtrs
     : public base::RefCountedThreadSafe<LibcurlFunctionPtrs> {
   static scoped_refptr<LibcurlFunctionPtrs> Create(
       scoped_refptr<RefCountableNativeLibrary> library) {
-    if (!library)
+    if (!library) {
       return nullptr;
+    }
 
     scoped_refptr<LibcurlFunctionPtrs> curl_functions =
         base::WrapRefCounted(new LibcurlFunctionPtrs);
@@ -102,8 +103,9 @@ struct LibcurlFunctionPtrs
     if (curl_functions->easy_init && curl_functions->easy_setopt &&
         curl_functions->slist_append && curl_functions->slist_free_all &&
         curl_functions->easy_perform && curl_functions->easy_cleanup &&
-        curl_functions->easy_getinfo && curl_functions->easy_reset)
+        curl_functions->easy_getinfo && curl_functions->easy_reset) {
       return curl_functions;
+    }
     return nullptr;
   }
 
@@ -138,7 +140,7 @@ struct LibcurlFunctionPtrs
   ~LibcurlFunctionPtrs() = default;
 };
 
-class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
+class LibcurlNetworkFetcherImpl {
  public:
   using ResponseStartedCallback =
       update_client::NetworkFetcher::ResponseStartedCallback;
@@ -148,36 +150,19 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   using DownloadToFileCompleteCallback =
       update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-  LibcurlNetworkFetcher() = delete;
-  LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
-  LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
-  ~LibcurlNetworkFetcher() override;
+  LibcurlNetworkFetcherImpl() = delete;
+  LibcurlNetworkFetcherImpl(const LibcurlNetworkFetcherImpl&) = delete;
+  LibcurlNetworkFetcherImpl& operator=(const LibcurlNetworkFetcherImpl&) =
+      delete;
+  ~LibcurlNetworkFetcherImpl();
 
-  LibcurlNetworkFetcher(CURL* curl,
-                        scoped_refptr<RefCountableNativeLibrary> library,
-                        scoped_refptr<LibcurlFunctionPtrs> curl_functions);
+  LibcurlNetworkFetcherImpl(
+      CURL* curl,
+      scoped_refptr<RefCountableNativeLibrary> library,
+      scoped_refptr<LibcurlFunctionPtrs> curl_functions,
+      scoped_refptr<base::SequencedTaskRunner> callback_sequence_);
 
-  // Overrides for update_client::NetworkFetcher
   void PostRequest(
-      const GURL& url,
-      const std::string& post_data,
-      const std::string& content_type,
-      const base::flat_map<std::string, std::string>& post_additional_headers,
-      ResponseStartedCallback response_started_callback,
-      ProgressCallback progress_callback,
-      PostRequestCompleteCallback post_request_complete_callback) override;
-
-  void DownloadToFile(const GURL& url,
-                      const base::FilePath& file_path,
-                      ResponseStartedCallback response_started_callback,
-                      ProgressCallback progress_callback,
-                      DownloadToFileCompleteCallback
-                          download_to_file_complete_callback) override;
-
- private:
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  void PostRequestOnIOSequence(
       const GURL& url,
       const std::string& post_data,
       const std::string& content_type,
@@ -186,12 +171,15 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
       ProgressCallback progress_callback,
       PostRequestCompleteCallback post_request_complete_callback);
 
-  void DownloadToFileOnIOSequence(
+  void DownloadToFile(
       const GURL& url,
       const base::FilePath& file_path,
       ResponseStartedCallback response_started_callback,
       ProgressCallback progress_callback,
       DownloadToFileCompleteCallback download_to_file_complete_callback);
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Static callbacks for libcurl.
   static size_t CurlWriteStringCallback(void* data,
@@ -222,39 +210,38 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
     return response_headers.contains(lower) ? response_headers.at(lower) : "";
   }
 
-  // Sequence to perform blocking IO.
-  scoped_refptr<base::SequencedTaskRunner> io_sequence_ =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-  // Sequence to post callbacks to.
-  scoped_refptr<base::SequencedTaskRunner> callback_sequence_ =
-      base::SequencedTaskRunner::GetCurrentDefault();
-
   base::raw_ptr<CURL> curl_;
   scoped_refptr<RefCountableNativeLibrary> library_;
   scoped_refptr<LibcurlFunctionPtrs> curl_functions_;
   std::array<char, CURL_ERROR_SIZE> curl_error_buf_;
 
+  // Sequence to post callbacks to.
+  scoped_refptr<base::SequencedTaskRunner> callback_sequence_;
+
   ResponseStartedCallback response_started_callback_;
   ProgressCallback progress_callback_;
 
-  base::WeakPtrFactory<LibcurlNetworkFetcher> weak_factory_{this};
+  base::WeakPtrFactory<LibcurlNetworkFetcherImpl> weak_factory_{this};
 };
 
-LibcurlNetworkFetcher::LibcurlNetworkFetcher(
+LibcurlNetworkFetcherImpl::LibcurlNetworkFetcherImpl(
     CURL* curl,
     scoped_refptr<RefCountableNativeLibrary> library,
-    scoped_refptr<LibcurlFunctionPtrs> curl_functions)
+    scoped_refptr<LibcurlFunctionPtrs> curl_functions,
+    scoped_refptr<base::SequencedTaskRunner> callback_sequence)
     : curl_(curl),
       library_(library),
-      curl_functions_(std::move(curl_functions)) {
+      curl_functions_(std::move(curl_functions)),
+      callback_sequence_(callback_sequence) {
   CHECK(curl_functions_);
 }
 
-LibcurlNetworkFetcher::~LibcurlNetworkFetcher() {
+LibcurlNetworkFetcherImpl::~LibcurlNetworkFetcherImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   curl_functions_->easy_cleanup(curl_);
 }
 
-void LibcurlNetworkFetcher::PostRequest(
+void LibcurlNetworkFetcherImpl::PostRequest(
     const GURL& url,
     const std::string& post_data,
     const std::string& content_type,
@@ -265,23 +252,6 @@ void LibcurlNetworkFetcher::PostRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;
 
-  io_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LibcurlNetworkFetcher::PostRequestOnIOSequence,
-                                weak_factory_.GetWeakPtr(), url, post_data,
-                                content_type, post_additional_headers,
-                                std::move(response_started_callback),
-                                std::move(progress_callback),
-                                std::move(post_request_complete_callback)));
-}
-
-void LibcurlNetworkFetcher::PostRequestOnIOSequence(
-    const GURL& url,
-    const std::string& post_data,
-    const std::string& content_type,
-    const base::flat_map<std::string, std::string>& post_additional_headers,
-    ResponseStartedCallback response_started_callback,
-    ProgressCallback progress_callback,
-    PostRequestCompleteCallback post_request_complete_callback) {
   curl_functions_->easy_reset(curl_);
 
   base::raw_ptr<struct curl_slist> headers = nullptr;
@@ -295,7 +265,8 @@ void LibcurlNetworkFetcher::PostRequestOnIOSequence(
   base::flat_map<std::string, std::string> response_headers;
   std::unique_ptr<std::string> response_body = std::make_unique<std::string>();
 
-  base::WeakPtr<LibcurlNetworkFetcher> weak_ptr = weak_factory_.GetWeakPtr();
+  base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
+      weak_factory_.GetWeakPtr();
   if (curl_functions_->easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_HTTPPOST, 1L) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_HTTPHEADER, headers.get()) ||
@@ -305,18 +276,18 @@ void LibcurlNetworkFetcher::PostRequestOnIOSequence(
                                    post_data.c_str()) ||
       curl_functions_->easy_setopt(
           curl_, CURLOPT_HEADERFUNCTION,
-          &LibcurlNetworkFetcher::CurlHeaderCallback) ||
+          &LibcurlNetworkFetcherImpl::CurlHeaderCallback) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_HEADERDATA,
                                    &response_headers) ||
       curl_functions_->easy_setopt(
           curl_, CURLOPT_WRITEFUNCTION,
-          &LibcurlNetworkFetcher::CurlWriteStringCallback) ||
+          &LibcurlNetworkFetcherImpl::CurlWriteStringCallback) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_WRITEDATA,
                                    response_body.get()) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
       curl_functions_->easy_setopt(
           curl_, CURLOPT_XFERINFOFUNCTION,
-          &LibcurlNetworkFetcher::CurlTransferCallback) ||
+          &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_ERRORBUFFER,
                                    curl_error_buf_.data())) {
@@ -357,7 +328,7 @@ void LibcurlNetworkFetcher::PostRequestOnIOSequence(
   curl_functions_->slist_free_all(headers);
 }
 
-void LibcurlNetworkFetcher::DownloadToFile(
+void LibcurlNetworkFetcherImpl::DownloadToFile(
     const GURL& url,
     const base::FilePath& file_path,
     ResponseStartedCallback response_started_callback,
@@ -366,26 +337,11 @@ void LibcurlNetworkFetcher::DownloadToFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;
 
-  io_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&LibcurlNetworkFetcher::DownloadToFileOnIOSequence,
-                     weak_factory_.GetWeakPtr(), url, file_path,
-                     std::move(response_started_callback),
-                     std::move(progress_callback),
-                     std::move(download_to_file_complete_callback)));
-}
-
-void LibcurlNetworkFetcher::DownloadToFileOnIOSequence(
-    const GURL& url,
-    const base::FilePath& file_path,
-    ResponseStartedCallback response_started_callback,
-    ProgressCallback progress_callback,
-    DownloadToFileCompleteCallback download_to_file_complete_callback) {
   base::File file;
   file.Initialize(file_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                  base::File::Flags::FLAG_WRITE);
   if (!file.IsValid()) {
-    VLOG(1) << "LibcurlNetworkFetcher cannot open file for download.";
+    VLOG(1) << "LibcurlNetworkFetcherImpl cannot open file for download.";
     callback_sequence_->PostTask(
         FROM_HERE, base::BindOnce(std::move(download_to_file_complete_callback),
                                   CURLE_WRITE_ERROR, 0));
@@ -394,17 +350,18 @@ void LibcurlNetworkFetcher::DownloadToFileOnIOSequence(
 
   curl_functions_->easy_reset(curl_);
 
-  base::WeakPtr<LibcurlNetworkFetcher> weak_ptr = weak_factory_.GetWeakPtr();
+  base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
+      weak_factory_.GetWeakPtr();
   if (curl_functions_->easy_setopt(curl_, CURLOPT_URL, url.spec().c_str()) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_HTTPGET, 1L) ||
       curl_functions_->easy_setopt(
           curl_, CURLOPT_WRITEFUNCTION,
-          &LibcurlNetworkFetcher::CurlWriteFileCallback) ||
+          &LibcurlNetworkFetcherImpl::CurlWriteFileCallback) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_WRITEDATA, &file) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_NOPROGRESS, 0) ||
       curl_functions_->easy_setopt(
           curl_, CURLOPT_XFERINFOFUNCTION,
-          &LibcurlNetworkFetcher::CurlTransferCallback) ||
+          &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_XFERINFODATA, &weak_ptr) ||
       curl_functions_->easy_setopt(curl_, CURLOPT_ERRORBUFFER,
                                    curl_error_buf_.data())) {
@@ -434,8 +391,8 @@ void LibcurlNetworkFetcher::DownloadToFileOnIOSequence(
                                 result, downloaded_bytes));
 }
 
-void LibcurlNetworkFetcher::OnTransferInfo(curl_off_t total,
-                                           curl_off_t current) {
+void LibcurlNetworkFetcherImpl::OnTransferInfo(curl_off_t total,
+                                               curl_off_t current) {
   if (response_started_callback_ && total) {
     // Query for an HTTP response code. If one has not been sent yet, the
     // transfer has not started.
@@ -457,10 +414,10 @@ void LibcurlNetworkFetcher::OnTransferInfo(curl_off_t total,
   }
 }
 
-size_t LibcurlNetworkFetcher::CurlWriteStringCallback(void* data,
-                                                      size_t member_size,
-                                                      size_t num_members,
-                                                      void* userp) {
+size_t LibcurlNetworkFetcherImpl::CurlWriteStringCallback(void* data,
+                                                          size_t member_size,
+                                                          size_t num_members,
+                                                          void* userp) {
   base::CheckedNumeric<size_t> write_size =
       base::CheckedNumeric<size_t>(member_size) *
       base::CheckedNumeric<size_t>(num_members);
@@ -469,10 +426,10 @@ size_t LibcurlNetworkFetcher::CurlWriteStringCallback(void* data,
   return write_size.ValueOrDefault(0);
 }
 
-size_t LibcurlNetworkFetcher::CurlHeaderCallback(char* data,
-                                                 size_t member_size,
-                                                 size_t num_members,
-                                                 void* userp) {
+size_t LibcurlNetworkFetcherImpl::CurlHeaderCallback(char* data,
+                                                     size_t member_size,
+                                                     size_t num_members,
+                                                     void* userp) {
   base::raw_ptr<base::flat_map<std::string, std::string>> headers =
       static_cast<base::flat_map<std::string, std::string>*>(userp);
 
@@ -483,8 +440,9 @@ size_t LibcurlNetworkFetcher::CurlHeaderCallback(char* data,
   std::string line(data, buf_size.ValueOrDefault(0));
   // Reject any headers that aren't compliant with RFC 5987.
   // Returning 0 will abort the transfer.
-  if (!base::IsStringASCII(line))
+  if (!base::IsStringASCII(line)) {
     return 0;
+  }
 
   size_t delim_pos = line.find(":");
   if (delim_pos != std::string::npos) {
@@ -494,16 +452,17 @@ size_t LibcurlNetworkFetcher::CurlHeaderCallback(char* data,
     base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
 
     // HTTP headers are case insensitive. For simplicity, always use lower-case.
-    if (!key.empty() && !value.empty())
+    if (!key.empty() && !value.empty()) {
       headers->insert_or_assign(base::ToLowerASCII(key), value);
+    }
   }
   return buf_size.ValueOrDefault(0);
 }
 
-size_t LibcurlNetworkFetcher::CurlWriteFileCallback(void* data,
-                                                    size_t member_size,
-                                                    size_t num_members,
-                                                    void* userp) {
+size_t LibcurlNetworkFetcherImpl::CurlWriteFileCallback(void* data,
+                                                        size_t member_size,
+                                                        size_t num_members,
+                                                        void* userp) {
   base::CheckedNumeric<size_t> write_size =
       base::CheckedNumeric<size_t>(member_size) *
       base::CheckedNumeric<size_t>(num_members);
@@ -515,24 +474,106 @@ size_t LibcurlNetworkFetcher::CurlWriteFileCallback(void* data,
   return bytes_written > 0 ? bytes_written : 0;
 }
 
-int LibcurlNetworkFetcher::CurlTransferCallback(void* userp,
-                                                curl_off_t dltotal,
-                                                curl_off_t dlnow,
-                                                curl_off_t ultotal,
-                                                curl_off_t ulnow) {
-  if (!dltotal && !dlnow && !ultotal && !ulnow)
+int LibcurlNetworkFetcherImpl::CurlTransferCallback(void* userp,
+                                                    curl_off_t dltotal,
+                                                    curl_off_t dlnow,
+                                                    curl_off_t ultotal,
+                                                    curl_off_t ulnow) {
+  if (!dltotal && !dlnow && !ultotal && !ulnow) {
     return 0;
+  }
 
-  base::WeakPtr<LibcurlNetworkFetcher> wrapper =
-      *static_cast<base::WeakPtr<LibcurlNetworkFetcher>*>(userp);
+  base::WeakPtr<LibcurlNetworkFetcherImpl> wrapper =
+      *static_cast<base::WeakPtr<LibcurlNetworkFetcherImpl>*>(userp);
   if (wrapper) {
-    if (dltotal || dlnow)
+    if (dltotal || dlnow) {
       wrapper->OnTransferInfo(dltotal, dlnow);
-    else
+    } else {
       wrapper->OnTransferInfo(ultotal, ulnow);
+    }
   }
 
   return 0;
+}
+
+// LibcurlNetworkFetcher wraps a |LibcurlNetworkFetcherImpl| in a
+// |base::SequenceBound|. This allows the wrapped fetcher to run solely in a
+// dedicated io sequence.
+class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
+ public:
+  using ResponseStartedCallback =
+      update_client::NetworkFetcher::ResponseStartedCallback;
+  using ProgressCallback = update_client::NetworkFetcher::ProgressCallback;
+  using PostRequestCompleteCallback =
+      update_client::NetworkFetcher::PostRequestCompleteCallback;
+  using DownloadToFileCompleteCallback =
+      update_client::NetworkFetcher::DownloadToFileCompleteCallback;
+
+  LibcurlNetworkFetcher() = delete;
+  LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
+  LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
+  ~LibcurlNetworkFetcher() override = default;
+
+  LibcurlNetworkFetcher(CURL* curl,
+                        scoped_refptr<RefCountableNativeLibrary> library,
+                        scoped_refptr<LibcurlFunctionPtrs> curl_functions);
+
+  // Overrides for update_client::NetworkFetcher
+  void PostRequest(
+      const GURL& url,
+      const std::string& post_data,
+      const std::string& content_type,
+      const base::flat_map<std::string, std::string>& post_additional_headers,
+      ResponseStartedCallback response_started_callback,
+      ProgressCallback progress_callback,
+      PostRequestCompleteCallback post_request_complete_callback) override;
+
+  void DownloadToFile(const GURL& url,
+                      const base::FilePath& file_path,
+                      ResponseStartedCallback response_started_callback,
+                      ProgressCallback progress_callback,
+                      DownloadToFileCompleteCallback
+                          download_to_file_complete_callback) override;
+
+ private:
+  base::SequenceBound<LibcurlNetworkFetcherImpl> impl_;
+};
+
+LibcurlNetworkFetcher::LibcurlNetworkFetcher(
+    CURL* curl,
+    scoped_refptr<RefCountableNativeLibrary> library,
+    scoped_refptr<LibcurlFunctionPtrs> curl_functions)
+    : impl_(base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            curl,
+            library,
+            curl_functions,
+            base::SequencedTaskRunner::GetCurrentDefault()) {}
+
+void LibcurlNetworkFetcher::PostRequest(
+    const GURL& url,
+    const std::string& post_data,
+    const std::string& content_type,
+    const base::flat_map<std::string, std::string>& post_additional_headers,
+    ResponseStartedCallback response_started_callback,
+    ProgressCallback progress_callback,
+    PostRequestCompleteCallback post_request_complete_callback) {
+  impl_.AsyncCall(&LibcurlNetworkFetcherImpl::PostRequest)
+      .WithArgs(url, post_data, content_type, post_additional_headers,
+                std::move(response_started_callback),
+                std::move(progress_callback),
+                std::move(post_request_complete_callback));
+}
+
+void LibcurlNetworkFetcher::DownloadToFile(
+    const GURL& url,
+    const base::FilePath& file_path,
+    ResponseStartedCallback response_started_callback,
+    ProgressCallback progress_callback,
+    DownloadToFileCompleteCallback download_to_file_complete_callback) {
+  impl_.AsyncCall(&LibcurlNetworkFetcherImpl::DownloadToFile)
+      .WithArgs(url, file_path, std::move(response_started_callback),
+                std::move(progress_callback),
+                std::move(download_to_file_complete_callback));
 }
 
 }  // namespace
@@ -554,8 +595,9 @@ NetworkFetcherFactory::Impl::Impl() {
   base::NativeLibrary native_library;
   for (const char* name : kCurlSOFilenames) {
     native_library = base::LoadNativeLibrary(base::FilePath(name), nullptr);
-    if (native_library)
+    if (native_library) {
       break;
+    }
   }
   if (!native_library) {
     VLOG(1) << "Could not dynamically load libcurl.";
@@ -578,8 +620,9 @@ NetworkFetcherFactory::Impl::Impl() {
 
 std::unique_ptr<update_client::NetworkFetcher>
 NetworkFetcherFactory::Impl::Create() {
-  if (!library_ || !functions_)
+  if (!library_ || !functions_) {
     return nullptr;
+  }
 
   raw_ptr<CURL> curl = functions_->easy_init();
   if (!curl) {
