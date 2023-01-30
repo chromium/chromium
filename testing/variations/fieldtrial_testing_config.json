@@ -4319,6 +4319,21 @@
             ]
         }
     ],
+    "DiscoFeedEndpoint": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DiscoFeedEndpoint"
+                    ]
+                }
+            ]
+        }
+    ],
     "DiscountConsentV2": [
         {
             "platforms": [
