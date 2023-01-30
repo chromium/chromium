@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/containers/contains.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -85,12 +85,13 @@ class BrowserLauncherTest : public InProcessBrowserTest {
   }
 
   void NewWindowSync(bool incognito, bool should_trigger_session_restore) {
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> new_window_future;
     browser_service()->NewWindow(
         incognito, should_trigger_session_restore,
         display::Screen::GetScreen()->GetDisplayForNewWindows().id(),
-        run_loop.QuitClosure());
-    run_loop.Run();
+        new_window_future.GetCallback());
+    ASSERT_TRUE(new_window_future.Wait())
+        << "NewWindow did not trigger the callback.";
   }
 
   void DisableWelcomePages(const std::vector<Profile*>& profiles) {
@@ -281,10 +282,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreWithTwoProfiles) {
   EXPECT_TRUE(base::Contains(last_opened_profiles, profile2));
 
   // Trigger Lacros full restore.
-  base::RunLoop run_loop;
-  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
+  base::test::TestFuture<void> restore_waiter_future;
+  testing::SessionsRestoredWaiter restore_waiter(
+      restore_waiter_future.GetCallback(), 2);
   browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
-  run_loop.Run();
+  ASSERT_TRUE(restore_waiter_future.Wait())
+      << "restore_waiter did not trigger the callback.";
 
   // The startup URLs are ignored, and instead the last open sessions are
   // restored.
@@ -375,10 +378,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest,
 
   // Trigger Lacros full restore.
   EXPECT_FALSE(profile->restored_last_session());
-  base::RunLoop run_loop;
-  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  base::test::TestFuture<void> restore_waiter_future;
+  testing::SessionsRestoredWaiter restore_waiter(
+      restore_waiter_future.GetCallback(), 1);
   browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
-  run_loop.Run();
+  ASSERT_TRUE(restore_waiter_future.Wait())
+      << "restore_waiter did not trigger the callback.";
 
   // The last session should be logged as restored.
   EXPECT_TRUE(profile->restored_last_session());
@@ -452,10 +457,12 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(0u, BrowserList::GetInstance()->size());
 
   // Trigger a new window with session restore.
-  base::RunLoop run_loop;
-  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  base::test::TestFuture<void> restore_waiter_future;
+  testing::SessionsRestoredWaiter restore_waiter(
+      restore_waiter_future.GetCallback(), 1);
   NewWindowSync(/*incognito=*/false, /*should_trigger_session_restore=*/true);
-  run_loop.Run();
+  ASSERT_TRUE(restore_waiter_future.Wait())
+      << "restore_waiter did not trigger the callback.";
 
   // The browser window should be restored but app browser should not.
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile));
@@ -557,10 +564,12 @@ IN_PROC_BROWSER_TEST_F(BrowserLauncherTest, FullRestoreSkipCrashRestore) {
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
 
   // Trigger Lacros full restore and skip crash restore prompts.
-  base::RunLoop run_loop;
-  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  base::test::TestFuture<void> restore_waiter_future;
+  testing::SessionsRestoredWaiter restore_waiter(
+      restore_waiter_future.GetCallback(), 1);
   browser_service()->OpenForFullRestore(/*skip_crash_restore=*/true);
-  run_loop.Run();
+  ASSERT_TRUE(restore_waiter_future.Wait())
+      << "restore_waiter did not trigger the callback.";
 
   // The browser should be restored (ignoring startup preference).
   Browser* new_browser = nullptr;
