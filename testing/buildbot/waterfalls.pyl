@@ -5210,7 +5210,7 @@
       },
       'WebKit Linux MSAN': {
         'mixins': [
-          'linux-bionic',
+          'linux-focal',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',

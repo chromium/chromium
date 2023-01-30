@@ -312,6 +312,7 @@ try_.builder(
     ],
     goma_backend = None,
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    os = os.LINUX_FOCAL,
 )
 
 try_.builder(
