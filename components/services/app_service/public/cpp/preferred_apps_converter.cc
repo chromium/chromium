@@ -3,58 +3,63 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/logging.h"
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 constexpr int kVersionInitial = 0;
 constexpr int kVersionSupportsSharing = 1;
 
-base::Value ConvertConditionValueToValue(
+base::Value::Dict ConvertConditionValueToDict(
     const apps::ConditionValuePtr& condition_value) {
-  base::Value condition_value_dict(base::Value::Type::DICT);
-  condition_value_dict.SetStringKey(apps::kValueKey, condition_value->value);
-  condition_value_dict.SetIntKey(apps::kMatchTypeKey,
-                                 static_cast<int>(condition_value->match_type));
+  base::Value::Dict condition_value_dict;
+  condition_value_dict.Set(apps::kValueKey, condition_value->value);
+  condition_value_dict.Set(apps::kMatchTypeKey,
+                           static_cast<int>(condition_value->match_type));
   return condition_value_dict;
 }
 
-base::Value ConvertConditionToValue(const apps::ConditionPtr& condition) {
-  base::Value condition_dict(base::Value::Type::DICT);
-  condition_dict.SetIntKey(apps::kConditionTypeKey,
-                           static_cast<int>(condition->condition_type));
+base::Value::Dict ConvertConditionToDict(const apps::ConditionPtr& condition) {
+  base::Value::Dict condition_dict;
+  condition_dict.Set(apps::kConditionTypeKey,
+                     static_cast<int>(condition->condition_type));
   base::Value condition_values_list(base::Value::Type::LIST);
   for (auto& condition_value : condition->condition_values) {
-    condition_values_list.Append(ConvertConditionValueToValue(condition_value));
+    condition_values_list.Append(
+        base::Value(ConvertConditionValueToDict(condition_value)));
   }
-  condition_dict.SetKey(apps::kConditionValuesKey,
-                        std::move(condition_values_list));
+  condition_dict.Set(apps::kConditionValuesKey,
+                     std::move(condition_values_list));
   return condition_dict;
 }
 
-base::Value ConvertIntentFilterToValue(
+base::Value::List ConvertIntentFilterToList(
     const apps::IntentFilterPtr& intent_filter) {
-  base::Value intent_filter_value(base::Value::Type::LIST);
+  base::Value::List intent_filter_list;
   for (auto& condition : intent_filter->conditions) {
-    intent_filter_value.Append(ConvertConditionToValue(condition));
+    intent_filter_list.Append(base::Value(ConvertConditionToDict(condition)));
   }
-  return intent_filter_value;
+  return intent_filter_list;
 }
 
-apps::ConditionValuePtr ParseValueToConditionValue(const base::Value& value) {
-  auto* value_string = value.FindStringKey(apps::kValueKey);
+apps::ConditionValuePtr ParseDictToConditionValue(
+    const base::Value::Dict& dict) {
+  const std::string* value_string = dict.FindString(apps::kValueKey);
   if (!value_string) {
     DVLOG(0) << "Fail to parse condition value. Cannot find \""
              << apps::kValueKey << "\" key with string value.";
     return nullptr;
   }
-  auto match_type = value.FindIntKey(apps::kMatchTypeKey);
-  if (!match_type.has_value()) {
+  const absl::optional<int> match_type = dict.FindInt(apps::kMatchTypeKey);
+  if (!match_type) {
     DVLOG(0) << "Fail to parse condition value. Cannot find \""
              << apps::kMatchTypeKey << "\" key with int value.";
     return nullptr;
@@ -71,23 +76,25 @@ apps::ConditionValuePtr ParseValueToConditionValue(const base::Value& value) {
                                                 pattern_match_type);
 }
 
-apps::ConditionPtr ParseValueToCondition(const base::Value& value) {
-  auto condition_type = value.FindIntKey(apps::kConditionTypeKey);
-  if (!condition_type.has_value()) {
+apps::ConditionPtr ParseDictToCondition(const base::Value::Dict& dict) {
+  const absl::optional<int> condition_type =
+      dict.FindInt(apps::kConditionTypeKey);
+  if (!condition_type) {
     DVLOG(0) << "Fail to parse condition. Cannot find \""
              << apps::kConditionTypeKey << "\" key with int value.";
     return nullptr;
   }
 
   apps::ConditionValues condition_values;
-  auto* values = value.FindKey(apps::kConditionValuesKey);
-  if (!values || !values->is_list()) {
+  const base::Value::List* values = dict.FindList(apps::kConditionValuesKey);
+  if (!values) {
     DVLOG(0) << "Fail to parse condition. Cannot find \""
              << apps::kConditionValuesKey << "\" key with list value.";
     return nullptr;
   }
-  for (auto& condition_value : values->GetList()) {
-    auto parsed_condition_value = ParseValueToConditionValue(condition_value);
+  for (const base::Value& condition_value : *values) {
+    auto parsed_condition_value =
+        ParseDictToConditionValue(condition_value.GetDict());
     if (!parsed_condition_value) {
       DVLOG(0) << "Fail to parse condition. Cannot parse condition values";
       return nullptr;
@@ -106,8 +113,8 @@ apps::IntentFilterPtr ParseValueToIntentFilter(const base::Value* value) {
     return nullptr;
   }
   auto intent_filter = std::make_unique<apps::IntentFilter>();
-  for (auto& condition : value->GetList()) {
-    auto parsed_condition = ParseValueToCondition(condition);
+  for (const base::Value& condition : value->GetList()) {
+    auto parsed_condition = ParseDictToCondition(condition.GetDict());
     if (!parsed_condition) {
       DVLOG(0) << "Fail to parse intent filter. Cannot parse conditions.";
       return nullptr;
@@ -131,21 +138,19 @@ const char kPreferredAppsKey[] = "preferred_apps";
 const char kVersionKey[] = "version";
 
 base::Value ConvertPreferredAppsToValue(const PreferredApps& preferred_apps) {
-  base::Value preferred_apps_value(base::Value::Type::DICT);
+  base::Value::Dict preferred_apps_dict;
   int version = kVersionSupportsSharing;
-  preferred_apps_value.SetIntKey(kVersionKey, version);
-  base::Value preferred_apps_list(base::Value::Type::LIST);
+  preferred_apps_dict.Set(kVersionKey, version);
+  base::Value::List preferred_apps_list;
   for (auto& preferred_app : preferred_apps) {
-    base::Value preferred_app_dict(base::Value::Type::DICT);
-    preferred_app_dict.SetKey(
-        kIntentFilterKey,
-        ConvertIntentFilterToValue(preferred_app->intent_filter));
-    preferred_app_dict.SetStringKey(kAppIdKey, preferred_app->app_id);
+    base::Value::Dict preferred_app_dict;
+    preferred_app_dict.Set(kIntentFilterKey, ConvertIntentFilterToList(
+                                                 preferred_app->intent_filter));
+    preferred_app_dict.Set(kAppIdKey, preferred_app->app_id);
     preferred_apps_list.Append(std::move(preferred_app_dict));
   }
-  preferred_apps_value.SetKey(kPreferredAppsKey,
-                              std::move(preferred_apps_list));
-  return preferred_apps_value;
+  preferred_apps_dict.Set(kPreferredAppsKey, std::move(preferred_apps_list));
+  return base::Value(std::move(preferred_apps_dict));
 }
 
 PreferredApps ParseValueToPreferredApps(
@@ -163,15 +168,16 @@ PreferredApps ParseValueToPreferredApps(
   }
 
   PreferredApps preferred_apps;
-  for (auto& entry : preferred_apps_list->GetList()) {
-    auto* app_id = entry.FindStringKey(kAppIdKey);
+  for (const base::Value& entry_val : preferred_apps_list->GetList()) {
+    const base::Value::Dict& entry = entry_val.GetDict();
+    const std::string* app_id = entry.FindString(kAppIdKey);
     if (!app_id) {
       DVLOG(0) << "Fail to parse condition value. Cannot find \""
                << apps::kAppIdKey << "\" key with string value.";
       return PreferredApps();
     }
     auto parsed_intent_filter =
-        ParseValueToIntentFilter(entry.FindKey(kIntentFilterKey));
+        ParseValueToIntentFilter(entry.Find(kIntentFilterKey));
     if (!parsed_intent_filter) {
       DVLOG(0) << "Fail to parse condition value. Cannot parse intent filter.";
       return PreferredApps();

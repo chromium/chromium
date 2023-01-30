@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/preferred_apps_converter.h"
 
 #include "base/json/json_reader.h"
+#include "base/values.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -32,30 +33,34 @@ TEST_F(PreferredAppsConverterTest, ConvertSimpleEntry) {
       apps::ConvertPreferredAppsToValue(preferred_apps.GetReference());
 
   auto* converted_preferred_apps =
-      converted_value.FindKey(apps::kPreferredAppsKey);
+      converted_value.GetDict().Find(apps::kPreferredAppsKey);
   // Check that each entry is correct.
   ASSERT_EQ(1u, converted_preferred_apps->GetList().size());
-  auto& entry = converted_preferred_apps->GetList()[0];
-  EXPECT_EQ(kAppId1, *entry.FindStringKey(apps::kAppIdKey));
+  const base::Value& entry_val = converted_preferred_apps->GetList()[0];
+  const base::Value::Dict& entry = entry_val.GetDict();
+  EXPECT_EQ(kAppId1, *entry.FindString(apps::kAppIdKey));
 
-  auto* converted_intent_filter = entry.FindKey(apps::kIntentFilterKey);
-  ASSERT_EQ(intent_filter->conditions.size(),
-            converted_intent_filter->GetList().size());
+  const base::Value::List* converted_intent_filter =
+      entry.FindList(apps::kIntentFilterKey);
+  ASSERT_EQ(intent_filter->conditions.size(), converted_intent_filter->size());
 
   for (size_t i = 0; i < intent_filter->conditions.size(); i++) {
     auto& condition = intent_filter->conditions[i];
-    auto& converted_condition = converted_intent_filter->GetList()[i];
+    const base::Value::Dict& converted_condition =
+        (*converted_intent_filter)[i].GetDict();
     auto& condition_values = condition->condition_values;
-    const auto& converted_condition_values =
-        converted_condition.FindKey(apps::kConditionValuesKey)->GetList();
+    const base::Value::List* converted_condition_values =
+        converted_condition.FindList(apps::kConditionValuesKey);
 
     EXPECT_EQ(static_cast<int>(condition->condition_type),
-              converted_condition.FindIntKey(apps::kConditionTypeKey));
-    ASSERT_EQ(1u, converted_condition_values.size());
+              converted_condition.FindInt(apps::kConditionTypeKey));
+    ASSERT_EQ(1u, converted_condition_values->size());
     EXPECT_EQ(condition_values[0]->value,
-              *converted_condition_values[0].FindStringKey(apps::kValueKey));
+              *(*converted_condition_values)[0].GetDict().FindString(
+                  apps::kValueKey));
     EXPECT_EQ(static_cast<int>(condition_values[0]->match_type),
-              converted_condition_values[0].FindIntKey(apps::kMatchTypeKey));
+              (*converted_condition_values)[0].GetDict().FindInt(
+                  apps::kMatchTypeKey));
   }
 
   preferred_apps.Init();
