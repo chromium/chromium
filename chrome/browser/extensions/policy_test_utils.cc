@@ -69,14 +69,15 @@ void SetExtensionInstallForcelistPolicy(
   // Extensions that are force-installed come from an update URL, which defaults
   // to the webstore. Use a mock URL for test with an update manifest that
   // includes the crx file of the test extension.
-  base::Value forcelist(base::Value::Type::LIST);
+  base::Value::List forcelist;
   forcelist.Append(base::StringPrintf("%s;%s", extension_id.c_str(),
                                       update_manifest_url.spec().c_str()));
 
   policy::PolicyMap policy;
   policy.Set(policy::key::kExtensionInstallForcelist,
              policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
-             policy::POLICY_SOURCE_CLOUD, std::move(forcelist), nullptr);
+             policy::POLICY_SOURCE_CLOUD, base::Value(std::move(forcelist)),
+             nullptr);
 
   // Set the policy and wait until the extension is installed.
   extensions::TestExtensionRegistryObserver observer(

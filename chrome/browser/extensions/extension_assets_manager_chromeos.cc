@@ -391,10 +391,10 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
   base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
 
   CHECK(!shared_extensions->Find(version));
-  base::Value version_info(base::Value::Type::DICT);
-  version_info.SetStringKey(kSharedExtensionPath, shared_version_dir.value());
+  base::Value::Dict version_info;
+  version_info.Set(kSharedExtensionPath, shared_version_dir.value());
 
-  base::Value users(base::Value::Type::LIST);
+  base::Value::List users;
   for (size_t i = 0; i < pending_installs.size(); i++) {
     ExtensionAssetsManagerHelper::PendingInstallInfo& info =
         pending_installs[i];
@@ -404,7 +404,7 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
         FROM_HERE,
         base::BindOnce(std::move(info.callback), shared_version_dir));
   }
-  version_info.SetKey(kSharedExtensionUsers, std::move(users));
+  version_info.Set(kSharedExtensionUsers, std::move(users));
   extension_info_weak->Set(version, std::move(version_info));
 }
 

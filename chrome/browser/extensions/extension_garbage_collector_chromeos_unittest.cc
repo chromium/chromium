@@ -99,18 +99,18 @@ class ExtensionGarbageCollectorChromeOSUnitTest
 
     base::Value::Dict* extension_info_weak = shared_extensions->EnsureDict(id);
 
-    base::Value version_info(base::Value::Type::DICT);
-    version_info.SetStringKey(
-        ExtensionAssetsManagerChromeOS::kSharedExtensionPath, path.value());
+    base::Value::Dict version_info;
+    version_info.Set(ExtensionAssetsManagerChromeOS::kSharedExtensionPath,
+                     path.value());
 
-    base::Value users(base::Value::Type::LIST);
+    base::Value::List users;
     for (const std::string& user :
          base::SplitString(users_string, ",", base::KEEP_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY)) {
       users.Append(user);
     }
-    version_info.SetKey(ExtensionAssetsManagerChromeOS::kSharedExtensionUsers,
-                        std::move(users));
+    version_info.Set(ExtensionAssetsManagerChromeOS::kSharedExtensionUsers,
+                     std::move(users));
     extension_info_weak->Set(version, std::move(version_info));
   }
 

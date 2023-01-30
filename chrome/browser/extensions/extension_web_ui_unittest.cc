@@ -186,19 +186,17 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
     // Add multiple entries for the same extension.
     ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
     base::Value::Dict& all_overrides = update.Get();
-    base::Value newtab_list(base::Value::Type::LIST);
+    base::Value::List newtab_list;
     {
-      base::Value newtab(base::Value::Type::DICT);
-      newtab.SetKey("entry", base::Value(newtab_url.spec()));
-      newtab.SetKey("active", base::Value(true));
+      base::Value::Dict newtab;
+      newtab.Set("entry", newtab_url.spec());
+      newtab.Set("active", true);
       newtab_list.Append(std::move(newtab));
     }
     {
-      base::Value newtab(base::Value::Type::DICT);
-      newtab.SetKey(
-          "entry",
-          base::Value(extension->GetResourceURL("oldtab.html").spec()));
-      newtab.SetKey("active", base::Value(true));
+      base::Value::Dict newtab;
+      newtab.Set("entry", extension->GetResourceURL("oldtab.html").spec());
+      newtab.Set("active", true);
       newtab_list.Append(std::move(newtab));
     }
 
