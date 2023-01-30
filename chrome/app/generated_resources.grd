@@ -7502,6 +7502,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_LEARN_MORE_USER_NOTE" desc="User note menu label, which allows users to learn more about the user note feature.">
         Learn more
       </message>
+      <message name="IDS_ALL_NOTES" desc="The text label of a button in the side panel user notes UI, when clicked, takes the user to the notes overviews UI.">
+        All Notes
+      </message>
 
       <!-- Feed button and menu -->
       <message name="IDS_FEED_TITLE" desc="Title of the feed menu">

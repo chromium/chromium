@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/side_panel_shared_resources.h"
+#include "chrome/grit/side_panel_shared_resources_map.h"
 #include "chrome/grit/side_panel_user_notes_resources.h"
 #include "chrome/grit/side_panel_user_notes_resources_map.h"
 #include "components/strings/grit/components_strings.h"
@@ -27,6 +29,7 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"add", IDS_ADD},
       {"addANote", IDS_ADD_NEW_USER_NOTE_PLACEHOLDER_TEXT},
+      {"allNotes", IDS_ALL_NOTES},
       {"cancel", IDS_CANCEL},
       {"delete", IDS_DELETE},
       {"edit", IDS_EDIT},
@@ -45,6 +48,8 @@ UserNotesSidePanelUI::UserNotesSidePanelUI(content::WebUI* web_ui)
                               base::make_span(kSidePanelUserNotesResources,
                                               kSidePanelUserNotesResourcesSize),
                               IDR_SIDE_PANEL_USER_NOTES_USER_NOTES_HTML);
+  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
+                                           kSidePanelSharedResourcesSize));
 }
 
 UserNotesSidePanelUI::~UserNotesSidePanelUI() = default;

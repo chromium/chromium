@@ -19,6 +19,9 @@
 #include "components/power_bookmarks/core/power_bookmark_service.h"
 #include "components/sync/protocol/power_bookmark_specifics.pb.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/window_open_disposition.h"
+#include "ui/base/window_open_disposition_utils.h"
 
 namespace {
 
@@ -204,6 +207,19 @@ void UserNotesPageHandler::DeleteNotesForUrl(
       base::BindOnce([](DeleteNotesForUrlCallback callback,
                         bool success) { std::move(callback).Run(success); },
                      std::move(callback)));
+}
+
+void UserNotesPageHandler::NoteOverviewSelected(
+    const ::GURL& url,
+    ui::mojom::ClickModifiersPtr click_modifiers) {
+  WindowOpenDisposition open_location = ui::DispositionFromClick(
+      click_modifiers->middle_button, click_modifiers->alt_key,
+      click_modifiers->ctrl_key, click_modifiers->meta_key,
+      click_modifiers->shift_key);
+
+  content::OpenURLParams params(url, content::Referrer(), open_location,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
+  browser_->OpenURL(params);
 }
 
 void UserNotesPageHandler::OnPowersChanged() {

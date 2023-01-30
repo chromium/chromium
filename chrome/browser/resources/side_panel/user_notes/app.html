@@ -1,11 +1,30 @@
 <style>
+  iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    width: var(--icon-size);
+  }
+
   user-note {
     margin: 12px 0;
   }
 </style>
 
-<template id="notesList" is="dom-repeat" items="[[notes_]]"
-    sort="sortByModificationTime_">
-  <user-note note="[[item]]"></user-note>
+<template is="dom-if" if="[[viewingOverviews_]]" restamp>
+  <user-note-overviews-list overviews="[[overviews_]]"
+      on-current-tab-overview-selected="[[onCurrentTabOverviewSelected_]]">
+  </user-note-overviews-list>
 </template>
-<user-note id="entryNote"></user-note>
+<template is="dom-if" if="[[!viewingOverviews_]]" restamp>
+  <sp-heading hide-back-button="true">
+    <cr-button slot="buttons" id="allNotesButton" on-click="onAllNotesClick_">
+      <iron-icon icon="cr:arrow-back"></iron-icon>
+      $i18n{allNotes}
+    </cr-button>
+  </sp-heading>
+  <template id="notesList" is="dom-repeat" items="[[notes_]]"
+      sort="sortByModificationTime_">
+    <user-note note="[[item]]"></user-note>
+  </template>
+  <user-note id="entryNote"></user-note>
+</template>

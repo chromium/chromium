@@ -52,6 +52,9 @@ class UserNotesPageHandler : public side_panel::mojom::UserNotesPageHandler,
                   DeleteNoteCallback callback) override;
   void DeleteNotesForUrl(const ::GURL& url,
                          DeleteNotesForUrlCallback callback) override;
+  void NoteOverviewSelected(
+      const ::GURL& url,
+      ui::mojom::ClickModifiersPtr click_modifiers) override;
 
   void SetCurrentTabUrlForTesting(GURL url) { current_tab_url_ = url; }
 

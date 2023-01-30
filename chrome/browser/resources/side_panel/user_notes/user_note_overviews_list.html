@@ -1,0 +1,6 @@
+<template id="noteOverviewsList" is="dom-repeat" items="[[overviews]]">
+  <user-note-overview-row overview="[[item]]" description="[[item.text]]"
+      on-row-clicked="onRowClicked_" on-context-menu="onShowContextMenuClicked_"
+      on-trailing-icon-clicked="onShowContextMenuClicked_">
+  </user-note-overview-row>
+</template>

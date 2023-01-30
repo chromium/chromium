@@ -1,0 +1,17 @@
+<cr-url-list-item
+    role="listitem"
+    size="[[size_]]"
+    url="[[overview.url.url]]"
+    title="[[overview.title]]"
+    on-click="onRowClicked_"
+    on-contextmenu="onRowContextMenu_">
+  <button slot="title" id="title" aria-labelledby="title description">
+    [[getTitle_(overview)]]
+  </button>
+  <div slot="description" id="description" hidden$="[[!description]]">
+    [[description]]
+  </div>
+  <cr-icon-button slot="suffix-icon" iron-icon="cr:more-vert"
+      on-click="onTrailingIconClicked_">
+  </template>
+</cr-url-list-item>

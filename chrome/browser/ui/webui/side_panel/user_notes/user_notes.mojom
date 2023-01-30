@@ -6,6 +6,7 @@ module side_panel.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/token.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "url/mojom/url.mojom";
 
 // Data structure representing a note.
@@ -77,6 +78,11 @@ interface UserNotesPageHandler {
 
   // Called when deleting all notes for a url.
   DeleteNotesForUrl(url.mojom.Url url) => (bool success);
+
+  // Called when a note overview has been selected and the notes for that url
+  // should be shown.
+  NoteOverviewSelected(url.mojom.Url url,
+                       ui.mojom.ClickModifiers click_modifiers);
 };
 
 // WebUI-side handler for requests from the browser.
