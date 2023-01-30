@@ -220,8 +220,6 @@ std::string GetModuleStatusString(
 enum ThirdPartyFeaturesStatus {
   // The third-party features are not available in non-Google Chrome builds.
   kNonGoogleChromeBuild,
-  // The third-party features are not available on Windows 7.
-  kNotAvailableWin7,
   // The ThirdPartyBlockingEnabled group policy is disabled.
   kPolicyDisabled,
   // Both the IncompatibleApplicationsWarning and the
@@ -289,8 +287,6 @@ std::string GetThirdPartyFeaturesStatusString(ThirdPartyFeaturesStatus status) {
     case ThirdPartyFeaturesStatus::kNonGoogleChromeBuild:
       return "The third-party features are not available in non-Google Chrome "
              "builds.";
-    case ThirdPartyFeaturesStatus::kNotAvailableWin7:
-      return "The third-party features are not available on Windows 7.";
     case ThirdPartyFeaturesStatus::kPolicyDisabled:
       return "The ThirdPartyBlockingEnabled group policy is disabled.";
     case ThirdPartyFeaturesStatus::kFeatureDisabled:
