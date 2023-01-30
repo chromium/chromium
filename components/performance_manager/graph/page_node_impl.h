@@ -66,7 +66,6 @@ class PageNodeImpl
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated();
   void OnTitleUpdated();
-  void OnAboutToBeDiscarded(base::WeakPtr<PageNode> new_page_node);
   void OnMainFrameNavigationCommitted(bool same_document,
                                       base::TimeTicks navigation_committed_time,
                                       int64_t navigation_id,

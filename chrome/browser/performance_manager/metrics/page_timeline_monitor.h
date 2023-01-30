@@ -36,6 +36,10 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   };
 
   PageTimelineMonitor();
+  // For testing, to provide a function to decide whether a call to
+  // CollectSlice() will record a UKM. Its return value dictates whether a slice
+  // will be collected, and is called at each entry to the function.
+  explicit PageTimelineMonitor(base::RepeatingCallback<bool()>);
   ~PageTimelineMonitor() override;
   PageTimelineMonitor(const PageTimelineMonitor& other) = delete;
   PageTimelineMonitor& operator=(const PageTimelineMonitor&) = delete;
@@ -53,17 +57,11 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
                      PageType previous_state) override;
   void OnTitleUpdated(const PageNode* page_node) override;
   void OnFaviconUpdated(const PageNode* page_node) override;
-  void OnAboutToBeDiscarded(const PageNode* page_node,
-                            const PageNode* new_page_node) override;
 
   void SetBatterySaverEnabled(bool enabled);
 
  private:
-  friend class PageTimelineMonitorBrowserTest;
   friend PageTimelineMonitorUnitTest;
-  FRIEND_TEST_ALL_PREFIXES(
-      PageTimelineMonitorUnitTest,
-      TestPageTimelineDoesntRecordIfShouldCollectSliceReturnsFalse);
   FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
                            TestUpdateFaviconInBackground);
   FRIEND_TEST_ALL_PREFIXES(PageTimelineMonitorUnitTest,
@@ -81,29 +79,22 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
     bool updated_title_or_favicon_in_background{false};
     base::TimeTicks time_of_last_foreground_millisecond_update;
     int total_foreground_milliseconds{0};
-    int tab_id;
 
     PageTimelineMonitor::PageState GetPageState();
 
     explicit PageNodeInfo(base::TimeTicks time_of_creation,
-                          const PageNode* page_node,
-                          int tab_id)
+                          const PageNode* page_node)
         : time_of_creation(time_of_creation),
           currently_visible(page_node->IsVisible()),
           current_lifecycle(page_node->GetLifecycleState()),
           time_of_most_recent_state_change(base::TimeTicks::Now()),
           time_of_last_foreground_millisecond_update(
-              time_of_most_recent_state_change),
-          tab_id(tab_id) {}
+              time_of_most_recent_state_change) {}
     ~PageNodeInfo() = default;
   };
 
   // Method collecting the PageTimelineState UKM.
   void CollectSlice();
-
-  bool ShouldCollectSlice() const;
-
-  void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
 
   // Monotonically increasing counters for tabs and slices.
   int slice_id_counter_;
