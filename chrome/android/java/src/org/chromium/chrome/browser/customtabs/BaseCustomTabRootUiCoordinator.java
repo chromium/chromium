@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -89,6 +90,8 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     // Created only when ChromeFeatureList.CctBrandTransparency is enabled.
     // TODO(https://crbug.com/1343056): Make it part of the ctor.
     private @Nullable BrandingController mBrandingController;
+
+    private @Nullable DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -345,6 +348,11 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
             mBrandingController = null;
         }
 
+        if (mDesktopSiteSettingsIPHController != null) {
+            mDesktopSiteSettingsIPHController.destroy();
+            mDesktopSiteSettingsIPHController = null;
+        }
+
         mCustomTabHeightStrategy.destroy();
     }
 
@@ -370,7 +378,13 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
      * Runs a set of deferred startup tasks.
      */
     void onDeferredStartup() {
-        RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
+        boolean didShowPrompt = RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                 Profile.getLastUsedRegularProfile(), mMessageDispatcher, mActivity);
+        if (!didShowPrompt && mAppMenuCoordinator != null) {
+            mDesktopSiteSettingsIPHController = DesktopSiteSettingsIPHController.create(mActivity,
+                    mWindowAndroid, mActivityTabProvider, Profile.getLastUsedRegularProfile(),
+                    getToolbarManager().getMenuButtonView(),
+                    mAppMenuCoordinator.getAppMenuHandler());
+        }
     }
 }

@@ -2545,6 +2545,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 currentTab.reload();
                 RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
                         profile, this, getModalDialogManager());
+                TrackerFactory.getTrackerForProfile(profile).notifyEvent(
+                        EventConstants.APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED);
             } else {
                 TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true,
                         UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);

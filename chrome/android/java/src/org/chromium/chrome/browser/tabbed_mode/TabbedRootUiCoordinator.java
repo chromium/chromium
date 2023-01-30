@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureNotificationUtils;
 import org.chromium.chrome.browser.feature_guide.notifications.FeatureType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -147,6 +148,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private OfflineIndicatorControllerV2 mOfflineIndicatorController;
     private OfflineIndicatorInProductHelpController mOfflineIndicatorInProductHelpController;
     private ReadLaterIPHController mReadLaterIPHController;
+    private DesktopSiteSettingsIPHController mDesktopSiteSettingsIPHController;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
     private UrlFocusChangeListener mUrlFocusChangeListener;
     private @Nullable ToolbarButtonInProductHelpController mToolbarButtonInProductHelpController;
@@ -402,6 +404,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mTabSwitcherCustomViewManagerCallbackController != null) {
             mTabSwitcherCustomViewManagerCallbackController.destroy();
+        }
+
+        if (mDesktopSiteSettingsIPHController != null) {
+            mDesktopSiteSettingsIPHController.destroy();
+            mDesktopSiteSettingsIPHController = null;
         }
 
         super.onDestroy();
@@ -731,6 +738,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
             }
+            DesktopSiteSettingsIPHController.create(mActivity, mWindowAndroid, mActivityTabProvider,
+                    Profile.getLastUsedRegularProfile(), getToolbarManager().getMenuButtonView(),
+                    mAppMenuCoordinator.getAppMenuHandler());
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);
 
