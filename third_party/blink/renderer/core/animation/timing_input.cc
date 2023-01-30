@@ -56,8 +56,15 @@ Timing::Delay ConvertDelay(const Timing::V8Delay* delay,
     DCHECK(std::isfinite(delay_in_ms));
     result.time_delay = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(delay_in_ms);
   } else {
-    // TODO(crbug.com/1216527): support delay as percentage.
-    exception_state.ThrowTypeError("Delay must be a finite double");
+    CSSNumericValue* numeric_value = delay->GetAsCSSNumericValue();
+    CSSUnitValue* unit_value =
+        numeric_value->to(CSSPrimitiveValue::UnitType::kPercentage);
+    if (!unit_value) {
+      exception_state.ThrowTypeError(
+          "Delay must be a finite double or percentage for animation delay.");
+      return result;
+    }
+    result.relative_delay = 0.01 * unit_value->value();
   }
   return result;
 }

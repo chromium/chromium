@@ -232,11 +232,16 @@ AnimationTimeDelta ScrollTimeline::CalculateIntrinsicIterationDuration(
   if (duration) {
     // if iteration_duration == "auto" and iterations > 0
     if (!timing.iteration_duration && timing.iteration_count > 0) {
-      // duration represents 100% so we divide it by iteration count to
-      // calculate the iteration duration. TODO: (crbug.com/1216527) Once
-      // delays can be percentages we will include them in the calculation:
-      // ((100% - start_delay% - end_delay%) / iterations) * duration
-      return duration.value() / timing.iteration_count;
+      // duration represents 100% so we subtract percentage delays and divide it
+      // by iteration count to calculate the iteration duration.
+      double start_delay = timing.start_delay.relative_delay.value_or(0);
+      double end_delay = timing.end_delay.relative_delay.value_or(0);
+      double scale = (1 - start_delay - end_delay);
+      if (scale <= 0) {
+        return AnimationTimeDelta();
+      }
+
+      return scale * duration.value() / timing.iteration_count;
     }
   }
   return AnimationTimeDelta();
@@ -425,6 +430,23 @@ void ScrollTimeline::UpdateCompositorTimeline() {
       ->UpdateScrollerIdAndScrollOffsets(
           scroll_timeline_util::GetCompositorScrollElementId(resolved_source_),
           GetResolvedScrollOffsets());
+}
+
+ScrollTimeline::TimeDelayPair ScrollTimeline::ComputeEffectiveAnimationDelays(
+    const Animation* animation,
+    const Timing& timing) const {
+  absl::optional<AnimationTimeDelta> duration = GetDuration();
+  if (!duration) {
+    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
+  }
+
+  // Animation delays are effectively insets on the animation range.
+  // Delays must be expressed as percentages. Time-based delays are ignored.
+  double start_delay = timing.start_delay.relative_delay.value_or(0);
+  double end_delay = timing.end_delay.relative_delay.value_or(0);
+
+  return std::make_pair(start_delay * duration.value(),
+                        end_delay * duration.value());
 }
 
 }  // namespace blink

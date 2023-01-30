@@ -82,9 +82,11 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   // the timeline duration. In the event that the timeline is not an instance
   // of a view timeline, the delays are zero.
   using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
-  virtual TimeDelayPair TimelineOffsetsToTimeDelays(
-      const Animation* animation) const {
-    return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
+  virtual TimeDelayPair ComputeEffectiveAnimationDelays(
+      const Animation* animation,
+      const Timing& timing) const {
+    return std::make_pair(timing.start_delay.AsTimeValue(),
+                          timing.end_delay.AsTimeValue());
   }
 
   Document* GetDocument() const { return document_; }

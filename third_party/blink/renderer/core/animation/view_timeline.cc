@@ -265,10 +265,19 @@ AnimationTimeDelta ViewTimeline::CalculateIntrinsicIterationDuration(
                      ? ToFractionalOffset(animation->GetRangeEnd().value())
                      : 1;
 
-    // TODO(crbug.com1216527): Delays will also need to be incorporated once we
-    // support % delays.
     active_interval -= start;
     active_interval -= (1 - end);
+
+    // Start and end delays are proportional to the active interval.
+    double start_delay = timing.start_delay.relative_delay.value_or(0);
+    double end_delay = timing.end_delay.relative_delay.value_or(0);
+    double delay = start_delay + end_delay;
+
+    if (delay >= 1) {
+      return AnimationTimeDelta();
+    }
+
+    active_interval *= (1 - delay);
     return duration.value() * active_interval / timing.iteration_count;
   }
   return AnimationTimeDelta();
@@ -468,21 +477,34 @@ double ViewTimeline::ToFractionalOffset(
   return (offset - align_subject_start_view_end) / range;
 }
 
-AnimationTimeline::TimeDelayPair ViewTimeline::TimelineOffsetsToTimeDelays(
-    const Animation* animation) const {
+AnimationTimeline::TimeDelayPair ViewTimeline::ComputeEffectiveAnimationDelays(
+    const Animation* animation,
+    const Timing& timing) const {
   absl::optional<AnimationTimeDelta> duration = GetDuration();
   if (!duration)
     return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
-  double start_fraction =
+  double range_start =
       animation->GetRangeStart()
           ? ToFractionalOffset(animation->GetRangeStart().value())
           : 0;
-  double end_fraction =
-      animation->GetRangeEnd()
-          ? ToFractionalOffset(animation->GetRangeEnd().value())
-          : 1;
-  return std::make_pair(start_fraction * duration.value(),
-                        (1 - end_fraction) * duration.value());
+  double range_end = animation->GetRangeEnd()
+                         ? ToFractionalOffset(animation->GetRangeEnd().value())
+                         : 1;
+
+  // Timeline range is relative to cover 0% to 100% range.
+  double timeline_range = range_end - range_start;
+
+  // Animation delays are effectively insets on the animation range.
+  // Delays must be expressed as percentages. Time-based delays are ignored.
+  double start_delay =
+      timing.start_delay.relative_delay.value_or(0) * timeline_range;
+  double end_delay =
+      timing.end_delay.relative_delay.value_or(0) * timeline_range;
+
+  // TODO(kevers): Check if additional safeguards are required for delays
+  // summing > 100%.
+  return std::make_pair((range_start + start_delay) * duration.value(),
+                        (1 - range_end + end_delay) * duration.value());
 }
 
 CSSNumericValue* ViewTimeline::startOffset() const {

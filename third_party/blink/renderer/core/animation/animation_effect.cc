@@ -142,13 +142,10 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       // TODO(crbug.com/1216527): Update timing once ratified in the spec.
       // Normalized timing is purely used internally in order to keep the bulk
       // of the animation code time-based. Range start and end is combined with
-      // delay and endDelay. At present, we do not support non-zero time delays
-      // with duration auto, and delays are purely set by range start and end.
-      // This will change when we support percent based delays, and possibly
-      // figure out how to mix percentages and time-based values.
+      // delay and endDelay.
       normalized_->iteration_duration = IntrinsicIterationDuration();
       std::pair<AnimationTimeDelta, AnimationTimeDelta> delay_pair =
-          TimelineOffsetsToTimeDelays();
+          ComputeEffectiveAnimationDelays();
       normalized_->start_delay = delay_pair.first;
       normalized_->end_delay = delay_pair.second;
     }
@@ -368,11 +365,11 @@ const Animation* AnimationEffect::GetAnimation() const {
   return owner_ ? owner_->GetAnimation() : nullptr;
 }
 
-AnimationEffect::TimeDelayPair AnimationEffect::TimelineOffsetsToTimeDelays()
-    const {
+AnimationEffect::TimeDelayPair
+AnimationEffect::ComputeEffectiveAnimationDelays() const {
   if (GetAnimation() && GetAnimation()->timeline()) {
-    return GetAnimation()->timeline()->TimelineOffsetsToTimeDelays(
-        owner_->GetAnimation());
+    return GetAnimation()->timeline()->ComputeEffectiveAnimationDelays(
+        owner_->GetAnimation(), timing_);
   }
   return std::make_pair(AnimationTimeDelta(), AnimationTimeDelta());
 }

@@ -131,6 +131,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
     return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
+  AnimationTimeline::TimeDelayPair ComputeEffectiveAnimationDelays(
+      const Animation* animation,
+      const Timing& timing) const override;
+
  protected:
   PhaseAndTime CurrentPhaseAndTime() override;
 

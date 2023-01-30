@@ -176,7 +176,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   // the timeline duration. In the event that the timeline is not an instance
   // of a view timeline, the delays are zero.
   using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
-  TimeDelayPair TimelineOffsetsToTimeDelays() const;
+  TimeDelayPair ComputeEffectiveAnimationDelays() const;
 
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
