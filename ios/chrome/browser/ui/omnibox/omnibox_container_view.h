@@ -37,8 +37,12 @@
 // The layout guide center to use to refer to the omnibox leading image.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
 
+// Sets the leading button's image and sets its accessibility identifier.
+- (void)setLeadingImage:(UIImage*)image
+    withAccessibilityIdentifier:(NSString*)accessibilityIdentifier;
+
 // Sets the leading button's image.
-- (void)setLeadingImage:(UIImage*)image;
+- (void)setLeadingImageWithoutAccessibilityIdentifier:(UIImage*)image;
 
 // Sets the alpha level of the leading image view.
 - (void)setLeadingImageAlpha:(CGFloat)alpha;

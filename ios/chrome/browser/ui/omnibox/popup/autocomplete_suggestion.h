@@ -57,6 +57,9 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 /// History, Search, or Stock.
 /// Ignores `starred` status of the suggestion.
 @property(nonatomic, readonly) UIImage* matchTypeIcon;
+/// Accessibility identifier of the icon corresponding to the suggestion's
+/// autocomplete match type.
+@property(nonatomic, readonly) NSString* matchTypeIconAccessibilityIdentifier;
 /// Whether this is a search suggestion (as opposed to URL suggestion)
 @property(nonatomic, readonly, getter=isMatchTypeSearch) BOOL matchTypeSearch;
 /// For URL suggestions, the URL that the match represents.

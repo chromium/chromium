@@ -32,6 +32,7 @@
 
 @property(nonatomic) NSAttributedString* omniboxPreviewText;
 @property(nonatomic) UIImage* matchTypeIcon;
+@property(nonatomic) NSString* matchTypeIconAccessibilityIdentifier;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
 @property(nonatomic) CrURL* destinationUrl;
 

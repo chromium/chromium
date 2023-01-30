@@ -256,9 +256,18 @@ const CGFloat kClearButtonSize = 28.0f;
 }
 
 - (void)textFieldDidChange:(id)sender {
+  BOOL accessibilityIdentifierFlagEnabled = base::FeatureList::IsEnabled(
+      kEnableAccessibilityIdentifierToOmniboxLeadingImage);
   // If the text is empty, update the leading image.
   if (self.textField.text.length == 0) {
-    [self.view setLeadingImage:self.emptyTextLeadingImage];
+    if (accessibilityIdentifierFlagEnabled) {
+      [self.view setLeadingImage:self.emptyTextLeadingImage
+          withAccessibilityIdentifier:
+              kOmniboxLeadingImageEmptyTextAccessibilityIdentifier];
+    } else {
+      [self.view setLeadingImageWithoutAccessibilityIdentifier:
+                     self.emptyTextLeadingImage];
+    }
   }
 
   [self updateClearButtonVisibility];
@@ -303,9 +312,21 @@ const CGFloat kClearButtonSize = 28.0f;
 
   // Update the clear button state.
   [self updateClearButtonVisibility];
-  [self.view setLeadingImage:self.textField.text.length
-                                 ? self.defaultLeadingImage
-                                 : self.emptyTextLeadingImage];
+  UIImage* image = self.textField.text.length ? self.defaultLeadingImage
+                                              : self.emptyTextLeadingImage;
+
+  NSString* accessibilityID =
+      self.textField.text.length
+          ? kOmniboxLeadingImageDefaultAccessibilityIdentifier
+          : kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
+
+  if (base::FeatureList::IsEnabled(
+          kEnableAccessibilityIdentifierToOmniboxLeadingImage)) {
+    [self.view setLeadingImage:image
+        withAccessibilityIdentifier:accessibilityID];
+  } else {
+    [self.view setLeadingImageWithoutAccessibilityIdentifier:image];
+  }
 
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
   self.isTextfieldEditing = YES;
@@ -420,10 +441,18 @@ const CGFloat kClearButtonSize = 28.0f;
 
 #pragma mark - OmniboxConsumer
 
-- (void)updateAutocompleteIcon:(UIImage*)icon {
-  [self.view setLeadingImage:icon];
+- (void)updateAutoCompleteIconWithoutAccessibilityIdentifier:(UIImage*)icon {
+  DCHECK(!base::FeatureList::IsEnabled(
+      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
+  [self.view setLeadingImageWithoutAccessibilityIdentifier:icon];
 }
-
+- (void)updateAutocompleteIcon:(UIImage*)icon
+    withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  DCHECK(base::FeatureList::IsEnabled(
+      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
+  [self.view setLeadingImage:icon
+      withAccessibilityIdentifier:accessibilityIdentifier];
+}
 - (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
   self.searchByImageEnabled = searchByImageSupported;
 }

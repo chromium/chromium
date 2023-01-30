@@ -9,3 +9,12 @@
 #endif
 
 const CGFloat kOmniboxPlaceholderAlpha = 0.3;
+
+NSString* const kOmniboxLeadingImageDefaultAccessibilityIdentifier =
+    @"OmniboxLeadingImageDefaultAccessibilityIdentifier";
+
+NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier =
+    @"OmniboxLeadingImageEmptyTextAccessibilityIdentifier";
+
+NSString* const kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier =
+    @"OmniboxLeadingImageSuggestionImageAccessibilityIdentifier";

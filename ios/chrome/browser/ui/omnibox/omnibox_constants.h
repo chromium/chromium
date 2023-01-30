@@ -9,4 +9,11 @@
 
 extern const CGFloat kOmniboxPlaceholderAlpha;
 
+extern NSString* const kOmniboxLeadingImageDefaultAccessibilityIdentifier;
+
+extern NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier;
+
+extern NSString* const
+    kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_CONSTANTS_H_

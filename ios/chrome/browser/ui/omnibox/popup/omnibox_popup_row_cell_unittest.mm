@@ -30,6 +30,7 @@
 @property(nonatomic, weak) id<OmniboxPedal, OmniboxIcon> pedal;
 @property(nonatomic, strong) NSAttributedString* omniboxPreviewText;
 @property(nonatomic, strong) UIImage* matchTypeIcon;
+@property(nonatomic, strong) NSString* matchTypeIconAccessibilityIdentifier;
 @property(nonatomic, getter=isMatchTypeSearch) BOOL matchTypeSearch;
 @property(nonatomic, strong) CrURL* destinationUrl;
 @property(nonatomic, strong) NSNumber* suggestionGroupId;

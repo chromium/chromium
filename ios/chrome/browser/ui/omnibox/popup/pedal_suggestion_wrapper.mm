@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_suggestion_wrapper.h"
+#import "base/notreached.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -87,6 +88,11 @@
 }
 
 - (UIImage*)matchTypeIcon {
+  return nil;
+}
+
+- (NSString*)matchTypeIconAccessibilityIdentifier {
+  NOTREACHED();
   return nil;
 }
 

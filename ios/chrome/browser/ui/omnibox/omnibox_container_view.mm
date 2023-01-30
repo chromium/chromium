@@ -102,7 +102,17 @@ const CGFloat kTextFieldClearButtonTrailingOffset = 4;
   return self;
 }
 
-- (void)setLeadingImage:(UIImage*)image {
+- (void)setLeadingImage:(UIImage*)image
+    withAccessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  DCHECK(base::FeatureList::IsEnabled(
+      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
+  [self.leadingImageView setImage:image];
+  [self.leadingImageView setAccessibilityIdentifier:accessibilityIdentifier];
+}
+
+- (void)setLeadingImageWithoutAccessibilityIdentifier:(UIImage*)image {
+  DCHECK(!base::FeatureList::IsEnabled(
+      kEnableAccessibilityIdentifierToOmniboxLeadingImage));
   [self.leadingImageView setImage:image];
 }
 
