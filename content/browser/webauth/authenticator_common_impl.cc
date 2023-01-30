@@ -850,19 +850,18 @@ void AuthenticatorCommonImpl::MakeCredential(
 
       case device::AttestationConveyancePreference::
           kEnterpriseApprovedByBrowser:
-        // This should never come from the renderer.
-        mojo::ReportBadMessage("invalid devicePubKey attestation value");
-        CompleteGetAssertionRequest(
-            blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-        break;
+        // Enterprise attestation should not have been approved by this point.
+        NOTREACHED();
+        return;
     }
   }
 
   // Compute the effective attestation conveyance preference.
   device::AttestationConveyancePreference attestation = options->attestation;
   // Enterprise attestation should not have been approved by this point.
-  DCHECK(attestation !=
-         device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser);
+  DCHECK_NE(
+      attestation,
+      device::AttestationConveyancePreference::kEnterpriseApprovedByBrowser);
   if (attestation == device::AttestationConveyancePreference::
                          kEnterpriseIfRPListedOnAuthenticator &&
       GetWebAuthenticationDelegate()->ShouldPermitIndividualAttestation(
