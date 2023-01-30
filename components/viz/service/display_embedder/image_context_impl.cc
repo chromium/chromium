@@ -325,9 +325,8 @@ bool ImageContextImpl::BindTextureIfNecessary(gpu::TextureBase* texture_base,
   // we need check the texture image state, and bind the image to the
   // texture if necessary.
   auto* texture = gpu::gles2::Texture::CheckedCast(texture_base);
-  gpu::gles2::Texture::ImageState image_state;
-  auto* image = texture->GetLevelImage(GL_TEXTURE_2D, 0, &image_state);
-  if (image && image_state == gpu::gles2::Texture::UNBOUND) {
+  if (texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0)) {
+    auto* image = texture->GetLevelImage(GL_TEXTURE_2D, 0);
     glBindTexture(texture_base->target(), texture_base->service_id());
     if (!image->BindTexImage(texture_base->target())) {
       LOG(ERROR) << "Failed to bind a gl image to texture.";

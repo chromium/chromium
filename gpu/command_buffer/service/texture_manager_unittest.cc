@@ -1701,13 +1701,10 @@ TEST_F(TextureTest, MarkLevelImageBound) {
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
   manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
                                  image.get());
-  Texture::ImageState state;
-  texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
-  EXPECT_EQ(state, Texture::UNBOUND);
+  EXPECT_TRUE(texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0));
   // Mark the image as bound and verify that the state updates.
   texture->MarkLevelImageBound(GL_TEXTURE_2D, 0);
-  texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
-  EXPECT_EQ(state, Texture::BOUND);
+  EXPECT_FALSE(texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0));
 }
 #endif
 

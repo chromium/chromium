@@ -99,7 +99,7 @@ gl::GLImage* ValidatingAbstractTextureImpl::GetImageForTesting() const {
 
   const GLuint target = texture_ref_->texture()->target();
   const GLint level = 0;
-  return texture_ref_->texture()->GetLevelImage(target, level, nullptr);
+  return texture_ref_->texture()->GetLevelImage(target, level);
 }
 
 void ValidatingAbstractTextureImpl::SetCleared() {

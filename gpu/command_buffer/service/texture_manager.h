@@ -191,9 +191,15 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
     GLenum format = 0;
     GLenum type = 0;
     scoped_refptr<gl::GLImage> image;
-    ImageState image_state = UNBOUND;
     uint32_t estimated_size = 0;
     bool internal_workaround = false;
+
+   private:
+    friend class Texture;
+
+    // Nothing outside of Texture should directly access the binding state of
+    // the image; clients can use Texture::HasUnboundLevelImage().
+    ImageState image_state = UNBOUND;
   };
 
   explicit Texture(GLuint service_id);
@@ -341,10 +347,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
   // Get the image associated with a particular level. Returns NULL if level
   // does not exist.
-  gl::GLImage* GetLevelImage(GLint target,
-                             GLint level,
-                             ImageState* state) const;
   gl::GLImage* GetLevelImage(GLint target, GLint level) const;
+
+  // Returns true iff (a) there is an image associated with the particular
+  // level, and (b) the image is unbound.
+  bool HasUnboundLevelImage(GLint target, GLint level) const;
 
   bool HasImages() const {
     return has_images_;

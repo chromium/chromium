@@ -735,19 +735,7 @@ MemoryTypeTracker* Texture::GetMemTracker() {
   }
 }
 
-Texture::LevelInfo::LevelInfo()
-    : target(0),
-      level(-1),
-      internal_format(0),
-      width(0),
-      height(0),
-      depth(0),
-      border(0),
-      format(0),
-      type(0),
-      image_state(UNBOUND),
-      estimated_size(0),
-      internal_workaround(false) {}
+Texture::LevelInfo::LevelInfo() = default;
 
 Texture::LevelInfo::LevelInfo(const LevelInfo& rhs)
     : cleared_rect(rhs.cleared_rect),
@@ -761,9 +749,9 @@ Texture::LevelInfo::LevelInfo(const LevelInfo& rhs)
       format(rhs.format),
       type(rhs.type),
       image(rhs.image),
-      image_state(rhs.image_state),
       estimated_size(rhs.estimated_size),
-      internal_workaround(rhs.internal_workaround) {}
+      internal_workaround(rhs.internal_workaround),
+      image_state(rhs.image_state) {}
 
 Texture::LevelInfo::~LevelInfo() = default;
 
@@ -1953,20 +1941,25 @@ const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
   return nullptr;
 }
 
-gl::GLImage* Texture::GetLevelImage(GLint target,
-                                    GLint level,
-                                    ImageState* state) const {
+gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
   const LevelInfo* info = GetLevelInfo(target, level);
   if (!info)
     return nullptr;
 
-  if (state)
-    *state = info->image_state;
   return info->image.get();
 }
 
-gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
-  return GetLevelImage(target, level, nullptr);
+bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
+  const LevelInfo* info = GetLevelInfo(target, level);
+  if (!info) {
+    return false;
+  }
+
+  if (!info->image.get()) {
+    return false;
+  }
+
+  return info->image_state == ImageState::UNBOUND;
 }
 
 void Texture::DumpLevelMemory(base::trace_event::ProcessMemoryDump* pmd,

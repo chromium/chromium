@@ -282,14 +282,12 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
   auto* validating_texture =
       static_cast<ValidatingAbstractTextureImpl*>(abstract_texture.get());
   TextureRef* texture_ref = validating_texture->GetTextureRefForTesting();
-  Texture::ImageState state;
-  EXPECT_EQ(texture_ref->texture()->GetLevelImage(target, 0, &state),
-            image.get());
+  EXPECT_EQ(texture_ref->texture()->GetLevelImage(target, 0), image.get());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_EQ(state, Texture::ImageState::UNBOUND);
+  EXPECT_TRUE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
 #else
-  EXPECT_EQ(state, Texture::ImageState::BOUND);
+  EXPECT_FALSE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
 #endif
 
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();

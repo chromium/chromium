@@ -10494,9 +10494,8 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
                                               GLuint texture_unit) {
   // Image is already in use if texture is attached to a framebuffer.
   if (texture && !texture->IsAttachedToFramebuffer()) {
-    Texture::ImageState old_image_state;
-    gl::GLImage* image = texture->GetLevelImage(textarget, 0, &old_image_state);
-    if (image && old_image_state == Texture::UNBOUND) {
+    if (texture->HasUnboundLevelImage(textarget, 0)) {
+      gl::GLImage* image = texture->GetLevelImage(textarget, 0);
       UMA_HISTOGRAM_BOOLEAN(
           "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
 
