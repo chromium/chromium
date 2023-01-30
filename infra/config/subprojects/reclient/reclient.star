@@ -289,7 +289,7 @@ fyi_reclient_staging_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "reclient_staging"],
+            apply_configs = ["chromeos", "reclient_staging", "checkout_lacros_sdk"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -299,6 +299,7 @@ fyi_reclient_staging_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
+            target_cros_boards = ["amd64-generic"],
         ),
     ),
     os = os.LINUX_DEFAULT,
@@ -310,7 +311,7 @@ fyi_reclient_test_builder(
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos", "reclient_test"],
+            apply_configs = ["chromeos", "reclient_test", "checkout_lacros_sdk"],
         ),
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -320,6 +321,7 @@ fyi_reclient_test_builder(
             target_bits = 64,
             target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
+            target_cros_boards = ["amd64-generic"],
         ),
     ),
     os = os.LINUX_DEFAULT,
