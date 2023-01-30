@@ -126,6 +126,9 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
 
   if (!card.card_art_url().empty())
     result.set_card_art_url(GURL(card.card_art_url()));
+
+  result.set_product_description(base::UTF8ToUTF16(card.product_description()));
+
   return result;
 }
 
@@ -308,6 +311,9 @@ void SetAutofillWalletSpecificsFromServerCard(
 
   if (!card.card_art_url().is_empty())
     wallet_card->set_card_art_url(card.card_art_url().spec());
+
+  wallet_card->set_product_description(
+      base::UTF16ToUTF8(card.product_description()));
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
