@@ -24,6 +24,8 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -56,7 +58,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/common/chrome_features.h"
@@ -169,14 +170,12 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
 
     if (!skip_icon_effects) {
       extensions::ChromeAppIcon::ResizeFunction resize_function;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (purpose == IconPurpose::ANY) {
         output_image_skia = apps::CreateStandardIconImage(output_image_skia);
       }
       if (purpose == IconPurpose::MASKABLE) {
         output_image_skia = apps::ApplyBackgroundAndMask(output_image_skia);
       }
-#endif
 
       extensions::ChromeAppIcon::ApplyEffects(
           kSizeInDip, resize_function, true /* app_launchable */,
@@ -244,9 +243,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     base::RunLoop run_loop;
 
     auto icon_type = apps::IconType::kUncompressed;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     icon_type = apps::IconType::kStandard;
-#endif
 
     apps::LoadIconFromWebApp(
         profile(), icon_type, kSizeInDip, app_id, icon_effects,
@@ -323,9 +320,7 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIcon) {
   gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
-#endif
 
   LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
@@ -406,9 +401,7 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableCompressedIcon) {
                                src_data);
 
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
-#endif
 
   auto icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
 
@@ -434,7 +427,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
   gfx::ImageSkia src_image_skia;
   gfx::ImageSkia dst_image_skia;
 
-#if BUILDFLAG(IS_CHROMEOS)
   ASSERT_TRUE(
       icon_manager().HasIcons(app_id, IconPurpose::MASKABLE, {kIconSize2}));
 
@@ -446,17 +438,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableIcon) {
                          apps::IconEffects::kCrOsStandardBackground |
                          apps::IconEffects::kCrOsStandardMask,
                      dst_image_skia);
-  VerifyIcon(src_image_skia, dst_image_skia);
-  return;
-#endif
-
-  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
-
-  GenerateWebAppIcon(app_id, IconPurpose::ANY, {kIconSize1},
-                     {{1.0, kIconSize1}, {2.0, kIconSize1}}, src_image_skia);
-
-  LoadIconFromWebApp(app_id, apps::IconEffects::kRoundCorners, dst_image_skia);
-
   VerifyIcon(src_image_skia, dst_image_skia);
 }
 
@@ -480,7 +461,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
   apps::IconValuePtr icon;
 
-#if BUILDFLAG(IS_CHROMEOS)
   icon_effect |= apps::IconEffects::kCrOsStandardBackground |
                  apps::IconEffects::kCrOsStandardMask;
   ASSERT_TRUE(
@@ -488,18 +468,6 @@ TEST_F(WebAppIconFactoryTest, LoadMaskableCompressedIcon) {
 
   GenerateWebAppCompressedIcon(app_id, IconPurpose::MASKABLE, {kIconSize2},
                                {{1.0, kIconSize2}, {2.0, kIconSize2}},
-                               src_data);
-
-  icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
-
-  VerifyCompressedIcon(src_data, *icon);
-  return;
-#endif
-
-  ASSERT_TRUE(icon_manager().HasIcons(app_id, IconPurpose::ANY, {kIconSize1}));
-
-  GenerateWebAppCompressedIcon(app_id, IconPurpose::ANY, {kIconSize1},
-                               {{1.0, kIconSize1}, {2.0, kIconSize1}},
                                src_data);
 
   icon = LoadCompressedIconBlockingFromWebApp(app_id, icon_effect);
@@ -532,9 +500,7 @@ TEST_F(WebAppIconFactoryTest, LoadNonMaskableIconWithMaskableIcon) {
   gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
-#endif
 
   LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 
@@ -600,9 +566,7 @@ TEST_F(WebAppIconFactoryTest, LoadExactSizeIcon) {
   gfx::ImageSkia dst_image_skia;
   apps::IconEffects icon_effect = apps::IconEffects::kRoundCorners;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   icon_effect |= apps::IconEffects::kCrOsStandardIcon;
-#endif
 
   LoadIconFromWebApp(app_id, icon_effect, dst_image_skia);
 

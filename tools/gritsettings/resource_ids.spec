@@ -156,7 +156,7 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [1385],
   },
-  "chrome/browser/resources/chromeos/app_icon/app_icon_resources.grd": {
+  "chrome/browser/resources/app_icon/app_icon_resources.grd": {
     "structures": [1390],
   },
   "chrome/browser/resources/chromeos/login/oobe_conditional_resources.grd": {

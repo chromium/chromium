@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #endif
 
 namespace apps {
@@ -81,14 +81,10 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     extensions::ImageLoader::Get(profile())->LoadImageAtEveryScaleFactorAsync(
         extension, gfx::Size(kSizeInDip, kSizeInDip), result.GetCallback());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     output_image_skia =
         skip_effects
             ? result.Take().AsImageSkia()
             : apps::CreateStandardIconImage(result.Take().AsImageSkia());
-#else
-    output_image_skia = result.Take().AsImageSkia();
-#endif
   }
 
   void GenerateExtensionAppCompressedIcon(const std::string app_id,

@@ -1615,10 +1615,8 @@ IconEffects WebAppPublisherHelper::GetIconEffects(const WebApp* web_app) {
     icon_effects |= IconEffects::kBlocked;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   icon_effects |= web_app->is_generated_icon() ? IconEffects::kCrOsStandardMask
                                                : IconEffects::kCrOsStandardIcon;
-#endif
 
   if (IsPaused(web_app->app_id())) {
     icon_effects |= IconEffects::kPaused;

@@ -20,6 +20,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -50,7 +51,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
@@ -176,12 +176,10 @@ absl::optional<IconPurpose> GetIconPurpose(
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
   if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::MASKABLE},
                                    max_icon_size_in_px)) {
     return absl::make_optional(IconPurpose::MASKABLE);
   }
-#endif
 
   if (icon_manager.HasSmallestIcon(web_app_id, {IconPurpose::ANY},
                                    max_icon_size_in_px)) {
@@ -191,7 +189,6 @@ absl::optional<IconPurpose> GetIconPurpose(
   return absl::nullopt;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
                                 int size_hint_in_dip,
                                 apps::IconValuePtr iv,
@@ -214,7 +211,7 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
     DCHECK(!(icon_effects & apps::IconEffects::kCrOsStandardMask));
     iv->uncompressed = apps::CreateStandardIconImage(iv->uncompressed);
   }
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (icon_effects & apps::IconEffects::kMdIconStyle) {
     // TODO(crbug.com/826982): MD post-processing is not always applied: "See
     // legacy code:
@@ -223,6 +220,7 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
     app_list::MaybeResizeAndPadIconForMd(
         gfx::Size(size_hint_in_dip, size_hint_in_dip), &iv->uncompressed);
   }
+#endif
 
   if (!iv->uncompressed.isNull()) {
     iv->uncompressed.MakeThreadSafe();
@@ -230,7 +228,6 @@ apps::IconValuePtr ApplyEffects(apps::IconEffects icon_effects,
 
   return iv;
 }
-#endif
 
 }  // namespace
 
@@ -306,7 +303,6 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
   if (!iv || iv->uncompressed.isNull())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!standard_icon_task_runner_) {
     standard_icon_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::TaskPriority::USER_VISIBLE,
@@ -327,9 +323,6 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
                      std::move(iv), mask_image),
       base::BindOnce(&AppIconLoader::ApplyBadges, base::WrapRefCounted(this),
                      icon_effects));
-#else
-  ApplyBadges(icon_effects, std::move(iv));
-#endif
 }
 
 void AppIconLoader::ApplyBadges(IconEffects icon_effects, IconValuePtr iv) {
@@ -516,14 +509,16 @@ void AppIconLoader::LoadIconFromCompressedData(
 void AppIconLoader::LoadIconFromResource(int icon_resource) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // For the default icon, use the raw icon, because the standard icon image
+  // convert could break the test cases.
+  if (icon_resource == IDR_APP_DEFAULT_ICON) {
+    icon_effects_ &= ~apps::IconEffects::kCrOsStandardIcon;
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (icon_resource == IDR_LOGO_CROSTINI_DEFAULT ||
-      icon_resource == IDR_APP_DEFAULT_ICON) {
+  if (icon_resource == IDR_LOGO_CROSTINI_DEFAULT) {
     // For the Crostini penguin icon, clear the standard icon effects, and use
     // the raw icon.
-    //
-    // For the default icon, use the raw icon, because the standard icon image
-    // convert could break the test cases.
     icon_effects_ &= ~apps::IconEffects::kCrOsStandardIcon;
   }
 #endif

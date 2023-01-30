@@ -23,6 +23,7 @@
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_test_util.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/md_icon_normalizer.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
@@ -144,9 +144,7 @@ class AppIconFactoryTest : public testing::Test {
 
     output_image_skia = gfx::ImageSkia::CreateFromBitmap(decoded, scale);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     output_image_skia = apps::CreateStandardIconImage(output_image_skia);
-#endif
     EnsureRepresentationsLoaded(output_image_skia);
   }
 

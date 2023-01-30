@@ -58,18 +58,22 @@ template("chrome_repack_percent") {
     }
 
     if (toolkit_views) {
-      sources += [ "$root_gen_dir/ui/views/resources/views_resources_${percent}_percent.pak" ]
-      deps += [ "//ui/views/resources" ]
+      sources += [
+        "$root_gen_dir/chrome/app_icon_resources_${percent}_percent.pak",
+        "$root_gen_dir/ui/views/resources/views_resources_${percent}_percent.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources:app_icon_resources",
+        "//ui/views/resources",
+      ]
     }
     if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
-        "$root_gen_dir/chrome/app_icon_resources_${percent}_percent.pak",
         "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       ]
       deps += [
         "//ash/login/resources",
-        "//chrome/browser/resources/chromeos:app_icon_resources",
         "//ui/chromeos/resources",
       ]
     }

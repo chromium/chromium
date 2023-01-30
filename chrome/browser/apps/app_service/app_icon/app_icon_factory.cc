@@ -22,6 +22,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/grit/app_icon_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
@@ -34,6 +35,7 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -41,8 +43,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/grit/app_icon_resources.h"
-#include "ui/gfx/geometry/skia_conversions.h"
 #endif
 
 namespace {
@@ -52,51 +52,6 @@ namespace {
 // Copy from Android code, all four sides of the ARC foreground and background
 // images are padded 25% of it's width and height.
 float kAndroidAdaptiveIconPaddingPercentage = 1.0f / 8.0f;
-
-using SizeToImageSkiaRep = std::map<int, gfx::ImageSkiaRep>;
-using ScaleToImageSkiaReps = std::map<float, SizeToImageSkiaRep>;
-using MaskImageSkiaReps = std::pair<SkBitmap, ScaleToImageSkiaReps>;
-
-MaskImageSkiaReps& GetMaskResourceIconCache() {
-  static base::NoDestructor<MaskImageSkiaReps> mask_cache;
-  return *mask_cache;
-}
-
-const SkBitmap& GetMaskBitmap() {
-  auto& mask_cache = GetMaskResourceIconCache();
-  if (mask_cache.first.empty()) {
-    // We haven't yet loaded the mask image from resources. Do so and store it
-    // in the cache.
-    mask_cache.first = *ui::ResourceBundle::GetSharedInstance()
-                            .GetImageNamed(IDR_ICON_MASK)
-                            .ToSkBitmap();
-  }
-  DCHECK(!mask_cache.first.empty());
-  return mask_cache.first;
-}
-
-// Returns the mask image corresponding to the given image |scale| and edge
-// pixel |size|. The mask must precisely match the properties of the image it
-// will be composited onto.
-const gfx::ImageSkiaRep& GetMaskAsImageSkiaRep(float scale,
-                                               int size_hint_in_dip) {
-  auto& mask_cache = GetMaskResourceIconCache();
-  const auto& scale_iter = mask_cache.second.find(scale);
-  if (scale_iter != mask_cache.second.end()) {
-    const auto& size_iter = scale_iter->second.find(size_hint_in_dip);
-    if (size_iter != scale_iter->second.end()) {
-      return size_iter->second;
-    }
-  }
-
-  auto& image_rep = mask_cache.second[scale][size_hint_in_dip];
-  image_rep = gfx::ImageSkiaRep(
-      skia::ImageOperations::Resize(GetMaskBitmap(),
-                                    skia::ImageOperations::RESIZE_LANCZOS3,
-                                    size_hint_in_dip, size_hint_in_dip),
-      scale);
-  return image_rep;
-}
 
 bool IsConsistentPixelSize(const gfx::ImageSkiaRep& rep,
                            const gfx::ImageSkia& image_skia) {
@@ -155,8 +110,52 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
   }
   return subset_image;
 }
+#endif
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+using SizeToImageSkiaRep = std::map<int, gfx::ImageSkiaRep>;
+using ScaleToImageSkiaReps = std::map<float, SizeToImageSkiaRep>;
+using MaskImageSkiaReps = std::pair<SkBitmap, ScaleToImageSkiaReps>;
+
+MaskImageSkiaReps& GetMaskResourceIconCache() {
+  static base::NoDestructor<MaskImageSkiaReps> mask_cache;
+  return *mask_cache;
+}
+
+const SkBitmap& GetMaskBitmap() {
+  auto& mask_cache = GetMaskResourceIconCache();
+  if (mask_cache.first.empty()) {
+    // We haven't yet loaded the mask image from resources. Do so and store it
+    // in the cache.
+    mask_cache.first = *ui::ResourceBundle::GetSharedInstance()
+                            .GetImageNamed(IDR_ICON_MASK)
+                            .ToSkBitmap();
+  }
+  DCHECK(!mask_cache.first.empty());
+  return mask_cache.first;
+}
+
+// Returns the mask image corresponding to the given image |scale| and edge
+// pixel |size|. The mask must precisely match the properties of the image it
+// will be composited onto.
+const gfx::ImageSkiaRep& GetMaskAsImageSkiaRep(float scale,
+                                               int size_hint_in_dip) {
+  auto& mask_cache = GetMaskResourceIconCache();
+  const auto& scale_iter = mask_cache.second.find(scale);
+  if (scale_iter != mask_cache.second.end()) {
+    const auto& size_iter = scale_iter->second.find(size_hint_in_dip);
+    if (size_iter != scale_iter->second.end()) {
+      return size_iter->second;
+    }
+  }
+
+  auto& image_rep = mask_cache.second[scale][size_hint_in_dip];
+  image_rep = gfx::ImageSkiaRep(
+      skia::ImageOperations::Resize(GetMaskBitmap(),
+                                    skia::ImageOperations::RESIZE_LANCZOS3,
+                                    size_hint_in_dip, size_hint_in_dip),
+      scale);
+  return image_rep;
+}
 
 // Calls |callback| with the compressed icon |data|.
 void CompleteIconWithCompressed(apps::LoadIconCallback callback,
@@ -305,8 +304,6 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
   return image_data;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
   gfx::ImageSkia mask_image;
   for (const auto& it : scale_to_size) {
@@ -326,6 +323,7 @@ gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
       SK_ColorWHITE, image, LoadMaskImage(GetScaleToSize(image)));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::ImageSkia CompositeImagesAndApplyMask(
     const gfx::ImageSkia& foreground_image,
     const gfx::ImageSkia& background_image) {

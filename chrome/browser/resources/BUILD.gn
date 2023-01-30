@@ -21,6 +21,7 @@ group("resources") {
 
   if (!is_android) {
     public_deps += [
+      ":app_icon_resources",
       ":component_extension_resources",
       ":dev_ui_paks",
       "access_code_cast:resources",
@@ -170,6 +171,19 @@ if (!is_android) {
       "grit/component_extension_resources_map.cc",
       "grit/component_extension_resources_map.h",
       "component_extension_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
+
+  grit("app_icon_resources") {
+    source = "app_icon/app_icon_resources.grd"
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/app_icon_resources.h",
+      "grit/app_icon_resources_map.cc",
+      "grit/app_icon_resources_map.h",
+      "app_icon_resources_100_percent.pak",
+      "app_icon_resources_200_percent.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
   }
