@@ -372,6 +372,89 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPermissionsForOrigin) {
   // Check if the permissions of url1 is regranted.
   EXPECT_EQ(ContentSetting::CONTENT_SETTING_ALLOW,
             hcsm()->GetContentSetting(GURL(url1), GURL(url1), type));
+
+  // Undoing the changes should add url1 back to the list of revoked permissions
+  // and reset its permissions.
+  service()->UndoRegrantPermissionsForOrigin({type}, absl::nullopt,
+                                             url::Origin::Create(GURL(url1)));
+
+  hcsm()->GetSettingsForOneType(
+      ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+      &revoked_permissions_list);
+  EXPECT_EQ(2U, revoked_permissions_list.size());
+  EXPECT_EQ(ContentSetting::CONTENT_SETTING_ASK,
+            hcsm()->GetContentSetting(GURL(url1), GURL(url1), type));
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url1 = GURL("https://example1.com:443");
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  hcsm()->SetContentSettingDefaultScope(
+      url1, url1, ContentSettingsType::GEOLOCATION,
+      ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel 70 days through time so that the granted permission is revoked.
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+  // After regranting permissions they are not revoked again even after >60 days
+  // pass.
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+}
+
+TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(
+      content_settings::features::kSafetyCheckUnusedSitePermissions);
+
+  const GURL url1 = GURL("https://example1.com:443");
+  const ContentSettingsType type = ContentSettingsType::GEOLOCATION;
+  const content_settings::ContentSettingConstraints constraint{
+      .track_last_visit_for_autoexpiration = true};
+
+  hcsm()->SetContentSettingDefaultScope(
+      url1, url1, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // Travel 70 days through time so that the granted permission is revoked.
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+  const ContentSettingPatternSource revoked_permission =
+      GetRevokedUnusedPermissions(hcsm())[0];
+
+  // Permission remains revoked after regrant and undo.
+  content_settings::ContentSettingConstraints expiration_constraint = {
+      .expiration = revoked_permission.metadata.expiration};
+  service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
+  service()->UndoRegrantPermissionsForOrigin({type}, expiration_constraint,
+                                             url::Origin::Create(url1));
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
+
+  // Revoked permission is cleaned up after >30 days.
+  clock()->Advance(base::Days(40));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
+
+  // If that permission is granted again, it will still be autorevoked.
+  hcsm()->SetContentSettingDefaultScope(
+      url1, url1, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
+  clock()->Advance(base::Days(70));
+  service()->UpdateUnusedPermissionsForTesting();
+  EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
 }
 
 TEST_F(UnusedSitePermissionsServiceTest, NotRevokeNotificationPermission) {

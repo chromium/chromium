@@ -87,13 +87,21 @@ class UnusedSitePermissionsService
   // from revoked permissions list.
   void RegrantPermissionsForOrigin(const url::Origin& origin);
 
+  // Reverse changes made by |RegrantPermissionsForOrigin|. Adds this origin to
+  // the removed permissions list and resets its permissions.
+  void UndoRegrantPermissionsForOrigin(
+      const std::set<ContentSettingsType> permissions,
+      const absl::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const url::Origin origin);
+
   // Clear the list of revoked permissions so they will no longer be shown to
   // the user. Does not change permissions themselves.
   void ClearRevokedPermissionsList();
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::list<ContentSettingsType> permissions,
+      const std::set<ContentSettingsType> permissions,
       const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const url::Origin origin);
@@ -123,7 +131,7 @@ class UnusedSitePermissionsService
 
   // Stores revoked permissions data on HCSM.
   void StorePermissionInRevokedPermissionSetting(
-      const std::list<ContentSettingsType> permissions,
+      const std::set<ContentSettingsType> permissions,
       const absl::optional<content_settings::ContentSettingConstraints>
           constraint,
       const ContentSettingsPattern& primary_pattern,
