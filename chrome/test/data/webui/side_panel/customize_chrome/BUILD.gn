@@ -32,5 +32,7 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/side_panel/customize_chrome:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 }

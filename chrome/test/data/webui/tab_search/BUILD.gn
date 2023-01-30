@@ -29,5 +29,9 @@ build_webui_tests("build") {
             "$root_gen_dir/chrome/test/data/webui/metrics_reporter/tsc/*",
             target_gen_dir),
   ]
-  ts_deps = [ "//chrome/browser/resources/tab_search:build_ts" ]
+  ts_deps = [
+    "//chrome/browser/resources/tab_search:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
 }

@@ -242,7 +242,6 @@ ts_library("build_ts") {
       [ "test_api.test-mojom-webui.js" ] + test_files + app_management_tests
   deps = [
     "//chrome/test/data/webui:build_ts",
-    "//ui/webui/resources:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/mojo:library",
   ]
