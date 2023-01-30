@@ -556,9 +556,6 @@ class PLATFORM_EXPORT ResourceFetcher
   // The number of sub resource loads that a service worker fetch handler
   // called respondWith. i.e. no fallback to network.
   uint32_t number_of_subresource_loads_handled_by_service_worker_ = 0;
-
-  // NOTE: This must be the last member.
-  base::WeakPtrFactory<ResourceFetcher> weak_ptr_factory_{this};
 };
 
 class ResourceCacheValidationSuppressor {
