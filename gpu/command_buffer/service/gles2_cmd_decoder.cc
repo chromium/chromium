@@ -10507,7 +10507,7 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
       api()->glBindTextureFn(textarget, texture->service_id());
       bool rv = image->BindTexImage(textarget);
       DCHECK(rv) << "BindTexImage() failed";
-      texture->SetLevelImageState(textarget, 0, Texture::BOUND);
+      texture->MarkLevelImageBound(textarget, 0);
       if (!texture_unit) {
         RestoreCurrentTextureBindings(&state_, textarget,
                                       state_.active_texture_unit);

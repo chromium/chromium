@@ -332,8 +332,8 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   void BindToServiceId(GLuint service_id);
 #endif
 
-  // Set the ImageState for the image bound to the given level.
-  void SetLevelImageState(GLenum target, GLint level, ImageState state);
+  // Marks the image for the given level as bound.
+  void MarkLevelImageBound(GLenum target, GLint level);
 
   bool CompatibleWithSamplerUniformType(
       GLenum type,

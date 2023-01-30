@@ -1691,23 +1691,26 @@ TEST_F(TextureTest, GetLevelImage) {
   EXPECT_TRUE(texture->GetLevelImage(GL_TEXTURE_2D, 1) == nullptr);
 }
 
-TEST_F(TextureTest, SetLevelImageState) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+TEST_F(TextureTest, MarkLevelImageBound) {
   manager_->SetTarget(texture_ref_.get(), GL_TEXTURE_2D);
   manager_->SetLevelInfo(texture_ref_.get(), GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 1,
                          0, GL_RGBA, GL_UNSIGNED_BYTE, gfx::Rect(2, 2));
   Texture* texture = texture_ref_->texture();
-  // Set image, initially BOUND.
+  // Set image, initially unbound.
   scoped_refptr<gl::GLImage> image(new gl::GLImageStub);
-  manager_->SetBoundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
-                               image.get());
+  manager_->SetUnboundLevelImage(texture_ref_.get(), GL_TEXTURE_2D, 0,
+                                 image.get());
   Texture::ImageState state;
   texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
-  EXPECT_EQ(state, Texture::BOUND);
-  // Change the state.
-  texture->SetLevelImageState(GL_TEXTURE_2D, 0, Texture::COPIED);
+  EXPECT_EQ(state, Texture::UNBOUND);
+  // Mark the image as bound and verify that the state updates.
+  texture->MarkLevelImageBound(GL_TEXTURE_2D, 0);
   texture->GetLevelImage(GL_TEXTURE_2D, 0, &state);
-  EXPECT_EQ(state, Texture::COPIED);
+  EXPECT_EQ(state, Texture::BOUND);
 }
+#endif
+
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

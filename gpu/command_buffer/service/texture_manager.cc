@@ -1924,7 +1924,7 @@ void Texture::BindToServiceId(GLuint service_id) {
 }
 #endif
 
-void Texture::SetLevelImageState(GLenum target, GLint level, ImageState state) {
+void Texture::MarkLevelImageBound(GLenum target, GLint level) {
   DCHECK_GE(level, 0);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
   DCHECK_LT(face_index, face_infos_.size());
@@ -1933,7 +1933,7 @@ void Texture::SetLevelImageState(GLenum target, GLint level, ImageState state) {
   Texture::LevelInfo& info = face_infos_[face_index].level_infos[level];
   DCHECK_EQ(info.target, target);
   DCHECK_EQ(info.level, level);
-  info.image_state = state;
+  info.image_state = ImageState::BOUND;
 }
 
 const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
