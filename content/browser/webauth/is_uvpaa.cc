@@ -46,9 +46,11 @@ void IsUVPlatformAuthenticatorAvailable(
 
 #elif BUILDFLAG(IS_WIN)
 void IsUVPlatformAuthenticatorAvailable(
+    bool is_off_the_record,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::WinWebAuthnApiAuthenticator::
       IsUserVerifyingPlatformAuthenticatorAvailable(
+          is_off_the_record,
           AuthenticatorEnvironmentImpl::GetInstance()->win_webauthn_api(),
           std::move(callback));
 }

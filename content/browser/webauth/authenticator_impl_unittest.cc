@@ -53,6 +53,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
 #include "device/base/features.h"
@@ -1490,6 +1491,40 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
   EXPECT_FALSE(cb.value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+class OffTheRecordAuthenticatorImplTest : public AuthenticatorImplTest {
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    auto browser_context = std::make_unique<TestBrowserContext>();
+    browser_context->set_is_off_the_record(true);
+    return browser_context;
+  }
+};
+
+// Tests that IsUVPAA returns true if the version of Windows supports an
+// appropriate warning.
+TEST_F(OffTheRecordAuthenticatorImplTest, WinIsUVPAAIncognito) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  fake_win_webauthn_api_.set_available(true);
+  fake_win_webauthn_api_.set_is_uvpaa(true);
+
+  for (bool win_api_supports_incognito_warning : {false, true}) {
+    TestIsUvpaaCallback cb;
+    SCOPED_TRACE(win_api_supports_incognito_warning
+                     ? "supports incognito"
+                     : "does not support incognito");
+    fake_win_webauthn_api_.set_version(win_api_supports_incognito_warning
+                                           ? WEBAUTHN_API_VERSION_4
+                                           : WEBAUTHN_API_VERSION_3);
+    authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+    cb.WaitForCallback();
+    EXPECT_EQ(cb.value(), win_api_supports_incognito_warning);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // TestWebAuthenticationRequestProxy is a test fake implementation of the
 // WebAuthenticationRequestProxy embedder interface.

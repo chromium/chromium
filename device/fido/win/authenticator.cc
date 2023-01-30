@@ -48,6 +48,7 @@ struct PlatformCredentialListDeleter {
 
 // static
 void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
+    bool is_off_the_record,
     WinWebAuthnApi* api,
     base::OnceCallback<void(bool is_available)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -55,14 +56,19 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
       {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
-          [](WinWebAuthnApi* api) {
+          [](bool is_off_the_record, WinWebAuthnApi* api) {
             BOOL result;
-            return api && api->IsAvailable() &&
-                   api->IsUserVerifyingPlatformAuthenticatorAvailable(
+            if (!api || !api->IsAvailable()) {
+              return false;
+            }
+            if (is_off_the_record && api->Version() < WEBAUTHN_API_VERSION_4) {
+              return false;
+            }
+            return api->IsUserVerifyingPlatformAuthenticatorAvailable(
                        &result) == S_OK &&
                    result == TRUE;
           },
-          api),
+          is_off_the_record, api),
       std::move(callback));
 }
 

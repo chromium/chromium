@@ -1199,8 +1199,7 @@ void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
     return;
   }
 
-  // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode
-  // and, on Windows only, in Incognito.
+  // Check for a delegate override. Chrome overrides IsUVPAA() in Guest mode.
   absl::optional<bool> is_uvpaa_override =
       GetWebAuthenticationDelegate()
           ->IsUserVerifyingPlatformAuthenticatorAvailableOverride(
@@ -1224,7 +1223,8 @@ void AuthenticatorCommonImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
   IsUVPlatformAuthenticatorAvailable(GetBrowserContext(),
                                      std::move(uma_decorated_callback));
 #elif BUILDFLAG(IS_WIN)
-  IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
+  IsUVPlatformAuthenticatorAvailable(GetBrowserContext()->IsOffTheRecord(),
+                                     std::move(uma_decorated_callback));
 #elif BUILDFLAG(IS_CHROMEOS)
   IsUVPlatformAuthenticatorAvailable(std::move(uma_decorated_callback));
 #else
