@@ -110,9 +110,9 @@ android_resources("managed_prefs_java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/ChromeSwitchPreferenceTest.java",
   ]
   deps = [
     ":java",
@@ -162,10 +162,10 @@ android_library("test_support_java") {
   testonly = true
 
   sources = [
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/ManagedPreferenceTestDelegates.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/Matchers.java",
-    "widget/javatests/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
+    "widget/test_support_java/src/org/chromium/components/browser_ui/settings/BlankUiTestActivitySettingsTestRule.java",
+    "widget/test_support_java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceTestDelegates.java",
+    "widget/test_support_java/src/org/chromium/components/browser_ui/settings/Matchers.java",
+    "widget/test_support_java/src/org/chromium/components/browser_ui/settings/PlaceholderSettingsForTest.java",
   ]
 
   deps = [
@@ -187,9 +187,9 @@ android_library("test_support_java") {
 android_resources("java_test_resources") {
   testonly = true
   sources = [
-    "widget/javatests/res/layout/chrome_managed_preference_with_custom_layout.xml",
-    "widget/javatests/res/xml/test_chrome_base_preference_screen.xml",
-    "widget/javatests/res/xml/test_chrome_switch_preference_screen.xml",
+    "widget/java_test_resources/res/layout/chrome_managed_preference_with_custom_layout.xml",
+    "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
+    "widget/java_test_resources/res/xml/test_chrome_switch_preference_screen.xml",
   ]
   deps = [
     ":java_resources",
