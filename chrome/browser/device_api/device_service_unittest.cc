@@ -72,11 +72,11 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetAllowedOrigin() {
-    base::Value allowed_origins(base::Value::Type::LIST);
-    allowed_origins.Append(base::Value(kTrustedUrl));
-    allowed_origins.Append(base::Value(kKioskAppInstallUrl));
-    profile()->GetPrefs()->Set(prefs::kDeviceAttributesAllowedForOrigins,
-                               allowed_origins);
+    base::Value::List allowed_origins;
+    allowed_origins.Append(kTrustedUrl);
+    allowed_origins.Append(kKioskAppInstallUrl);
+    profile()->GetPrefs()->SetList(prefs::kDeviceAttributesAllowedForOrigins,
+                                   std::move(allowed_origins));
   }
 
   void RemoveAllowedOrigin() {
