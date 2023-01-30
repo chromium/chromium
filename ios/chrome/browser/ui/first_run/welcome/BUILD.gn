@@ -7,8 +7,6 @@ source_set("welcome") {
   sources = [
     "tos_coordinator.h",
     "tos_coordinator.mm",
-    "welcome_screen_coordinator.h",
-    "welcome_screen_coordinator.mm",
   ]
   deps = [
     ":welcome_ui",
@@ -37,15 +35,12 @@ source_set("welcome") {
 source_set("welcome_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    # TODO(crbug.com/1407658): Move checkbox_button.* to
+    # //ios/showcase/first_run/ as this no longer used by the //ios//chrome.
     "checkbox_button.h",
     "checkbox_button.mm",
     "tos_view_controller.h",
     "tos_view_controller.mm",
-    "welcome_screen_consumer.h",
-    "welcome_screen_mediator.h",
-    "welcome_screen_mediator.mm",
-    "welcome_screen_view_controller.h",
-    "welcome_screen_view_controller.mm",
   ]
   deps = [
     "//base",
@@ -60,9 +55,7 @@ source_set("welcome_ui") {
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:utils",
     "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
-    "//ios/chrome/browser/ui/first_run/resources:welcome_screen_banner",
     "//ios/chrome/browser/ui/first_run/uma",
-    "//ios/chrome/browser/ui/settings/resources:enterprise_icon",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",

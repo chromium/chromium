@@ -32,16 +32,6 @@ imageset("read_more_arrow") {
   ]
 }
 
-imageset("welcome_screen_banner") {
-  sources = [
-    "welcome_screen_banner.imageset/Contents.json",
-    "welcome_screen_banner.imageset/welcome_screen_banner_dark@2x.png",
-    "welcome_screen_banner.imageset/welcome_screen_banner_dark@3x.png",
-    "welcome_screen_banner.imageset/welcome_screen_banner_light@2x.png",
-    "welcome_screen_banner.imageset/welcome_screen_banner_light@3x.png",
-  ]
-}
-
 imageset("welcome_metrics_checkmark") {
   sources = [
     "welcome_metrics_checkmark.imageset/Contents.json",
