@@ -3603,7 +3603,7 @@
   {
     "name": "expanded-tab-strip",
     "owners": [ "rkgibson@google.com", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 116
   },
   {
     "name": "experience-kit-apple-calendar",
@@ -6996,7 +6996,7 @@
   {
     "name": "use-sf-symbols",
     "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 113
   },
   {
     "name": "use-sf-symbols-omnibox",
