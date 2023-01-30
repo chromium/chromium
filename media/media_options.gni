@@ -16,6 +16,18 @@ import("//third_party/libgav1/options.gni")
 # This flag sets defaults for the current generation of cast devices.
 is_cast_media_device = is_castos || is_cast_android
 
+# Out-of-process video decoding is a feature specific to Linux and ChromeOS
+# which makes the interaction with platform drivers (for the purposes of
+# hardware accelerated video decoding) happen on utility processes for stability
+# and security purposes. When |allow_oop_video_decoder| is true, code to
+# implement this feature is compiled. Note that even if
+# |allow_oop_video_decoder| is true, the feature may be disabled by a runtime
+# flag.
+#
+# TODO(b/195769334): finish replacing usages of (is_linux || is_chromeos) with
+# allow_oop_video_decoder where appropriate.
+allow_oop_video_decoder = is_linux || is_chromeos
+
 declare_args() {
   # Allows distributions to link pulseaudio directly (DT_NEEDED) instead of
   # using dlopen. This helps with automated detection of ABI mismatches and
@@ -120,49 +132,40 @@ declare_args() {
       (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
 }
 
-assert(
-    !enable_platform_ac3_eac3_audio || proprietary_codecs,
-    "proprietary_codecs required for enable_platform_ac3_eac3_audio")
-assert(
-    !enable_platform_mpeg_h_audio || proprietary_codecs,
-    "proprietary_codecs required for enable_platform_mpeg_h_audio")
-assert(
-    !enable_mse_mpeg2ts_stream_parser || proprietary_codecs,
-    "proprietary_codecs required for enable_mse_mpeg2ts_stream_parser")
-assert(
-    !enable_platform_dolby_vision || proprietary_codecs,
-    "proprietary_codecs required for enable_platform_dolby_vision")
+assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,
+       "proprietary_codecs required for enable_platform_ac3_eac3_audio")
+assert(!enable_platform_mpeg_h_audio || proprietary_codecs,
+       "proprietary_codecs required for enable_platform_mpeg_h_audio")
+assert(!enable_mse_mpeg2ts_stream_parser || proprietary_codecs,
+       "proprietary_codecs required for enable_mse_mpeg2ts_stream_parser")
+assert(!enable_platform_dolby_vision || proprietary_codecs,
+       "proprietary_codecs required for enable_platform_dolby_vision")
 assert(
     !enable_platform_encrypted_dolby_vision || enable_platform_dolby_vision,
     "enable_platform_dolby_vision required for enable_platform_encrypted_dolby_vision")
 assert(!enable_hls_sample_aes || proprietary_codecs,
        "proprietary_codecs required for enable_hls_sample_aes")
-assert(
-    !enable_platform_dts_audio || proprietary_codecs,
-    "proprietary_codecs required for enable_platform_dts_audio")
+assert(!enable_platform_dts_audio || proprietary_codecs,
+       "proprietary_codecs required for enable_platform_dts_audio")
 
-assert(
-    !enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
-    "enable_mse_mpeg2ts_stream_parser required for enable_hls_sample_aes")
+assert(!enable_hls_sample_aes || enable_mse_mpeg2ts_stream_parser,
+       "enable_mse_mpeg2ts_stream_parser required for enable_hls_sample_aes")
 
-assert(
-    !enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
-    "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
+assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
+       "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
 
 assert(!enable_platform_hevc || proprietary_codecs,
        "proprietary_codecs required for enable_platform_hevc")
 
-assert(
-    !enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
-    "enable_platform_hevc required for enable_hevc_parser_and_hw_decoder")
+assert(!enable_hevc_parser_and_hw_decoder || enable_platform_hevc,
+       "enable_platform_hevc required for enable_hevc_parser_and_hw_decoder")
 
 # Most DolbyVision profiles (4, 5, 7, 8, not 9) require HEVC support. It's very
 # unlikely that we support DolbyVision on a new platform without requiring HEVC
 # support. See for details:
 # https://professionalsupport.dolby.com/s/article/What-is-Dolby-Vision-Profile
-assert(
-    !enable_platform_dolby_vision || enable_platform_hevc,
-    "enable_platform_hevc required for enable_platform_dolby_vision")
+assert(!enable_platform_dolby_vision || enable_platform_hevc,
+       "enable_platform_hevc required for enable_platform_dolby_vision")
 
 # Use another declare_args() to pick up possible overrides of |use_cras|.
 declare_args() {
@@ -318,11 +321,11 @@ declare_args() {
 declare_args() {
   # Currently it is available on Win, Mac, Linux and ChromeOS since it requires
   # the audio service to run in a separate process.
-  # ChromeOS(http://crbug/1407588):  
+  # ChromeOS(http://crbug/1407588):
   # On CromeOS we are experimenting with the same set of systems CRAS runs on
   # ie. is_chromeos_device.
   chrome_wide_echo_cancellation_supported =
-    is_win || is_mac || is_linux || is_chromeos_device
+      is_win || is_mac || is_linux || is_chromeos_device
 }
 
 # Do not expand this list without double-checking with OWNERS, this is a list of

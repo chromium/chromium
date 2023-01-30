@@ -156,7 +156,27 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
   static std::vector<Fourcc> DefaultPreferredRenderableFourccs();
 
+  // Ensures that the video decoder supported configurations are known. When
+  // they are, |cb| is called with a PendingRemote that corresponds to the same
+  // connection as |oop_video_decoder| (which may be |oop_video_decoder|
+  // itself). If |oop_video_decoder| is valid, the supported configurations are
+  // those of an out-of-process video decoder (and in this case,
+  // |oop_video_decoder| may be used internally to query those configurations).
+  // Otherwise, the supported configurations are those of an in-process,
+  // platform-specific decoder (e.g., VaapiVideoDecoder or V4L2VideoDecoder).
+  //
+  // |cb| is called with |oop_video_decoder| before NotifySupportKnown() returns
+  // if the supported configurations are already known.
+  //
+  // This method is thread- and sequence-safe. |cb| is always called on the same
+  // sequence as NotifySupportKnown().
+  static void NotifySupportKnown(
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+      base::OnceCallback<
+          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
+
   static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs(
+      VideoDecoderType decoder_type,
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
   ~VideoDecoderPipeline() override;

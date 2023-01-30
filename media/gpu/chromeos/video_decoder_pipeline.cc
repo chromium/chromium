@@ -238,17 +238,40 @@ std::vector<Fourcc> VideoDecoderPipeline::DefaultPreferredRenderableFourccs() {
 }
 
 // static
+void VideoDecoderPipeline::NotifySupportKnown(
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    base::OnceCallback<
+        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+  if (oop_video_decoder) {
+    OOPVideoDecoder::NotifySupportKnown(std::move(oop_video_decoder),
+                                        std::move(cb));
+    return;
+  }
+  std::move(cb).Run(std::move(oop_video_decoder));
+}
+
+// static
 absl::optional<SupportedVideoDecoderConfigs>
 VideoDecoderPipeline::GetSupportedConfigs(
+    VideoDecoderType decoder_type,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  absl::optional<SupportedVideoDecoderConfigs> configs =
-  // TODO(b/195769334): figure out the best way to query the supported
-  // configurations when using an out-of-process video decoder.
+  absl::optional<SupportedVideoDecoderConfigs> configs;
+  switch (decoder_type) {
+    case VideoDecoderType::kOutOfProcess:
+      configs = OOPVideoDecoder::GetSupportedConfigs();
+      break;
 #if BUILDFLAG(USE_VAAPI)
-      VaapiVideoDecoder::GetSupportedConfigs();
+    case VideoDecoderType::kVaapi:
+      configs = VaapiVideoDecoder::GetSupportedConfigs();
+      break;
 #elif BUILDFLAG(USE_V4L2_CODEC)
-      V4L2VideoDecoder::GetSupportedConfigs();
+    case VideoDecoderType::kV4L2:
+      configs = V4L2VideoDecoder::GetSupportedConfigs();
+      break;
 #endif
+    default:
+      configs = absl::nullopt;
+  }
 
   if (!configs)
     return absl::nullopt;
@@ -422,7 +445,8 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
   // which must provide such information.
   const auto supported_configs =
       supported_configs_for_testing_.empty()
-          ? VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds_)
+          ? VideoDecoderPipeline::GetSupportedConfigs(GetDecoderType(),
+                                                      gpu_workarounds_)
           : supported_configs_for_testing_;
   if (!supported_configs.has_value()) {
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);

@@ -84,6 +84,26 @@ struct VideoDecoderTraits {
 // Creates a platform-specific media::VideoDecoder.
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(VideoDecoderTraits&);
 
+#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+// Ensures that the platform video decoder supported configurations are known.
+// When they are, |cb| is called with a PendingRemote that corresponds to the
+// same connection as |oop_video_decoder| (which may be |oop_video_decoder|
+// itself). |oop_video_decoder| may be used internally to query the supported
+// configurations of an out-of-process video decoder.
+//
+// |cb| is called with |oop_video_decoder| before NotifyPlatformDecoderSupport()
+// returns if the supported configurations are already known.
+//
+// This function is thread- and sequence-safe. |cb| is always called on the same
+// sequence as NotifyPlatformDecoderSupport().
+void NotifyPlatformDecoderSupport(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GPUInfo& gpu_info,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    base::OnceCallback<
+        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
+#endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+
 // Queries the platform-specific VideoDecoder implementation for its
 // supported profiles. Many platforms fall back to use the VDAVideoDecoder
 // so that implementation is shared, and its supported configs can be
@@ -144,6 +164,12 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
   std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner) final;
 
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  void NotifyDecoderSupportKnown(
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(
+          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) final;
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       MediaLog* media_log,

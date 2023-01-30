@@ -214,6 +214,24 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
   }
 }
 
+void NotifyPlatformDecoderSupport(
+    const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GPUInfo& gpu_info,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+    base::OnceCallback<
+        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+  switch (GetActualPlatformDecoderImplementation(gpu_preferences, gpu_info)) {
+    case VideoDecoderType::kOutOfProcess:
+    case VideoDecoderType::kVaapi:
+    case VideoDecoderType::kV4L2:
+      VideoDecoderPipeline::NotifySupportKnown(std::move(oop_video_decoder),
+                                               std::move(cb));
+      break;
+    default:
+      std::move(cb).Run(std::move(oop_video_decoder));
+  }
+}
+
 absl::optional<SupportedVideoDecoderConfigs>
 GetPlatformSupportedVideoDecoderConfigs(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
@@ -232,7 +250,8 @@ GetPlatformSupportedVideoDecoderConfigs(
     case VideoDecoderType::kOutOfProcess:
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2:
-      return VideoDecoderPipeline::GetSupportedConfigs(gpu_workarounds);
+      return VideoDecoderPipeline::GetSupportedConfigs(decoder_implementation,
+                                                       gpu_workarounds);
     default:
       return absl::nullopt;
   }

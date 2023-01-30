@@ -43,6 +43,30 @@ class OOPVideoDecoder : public VideoDecoderMixin,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       base::WeakPtr<VideoDecoderMixin::Client> client);
 
+  // The first time this is called, |oop_video_decoder| will be used to query
+  // the supported configurations of the out-of-process video decoder. When
+  // those are obtained, they will be cached and |cb| will be called with a
+  // PendingRemote that corresponds to the same pipe as |oop_video_decoder|.
+  //
+  // If a query is in progress, this method will store |cb|. |cb| will then be
+  // called with |oop_video_decoder| once the query is done.
+  //
+  // If the supported configurations are already known, this method will
+  // immediately call |cb|.
+  //
+  // Threading considerations: this method is thread- and sequence-safe. |cb|
+  // will be called on the same sequence as the one NotifySupportKnown() is
+  // called on.
+  static void NotifySupportKnown(
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
+      base::OnceCallback<
+          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb);
+
+  // Returns the cached supported configurations of the out-of-process video
+  // decoder if known (absl::nullopt otherwise). This method is thread- and
+  // sequence-safe.
+  static absl::optional<SupportedVideoDecoderConfigs> GetSupportedConfigs();
+
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,
                   bool low_delay,

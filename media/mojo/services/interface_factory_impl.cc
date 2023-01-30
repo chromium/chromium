@@ -85,10 +85,24 @@ void InterfaceFactoryImpl::CreateVideoDecoder(
         dst_video_decoder) {
   DVLOG(2) << __func__;
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+  // When out-of-process video decoding is enabled, we need to ensure that we
+  // know the supported video decoder configurations prior to creating the
+  // MojoVideoDecoderService. That way, the MojoVideoDecoderService won't need
+  // to talk to the out-of-process video decoder to find out the supported
+  // configurations (this would be a problem because the MojoVideoDecoderService
+  // may not have an easy way to talk to the out-of-process decoder at the time
+  // the supported configurations are needed).
+  mojo_media_client_->NotifyDecoderSupportKnown(
+      std::move(dst_video_decoder),
+      base::BindOnce(&InterfaceFactoryImpl::FinishCreatingVideoDecoder,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
+#else
   video_decoder_receivers_.Add(std::make_unique<MojoVideoDecoderService>(
                                    mojo_media_client_, &cdm_service_context_,
                                    std::move(dst_video_decoder)),
                                std::move(receiver));
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 }
 
@@ -340,5 +354,21 @@ void InterfaceFactoryImpl::OnCdmServiceInitialized(
 }
 
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
+
+#if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
+void InterfaceFactoryImpl::FinishCreatingVideoDecoder(
+    mojo::PendingReceiver<mojom::VideoDecoder> receiver,
+    mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+        dst_video_decoder) {
+#if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+  video_decoder_receivers_.Add(std::make_unique<MojoVideoDecoderService>(
+                                   mojo_media_client_, &cdm_service_context_,
+                                   std::move(dst_video_decoder)),
+                               std::move(receiver));
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+}
+#endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 }  // namespace media

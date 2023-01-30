@@ -52,7 +52,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
       case VideoDecoderType::kVaapi:
       case VideoDecoderType::kV4L2:
         configs = VideoDecoderPipeline::GetSupportedConfigs(
-            gpu::GpuDriverBugWorkarounds());
+            GetDecoderImplementationType(), gpu::GpuDriverBugWorkarounds());
         break;
       case VideoDecoderType::kVda: {
         VideoDecodeAccelerator::Capabilities capabilities =
