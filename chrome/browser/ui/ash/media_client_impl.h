@@ -144,9 +144,10 @@ class MediaClientImpl : public ash::MediaClient,
                                  const std::string& device_name,
                                  bool resurface = true);
 
-  // Removes the camera notification with the give id `notification_id` and
-  // updates the internal data structures of the class accordingly.
-  void RemoveCameraOffNotificationByID(const std::string& notification_id);
+  // Removes the camera notification for device with id `device_id` and returns
+  // iterator to the next device id in `devices_having_visible_notification_`.
+  base::flat_set<std::string>::iterator RemoveCameraOffNotificationForDevice(
+      const std::string& device_id);
 
   void OnGetSourceInfosByCameraHWPrivacySwitchStateChanged(
       const std::string& device_id,
@@ -204,9 +205,9 @@ class MediaClientImpl : public ash::MediaClient,
   base::flat_map<cros::mojom::CameraClientType, base::flat_set<std::string>>
       devices_used_by_client_;
 
-  // IDs of the existing camera hardware switch notifications in the message
-  // center.
-  base::flat_set<std::string> existing_notifications_;
+  // Set of IDs of the camera devices having a visible notification in the
+  // message center.
+  base::flat_set<std::string> devices_having_visible_notification_;
 
   // Stores the state of the camera software privacy switch state locally.
   cros::mojom::CameraPrivacySwitchState camera_sw_privacy_switch_state_ =
