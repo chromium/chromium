@@ -1653,17 +1653,14 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(initial_style.get()));
 
+  const ComputedStyle* document_style = GetDocument().GetComputedStyle();
   ComputedStyleBuilder builder = CreateComputedStyleBuilder();
-  const ComputedStyle* root_element_style =
-      state.RootElementStyle() ? state.RootElementStyle()
-                               : GetDocument().GetComputedStyle();
-  DCHECK(root_element_style);
-  builder.InheritFrom(*root_element_style);
+  builder.InheritFrom(*document_style);
   state.SetStyle(builder.TakeStyle());
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  PageRuleCollector collector(root_element_style, page_index, page_name,
+  PageRuleCollector collector(document_style, page_index, page_name,
                               cascade.MutableMatchResult());
 
   collector.MatchPageRules(
