@@ -319,12 +319,14 @@ bool ImageContextImpl::BindTextureIfNecessary(gpu::TextureBase* texture_base,
                                               gfx::Size* size) {
   if (texture_base->GetType() != gpu::TextureBase::Type::kValidated)
     return false;
+  auto* texture = gpu::gles2::Texture::CheckedCast(texture_base);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // If a texture is validated and bound to an image, we may defer copying the
   // image to the texture until the texture is used. It is for implementing low
   // latency drawing (e.g. fast ink) and avoiding unnecessary texture copy. So
   // we need check the texture image state, and bind the image to the
   // texture if necessary.
-  auto* texture = gpu::gles2::Texture::CheckedCast(texture_base);
   if (texture->HasUnboundLevelImage(GL_TEXTURE_2D, 0)) {
     auto* image = texture->GetLevelImage(GL_TEXTURE_2D, 0);
     glBindTexture(texture_base->target(), texture_base->service_id());
@@ -333,6 +335,8 @@ bool ImageContextImpl::BindTextureIfNecessary(gpu::TextureBase* texture_base,
       return false;
     }
   }
+#endif
+
   GLsizei temp_width, temp_height;
   texture->GetLevelSize(texture_base->target(), 0 /* level */, &temp_width,
                         &temp_height, nullptr /* depth */);

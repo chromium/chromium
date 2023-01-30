@@ -10492,6 +10492,9 @@ void GLES2DecoderImpl::PerformanceWarning(
 bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
                                               GLenum textarget,
                                               GLuint texture_unit) {
+  // TODO(crbug.com/1323341): Have this whole method exist only on Win/Mac and
+  // push ifdef's out to callsites.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Image is already in use if texture is attached to a framebuffer.
   if (texture && !texture->IsAttachedToFramebuffer()) {
     if (texture->HasUnboundLevelImage(textarget, 0)) {
@@ -10523,6 +10526,7 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
     UMA_HISTOGRAM_BOOLEAN(
         "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
   }
+#endif
 
   return false;
 }

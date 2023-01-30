@@ -151,10 +151,12 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 class GPU_GLES2_EXPORT Texture final : public TextureBase {
  public:
   enum ImageState {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // If an image is associated with the texture and image state is UNBOUND,
     // then sampling out of the texture or using it as a target for drawing
     // will not read/write from/to the image.
     UNBOUND,
+#endif
     // If image state is BOUND, then sampling from the texture will return the
     // contents of the image and using it as a target will modify the image.
     BOUND,
@@ -334,8 +336,10 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   void BindToServiceId(GLuint service_id);
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Marks the image for the given level as bound.
   void MarkLevelImageBound(GLenum target, GLint level);
+#endif
 
   bool CompatibleWithSamplerUniformType(
       GLenum type,
@@ -345,9 +349,11 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // does not exist.
   gl::GLImage* GetLevelImage(GLint target, GLint level) const;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Returns true iff (a) there is an image associated with the particular
   // level, and (b) the image is unbound.
   bool HasUnboundLevelImage(GLint target, GLint level) const;
+#endif
 
   bool HasImages() const {
     return has_images_;

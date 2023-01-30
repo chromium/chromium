@@ -1914,6 +1914,7 @@ void Texture::BindToServiceId(GLuint service_id) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 void Texture::MarkLevelImageBound(GLenum target, GLint level) {
   DCHECK_GE(level, 0);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
@@ -1925,6 +1926,7 @@ void Texture::MarkLevelImageBound(GLenum target, GLint level) {
   DCHECK_EQ(info.level, level);
   info.image_state = ImageState::BOUND;
 }
+#endif
 
 const Texture::LevelInfo* Texture::GetLevelInfo(GLint target,
                                                 GLint level) const {
@@ -1951,6 +1953,7 @@ gl::GLImage* Texture::GetLevelImage(GLint target, GLint level) const {
   return info->image.get();
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
   const LevelInfo* info = GetLevelInfo(target, level);
   if (!info) {
@@ -1965,6 +1968,7 @@ bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
   DCHECK(info->image_state != ImageState::NOIMAGE);
   return info->image_state == ImageState::UNBOUND;
 }
+#endif
 
 void Texture::DumpLevelMemory(base::trace_event::ProcessMemoryDump* pmd,
                               uint64_t client_tracing_id,

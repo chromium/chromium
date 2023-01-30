@@ -286,8 +286,6 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   EXPECT_TRUE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
-#else
-  EXPECT_FALSE(texture_ref->texture()->HasUnboundLevelImage(target, 0));
 #endif
 
   EXPECT_CALL(*gl_, DeleteTextures(1, _)).Times(1).RetiresOnSaturation();
