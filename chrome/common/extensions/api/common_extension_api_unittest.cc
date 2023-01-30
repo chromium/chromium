@@ -473,9 +473,9 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
   manifest.Set("version", "1.0");
   manifest.Set("manifest_version", 2);
   {
-    base::Value permissions_list(base::Value::Type::LIST);
-    for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list.Append(*i);
+    base::Value::List permissions_list;
+    for (const auto& i : permissions) {
+      permissions_list.Append(i);
     }
     manifest.Set("permissions", std::move(permissions_list));
   }
@@ -590,9 +590,9 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
   app.Set("background", std::move(background));
   values.Set(manifest_keys::kApp, std::move(app));
   {
-    base::Value permissions_list(base::Value::Type::LIST);
-    for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list.Append(*i);
+    base::Value::List permissions_list;
+    for (const auto& i : permissions) {
+      permissions_list.Append(i);
     }
     values.Set("permissions", std::move(permissions_list));
   }
