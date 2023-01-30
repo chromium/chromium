@@ -5,12 +5,15 @@
 #include "components/viz/service/debugger/viz_debugger_unittests/viz_debugger_unittest_base.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/codec/SkCodec.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if VIZ_DEBUGGER_IS_ON()
@@ -209,25 +212,31 @@ void VisualDebuggerTestBase::GetFrameData(bool clear_cache) {
   if (buffer_map_dict) {
     for (base::Value::Dict::const_iterator itr = buffer_map_dict->begin();
          itr != buffer_map_dict->end(); itr++) {
-      const base::Value::Dict* buffer_dict =
-          buffer_map_dict->FindDict(itr->first);
-      EXPECT_TRUE(buffer_dict);
-      int width = buffer_dict->FindInt("width").value_or(kNoVal);
-      int height = buffer_dict->FindInt("height").value_or(kNoVal);
-      const base::Value::List* buffer_info = buffer_dict->FindList("buffer");
-      EXPECT_TRUE(buffer_info);
+      EXPECT_TRUE(itr->second.is_string());
+      const std::string& image_data_uri = itr->second.GetString();
+
+      // We expect |buffer_map_dict| contains base64-encoded data URIs. We only
+      // need to look at the base64-encoded data since |SkCodec| can decode
+      // without extra metadata about the image.
+      constexpr const char* kDataUriPrefix = "data:image/png;base64,";
+      EXPECT_TRUE(image_data_uri.starts_with(kDataUriPrefix));
+      base::StringPiece image_base64_encoded =
+          base::StringPiece(image_data_uri).substr(strlen(kDataUriPrefix));
+      const absl::optional<std::vector<uint8_t>> image_bytes =
+          base::Base64Decode(image_base64_encoded);
+      EXPECT_TRUE(image_bytes.has_value());
+
+      // |MakeWithoutCopy| is safe because we expect to be done decoding |data|
+      // into |buff.bitmap| before we release |image_bytes|.
+      sk_sp<SkData> data =
+          SkData::MakeWithoutCopy(image_bytes->data(), image_bytes->size());
+      std::unique_ptr<SkCodec> codec = SkCodec::MakeFromData(data);
+
       VizDebuggerInternal::BufferInfo buff;
-      buff.bitmap.setInfo(SkImageInfo::Make(
-          width, height, kBGRA_8888_SkColorType, kUnpremul_SkAlphaType));
-      buff.bitmap.allocPixels();
-      for (size_t i = 0; i < buffer_info->size() / 4; i++) {
-        uint8_t temp1 = (*buffer_info)[i * 4].GetInt();
-        uint8_t temp2 = (*buffer_info)[i * 4 + 1].GetInt();
-        uint8_t temp3 = (*buffer_info)[i * 4 + 2].GetInt();
-        uint8_t temp4 = (*buffer_info)[i * 4 + 3].GetInt();
-        *buff.bitmap.getAddr32(i % width, i / width) =
-            SkColorSetARGB(temp4, temp1, temp2, temp3);
-      }
+      buff.bitmap.allocPixels(codec->getInfo());
+      const SkCodec::Result result = codec->getPixels(buff.bitmap.pixmap());
+      EXPECT_EQ(SkCodec::Result::kSuccess, result);
+
       int id;
       base::StringToInt(itr->first, &id);
       VizDebuggerInternal::Buffer buffer;

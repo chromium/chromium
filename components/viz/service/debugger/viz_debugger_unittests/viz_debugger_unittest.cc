@@ -226,9 +226,8 @@ TEST_F(VisualDebuggerTest, SingleBufferSync) {
   VizDebuggerInternal::BufferInfo buffer_info;
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
-  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
-                                               kBGRA_8888_SkColorType,
-                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.setInfo(
+      SkImageInfo::MakeN32(kBufferWidth, kBufferHeight, kUnpremul_SkAlphaType));
   buffer_info.bitmap.allocPixels();
   const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
   buffer_info.bitmap.eraseColor(kFillColor);
@@ -269,8 +268,7 @@ TEST_F(VisualDebuggerTest, SingleBufferSync) {
     EXPECT_EQ(pixmap.info().height(), kBufferHeight);
     for (int j = 0; j < pixmap.height(); j++) {
       for (int i = 0; i < pixmap.width(); i++) {
-        auto color = *pixmap.addr32(i, j);
-        EXPECT_EQ(kFillColor, color);
+        EXPECT_EQ(kFillColor, pixmap.getColor(i, j));
       }
     }
   }
@@ -286,9 +284,8 @@ TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
   VizDebuggerInternal::BufferInfo buffer_info;
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
-  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
-                                               kBGRA_8888_SkColorType,
-                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.setInfo(
+      SkImageInfo::MakeN32(kBufferWidth, kBufferHeight, kUnpremul_SkAlphaType));
   buffer_info.bitmap.allocPixels();
   const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
   buffer_info.bitmap.eraseColor(kFillColor);
@@ -328,8 +325,7 @@ TEST_F(VisualDebuggerTest, MultipleBuffersSync) {
     EXPECT_EQ(pixmap.info().height(), kBufferHeight);
     for (int j = 0; j < pixmap.height(); j++) {
       for (int i = 0; i < pixmap.width(); i++) {
-        auto color = *pixmap.addr32(i, j);
-        EXPECT_EQ(kFillColor, color);
+        EXPECT_EQ(kFillColor, pixmap.getColor(i, j));
       }
     }
   }
@@ -345,9 +341,8 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
   VizDebuggerInternal::BufferInfo buffer_info;
   const int kBufferWidth = 4;
   const int kBufferHeight = 8;
-  buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
-                                               kBGRA_8888_SkColorType,
-                                               kUnpremul_SkAlphaType));
+  buffer_info.bitmap.setInfo(
+      SkImageInfo::MakeN32(kBufferWidth, kBufferHeight, kUnpremul_SkAlphaType));
   buffer_info.bitmap.allocPixels();
   const auto kFillColor = SkColorSetARGB(0xFF, 0x43, 0x67, 0xAA);
   buffer_info.bitmap.eraseColor(kFillColor);
@@ -392,8 +387,7 @@ TEST_F(VisualDebuggerTest, SingleBufferAsync) {
       EXPECT_EQ(pixmap.info().height(), kBufferHeight);
       for (int j = 0; j < pixmap.height(); j++) {
         for (int i = 0; i < pixmap.width(); i++) {
-          auto color = *pixmap.addr32(i, j);
-          EXPECT_EQ(kFillColor, color);
+          EXPECT_EQ(kFillColor, pixmap.getColor(i, j));
         }
       }
     }
@@ -419,9 +413,8 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
 
     for (auto&& each : test_buffers_color) {
       VizDebuggerInternal::BufferInfo buffer_info;
-      buffer_info.bitmap.setInfo(SkImageInfo::Make(kBufferWidth, kBufferHeight,
-                                                   kBGRA_8888_SkColorType,
-                                                   kUnpremul_SkAlphaType));
+      buffer_info.bitmap.setInfo(SkImageInfo::MakeN32(
+          kBufferWidth, kBufferHeight, kUnpremul_SkAlphaType));
       buffer_info.bitmap.allocPixels();
       buffer_info.bitmap.eraseColor(each.second);
       DBG_COMPLETE_BUFFERS(each.first, buffer_info);
@@ -465,8 +458,8 @@ TEST_F(VisualDebuggerTest, MultipleBuffersAsync) {
         EXPECT_EQ(pixmap.info().height(), kBufferHeight);
         for (int jj = 0; jj < pixmap.height(); jj++) {
           for (int ii = 0; ii < pixmap.width(); ii++) {
-            auto color = *pixmap.addr32(ii, jj);
-            EXPECT_EQ(test_buffers_color[buffers_[i].id], color);
+            EXPECT_EQ(test_buffers_color[buffers_[i].id],
+                      pixmap.getColor(ii, jj));
           }
         }
       }

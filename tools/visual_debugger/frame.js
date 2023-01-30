@@ -84,12 +84,12 @@ class DrawFrame {
     }
 
     for (let buff in this.buffer_map) {
-      let image = new ImageData(Uint8ClampedArray
-                                  .from(this.buffer_map[buff]["buffer"]),
-                                this.buffer_map[buff]["width"],
-                                this.buffer_map[buff]["height"]);
-      createImageBitmap(image)
-        .then(res => {
+      // |buffer_map| contains data URIs, which we |fetch| to get a |Blob| to
+      // create an |ImageBitmap| with.
+      fetch(this.buffer_map[buff])
+        .then((res) => res.blob())
+        .then((blob) => createImageBitmap(blob))
+        .then((res) => {
           DrawFrame.buffer_map[buff] = res;
           return res;
         });

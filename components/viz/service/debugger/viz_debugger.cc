@@ -7,11 +7,14 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "components/viz/service/debugger/viz_debugger.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkSwizzle.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 #if VIZ_DEBUGGER_IS_ON()
 
@@ -175,24 +178,19 @@ base::Value VizDebugger::FrameAsJson(const uint64_t counter,
   base::Value::Dict buff_map;
 
   for (auto&& each : buffers_) {
-    base::Value::Dict dict;
-    auto& pixmap = each.buffer_info.bitmap.pixmap();
-    dict.Set("width", pixmap.width());
-    dict.Set("height", pixmap.height());
-    base::Value::List lst;
-
-    for (int j = 0; j < pixmap.height(); j++) {
-      for (int i = 0; i < pixmap.width(); i++) {
-        auto color = *pixmap.addr32(i, j);
-        lst.Append(static_cast<int>(SkColorGetR(color)));
-        lst.Append(static_cast<int>(SkColorGetG(color)));
-        lst.Append(static_cast<int>(SkColorGetB(color)));
-        lst.Append(static_cast<int>(SkColorGetA(color)));
-      }
+    SkDynamicMemoryWStream stream;
+    bool result = SkPngEncoder::Encode(
+        &stream, each.buffer_info.bitmap.pixmap(), SkPngEncoder::Options());
+    if (!result) {
+      DLOG(ERROR) << "encode failed";
+      continue;
     }
-
-    dict.Set("buffer", std::move(lst));
-    buff_map.Set(base::NumberToString(each.id), std::move(dict));
+    sk_sp<SkData> data = stream.detachAsData();
+    std::string uri =
+        "data:image/png;base64," +
+        base::Base64Encode(base::span<const uint8_t>(
+            static_cast<const uint8_t*>(data->data()), data->size()));
+    buff_map.Set(base::NumberToString(each.id), std::move(uri));
   }
 
   global_dict.Set("buff_map", std::move(buff_map));
