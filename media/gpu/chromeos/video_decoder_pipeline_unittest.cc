@@ -191,7 +191,8 @@ class VideoDecoderPipelineTest
         VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
         std::make_unique<MockMediaLog>(),
         // This callback needs to be configured in the individual tests.
-        base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder)));
+        base::BindOnce(&VideoDecoderPipelineTest::CreateNullMockDecoder),
+        /*uses_oop_video_decoder=*/false));
 
     SetSupportedVideoDecoderConfigs({SupportedVideoDecoderConfig(
         /*profile_min,=*/VP8PROFILE_ANY,

@@ -138,7 +138,7 @@ class OOPVideoDecoder : public VideoDecoderMixin,
       stable_cdm_context_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  VideoDecoderType decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
+  VideoDecoderType remote_decoder_type_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VideoDecoderType::kUnknown;
 
   mojo::Remote<stable::mojom::StableVideoDecoder> remote_decoder_

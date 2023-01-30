@@ -200,9 +200,11 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
+  bool uses_oop_video_decoder = false;
   if (oop_video_decoder) {
     create_decoder_function_cb =
         base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
+    uses_oop_video_decoder = true;
   } else {
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
@@ -217,7 +219,8 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   auto* pipeline = new VideoDecoderPipeline(
       workarounds, std::move(client_task_runner), std::move(frame_pool),
       std::move(frame_converter), std::move(renderable_fourccs),
-      std::move(media_log), std::move(create_decoder_function_cb));
+      std::move(media_log), std::move(create_decoder_function_cb),
+      uses_oop_video_decoder);
   return std::make_unique<AsyncDestroyVideoDecoder<VideoDecoderPipeline>>(
       base::WrapUnique(pipeline));
 }
@@ -281,7 +284,8 @@ VideoDecoderPipeline::VideoDecoderPipeline(
     std::unique_ptr<VideoFrameConverter> frame_converter,
     std::vector<Fourcc> renderable_fourccs,
     std::unique_ptr<MediaLog> media_log,
-    CreateDecoderFunctionCB create_decoder_function_cb)
+    CreateDecoderFunctionCB create_decoder_function_cb,
+    bool uses_oop_video_decoder)
     : gpu_workarounds_(gpu_workarounds),
       client_task_runner_(std::move(client_task_runner)),
       decoder_task_runner_(GetDecoderTaskRunner()),
@@ -289,7 +293,8 @@ VideoDecoderPipeline::VideoDecoderPipeline(
       frame_converter_(std::move(frame_converter)),
       renderable_fourccs_(std::move(renderable_fourccs)),
       media_log_(std::move(media_log)),
-      create_decoder_function_cb_(std::move(create_decoder_function_cb)) {
+      create_decoder_function_cb_(std::move(create_decoder_function_cb)),
+      uses_oop_video_decoder_(uses_oop_video_decoder) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
   DCHECK(main_frame_pool_);
@@ -337,6 +342,11 @@ void VideoDecoderPipeline::DestroyAsync(
 VideoDecoderType VideoDecoderPipeline::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   // TODO(mcasas): query |decoder_| instead.
+
+  if (uses_oop_video_decoder_) {
+    return VideoDecoderType::kOutOfProcess;
+  }
+
 #if BUILDFLAG(USE_VAAPI)
   return VideoDecoderType::kVaapi;
 #elif BUILDFLAG(USE_V4L2_CODEC)

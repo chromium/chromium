@@ -250,12 +250,12 @@ void OOPVideoDecoder::OnInitializeDone(const DecoderStatus& status,
       (decoder_type != VideoDecoderType::kVda &&
        decoder_type != VideoDecoderType::kVaapi &&
        decoder_type != VideoDecoderType::kV4L2) ||
-      (decoder_type_ != VideoDecoderType::kUnknown &&
-       decoder_type_ != decoder_type)) {
+      (remote_decoder_type_ != VideoDecoderType::kUnknown &&
+       remote_decoder_type_ != decoder_type)) {
     Stop();
     return;
   }
-  decoder_type_ = decoder_type;
+  remote_decoder_type_ = decoder_type;
   std::move(init_cb_).Run(status);
 }
 
@@ -267,7 +267,7 @@ void OOPVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   CHECK(!init_cb_);
   CHECK(!reset_cb_);
 
-  if (has_error_ || decoder_type_ == VideoDecoderType::kUnknown) {
+  if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
     decoder_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(decode_cb),
                                   DecoderStatus::Codes::kNotInitialized));
@@ -365,7 +365,7 @@ void OOPVideoDecoder::Reset(base::OnceClosure reset_cb) {
   CHECK(!init_cb_);
   CHECK(!reset_cb_);
 
-  if (has_error_ || decoder_type_ == VideoDecoderType::kUnknown) {
+  if (has_error_ || remote_decoder_type_ == VideoDecoderType::kUnknown) {
     std::move(reset_cb).Run();
     return;
   }
@@ -468,7 +468,7 @@ int OOPVideoDecoder::GetMaxDecodeRequests() const {
 
 VideoDecoderType OOPVideoDecoder::GetDecoderType() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return decoder_type_;
+  return VideoDecoderType::kOutOfProcess;
 }
 
 bool OOPVideoDecoder::IsPlatformDecoder() const {

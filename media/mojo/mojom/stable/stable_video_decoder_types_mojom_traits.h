@@ -1139,6 +1139,7 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
       case ::media::VideoDecoderType::kMediaCodec:
       case ::media::VideoDecoderType::kD3D11:
       case ::media::VideoDecoderType::kBroker:
+      case ::media::VideoDecoderType::kOutOfProcess:
         return media::stable::mojom::VideoDecoderType::kUnknown;
     }
 

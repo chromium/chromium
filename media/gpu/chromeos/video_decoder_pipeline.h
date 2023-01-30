@@ -205,7 +205,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
       std::unique_ptr<VideoFrameConverter> frame_converter,
       std::vector<Fourcc> renderable_fourccs,
       std::unique_ptr<MediaLog> media_log,
-      CreateDecoderFunctionCB create_decoder_function_cb);
+      CreateDecoderFunctionCB create_decoder_function_cb,
+      bool uses_oop_video_decoder);
 
   void InitializeTask(const VideoDecoderConfig& config,
                       bool low_delay,
@@ -372,6 +373,9 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   // the Renderer pipeline.
   size_t estimated_num_buffers_for_renderer_ GUARDED_BY_CONTEXT(
       decoder_sequence_checker_) = limits::kMaxVideoFrames + 1;
+
+  // Set to true when the underlying |decoder_| is an OOPVideoDecoder.
+  const bool uses_oop_video_decoder_;
 
   // Set to true to bypass checks for encrypted content support for testing.
   bool allow_encrypted_content_for_testing_ = false;

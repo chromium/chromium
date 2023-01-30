@@ -104821,6 +104821,7 @@ Full version information for the fingerprint enum values:
   <int value="13" label="Broker Video Decoder"/>
   <int value="14" label="VDA Video Decoder"/>
   <int value="16" label="V4l2 Video Decoder"/>
+  <int value="18" label="OOP Video Decoder"/>
 </enum>
 
 <enum name="VideoFormat">
