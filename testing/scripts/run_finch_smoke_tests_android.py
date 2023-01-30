@@ -265,11 +265,21 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     # for Chrome and WebLayer.
     return True
 
-  def enable_wifi(self):
+  def enable_internet(self):
+    self._device.RunShellCommand(
+        ['settings', 'put', 'global', 'airplane_mode_on', '0'])
+    self._device.RunShellCommand(
+        ['am', 'broadcast', '-a',
+         'android.intent.action.AIRPLANE_MODE'])
     self._device.RunShellCommand(['svc', 'wifi', 'enable'])
+    self._device.RunShellCommand(['svc', 'data', 'enable'])
 
-  def disable_wifi(self):
-    self._device.RunShellCommand(['svc', 'wifi', 'disable'])
+  def disable_internet(self):
+    self._device.RunShellCommand(
+        ['settings', 'put', 'global', 'airplane_mode_on', '1'])
+    self._device.RunShellCommand(
+        ['am', 'broadcast', '-a',
+         'android.intent.action.AIRPLANE_MODE'])
 
   @contextlib.contextmanager
   def _archive_logcat(self, filename, endpoint_name):
@@ -315,7 +325,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
   def __enter__(self):
     self._device.EnableRoot()
     # Run below commands to ensure that the device can download a seed
-    self.disable_wifi()
+    self.disable_internet()
     self._device.adb.Emu(['power', 'ac', 'on'])
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
@@ -1206,7 +1216,7 @@ def main(args):
                                  check_seed_loaded=True)
 
       # enable wifi so that a new seed can be downloaded from the finch server
-      test_case.enable_wifi()
+      test_case.enable_internet()
 
       # TODO(b/187185389): Figure out why WebView needs an extra restart
       # to fetch and load a new finch seed.
@@ -1229,7 +1239,7 @@ def main(args):
 
       # Disable wifi so that new updates will not be downloaded which can cause
       # timeouts in the adb commands run below.
-      test_case.disable_wifi()
+      test_case.disable_internet()
     else:
       installed_seed = test_case.install_seed()
       # If the seed is placed in a local path, we can pass it from the command
