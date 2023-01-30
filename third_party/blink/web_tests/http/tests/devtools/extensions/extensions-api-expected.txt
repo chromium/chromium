@@ -70,6 +70,7 @@ RUNNING TEST: extension_testAPI
         themeName : "themeNameForTest"
     }
     recorder : {
+        createView : <function>
         registerRecorderExtensionPlugin : <function>
         unregisterRecorderExtensionPlugin : <function>
     }
