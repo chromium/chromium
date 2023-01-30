@@ -614,8 +614,7 @@ config("compiler") {
         cflags_cc += [ "-fno-trigraphs" ]
       }
     } else if (is_clang) {
-      if (is_chromeos_device || use_cxx17) {
-        # TODO(crbug.com/1392471): Support C++20 in CrOS toolchain.
+      if (use_cxx17) {
         cflags_cc += [ "-std=${standard_prefix}++17" ]
       } else {
         cflags_cc += [ "-std=${standard_prefix}++20" ]
