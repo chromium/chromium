@@ -5,8 +5,9 @@
 #include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
 
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
@@ -88,8 +89,7 @@ class FakeAuthPolicyClientTest : public ::testing::Test {
   }
 
   void OnWaitForServiceToBeAvailableCalled(bool is_service_available) {
-    EXPECT_TRUE(is_service_available);
-    service_is_available_called_num_++;
+    service_available_future_.AddValue(is_service_available);
   }
 
   void LockDevice() {
@@ -97,7 +97,7 @@ class FakeAuthPolicyClientTest : public ::testing::Test {
                                                          "device_id");
   }
 
-  int service_is_available_called_num_ = 0;
+  base::test::RepeatingTestFuture<bool> service_available_future_;
 
  private:
   ScopedStubInstallAttributes install_attributes_;
@@ -131,17 +131,11 @@ TEST_F(FakeAuthPolicyClientTest, JoinAdDomain_ParseMachineName) {
                      EXPECT_EQ(authpolicy::ERROR_INVALID_MACHINE_NAME, error);
                      EXPECT_TRUE(domain.empty());
                    }));
-  base::RunLoop loop;
-  JoinAdDomain(">nvalidname", kCorrectUserName,
-               base::BindOnce(
-                   [](base::OnceClosure closure, authpolicy::ErrorType error,
-                      const std::string& domain) {
-                     EXPECT_EQ(authpolicy::ERROR_INVALID_MACHINE_NAME, error);
-                     EXPECT_TRUE(domain.empty());
-                     std::move(closure).Run();
-                   },
-                   loop.QuitClosure()));
-  loop.Run();
+
+  base::test::TestFuture<authpolicy::ErrorType, const std::string&> future;
+  JoinAdDomain(">nvalidname", kCorrectUserName, future.GetCallback());
+  EXPECT_EQ(authpolicy::ERROR_INVALID_MACHINE_NAME, future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().empty());
 }
 
 // Tests join to a different machine domain.
@@ -154,18 +148,13 @@ TEST_F(FakeAuthPolicyClientTest, JoinAdDomain_MachineDomain) {
                                   EXPECT_EQ(authpolicy::ERROR_NONE, error);
                                   EXPECT_EQ(kMachineDomain, domain);
                                 }));
-  base::RunLoop loop;
-  JoinAdDomainWithMachineDomain(
-      kCorrectMachineName, "", kCorrectUserName,
-      base::BindOnce(
-          [](base::OnceClosure closure, authpolicy::ErrorType error,
-             const std::string& domain) {
-            EXPECT_EQ(authpolicy::ERROR_NONE, error);
-            EXPECT_EQ(kCorrectUserDomain, domain);
-            std::move(closure).Run();
-          },
-          loop.QuitClosure()));
-  loop.Run();
+
+  base::test::TestFuture<authpolicy::ErrorType, const std::string&> future;
+  JoinAdDomainWithMachineDomain(kCorrectMachineName, "", kCorrectUserName,
+                                future.GetCallback());
+
+  EXPECT_EQ(authpolicy::ERROR_NONE, future.Get<0>());
+  EXPECT_EQ(kCorrectUserDomain, future.Get<1>());
 }
 
 // Tests parsing user name.
@@ -201,40 +190,28 @@ TEST_F(FakeAuthPolicyClientTest, JoinAdDomain_ParseUPN) {
                      EXPECT_EQ(authpolicy::ERROR_PARSE_UPN_FAILED, error);
                      EXPECT_TRUE(domain.empty());
                    }));
-  base::RunLoop loop;
-  JoinAdDomain(kCorrectMachineName, "user@realm@com",
-               base::BindOnce(
-                   [](base::OnceClosure closure, authpolicy::ErrorType error,
-                      const std::string& domain) {
-                     EXPECT_EQ(authpolicy::ERROR_PARSE_UPN_FAILED, error);
-                     EXPECT_TRUE(domain.empty());
-                     std::move(closure).Run();
-                   },
-                   loop.QuitClosure()));
-  loop.Run();
+
+  base::test::TestFuture<authpolicy::ErrorType, const std::string&> future;
+  JoinAdDomain(kCorrectMachineName, "user@realm@com", future.GetCallback());
+  EXPECT_EQ(authpolicy::ERROR_PARSE_UPN_FAILED, future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().empty());
 }
 
 // Tests that fake server does not support legacy encryption types.
 TEST_F(FakeAuthPolicyClientTest, JoinAdDomain_NotSupportedEncType) {
   authpolicy_client()->SetStarted(true);
-  base::RunLoop loop;
   authpolicy::JoinDomainRequest request;
   request.set_machine_name(kCorrectMachineName);
   request.set_user_principal_name(kCorrectUserName);
   request.set_kerberos_encryption_types(
       authpolicy::KerberosEncryptionTypes::ENC_TYPES_LEGACY);
-  authpolicy_client()->JoinAdDomain(
-      request, /* password_fd */ -1,
-      base::BindOnce(
-          [](base::OnceClosure closure, authpolicy::ErrorType error,
-             const std::string& domain) {
-            EXPECT_EQ(authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE,
-                      error);
-            EXPECT_TRUE(domain.empty());
-            std::move(closure).Run();
-          },
-          loop.QuitClosure()));
-  loop.Run();
+
+  base::test::TestFuture<authpolicy::ErrorType, const std::string&> future;
+  authpolicy_client()->JoinAdDomain(request, /* password_fd */ -1,
+                                    future.GetCallback());
+  EXPECT_EQ(authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE,
+            future.Get<0>());
+  EXPECT_TRUE(future.Get<1>().empty());
 }
 
 // Test AuthenticateUser.
@@ -271,16 +248,10 @@ TEST_F(FakeAuthPolicyClientTest, NotStartedAuthPolicyService) {
       base::BindOnce([](authpolicy::ErrorType error) {
         EXPECT_EQ(authpolicy::ERROR_DBUS_FAILURE, error);
       }));
-  base::RunLoop loop;
+  base::test::TestFuture<authpolicy::ErrorType> future;
   authpolicy_client()->RefreshUserPolicy(
-      AccountId::FromUserEmail(kCorrectUserName),
-      base::BindOnce(
-          [](base::OnceClosure closure, authpolicy::ErrorType error) {
-            EXPECT_EQ(authpolicy::ERROR_DBUS_FAILURE, error);
-            std::move(closure).Run();
-          },
-          loop.QuitClosure()));
-  loop.Run();
+      AccountId::FromUserEmail(kCorrectUserName), future.GetCallback());
+  EXPECT_EQ(authpolicy::ERROR_DBUS_FAILURE, future.Get());
 }
 
 // Tests RefreshDevicePolicy. On a not locked device it should cache policy. On
@@ -292,14 +263,9 @@ TEST_F(FakeAuthPolicyClientTest, NotLockedDeviceCachesPolicy) {
         EXPECT_EQ(authpolicy::ERROR_DEVICE_POLICY_CACHED_BUT_NOT_SENT, error);
       }));
   LockDevice();
-  base::RunLoop loop;
-  authpolicy_client()->RefreshDevicePolicy(base::BindOnce(
-      [](base::OnceClosure closure, authpolicy::ErrorType error) {
-        EXPECT_EQ(authpolicy::ERROR_NONE, error);
-        std::move(closure).Run();
-      },
-      loop.QuitClosure()));
-  loop.Run();
+  base::test::TestFuture<authpolicy::ErrorType> future;
+  authpolicy_client()->RefreshDevicePolicy(future.GetCallback());
+  EXPECT_EQ(authpolicy::ERROR_NONE, future.Get());
 }
 
 // Tests that RefreshDevicePolicy stores device policy in the session manager.
@@ -309,17 +275,12 @@ TEST_F(FakeAuthPolicyClientTest, RefreshDevicePolicyStoresPolicy) {
 
   {
     // Call RefreshDevicePolicy.
-    base::RunLoop loop;
+    base::test::TestFuture<authpolicy::ErrorType> future;
     em::ChromeDeviceSettingsProto policy;
     policy.mutable_allow_new_users()->set_allow_new_users(true);
     authpolicy_client()->set_device_policy(policy);
-    authpolicy_client()->RefreshDevicePolicy(base::BindOnce(
-        [](base::OnceClosure closure, authpolicy::ErrorType error) {
-          EXPECT_EQ(authpolicy::ERROR_NONE, error);
-          std::move(closure).Run();
-        },
-        loop.QuitClosure()));
-    loop.Run();
+    authpolicy_client()->RefreshDevicePolicy(future.GetCallback());
+    EXPECT_EQ(authpolicy::ERROR_NONE, future.Get());
   }
 
   {
@@ -343,16 +304,16 @@ TEST_F(FakeAuthPolicyClientTest, RefreshDevicePolicyStoresPolicy) {
 }
 
 TEST_F(FakeAuthPolicyClientTest, WaitForServiceToBeAvailableCalled) {
+  // Start waiting for service before starting the client.
   WaitForServiceToBeAvailable();
   WaitForServiceToBeAvailable();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, service_is_available_called_num_);
   authpolicy_client()->SetStarted(true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, service_is_available_called_num_);
   WaitForServiceToBeAvailable();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(3, service_is_available_called_num_);
+
+  // Wait for the future to catch all three callbacks.
+  EXPECT_TRUE(service_available_future_.Take());
+  EXPECT_TRUE(service_available_future_.Take());
+  EXPECT_TRUE(service_available_future_.Take());
 }
 
 }  // namespace ash
