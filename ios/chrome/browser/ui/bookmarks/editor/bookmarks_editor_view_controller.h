@@ -19,15 +19,6 @@ class BookmarkNode;
 
 @protocol BookmarksEditorViewControllerDelegate
 
-// Called when the edited bookmark is set for deletion.
-// If the delegate returns `YES`, all nodes matching the URL of `bookmark` will
-// be deleted.
-// If the delegate returns `NO`, only `bookmark` will be deleted.
-// If the delegate doesn't implement this method, the default behavior is to
-// delete all nodes matching the URL of `bookmark`.
-- (BOOL)bookmarkEditor:(BookmarksEditorViewController*)controller
-    shoudDeleteAllOccurencesOfBookmark:(const bookmarks::BookmarkNode*)bookmark;
-
 // Called when the controller should be dismissed.
 - (void)bookmarkEditorWantsDismissal:(BookmarksEditorViewController*)controller;
 

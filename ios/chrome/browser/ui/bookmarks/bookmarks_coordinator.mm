@@ -465,11 +465,6 @@ enum class PresentedState {
 
 #pragma mark - BookmarksEditorViewControllerDelegate
 
-- (BOOL)bookmarkEditor:(BookmarksEditorViewController*)controller
-    shoudDeleteAllOccurencesOfBookmark:(const BookmarkNode*)bookmark {
-  return YES;
-}
-
 - (void)bookmarkEditorWantsDismissal:
     (BookmarksEditorViewController*)controller {
   [self dismissBookmarkEditorAnimated:YES];

@@ -420,21 +420,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
     // ignore bookmark model updates notifications.
     base::AutoReset<BOOL> autoReset(&_ignoresBookmarkModelChanges, YES);
 
-    std::set<const BookmarkNode*> nodes;
-    if ([self.delegate bookmarkEditor:self
-            shoudDeleteAllOccurencesOfBookmark:self.bookmark]) {
-      // When launched from the star button, removing the current bookmark
-      // removes all matching nodes.
-      std::vector<const BookmarkNode*> nodesVector;
-      self.bookmarkModel->GetNodesByURL(self.bookmark->url(), &nodesVector);
-      for (const BookmarkNode* node : nodesVector) {
-        nodes.insert(node);
-      }
-    } else {
-      // When launched from the info button, removing the current bookmark only
-      // removes the current node.
-      nodes.insert(self.bookmark);
-    }
+    // When launched from the star button, removing the current bookmark
+    // removes all matching nodes.
+    std::vector<const BookmarkNode*> nodesVector;
+    self.bookmarkModel->GetNodesByURL(self.bookmark->url(), &nodesVector);
+    std::set<const BookmarkNode*> nodes(nodesVector.begin(), nodesVector.end());
 
     [self.snackbarCommandsHandler
         showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
