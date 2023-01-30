@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.os.Build;
 import android.widget.FrameLayout;
@@ -171,8 +173,11 @@ public class SnackbarTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> mManager.showSnackbar(snackbar));
         pollSnackbarCondition("Snackbar on queue was not cleared by snackbar stack.",
                 () -> mManager.isShowing() && mManager.getCurrentSnackbarForTesting() == snackbar);
-        PostTask.runOrPostTask(
-                UiThreadTaskTraits.DEFAULT, () -> mManager.dismissSnackbars(mDismissController));
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            mManager.dismissSnackbars(mDismissController);
+            // Callers rely on onDismissNoAction being called synchronously.
+            assertTrue("onDismissNoAction not called", mDismissed);
+        });
         pollSnackbarCondition(
                 "Snackbar did not time out", () -> !mManager.isShowing() && mDismissed);
     }

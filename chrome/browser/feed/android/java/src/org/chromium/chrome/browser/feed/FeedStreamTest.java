@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -120,6 +121,8 @@ public class FeedStreamTest {
 
     @Mock
     private SnackbarManager mSnackbarManager;
+    @Captor
+    private ArgumentCaptor<Snackbar> mSnackbarCaptor;
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
@@ -129,7 +132,12 @@ public class FeedStreamTest {
     @Mock
     private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock
-    private FeedActionsHandler.SnackbarController mSnackbarController;
+    private FeedActionsHandler.SnackbarController mMockSnackbarController;
+    private StubSnackbarController mSnackbarController = new StubSnackbarController();
+    @Mock
+    private Runnable mMockRunnable;
+    @Mock
+    private Callback<Boolean> mMockRefreshCallback;
     @Mock
     private FeedStream.ShareHelperWrapper mShareHelper;
     @Mock
@@ -961,6 +969,70 @@ public class FeedStreamTest {
 
     @Test
     @SmallTest
+    public void testShowSnackbarOnAction() {
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.showSnackbar(
+                "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+
+        // Tapping on the snackbar action should trigger the onAction on the stub snackbar
+        // controller. postTaskAfterWorkComplete() should not execute the runnable until after the
+        // stub snackbar runnable is executed.
+        mSnackbarCaptor.getValue().getController().onAction("data");
+        mFeedStream.getInProgressWorkTrackerForTesting().postTaskAfterWorkComplete(mMockRunnable);
+        verify(mMockRunnable, times(0)).run();
+
+        mSnackbarController.mOnActionFinished.run();
+        verify(mMockRunnable, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testShowSnackbarOnDismissNoAction() {
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.showSnackbar(
+                "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+
+        // Dismissing the snackbar should trigger onDismissNoAction() on the stub snackbar
+        // controller. postTaskAfterWorkComplete() should not execute the runnable until after the
+        // stub snackbar runnable is executed.
+        mSnackbarCaptor.getValue().getController().onDismissNoAction("data");
+        mFeedStream.getInProgressWorkTrackerForTesting().postTaskAfterWorkComplete(mMockRunnable);
+        verify(mMockRunnable, times(0)).run();
+
+        mSnackbarController.mOnDismissNoActionFinished.run();
+        verify(mMockRunnable, times(1)).run();
+    }
+
+    @Test
+    @SmallTest
+    public void testTriggerRefreshDismissesSnackbars() {
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.showSnackbar(
+                "message", "Undo", FeedActionsHandler.SnackbarDuration.SHORT, mSnackbarController);
+        verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
+
+        mFeedStream.triggerRefresh(mMockRefreshCallback);
+
+        verify(mSnackbarManager, times(1)).dismissSnackbars(any());
+        verify(mFeedStreamJniMock).manualRefresh(anyLong(), any(), any());
+    }
+
+    @Test
+    @SmallTest
     public void testShare() {
         mFeedStream.setShareWrapperForTest(mShareHelper);
 
@@ -1250,5 +1322,19 @@ public class FeedStreamTest {
         mFeedStream.bind(mRecyclerView, mContentManager, null, mSurfaceScope, mRenderer,
                 mLaunchReliabilityLogger, mContentManager.getItemCount(),
                 /*shouldScrollToTop=*/false);
+    }
+
+    class StubSnackbarController implements FeedActionsHandler.SnackbarController {
+        Runnable mOnActionFinished;
+        Runnable mOnDismissNoActionFinished;
+        @Override
+        public void onAction(Runnable actionFinished) {
+            mOnActionFinished = actionFinished;
+        }
+
+        @Override
+        public void onDismissNoAction(Runnable actionFinished) {
+            mOnDismissNoActionFinished = actionFinished;
+        }
     }
 }

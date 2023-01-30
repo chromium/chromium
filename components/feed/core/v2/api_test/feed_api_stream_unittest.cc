@@ -2905,6 +2905,22 @@ TEST_F(FeedApiTest, ReportUserSettingsFromMetadataWaaOffDpOn) {
                                 UserSettingsOnStart::kSignedInWaaOffDpOn, 1);
 }
 
+TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshWithoutSurfaceIsAborted) {
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  surface.Detach();
+  WaitForIdleTaskQueue();
+  surface.Clear();
+
+  CallbackReceiver<bool> callback;
+  stream_->ManualRefresh(surface.GetStreamType(), callback.Bind());
+  WaitForIdleTaskQueue();
+  // Refresh fails, and surface is not updated.
+  EXPECT_EQ(absl::optional<bool>(false), callback.GetResult());
+  EXPECT_EQ("", surface.DescribeUpdates());
+}
+
 TEST_F(FeedStreamTestForAllStreamTypes, ManualRefreshInterestFeedSuccess) {
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestForYouSurface surface(stream_.get());
@@ -3452,7 +3468,10 @@ TEST_F(FeedApiTest, InfoCardTrackingActions) {
   // Chrome restart. This is used to test that info card tracking states are
   // sent in the initial page load when stream model is not loaded yet.
   response_translator_.InjectResponse(MakeTypicalRefreshModelState());
+  surface.Detach();
   CreateStream();
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
   stream_->ManualRefresh(StreamType(StreamKind::kForYou), base::DoNothing());
   WaitForIdleTaskQueue();
 
