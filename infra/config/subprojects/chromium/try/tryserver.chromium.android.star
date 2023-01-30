@@ -377,6 +377,9 @@ try_.orchestrator_builder(
     # use_orchestrator_pool = True,
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
+
+    # TODO(crbug.com/1405549): verify if py3 works for this builder.
+    omit_python2 = True,
 )
 
 try_.orchestrator_builder(
