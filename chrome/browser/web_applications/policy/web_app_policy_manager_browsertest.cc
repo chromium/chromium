@@ -48,32 +48,31 @@ constexpr char kInstallUrl[] = "https://example.com/install";
 constexpr char kStartUrl[] = "https://example.com/start/?u=1";
 constexpr char kManifestUrl[] = "https://example.com/install/manifest.json";
 
-base::Value GetForceInstalledAppItem() {
-  base::Value item(base::Value::Type::DICT);
-  item.SetKey(kUrlKey, base::Value(kInstallUrl));
-  item.SetKey(kDefaultLaunchContainerKey,
-              base::Value(kDefaultLaunchContainerWindowValue));
+base::Value::Dict GetForceInstalledAppItem() {
+  base::Value::Dict item;
+  item.Set(kUrlKey, kInstallUrl);
+  item.Set(kDefaultLaunchContainerKey, kDefaultLaunchContainerWindowValue);
   return item;
 }
 
-base::Value GetCustomAppNameItem() {
-  base::Value item = GetForceInstalledAppItem();
-  item.SetKey(kCustomNameKey, base::Value(kDefaultCustomName));
+base::Value::Dict GetCustomAppNameItem() {
+  base::Value::Dict item = GetForceInstalledAppItem();
+  item.Set(kCustomNameKey, kDefaultCustomName);
   return item;
 }
 
-base::Value GetCustomAppIconItem() {
-  base::Value item = GetForceInstalledAppItem();
-  base::Value sub_item(base::Value::Type::DICT);
-  sub_item.SetKey(kCustomIconURLKey, base::Value(kDefaultCustomIconUrl));
-  sub_item.SetKey(kCustomIconHashKey, base::Value(kDefaultCustomIconHash));
-  item.SetKey(kCustomIconKey, std::move(sub_item));
+base::Value::Dict GetCustomAppIconItem() {
+  base::Value::Dict item = GetForceInstalledAppItem();
+  base::Value::Dict sub_item;
+  sub_item.Set(kCustomIconURLKey, kDefaultCustomIconUrl);
+  sub_item.Set(kCustomIconHashKey, kDefaultCustomIconHash);
+  item.Set(kCustomIconKey, std::move(sub_item));
   return item;
 }
 
-base::Value GetCustomAppIconAndNameItem() {
-  base::Value item = GetCustomAppIconItem();
-  item.SetKey(kCustomNameKey, base::Value(kDefaultCustomName));
+base::Value::Dict GetCustomAppIconAndNameItem() {
+  base::Value::Dict item = GetCustomAppIconItem();
+  item.Set(kCustomNameKey, kDefaultCustomName);
   return item;
 }
 
