@@ -317,6 +317,8 @@ static_library("browser") {
     "component_updater/crl_set_component_installer.h",
     "component_updater/crowd_deny_component_installer.cc",
     "component_updater/crowd_deny_component_installer.h",
+    "component_updater/desktop_sharing_hub_component_remover.cc",
+    "component_updater/desktop_sharing_hub_component_remover.h",
     "component_updater/first_party_sets_component_installer.cc",
     "component_updater/first_party_sets_component_installer.h",
     "component_updater/mei_preload_component_installer.cc",
@@ -2908,8 +2910,6 @@ static_library("browser") {
       "commerce/price_tracking/android/price_tracking_notification_bridge.h",
       "component_updater/crow_domain_list_component_installer.cc",
       "component_updater/crow_domain_list_component_installer.h",
-      "component_updater/desktop_sharing_hub_component_remover.cc",
-      "component_updater/desktop_sharing_hub_component_remover.h",
       "content_creation/notes/internal/android/note_service_bridge_factory.cc",
       "content_creation/notes/internal/note_service_factory.cc",
       "content_creation/notes/internal/note_service_factory.h",
@@ -3550,8 +3550,6 @@ static_library("browser") {
       "commerce/coupons/coupon_service_observer.h",
       "component_updater/desktop_screenshot_editor_component_installer.cc",
       "component_updater/desktop_screenshot_editor_component_installer.h",
-      "component_updater/desktop_sharing_hub_component_installer.cc",
-      "component_updater/desktop_sharing_hub_component_installer.h",
       "component_updater/intervention_policy_database_component_installer.cc",
       "component_updater/intervention_policy_database_component_installer.h",
       "component_updater/soda_component_installer.cc",
@@ -4371,7 +4369,6 @@ static_library("browser") {
       "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
       "//chrome/browser/resource_coordinator/tab_ranker",
       "//chrome/browser/resources:component_extension_resources",
-      "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/ui/color:color_headers",
@@ -7728,10 +7725,7 @@ grit("resources") {
     ]
   }
   if (!is_android) {
-    deps += [
-      "//chrome/browser/resources/media_router/internals:build_ts",
-      "//chrome/browser/share/core/resources:make_share_targets_protobuf",
-    ]
+    deps += [ "//chrome/browser/resources/media_router/internals:build_ts" ]
   }
   if (is_chromeos_ash) {
     deps += [

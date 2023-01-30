@@ -77,16 +77,9 @@ views::View* FocusedViewOf(views::Widget* widget) {
 }
 
 const std::vector<sharing_hub::SharingHubAction> kFirstPartyActions = {
-    {0, u"Feed to Dino", nullptr, true, gfx::ImageSkia(), "feed-to-dino"},
-    {1, u"Reverse Star", nullptr, true, gfx::ImageSkia(), "reverse-star"},
-    {2, u"Pastelify", nullptr, true, gfx::ImageSkia(), "pastelify"},
-};
-
-const std::vector<sharing_hub::SharingHubAction> kThirdPartyActions = {
-    {10, u"Owlbook", nullptr, false, gfx::ImageSkia(), "owlbook"},
-    {11, u"Robinspace", nullptr, false, gfx::ImageSkia(), "robinspace"},
-    {12, u"Ducktok", nullptr, false, gfx::ImageSkia(), "ducktok"},
-    {13, u"Pigeongram", nullptr, false, gfx::ImageSkia(), "pigeongram"},
+    {0, u"Feed to Dino", nullptr, "feed-to-dino"},
+    {1, u"Reverse Star", nullptr, "reverse-star"},
+    {2, u"Pastelify", nullptr, "pastelify"},
 };
 
 }  // namespace
@@ -136,24 +129,12 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
     return concrete_actions;
   }
 
-  views::Label* GetThirdPartySectionHeader() {
-    std::vector<views::View*> labels = DescendantsMatchingPredicate(
-        bubble(), base::BindRepeating(&ViewHasClassName, "Label"));
-    for (auto* view : labels) {
-      views::Label* label = static_cast<views::Label*>(view);
-      if (label->GetText() == u"Share link to") {
-        return label;
-      }
-    }
-    return nullptr;
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_{share::kDesktopSharePreview};
 
   raw_ptr<sharing_hub::SharingHubBubbleViewImpl> bubble_;
   testing::NiceMock<sharing_hub::FakeSharingHubBubbleController> controller_{
-      kFirstPartyActions, kThirdPartyActions};
+      kFirstPartyActions};
 
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<views::Widget> bubble_widget_;
@@ -169,35 +150,13 @@ TEST_F(SharingHubBubbleTest, AllFirstPartyActionsAppearInOrder) {
   EXPECT_EQ(AccessibleNameForView(actions[2]), "Pastelify");
 }
 
-TEST_F(SharingHubBubbleTest, AllThirdPartyActionsAppearInOrder) {
-  ShowBubble();
-
-  auto actions = GetActionButtons();
-  ASSERT_GE(actions.size(), 7u);
-  EXPECT_EQ(AccessibleNameForView(actions[3]), "Share link to Owlbook");
-  EXPECT_EQ(AccessibleNameForView(actions[4]), "Share link to Robinspace");
-  EXPECT_EQ(AccessibleNameForView(actions[5]), "Share link to Ducktok");
-  EXPECT_EQ(AccessibleNameForView(actions[6]), "Share link to Pigeongram");
-}
-
 TEST_F(SharingHubBubbleTest, ClickingActionsCallsController) {
   ShowBubble();
 
   auto actions = GetActionButtons();
   ASSERT_GE(actions.size(), 3u);
-  EXPECT_CALL(*controller(), OnActionSelected(2, true, testing::_));
+  EXPECT_CALL(*controller(), OnActionSelected(2, testing::_));
   Click(actions[2]);
-}
-
-TEST_F(SharingHubBubbleTest, ThirdPartyHeaderWhenActionsPresent) {
-  ShowBubble();
-  EXPECT_TRUE(GetThirdPartySectionHeader());
-}
-
-TEST_F(SharingHubBubbleTest, NoThirdPartyHeaderWhenNoActionsPresent) {
-  controller()->SetThirdPartyActions({});
-  ShowBubble();
-  EXPECT_FALSE(GetThirdPartySectionHeader());
 }
 
 TEST_F(SharingHubBubbleTest, ArrowKeysTraverseItemsForward) {

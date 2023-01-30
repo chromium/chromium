@@ -60,13 +60,11 @@ class SharingHubBubbleControllerDesktopImpl
 
   // SharingHubBubbleController:
   std::vector<SharingHubAction> GetFirstPartyActions() override;
-  std::vector<SharingHubAction> GetThirdPartyActions() override;
   bool ShouldUsePreview() override;
   base::CallbackListSubscription RegisterPreviewImageChangedCallback(
       PreviewImageChangedCallback callback) override;
   base::WeakPtr<SharingHubBubbleController> GetWeakPtr() override;
   void OnActionSelected(int command_id,
-                        bool is_first_party,
                         std::string feature_name_for_metrics) override;
   void OnBubbleClosed() override;
 

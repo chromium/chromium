@@ -30,12 +30,6 @@ class SharingHubModelTest : public ::testing::Test {
     return actions;
   }
 
-  std::vector<sharing_hub::SharingHubAction> GetThirdPartyActions() {
-    std::vector<sharing_hub::SharingHubAction> actions;
-    model_.GetThirdPartyActionList(test_web_contents_.get(), &actions);
-    return actions;
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -54,14 +48,4 @@ TEST_F(SharingHubModelTest, DISABLED_FirstPartyOptionsOfferedOnAllURLs) {
   EXPECT_GT(GetFirstPartyActions().size(), 0u);
   NavigateTo(GURL("chrome://version"));
   EXPECT_GT(GetFirstPartyActions().size(), 0u);
-}
-
-TEST_F(SharingHubModelTest, ThirdPartyOptionsOfferedOnWebURL) {
-  NavigateTo(GURL("https://www.chromium.org"));
-  EXPECT_GT(GetThirdPartyActions().size(), 0u);
-}
-
-TEST_F(SharingHubModelTest, ThirdPartyOptionsNotOfferedOnChromeURL) {
-  NavigateTo(GURL("chrome://version"));
-  EXPECT_EQ(GetThirdPartyActions().size(), 0u);
 }

@@ -33,8 +33,6 @@ static constexpr gfx::Size kPrimaryIconSize{16, 16};
 static_assert(kPrimaryIconSize.width() == kPrimaryIconSize.height());
 
 ui::ImageModel ImageForAction(const SharingHubAction& action_info) {
-  if (!action_info.third_party_icon.isNull())
-    return ui::ImageModel::FromImageSkia(action_info.third_party_icon);
   return ui::ImageModel::FromVectorIcon(*action_info.icon, ui::kColorMenuIcon,
                                         kPrimaryIconSize.width());
 }
@@ -45,7 +43,6 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
     SharingHubBubbleViewImpl* bubble,
     const SharingHubAction& action_info)
     : action_command_id_(action_info.command_id),
-      action_is_first_party_(action_info.is_first_party),
       action_name_for_metrics_(action_info.feature_name_for_metrics) {
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -84,12 +81,7 @@ SharingHubBubbleActionButton::SharingHubBubbleActionButton(
       action_info.title, views::style::CONTEXT_MENU));
   title_->SetCanProcessEventsWithinSubtree(false);
 
-  if (action_is_first_party_) {
-    GetViewAccessibility().OverrideName(title_->GetText());
-  } else {
-    GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
-        IDS_SHARING_HUB_SHARE_LABEL_ACCESSIBILITY, title_->GetText()));
-  }
+  GetViewAccessibility().OverrideName(title_->GetText());
 }
 
 SharingHubBubbleActionButton::~SharingHubBubbleActionButton() = default;

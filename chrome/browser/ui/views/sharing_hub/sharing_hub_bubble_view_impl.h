@@ -67,8 +67,7 @@ class SharingHubBubbleViewImpl : public SharingHubBubbleView,
 
   // Populates the scroll view containing sharing actions.
   void PopulateScrollView(
-      const std::vector<SharingHubAction>& first_party_actions,
-      const std::vector<SharingHubAction>& third_party_actions);
+      const std::vector<SharingHubAction>& first_party_actions);
 
   // Resizes and potentially moves the bubble to fit the content's preferred
   // size.

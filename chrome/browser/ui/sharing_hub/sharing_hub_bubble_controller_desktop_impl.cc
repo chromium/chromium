@@ -149,17 +149,6 @@ SharingHubBubbleControllerDesktopImpl::GetFirstPartyActions() {
   return actions;
 }
 
-std::vector<SharingHubAction>
-SharingHubBubbleControllerDesktopImpl::GetThirdPartyActions() {
-  std::vector<SharingHubAction> actions;
-
-  SharingHubModel* model = GetSharingHubModel();
-  if (model)
-    model->GetThirdPartyActionList(&GetWebContents(), &actions);
-
-  return actions;
-}
-
 bool SharingHubBubbleControllerDesktopImpl::ShouldUsePreview() {
   return share::GetDesktopSharePreviewVariant() !=
          share::DesktopSharePreviewVariant::kDisabled;
@@ -178,42 +167,35 @@ SharingHubBubbleControllerDesktopImpl::GetWeakPtr() {
 
 void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
     int command_id,
-    bool is_first_party,
     std::string feature_name_for_metrics) {
   Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
   // Can be null in tests.
   if (!browser)
     return;
 
-  if (is_first_party) {
-    base::RecordComputedAction(feature_name_for_metrics);
+  base::RecordComputedAction(feature_name_for_metrics);
 
-    // Show a back button for 1P dialogs anchored to the sharing hub icon.
-    if (command_id == IDC_QRCODE_GENERATOR) {
-      qrcode_generator::QRCodeGeneratorBubbleController* qrcode_controller =
-          qrcode_generator::QRCodeGeneratorBubbleController::Get(
-              &GetWebContents());
-      qrcode_controller->ShowBubble(GetWebContents().GetLastCommittedURL(),
-                                    true);
-    } else if (command_id == IDC_SEND_TAB_TO_SELF) {
-      send_tab_to_self::ShowBubble(&GetWebContents(),
-                                   /*show_back_button=*/true);
-    } else if (command_id == IDC_ROUTE_MEDIA) {
-      media_router::MediaRouterDialogController* dialog_controller =
-          media_router::MediaRouterDialogController::GetOrCreateForWebContents(
-              browser->tab_strip_model()->GetActiveWebContents());
-      if (!dialog_controller)
-        return;
-
-      dialog_controller->ShowMediaRouterDialog(
-          media_router::MediaRouterDialogActivationLocation::SHARING_HUB);
-    } else {
-      chrome::ExecuteCommand(browser, command_id);
+  // Show a back button for 1P dialogs anchored to the sharing hub icon.
+  if (command_id == IDC_QRCODE_GENERATOR) {
+    qrcode_generator::QRCodeGeneratorBubbleController* qrcode_controller =
+        qrcode_generator::QRCodeGeneratorBubbleController::Get(
+            &GetWebContents());
+    qrcode_controller->ShowBubble(GetWebContents().GetLastCommittedURL(), true);
+  } else if (command_id == IDC_SEND_TAB_TO_SELF) {
+    send_tab_to_self::ShowBubble(&GetWebContents(),
+                                 /*show_back_button=*/true);
+  } else if (command_id == IDC_ROUTE_MEDIA) {
+    media_router::MediaRouterDialogController* dialog_controller =
+        media_router::MediaRouterDialogController::GetOrCreateForWebContents(
+            browser->tab_strip_model()->GetActiveWebContents());
+    if (!dialog_controller) {
+      return;
     }
+
+    dialog_controller->ShowMediaRouterDialog(
+        media_router::MediaRouterDialogActivationLocation::SHARING_HUB);
   } else {
-    SharingHubModel* model = GetSharingHubModel();
-    DCHECK(model);
-    model->ExecuteThirdPartyAction(&GetWebContents(), command_id);
+    chrome::ExecuteCommand(browser, command_id);
   }
 }
 
