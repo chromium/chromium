@@ -41,17 +41,6 @@ DirectFromSellerSignals& DirectFromSellerSignals::operator=(
 DirectFromSellerSignals& DirectFromSellerSignals::operator=(
     DirectFromSellerSignals&&) = default;
 
-AuctionConfig::MaybePromiseJson::MaybePromiseJson() = default;
-AuctionConfig::MaybePromiseJson::MaybePromiseJson(const MaybePromiseJson&) =
-    default;
-AuctionConfig::MaybePromiseJson::MaybePromiseJson(MaybePromiseJson&&) = default;
-AuctionConfig::MaybePromiseJson::~MaybePromiseJson() = default;
-
-AuctionConfig::MaybePromiseJson& AuctionConfig::MaybePromiseJson::operator=(
-    const MaybePromiseJson&) = default;
-AuctionConfig::MaybePromiseJson& AuctionConfig::MaybePromiseJson::operator=(
-    MaybePromiseJson&&) = default;
-
 AuctionConfig::NonSharedParams::NonSharedParams() = default;
 AuctionConfig::NonSharedParams::NonSharedParams(const NonSharedParams&) =
     default;

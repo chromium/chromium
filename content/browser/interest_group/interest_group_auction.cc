@@ -731,7 +731,7 @@ class InterestGroupAuction::BuyerHelper
     }
 
     bid_state->bid_finalizer->FinishGenerateBid(
-        auction_->config_->non_shared_params.auction_signals.maybe_json(),
+        auction_->config_->non_shared_params.auction_signals.value(),
         GetPerBuyerSignals(*auction_->config_,
                            bid_state->bidder->interest_group.owner),
         auction_->PerBuyerTimeout(bid_state));

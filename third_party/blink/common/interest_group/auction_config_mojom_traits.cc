@@ -68,26 +68,20 @@ bool StructTraits<blink::mojom::DirectFromSellerSignalsDataView,
   return true;
 }
 
-bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
-                 blink::AuctionConfig::MaybePromiseJson>::
-    Read(blink::mojom::AuctionAdConfigMaybePromiseJsonDataView in,
-         blink::AuctionConfig::MaybePromiseJson* out) {
+template <class View, class Wrapper>
+bool AdConfigMaybePromiseTraitsHelper<View, Wrapper>::Read(View in,
+                                                           Wrapper* out) {
   switch (in.tag()) {
-    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kNothing:
-      *out = blink::AuctionConfig::MaybePromiseJson::FromNothing();
+    case View::Tag::kPromise:
+      *out = Wrapper::FromPromise();
       return true;
 
-    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kPromise:
-      *out = blink::AuctionConfig::MaybePromiseJson::FromPromise();
-      return true;
-
-    case blink::mojom::AuctionAdConfigMaybePromiseJsonDataView::Tag::kJson: {
-      std::string json_payload;
-      if (!in.ReadJson(&json_payload)) {
+    case View::Tag::kValue: {
+      typename Wrapper::ValueType payload;
+      if (!in.ReadValue(&payload)) {
         return false;
       }
-      *out = blink::AuctionConfig::MaybePromiseJson::FromJson(
-          std::move(json_payload));
+      *out = Wrapper::FromValue(std::move(payload));
       return true;
     }
   }
@@ -95,31 +89,17 @@ bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
   return false;
 }
 
-bool UnionTraits<
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::AuctionAdConfigMaybePromiseJsonDataView,
+    blink::AuctionConfig::MaybePromiseJson>;
+
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
     blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView,
-    blink::AuctionConfig::MaybePromisePerBuyerSignals>::
-    Read(blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView in,
-         blink::AuctionConfig::MaybePromisePerBuyerSignals* out) {
-  switch (in.tag()) {
-    case blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView::Tag::
-        kPromise:
-      *out = blink::AuctionConfig::MaybePromisePerBuyerSignals::FromPromise();
-      return true;
+    blink::AuctionConfig::MaybePromisePerBuyerSignals>;
 
-    case blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignalsDataView::Tag::
-        kPerBuyerSignals: {
-      absl::optional<base::flat_map<url::Origin, std::string>> payload;
-      if (!in.ReadPerBuyerSignals(&payload)) {
-        return false;
-      }
-      *out = blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
-          std::move(payload));
-      return true;
-    }
-  }
-  NOTREACHED();
-  return false;
-}
+template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<
+    blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView,
+    blink::AuctionConfig::MaybePromiseBuyerTimeouts>;
 
 bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
                   blink::AuctionConfig::BuyerTimeouts>::
@@ -130,31 +110,6 @@ bool StructTraits<blink::mojom::AuctionAdConfigBuyerTimeoutsDataView,
     return false;
   }
   return true;
-}
-
-bool UnionTraits<blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView,
-                 blink::AuctionConfig::MaybePromiseBuyerTimeouts>::
-    Read(blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView in,
-         blink::AuctionConfig::MaybePromiseBuyerTimeouts* out) {
-  switch (in.tag()) {
-    case blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView::Tag::
-        kPromise:
-      *out = blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromPromise();
-      return true;
-
-    case blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeoutsDataView::Tag::
-        kValue: {
-      blink::AuctionConfig::BuyerTimeouts payload;
-      if (!in.ReadValue(&payload)) {
-        return false;
-      }
-      *out = blink::AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
-          std::move(payload));
-      return true;
-    }
-  }
-  NOTREACHED();
-  return false;
 }
 
 bool StructTraits<

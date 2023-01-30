@@ -888,7 +888,8 @@ ConvertJsonPromiseFromIdlToMojo(
       return nullptr;
     }
 
-    return mojom::blink::AuctionAdConfigMaybePromiseJson::NewJson(json_payload);
+    return mojom::blink::AuctionAdConfigMaybePromiseJson::NewValue(
+        json_payload);
   }
 }
 
@@ -905,7 +906,7 @@ bool CopyAuctionSignalsFromIdlToMojo(
 
   if (!input.hasAuctionSignals()) {
     output.auction_ad_config_non_shared_params->auction_signals =
-        mojom::blink::AuctionAdConfigMaybePromiseJson::NewNothing(0);
+        mojom::blink::AuctionAdConfigMaybePromiseJson::NewValue(String());
     return true;
   }
 
@@ -927,7 +928,7 @@ bool CopySellerSignalsFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasSellerSignals()) {
     output.auction_ad_config_non_shared_params->seller_signals =
-        mojom::blink::AuctionAdConfigMaybePromiseJson::NewNothing(0);
+        mojom::blink::AuctionAdConfigMaybePromiseJson::NewValue(String());
     return true;
   }
 
@@ -1100,8 +1101,8 @@ bool CopyPerBuyerSignalsFromIdlToMojo(
     mojom::blink::AuctionAdConfig& output) {
   if (!input.hasPerBuyerSignals()) {
     output.auction_ad_config_non_shared_params->per_buyer_signals =
-        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::
-            NewPerBuyerSignals(absl::nullopt);
+        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::NewValue(
+            absl::nullopt);
     return true;
   }
 
@@ -1127,8 +1128,8 @@ bool CopyPerBuyerSignalsFromIdlToMojo(
       script_state, exception_state, input.seller(), value);
   if (per_buyer_signals.has_value()) {
     output.auction_ad_config_non_shared_params->per_buyer_signals =
-        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::
-            NewPerBuyerSignals(per_buyer_signals);
+        mojom::blink::AuctionAdConfigMaybePromisePerBuyerSignals::NewValue(
+            std::move(per_buyer_signals));
     return true;
   }
 

@@ -70,104 +70,47 @@ struct BLINK_COMMON_EXPORT DirectFromSellerSignals {
 //
 // All URLs and origins must be HTTPS.
 struct BLINK_COMMON_EXPORT AuctionConfig {
-  // Representation of an optional JSON parameter that may be provided
-  // asynchronously via a Promise (with the browser notified via a
-  // AbortableAdAuction.ResolvedPromiseParam mojo call).
-  //
-  // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseJson
-  //
-  // It can have 3 possible modes:
-  // - kNothing, meaning nothing is passed in.
-  // - kPromise, meaning that the call to runAdAuction() had a promise provided
-  //   for a given field; the actual value will need to be separately provided
-  //   once the promise resolves.
-  // - kJson, meaning a JSON value is passed in.
-  class BLINK_COMMON_EXPORT MaybePromiseJson {
+  // Representation of some auction config field being potentially delivered via
+  // a promise, or as its value (tag() == kValue). In case of a promise the
+  // resolved value will be delivered later via a Resolved*Promise message on
+  // AbortableAdAuction interface. Each specialization is individually
+  // typemapped.
+  template <typename Value>
+  class BLINK_COMMON_EXPORT MaybePromise {
    public:
-    // TODO(morlovich): Switch this to match simpler scheme of others like this?
-    enum class Tag { kNothing, kPromise, kJson };
+    using ValueType = Value;
 
-    MaybePromiseJson();
-    MaybePromiseJson(const MaybePromiseJson&);
-    MaybePromiseJson(MaybePromiseJson&&);
-    ~MaybePromiseJson();
+    enum class Tag { kPromise, kValue };
 
-    MaybePromiseJson& operator=(const MaybePromiseJson&);
-    MaybePromiseJson& operator=(MaybePromiseJson&&);
+    bool is_promise() const { return tag_ == Tag::kPromise; }
 
-    static MaybePromiseJson FromJson(std::string json) {
-      MaybePromiseJson result;
-      result.tag_ = Tag::kJson;
-      result.json_payload_ = std::move(json);
-      return result;
-    }
-
-    static MaybePromiseJson FromNothing() {
-      MaybePromiseJson result;
-      result.tag_ = Tag::kNothing;
-      return result;
-    }
-
-    static MaybePromiseJson FromPromise() {
-      MaybePromiseJson result;
+    static MaybePromise<Value> FromPromise() {
+      MaybePromise<Value> result;
       result.tag_ = Tag::kPromise;
       return result;
     }
 
-    bool is_json() const { return tag_ == Tag::kJson; }
-    bool is_promise() const { return tag_ == Tag::kPromise; }
-
-    Tag tag() const { return tag_; }
-    const std::string& json_payload() const { return json_payload_; }
-
-    // Converts a non-promise value to an optional-string representation.
-    // (Meant to be used after all relevant promises have been resolved and
-    //  replaced with concrete values to pass data for further processing).
-    absl::optional<std::string> maybe_json() const {
-      DCHECK_NE(tag_, Tag::kPromise);
-      return is_json() ? absl::make_optional(json_payload_) : absl::nullopt;
-    }
-
-   private:
-    Tag tag_ = Tag::kNothing;
-    std::string json_payload_;
-  };
-
-  // Representation of per_buyer_signals field in auction configuration, either
-  // as its value (tag() == kPerBuyerSignals) or a promise to deliver it later
-  // via ResolvedPerBuyerSignalsPromise.
-  //
-  // Typemapped to blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals.
-  class BLINK_COMMON_EXPORT MaybePromisePerBuyerSignals {
-   public:
-    enum class Tag { kPromise, kPerBuyerSignals };
-
-    bool is_promise() const { return tag_ == Tag::kPromise; }
-
-    static MaybePromisePerBuyerSignals FromPromise() {
-      MaybePromisePerBuyerSignals result;
-      result.tag_ = Tag::kPromise;
-      return result;
-    }
-
-    static MaybePromisePerBuyerSignals FromValue(
-        absl::optional<base::flat_map<url::Origin, std::string>> value_in) {
-      MaybePromisePerBuyerSignals result;
+    static MaybePromise<Value> FromValue(Value value_in) {
+      MaybePromise<Value> result;
       result.value_ = std::move(value_in);
-      result.tag_ = Tag::kPerBuyerSignals;
+      result.tag_ = Tag::kValue;
       return result;
     }
 
     Tag tag() const { return tag_; }
-    const absl::optional<base::flat_map<url::Origin, std::string>>& value()
-        const {
-      return value_;
-    }
+    const Value& value() const { return value_; }
 
    private:
-    Tag tag_ = Tag::kPerBuyerSignals;
-    absl::optional<base::flat_map<url::Origin, std::string>> value_;
+    Tag tag_ = Tag::kValue;
+    Value value_;
   };
+
+  // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseJson
+  using MaybePromiseJson = MaybePromise<absl::optional<std::string>>;
+
+  // Typemapped to blink::mojom::AuctionAdConfigMaybePromisePerBuyerSignals.
+  using MaybePromisePerBuyerSignals =
+      MaybePromise<absl::optional<base::flat_map<url::Origin, std::string>>>;
 
   // Representation of bidder timeouts, including optional global and per-origin
   // timeouts.
@@ -183,37 +126,8 @@ struct BLINK_COMMON_EXPORT AuctionConfig {
         per_buyer_timeouts;
   };
 
-  // Representation of per_buyer_timeouts field in auction configuration, either
-  // as its value (tag() == kValue) or a promise to deliver it later
-  // via ResolvedBuyerTimeoutsPromise.
-  //
   // Typemapped to blink::mojom::AuctionAdConfigMaybePromiseBuyerTimeouts
-  class BLINK_COMMON_EXPORT MaybePromiseBuyerTimeouts {
-   public:
-    enum class Tag { kPromise, kValue };
-
-    bool is_promise() const { return tag_ == Tag::kPromise; }
-
-    static MaybePromiseBuyerTimeouts FromPromise() {
-      MaybePromiseBuyerTimeouts result;
-      result.tag_ = Tag::kPromise;
-      return result;
-    }
-
-    static MaybePromiseBuyerTimeouts FromValue(BuyerTimeouts value_in) {
-      MaybePromiseBuyerTimeouts result;
-      result.value_ = std::move(value_in);
-      result.tag_ = Tag::kValue;
-      return result;
-    }
-
-    Tag tag() const { return tag_; }
-    const BuyerTimeouts& value() const { return value_; }
-
-   private:
-    Tag tag_ = Tag::kValue;
-    BuyerTimeouts value_;
-  };
+  using MaybePromiseBuyerTimeouts = MaybePromise<BuyerTimeouts>;
 
   // Subset of AuctionConfig that is not shared by all auctions that are
   // using the same SellerWorklet object (so it's "not shared" between

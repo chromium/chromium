@@ -1207,7 +1207,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     if (use_promise) {
       return blink::AuctionConfig::MaybePromiseJson::FromPromise();
     } else {
-      return blink::AuctionConfig::MaybePromiseJson::FromJson(
+      return blink::AuctionConfig::MaybePromiseJson::FromValue(
           base::StringPrintf(R"({"url": "%s"})",
                              seller_decision_logic_url.spec().c_str()));
     }
@@ -1219,7 +1219,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     if (use_promise) {
       return blink::AuctionConfig::MaybePromiseJson::FromPromise();
     } else {
-      return blink::AuctionConfig::MaybePromiseJson::FromJson(
+      return blink::AuctionConfig::MaybePromiseJson::FromValue(
           base::StringPrintf(R"("auctionSignalsFor %s")",
                              seller.Serialize().c_str()));
     }
@@ -4850,7 +4850,7 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignals) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
-          .json_payload());
+          .value());
 
   auction_run_loop_->Run();
 
@@ -4917,7 +4917,7 @@ TEST_F(AuctionRunnerTest, PromiseAuctionSignalsDeliveredBeforeWorklet) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
-          .json_payload());
+          .value());
 
   // Can't complete yet since there is no process slot.
   task_environment()->RunUntilIdle();
@@ -4970,7 +4970,7 @@ TEST_F(AuctionRunnerTest, PromiseSignals) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
-      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).value());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
@@ -4979,7 +4979,7 @@ TEST_F(AuctionRunnerTest, PromiseSignals) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
-          .json_payload());
+          .value());
 
   auction_run_loop_->Run();
 
@@ -5218,7 +5218,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsParallelism) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
-      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).value());
   auction_run_loop_->Run();
 
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);
@@ -5268,7 +5268,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsResolveAfterAbort) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
-      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).value());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
   EXPECT_TRUE(result_.manually_aborted);
@@ -5305,7 +5305,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
-      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).value());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
@@ -5313,7 +5313,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kAuctionSignals,
       MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(kSellerUrl))
-          .json_payload());
+          .value());
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
@@ -5323,14 +5323,14 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuction) {
     abortable_ad_auction_->ResolvedPromiseParam(
         blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
         blink::mojom::AuctionAdConfigField::kSellerSignals,
-        MakeSellerSignals(/*use_promise=*/false, url).json_payload());
+        MakeSellerSignals(/*use_promise=*/false, url).value());
     task_environment()->RunUntilIdle();
     EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
     abortable_ad_auction_->ResolvedPromiseParam(
         blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
         blink::mojom::AuctionAdConfigField::kAuctionSignals,
         MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(url))
-            .json_payload());
+            .value());
     if (component != 1) {
       task_environment()->RunUntilIdle();
       EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
@@ -5375,7 +5375,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuctionRejected) {
         blink::mojom::AuctionAdConfigField::kAuctionSignals,
         MakeAuctionSignals(/*use_promise=*/false,
                            url::Origin::Create(kSellerUrl))
-            .json_payload());
+            .value());
     task_environment()->RunUntilIdle();
     EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
 
@@ -5387,7 +5387,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuctionRejected) {
               component),
           blink::mojom::AuctionAdConfigField::kAuctionSignals,
           MakeAuctionSignals(/*use_promise=*/false, url::Origin::Create(url))
-              .json_payload());
+              .value());
 
       if (component == 0) {
         if (inject_incorrect_call) {
@@ -5397,7 +5397,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsComponentAuctionRejected) {
               blink::mojom::AuctionAdConfigField::kAuctionSignals,
               MakeAuctionSignals(/*use_promise=*/false,
                                  url::Origin::Create(url))
-                  .json_payload());
+                  .value());
         }
         task_environment()->RunUntilIdle();
         EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
@@ -5444,7 +5444,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsSellerDependency) {
     abortable_ad_auction_->ResolvedPromiseParam(
         blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(component),
         blink::mojom::AuctionAdConfigField::kSellerSignals,
-        MakeSellerSignals(/*use_promise=*/false, url).json_payload());
+        MakeSellerSignals(/*use_promise=*/false, url).value());
 
     task_environment()->RunUntilIdle();
     EXPECT_FALSE(auction_run_loop_->AnyQuitCalled());
@@ -5454,7 +5454,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsSellerDependency) {
   abortable_ad_auction_->ResolvedPromiseParam(
       blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
       blink::mojom::AuctionAdConfigField::kSellerSignals,
-      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).json_payload());
+      MakeSellerSignals(/*use_promise=*/false, kSellerUrl).value());
 
   auction_run_loop_->Run();
   EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name), result_.winning_group_id);

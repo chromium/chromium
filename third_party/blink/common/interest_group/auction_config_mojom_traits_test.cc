@@ -38,7 +38,7 @@ bool operator==(const DirectFromSellerSignals& a,
 
 bool operator==(const AuctionConfig::MaybePromiseJson& a,
                 const AuctionConfig::MaybePromiseJson& b) {
-  return a.tag() == b.tag() && a.json_payload() == b.json_payload();
+  return a.tag() == b.tag() && a.value() == b.value();
 }
 
 bool operator==(const AuctionConfig::MaybePromisePerBuyerSignals& a,
@@ -127,9 +127,9 @@ AuctionConfig CreateFullConfig() {
   non_shared_params.interest_group_buyers.emplace();
   non_shared_params.interest_group_buyers->push_back(buyer);
   non_shared_params.auction_signals =
-      AuctionConfig::MaybePromiseJson::FromJson("[4]");
+      AuctionConfig::MaybePromiseJson::FromValue("[4]");
   non_shared_params.seller_signals =
-      AuctionConfig::MaybePromiseJson::FromJson("[5]");
+      AuctionConfig::MaybePromiseJson::FromValue("[5]");
   non_shared_params.seller_timeout = base::Seconds(6);
 
   absl::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
@@ -425,13 +425,13 @@ TEST(AuctionConfigMojomTraitsTest, DirectFromSellerSignalsNoAuctionSignals) {
 TEST(AuctionConfigMojomTraitsTest, MaybePromiseJson) {
   {
     AuctionConfig::MaybePromiseJson json =
-        AuctionConfig::MaybePromiseJson::FromJson("{A: 42}");
+        AuctionConfig::MaybePromiseJson::FromValue("{A: 42}");
     EXPECT_TRUE(SerializeAndDeserialize(json));
   }
 
   {
     AuctionConfig::MaybePromiseJson nothing =
-        AuctionConfig::MaybePromiseJson::FromNothing();
+        AuctionConfig::MaybePromiseJson::FromValue(absl::nullopt);
     EXPECT_TRUE(SerializeAndDeserialize(nothing));
   }
 

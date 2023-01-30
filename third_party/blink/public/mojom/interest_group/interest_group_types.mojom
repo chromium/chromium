@@ -191,18 +191,17 @@ struct DirectFromSellerSignals {
 
 // See blink::AuctionConfig::MaybePromiseJson.
 union AuctionAdConfigMaybePromiseJson {
-  uint32 nothing;  // value unused.
   uint32 promise;  // value unused.
-  string json;
+  string? value;
 };
 
 // See blink::AuctionConfig::MaybePromisePerBuyerSignals
 union AuctionAdConfigMaybePromisePerBuyerSignals {
   uint32 promise;  // value unused
 
-  // Keys of `per_buyer_signals` must be valid HTTPS origins. Value is opaque
+  // Keys of `value` must be valid HTTPS origins. Value is opaque
   // JSON data, passed as object to auction worklet.
-  map<url.mojom.Origin, string>? per_buyer_signals;
+  map<url.mojom.Origin, string>? value;
 };
 
 // See blink::AuctionConfig::BuyerTimeouts

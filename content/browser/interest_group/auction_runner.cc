@@ -57,15 +57,6 @@ blink::AuctionConfig* LookupAuction(
   return nullptr;
 }
 
-blink::AuctionConfig::MaybePromiseJson FromOptionalString(
-    base::optional_ref<const std::string> maybe_json) {
-  if (maybe_json.has_value()) {
-    return blink::AuctionConfig::MaybePromiseJson::FromJson(*maybe_json);
-  } else {
-    return blink::AuctionConfig::MaybePromiseJson::FromNothing();
-  }
-}
-
 }  // namespace
 
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
@@ -104,7 +95,7 @@ void AuctionRunner::ResolvedPromiseParam(
   }
 
   blink::AuctionConfig::MaybePromiseJson new_val =
-      FromOptionalString(json_value);
+      blink::AuctionConfig::MaybePromiseJson::FromValue(json_value);
 
   switch (field) {
     case blink::mojom::AuctionAdConfigField::kAuctionSignals:

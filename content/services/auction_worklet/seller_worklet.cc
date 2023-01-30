@@ -128,18 +128,20 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
     auction_config_dict.Set("interestGroupBuyers", interest_group_buyers);
   }
 
-  if (auction_ad_config_non_shared_params.auction_signals.is_json() &&
+  DCHECK(!auction_ad_config_non_shared_params.auction_signals.is_promise());
+  if (auction_ad_config_non_shared_params.auction_signals.value() &&
       !v8_helper->InsertJsonValue(
           context, "auctionSignals",
-          auction_ad_config_non_shared_params.auction_signals.json_payload(),
+          *auction_ad_config_non_shared_params.auction_signals.value(),
           auction_config_value)) {
     return false;
   }
 
-  if (auction_ad_config_non_shared_params.seller_signals.is_json() &&
+  DCHECK(!auction_ad_config_non_shared_params.seller_signals.is_promise());
+  if (auction_ad_config_non_shared_params.seller_signals.value() &&
       !v8_helper->InsertJsonValue(
           context, "sellerSignals",
-          auction_ad_config_non_shared_params.seller_signals.json_payload(),
+          *auction_ad_config_non_shared_params.seller_signals.value(),
           auction_config_value)) {
     return false;
   }

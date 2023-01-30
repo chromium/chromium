@@ -359,8 +359,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
   bidder_worklet_handle_->AuthorizeSubresourceUrls(
       *seller_info.subresource_url_builder);
   bidder_worklet_handle_->GetBidderWorklet()->ReportWin(
-      group_name,
-      auction_config->non_shared_params.auction_signals.maybe_json(),
+      group_name, auction_config->non_shared_params.auction_signals.value(),
       per_buyer_signals,
       InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
           *seller_info.subresource_url_builder,
