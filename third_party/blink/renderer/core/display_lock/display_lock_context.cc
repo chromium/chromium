@@ -69,7 +69,7 @@ DisplayLockContext::DisplayLockContext(Element* element)
   DetermineIfSubtreeHasFocus();
   DetermineIfSubtreeHasSelection();
   DetermineIfSubtreeHasTopLayerElement();
-  DetermineIfInViewTransitionElementChain();
+  DetermineIfDescendantIsViewTransitionElement();
 }
 
 void DisplayLockContext::SetRequestedState(EContentVisibility state,
@@ -887,7 +887,7 @@ void DisplayLockContext::DidMoveToNewDocument(Document& old_document) {
   DetermineIfSubtreeHasFocus();
   DetermineIfSubtreeHasSelection();
   DetermineIfSubtreeHasTopLayerElement();
-  DetermineIfInViewTransitionElementChain();
+  DetermineIfDescendantIsViewTransitionElement();
 }
 
 void DisplayLockContext::WillStartLifecycleUpdate(const LocalFrameView& view) {
@@ -1162,55 +1162,22 @@ void DisplayLockContext::DetermineIfSubtreeHasTopLayerElement() {
   }
 }
 
-void DisplayLockContext::DetermineIfInViewTransitionElementChain() {
-  ResetAndDetermineIfAncestorIsViewTransitionElement();
+void DisplayLockContext::DetermineIfDescendantIsViewTransitionElement() {
+  ResetDescendantIsViewTransitionElement();
   if (ConnectedToView()) {
     document_->GetDisplayLockDocumentState()
         .UpdateViewTransitionElementAncestorLocks();
   }
 }
 
-void DisplayLockContext::ResetInViewTransitionElementChain() {
-  SetRenderAffectingState(RenderAffectingState::kViewTransitionElementChain,
-                          false);
+void DisplayLockContext::ResetDescendantIsViewTransitionElement() {
+  SetRenderAffectingState(
+      RenderAffectingState::kDescendantIsViewTransitionElement, false);
 }
 
-void DisplayLockContext::SetInViewTransitionElementChain() {
-  SetRenderAffectingState(RenderAffectingState::kViewTransitionElementChain,
-                          true);
-}
-
-bool DisplayLockContext::IsInViewTransitionElementAncestorChain() const {
-  return render_affecting_state_[static_cast<int>(
-      RenderAffectingState::kViewTransitionElementChain)];
-}
-
-void DisplayLockContext::ResetAndDetermineIfAncestorIsViewTransitionElement() {
-  ResetInViewTransitionElementChain();
-  if (!ConnectedToView())
-    return;
-
-  auto* transition = ViewTransitionUtils::GetActiveTransition(*document_);
-  if (!transition)
-    return;
-
-  bool has_view_transition_element_ancestor = false;
-  for (auto* candidate = element_.Get(); candidate;
-       candidate = FlatTreeTraversal::ParentElement(*candidate)) {
-    // We don't care about document element as the ancestor, since it's common
-    // to have one and it will be clipped by viewport anyway.
-    if (candidate->IsDocumentElement())
-      continue;
-
-    if (auto* layout_object = candidate->GetLayoutObject();
-        layout_object &&
-        transition->IsRepresentedViaPseudoElements(*layout_object)) {
-      has_view_transition_element_ancestor = true;
-      break;
-    }
-  }
-  SetRenderAffectingState(RenderAffectingState::kViewTransitionElementChain,
-                          has_view_transition_element_ancestor);
+void DisplayLockContext::SetDescendantIsViewTransitionElement() {
+  SetRenderAffectingState(
+      RenderAffectingState::kDescendantIsViewTransitionElement, true);
 }
 
 void DisplayLockContext::ClearHasTopLayerElement() {
@@ -1333,7 +1300,7 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
         !state(RenderAffectingState::kAutoStateUnlockedUntilLifecycle) &&
         !state(RenderAffectingState::kAutoUnlockedForPrint) &&
         !state(RenderAffectingState::kSubtreeHasTopLayerElement) &&
-        !state(RenderAffectingState::kViewTransitionElementChain)));
+        !state(RenderAffectingState::kDescendantIsViewTransitionElement)));
 
   if (should_be_locked && !IsLocked())
     Lock();
@@ -1367,8 +1334,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "AutoUnlockedForPrint";
     case RenderAffectingState::kSubtreeHasTopLayerElement:
       return "SubtreeHasTopLayerElement";
-    case RenderAffectingState::kViewTransitionElementChain:
-      return "ViewTransitionElementChain";
+    case RenderAffectingState::kDescendantIsViewTransitionElement:
+      return "DescendantIsViewTransitionElement";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }

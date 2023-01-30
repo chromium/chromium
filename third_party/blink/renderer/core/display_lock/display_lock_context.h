@@ -249,30 +249,9 @@ class CORE_EXPORT DisplayLockContext final
 
   void ScheduleTopLayerCheck();
 
-  // This updates the rendering state to account for the fact that one of the
-  // ancestor may be a non-root view transition element, which should cause the
-  // content-visibility: auto locks to be unlocked.
-  // This function is called anytime a descendant or ancestor view transition
-  // element may change. Note that to determine the descendants, this function
-  // uses a document level function to mark all ancestors of view transition
-  // elements. This updates all display locks on such ancestor chains, but it
-  // should be a no-op for any lock except this one. This is the most optimal
-  // way to do this and not a necessary component of the function.
-  // Note that this function also does not consider the root as a view
-  // transition element (even though it might be). The reason for this is that
-  // root is treated different in View Transitions: it is clipped by a viewport
-  // or some margin around, and it's captured by default. This means that it
-  // will frequently be in the chain of all display locks, and we want to avoid
-  // unnecessary unlocks.
-  void DetermineIfInViewTransitionElementChain();
-  // Note that the following only checks the ancestor chain, and does not
-  // consider view transition descendants. This is an optimization to be used by
-  // the document state.
-  void ResetAndDetermineIfAncestorIsViewTransitionElement();
   // State control for view transition element render affecting state.
-  void ResetInViewTransitionElementChain();
-  void SetInViewTransitionElementChain();
-  bool IsInViewTransitionElementAncestorChain() const;
+  void ResetDescendantIsViewTransitionElement();
+  void SetDescendantIsViewTransitionElement();
 
  private:
   // Give access to |NotifyForcedUpdateScopeStarted()| and
@@ -377,6 +356,10 @@ class CORE_EXPORT DisplayLockContext final
   // Determines if the subtree has a top layer element. This is a walk from each
   // top layer node up the ancestor chain looking for `element_`.
   void DetermineIfSubtreeHasTopLayerElement();
+
+  // Determines if there are view transition elements in the subtree of this
+  // element.
+  void DetermineIfDescendantIsViewTransitionElement();
 
   // Detaching the layout tree from the top layers nested under this lock.
   void DetachDescendantTopLayerElements();
@@ -521,7 +504,7 @@ class CORE_EXPORT DisplayLockContext final
     kAutoStateUnlockedUntilLifecycle,
     kAutoUnlockedForPrint,
     kSubtreeHasTopLayerElement,
-    kViewTransitionElementChain,
+    kDescendantIsViewTransitionElement,
     kNumRenderAffectingStates
   };
   void SetRenderAffectingState(RenderAffectingState state, bool flag);

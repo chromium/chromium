@@ -252,21 +252,14 @@ bool DisplayLockDocumentState::MarkAncestorContextsHaveTopLayerElement(
 }
 
 void DisplayLockDocumentState::NotifyViewTransitionPseudoTreeChanged() {
-  // Note that this function doesn't use
-  // DisplayLockContext::DetermineIfInViewTransitionElementChain, since that
-  // would mean we have to call UpdateViewTransitionElementAncestorLocks for
-  // each lock. This function only calls it once by hoisting it out of the
-  // context calls.
-  // TODO(crbug.com/1409132): This needs to be updated to match the new desired
-  // behavior for content-visibility: auto in a snapshot descendent.
-
-  // Reset the flag and determine if the ancestor is a view transition element.
+  // Reset the view transition element flag.
+  // TODO(vmpstr): This should be optimized to keep track of elements that
+  // actually have this flag set.
   for (auto context : display_lock_contexts_)
-    context->ResetAndDetermineIfAncestorIsViewTransitionElement();
+    context->ResetDescendantIsViewTransitionElement();
 
-  // Also process the view transition elements to check if their ancestors are
-  // locks. These two parts give us the full chain (either locks are ancestors
-  // of transition element or transition elements are ancestors of locks).
+  // Process the view transition elements to check if their ancestors are
+  // locks that need to be made relevant.
   UpdateViewTransitionElementAncestorLocks();
 }
 
@@ -279,16 +272,10 @@ void DisplayLockDocumentState::UpdateViewTransitionElementAncestorLocks() {
   for (auto element : transitioning_elements) {
     auto* ancestor = element.Get();
     // When the element which has c-v:auto is itself a view transition element,
-    // marking it as such could go in either walk (from the function naming) but
-    // it happens in the ancestor chain check and skipped here. This DCHECK
-    // verifies this.
-    DCHECK(!element->GetDisplayLockContext() ||
-           element->GetDisplayLockContext()
-               ->IsInViewTransitionElementAncestorChain());
-
+    // we keep it locked. So start with the parent.
     while ((ancestor = FlatTreeTraversal::ParentElement(*ancestor))) {
       if (auto* context = ancestor->GetDisplayLockContext())
-        context->SetInViewTransitionElementChain();
+        context->SetDescendantIsViewTransitionElement();
     }
   }
 }
