@@ -1109,7 +1109,7 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
       gfx::Size(/*ignored*/ 0, kPinPasswordToggleButtonHeight));
 
   auto pin_view = std::make_unique<LoginPinView>(
-      LoginPinView::Style::kAlphanumeric,
+      LoginPinView::Style::kNumeric,
       base::BindRepeating(&LoginAuthUserView::OnPinPadInsertDigit,
                           base::Unretained(this)),
       base::BindRepeating(&LoginAuthUserView::OnPinPadBackspace,
