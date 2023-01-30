@@ -65,64 +65,61 @@ base::Value ToValue(const LuciTestResult::Artifact& artifact) {
   // One and only one of the two optional fields must have value.
   DCHECK(artifact.file_path.has_value() != artifact.contents.has_value());
 
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
 
   if (artifact.file_path.has_value()) {
-    dict.SetStringKey(kKeyFilePath, artifact.file_path->AsUTF8Unsafe());
+    dict.Set(kKeyFilePath, artifact.file_path->AsUTF8Unsafe());
   } else {
     DCHECK(artifact.contents.has_value());
-    dict.SetStringKey(kKeyContents, artifact.contents.value());
+    dict.Set(kKeyContents, artifact.contents.value());
   }
 
-  dict.SetStringKey(kKeyContentType, artifact.content_type);
-  return dict;
+  dict.Set(kKeyContentType, artifact.content_type);
+  return base::Value(std::move(dict));
 }
 
 base::Value ToValue(const LuciTestResult& result) {
-  base::Value test_report(base::Value::Type::DICT);
+  base::Value::Dict test_report;
 
-  base::Value* test_result =
-      test_report.SetKey(kKeyTestResult, base::Value(base::Value::Type::DICT));
-  test_result->SetStringKey(kKeyTestPath, result.test_path());
+  base::Value::Dict* test_result = test_report.EnsureDict(kKeyTestResult);
+  test_result->Set(kKeyTestPath, result.test_path());
 
   if (!result.extra_variant_pairs().empty()) {
-    base::Value* variant_dict =
-        test_result->SetKey(kKeyVariant, base::Value(base::Value::Type::DICT));
+    base::Value::Dict* variant_dict = test_result->EnsureDict(kKeyVariant);
     for (const auto& pair : result.extra_variant_pairs())
-      variant_dict->SetStringKey(pair.first, pair.second);
+      variant_dict->Set(pair.first, pair.second);
   }
 
-  test_result->SetStringKey(kKeyStatus, ToString(result.status()));
-  test_result->SetBoolKey(kKeyExpected, result.is_expected());
+  test_result->Set(kKeyStatus, ToString(result.status()));
+  test_result->Set(kKeyExpected, result.is_expected());
 
   if (!result.start_time().is_null()) {
-    test_result->SetStringKey(kKeyStartTime, ToUtcIsoTime(result.start_time()));
+    test_result->Set(kKeyStartTime, ToUtcIsoTime(result.start_time()));
   }
   if (!result.duration().is_zero()) {
-    test_result->SetStringKey(
+    test_result->Set(
         kKeyRunDuration,
         base::StringPrintf("%.2fs", result.duration().InSecondsF()));
   }
 
   if (!result.output_artifacts().empty()) {
-    base::Value* artifacts_dict = test_result->SetKey(
-        kKeyOutputArtifacts, base::Value(base::Value::Type::DICT));
+    base::Value::Dict* artifacts_dict =
+        test_result->EnsureDict(kKeyOutputArtifacts);
     for (const auto& pair : result.output_artifacts())
-      artifacts_dict->SetKey(pair.first, ToValue(pair.second));
+      artifacts_dict->Set(pair.first, ToValue(pair.second));
   }
 
   if (!result.tags().empty()) {
-    base::Value* tags_list =
-        test_result->SetKey(kKeyTags, base::Value(base::Value::Type::LIST));
+    base::Value::List* tags_list = test_result->EnsureList(kKeyTags);
     for (const auto& tag : result.tags()) {
-      base::Value tag_dict(base::Value::Type::DICT);
-      tag_dict.SetStringKey(kKeyKey, tag.key);
-      tag_dict.SetStringKey(kKeyValue, tag.value);
+      base::Value::Dict tag_dict;
+      tag_dict.Set(kKeyKey, tag.key);
+      tag_dict.Set(kKeyValue, tag.value);
       tags_list->Append(std::move(tag_dict));
     }
   }
 
-  return test_report;
+  return base::Value(std::move(test_report));
 }
 
 std::string ToJson(const LuciTestResult& result) {
