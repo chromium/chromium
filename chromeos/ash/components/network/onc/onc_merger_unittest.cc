@@ -101,7 +101,7 @@ TEST_F(ONCMergerTest, UserValueAndRecommendedUnset) {
 TEST_F(ONCMergerTest, UserDictionaryAndNoPolicyValue) {
   base::Value merged(
       MergeSettingsAndPoliciesToEffective(&policy_, nullptr, &user_, nullptr));
-  EXPECT_FALSE(merged.FindKey("ProxySettings"));
+  EXPECT_FALSE(merged.GetDict().contains("ProxySettings"));
 }
 
 TEST_F(ONCMergerTest, MergeWithEmptyPolicyProhibitsEverything) {

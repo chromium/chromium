@@ -191,21 +191,22 @@ class NetworkCertMigratorTest : public testing::Test {
     const base::Value* properties =
         service_test_->GetServiceProperties(kVPNStub);
     ASSERT_TRUE(properties);
-    const base::Value* provider = properties->FindKey(shill::kProviderProperty);
+    const base::Value::Dict* provider =
+        properties->GetDict().FindDict(shill::kProviderProperty);
     if (!provider)
       return;
     if (open_vpn) {
       const std::string* pkcs11_id_value =
-          provider->FindStringKey(shill::kOpenVPNClientCertIdProperty);
+          provider->FindString(shill::kOpenVPNClientCertIdProperty);
       if (pkcs11_id_value)
         *pkcs11_id = *pkcs11_id_value;
     } else {
       const std::string* slot_value =
-          provider->FindStringKey(shill::kL2TPIPsecClientCertSlotProperty);
+          provider->FindString(shill::kL2TPIPsecClientCertSlotProperty);
       if (slot_value)
         *slot_id = *slot_value;
       const std::string* pkcs11_id_value =
-          provider->FindStringKey(shill::kL2TPIPsecClientCertIdProperty);
+          provider->FindString(shill::kL2TPIPsecClientCertIdProperty);
       if (pkcs11_id_value)
         *pkcs11_id = *pkcs11_id_value;
     }

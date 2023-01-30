@@ -130,7 +130,7 @@ class MergeListOfDictionaries {
         for (const base::Value* dict_inner : dicts) {
           const base::Value* value = nullptr;
           if (dict_inner && dict_inner->is_dict())
-            value = dict_inner->FindKey(key);
+            value = dict_inner->GetDict().Find(key);
           values_for_key.push_back(value);
         }
         if (field.second.is_dict()) {
