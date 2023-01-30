@@ -108,8 +108,7 @@ public class WebApkInstaller {
 
     private void notify(@WebApkInstallResult int result) {
         if (mNativePointer != 0) {
-            WebApkInstallerJni.get().onInstallFinished(
-                    mNativePointer, WebApkInstaller.this, result);
+            WebApkInstallerJni.get().onInstallFinished(mNativePointer, result);
         }
     }
 
@@ -156,8 +155,7 @@ public class WebApkInstaller {
 
             @Override
             protected void onPostExecute(Integer result) {
-                WebApkInstallerJni.get().onGotSpaceStatus(
-                        mNativePointer, WebApkInstaller.this, result);
+                WebApkInstallerJni.get().onGotSpaceStatus(mNativePointer, result);
             }
         }
                 .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -174,8 +172,7 @@ public class WebApkInstaller {
 
     @NativeMethods
     interface Natives {
-        void onInstallFinished(long nativeWebApkInstaller, WebApkInstaller caller,
-                @WebApkInstallResult int result);
-        void onGotSpaceStatus(long nativeWebApkInstaller, WebApkInstaller caller, int status);
+        void onInstallFinished(long nativeWebApkInstaller, @WebApkInstallResult int result);
+        void onGotSpaceStatus(long nativeWebApkInstaller, int status);
     }
 }

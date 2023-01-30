@@ -97,8 +97,7 @@ class TestWebApkInstaller : public WebApkInstaller {
 
  private:
   void CheckFreeSpace() override {
-    OnGotSpaceStatus(nullptr, base::android::JavaParamRef<jobject>(nullptr),
-                     static_cast<int>(test_space_status_));
+    OnGotSpaceStatus(nullptr, static_cast<int>(test_space_status_));
   }
 
   // The space status used in tests.
