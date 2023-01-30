@@ -24,7 +24,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (bool remove_recommended_fields : {false, true}) {
     Normalizer normalizer(remove_recommended_fields);
     normalizer.NormalizeObject(&chromeos::onc::kNetworkConfigurationSignature,
-                               *parsed_json);
+                               parsed_json->GetDict());
   }
 
   return 0;
