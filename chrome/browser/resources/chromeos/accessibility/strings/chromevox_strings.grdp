@@ -2055,20 +2055,8 @@
   <message desc="Title displayed in the panel for the menuitem to report an issue." name="IDS_CHROMEVOX_PANEL_MENU_ITEM_REPORT_ISSUE">
     Report an issue
   </message>
-  <message desc="Title of a notification that ChromeVox has been updated." name="IDS_CHROMEVOX_UPDATE_TITLE">
-    ChromeVox Updated
-  </message>
-  <message desc="Message text for a notification that ChromeVox has been updated for a new release." name="IDS_CHROMEVOX_UPDATE_MESSAGE_NEW">
-    Press ChromeVox o, n to find out what's new
-  </message>
   <message desc="Description of button that closes the ChromeVox Tutorial" name="IDS_CHROMEVOX_CLOSE_TUTORIAL">
     Close ChromeVox Tutorial
-  </message>
-  <message desc="Button that goes to the previous page in the ChromeVox Tutorial" name="IDS_CHROMEVOX_TUTORIAL_PREVIOUS">
-    Previous
-  </message>
-  <message desc="Button that goes to the next page in the ChromeVox Tutorial" name="IDS_CHROMEVOX_TUTORIAL_NEXT">
-    Next
   </message>
   <message desc="Heading that welcomes users to the ChromeVox tutorial" name="IDS_CHROMEVOX_TUTORIAL_WELCOME_HEADING">
     Welcome to ChromeVox!
@@ -2158,21 +2146,6 @@
   <message desc="Part of the ChromeVox tutorial, explaining that this is the end of the tutorial and that there are links to more information." name="IDS_CHROMEVOX_TUTORIAL_LEARN_MORE">
     Congratulations! You’ve learned the essentials to use ChromeVox successfully. Remember that you can open the ChromeVox command menu at any time by pressing Search+Period. To learn even more about ChromeVox and ChromeOS, visit the following articles.
     If you're done with the tutorial, use ChromeVox to navigate to the Close button and click it.
-  </message>
-  <message desc="Part of the ChromeVox update notes for m63, title." name="IDS_CHROMEVOX_UPDATE_63_TITLE">
-    You've been updated to ChromeVox 63!
-  </message>
-  <message desc="Part of the ChromeVox update notes for m63, introductory text." name="IDS_CHROMEVOX_UPDATE_63_INTRO">
-    We have some exciting changes in this new release; here's what's new:
-  </message>
-  <message desc="Part of the ChromeVox update notes for 63, new items 1." name="IDS_CHROMEVOX_UPDATE_63_ITEM_1">
-    Classic removed. The keyboard toggle to switch back into ChromeVox Classic has been removed.
-  </message>
-  <message desc="Part of the ChromeVox update notes for m63, new items 2." name="IDS_CHROMEVOX_UPDATE_63_ITEM_2">
-    Rich text support. ChromeVox now supports rich text fields including jump commands, braille cursor routing, selection, and more.
-  </message>
-  <message desc="Part of the ChromeVox update notes for m63, new items 3." name="IDS_CHROMEVOX_UPDATE_63_ITEM_3">
-    Android apps for Chrome. If you have Play Store on your device, get a sneak peek at ChromeVox with Android apps. Try the experimental support by downloading Google Chrome Canary from the Play Store.
   </message>
   <message desc="Title of an article on the command reference for 'ChromeVox'" name="IDS_CHROMEVOX_NEXT_COMMAND_REFERENCE">
     ChromeVox Command Reference
