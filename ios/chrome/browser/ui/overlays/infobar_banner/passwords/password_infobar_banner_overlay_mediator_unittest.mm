@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "build/build_config.h"
 #import "components/infobars/core/infobar.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
@@ -178,10 +179,12 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
       l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER_LOCAL_SAVE_SUBTITLE),
       consumer.subtitleText);
 
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
   // Verify that the multi-color infobar icon was set up properly.
   EXPECT_NSEQ(MakeSymbolMulticolor(CustomSymbolWithPointSize(
                   kMulticolorPasswordSymbol, kInfobarSymbolPointSize)),
               consumer.iconImage);
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
 TEST_F(PasswordInfobarBannerOverlayMediatorTest,
@@ -219,8 +222,10 @@ TEST_F(PasswordInfobarBannerOverlayMediatorTest,
                               base::UTF8ToUTF16(std::string(kAccount))),
       consumer.subtitleText);
 
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
   // Verify that the multi-color infobar icon was set up properly.
   EXPECT_NSEQ(MakeSymbolMulticolor(CustomSymbolWithPointSize(
                   kMulticolorPasswordSymbol, kInfobarSymbolPointSize)),
               consumer.iconImage);
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }

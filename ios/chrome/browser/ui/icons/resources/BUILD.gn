@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/asset_catalog.gni")
+import("//build/config/ios/ios_sdk.gni")
 
 symbolset("arrow_clockwise") {
   sources = [
@@ -53,11 +54,13 @@ symbolset("password") {
   ]
 }
 
-symbolset("multicolor_password") {
-  sources = [
-    "multicolor_password.symbolset/Contents.json",
-    "multicolor_password.symbolset/multicolor.password.cr.svg",
-  ]
+if (target_environment != "catalyst") {
+  symbolset("multicolor_password") {
+    sources = [
+      "multicolor_password.symbolset/Contents.json",
+      "multicolor_password.symbolset/multicolor.password.cr.svg",
+    ]
+  }
 }
 
 symbolset("password_manager") {
