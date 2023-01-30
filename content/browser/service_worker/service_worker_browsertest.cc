@@ -4423,36 +4423,20 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSpeculativeStartupBrowserTest,
       static_cast<int>(blink::ServiceWorkerStatusCode::kOk), 1);
 }
 
-enum class ServiceWorkerBypassFetchHandlerBypassedOriginType {
-  kBypassed,
-  kNotBypassed
-};
-
 class ServiceWorkerBypassFetchHandlerTest
     : public ServiceWorkerBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<ServiceWorkerBypassFetchHandlerBypassedOriginType, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ServiceWorkerBypassFetchHandlerTest() {
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kServiceWorkerBypassFetchHandler,
-          {{"origins_to_bypass", "https://a.test"},
+          {{"script_checksum_to_bypass",
+            ShouldUseValidChecksum() ? kValidChecksum : kInvalidChecksum},
            {"strategy",
             ShouldUseAllowListStrategy() ? "allowlist" : "optin"}}}},
         {});
   }
   ~ServiceWorkerBypassFetchHandlerTest() override = default;
-
-  void SetUpOnMainThread() override {
-    SetServiceWorkerContextWrapper();
-    host_resolver()->AddRule("*", "127.0.0.1");
-    https_server_.ServeFilesFromSourceDirectory(GetTestDataFilePath());
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    net::test_server::RegisterDefaultHandlers(&https_server_);
-    ASSERT_TRUE(https_server()->Start());
-  }
-
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   WebContents* web_contents() const { return shell()->web_contents(); }
 
@@ -4461,41 +4445,28 @@ class ServiceWorkerBypassFetchHandlerTest
   }
 
  protected:
-  ServiceWorkerBypassFetchHandlerBypassedOriginType GetBypassedOriginType() {
-    return std::get<0>(GetParam());
-  }
+  bool ShouldUseValidChecksum() { return std::get<0>(GetParam()); }
   bool ShouldUseAllowListStrategy() { return std::get<1>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  std::string kValidChecksum =
+      "B437DA0A66F805F079E1F371F2BFAEF4A35BB9AEEA0A85827B954B05F6D63C6C";
+  std::string kInvalidChecksum = "";
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ServiceWorkerBypassFetchHandlerTest,
-    testing::Combine(
-        testing::Values(
-            ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed,
-            ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed),
-        testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerBypassFetchHandlerTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
-  std::string origin;
-  switch (GetBypassedOriginType()) {
-    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed:
-      origin = "a.test";
-      break;
-    case ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed:
-      origin = "b.test";
-      break;
-  }
+  StartServerAndNavigateToSetup();
 
-  const GURL create_service_worker_url(https_server()->GetURL(
-      origin, "/service_worker/create_service_worker.html"));
-  const GURL out_scope_url(https_server()->GetURL(origin, "/empty.html"));
+  const GURL create_service_worker_url(embedded_test_server()->GetURL(
+      "/service_worker/create_service_worker.html"));
+  const GURL out_scope_url(embedded_test_server()->GetURL("/empty.html"));
   const GURL in_scope_url(
-      https_server()->GetURL(origin, "/service_worker/empty.html"));
+      embedded_test_server()->GetURL("/service_worker/empty.html"));
 
   // Register a service worker.
   WorkerRunningStatusObserver observer1(public_context());
@@ -4535,17 +4506,14 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerBypassFetchHandlerTest, UrlInAllowList) {
   EXPECT_TRUE(NavigateToURL(shell(), in_scope_url));
 
   if (ShouldUseAllowListStrategy()) {
-    switch (GetBypassedOriginType()) {
-      case ServiceWorkerBypassFetchHandlerBypassedOriginType::kBypassed:
-        // If bypassing is allowed, the service worker was bypassed and the
-        // navigation request shouldn't be handled by the fetch handler.
-        EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
-        break;
-      case ServiceWorkerBypassFetchHandlerBypassedOriginType::kNotBypassed:
-        // If bypassing is not allowed, the navigation request should be handled
-        // by the fetch handler.
-        EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
-        break;
+    if (ShouldUseValidChecksum()) {
+      // If bypassing is allowed, the service worker was bypassed and the
+      // navigation request shouldn't be handled by the fetch handler.
+      EXPECT_EQ(0, EvalJs(GetPrimaryMainFrame(), script));
+    } else {
+      // If bypassing is not allowed, the navigation request should be handled
+      // by the fetch handler.
+      EXPECT_EQ(1, EvalJs(GetPrimaryMainFrame(), script));
     }
   } else {
     // If the allowlist isn't used, the service worker was bypassed and the
