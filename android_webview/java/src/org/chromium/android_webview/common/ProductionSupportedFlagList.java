@@ -362,6 +362,7 @@ public final class ProductionSupportedFlagList {
                     "Disable the per-domain blocking for 3D APIs after GPU reset. "
                             + "This switch is intended only for tests."),
             Flag.baseFeature("NavigationRequestPreconnect"),
+            Flag.baseFeature("WebViewEnableDnsPrefetchAndPreconnect"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
