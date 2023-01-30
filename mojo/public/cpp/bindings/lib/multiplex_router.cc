@@ -293,12 +293,20 @@ class MultiplexRouter::MessageWrapper {
   // handles.
   Message DeserializeEndpointHandlesAndTake() {
     if (!value_.DeserializeAssociatedEndpointHandles(router_)) {
+      // https://linear.app/replay/issue/RUN-1228
+      // Not asserting here because the location where false is returned
+      // in the call above is asserted instead.
+
       // The previous call may have deserialized part of the associated
       // interface endpoint handles. They must be destroyed outside of the
       // router's lock, so we cannot wait until destruction of MessageWrapper.
       value_.Reset();
       return Message();
     }
+
+    // https://linear.app/replay/issue/RUN-1228
+    recordreplay::Assert("[RUN-1228] MessageWrapper::DeserializeEndpointHandlesAndTake #2 isNull=%d",
+      value_.IsNull());
     return std::move(value_);
   }
 

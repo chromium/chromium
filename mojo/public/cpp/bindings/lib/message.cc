@@ -27,6 +27,8 @@
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 
+#include "base/record_replay.h"
+
 namespace mojo {
 
 namespace {
@@ -508,11 +510,15 @@ bool Message::DeserializeAssociatedEndpointHandles(
   bool result = true;
   for (uint32_t i = 0; i < num_ids; ++i) {
     auto handle = group_controller->CreateLocalEndpointHandle(ids[i]);
-    if (IsValidInterfaceId(ids[i]) && !handle.is_valid()) {
+    if (IsValidInterfaceId(ids[i]) && !handle.is_valid()) { 
       // |ids[i]| itself is valid but handle creation failed. In that case, mark
       // deserialization as failed but continue to deserialize the rest of
       // handles.
       result = false;
+
+      // https://linear.app/replay/issue/RUN-1228
+      recordreplay::Assert("[RUN-1228] MessageWrapper::DeserializeAssociatedEndpointHandles %u id=%u",
+        i, ids[i]);
     }
 
     endpoint_handles.push_back(std::move(handle));
