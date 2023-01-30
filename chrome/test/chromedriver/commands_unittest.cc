@@ -453,7 +453,7 @@ TEST(CommandsTest, SuccessfulFindElement) {
   base::Value::Dict param;
   param.Set("css selector", "#a");
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(base::Value(std::move(param)));
+  expected_args.GetList().Append(std::move(param));
   web_view.Verify("frame_id1", &expected_args, result.get());
 }
 
@@ -484,7 +484,7 @@ TEST(CommandsTest, SuccessfulFindElements) {
   base::Value::Dict param;
   param.Set("css selector", "*[name='b']");
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(base::Value(std::move(param)));
+  expected_args.GetList().Append(std::move(param));
   web_view.Verify("frame_id2", &expected_args, result.get());
 }
 
@@ -520,8 +520,8 @@ TEST(CommandsTest, SuccessfulFindChildElement) {
   base::Value::Dict root_element_param;
   root_element_param.Set("ELEMENT", element_id);
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(base::Value(std::move(locator_param)));
-  expected_args.Append(base::Value(std::move(root_element_param)));
+  expected_args.GetList().Append(std::move(locator_param));
+  expected_args.GetList().Append(std::move(root_element_param));
   web_view.Verify("frame_id3", &expected_args, result.get());
 }
 
@@ -556,8 +556,8 @@ TEST(CommandsTest, SuccessfulFindChildElements) {
   base::Value::Dict root_element_param;
   root_element_param.Set("ELEMENT", element_id);
   base::Value expected_args(base::Value::Type::LIST);
-  expected_args.Append(base::Value(std::move(locator_param)));
-  expected_args.Append(base::Value(std::move(root_element_param)));
+  expected_args.GetList().Append(std::move(locator_param));
+  expected_args.GetList().Append(std::move(root_element_param));
   web_view.Verify("frame_id4", &expected_args, result.get());
 }
 

@@ -829,13 +829,12 @@ Status ExecuteGetWindowHandles(Session* session,
     }
   }
 
-  std::unique_ptr<base::Value> window_ids(
-      new base::Value(base::Value::Type::LIST));
+  base::Value::List window_ids;
   for (std::list<std::string>::const_iterator it = web_view_ids.begin();
        it != web_view_ids.end(); ++it) {
-    window_ids->Append(*it);
+    window_ids.Append(*it);
   }
-  *value = std::move(window_ids);
+  *value = std::make_unique<base::Value>(std::move(window_ids));
   return Status(kOk);
 }
 
