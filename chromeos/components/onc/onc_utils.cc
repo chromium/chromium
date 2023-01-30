@@ -230,13 +230,14 @@ bool ResolveSingleCertRef(const CertPEMsByGUIDMap& certs_by_guid,
 bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
                         const std::string& key_guid_ref_list,
                         const std::string& key_pem_list,
-                        base::Value* onc_object) {
-  const base::Value* guid_ref_list = onc_object->FindListKey(key_guid_ref_list);
+                        base::Value::Dict& onc_object) {
+  const base::Value::List* guid_ref_list =
+      onc_object.FindList(key_guid_ref_list);
   if (!guid_ref_list)
     return true;
 
-  base::Value pem_list(base::Value::Type::LIST);
-  for (const auto& entry : guid_ref_list->GetList()) {
+  base::Value::List pem_list;
+  for (const auto& entry : *guid_ref_list) {
     std::string pem_encoded;
     if (!GUIDRefToPEMEncoding(certs_by_guid, entry.GetString(), &pem_encoded))
       return false;
@@ -244,8 +245,8 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
     pem_list.Append(pem_encoded);
   }
 
-  onc_object->RemoveKey(key_guid_ref_list);
-  onc_object->SetKey(key_pem_list, std::move(pem_list));
+  onc_object.Remove(key_guid_ref_list);
+  onc_object.Set(key_pem_list, std::move(pem_list));
   return true;
 }
 
@@ -254,8 +255,8 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
 bool ResolveSingleCertRefToList(const CertPEMsByGUIDMap& certs_by_guid,
                                 const std::string& key_guid_ref,
                                 const std::string& key_pem_list,
-                                base::Value* onc_object) {
-  std::string* guid_ref = onc_object->FindStringKey(key_guid_ref);
+                                base::Value::Dict& onc_object) {
+  std::string* guid_ref = onc_object.FindString(key_guid_ref);
   if (!guid_ref)
     return true;
 
@@ -263,10 +264,10 @@ bool ResolveSingleCertRefToList(const CertPEMsByGUIDMap& certs_by_guid,
   if (!GUIDRefToPEMEncoding(certs_by_guid, *guid_ref, &pem_encoded))
     return false;
 
-  base::Value pem_list(base::Value::Type::LIST);
+  base::Value::List pem_list;
   pem_list.Append(pem_encoded);
-  onc_object->RemoveKey(key_guid_ref);
-  onc_object->SetKey(key_pem_list, std::move(pem_list));
+  onc_object.Remove(key_guid_ref);
+  onc_object.Set(key_pem_list, std::move(pem_list));
   return true;
 }
 
@@ -286,12 +287,12 @@ bool ResolveCertRefsOrRefToList(const CertPEMsByGUIDMap& certs_by_guid,
       onc_dict.Remove(key_guid_ref);
     }
     return ResolveCertRefList(certs_by_guid, key_guid_refs, key_pem_list,
-                              onc_object);
+                              onc_dict);
   }
 
   // Only resolve |key_guid_ref| if |key_guid_refs| isn't present.
   return ResolveSingleCertRefToList(certs_by_guid, key_guid_ref, key_pem_list,
-                                    onc_object);
+                                    onc_dict);
 }
 
 // Resolve known server and authority certiifcate reference fields in
@@ -302,7 +303,8 @@ bool ResolveServerCertRefsInObject(const CertPEMsByGUIDMap& certs_by_guid,
   DCHECK(onc_object->is_dict());
   if (&signature == &kCertificatePatternSignature) {
     if (!ResolveCertRefList(certs_by_guid, ::onc::client_cert::kIssuerCARef,
-                            ::onc::client_cert::kIssuerCAPEMs, onc_object)) {
+                            ::onc::client_cert::kIssuerCAPEMs,
+                            onc_object->GetDict())) {
       return false;
     }
   } else if (&signature == &kEAPSignature) {
