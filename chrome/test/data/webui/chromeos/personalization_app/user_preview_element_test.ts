@@ -79,7 +79,7 @@ suite('UserPreviewTest', function() {
   });
 
   test('displays user image from profile image', async () => {
-    personalizationStore.data.user.image = {profileImage: {}};
+    personalizationStore.data.user.image = {profileImage: {}} as UserImage;
     personalizationStore.data.user.profileImage = userProvider.profileImage;
     userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement!);
@@ -126,7 +126,7 @@ suite('UserPreviewTest', function() {
   });
 
   test('displays placeholder image if user image is invalid', async () => {
-    personalizationStore.data.user.image = {invalidImage: {}};
+    personalizationStore.data.user.image = {invalidImage: {}} as UserImage;
     userPreviewElement = initElement(UserPreview, {path: Paths.ROOT});
     await waitAfterNextRender(userPreviewElement!);
 
@@ -185,7 +185,7 @@ suite('UserPreviewTest', function() {
     };
     personalizationStore.data.user.image = {
       defaultImage: deprecatedDefaultImage,
-    };
+    } as UserImage;
     personalizationStore.notifyObservers();
     await waitAfterNextRender(userPreviewElement);
 

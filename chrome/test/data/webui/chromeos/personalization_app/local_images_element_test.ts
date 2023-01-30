@@ -57,7 +57,7 @@ suite('LocalImagesTest', function() {
     };
     personalizationStore.data.wallpaper.loading.local = {
       images: false,
-      data: {},
+      data: {[kDefaultImageSymbol]: false},
     };
 
     localImagesElement = initElement(LocalImages, {hidden: false});
@@ -76,6 +76,7 @@ suite('LocalImagesTest', function() {
       data: {
         'LocalImage0.png': true,
         'LocalImage1.png': true,
+        [kDefaultImageSymbol]: false,
       },
     };
     personalizationStore.notifyObservers();
@@ -86,7 +87,11 @@ suite('LocalImagesTest', function() {
 
     personalizationStore.data.wallpaper.loading.local = {
       images: false,
-      data: {'LocalImage0.png': false, 'LocalImage1.png': true},
+      data: {
+        'LocalImage0.png': false,
+        'LocalImage1.png': true,
+        [kDefaultImageSymbol]: false,
+      },
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(localImagesElement);
@@ -104,7 +109,7 @@ suite('LocalImagesTest', function() {
         };
         personalizationStore.data.wallpaper.loading.local = {
           images: false,
-          data: {},
+          data: {[kDefaultImageSymbol]: false},
         };
 
         localImagesElement = initElement(LocalImages, {hidden: false});
@@ -120,6 +125,7 @@ suite('LocalImagesTest', function() {
         // Set loading finished for first thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
           'LocalImage0.png': false,
+          [kDefaultImageSymbol]: false,
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
@@ -136,10 +142,12 @@ suite('LocalImagesTest', function() {
         personalizationStore.data.wallpaper.loading.local.data = {
           'LocalImage0.png': false,
           'LocalImage1.png': false,
+          [kDefaultImageSymbol]: false,
         };
         personalizationStore.data.wallpaper.local.data = {
           'LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
-          'LocalImage1.png': null,
+          'LocalImage1.png': {url: ''},
+          [kDefaultImageSymbol]: {url: ''},
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
@@ -163,6 +171,7 @@ suite('LocalImagesTest', function() {
       data: {
         '/test/LocalImage0.png': {url: 'data:image/png;base64,localimage0data'},
         '/test/LocalImage1.png': {url: 'data:image/png;base64,localimage1data'},
+        [kDefaultImageSymbol]: {url: ''},
       },
     };
     // Done loading.
@@ -171,6 +180,7 @@ suite('LocalImagesTest', function() {
       data: {
         '/test/LocalImage0.png': false,
         '/test/LocalImage1.png': false,
+        [kDefaultImageSymbol]: false,
       },
     };
 
@@ -188,6 +198,7 @@ suite('LocalImagesTest', function() {
     assertTrue(Array.from(images).every(image => !image.selected));
 
     personalizationStore.data.wallpaper.currentSelected = {
+      ...wallpaperProvider.currentWallpaper,
       key: '/test/LocalImage1.png',
     };
     personalizationStore.notifyObservers();
@@ -208,6 +219,7 @@ suite('LocalImagesTest', function() {
       data: {
         'LocalImage0.png': false,
         'LocalImage1.png': false,
+        [kDefaultImageSymbol]: false,
       },
     };
 

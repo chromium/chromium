@@ -216,7 +216,7 @@ suite('AmbientSubpageTest', function() {
                      AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
     assertFalse(action.enabled);
-    assertFalse(personalizationStore.data.ambient.ambientModeEnabled);
+    assertFalse(!!personalizationStore.data.ambient.ambientModeEnabled);
     assertFalse(toggleButton!.checked);
 
     personalizationStore.expectAction(
@@ -226,7 +226,7 @@ suite('AmbientSubpageTest', function() {
                  AmbientActionName.SET_AMBIENT_MODE_ENABLED) as
         SetAmbientModeEnabledAction;
     assertTrue(action.enabled);
-    assertTrue(personalizationStore.data.ambient.ambientModeEnabled);
+    assertTrue(!!personalizationStore.data.ambient.ambientModeEnabled);
     assertTrue(toggleButton!.checked);
   });
 
@@ -587,8 +587,8 @@ suite('AmbientSubpageTest', function() {
     assertFalse(albums[1].selected!);
     assertTrue(albums[2].selected!);
     let selectedAlbums = getSelectedAlbums(
-        personalizationStore.data.ambient.albums,
-        personalizationStore.data.ambient.topicSource);
+        personalizationStore.data.ambient.albums || [],
+        personalizationStore.data.ambient.topicSource!);
     assertEquals(1, selectedAlbums!.length);
     assertEquals('2', selectedAlbums[0]!.title);
 
@@ -598,8 +598,8 @@ suite('AmbientSubpageTest', function() {
     await personalizationStore.waitForAction(
         AmbientActionName.SET_ALBUM_SELECTED);
     selectedAlbums = getSelectedAlbums(
-        personalizationStore.data.ambient.albums,
-        personalizationStore.data.ambient.topicSource);
+        personalizationStore.data.ambient.albums || [],
+        personalizationStore.data.ambient.topicSource!);
     assertEquals(2, selectedAlbums!.length);
     assertEquals('1', selectedAlbums[0]!.title);
     assertEquals('2', selectedAlbums[1]!.title);

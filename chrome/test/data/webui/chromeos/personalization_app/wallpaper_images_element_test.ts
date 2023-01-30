@@ -79,12 +79,14 @@ suite('WallpaperImagesTest', function() {
         {
           assetId: BigInt(1),
           attribution: ['Image 0-1'],
+          type: OnlineImageType.kUnknown,
           unitId: BigInt(1),
           url: {url: 'https://id_0-1/'},
         },
         {
           assetId: BigInt(2),
           attribution: ['Image 0-2'],
+          type: OnlineImageType.kUnknown,
           unitId: BigInt(2),
           url: {url: 'https://id_0-2/'},
         },
@@ -93,12 +95,14 @@ suite('WallpaperImagesTest', function() {
         {
           assetId: BigInt(10),
           attribution: ['Image 1-10'],
+          type: OnlineImageType.kUnknown,
           unitId: BigInt(10),
           url: {url: 'https://id_1-10/'},
         },
         {
           assetId: BigInt(20),
           attribution: ['Image 1-20'],
+          type: OnlineImageType.kUnknown,
           unitId: BigInt(20),
           url: {url: 'https://id_1-20/'},
         },

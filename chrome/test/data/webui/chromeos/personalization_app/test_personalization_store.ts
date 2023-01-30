@@ -7,7 +7,7 @@
  * and manipulate state.
  */
 
-import {emptyState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationState, PersonalizationStore, reduce} from 'chrome://personalization/js/personalization_app.js';
 import {Action} from 'chrome://resources/ash/common/store/store.js';
 import {TestStore} from 'chrome://webui-test/chromeos/test_store.js';
 
@@ -15,6 +15,8 @@ export class TestPersonalizationStore extends TestStore {
   // received actions and states.
   private actions_: Action[];
   private states_: any[];
+
+  override data: PersonalizationState = emptyState();
 
   constructor(data: any) {
     super(data, PersonalizationStore, emptyState(), reduce);

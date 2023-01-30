@@ -39,7 +39,7 @@ suite('WallpaperSelectedTest', function() {
       async () => {
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 1,
+          selected: true,
           setImage: 0,
         };
         wallpaperSelectedElement = initElement(WallpaperSelected);
@@ -60,7 +60,7 @@ suite('WallpaperSelectedTest', function() {
         // Loading placeholder should be hidden.
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 0,
+          selected: false,
           setImage: 0,
         };
         personalizationStore.data.wallpaper.currentSelected =
@@ -74,7 +74,7 @@ suite('WallpaperSelectedTest', function() {
         // come back.
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 0,
+          selected: false,
           setImage: 1,
         };
         personalizationStore.notifyObservers();
@@ -120,9 +120,8 @@ suite('WallpaperSelectedTest', function() {
 
   test('shows unknown for empty attribution', async () => {
     personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'data:image/png;base64,abc='},
+      ...wallpaperProvider.currentWallpaper,
       attribution: [],
-      assetId: BigInt(100),
     };
     personalizationStore.data.wallpaper.loading.selected = false;
     wallpaperSelectedElement = initElement(WallpaperSelected);
@@ -190,11 +189,8 @@ suite('WallpaperSelectedTest', function() {
   });
 
   test('shows daily refresh option on the collection view', async () => {
-    personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'data:image/png;base64,abc='},
-      attribution: [],
-      assetId: BigInt(100),
-    };
+    personalizationStore.data.wallpaper.currentSelected =
+        wallpaperProvider.currentWallpaper;
     personalizationStore.data.wallpaper.loading.selected = false;
 
     wallpaperSelectedElement =
@@ -213,11 +209,8 @@ suite('WallpaperSelectedTest', function() {
   test(
       'shows daily refresh option on the google photos album view',
       async () => {
-        personalizationStore.data.wallpaper.currentSelected = {
-          url: {url: 'data:image/png;base64,abc='},
-          attribution: [],
-          assetId: BigInt(100),
-        };
+        personalizationStore.data.wallpaper.currentSelected =
+            wallpaperProvider.currentWallpaper;
         personalizationStore.data.wallpaper.loading.selected = false;
 
         wallpaperSelectedElement = initElement(WallpaperSelected, {
@@ -239,11 +232,8 @@ suite('WallpaperSelectedTest', function() {
   test(
       'shows refresh button only on collection with daily refresh enabled',
       async () => {
-        personalizationStore.data.wallpaper.currentSelected = {
-          url: {url: 'data:image/png;base64,abc='},
-          attribution: [],
-          assetId: BigInt(100),
-        };
+        personalizationStore.data.wallpaper.currentSelected =
+            wallpaperProvider.currentWallpaper;
         personalizationStore.data.wallpaper.loading.selected = false;
         const collection_id = wallpaperProvider.collections![0]!.id;
         personalizationStore.data.wallpaper.dailyRefresh = {
@@ -267,11 +257,8 @@ suite('WallpaperSelectedTest', function() {
   test(
       'shows refresh button only on google photos album with daily refresh enabled',
       async () => {
-        personalizationStore.data.wallpaper.currentSelected = {
-          url: {url: 'data:image/png;base64,abc='},
-          attribution: [],
-          assetId: BigInt(100),
-        };
+        personalizationStore.data.wallpaper.currentSelected =
+            wallpaperProvider.currentWallpaper;
         personalizationStore.data.wallpaper.loading.selected = false;
 
         const album_id = 'test_album_id';
@@ -297,7 +284,6 @@ suite('WallpaperSelectedTest', function() {
   test('shows layout options for Google Photos', async () => {
     // Set a Google Photos photo as current wallpaper.
     personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'url'},
       attribution: [],
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kOnceGooglePhotos,

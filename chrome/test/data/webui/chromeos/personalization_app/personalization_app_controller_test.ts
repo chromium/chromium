@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchLocalData, getDefaultImageThumbnail, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, initializeGooglePhotosData, isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -936,8 +936,10 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     const pendingSelected = personalizationStore.data.wallpaper.pendingSelected;
     assertEquals(pendingSelected, image);
     personalizationStore.data.wallpaper.currentSelected = {
-      key: getImageKey(image),
+      key: getImageKey(image)!,
       type: getImageType(image),
+      attribution: [],
+      layout: WallpaperLayout.kCenterCropped,
     };
     personalizationStore.data.wallpaper.pendingSelected = null;
 
@@ -1016,6 +1018,9 @@ suite('updates default image', () => {
     // state.
     personalizationStore.reset(personalizationStore.data);
 
+    assertTrue(
+        Array.isArray(personalizationStore.data.wallpaper.local.images),
+        'wallpaper.local.images is not array');
     assertTrue(
         personalizationStore.data.wallpaper.local.images.every(
             (image: FilePath|DefaultImageSymbol) => isFilePath(image) &&

@@ -7,12 +7,12 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {CurrentWallpaper, DailyRefreshType, DisplayableImage, WallpaperFullscreen, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import {CurrentWallpaper, DailyRefreshType, DisplayableImage, GooglePhotosPhoto, OnlineImageType, WallpaperFullscreen, WallpaperImage, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
-import {baseSetup, initElement} from './personalization_app_test_utils.js';
+import {baseSetup, initElement, toString16} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -174,9 +174,30 @@ suite('WallpaperFullscreenTest', function() {
     await exitFullscreenPromise;
   });
 
-  [{pendingSelectedImage: pendingSelectedCustomImage, shouldShow: true},
-   {pendingSelectedImage: /*Online:*/ {assetId: 0n}, shouldShow: false},
-   {pendingSelectedImage: /*Google Photos:*/ {id: 'test_id'}, shouldShow: true}]
+  [{
+    pendingSelectedImage: pendingSelectedCustomImage,
+    shouldShow: true,
+  },
+   {
+     pendingSelectedImage: {
+       url: {url: ''},
+       attribution: [],
+       assetId: 0n,
+       unitId: 0n,
+       type: OnlineImageType.kUnknown,
+     } as WallpaperImage,
+     shouldShow: false,
+   },
+   {
+     pendingSelectedImage: {
+       id: 'test_id',
+       name: 'asdf',
+       date: toString16('February'),
+       url: {url: ''},
+     } as GooglePhotosPhoto,
+     shouldShow: true,
+   },
+  ]
       .forEach(
           testCase => test(
               'shows layout options for custom and Google Photos images',
@@ -312,7 +333,7 @@ suite('WallpaperFullscreenTest', function() {
 
     personalizationStore.data.wallpaper.fullscreen = true;
     personalizationStore.data.wallpaper.currentSelected = {
-      ...personalizationStore.data.wallpaper.currentSelected,
+      ...wallpaperProvider.currentWallpaper,
       type: WallpaperType.kDaily,
     };
     personalizationStore.data.wallpaper.dailyRefresh = {
@@ -320,7 +341,7 @@ suite('WallpaperFullscreenTest', function() {
       type: DailyRefreshType.BACKDROP,
     };
     personalizationStore.data.wallpaper.pendingSelected =
-        wallpaperProvider.images![1];
+        wallpaperProvider.images![1]!;
     personalizationStore.notifyObservers();
 
     await waitAfterNextRender(wallpaperFullscreenElement);

@@ -39,7 +39,7 @@ suite('WallpaperPreviewTest', function() {
       async () => {
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 1,
+          selected: true,
           setImage: 0,
         };
         wallpaperPreviewElement = initElement(WallpaperPreview);
@@ -55,7 +55,7 @@ suite('WallpaperPreviewTest', function() {
         // Loading placeholder should be hidden.
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 0,
+          selected: false,
           setImage: 0,
         };
         personalizationStore.data.wallpaper.currentSelected =
@@ -69,7 +69,7 @@ suite('WallpaperPreviewTest', function() {
         // come back.
         personalizationStore.data.wallpaper.loading = {
           ...personalizationStore.data.wallpaper.loading,
-          selected: 0,
+          selected: false,
           setImage: 1,
         };
         personalizationStore.notifyObservers();
