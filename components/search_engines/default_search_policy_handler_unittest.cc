@@ -73,7 +73,7 @@ const char DefaultSearchPolicyHandlerTest::kHostName[] = "test.com";
 
 void DefaultSearchPolicyHandlerTest::
     BuildDefaultSearchPolicy(PolicyMap* policy) {
-  base::Value encodings(base::Value::Type::LIST);
+  base::Value::List encodings;
   encodings.Append("UTF-16");
   encodings.Append("UTF-8");
   policy->Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
@@ -95,8 +95,8 @@ void DefaultSearchPolicyHandlerTest::
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(kIconURL),
               nullptr);
   policy->Set(key::kDefaultSearchProviderEncodings, POLICY_LEVEL_MANDATORY,
-              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(encodings),
-              nullptr);
+              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+              base::Value(std::move(encodings)), nullptr);
   policy->Set(key::kDefaultSearchProviderAlternateURLs, POLICY_LEVEL_MANDATORY,
               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
               base::Value(default_alternate_urls_.Clone()), nullptr);
