@@ -21,6 +21,7 @@
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_sequence_block.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/animation/ink_drop_painted_layer_delegates.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
@@ -116,9 +117,12 @@ enum InkDropSubAnimations {
 constexpr float kQuickActionBurstScale = 1.3f;
 
 // Returns the InkDropState sub animation duration for the given |state|.
-base::TimeDelta GetAnimationDuration(InkDropSubAnimations state) {
+base::TimeDelta GetAnimationDuration(InkDropHost* ink_drop_host,
+                                     InkDropSubAnimations state) {
   if (!PlatformStyle::kUseRipples ||
-      !gfx::Animation::ShouldRenderRichAnimation()) {
+      !gfx::Animation::ShouldRenderRichAnimation() ||
+      (ink_drop_host &&
+       ink_drop_host->GetMode() == InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
     return base::TimeDelta();
   }
 
@@ -144,14 +148,16 @@ base::TimeDelta GetAnimationDuration(InkDropSubAnimations state) {
 
 }  // namespace
 
-SquareInkDropRipple::SquareInkDropRipple(const gfx::Size& large_size,
+SquareInkDropRipple::SquareInkDropRipple(InkDropHost* ink_drop_host,
+                                         const gfx::Size& large_size,
                                          int large_corner_radius,
                                          const gfx::Size& small_size,
                                          int small_corner_radius,
                                          const gfx::Point& center_point,
                                          SkColor color,
                                          float visible_opacity)
-    : visible_opacity_(visible_opacity),
+    : InkDropRipple(ink_drop_host),
+      visible_opacity_(visible_opacity),
       large_size_(large_size),
       large_corner_radius_(large_corner_radius),
       small_size_(small_size),
@@ -226,6 +232,7 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
                                              InkDropState new_ink_drop_state) {
   InkDropTransforms transforms;
   AnimationBuilder builder;
+  InkDropHost* host = GetInkDropHost();
   builder
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -241,14 +248,14 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
   };
 
   auto pending_animation =
-      [this, &animate_to_transforms](
+      [this, &animate_to_transforms, host](
           AnimationSequenceBlock& sequence,
           const InkDropTransforms& transforms) -> AnimationSequenceBlock& {
     auto& new_sequence =
-        sequence.SetDuration(GetAnimationDuration(ACTION_PENDING_FADE_IN))
+        sequence.SetDuration(GetAnimationDuration(host, ACTION_PENDING_FADE_IN))
             .SetOpacity(&root_layer_, visible_opacity_, gfx::Tween::EASE_IN)
             .Then()
-            .SetDuration(GetAnimationDuration(ACTION_PENDING_TRANSFORM))
+            .SetDuration(GetAnimationDuration(host, ACTION_PENDING_TRANSFORM))
             .SetOpacity(&root_layer_, visible_opacity_, gfx::Tween::EASE_IN);
     animate_to_transforms(new_sequence, transforms, gfx::Tween::EASE_IN_OUT);
     return new_sequence;
@@ -263,11 +270,11 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
         CalculateCircleTransforms(small_size_, &transforms);
         auto& sequence =
             builder.GetCurrentSequence()
-                .SetDuration(GetAnimationDuration(HIDDEN_FADE_OUT))
+                .SetDuration(GetAnimationDuration(host, HIDDEN_FADE_OUT))
                 .SetOpacity(&root_layer_, kHiddenOpacity,
                             gfx::Tween::EASE_IN_OUT)
                 .At(base::TimeDelta())
-                .SetDuration(GetAnimationDuration(HIDDEN_TRANSFORM));
+                .SetDuration(GetAnimationDuration(host, HIDDEN_TRANSFORM));
         animate_to_transforms(sequence, transforms, gfx::Tween::EASE_IN_OUT);
       }
       break;
@@ -298,10 +305,10 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
         builder.SetPreemptionStrategy(ui::LayerAnimator::ENQUEUE_NEW_ANIMATION);
       }
       builder.GetCurrentSequence()
-          .SetDuration(GetAnimationDuration(ACTION_TRIGGERED_FADE_OUT))
+          .SetDuration(GetAnimationDuration(host, ACTION_TRIGGERED_FADE_OUT))
           .SetOpacity(&root_layer_, kHiddenOpacity, gfx::Tween::EASE_IN_OUT)
           .Offset(base::TimeDelta())
-          .SetDuration(GetAnimationDuration(ACTION_TRIGGERED_TRANSFORM));
+          .SetDuration(GetAnimationDuration(host, ACTION_TRIGGERED_TRANSFORM));
       animate_to_transforms(builder.GetCurrentSequence(), transforms,
                             gfx::Tween::EASE_IN_OUT);
       break;
@@ -315,7 +322,7 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       CalculateRectTransforms(small_size_, small_corner_radius_, &transforms);
       animate_to_transforms(
           builder.GetCurrentSequence()
-              .SetDuration(GetAnimationDuration(ALTERNATE_ACTION_PENDING))
+              .SetDuration(GetAnimationDuration(host, ALTERNATE_ACTION_PENDING))
               .SetOpacity(&root_layer_, visible_opacity_, gfx::Tween::EASE_IN),
           transforms, gfx::Tween::EASE_IN_OUT);
       break;
@@ -328,19 +335,19 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
           << " new_ink_drop_state=" << ToString(new_ink_drop_state);
 
       base::TimeDelta visible_duration =
-          GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_TRANSFORM) -
-          GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_FADE_OUT);
+          GetAnimationDuration(host, ALTERNATE_ACTION_TRIGGERED_TRANSFORM) -
+          GetAnimationDuration(host, ALTERNATE_ACTION_TRIGGERED_FADE_OUT);
       CalculateRectTransforms(large_size_, large_corner_radius_, &transforms);
       builder.GetCurrentSequence()
           .SetDuration(visible_duration)
           .SetOpacity(&root_layer_, visible_opacity_, gfx::Tween::EASE_IN_OUT)
           .Then()
           .SetDuration(
-              GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_FADE_OUT))
+              GetAnimationDuration(host, ALTERNATE_ACTION_TRIGGERED_FADE_OUT))
           .SetOpacity(&root_layer_, kHiddenOpacity, gfx::Tween::EASE_IN_OUT)
           .At(base::TimeDelta())
           .SetDuration(
-              GetAnimationDuration(ALTERNATE_ACTION_TRIGGERED_TRANSFORM));
+              GetAnimationDuration(host, ALTERNATE_ACTION_TRIGGERED_TRANSFORM));
       animate_to_transforms(builder.GetCurrentSequence(), transforms,
                             gfx::Tween::EASE_IN_OUT);
       break;
@@ -357,7 +364,7 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
         CalculateCircleTransforms(large_size_, &transforms);
         animate_to_transforms(
             builder.GetCurrentSequence().SetDuration(
-                GetAnimationDuration(ACTIVATED_CIRCLE_TRANSFORM)),
+                GetAnimationDuration(host, ACTIVATED_CIRCLE_TRANSFORM)),
             transforms, gfx::Tween::EASE_IN_OUT)
             .Then();
       } else if (old_ink_drop_state == InkDropState::ACTION_PENDING) {
@@ -365,26 +372,28 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       }
 
       GetActivatedTargetTransforms(&transforms);
-      animate_to_transforms(builder.GetCurrentSequence().SetDuration(
-                                GetAnimationDuration(ACTIVATED_RECT_TRANSFORM)),
-                            transforms, gfx::Tween::EASE_IN_OUT);
+      animate_to_transforms(
+          builder.GetCurrentSequence().SetDuration(
+              GetAnimationDuration(host, ACTIVATED_RECT_TRANSFORM)),
+          transforms, gfx::Tween::EASE_IN_OUT);
       break;
     }
     case InkDropState::DEACTIVATED: {
       base::TimeDelta visible_duration =
-          GetAnimationDuration(DEACTIVATED_TRANSFORM) -
-          GetAnimationDuration(DEACTIVATED_FADE_OUT);
+          GetAnimationDuration(host, DEACTIVATED_TRANSFORM) -
+          GetAnimationDuration(host, DEACTIVATED_FADE_OUT);
       GetDeactivatedTargetTransforms(&transforms);
       builder.GetCurrentSequence()
           .SetDuration(visible_duration)
           .SetOpacity(&root_layer_, visible_opacity_, gfx::Tween::EASE_IN_OUT)
           .Then()
-          .SetDuration(GetAnimationDuration(DEACTIVATED_FADE_OUT))
+          .SetDuration(GetAnimationDuration(host, DEACTIVATED_FADE_OUT))
           .SetOpacity(&root_layer_, kHiddenOpacity, gfx::Tween::EASE_IN_OUT)
           .At(base::TimeDelta());
-      animate_to_transforms(builder.GetCurrentSequence().SetDuration(
-                                GetAnimationDuration(DEACTIVATED_TRANSFORM)),
-                            transforms, gfx::Tween::EASE_IN_OUT);
+      animate_to_transforms(
+          builder.GetCurrentSequence().SetDuration(
+              GetAnimationDuration(host, DEACTIVATED_TRANSFORM)),
+          transforms, gfx::Tween::EASE_IN_OUT);
       break;
     }
   }

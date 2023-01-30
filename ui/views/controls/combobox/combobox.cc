@@ -87,7 +87,7 @@ class TransparentButton : public Button {
     InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(),
+              InkDrop::Get(host), host->size(),
               InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
               host->GetColorProvider()->GetColor(ui::kColorLabelForeground),
               InkDrop::Get(host)->GetVisibleOpacity());

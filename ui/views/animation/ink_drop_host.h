@@ -57,6 +57,7 @@ class VIEWS_EXPORT InkDropHost {
     OFF,
     ON,
     ON_NO_GESTURE_HANDLER,
+    ON_NO_ANIMATE,
   };
 
   explicit InkDropHost(View* host);
@@ -122,6 +123,7 @@ class VIEWS_EXPORT InkDropHost {
   // TODO(bruthig): Add an easier mechanism than overriding functions to allow
   // subclasses/clients to specify the flavor of ink drop.
   void SetMode(InkDropMode ink_drop_mode);
+  InkDropMode GetMode() const;
 
   void SetVisibleOpacity(float visible_opacity);
   float GetVisibleOpacity() const;

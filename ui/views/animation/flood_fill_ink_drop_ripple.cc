@@ -115,12 +115,14 @@ float CalculateCircleLayerRadius(const gfx::Rect& clip_bounds) {
 
 namespace views {
 
-FloodFillInkDropRipple::FloodFillInkDropRipple(const gfx::Size& host_size,
+FloodFillInkDropRipple::FloodFillInkDropRipple(InkDropHost* ink_drop_host,
+                                               const gfx::Size& host_size,
                                                const gfx::Insets& clip_insets,
                                                const gfx::Point& center_point,
                                                SkColor color,
                                                float visible_opacity)
-    : clip_insets_(clip_insets),
+    : InkDropRipple(ink_drop_host),
+      clip_insets_(clip_insets),
       center_point_(center_point),
       visible_opacity_(visible_opacity),
       use_hide_transform_duration_for_hide_fade_out_(false),
@@ -160,11 +162,13 @@ FloodFillInkDropRipple::FloodFillInkDropRipple(const gfx::Size& host_size,
   SetStateToHidden();
 }
 
-FloodFillInkDropRipple::FloodFillInkDropRipple(const gfx::Size& host_size,
+FloodFillInkDropRipple::FloodFillInkDropRipple(InkDropHost* ink_drop_host,
+                                               const gfx::Size& host_size,
                                                const gfx::Point& center_point,
                                                SkColor color,
                                                float visible_opacity)
-    : FloodFillInkDropRipple(host_size,
+    : FloodFillInkDropRipple(ink_drop_host,
+                             host_size,
                              gfx::Insets(),
                              center_point,
                              color,
@@ -353,7 +357,9 @@ float FloodFillInkDropRipple::MaxDistanceToCorners(
 // Returns the InkDropState sub animation duration for the given |state|.
 base::TimeDelta FloodFillInkDropRipple::GetAnimationDuration(int state) {
   if (!PlatformStyle::kUseRipples ||
-      !gfx::Animation::ShouldRenderRichAnimation()) {
+      !gfx::Animation::ShouldRenderRichAnimation() ||
+      (GetInkDropHost() && GetInkDropHost()->GetMode() ==
+                               InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
     return base::TimeDelta();
   }
 

@@ -16,6 +16,7 @@
 #include "ui/views/animation/test/square_ink_drop_ripple_test_api.h"
 
 namespace views {
+class InkDropHost;
 
 namespace {
 
@@ -23,14 +24,16 @@ namespace {
 // GetTestApi().
 class TestInkDropRipple : public SquareInkDropRipple {
  public:
-  TestInkDropRipple(const gfx::Size& large_size,
+  TestInkDropRipple(InkDropHost* ink_drop_host,
+                    const gfx::Size& large_size,
                     int large_corner_radius,
                     const gfx::Size& small_size,
                     int small_corner_radius,
                     const gfx::Point& center_point,
                     SkColor color,
                     float visible_opacity)
-      : SquareInkDropRipple(large_size,
+      : SquareInkDropRipple(ink_drop_host,
+                            large_size,
                             large_corner_radius,
                             small_size,
                             small_corner_radius,
@@ -106,8 +109,8 @@ TestInkDropHost::TestInkDropHost(
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropRipple> {
         auto ripple = std::make_unique<TestInkDropRipple>(
-            host->size(), 0, host->size(), 0, gfx::Point(), SK_ColorBLACK,
-            0.175f);
+            InkDrop::Get(host), host->size(), 0, host->size(), 0, gfx::Point(),
+            SK_ColorBLACK, 0.175f);
         if (host->disable_timers_for_test_)
           ripple->GetTestApi()->SetDisableAnimationTimers(true);
         host->num_ink_drop_ripples_created_++;

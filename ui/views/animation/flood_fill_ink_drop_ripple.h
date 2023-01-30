@@ -26,6 +26,7 @@ class Layer;
 
 namespace views {
 class CircleLayerDelegate;
+class InkDropHost;
 
 namespace test {
 class FloodFillInkDropRippleTestApi;
@@ -51,12 +52,14 @@ class FloodFillInkDropRippleTestApi;
 //
 class VIEWS_EXPORT FloodFillInkDropRipple : public InkDropRipple {
  public:
-  FloodFillInkDropRipple(const gfx::Size& host_size,
+  FloodFillInkDropRipple(InkDropHost* ink_drop_host,
+                         const gfx::Size& host_size,
                          const gfx::Insets& clip_insets,
                          const gfx::Point& center_point,
                          SkColor color,
                          float visible_opacity);
-  FloodFillInkDropRipple(const gfx::Size& host_size,
+  FloodFillInkDropRipple(InkDropHost* ink_drop_host,
+                         const gfx::Size& host_size,
                          const gfx::Point& center_point,
                          SkColor color,
                          float visible_opacity);

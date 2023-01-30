@@ -22,6 +22,8 @@ class LayerAnimationObserver;
 
 namespace views {
 
+class InkDropHost;
+
 namespace test {
 class InkDropRippleTestApi;
 }  // namespace test
@@ -36,7 +38,7 @@ class VIEWS_EXPORT InkDropRipple {
   // The opacity of the ink drop when it is not visible.
   static const float kHiddenOpacity;
 
-  InkDropRipple();
+  explicit InkDropRipple(InkDropHost* ink_drop_host);
   InkDropRipple(const InkDropRipple&) = delete;
   InkDropRipple& operator=(const InkDropRipple&) = delete;
   virtual ~InkDropRipple();
@@ -98,6 +100,9 @@ class VIEWS_EXPORT InkDropRipple {
   // called.
   ui::LayerAnimationObserver* GetLayerAnimationObserver();
 
+  // Get the InkDropHost associated this ripple.
+  InkDropHost* GetInkDropHost() const;
+
  private:
   // The Callback invoked when all of the animation sequences for the specific
   // |ink_drop_state| animation have started. |observer| is the
@@ -124,6 +129,9 @@ class VIEWS_EXPORT InkDropRipple {
   raw_ptr<InkDropRippleObserver> observer_ = nullptr;
 
   std::unique_ptr<ui::CallbackLayerAnimationObserver> animation_observer_;
+
+  // Reference to the host on which this ripple resides.
+  raw_ptr<InkDropHost> ink_drop_host_ = nullptr;
 };
 
 }  // namespace views

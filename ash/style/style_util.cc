@@ -89,8 +89,8 @@ std::unique_ptr<views::InkDropRipple> StyleUtil::CreateInkDropRipple(
   const std::pair<SkColor, float> base_color_and_opacity =
       AshColorProvider::Get()->GetInkDropBaseColorAndOpacity(background_color);
   return std::make_unique<views::FloodFillInkDropRipple>(
-      host->size(), insets,
-      views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+      const_cast<views::InkDropHost*>(views::InkDrop::Get(host)), host->size(),
+      insets, views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
       base_color_and_opacity.first, base_color_and_opacity.second);
 }
 

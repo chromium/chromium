@@ -89,7 +89,7 @@ class Arrow : public Button {
     InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
           return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(),
+              InkDrop::Get(host), host->size(),
               InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
               style::GetColor(*host, style::CONTEXT_TEXTFIELD,
                               style::STYLE_PRIMARY),

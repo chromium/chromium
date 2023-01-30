@@ -90,8 +90,8 @@ std::unique_ptr<InkDropRipple> InkDropHost::CreateInkDropRipple() const {
     return create_ink_drop_ripple_callback_.Run();
   }
   return std::make_unique<views::FloodFillInkDropRipple>(
-      host_view_->size(), gfx::Insets(), GetInkDropCenterBasedOnLastEvent(),
-      GetBaseColor(), GetVisibleOpacity());
+      InkDrop::Get(host_view_), host_view_->size(), gfx::Insets(),
+      GetInkDropCenterBasedOnLastEvent(), GetBaseColor(), GetVisibleOpacity());
 }
 
 void InkDropHost::SetCreateRippleCallback(
@@ -173,6 +173,10 @@ void InkDropHost::SetBaseColorCallback(
 void InkDropHost::SetMode(InkDropMode ink_drop_mode) {
   ink_drop_mode_ = ink_drop_mode;
   ink_drop_.reset();
+}
+
+InkDropHost::InkDropMode InkDropHost::GetMode() const {
+  return ink_drop_mode_;
 }
 
 void InkDropHost::SetVisibleOpacity(float visible_opacity) {
@@ -273,7 +277,7 @@ std::unique_ptr<InkDropRipple> InkDropHost::CreateSquareRipple(
   constexpr float kLargeInkDropScale = 1.333f;
   const gfx::Size large_size = gfx::ScaleToCeiledSize(size, kLargeInkDropScale);
   auto ripple = std::make_unique<SquareInkDropRipple>(
-      large_size, ink_drop_large_corner_radius_, size,
+      InkDrop::Get(host_view_), large_size, ink_drop_large_corner_radius_, size,
       ink_drop_small_corner_radius_, center_point, GetBaseColor(),
       GetVisibleOpacity());
   return ripple;

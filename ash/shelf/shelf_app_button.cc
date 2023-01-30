@@ -342,7 +342,7 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
         const int ripple_size = host->shelf_view_->GetShelfItemRippleSize();
 
         return std::make_unique<views::SquareInkDropRipple>(
-            gfx::Size(ripple_size, ripple_size),
+            views::InkDrop::Get(host), gfx::Size(ripple_size, ripple_size),
             views::InkDrop::Get(host)->GetLargeCornerRadius(),
             small_ripple_area.size(),
             views::InkDrop::Get(host)->GetSmallCornerRadius(),

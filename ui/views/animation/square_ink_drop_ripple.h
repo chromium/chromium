@@ -27,6 +27,7 @@ class Layer;
 
 namespace views {
 class CircleLayerDelegate;
+class InkDropHost;
 class RectangleLayerDelegate;
 
 namespace test {
@@ -53,7 +54,8 @@ class VIEWS_EXPORT SquareInkDropRipple : public InkDropRipple {
   // The shape to use for the ACTIVATED/DEACTIVATED states.
   enum class ActivatedShape { kCircle, kRoundedRect };
 
-  SquareInkDropRipple(const gfx::Size& large_size,
+  SquareInkDropRipple(InkDropHost* ink_drop_host,
+                      const gfx::Size& large_size,
                       int large_corner_radius,
                       const gfx::Size& small_size,
                       int small_corner_radius,

@@ -65,9 +65,9 @@ InkDropRippleTest::InkDropRippleTest()
           gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED)) {
   switch (GetParam()) {
     case SQUARE_INK_DROP_RIPPLE: {
-      SquareInkDropRipple* square_ink_drop_ripple =
-          new SquareInkDropRipple(gfx::Size(10, 10), 2, gfx::Size(8, 8), 1,
-                                  gfx::Point(), SK_ColorBLACK, kVisibleOpacity);
+      SquareInkDropRipple* square_ink_drop_ripple = new SquareInkDropRipple(
+          nullptr, gfx::Size(10, 10), 2, gfx::Size(8, 8), 1, gfx::Point(),
+          SK_ColorBLACK, kVisibleOpacity);
       ink_drop_ripple_.reset(square_ink_drop_ripple);
       test_api_ =
           std::make_unique<SquareInkDropRippleTestApi>(square_ink_drop_ripple);
@@ -75,7 +75,7 @@ InkDropRippleTest::InkDropRippleTest()
     }
     case FLOOD_FILL_INK_DROP_RIPPLE: {
       FloodFillInkDropRipple* flood_fill_ink_drop_ripple =
-          new FloodFillInkDropRipple(gfx::Size(10, 10), gfx::Point(),
+          new FloodFillInkDropRipple(nullptr, gfx::Size(10, 10), gfx::Point(),
                                      SK_ColorBLACK, kVisibleOpacity);
       ink_drop_ripple_.reset(flood_fill_ink_drop_ripple);
       test_api_ = std::make_unique<FloodFillInkDropRippleTestApi>(

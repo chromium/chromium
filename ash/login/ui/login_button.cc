@@ -47,7 +47,8 @@ LoginButton::LoginButton(PressedCallback callback)
                          radius * 2);
 
         return std::make_unique<views::FloodFillInkDropRipple>(
-            host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+            views::InkDrop::Get(host), host->size(),
+            host->GetLocalBounds().InsetsFrom(bounds),
             views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             kInkDropRippleColor, 1.f /*visible_opacity*/);
       },

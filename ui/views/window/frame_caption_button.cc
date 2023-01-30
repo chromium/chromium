@@ -87,7 +87,8 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
   InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
       [](FrameCaptionButton* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
-            host->size(), host->GetInkdropInsets(host->size()),
+            InkDrop::Get(host), host->size(),
+            host->GetInkdropInsets(host->size()),
             InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
             InkDrop::Get(host)->GetBaseColor(),
             InkDrop::Get(host)->GetVisibleOpacity());

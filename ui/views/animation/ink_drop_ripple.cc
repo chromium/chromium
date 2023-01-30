@@ -15,7 +15,8 @@ namespace views {
 
 const float InkDropRipple::kHiddenOpacity = 0.f;
 
-InkDropRipple::InkDropRipple() = default;
+InkDropRipple::InkDropRipple(InkDropHost* ink_drop_host)
+    : ink_drop_host_(ink_drop_host) {}
 
 InkDropRipple::~InkDropRipple() = default;
 
@@ -79,6 +80,10 @@ test::InkDropRippleTestApi* InkDropRipple::GetTestApi() {
 
 ui::LayerAnimationObserver* InkDropRipple::GetLayerAnimationObserver() {
   return animation_observer_.get();
+}
+
+InkDropHost* InkDropRipple::GetInkDropHost() const {
+  return ink_drop_host_.get();
 }
 
 void InkDropRipple::AnimationStartedCallback(

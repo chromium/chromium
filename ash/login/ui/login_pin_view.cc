@@ -127,7 +127,8 @@ class BasePinButton : public views::View {
                                  kInkDropCornerRadiusDp * 2);
 
           return std::make_unique<views::FloodFillInkDropRipple>(
-              host->size(), host->GetLocalBounds().InsetsFrom(bounds),
+              views::InkDrop::Get(host), host->size(),
+              host->GetLocalBounds().InsetsFrom(bounds),
               views::InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
               host->GetColorProvider()->GetColor(kColorAshInkDrop),
               /*visible_opacity=*/1.f);
