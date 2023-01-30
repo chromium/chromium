@@ -8,9 +8,26 @@
 #include "base/metrics/user_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill::autofill_metrics {
+namespace {
+
+ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
+  switch (popup_type) {
+    case PopupType::kPersonalInformation:
+      return ManageSuggestionType::kPersonalInformation;
+    case PopupType::kAddresses:
+      return ManageSuggestionType::kAddresses;
+    case PopupType::kCreditCards:
+      return ManageSuggestionType::kPaymentMethods;
+    case PopupType::kPasswords:
+      ABSL_FALLTHROUGH_INTENDED;
+    case PopupType::kUnspecified:
+      return ManageSuggestionType::kOther;
+  }
+}
+
+}  // anonymous namespace
 
 void LogAutofillSuggestionAcceptedIndex(int index,
                                         PopupType popup_type,
@@ -39,6 +56,12 @@ void LogAutofillSuggestionAcceptedIndex(int index,
 
   base::UmaHistogramBoolean("Autofill.SuggestionAccepted.OffTheRecord",
                             off_the_record);
+}
+
+void LogAutofillSelectedManageEntry(PopupType popup_type) {
+  const ManageSuggestionType uma_type = ToManageSuggestionType(popup_type);
+  base::UmaHistogramEnumeration("Autofill.SuggestionsListManageClicked",
+                                uma_type);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -9495,6 +9495,13 @@ others/histograms.xml -->
   <int value="2" label="Accepted click, followed an ignored click"/>
 </enum>
 
+<enum name="AutofillSuggestionManageType">
+  <int value="0" label="Other"/>
+  <int value="1" label="Personal Information"/>
+  <int value="2" label="Addresses"/>
+  <int value="3" label="Payment Methods"/>
+</enum>
+
 <enum name="AutofillSyncState">
   <int value="0" label="Signed Out"/>
   <int value="1" label="Signed In"/>

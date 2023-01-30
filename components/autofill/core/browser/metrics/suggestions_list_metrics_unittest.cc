@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
-#include "base/logging.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +70,41 @@ TEST(SuggestionsListMetricsTest, LogSuggestionAcceptedIndex_Other) {
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.SuggestionAcceptedIndex.Other"),
       BucketsAre(base::Bucket(selected_suggestion_index, 2)));
+}
+
+TEST(SuggestionsListMetricsTest,
+     LogAutofillSelectedManageEntry_PersonalInformation) {
+  base::HistogramTester histogram_tester;
+  LogAutofillSelectedManageEntry(PopupType::kPersonalInformation);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
+      BucketsAre(base::Bucket(ManageSuggestionType::kPersonalInformation, 1)));
+}
+
+TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Addresses) {
+  base::HistogramTester histogram_tester;
+  LogAutofillSelectedManageEntry(PopupType::kAddresses);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
+      BucketsAre(base::Bucket(ManageSuggestionType::kAddresses, 1)));
+}
+
+TEST(SuggestionsListMetricsTest,
+     LogAutofillSelectedManageEntry_PaymentMethods) {
+  base::HistogramTester histogram_tester;
+  LogAutofillSelectedManageEntry(PopupType::kCreditCards);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
+      BucketsAre(base::Bucket(ManageSuggestionType::kPaymentMethods, 1)));
+}
+
+TEST(SuggestionsListMetricsTest, LogAutofillSelectedManageEntry_Other) {
+  base::HistogramTester histogram_tester;
+  LogAutofillSelectedManageEntry(PopupType::kUnspecified);
+  LogAutofillSelectedManageEntry(PopupType::kPasswords);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.SuggestionsListManageClicked"),
+      BucketsAre(base::Bucket(ManageSuggestionType::kOther, 2)));
 }
 
 }  // namespace autofill::autofill_metrics
