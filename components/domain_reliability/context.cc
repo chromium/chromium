@@ -185,7 +185,7 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   int max_upload_depth = 0;
 
-  base::Value beacons_value(base::Value::Type::LIST);
+  base::Value::List beacons_value;
   for (const auto& beacon : beacons_) {
     // Only include beacons with a matching NetworkAnonymizationKey in the
     // report.
@@ -204,12 +204,12 @@ base::Value DomainReliabilityContext::CreateReport(base::TimeTicks upload_time,
 
   DCHECK_GT(uploading_beacons_size_, 0u);
 
-  base::Value report_value(base::Value::Type::DICT);
-  report_value.SetStringKey("reporter", *upload_reporter_string_);
-  report_value.SetKey("entries", std::move(beacons_value));
+  base::Value::Dict report_value;
+  report_value.Set("reporter", *upload_reporter_string_);
+  report_value.Set("entries", std::move(beacons_value));
 
   *max_upload_depth_out = max_upload_depth;
-  return report_value;
+  return base::Value(std::move(report_value));
 }
 
 void DomainReliabilityContext::CommitUpload() {
