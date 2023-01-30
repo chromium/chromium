@@ -5357,7 +5357,7 @@ TEST_F(StyleEngineTest, HasPseudoClassInvalidationIgnoreVisitedPseudoInHas) {
   UpdateAllLifecyclePhases();
   unsigned element_count =
       GetStyleEngine().StyleForElementCount() - start_count;
-  ASSERT_EQ(2U, element_count);
+  ASSERT_EQ(1U, element_count);
 
   start_count = GetStyleEngine().StyleForElementCount();
   GetDocument().getElementById("div1")->RemoveChild(

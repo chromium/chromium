@@ -24,7 +24,7 @@ link.offsetTop; // Force recalc.
 link.href = "not-visited.html";
 
 if (window.internals)
-    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "2");
+    shouldBe("internals.updateStyleAndReturnAffectedElementCount()", "1");
 
 shouldBe("getComputedStyle(link).backgroundColor", "green");
 </script>

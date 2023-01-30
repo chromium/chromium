@@ -1295,12 +1295,6 @@ a:-webkit-any-link:focus-visible {
   outline-offset: 1px;
 }
 
-/* ensure that selected links are underlined.*/
-a:-webkit-any-link::target-text {
-    text-decoration:underline;
-    background-color:#E9D2FD;
-}
-
 /* HTML5 ruby elements */
 
 ruby, rt {
