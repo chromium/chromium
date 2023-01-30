@@ -11,13 +11,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -137,7 +137,7 @@ public class SessionRestoreManagerImpl implements SessionRestoreManager {
     private void startEvictionTimer() {
         assert mCallbackController == null : "An eviction timer is in place.";
         mCallbackController = new CallbackController();
-        PostTask.postDelayedTask(TaskTraits.BEST_EFFORT,
+        PostTask.postDelayedTask(UiThreadTaskTraits.BEST_EFFORT,
                 mCallbackController.makeCancelable(
                         () -> clearCacheWithReason(EvictionReason.TIMEOUT)),
                 mEvictionTimeout /*ms*/);
