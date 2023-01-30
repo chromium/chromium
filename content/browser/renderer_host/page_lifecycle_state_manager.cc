@@ -15,10 +15,12 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace {
-// ASAN builds are slow and we see flakes caused by reaching this timeout.
+// ASAN builds are slow and we see flakes caused by reaching this timeout. 6s
+// was not enough to stop the flakes. Trying 12s just to ensure that there isn't
+// something else going on that we don't understand.
 // See https://crbug.com/1224355.
 #if defined(ADDRESS_SANITIZER)
-constexpr base::TimeDelta kBackForwardCacheTimeout = base::Seconds(6);
+constexpr base::TimeDelta kBackForwardCacheTimeout = base::Seconds(12);
 #else
 constexpr base::TimeDelta kBackForwardCacheTimeout = base::Seconds(3);
 #endif
