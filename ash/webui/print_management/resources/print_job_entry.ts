@@ -434,7 +434,16 @@ export class PrintJobEntryElement extends PrintJobEntryElementBase {
       totalPages: number,
       ): number {
     assert(printedPages >= 0);
+    // TODO(b/235534580): Remove print statements once resolved.
+    if (totalPages <= 0) {
+      console.error('Total pages should be > 0. totalPages: ' + totalPages);
+    }
     assert(totalPages > 0);
+    if (printedPages > totalPages) {
+      console.error(
+          'Total pages should be more than printed pages. totalPages: ' +
+          totalPages + ' printedPages: ' + printedPages);
+    }
     assert(printedPages <= totalPages);
     return (printedPages * 100) / totalPages;
   }
