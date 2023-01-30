@@ -1897,8 +1897,11 @@ CommandHandler.COMMANDS_['invoke-sharesheet'] =
       execute(event, fileManager) {
         const entries = fileManager.selectionHandler.selection.entries;
         const launchSource = CommandUtil.getSharesheetLaunchSource(event);
+        const dlpSourceUrls =
+            fileManager.metadataModel.getCache(entries, ['sourceUrl'])
+                .map(m => m.sourceUrl || '');
         chrome.fileManagerPrivate.invokeSharesheet(
-            entries, launchSource, () => {
+            entries, launchSource, dlpSourceUrls, () => {
               if (chrome.runtime.lastError) {
                 console.warn(chrome.runtime.lastError.message);
                 return;

@@ -122,6 +122,19 @@ apps::IntentPtr MakeShareIntent(const std::string& text,
   return intent;
 }
 
+apps::IntentPtr MakeShareIntent(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types,
+    const std::vector<std::string>& dlp_source_urls) {
+  auto intent = MakeShareIntent(filesystem_urls, mime_types);
+
+  DCHECK_EQ(filesystem_urls.size(), dlp_source_urls.size());
+  for (size_t i = 0; i < filesystem_urls.size(); i++) {
+    intent->files[i]->dlp_source_url = dlp_source_urls[i];
+  }
+  return intent;
+}
+
 apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,
                                const std::string& mime_type) {
   auto intent = std::make_unique<apps::Intent>(kIntentActionEdit);

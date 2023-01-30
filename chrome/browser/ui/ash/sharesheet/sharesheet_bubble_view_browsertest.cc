@@ -9,21 +9,31 @@
 #include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_target_button.h"
+#include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/components/sharesheet/constants.h"
-#include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -84,9 +94,11 @@ class SharesheetBubbleViewBrowserTest
     ASSERT_FALSE(sharesheet_widget_->IsVisible());
   }
 
+ protected:
+  views::Widget* sharesheet_widget_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  views::Widget* sharesheet_widget_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -96,6 +108,132 @@ INSTANTIATE_TEST_SUITE_P(All,
 IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewBrowserTest, InvokeUi_Default) {
   ShowUi();
   ASSERT_TRUE(VerifyUi());
+  DismissUi();
+}
+
+class SharesheetBubbleViewPolicyBrowserTest
+    : public SharesheetBubbleViewBrowserTest {
+ public:
+  class MockFilesController : public policy::DlpFilesController {
+   public:
+    explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
+        : DlpFilesController(rules_manager) {}
+    ~MockFilesController() override = default;
+
+    MOCK_METHOD(bool,
+                IsLaunchBlocked,
+                (const apps::AppUpdate&, const apps::IntentPtr&),
+                (override));
+  };
+
+  void SetupRulesManager(bool is_dlp_blocked) {
+    policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(
+            &SharesheetBubbleViewPolicyBrowserTest::SetDlpRulesManager,
+            base::Unretained(this)));
+    ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+    ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
+        .WillByDefault(testing::Return(true));
+    mock_files_controller_ =
+        std::make_unique<MockFilesController>(*rules_manager_);
+    ON_CALL(*rules_manager_, GetDlpFilesController)
+        .WillByDefault(testing::Return(mock_files_controller_.get()));
+
+    EXPECT_CALL(*mock_files_controller_.get(), IsLaunchBlocked)
+        .WillOnce(testing::Return(is_dlp_blocked));
+  }
+
+  void SetupAppService() {
+    app_service_test_.SetUp(browser()->profile());
+
+    AddAppServiceAppsForTesting("arcAppId", apps::AppType::kArc, "text/plain",
+                                "https://example.com");
+  }
+
+  void AddAppServiceAppsForTesting(std::string app_id,
+                                   apps::AppType app_type,
+                                   std::string mime_type,
+                                   absl::optional<std::string> publisher_id) {
+    apps::AppServiceProxy* app_service_proxy =
+        apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+
+    std::vector<apps::AppPtr> fake_apps;
+    apps::AppPtr fake_app =
+        std::make_unique<apps::App>(apps::AppType::kArc, app_id);
+    fake_app->name = "xyz";
+    fake_app->show_in_management = true;
+    fake_app->readiness = apps::Readiness::kReady;
+    if (publisher_id.has_value()) {
+      fake_app->publisher_id = publisher_id.value();
+    }
+    std::vector<apps::PermissionPtr> fake_permissions;
+    fake_app->permissions = std::move(fake_permissions);
+    fake_app->handles_intents = true;
+    apps::IntentFilterPtr filter =
+        apps_util::MakeIntentFilterForMimeType(mime_type);
+    fake_app->intent_filters.push_back(std::move(filter));
+
+    fake_apps.push_back(std::move(fake_app));
+
+    app_service_proxy->AppRegistryCache().OnApps(
+        std::move(fake_apps), app_type,
+        /*should_notify_initialized=*/false);
+  }
+
+  bool VerifyDlp(bool is_dlp_blocked) {
+    if (!sharesheet_widget_) {
+      return false;
+    }
+    SharesheetBubbleView* sharesheet_bubble_view_ =
+        static_cast<SharesheetBubbleView*>(
+            sharesheet_widget_->GetContentsView());
+    views::View* targets = sharesheet_bubble_view_->GetViewByID(
+        SharesheetViewID::TARGETS_DEFAULT_VIEW_ID);
+    SharesheetTargetButton* button = static_cast<SharesheetTargetButton*>(
+        targets->children()[targets->children().size() - 1]);
+    return is_dlp_blocked ==
+           (button->GetState() == SharesheetTargetButton::STATE_DISABLED);
+  }
+
+  MockFilesController* mock_files_controller() {
+    return mock_files_controller_.get();
+  }
+
+ private:
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager =
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+    rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+  apps::AppServiceTest app_service_test_;
+  policy::MockDlpRulesManager* rules_manager_ = nullptr;
+  std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharesheetBubbleViewPolicyBrowserTest,
+                         ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewPolicyBrowserTest,
+                       InvokeUi_DlpAllowed) {
+  SetupRulesManager(/*is_dlp_blocked*/ false);
+  SetupAppService();
+  ShowUi();
+  ASSERT_TRUE(VerifyDlp(/*is_dlp_blocked*/ false));
+  DismissUi();
+}
+
+IN_PROC_BROWSER_TEST_P(SharesheetBubbleViewPolicyBrowserTest,
+                       InvokeUi_DlpBlocked) {
+  SetupRulesManager(/*is_dlp_blocked*/ true);
+  SetupAppService();
+  ShowUi();
+  ASSERT_TRUE(VerifyDlp(/*is_dlp_blocked*/ true));
   DismissUi();
 }
 

@@ -32,7 +32,8 @@ struct TargetInfo {
              const std::u16string& launch_name,
              const std::u16string& display_name,
              const absl::optional<std::u16string>& secondary_display_name,
-             const absl::optional<std::string>& activity_name);
+             const absl::optional<std::string>& activity_name,
+             bool is_dlp_blocked);
   ~TargetInfo();
 
   // Allow move.
@@ -67,6 +68,9 @@ struct TargetInfo {
   // The activity of the app for the target. This only applies when the app type
   // is kArc.
   absl::optional<std::string> activity_name;
+
+  // Whether the target is blocked by Data Leak Prevention (DLP).
+  bool is_dlp_blocked;
 };
 
 using DeliveredCallback = base::OnceCallback<void(SharesheetResult success)>;

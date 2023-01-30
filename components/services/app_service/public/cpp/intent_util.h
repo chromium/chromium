@@ -63,6 +63,12 @@ apps::IntentPtr MakeShareIntent(const GURL& filesystem_url,
 apps::IntentPtr MakeShareIntent(const std::string& text,
                                 const std::string& title);
 
+// Creates an intent for sharing |filesystem_urls|, with |dlpSourceUrls|.
+apps::IntentPtr MakeShareIntent(
+    const std::vector<GURL>& filesystem_urls,
+    const std::vector<std::string>& mime_types,
+    const std::vector<std::string>& dlp_source_urls);
+
 // Create an edit intent for the file with a given |filesystem_url| and
 // |mime_type|.
 apps::IntentPtr MakeEditIntent(const GURL& filesystem_url,

@@ -190,6 +190,10 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   if (params->urls.empty())
     return RespondNow(Error("No URLs provided"));
 
+  if (params->dlp_source_urls.size() != params->urls.size()) {
+    return RespondNow(Error("Mismatching URLs and DLP source URLs provided"));
+  }
+
   profile_ = Profile::FromBrowserContext(browser_context());
 
   const scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -209,6 +213,8 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
     urls_.push_back(url);
     file_system_urls_.push_back(file_system_url);
   }
+
+  dlp_source_urls_ = std::move(params->dlp_source_urls);
 
   mime_type_collector_ =
       std::make_unique<app_file_handler_util::MimeTypeCollector>(profile_);
@@ -249,7 +255,8 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   }
 
   sharesheet_service->ShowBubble(
-      GetSenderWebContents(), apps_util::MakeShareIntent(urls_, *mime_types),
+      GetSenderWebContents(),
+      apps_util::MakeShareIntent(urls_, *mime_types, dlp_source_urls_),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }

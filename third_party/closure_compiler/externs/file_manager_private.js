@@ -859,15 +859,16 @@ chrome.fileManagerPrivate.setDefaultTask = function(descriptor, entries, mimeTyp
 
 /**
  * Gets the list of tasks that can be performed over selected files. |entries|
- * Array of selected entries. |sourceUrls| Array of source URLs corresponding to
- * the entries  |callback|
+ * Array of selected entries. |dlpSourceUrls| Array of source URLs corresponding
+ * to the entries, used to check Data Leak Prevention (DLP) restrictions
+ * |callback|
  * @param {!Array<!Entry>} entries
- * @param {!Array<string>} sourceUrls
+ * @param {!Array<string>} dlpSourceUrls
  * @param {function((!chrome.fileManagerPrivate.ResultingTasks|undefined))}
  *     callback The list of matched file tasks for the entries.
  */
 chrome.fileManagerPrivate.getFileTasks = function(
-    entries, sourceUrls, callback) {};
+    entries, dlpSourceUrls, callback) {};
 
 /**
  * Gets the MIME type of an entry.
@@ -1490,12 +1491,16 @@ chrome.fileManagerPrivate.sharesheetHasTargets = function(entries, callback) {};
 /**
  * Invoke Sharesheet for selected files. If not possible, then returns
  * an error via chrome.runtime.lastError. |entries| Array of selected entries.
+ * |launchSource| Source from which sharesheet was invoked. |dlpSourceUrls|
+ * Array of source URLs corresponding to the entries, used to check Data Leak
+ * Prevention (DLP) restrictions.
  * @param {!Array<!Entry>} entries
  * @param {chrome.fileManagerPrivate.SharesheetLaunchSource} launchSource
+ * @param {!Array<string>} dlpSourceUrls
  * @param {function()} callback
  */
 chrome.fileManagerPrivate.invokeSharesheet = function(
-    entries, launchSource, callback) {};
+    entries, launchSource, dlpSourceUrls, callback) {};
 
 /**
  * Adds or removes a list of entries to temporary holding space. Any entries

@@ -377,7 +377,7 @@ void SharesheetBubbleView::PopulateLayoutsWithTargets(
         base::BindRepeating(&SharesheetBubbleView::TargetButtonPressed,
                             base::Unretained(this), target),
         display_name, secondary_display_name, icon,
-        delegator_->GetVectorIcon(display_name)));
+        delegator_->GetVectorIcon(display_name), target.is_dlp_blocked));
   }
 }
 

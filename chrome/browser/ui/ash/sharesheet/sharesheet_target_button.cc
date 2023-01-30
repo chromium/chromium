@@ -50,7 +50,8 @@ SharesheetTargetButton::SharesheetTargetButton(
     const std::u16string& display_name,
     const std::u16string& secondary_display_name,
     const absl::optional<gfx::ImageSkia> icon,
-    const gfx::VectorIcon* vector_icon)
+    const gfx::VectorIcon* vector_icon,
+    bool is_dlp_blocked)
     : Button(std::move(callback)), vector_icon_(vector_icon) {
   SetFocusBehavior(View::FocusBehavior::ALWAYS);
   // TODO(crbug.com/1097623) Margins shouldn't be within
@@ -102,6 +103,10 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   AddChildView(std::move(label_view));
   SetAccessibleName(accessible_name);
+
+  if (is_dlp_blocked) {
+    SetState(ButtonState::STATE_DISABLED);
+  }
 }
 
 void SharesheetTargetButton::OnThemeChanged() {

@@ -23,7 +23,8 @@ namespace sharesheet {
 // a single target (either app or action) in the |sharesheet_bubble_view|. The
 // target is comprised of an image (made from |icon| for apps or from
 // |vector_icon| for actions), a |display_name| and an optional
-// |secondary_display_name| below it. When pressed this button launches the
+// |secondary_display_name| below it. If |is_dlp_blocked| is set to true, the
+// button is disabled. Otherwise, when pressed this button launches the
 // associated target.
 class SharesheetTargetButton : public views::Button {
  public:
@@ -33,7 +34,8 @@ class SharesheetTargetButton : public views::Button {
                          const std::u16string& display_name,
                          const std::u16string& secondary_display_name,
                          const absl::optional<gfx::ImageSkia> icon,
-                         const gfx::VectorIcon* vector_icon);
+                         const gfx::VectorIcon* vector_icon,
+                         bool is_dlp_blocked);
   SharesheetTargetButton(const SharesheetTargetButton&) = delete;
   SharesheetTargetButton& operator=(const SharesheetTargetButton&) = delete;
 

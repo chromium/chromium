@@ -368,12 +368,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       });
 
   apiFunctions.setHandleRequest(
-      'invokeSharesheet', function(entries, launchSource, callback) {
+      'invokeSharesheet',
+      function(entries, launchSource, dlpSourceUrls, callback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
         fileManagerPrivateInternal.invokeSharesheet(
-            urls, launchSource, callback);
+            urls, launchSource, dlpSourceUrls, callback);
       });
 
   apiFunctions.setHandleRequest(

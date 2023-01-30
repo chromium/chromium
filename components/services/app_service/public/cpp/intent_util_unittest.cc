@@ -704,6 +704,23 @@ TEST_F(IntentUtilTest, FileWithTitleText) {
   EXPECT_TRUE(intent->MatchFilter(filter));
 }
 
+TEST_F(IntentUtilTest, FileWithDlpSourceUrls) {
+  const std::string mime_type = "image/jpeg";
+  const GURL file_url = GURL("https://www.google.com/");
+  const std::string dlp_source_url = "https://www.example.com/";
+
+  auto filter = apps_util::MakeIntentFilterForSend(mime_type);
+  const std::vector<GURL> urls{file_url};
+  const std::vector<std::string> mime_types{mime_type};
+  const std::vector<std::string> dlp_source_urls{dlp_source_url};
+
+  auto intent = apps_util::MakeShareIntent(urls, mime_types, dlp_source_urls);
+  ASSERT_EQ(1u, intent->files.size());
+  EXPECT_EQ(file_url, intent->files[0]->url);
+  EXPECT_EQ(dlp_source_url, intent->files[0]->dlp_source_url);
+  EXPECT_TRUE(intent->MatchFilter(filter));
+}
+
 TEST_F(IntentUtilTest, TextMatch) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";

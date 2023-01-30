@@ -112,6 +112,7 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
   std::vector<GURL> urls_;
   Profile* profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
+  std::vector<std::string> dlp_source_urls_;
   bool contains_hosted_document_ = false;
 };
 
