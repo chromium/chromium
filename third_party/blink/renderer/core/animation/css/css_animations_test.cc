@@ -109,6 +109,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
  private:
   void SetUpAnimationClockForTesting() {
     GetPage().Animator().Clock().ResetTimeForTesting();
+    GetDocument().Timeline().ResetForTesting();
   }
 };
 
