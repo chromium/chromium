@@ -413,6 +413,12 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingComplexSelectorList(
         ConsumeComplexSelector(argument, /*in_nested_style_rule=*/false,
                                /*first_in_complex_selector_list=*/false);
     if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
+      for (const CSSParserToken& token : argument) {
+        if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
+          dropped_nest_token_during_forgiving_parsing_ = true;
+          break;
+        }
+      }
       if (in_supports_parsing_) {
         at_supports_drop_invalid_counter.Count();
       }
@@ -766,7 +772,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     // of SelectorListIsNestContaining().
     wtf_size_t last_index = output_.size() - 1;
     output_[last_index].SetLastInSelectorList(true);
-    if (!SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
+    if (!dropped_nest_token_during_forgiving_parsing_ &&
+        !SelectorListIsNestContaining(reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
       output_.push_back(
           CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/true));
