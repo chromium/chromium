@@ -62,7 +62,7 @@ namespace webapps {
 
 namespace {
 
-const int kWebAppLargeIconSize = 128;
+const int kWebAppIconSize = 64;
 
 // The Youtube app is incorrectly hardcoded to be a 'bookmark app'. However, it
 // is a platform app.
@@ -320,8 +320,7 @@ app_home::mojom::AppInfoPtr AppHomePageHandler::CreateAppInfoPtrFromWebApp(
   std::string name = registrar.GetAppShortName(app_id);
   app_info->name = name;
 
-  app_info->icon_url =
-      apps::AppIconSource::GetIconURL(app_id, kWebAppLargeIconSize);
+  app_info->icon_url = apps::AppIconSource::GetIconURL(app_id, kWebAppIconSize);
 
   bool is_locally_installed = registrar.IsLocallyInstalled(app_id);
 
