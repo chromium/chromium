@@ -88,7 +88,7 @@ public class FledgeFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);
         mDisabledFledgePreference = findPreference(DISABLED_FLEDGE_PREFERENCE);
         mAllSitesPreference = findPreference(ALL_SITES_PREFERENCE);
-        mFooterPreference = findPreference(FOOTER_PREFERENCE);
+        mFooterPreference = (ClickableSpansTextMessagePreference) findPreference(FOOTER_PREFERENCE);
 
         mFledgeTogglePreference.setChecked(isFledgePrefEnabled());
         mFledgeTogglePreference.setOnPreferenceChangeListener(this);

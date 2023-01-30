@@ -78,7 +78,8 @@ public class TopicsFragmentV4 extends PrivacySandboxSettingsBaseFragment
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
-        mTopicsPageFooterPreference = findPreference(TOPICS_PAGE_FOOTER_PREFERENCE);
+        mTopicsPageFooterPreference =
+                (ClickableSpansTextMessagePreference) findPreference(TOPICS_PAGE_FOOTER_PREFERENCE);
 
         mTopicsTogglePreference.setChecked(isTopicsPrefEnabled());
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
