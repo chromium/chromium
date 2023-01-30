@@ -13,7 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
-import static org.chromium.ui.test.util.ViewUtils.VIEW_VISIBLE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import androidx.test.filters.MediumTest;
@@ -52,10 +52,9 @@ public class WebViewJSTest {
         mWebViewActivityRule.loadFileSync("alert.html", false);
         mWebViewActivityRule.loadJavaScriptSync(
                 "document.getElementById('alert-button').click();", false);
-        onView(isRoot()).check(waitForView(withText("Clicked"), VIEW_VISIBLE));
-        onView(withText("OK"))
-                .check(matches(isDisplayed()))
-                .perform(click());
+        // Wait for the correct view to be shown
+        onViewWaiting(withText("Clicked")).check(matches(isDisplayed()));
+        onView(withText("OK")).check(matches(isDisplayed())).perform(click());
         // "OK" should disappear once we've clicked on it. Wait for that to happen.
         onView(isRoot()).check(waitForView(withText("OK"), VIEW_NULL));
     }
