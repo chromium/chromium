@@ -85,10 +85,11 @@ const ExpectedStringGenerator common_v2_strings_generator =
           /*header_text=*/"",
           /*body_title=*/
           l10n_util::GetStringUTF8(
-              IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V2),
+              IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
           /*body_text=*/
-          l10n_util::GetStringUTF8(
-              IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_V2),
+          l10n_util::GetStringFUTF8(
+              IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC,
+              base::UTF8ToUTF16(primary_account.given_name)),
           /*confirm_button_label=*/
           l10n_util::GetStringUTF8(
               IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
@@ -145,7 +146,25 @@ const TestParam kTestParams[] = {
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
-        /*expected_strings_v2=*/common_v2_strings_generator,
+        /*expected_strings_v2=*/base::BindRepeating([] {
+          return BubbleStrings{
+              /*header_text=*/"",
+              /*body_title=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CONSUMER_BUBBLE_DESC_MANAGED_DEVICE,
+                  base::UTF8ToUTF16(primary_account.given_name),
+                  base::UTF8ToUTF16(intercepted_account.email)),
+              /*confirm_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
+              /*cancel_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
+          };
+        }),
     },
     {
         DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
@@ -168,7 +187,24 @@ const TestParam kTestParams[] = {
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
-        /*expected_strings_v2=*/common_v2_strings_generator,
+        /*expected_strings_v2=*/base::BindRepeating([] {
+          return BubbleStrings{
+              /*header_text=*/"",
+              /*body_title=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC,
+                  base::UTF8ToUTF16(primary_account.email)),
+              /*confirm_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
+              /*cancel_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
+          };
+        }),
     },
     {
         DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise,
@@ -191,7 +227,24 @@ const TestParam kTestParams[] = {
                   IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
           };
         }),
-        /*expected_strings_v2=*/common_v2_strings_generator,
+        /*expected_strings_v2=*/base::BindRepeating([] {
+          return BubbleStrings{
+              /*header_text=*/"",
+              /*body_title=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE),
+              /*body_text=*/
+              l10n_util::GetStringFUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE,
+                  base::UTF8ToUTF16(intercepted_account.email)),
+              /*confirm_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL),
+              /*cancel_button_label=*/
+              l10n_util::GetStringUTF8(
+                  IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL),
+          };
+        }),
     },
 };
 
