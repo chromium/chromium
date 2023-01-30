@@ -453,6 +453,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.FoundServiceWorkerRegistrationOnNavigation"
+    enum="BooleanFound" expires_after="2023-12-01">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Whether ServiceWorkerControlleeRequestHandler::MaybeCreateLoader found a
+    service worker registration after looking up the registration by using
+    FindRegistrationForClientUrl.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.InstallEvent.All.FetchCount" units="fetches"
     expires_after="2023-07-17">
   <owner>yyanagisawa@chromium.org</owner>
