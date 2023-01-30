@@ -1311,11 +1311,12 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
 
 void SetEnterpriseAllowlistForTesting(PrefService* pref_service,
                                       const std::vector<std::string>& hosts) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   for (const auto& host : hosts) {
     list.Append(host);
   }
-  pref_service->Set(prefs::kLookalikeWarningAllowlistDomains, std::move(list));
+  pref_service->SetList(prefs::kLookalikeWarningAllowlistDomains,
+                        std::move(list));
 }
 
 bool HasOneCharacterSwap(const std::u16string& str1,
