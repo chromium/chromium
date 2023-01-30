@@ -172,15 +172,16 @@ class DeviceTrustBrowserTestBase : public InProcessBrowserTest {
   void SetPolicy(bool as_empty_list = false,
                  Browser* active_browser = nullptr) {
     policy::PolicyMap policy_map;
-    base::Value list_value(base::Value::Type::LIST);
+    base::Value::List list;
 
     if (!as_empty_list) {
-      list_value.Append(kAllowedHost);
+      list.Append(kAllowedHost);
     }
 
     policy_map.Set(policy::key::kContextAwareAccessSignalsAllowlist,
                    policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                   policy::POLICY_SOURCE_CLOUD, std::move(list_value), nullptr);
+                   policy::POLICY_SOURCE_CLOUD, base::Value(std::move(list)),
+                   nullptr);
 
     EXPECT_NO_FATAL_FAILURE(provider_.UpdateChromePolicy(policy_map));
     base::RunLoop().RunUntilIdle();
