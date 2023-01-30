@@ -488,8 +488,13 @@ TEST(PlatformThreadTest, SetCurrentThreadTypeTest) {
                                       ThreadPriorityForTest::kBackground);
   TestPriorityResultingFromThreadType(ThreadType::kUtility,
                                       ThreadPriorityForTest::kUtility);
+#if BUILDFLAG(IS_APPLE)
+  TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
+                                      ThreadPriorityForTest::kUtility);
+#else
   TestPriorityResultingFromThreadType(ThreadType::kResourceEfficient,
                                       ThreadPriorityForTest::kNormal);
+#endif  // BUILDFLAG(IS_APPLE)
   TestPriorityResultingFromThreadType(ThreadType::kDefault,
                                       ThreadPriorityForTest::kNormal);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
