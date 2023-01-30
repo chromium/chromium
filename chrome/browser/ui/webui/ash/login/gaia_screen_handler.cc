@@ -559,7 +559,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
     }
   }
 
-  if (is_reauth && !gaia_reauth_request_token_.empty()) {
+  if (!gaia_reauth_request_token_.empty()) {
     params.Set("rart", gaia_reauth_request_token_);
   }
 
