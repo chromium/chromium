@@ -65,9 +65,14 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     BrowserChildProcessObserver::Add(this);
 
-    host_ = new UtilityProcessHost();
+    host_ = new UtilityProcessHost();  // Owned by a global list.
     host_->SetName(u"TestProcess");
     host_->SetMetricsName(kTestProcessName);
+  }
+
+  void TearDownOnMainThread() override {
+    // `host_` is about to be deleted during BrowserMainRunnerImpl::Shutdown().
+    host_ = nullptr;
   }
 
   void SetExpectFailLaunch() {

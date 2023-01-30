@@ -77,6 +77,11 @@ class CONTENT_EXPORT UtilityProcessHost
     virtual void OnProcessCrashed() {}
   };
 
+  // This class is self-owned. It must be instantiated using new, and shouldn't
+  // be deleted manually.
+  // TODO(https://crbug.com/1411101): Make it clearer the caller of the
+  // constructor do not own memory. A static method to create them + private
+  // constructor could be better.
   UtilityProcessHost();
   explicit UtilityProcessHost(std::unique_ptr<Client> client);
 
