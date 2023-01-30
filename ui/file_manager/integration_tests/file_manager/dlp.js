@@ -159,7 +159,7 @@ const cancelButton = '.button-panel button.cancel';
  */
 testcase.saveAsDlpRestrictedAndroid = async () => {
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedArc'});
+  await sendTestMessage({name: 'setBlockedComponent', component: 'arc'});
 
   const closer = async (dialog) => {
     // Select My Files folder and wait for file list to display Downloads, Play
@@ -224,7 +224,7 @@ testcase.saveAsDlpRestrictedAndroid = async () => {
  */
 testcase.saveAsDlpRestrictedVm = async () => {
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedPluginVM'});
+  await sendTestMessage({name: 'setBlockedComponent', component: 'pluginVm'});
 
   const guestName = 'JennyAnyDots';
   const guestId = await sendTestMessage({
@@ -299,7 +299,7 @@ testcase.saveAsDlpRestrictedVm = async () => {
  */
 testcase.saveAsDlpRestrictedCrostini = async () => {
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedCrostini'});
+  await sendTestMessage({name: 'setBlockedComponent', component: 'crostini'});
 
   // Add entries to Downloads.
   await addEntries(['local'], [ENTRIES.hello]);
@@ -353,6 +353,43 @@ testcase.saveAsDlpRestrictedCrostini = async () => {
 };
 
 /**
+ * Tests the save dialogs properly show blocked USB volumes.
+ */
+testcase.saveAsDlpRestrictedUsb = async () => {
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Setup the restrictions.
+  await sendTestMessage({name: 'setBlockedComponent', component: 'usb'});
+
+  const closer = async (dialog) => {
+    const disabledRealTreeItem = '#directory-tree .tree-item[disabled] ' +
+        '[volume-type-icon="removable"]';
+    // It should be disabled in the navigation list, but the eject button should
+    // be enabled.
+    await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 1);
+    await remoteCall.waitForElementsCount(
+        dialog, ['.root-eject:not([disabled])'], 1);
+
+    // Unmount.
+    await sendTestMessage({name: 'unmountUsb'});
+    await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 0);
+
+    // Mount again - should still be disabled.
+    await sendTestMessage({name: 'mountFakeUsbEmpty'});
+    await remoteCall.waitForElementsCount(dialog, [disabledRealTreeItem], 1);
+
+    // Click the close button to dismiss the dialog.
+    await remoteCall.waitAndClickElement(dialog, [cancelButton]);
+  };
+
+  chrome.test.assertEq(
+      undefined,
+      await openAndWaitForClosingDialog(
+          {type: 'saveFile'}, 'downloads', [], closer));
+};
+
+/**
  * Tests that save dialogs are opened in a requested volume/directory,
  * when it's not blocked by DLP.
  * This test is an addition to the `saveAsDlpRestrictedRedirectsToMyFiles` test
@@ -390,7 +427,7 @@ testcase.saveAsDlpRestrictedRedirectsToMyFiles = async () => {
   await addEntries(['android_files'], BASIC_ANDROID_ENTRY_SET);
 
   // Setup the restrictions.
-  await sendTestMessage({name: 'setBlockedArc'});
+  await sendTestMessage({name: 'setBlockedComponent', component: 'arc'});
 
   const blockedCloser = async (dialog) => {
     // Double check: current directory should be the default root, not Play
