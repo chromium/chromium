@@ -1199,6 +1199,9 @@ ci.builder(
         short_name = "N",
     ),
     execution_timeout = 4 * time.hour,
+
+    # TODO(crbug.com/1405549): verify if py3 works for this builder.
+    omit_python2 = True,
 )
 
 ci.thin_tester(
