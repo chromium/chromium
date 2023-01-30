@@ -909,6 +909,9 @@ class CORE_EXPORT LocalFrame final
   void DidResume();
   void SetContextPaused(bool);
 
+  // Helper for NavigationShouldReplaceCurrentHistoryEntry
+  bool ShouldReplaceForSameUrlNavigation(const FrameLoadRequest&);
+
   HitTestResult HitTestResultForVisualViewportPos(
       const gfx::Point& pos_in_viewport);
 

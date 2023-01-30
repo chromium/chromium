@@ -483,9 +483,52 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
     probe::FrameClearedScheduledNavigation(this);
 }
 
+// Much of this function is redundant with the browser process
+// (NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation), but in
+// the event that this navigation is handled synchronously because it is
+// same-document, we need to apply it immediately. Also, we will synchronously
+// fire the NavigateEvent, which exposes whether the navigation will push or
+// replace to JS.
+bool LocalFrame::ShouldReplaceForSameUrlNavigation(
+    const FrameLoadRequest& request) {
+  const KURL& request_url = request.GetResourceRequest().Url();
+  if (request_url != GetDocument()->Url()) {
+    return false;
+  }
+
+  // Forms should push even to the same URL.
+  if (request.Form()) {
+    return false;
+  }
+
+  // Don't replace if the navigation originated from a cross-origin iframe (so
+  // that cross-origin iframes can't guess the URL of this frame based on
+  // whether a history entry was added).
+  if (request.GetOriginWindow() &&
+      !request.GetOriginWindow()->GetSecurityOrigin()->CanAccess(
+          DomWindow()->GetSecurityOrigin())) {
+    return false;
+  }
+
+  // WebUI URLs and non-current-tab navigations go through the OpenURL path
+  // rather than the BeginNavigation path, which converts same-URL navigations
+  // to reloads if not already marked replacing. Defer to the browser process
+  // in those cases.
+  if (SchemeRegistry::IsWebUIScheme(request_url.Protocol()) ||
+      request.GetNavigationPolicy() != kNavigationPolicyCurrentTab) {
+    return false;
+  }
+
+  return true;
+}
+
 bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
     const FrameLoadRequest& request,
     WebFrameLoadType frame_load_type) {
+  if (frame_load_type != WebFrameLoadType::kStandard) {
+    return false;
+  }
+
   // Non-user navigation before the page has finished firing onload should not
   // create a new back/forward item. The spec only explicitly mentions this in
   // the context of navigating an iframe.
@@ -494,8 +537,13 @@ bool LocalFrame::NavigationShouldReplaceCurrentHistoryEntry(
       !HasTransientUserActivation(this) &&
       request.ClientRedirectReason() != ClientNavigationReason::kAnchorClick)
     return true;
-  return frame_load_type == WebFrameLoadType::kStandard &&
-         ShouldMaintainTrivialSessionHistory();
+
+  // In most cases, we will treat a navigation to the current URL as replacing.
+  if (ShouldReplaceForSameUrlNavigation(request)) {
+    return true;
+  }
+
+  return ShouldMaintainTrivialSessionHistory();
 
   // TODO(http://crbug.com/1197384): We may want to assert that
   // WebFrameLoadType is never kStandard in prerendered pages/portals before

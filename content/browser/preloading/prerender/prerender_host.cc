@@ -718,7 +718,12 @@ PrerenderHost::AreCommonNavigationParamsCompatibleWithNavigation(
     return ActivationNavigationParamsMatch::kInitiatorOrigin;
   }
 
-  if (potential_activation.transition != common_params_->transition) {
+  // The transition must match with the exception of the client redirect flag.
+  // The renderer may add the client redirect flag when it has enough
+  // information to be certain that this navigation would replace the current
+  // history entry (e.g., a renderer-initiated navigation to the current URL).
+  if ((potential_activation.transition &
+       ~ui::PAGE_TRANSITION_CLIENT_REDIRECT) != common_params_->transition) {
     return ActivationNavigationParamsMatch::kTransition;
   }
 
