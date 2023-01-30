@@ -2487,9 +2487,11 @@ GLES2DecoderPassthroughImpl::LazySharedContextState::LazySharedContextState(
     : impl_(impl) {}
 
 GLES2DecoderPassthroughImpl::LazySharedContextState::~LazySharedContextState() {
-  ui::ScopedMakeCurrent smc(shared_context_state_->context(),
-                            shared_context_state_->surface());
-  shared_context_state_.reset();
+  if (shared_context_state_) {
+    ui::ScopedMakeCurrent smc(shared_context_state_->context(),
+                              shared_context_state_->surface());
+    shared_context_state_.reset();
+  }
 }
 
 bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
