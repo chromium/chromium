@@ -32,8 +32,6 @@ const char* const kExpectedFontFamilyNames[] = {"AndroidClock",
                                                 "Noto Sans Bengali",
                                                 "Noto Sans Bengali UI",
                                                 "Noto Sans Devanagari",
-                                                "Noto Sans Devanagari",
-                                                "Noto Sans Devanagari UI",
                                                 "Noto Sans Devanagari UI",
                                                 "Noto Sans Kannada",
                                                 "Noto Sans Kannada",
@@ -44,12 +42,8 @@ const char* const kExpectedFontFamilyNames[] = {"AndroidClock",
                                                 "Noto Sans Lao UI",
                                                 "Noto Sans Lao UI",
                                                 "Noto Sans Malayalam",
-                                                "Noto Sans Malayalam",
-                                                "Noto Sans Malayalam UI",
                                                 "Noto Sans Malayalam UI",
                                                 "Noto Sans Tamil",
-                                                "Noto Sans Tamil",
-                                                "Noto Sans Tamil UI",
                                                 "Noto Sans Tamil UI",
                                                 "Noto Sans Telugu",
                                                 "Noto Sans Telugu",
@@ -136,14 +130,8 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 
 // TODO(crbug.com/949181): Make this work on Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1270151): Fix this on Android 11 and 12.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ContentLocalFontsMatching DISABLED_ContentLocalFontsMatching
-#else
-#define MAYBE_ContentLocalFontsMatching ContentLocalFontsMatching
-#endif
 IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
-                       MAYBE_ContentLocalFontsMatching) {
+                       ContentLocalFontsMatching) {
   LoadAndWait("/font_src_local_matching.html");
   Attach();
 
