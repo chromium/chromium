@@ -6,16 +6,19 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/system_shadow.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
+#include "ui/views/highlight_border.h"
 
 namespace ash {
 
@@ -31,7 +34,8 @@ constexpr int kYOffsetFromLabelWidget = 8;
 constexpr int kMinimumWidth = 184;
 constexpr gfx::Size kIdealSize{kMinimumWidth, 96};
 
-constexpr gfx::RoundedCornersF kBorderRadius{12.f};
+constexpr int kCornerRadius = 12;
+constexpr gfx::RoundedCornersF kRoundedCorners{kCornerRadius};
 
 // Gets the ideal size of the widget hosting the `RecordingTypeMenuView` either
 // from the preferred size of `contents_view` (if given), or the default size.
@@ -48,11 +52,14 @@ gfx::Size GetIdealSize(views::View* contents_view) {
 RecordingTypeMenuView::RecordingTypeMenuView(
     base::RepeatingClosure on_option_selected_callback)
     : CaptureModeMenuGroup(this, kMenuPadding),
-      on_option_selected_callback_(std::move(on_option_selected_callback)) {
+      on_option_selected_callback_(std::move(on_option_selected_callback)),
+      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
+          SystemShadow::Type::kElevation12)) {
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(kBorderRadius);
+  layer()->SetRoundedCornerRadius(kRoundedCorners);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
@@ -63,6 +70,14 @@ RecordingTypeMenuView::RecordingTypeMenuView(
   AddOption(&kCaptureGifIcon,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD),
             ToInt(RecordingType::kGif));
+
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
+
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
 
 RecordingTypeMenuView::~RecordingTypeMenuView() = default;

@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/system_shadow.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "capture_mode_menu_toggle_button.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
@@ -35,7 +37,8 @@ namespace {
 
 constexpr gfx::Size kSettingsSize{256, 248};
 
-constexpr gfx::RoundedCornersF kBorderRadius{10.f};
+constexpr int kCornerRadius = 10;
+constexpr gfx::RoundedCornersF kRoundedCorners{kCornerRadius};
 
 // Returns the bounds of the settings widget in screen coordinates relative to
 // the bounds of the |capture_mode_bar_view| based on its given preferred
@@ -61,7 +64,10 @@ CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
 
 CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
                                                  bool is_in_projector_mode)
-    : capture_mode_session_(session) {
+    : capture_mode_session_(session),
+      shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this,
+          SystemShadow::Type::kElevation12)) {
   auto* controller = CaptureModeController::Get();
   if (!controller->is_recording_in_progress()) {
     const bool audio_capture_managed_by_policy =
@@ -146,12 +152,20 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
   SetPaintToLayer();
   SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
   layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(kBorderRadius);
+  layer()->SetRoundedCornerRadius(kRoundedCorners);
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+
+  if (features::IsDarkLightModeEnabled()) {
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kCornerRadius, views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false));
+  }
+
+  shadow_->SetRoundedCornerRadius(kCornerRadius);
 }
 
 CaptureModeSettingsView::~CaptureModeSettingsView() {

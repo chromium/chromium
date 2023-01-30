@@ -15,6 +15,8 @@ class Rect;
 
 namespace ash {
 
+class SystemShadow;
+
 // Defines a view that will be the contents view of the recording type menu
 // widget, from which users can pick the desired recording format.
 class ASH_EXPORT RecordingTypeMenuView : public CaptureModeMenuGroup,
@@ -47,6 +49,8 @@ class ASH_EXPORT RecordingTypeMenuView : public CaptureModeMenuGroup,
   // the recording type has been set on the `CaptureModeController`. This is
   // bound to a function in the `CaptureModeSession` that closes the menu.
   base::RepeatingClosure on_option_selected_callback_;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash
