@@ -87,62 +87,59 @@ std::string CartDiscountLinkFetcher::GeneratePostData(
   const cart_db::ChromeCartDiscountProto& cart_discount_proto =
       cart_content_proto.discount_info();
 
-  base::Value discount_dict(base::Value::Type::DICT);
+  base::Value::Dict discount_dict;
   // MerchantIdentifier
-  base::Value merchant_identifier_dict(base::Value::Type::DICT);
-  merchant_identifier_dict.SetStringKey("cartUrl",
-                                        cart_content_proto.merchant_cart_url());
-  merchant_identifier_dict.SetStringKey("merchantId",
-                                        cart_discount_proto.merchant_id());
-  discount_dict.SetKey("merchantIdentifier",
-                       std::move(merchant_identifier_dict));
+  base::Value::Dict merchant_identifier_dict;
+  merchant_identifier_dict.Set("cartUrl",
+                               cart_content_proto.merchant_cart_url());
+  merchant_identifier_dict.Set("merchantId", cart_discount_proto.merchant_id());
+  discount_dict.Set("merchantIdentifier", std::move(merchant_identifier_dict));
 
   // RuleDiscount
   if (!cart_discount_proto.rule_discount_info_size()) {
     NOTREACHED() << "discount_info should not be empty";
   }
-  base::Value rule_discounts_list(base::Value::Type::LIST);
+  base::Value::List rule_discounts_list;
   for (int i = 0; i < cart_discount_proto.rule_discount_info_size(); i++) {
     const cart_db::RuleDiscountInfoProto& rule_discount_info_proto =
         cart_discount_proto.rule_discount_info(i);
 
-    base::Value rule_discount(base::Value::Type::DICT);
+    base::Value::Dict rule_discount;
     // ruleId
-    rule_discount.SetStringKey("ruleId", rule_discount_info_proto.rule_id());
+    rule_discount.Set("ruleId", rule_discount_info_proto.rule_id());
     // merchanRuletId
-    rule_discount.SetStringKey("merchantRuleId",
-                               rule_discount_info_proto.merchant_rule_id());
+    rule_discount.Set("merchantRuleId",
+                      rule_discount_info_proto.merchant_rule_id());
     // rawMerchantOfferId
     if (!rule_discount_info_proto.raw_merchant_offer_id().empty()) {
-      rule_discount.SetStringKey(
-          "rawMerchantOfferId",
-          rule_discount_info_proto.raw_merchant_offer_id());
+      rule_discount.Set("rawMerchantOfferId",
+                        rule_discount_info_proto.raw_merchant_offer_id());
     }
     // discount
-    base::Value discount(base::Value::Type::DICT);
+    base::Value::Dict discount;
     if (rule_discount_info_proto.has_amount_off()) {
-      base::Value money(base::Value::Type::DICT);
+      base::Value::Dict money;
 
       const cart_db::MoneyProto& money_proto =
           rule_discount_info_proto.amount_off();
-      money.SetStringKey("currencyCode", money_proto.currency_code());
-      money.SetStringKey("units", money_proto.units());
-      money.SetIntKey("nanos", money_proto.nanos());
+      money.Set("currencyCode", money_proto.currency_code());
+      money.Set("units", money_proto.units());
+      money.Set("nanos", money_proto.nanos());
 
-      discount.SetKey("amountOff", std::move(money));
+      discount.Set("amountOff", std::move(money));
     } else {
-      discount.SetIntKey("percentOff", rule_discount_info_proto.percent_off());
+      discount.Set("percentOff", rule_discount_info_proto.percent_off());
     }
-    rule_discount.SetKey("discount", std::move(discount));
+    rule_discount.Set("discount", std::move(discount));
 
     rule_discounts_list.Append(std::move(rule_discount));
   }
-  discount_dict.SetKey("ruleDiscounts", std::move(rule_discounts_list));
+  discount_dict.Set("ruleDiscounts", std::move(rule_discounts_list));
 
-  base::Value request_dict(base::Value::Type::DICT);
-  request_dict.SetKey("discount", std::move(discount_dict));
-  request_dict.SetStringKey("baseUrl", cart_content_proto.merchant_cart_url());
-  request_dict.SetStringKey("merchantId", cart_discount_proto.merchant_id());
+  base::Value::Dict request_dict;
+  request_dict.Set("discount", std::move(discount_dict));
+  request_dict.Set("baseUrl", cart_content_proto.merchant_cart_url());
+  request_dict.Set("merchantId", cart_discount_proto.merchant_id());
 
   std::string request_json;
   base::JSONWriter::Write(request_dict, &request_json);
