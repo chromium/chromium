@@ -516,6 +516,27 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         self.assertEqual(mock_stop_browser.call_count,
                          gpu_integration_test._START_BROWSER_RETRIES)
 
+  def testConsolidateBrowserArgs(self) -> None:
+    original_args = [
+        '--foo', 'value', '--enable-features', 'A', '--disable-features', 'B',
+        '--bar', '--enable-features=C,D=E'
+    ]
+    consolidated_args = gpu_integration_test._ConsolidateBrowserArgs(
+        original_args)
+    # We use sets for the consolidation check since the order they are appended
+    # is random due to the use of a dict.
+    expected_non_consolidated = ['--foo', 'value', '--bar']
+    expected_consolidated = {
+        '--enable-features=A,C,D=E', '--disable-features=B'
+    }
+    self.assertEqual(
+        len(consolidated_args),
+        len(expected_non_consolidated) + len(expected_consolidated))
+    self.assertEqual(consolidated_args[:len(expected_non_consolidated)],
+                     expected_non_consolidated)
+    self.assertEqual(set(consolidated_args[len(expected_non_consolidated):]),
+                     expected_consolidated)
+
   def _RunIntegrationTest(self, test_args: _IntegrationTestArgs) -> None:
     """Runs an integration and asserts fail/success/skip expectations.
 

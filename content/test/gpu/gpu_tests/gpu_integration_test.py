@@ -37,6 +37,11 @@ _SUPPORTED_WIN_INTEL_GPUS_WITH_NV12_OVERLAYS = [0x5912, 0x3e92, 0x9bc5]
 # Hardware overlays are disabled in 26.20.100.8141 per crbug.com/1079393#c105
 _UNSUPPORTED_WIN_INTEL_GPU_DRIVERS_WITH_NV12_OVERLAYS = ['5912-26.20.100.8141']
 
+_ARGS_TO_CONSOLIDATE = frozenset([
+    '--enable-features',
+    '--disable-features',
+])
+
 TestTuple = Tuple[str, ct.GeneratedTest]
 TestTupleGenerator = Generator[TestTuple, None, None]
 
@@ -251,6 +256,9 @@ class GpuIntegrationTest(
     # If requested, disable uploading of failure logs to cloud storage.
     if cls._disable_log_uploads:
       browser_options.logs_cloud_bucket = None
+
+    # Consolildate any arguments that require it.
+    browser_args = _ConsolidateBrowserArgs(browser_args)
 
     # Append the new arguments.
     browser_options.AppendExtraBrowserArgs(browser_args)
@@ -942,6 +950,47 @@ class GpuIntegrationTest(
         'unknown-gpu-0x8c',
         'unknown-gpu-',
     ]
+
+
+def _ConsolidateBrowserArgs(browser_args: List[str]):
+  """Consolidates browser args that require it to work properly.
+
+  As a concrete example, the --enable-features flag can only be passed once and
+  uses a comma-separated list of feature names. If --enable-features gets passed
+  multiple times, those multiple instances will be consolidated into a single
+  list containing elements from all instances.
+
+  Args:
+    browser_args: A list of strings containing browser arguments
+
+  Returns:
+    A copy of browser_args with any necessary browser args consolidated.
+  """
+  consolidated_args = []
+  found_args = collections.defaultdict(list)
+  # Use indices instead of a regular iterator since we potentially need to skip
+  # over elements.
+  index = 0
+  while index < len(browser_args):
+    arg = browser_args[index]
+    if arg in _ARGS_TO_CONSOLIDATE:
+      # Syntax is `--enable-features A,B`
+      value = browser_args[index + 1]
+      found_args[arg].append(value)
+      index += 2
+    elif '=' in arg and arg.split('=', 1)[0] in _ARGS_TO_CONSOLIDATE:
+      # Syntax is `--enable-features=A,B`
+      flag, value = arg.split('=', 1)
+      found_args[flag].append(value)
+      index += 1
+    else:
+      # No consolidation needed.
+      consolidated_args.append(arg)
+      index += 1
+
+  for k, v in found_args.items():
+    consolidated_args.append('%s=%s' % (k, ','.join(v)))
+  return consolidated_args
 
 
 def LoadAllTestsInModule(module: types.ModuleType) -> unittest.TestSuite:
