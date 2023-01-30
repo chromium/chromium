@@ -1752,9 +1752,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kWebSQLAccess,
     storage::kWebSQLAccess,
     base::Value::Type::BOOLEAN },
-  { key::kWebSQLNonSecureContextEnabled,
-    storage::kWebSQLNonSecureContextEnabled,
-    base::Value::Type::BOOLEAN },
 #if BUILDFLAG(IS_MAC)
   { key::kWarnBeforeQuittingEnabled,
     prefs::kConfirmToQuitEnabled,

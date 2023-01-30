@@ -228,7 +228,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebCodecsAudioEncoder,
           WebFeature::kWebCodecsVideoFrameFromImage,
           WebFeature::kWebCodecsVideoFrameFromBuffer,
-          WebFeature::kOpenWebDatabaseInsecureContext,
           WebFeature::kPrivateNetworkAccessIgnoredPreflightError,
           WebFeature::kWebBluetoothGetAvailability,
           WebFeature::kCookieHasNotBeenRefreshedIn201To300Days,

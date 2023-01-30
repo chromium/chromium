@@ -1,9 +1,11 @@
 caption: Force WebSQL in non-secure contexts to be enabled.
 default: false
+deprecated: true
 desc: |-
   WebSQL in non-secure contexts will be removed starting M110. This policy re-enables the API.
             If this policy is set to true, WebSQL in non-secure contexts will be available.
             If this policy is set to false or unset, WebSQL in non-secure contexts will remain available until M109, then unavailable starting M110.
+  This was removed in M112.
 example_value: true
 features:
   dynamic_refresh: false

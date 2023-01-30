@@ -1497,11 +1497,6 @@ BASE_FEATURE(kThreadedPreloadScanner,
              "ThreadedPreloadScanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow access to WebSQL in non-secure contexts.
-BASE_FEATURE(kWebSQLNonSecureContextAccess,
-             "WebSQLNonSecureContextAccess",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFileSystemUrlNavigation,
              "FileSystemUrlNavigation",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1032,31 +1032,6 @@ TEST_F(ChromeContentBrowserClientSwitchTest, WebSQLAccessEnabled) {
   EXPECT_TRUE(result.HasSwitch(blink::switches::kWebSQLAccess));
 }
 
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       WebSQLNonSecureContextEnabledDefault) {
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(
-      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       WebSQLNonSecureContextEnabledDisabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kWebSQLNonSecureContextEnabled,
-                                    false);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(
-      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       WebSQLNonSecureContextEnabledEnabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kWebSQLNonSecureContextEnabled,
-                                    true);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_TRUE(
-      result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ChromeContentBrowserClientSwitchTest,
        ShouldSetForceAppModeSwitchInRendererProcessIfItIsSetInCurrentProcess) {

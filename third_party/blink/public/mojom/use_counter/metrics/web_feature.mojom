@@ -3385,7 +3385,7 @@ enum WebFeature {
   kOBSOLETE_WebCodecsVideoFrameDefaultTimestamp = 4070,
   kWebCodecsVideoFrameFromImage = 4071,
   kWebCodecsVideoFrameFromBuffer = 4072,
-  kOpenWebDatabaseInsecureContext = 4073,
+  kOBSOLETE_OpenWebDatabaseInsecureContext = 4073,
   kScriptWebBundle = 4074,
   // The items above roughly this point are available in the M97 branch.
 

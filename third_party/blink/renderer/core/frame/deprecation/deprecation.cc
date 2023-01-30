@@ -157,9 +157,6 @@ const DeprecationInfo GetDeprecationInfo(WebFeature feature) {
       return DeprecationInfo::WithTranslation(
           feature,
           DeprecationIssueType::kObsoleteCreateImageBitmapImageOrientationNone);
-    case WebFeature::kOpenWebDatabaseInsecureContext:
-      return DeprecationInfo::WithTranslation(
-          feature, DeprecationIssueType::kOpenWebDatabaseInsecureContext);
     case WebFeature::kPaymentInstruments:
       return DeprecationInfo::WithTranslation(
           feature, DeprecationIssueType::kPaymentInstruments);

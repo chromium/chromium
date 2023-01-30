@@ -2698,14 +2698,9 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kDisablePrintPreview);
 
       // This passes the preference set by an enterprise policy on to a blink
-      // switch so that we know whether to force WebSQL/WebSQL in non-secure
-      // context to be enabled.
+      // switch so that we know whether to force WebSQL to be enabled.
       if (prefs->GetBoolean(storage::kWebSQLAccess)) {
         command_line->AppendSwitch(blink::switches::kWebSQLAccess);
-      }
-      if (prefs->GetBoolean(storage::kWebSQLNonSecureContextEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kWebSQLNonSecureContextEnabled);
       }
 
       // Enable legacy quota API if enabled by enterprise policy.

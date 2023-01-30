@@ -11,17 +11,12 @@ namespace storage {
 // Boolean policy to force WebSQL to be enabled.
 const char kWebSQLAccess[] = "policy.web_sql_access";
 
-// Boolean policy to force WebSQL in non-secure contexts to be enabled.
-const char kWebSQLNonSecureContextEnabled[] =
-    "policy.web_sql_non_secure_context_enabled";
-
 // Boolean policy to force PrefixedStorageInfo to be enabled.
 const char kPrefixedStorageInfoEnabled[] =
     "policy.prefixed_storage_info_enabled";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebSQLAccess, false);
-  registry->RegisterBooleanPref(kWebSQLNonSecureContextEnabled, false);
   registry->RegisterBooleanPref(kPrefixedStorageInfoEnabled, false);
 }
 

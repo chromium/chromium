@@ -81,18 +81,9 @@ Database* DOMWindowWebDatabase::openDatabase(
     }
 
     if (!window.GetExecutionContext()->IsSecureContext()) {
-      if (base::FeatureList::IsEnabled(
-              blink::features::kWebSQLNonSecureContextAccess) ||
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              blink::switches::kWebSQLNonSecureContextEnabled)) {
-        Deprecation::CountDeprecation(
-            &window, WebFeature::kOpenWebDatabaseInsecureContext);
-      } else {
-        UseCounter::Count(window, WebFeature::kOpenWebDatabaseInsecureContext);
-        exception_state.ThrowSecurityError(
-            "Access to the WebDatabase API is denied in non-secure contexts.");
-        return nullptr;
-      }
+      exception_state.ThrowSecurityError(
+          "Access to the WebDatabase API is denied in non-secure contexts.");
+      return nullptr;
     }
 
     if (window.IsCrossSiteSubframeIncludingScheme()) {
