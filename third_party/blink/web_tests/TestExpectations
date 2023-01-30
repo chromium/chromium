@@ -6927,10 +6927,6 @@ http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass 
 http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
 http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
 
-# TODO(skbug.com/13752) 2023-01-27 Temporary until a Skia change that imperceptibly changes these rolls.
-skbug.com/13752 svg/transforms/text-with-pattern-inside-transformed-html.xhtml [ Failure Pass ]
-skbug.com/13752 svg/transforms/text-with-pattern-with-svg-transform.svg [ Failure Pass ]
-
 # Sheriff 2023-01-20
 crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
