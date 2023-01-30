@@ -229,13 +229,9 @@ void AXTreeFormatterAuraLinux::AddHypertextProperties(
       gchar* link_start = g_utf8_offset_to_pointer(character_text, utf8_offset);
       int offset = link_start - character_text;
 
-      gchar* character_substring =
-          g_utf8_substring(character_text, utf8_offset, utf8_offset + 1);
-      DCHECK(std::string(character_substring) == "\uFFFC");
-
-      base::ReplaceFirstSubstringAfterOffset(&text, offset, character_substring,
+      std::string replacement_char = "\uFFFC";
+      base::ReplaceFirstSubstringAfterOffset(&text, offset, replacement_char,
                                              link_str);
-      g_free(character_substring);
     }
   }
 
