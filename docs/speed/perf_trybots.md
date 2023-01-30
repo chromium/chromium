@@ -53,7 +53,7 @@ Base Git Hash | The Git Hash of the control arm. Default is `HEAD`.
 Exp Git Hash | The Git Hash of the experiment arm. Default is `HEAD`.
 Base Patch | (optional) The patch you want the control arm to run the benchmark on. Patches in dependent repos (e.g. v8, skia) are supported. Pinpoint will also post updates on the Gerrit comment list.
 Exp Patch | (optional) Same as Base Patch for the experiment arm.
-Extra arguments on base commit | (optional) Extra arguments for the test. E.g. `--extra-chrome-categories="foo,bar"`<br><br>To see all arguments, run `tools/perf/run_benchmark run --help`
+Extra arguments on base commit | (optional) Extra arguments for the test. E.g. `--extra-chrome-categories=foo,bar`<br>or`--enable-features=foo,bar`(shortening the args by omitting "--extra-browser-args" prefix)<br><br>To see all arguments, run `tools/perf/run_benchmark run --help`
 Extra arguments on experiment commit | (optional) Same as base commit for the experiment arm. Note that some arguments will apply to both arms.
 Monorail Project | The repo the Git hashes are from. Default is `chromium`.
 Bug ID | (optional) A bug ID. Pinpoint will post updates on the bug.
