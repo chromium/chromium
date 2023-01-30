@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_SYSTEM_INFO_CARD_PROVIDER_H_
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_SYSTEM_INFO_SYSTEM_INFO_CARD_PROVIDER_H_
 
+#include <bitset>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -25,10 +27,11 @@ information such as Storage usage, CPU consumption, battery health, current
 version, network information and memory usage. The answer cards link to the
 relevant pages within the Settings and Diagnostics apps.*/
 
-// TODO(b/263994165): Complete the System Info Card Provide to return results.
+// TODO(b/263994165): Complete the System Info Card Provider to return results.
 // This provider is a work in progress.
 class SystemInfoCardProvider : public SearchProvider,
-                               public chromeos::PowerManagerClient::Observer {
+                               public chromeos::PowerManagerClient::Observer,
+                               public ash::settings::SizeCalculator::Observer {
  public:
   explicit SystemInfoCardProvider(Profile* profile);
   ~SystemInfoCardProvider() override;
@@ -40,6 +43,11 @@ class SystemInfoCardProvider : public SearchProvider,
   // SearchProvider:
   void Start(const std::u16string& query) override;
   void StopQuery() override;
+
+  // SizeCalculator::Observer:
+  void OnSizeCalculated(
+      const ash::settings::SizeCalculator::CalculationType& calculation_type,
+      int64_t total_bytes) override;
 
  private:
   void BindCrosHealthdProbeServiceIfNecessary();
@@ -66,6 +74,29 @@ class SystemInfoCardProvider : public SearchProvider,
                         power_supply_properties) override;
 
   void UpdateChromeOsVersion();
+
+  void UpdateStorageInfo();
+  void StartObservingCalculators();
+  void OnStorageInfoUpdated();
+  void StopObservingCalculators();
+
+  // Instances calculating the size of each storage items.
+  ::ash::settings::TotalDiskSpaceCalculator total_disk_space_calculator_;
+  ::ash::settings::FreeDiskSpaceCalculator free_disk_space_calculator_;
+  ::ash::settings::MyFilesSizeCalculator my_files_size_calculator_;
+  ::ash::settings::BrowsingDataSizeCalculator browsing_data_size_calculator_;
+  ::ash::settings::AppsSizeCalculator apps_size_calculator_;
+  ::ash::settings::CrostiniSizeCalculator crostini_size_calculator_;
+  ::ash::settings::OtherUsersSizeCalculator other_users_size_calculator_;
+
+  // Keeps track of the size of each storage item. Adding 1 since we are also
+  // saving the system storage here
+  int64_t storage_items_total_bytes_
+      [::ash::settings::SizeCalculator::kCalculationTypeCount + 1] = {0};
+
+  // Controls if the size of each storage item has been calculated.
+  std::bitset<::ash::settings::SizeCalculator::kCalculationTypeCount>
+      calculation_state_;
 
   Profile* const profile_;
   mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService>

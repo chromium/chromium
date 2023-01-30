@@ -10,9 +10,11 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/cpu_usage_data.h"
 #include "chrome/browser/ash/app_list/search/system_info/system_info_util.h"
+#include "chrome/browser/ui/webui/settings/ash/device_storage_util.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
@@ -22,15 +24,17 @@
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_string.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/text/bytes_formatting.h"
 
 namespace app_list {
 namespace {
 
-using ProbeCategories = ash::cros_healthd::mojom::ProbeCategoryEnum;
-using ash::cros_healthd::mojom::BatteryInfo;
-using ash::cros_healthd::mojom::CpuInfo;
-using ash::cros_healthd::mojom::PhysicalCpuInfoPtr;
-using ash::cros_healthd::mojom::TelemetryInfoPtr;
+using SizeCalculator = ::ash::settings::SizeCalculator;
+using ProbeCategories = ::ash::cros_healthd::mojom::ProbeCategoryEnum;
+using ::ash::cros_healthd::mojom::BatteryInfo;
+using ::ash::cros_healthd::mojom::CpuInfo;
+using ::ash::cros_healthd::mojom::PhysicalCpuInfoPtr;
+using ::ash::cros_healthd::mojom::TelemetryInfoPtr;
 using ::ash::string_matching::FuzzyTokenizedStringMatch;
 using ::ash::string_matching::TokenizedString;
 
@@ -39,17 +43,25 @@ constexpr double kRelevanceThreshold = 0.64;
 }  // namespace
 
 SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
-    : profile_(profile) {
+    : total_disk_space_calculator_(profile),
+      free_disk_space_calculator_(profile),
+      my_files_size_calculator_(profile),
+      browsing_data_size_calculator_(profile),
+      apps_size_calculator_(profile),
+      crostini_size_calculator_(profile),
+      profile_(profile) {
   DCHECK(profile_);
   ash::cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
       probe_service_.BindNewPipeAndPassReceiver());
   probe_service_.set_disconnect_handler(
       base::BindOnce(&SystemInfoCardProvider::OnProbeServiceDisconnect,
                      weak_factory_.GetWeakPtr()));
+  StartObservingCalculators();
 }
 
 SystemInfoCardProvider::~SystemInfoCardProvider() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  StopObservingCalculators();
 }
 
 void SystemInfoCardProvider::Start(const std::u16string& query) {
@@ -57,7 +69,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
   // stored in translation unit.
   std::vector<std::u16string> memory_keywords = {
       u"memory", u"memory usage", u"ram", u"ram usage", u"activity monitor"};
-  for (std::u16string keyword : memory_keywords) {
+  for (const std::u16string& keyword : memory_keywords) {
     if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
       UpdateMemoryUsage();
       break;
@@ -66,7 +78,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
 
   std::vector<std::u16string> cpu_keywords = {
       u"cpu", u"cpu usage", u"device slow", u"why is my device slow"};
-  for (std::u16string keyword : cpu_keywords) {
+  for (const std::u16string& keyword : cpu_keywords) {
     if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
       UpdateCpuUsage();
       break;
@@ -75,7 +87,7 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
 
   std::vector<std::u16string> battery_keywords = {u"battery", u"battery life",
                                                   u"battery health"};
-  for (std::u16string keyword : battery_keywords) {
+  for (const std::u16string& keyword : battery_keywords) {
     if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
       if (!chromeos::PowerManagerClient::Get()->HasObserver(this)) {
         chromeos::PowerManagerClient::Get()->AddObserver(this);
@@ -87,9 +99,22 @@ void SystemInfoCardProvider::Start(const std::u16string& query) {
 
   std::vector<std::u16string> version_keywords = {u"version", u"my device",
                                                   u"about"};
-  for (std::u16string keyword : version_keywords) {
+  for (const std::u16string& keyword : version_keywords) {
     if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
       UpdateChromeOsVersion();
+      break;
+    }
+  }
+
+  std::vector<std::u16string> storage_keywords = {u"storage", u"storage use",
+                                                  u"storage management"};
+  for (const std::u16string& keyword : storage_keywords) {
+    if (CalculateRelevance(query, keyword) > kRelevanceThreshold) {
+      // Do not calculate the storage size again if already calculated recently.
+      // TODO(b/263994165): Add in a refresh period here.
+      if (!calculation_state_.all()) {
+        UpdateStorageInfo();
+      }
       break;
     }
   }
@@ -264,9 +289,107 @@ void SystemInfoCardProvider::UpdateChromeOsVersion() {
 
   // TODO(b/263994165): Replace this with the correct translation string.
   chromeOS_version_ =
-      std::string("Version " + version + " (" + official + ") " +
-                  chrome::GetChannelName(chrome::WithExtendedStable(true)) +
-                  " " + processorVariation);
+      base::StrCat({"Version ", version, " (", official, ") ",
+                    chrome::GetChannelName(chrome::WithExtendedStable(true)),
+                    " ", processorVariation});
+}
+
+void SystemInfoCardProvider::UpdateStorageInfo() {
+  total_disk_space_calculator_.StartCalculation();
+  free_disk_space_calculator_.StartCalculation();
+  my_files_size_calculator_.StartCalculation();
+  browsing_data_size_calculator_.StartCalculation();
+  apps_size_calculator_.StartCalculation();
+  crostini_size_calculator_.StartCalculation();
+  other_users_size_calculator_.StartCalculation();
+}
+
+void SystemInfoCardProvider::StartObservingCalculators() {
+  total_disk_space_calculator_.AddObserver(this);
+  free_disk_space_calculator_.AddObserver(this);
+  my_files_size_calculator_.AddObserver(this);
+  browsing_data_size_calculator_.AddObserver(this);
+  apps_size_calculator_.AddObserver(this);
+  crostini_size_calculator_.AddObserver(this);
+  other_users_size_calculator_.AddObserver(this);
+}
+
+void SystemInfoCardProvider::StopObservingCalculators() {
+  total_disk_space_calculator_.RemoveObserver(this);
+  free_disk_space_calculator_.RemoveObserver(this);
+  my_files_size_calculator_.RemoveObserver(this);
+  browsing_data_size_calculator_.RemoveObserver(this);
+  apps_size_calculator_.RemoveObserver(this);
+  crostini_size_calculator_.RemoveObserver(this);
+  other_users_size_calculator_.RemoveObserver(this);
+}
+
+void SystemInfoCardProvider::OnSizeCalculated(
+    const SizeCalculator::CalculationType& calculation_type,
+    int64_t total_bytes) {
+  // The total disk space is rounded to the next power of 2.
+  if (calculation_type == SizeCalculator::CalculationType::kTotal) {
+    total_bytes = ash::settings::RoundByteSize(total_bytes);
+  }
+
+  // Store calculated item's size.
+  const int item_index = static_cast<int>(calculation_type);
+  storage_items_total_bytes_[item_index] = total_bytes;
+
+  // Mark item as calculated.
+  calculation_state_.set(item_index);
+  OnStorageInfoUpdated();
+}
+
+void SystemInfoCardProvider::OnStorageInfoUpdated() {
+  // If some size calculations are pending, return early and wait for all
+  // calculations to complete.
+  if (!calculation_state_.all()) {
+    return;
+  }
+
+  const int total_space_index =
+      static_cast<int>(SizeCalculator::CalculationType::kTotal);
+  const int free_disk_space_index =
+      static_cast<int>(SizeCalculator::CalculationType::kAvailable);
+
+  int64_t total_bytes = storage_items_total_bytes_[total_space_index];
+  int64_t available_bytes = storage_items_total_bytes_[free_disk_space_index];
+  int64_t in_use_bytes = total_bytes - available_bytes;
+
+  if (total_bytes <= 0 || available_bytes < 0) {
+    // We can't get useful information from the storage page if total_bytes <= 0
+    // or available_bytes is less than 0. This is not expected to happen.
+    NOTREACHED() << "Unable to retrieve total or available disk space";
+    return;
+  }
+
+  int64_t system_bytes = 0;
+  for (int i = 0; i < SizeCalculator::kCalculationTypeCount; ++i) {
+    const int64_t total_bytes_for_current_item =
+        std::max(storage_items_total_bytes_[i], static_cast<int64_t>(0));
+    // The total amount of disk space counts positively towards system's size.
+    if (i == static_cast<int>(SizeCalculator::CalculationType::kTotal)) {
+      if (total_bytes_for_current_item <= 0) {
+        return;
+      }
+      system_bytes += total_bytes_for_current_item;
+      continue;
+    }
+    // All other items are subtracted from the total amount of disk space.
+    if (i == static_cast<int>(SizeCalculator::CalculationType::kAvailable) &&
+        total_bytes_for_current_item < 0) {
+      return;
+    }
+    system_bytes -= total_bytes_for_current_item;
+  }
+  const int system_space_index =
+      static_cast<int>(SizeCalculator::CalculationType::kSystem);
+  storage_items_total_bytes_[system_space_index] = system_bytes;
+  std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
+  std::u16string total_size = ui::FormatBytes(total_bytes);
+  // TODO(b/263994165): Add this string into an answer result.
+  std::u16string title = base::StrCat({in_use_size, u" in use / ", total_size});
 }
 
 }  // namespace app_list
