@@ -289,7 +289,14 @@ tr {
 
 td, th {
     display: table-cell;
-    vertical-align: inherit
+    vertical-align: inherit;
+}
+
+/* When the td/th are inside a table (the normal case), the padding is taken
+   care of by HTMLTableCellElement::AdditionalPresentationAttributeStyle(). */
+td:not(table td),
+th:not(table th) {
+  padding: 1px;
 }
 
 th {

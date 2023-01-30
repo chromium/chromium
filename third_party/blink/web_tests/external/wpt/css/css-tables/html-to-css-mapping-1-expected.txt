@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS HTML -> CSS Mapping is applied correctly on proper table markup (border-spacing, padding)
-FAIL HTML -> CSS Mapping is applied correctly on improper table markup (no table => no border-spacing, but padding) assert_equals: expected 10 but got 0
-PASS HTML -> CSS Mapping is applied correctly on improper table markup (no td => border-spacing, but no padding)
-PASS HTML -> CSS Mapping is applied correctly on empty table markup (no content => no border-spacing, no padding)
-Harness: the test ran to completion.
-
