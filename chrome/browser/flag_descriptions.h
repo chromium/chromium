@@ -370,9 +370,6 @@ extern const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[];
 extern const char kCanvasOopRasterizationName[];
 extern const char kCanvasOopRasterizationDescription[];
 
-extern const char kCheckOfflineCapabilityName[];
-extern const char kCheckOfflineCapabilityDescription[];
-
 extern const char kChromeLabsName[];
 extern const char kChromeLabsDescription[];
 

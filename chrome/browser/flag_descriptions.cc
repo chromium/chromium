@@ -670,11 +670,6 @@ const char kServiceWorkerBypassFetchHandlerForMainResourceDescription[] =
     "and handles subresources. If the main resource could be handled in the "
     "fetch handler, the feature may affect the page load.";
 
-const char kCheckOfflineCapabilityName[] = "Check offline capability for PWAs";
-const char kCheckOfflineCapabilityDescription[] =
-    "Use advanced offline capability check to decide whether the browser "
-    "displays install prompts for PWAs.";
-
 const char kChromeLabsName[] = "Chrome Labs";
 const char kChromeLabsDescription[] =
     "Access Chrome Labs through the toolbar menu to see featured user-facing "

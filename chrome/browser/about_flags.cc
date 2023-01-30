@@ -2613,18 +2613,6 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kCheckOfflineCapabilityWarnOnly[] = {
-    {"check_mode", "warn_only"}};
-const FeatureEntry::FeatureParam kCheckOfflineCapabilityEnforce[] = {
-    {"check_mode", "enforce"}};
-
-const FeatureEntry::FeatureVariation kCheckOfflineCapabilityVariations[] = {
-    {"Warn-only", kCheckOfflineCapabilityWarnOnly,
-     std::size(kCheckOfflineCapabilityWarnOnly), nullptr},
-    {"Enforce", kCheckOfflineCapabilityEnforce,
-     std::size(kCheckOfflineCapabilityEnforce), nullptr},
-};
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
     {"enable_continue", "false"}};
@@ -7600,12 +7588,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"block-insecure-downloads", flag_descriptions::kBlockInsecureDownloadsName,
      flag_descriptions::kBlockInsecureDownloadsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kBlockInsecureDownloads)},
-
-    {"check-offline-capability", flag_descriptions::kCheckOfflineCapabilityName,
-     flag_descriptions::kCheckOfflineCapabilityDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kCheckOfflineCapability,
-                                    kCheckOfflineCapabilityVariations,
-                                    "CheckOfflineCapability")},
 
     {"deferred-font-shaping", flag_descriptions::kDeferredFontShapingName,
      flag_descriptions::kDeferredFontShapingDescription, kOsAll,
