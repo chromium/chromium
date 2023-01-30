@@ -365,7 +365,6 @@ bool TranslateAgent::ExecuteScriptAndGetBoolResult(const std::string& script,
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
   if (result.IsEmpty() || !result->IsBoolean()) {
-    NOTREACHED();
     return fallback;
   }
 
@@ -385,7 +384,6 @@ std::string TranslateAgent::ExecuteScriptAndGetStringResult(
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
   if (result.IsEmpty() || !result->IsString()) {
-    NOTREACHED();
     return std::string();
   }
 
@@ -411,7 +409,6 @@ double TranslateAgent::ExecuteScriptAndGetDoubleResult(
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
   if (result.IsEmpty() || !result->IsNumber()) {
-    NOTREACHED();
     return 0.0;
   }
 
@@ -430,7 +427,6 @@ int64_t TranslateAgent::ExecuteScriptAndGetIntegerResult(
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
   if (result.IsEmpty() || !result->IsNumber()) {
-    NOTREACHED();
     return 0;
   }
 
