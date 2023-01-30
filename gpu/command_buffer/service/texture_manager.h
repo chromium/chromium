@@ -158,12 +158,8 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
     // If image state is BOUND, then sampling from the texture will return the
     // contents of the image and using it as a target will modify the image.
     BOUND,
-    // Image state is set to COPIED if the contents of the image has been
-    // copied to the texture. Sampling from the texture will be equivalent
-    // to sampling out the image (assuming image has not been changed since
-    // it was copied). Using the texture as a target for drawing will only
-    // modify the texture and not the image.
-    COPIED
+    // State when there is no image present.
+    NOIMAGE,
   };
 
   struct CompatibilitySwizzle {
@@ -199,7 +195,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
 
     // Nothing outside of Texture should directly access the binding state of
     // the image; clients can use Texture::HasUnboundLevelImage().
-    ImageState image_state = UNBOUND;
+    ImageState image_state = NOIMAGE;
   };
 
   explicit Texture(GLuint service_id);

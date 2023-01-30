@@ -1321,7 +1321,7 @@ void Texture::SetLevelInfo(GLenum target,
   info.format = format;
   info.type = type;
   info.image.reset();
-  info.image_state = UNBOUND;
+  info.image_state = NOIMAGE;
   info.internal_workaround = false;
 
   UpdateMipCleared(&info, width, height, cleared_rect);
@@ -1869,6 +1869,8 @@ void Texture::SetLevelImageInternal(GLenum target,
                                     GLint level,
                                     gl::GLImage* image,
                                     ImageState state) {
+  DCHECK(image ? state != ImageState::NOIMAGE : state == ImageState::NOIMAGE);
+
   DCHECK_GE(level, 0);
   size_t face_index = GLES2Util::GLTargetToFaceIndex(target);
   DCHECK_LT(face_index, face_infos_.size());
@@ -1902,7 +1904,7 @@ void Texture::SetUnboundLevelImage(GLenum target,
 
 void Texture::UnsetLevelImage(GLenum target, GLint level) {
   SetStreamTextureServiceId(0);
-  SetLevelImageInternal(target, level, nullptr, ImageState::UNBOUND);
+  SetLevelImageInternal(target, level, nullptr, ImageState::NOIMAGE);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1956,9 +1958,11 @@ bool Texture::HasUnboundLevelImage(GLint target, GLint level) const {
   }
 
   if (!info->image.get()) {
+    DCHECK(info->image_state == ImageState::NOIMAGE);
     return false;
   }
 
+  DCHECK(info->image_state != ImageState::NOIMAGE);
   return info->image_state == ImageState::UNBOUND;
 }
 
