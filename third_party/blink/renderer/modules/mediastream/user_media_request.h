@@ -45,7 +45,6 @@
 namespace blink {
 
 class LocalDOMWindow;
-class MediaErrorState;
 class MediaStreamConstraints;
 class ScriptWrappable;
 class TransferredMediaStreamTrack;
@@ -98,7 +97,7 @@ class MODULES_EXPORT UserMediaRequest final
                                   UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  MediaErrorState&,
+                                  ExceptionState&,
                                   IdentifiableSurface surface);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
                                             const MediaConstraints& video);

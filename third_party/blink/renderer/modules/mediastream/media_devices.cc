@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
-#include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
@@ -429,18 +428,16 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
         surface_type, TokenFromConstraints(options));
   }
   ScriptPromise promise = resolver->Promise();
-  MediaErrorState error_state;
   UserMediaRequest* request =
       UserMediaRequest::Create(window, user_media_client, media_type, options,
-                               callbacks, error_state, surface);
+                               callbacks, exception_state, surface);
   if (!request) {
-    DCHECK(error_state.HadException());
-    resolver->RecordAndThrowTypeError(
-        exception_state, error_state.GetErrorMessage(),
+    DCHECK(exception_state.HadException());
+    resolver->RecordResultAndLatency(
         UserMediaRequestResult::kInvalidConstraints);
     RecordIdentifiabilityMetric(
         surface, GetExecutionContext(),
-        IdentifiabilityBenignStringToken(error_state.GetErrorMessage()));
+        IdentifiabilityBenignStringToken(exception_state.Message()));
     return ScriptPromise();
   }
 
