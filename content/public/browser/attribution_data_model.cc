@@ -4,7 +4,6 @@
 
 #include "content/public/browser/attribution_data_model.h"
 
-#include <tuple>
 #include <utility>
 
 #include "base/check.h"
@@ -12,14 +11,9 @@
 
 namespace content {
 
-AttributionDataModel::DataKey::DataKey(url::Origin reporting_origin,
-                                       url::Origin context_origin,
-                                       Scope scope)
-    : reporting_origin_(std::move(reporting_origin)),
-      context_origin_(std::move(context_origin)),
-      scope_(scope) {
+AttributionDataModel::DataKey::DataKey(url::Origin reporting_origin)
+    : reporting_origin_(std::move(reporting_origin)) {
   DCHECK(!reporting_origin_.opaque());
-  DCHECK(!context_origin_.opaque());
 }
 
 AttributionDataModel::DataKey::DataKey(const DataKey&) = default;
@@ -36,14 +30,12 @@ AttributionDataModel::DataKey::~DataKey() = default;
 
 bool AttributionDataModel::DataKey::operator<(
     const AttributionDataModel::DataKey& other) const {
-  return std::tie(reporting_origin_, context_origin_, scope_) <
-         std::tie(other.reporting_origin_, other.context_origin_, other.scope_);
+  return reporting_origin_ < other.reporting_origin_;
 }
 
 bool AttributionDataModel::DataKey::operator==(
     const AttributionDataModel::DataKey& other) const {
-  return std::tie(reporting_origin_, context_origin_, scope_) ==
-         std::tie(other.reporting_origin_, other.context_origin_, other.scope_);
+  return reporting_origin_ == other.reporting_origin_;
 }
 
 }  // namespace content
