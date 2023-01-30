@@ -42,6 +42,13 @@ class {{export_attribute}} {{union.name}} {
   {{union.name}}();
   ~{{union.name}}();
 
+{%- if not union|should_inline_union %}
+  // Delete the copy constructor and copy assignment operators because `data_`
+  // contains raw pointers that must not be copied.
+  {{union.name}}(const {{union.name}}& other) = delete;
+  {{union.name}}& operator=(const {{union.name}}& other) = delete;
+{%- endif %}
+
   // Clone() is a template so it is only instantiated if it is used. Thus, the
   // bindings generator does not need to know whether Clone() or copy
   // constructor/assignment are available for members.

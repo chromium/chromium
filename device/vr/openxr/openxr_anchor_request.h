@@ -32,7 +32,7 @@ class CreateAnchorRequest {
   ~CreateAnchorRequest();
 
  private:
-  const mojom::XRNativeOriginInformation native_origin_information_;
+  mojom::XRNativeOriginInformationPtr native_origin_information_;
   const gfx::Transform native_origin_from_anchor_;
   const base::TimeTicks request_start_time_;
 

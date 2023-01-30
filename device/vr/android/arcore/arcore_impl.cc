@@ -1814,7 +1814,7 @@ void ArCoreImpl::ProcessAnchorCreationRequestsHelper(
       continue;
     }
 
-    mojom::XRNativeOriginInformation native_origin_information =
+    const mojom::XRNativeOriginInformation& native_origin_information =
         create_anchor.GetNativeOriginInformation();
 
     if (!NativeOriginExists(native_origin_information, input_state)) {
@@ -2017,16 +2017,16 @@ CreateAnchorRequest::CreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform& native_origin_from_anchor,
     ArCore::CreateAnchorCallback callback)
-    : native_origin_information_(native_origin_information),
+    : native_origin_information_(native_origin_information.Clone()),
       native_origin_from_anchor_(native_origin_from_anchor),
       request_start_time_(base::TimeTicks::Now()),
       callback_(std::move(callback)) {}
 CreateAnchorRequest::CreateAnchorRequest(CreateAnchorRequest&& other) = default;
 CreateAnchorRequest::~CreateAnchorRequest() = default;
 
-mojom::XRNativeOriginInformation
+const mojom::XRNativeOriginInformation&
 CreateAnchorRequest::GetNativeOriginInformation() const {
-  return native_origin_information_;
+  return *native_origin_information_;
 }
 
 gfx::Transform CreateAnchorRequest::GetNativeOriginFromAnchor() const {
@@ -2046,7 +2046,7 @@ CreatePlaneAttachedAnchorRequest::CreatePlaneAttachedAnchorRequest(
     const gfx::Transform& native_origin_from_anchor,
     uint64_t plane_id,
     ArCore::CreateAnchorCallback callback)
-    : native_origin_information_(native_origin_information),
+    : native_origin_information_(native_origin_information.Clone()),
       native_origin_from_anchor_(native_origin_from_anchor),
       plane_id_(plane_id),
       request_start_time_(base::TimeTicks::Now()),
@@ -2055,9 +2055,9 @@ CreatePlaneAttachedAnchorRequest::CreatePlaneAttachedAnchorRequest(
     CreatePlaneAttachedAnchorRequest&& other) = default;
 CreatePlaneAttachedAnchorRequest::~CreatePlaneAttachedAnchorRequest() = default;
 
-mojom::XRNativeOriginInformation
+const mojom::XRNativeOriginInformation&
 CreatePlaneAttachedAnchorRequest::GetNativeOriginInformation() const {
-  return native_origin_information_;
+  return *native_origin_information_;
 }
 
 uint64_t CreatePlaneAttachedAnchorRequest::GetPlaneId() const {

@@ -26,7 +26,7 @@ using AnchorId = base::IdTypeU64<class AnchorTag>;
 
 class CreateAnchorRequest {
  public:
-  mojom::XRNativeOriginInformation GetNativeOriginInformation() const;
+  const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
   gfx::Transform GetNativeOriginFromAnchor() const;
   base::TimeTicks GetRequestStartTime() const;
 
@@ -40,7 +40,7 @@ class CreateAnchorRequest {
   ~CreateAnchorRequest();
 
  private:
-  const mojom::XRNativeOriginInformation native_origin_information_;
+  mojom::XRNativeOriginInformationPtr native_origin_information_;
   const gfx::Transform native_origin_from_anchor_;
   const base::TimeTicks request_start_time_;
 
@@ -50,7 +50,7 @@ class CreateAnchorRequest {
 class CreatePlaneAttachedAnchorRequest {
  public:
   uint64_t GetPlaneId() const;
-  mojom::XRNativeOriginInformation GetNativeOriginInformation() const;
+  const mojom::XRNativeOriginInformation& GetNativeOriginInformation() const;
   gfx::Transform GetNativeOriginFromAnchor() const;
   base::TimeTicks GetRequestStartTime() const;
 
@@ -65,7 +65,7 @@ class CreatePlaneAttachedAnchorRequest {
   ~CreatePlaneAttachedAnchorRequest();
 
  private:
-  const mojom::XRNativeOriginInformation native_origin_information_;
+  mojom::XRNativeOriginInformationPtr native_origin_information_;
   const gfx::Transform native_origin_from_anchor_;
   const uint64_t plane_id_;
   const base::TimeTicks request_start_time_;

@@ -10,7 +10,7 @@ CreateAnchorRequest::CreateAnchorRequest(
     const mojom::XRNativeOriginInformation& native_origin_information,
     const gfx::Transform native_origin_from_anchor,
     CreateAnchorCallback callback)
-    : native_origin_information_(native_origin_information),
+    : native_origin_information_(native_origin_information.Clone()),
       native_origin_from_anchor_(native_origin_from_anchor),
       request_start_time_(base::TimeTicks::Now()),
       callback_(std::move(callback)) {}
@@ -19,7 +19,7 @@ CreateAnchorRequest::~CreateAnchorRequest() = default;
 
 const mojom::XRNativeOriginInformation&
 CreateAnchorRequest::GetNativeOriginInformation() const {
-  return native_origin_information_;
+  return *native_origin_information_;
 }
 
 const gfx::Transform& CreateAnchorRequest::GetNativeOriginFromAnchor() const {
