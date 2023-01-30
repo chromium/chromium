@@ -8,6 +8,7 @@
 #import <memory>
 #import <vector>
 
+#import "base/feature_list.h"
 #import "base/i18n/rtl.h"
 #import "base/mac/bundle_locations.h"
 #import "base/mac/foundation_util.h"
@@ -41,6 +42,9 @@
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_container_view.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_context_menu_delegate.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_context_menu_helper.h"
+#import "ios/chrome/browser/ui/tabs/tab_strip_context_menu_provider.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_view.h"
 #import "ios/chrome/browser/ui/tabs/tab_view.h"
 #import "ios/chrome/browser/ui/tabs/target_frame_cache.h"
@@ -80,7 +84,8 @@ const NSTimeInterval kTabAnimationDuration = 0.25;
 const NSTimeInterval kTabStripFadeAnimationDuration = 0.15;
 
 // Amount of time needed to trigger drag and drop mode when long pressing.
-const NSTimeInterval kDragAndDropLongPressDuration = 0.4;
+const NSTimeInterval kDragAndDropLongPressDuration = 0.1;
+const NSTimeInterval kDragAndDropLongPressLegacyDuration = 0.4;
 
 // Tab dimensions.
 const CGFloat kTabOverlapStacked = 32.0;
@@ -130,6 +135,12 @@ UIColor* BackgroundColor() {
   return UIColor.blackColor;
 }
 
+// Convenience method for determining if the TabStripContextMenu feature is
+// enabled.
+bool IsTabStripContextMenuEnabled() {
+  return base::FeatureList::IsEnabled(kTabStripContextMenu);
+}
+
 const CGFloat kSymbolSize = 18;
 
 }  // namespace
@@ -169,11 +180,13 @@ const CGFloat kSymbolSize = 18;
 @end
 
 @interface TabStripController () <CRWWebStateObserver,
+                                  TabStripContextMenuDelegate,
                                   TabStripViewLayoutDelegate,
                                   TabViewDelegate,
                                   ViewRevealingAnimatee,
-                                  WebStateListObserving,
                                   WebStateFaviconDriverObserver,
+                                  WebStateListObserving,
+                                  UIContextMenuInteractionDelegate,
                                   UIGestureRecognizerDelegate,
                                   UIScrollViewDelegate,
                                   URLDropDelegate> {
@@ -270,6 +283,10 @@ const CGFloat kSymbolSize = 18;
 
 // YES if the controller has been disconnected.
 @property(nonatomic) BOOL disconnected;
+
+// Provider of context menu configurations.
+@property(nonatomic, strong) id<TabStripContextMenuProvider>
+    contextMenuProvider;
 
 // If set to `YES`, tabs at either end of the tabstrip are "collapsed" into a
 // stack, such that the visible width of the tabstrip is constant.  If set to
@@ -477,6 +494,10 @@ const CGFloat kSymbolSize = 18;
     [_view addSubview:_tabStripView];
     _view.tabStripView = _tabStripView;
 
+    _contextMenuProvider =
+        [[TabStripContextMenuHelper alloc] initWithBrowser:_browser
+                               tabStripContextMenuDelegate:self];
+
     // `self.buttonNewTab` setup.
     CGRect buttonNewTabFrame = tabStripFrame;
     buttonNewTabFrame.size.width = kNewTabButtonWidth;
@@ -628,7 +649,15 @@ const CGFloat kSymbolSize = 18;
       [[UILongPressGestureRecognizer alloc]
           initWithTarget:self
                   action:@selector(handleLongPress:)];
-  [longPress setMinimumPressDuration:kDragAndDropLongPressDuration];
+
+  if (IsTabStripContextMenuEnabled()) {
+    [view addInteraction:[[UIContextMenuInteraction alloc]
+                             initWithDelegate:self]];
+    [longPress setMinimumPressDuration:kDragAndDropLongPressDuration];
+
+  } else {
+    [longPress setMinimumPressDuration:kDragAndDropLongPressLegacyDuration];
+  }
   [longPress setDelegate:self];
   [view addGestureRecognizer:longPress];
 
@@ -831,8 +860,62 @@ const CGFloat kSymbolSize = 18;
   UrlLoadingBrowserAgent::FromBrowser(_browser)->Load(params);
 }
 
-#pragma mark -
-#pragma mark Tab Drag and Drop methods
+#pragma mark - UIContextMenuInteractionDelegate
+
+- (UIContextMenuConfiguration*)contextMenuInteraction:
+                                   (UIContextMenuInteraction*)interaction
+                       configurationForMenuAtLocation:(CGPoint)location {
+  DCHECK(IsTabStripContextMenuEnabled());
+
+  int webStateIndex = [self webStateListIndexForTabView:interaction.view];
+  NSString* identifier =
+      _webStateList->GetWebStateAt(webStateIndex)->GetStableIdentifier();
+  BOOL pinnedState = _webStateList->IsWebStatePinnedAt(webStateIndex);
+
+  return [self.contextMenuProvider
+      contextMenuConfigurationForWebStateIdentifier:identifier
+                                        pinnedState:pinnedState];
+}
+
+- (UITargetedPreview*)contextMenuInteraction:
+                          (UIContextMenuInteraction*)interaction
+                               configuration:
+                                   (UIContextMenuConfiguration*)configuration
+       highlightPreviewForItemWithIdentifier:(id<NSCopying>)identifier {
+  // TODO(crbug.com/1409893): Update the targeted preview.
+  UIPreviewParameters* previewParameters = [[UIPreviewParameters alloc] init];
+  previewParameters.backgroundColor = UIColor.clearColor;
+  return [[UITargetedPreview alloc] initWithView:interaction.view
+                                      parameters:previewParameters];
+}
+
+#pragma mark - TabStripContextMenuDelegate
+
+- (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+- (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+- (void)editBookmarkWithURL:(const GURL&)URL {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+- (void)pinTabWithIdentifier:(NSString*)identifier {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+- (void)unpinTabWithIdentifier:(NSString*)identifier {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+- (void)closeTabWithIdentifier:(NSString*)identifier {
+  // TODO(crbug.com/1409893): Implement this.
+}
+
+#pragma mark - Tab Drag and Drop methods
 
 - (void)beginDrag:(UILongPressGestureRecognizer*)gesture {
   DCHECK([[gesture view] isKindOfClass:[TabView class]]);
@@ -978,8 +1061,7 @@ const CGFloat kSymbolSize = 18;
   [self insertNewItemAtIndex:_webStateList->count() withURL:URL];
 }
 
-#pragma mark -
-#pragma mark Autoscroll methods
+#pragma mark - Autoscroll methods
 
 - (void)installAutoscrollTimerIfNeeded {
   if (_autoscrollTimer)
@@ -1069,7 +1151,6 @@ const CGFloat kSymbolSize = 18;
     _autoscrollDistance = -offset.x;
 }
 
-#pragma mark -
 #pragma mark - CRWWebStateObserver methods
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
@@ -1118,8 +1199,7 @@ const CGFloat kSymbolSize = 18;
   [view setNeedsDisplay];
 }
 
-#pragma mark -
-#pragma mark WebStateListObserving methods
+#pragma mark - WebStateListObserving methods
 
 // Observer method, active WebState changed.
 - (void)webStateList:(WebStateList*)webStateList
@@ -1234,8 +1314,7 @@ const CGFloat kSymbolSize = 18;
   [self layoutTabStripSubviews];
 }
 
-#pragma mark -
-#pragma mark WebStateFaviconDriverObserver
+#pragma mark - WebStateFaviconDriverObserver
 
 // Observer method. `webState` got a favicon update.
 - (void)faviconDriver:(favicon::FaviconDriver*)driver
@@ -1261,8 +1340,7 @@ const CGFloat kSymbolSize = 18;
   }
 }
 
-#pragma mark -
-#pragma mark Views and Layout
+#pragma mark - Views and Layout
 
 - (TabView*)tabViewForWebState:(web::WebState*)webState {
   int listIndex = _webStateList->GetIndexOfWebState(webState);
@@ -1361,7 +1439,6 @@ const CGFloat kSymbolSize = 18;
   return frame;
 }
 
-#pragma mark -
 #pragma mark - Unstacked layout
 
 - (int)maxNumCollapsedTabs {

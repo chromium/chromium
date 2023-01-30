@@ -27,7 +27,8 @@ enum class MenuScenarioHistogram {
   kThumbStrip = 15,
   kOmniboxMostVisitedEntry = 16,
   kPinnedTabsEntry = 17,
-  kMaxValue = kPinnedTabsEntry,
+  kTabStripEntry = 18,
+  kMaxValue = kTabStripEntry,
 };
 
 // Records a menu shown histogram metric for the `scenario`.
