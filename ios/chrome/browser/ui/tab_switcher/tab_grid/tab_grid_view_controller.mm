@@ -2268,9 +2268,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.topToolbar.pageControl.pinnedTabCount = count;
 }
 
-- (void)pinnedTabsViewControllerDidHide {
+- (void)pinnedTabsViewControllerVisibilityDidChange:
+    (PinnedTabsViewController*)pinnedTabsViewController {
   UIEdgeInsets inset = [self calculateInsetForRegularGridView];
-
   [UIView animateWithDuration:kPinnedViewInsetAnimationTime
                    animations:^{
                      self.regularTabsViewController.gridView.contentInset =

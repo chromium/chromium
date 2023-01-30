@@ -30,8 +30,10 @@
             (PinnedTabsViewController*)pinnedTabsViewController
               didChangeItemCount:(NSUInteger)count;
 
-// Tells the delegate that the `pinnedTabsViewController` is hidden.
-- (void)pinnedTabsViewControllerDidHide;
+// Tells the delegate that the `pinnedTabsViewController` visibility has
+// changed.
+- (void)pinnedTabsViewControllerVisibilityDidChange:
+    (PinnedTabsViewController*)pinnedTabsViewController;
 
 @end
 

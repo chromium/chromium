@@ -660,8 +660,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   _visible = visible;
   if (!visible) {
     self.view.hidden = YES;
-    [self.delegate pinnedTabsViewControllerDidHide];
   }
+
+  // Don't call the delegate if the pinned view is hidden after a tab grid page
+  // change.
+  if (!visible && _items.count > 0) {
+    return;
+  }
+
+  [self.delegate pinnedTabsViewControllerVisibilityDidChange:self];
 }
 
 // Hides `_emptyCollectionViewLabel` when the collection view is not empty.
