@@ -1525,8 +1525,18 @@ suite('InternetDetailPage', function() {
           assertTrue(!!tetherDialog);
           assertFalse(tetherDialog.$.dialog.open);
 
+          let showTetherDialogFinished;
+          const showTetherDialogPromise = new Promise((resolve) => {
+            showTetherDialogFinished = resolve;
+          });
+          const showTetherDialog = internetDetailPage.showTetherDialog_;
+          internetDetailPage.showTetherDialog_ = () => {
+            showTetherDialog.call(internetDetailPage);
+            showTetherDialogFinished();
+          };
+
           connect.click();
-          await flushAsync();
+          await showTetherDialogPromise;
           assertTrue(tetherDialog.$.dialog.open);
         });
 
