@@ -214,8 +214,13 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
       }
       policy {
         cookies_allowed: NO
-        policy_exception_justification:
-          "No policies implemented yet."
+        setting : "Only Admins can enable/disable this feature from the admin"
+                  "dashboard."
+        chrome_policy {
+          SamlInSessionPasswordChangeEnabled {
+            SamlInSessionPasswordChangeEnabled : false
+          }
+        }
       })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
   switch (request_type_) {
