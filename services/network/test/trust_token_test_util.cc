@@ -140,24 +140,24 @@ SerializeTrustTokenParametersAndConstructExpectation(
     const TrustTokenTestParameters& input) {
   auto trust_token_params = mojom::TrustTokenParams::New();
 
-  base::Value parameters(base::Value::Type::DICT);
-  parameters.SetStringKey("operation", TrustTokenEnumToString(input.operation));
+  base::Value::Dict parameters;
+  parameters.Set("operation", TrustTokenEnumToString(input.operation));
   trust_token_params->operation = input.operation;
 
   if (input.refresh_policy.has_value()) {
-    parameters.SetStringKey("refreshPolicy",
-                            TrustTokenEnumToString(*input.refresh_policy));
+    parameters.Set("refreshPolicy",
+                   TrustTokenEnumToString(*input.refresh_policy));
     trust_token_params->refresh_policy = *input.refresh_policy;
   }
 
   if (input.issuer_specs.has_value()) {
-    base::Value issuers(base::Value::Type::LIST);
+    base::Value::List issuers;
     for (const std::string& issuer_spec : *input.issuer_specs) {
       issuers.Append(issuer_spec);
       trust_token_params->issuers.push_back(
           url::Origin::Create(GURL(issuer_spec)));
     }
-    parameters.SetKey("issuers", std::move(issuers));
+    parameters.Set("issuers", std::move(issuers));
   }
 
   std::string serialized_parameters;
