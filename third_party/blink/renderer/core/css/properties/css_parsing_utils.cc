@@ -2027,8 +2027,8 @@ static bool ParseColorFunctionParameters(CSSParserTokenRange& range,
       continue;
     }
 
-    // Missing components default to zero.
-    param = 0.0;
+    // Missing components should not parse.
+    return false;
   }
   if (has_commas && has_none) {
     return false;
