@@ -556,9 +556,6 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   for (const auto& mailbox : overlay_mailboxes) {
     auto it = overlays_.find(mailbox);
     DCHECK(it != overlays_.end());
-    if (!result.release_fence.is_null())
-      it->scoped_read_access()->SetReleaseFence(result.release_fence.Clone());
-
     it->Unref();
   }
 
@@ -574,26 +571,32 @@ void SkiaOutputDeviceBufferQueue::DoFinishSwapBuffers(
   }
 #endif
 
-  std::vector<gpu::Mailbox> released_overlays;
-  auto on_overlay_release =
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
-      [&released_overlays](const OverlayData& overlay) {
-        // Right now, only macOS needs to return maliboxes of released
-        // overlays, so SkiaRenderer can unlock resources for them.
-        released_overlays.push_back(overlay.mailbox());
-      };
-#else
-      [](const OverlayData& overlay) {};
-#endif
-
+  [[maybe_unused]] std::vector<gpu::Mailbox> released_overlays;
   // Go through backings of all overlays, and release overlay backings which are
   // not used.
-  base::EraseIf(overlays_, [&on_overlay_release](auto& overlay) {
-    if (!overlay.unique())
+  base::EraseIf(overlays_, [&result, &released_overlays](auto& overlay) {
+    if (!overlay.unique()) {
       return false;
-    if (overlay.IsInUseByWindowServer())
+    }
+
+    if (overlay.IsInUseByWindowServer()) {
       return false;
-    on_overlay_release(overlay);
+    }
+
+    // Right now, only macOS and LaCros needs to return maliboxes of released
+    // overlays, so SkiaRenderer can unlock resources for them.
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
+    released_overlays.push_back(overlay.mailbox());
+#else
+    (void)released_overlays;
+#endif
+    // Setting fences on overlays every frame can be very costly for delegated
+    // compositing where we have an overlay for each visible quad. So we only
+    // set the release fence here iff this is the last 'Unref' call.
+    if (!result.release_fence.is_null()) {
+      overlay.scoped_read_access()->SetReleaseFence(
+          result.release_fence.Clone());
+    }
     overlay.Unref();
     return true;
   });
