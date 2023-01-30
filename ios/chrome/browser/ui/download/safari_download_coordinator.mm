@@ -86,15 +86,11 @@ const char kUmaDownloadMobileConfigFileUI[] =
 #pragma mark - DependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
-  if (SafariDownloadTabHelper::FromWebState(webState)) {
-    SafariDownloadTabHelper::FromWebState(webState)->set_delegate(self);
-  }
+  SafariDownloadTabHelper::FromWebState(webState)->set_delegate(self);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
-  if (SafariDownloadTabHelper::FromWebState(webState)) {
-    SafariDownloadTabHelper::FromWebState(webState)->set_delegate(nil);
-  }
+  SafariDownloadTabHelper::FromWebState(webState)->set_delegate(nil);
 }
 
 #pragma mark - SafariDownloadTabHelperDelegate

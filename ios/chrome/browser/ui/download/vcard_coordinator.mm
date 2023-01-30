@@ -53,15 +53,11 @@
 #pragma mark - DependencyInstalling methods
 
 - (void)installDependencyForWebState:(web::WebState*)webState {
-  if (VcardTabHelper::FromWebState(webState)) {
-    VcardTabHelper::FromWebState(webState)->set_delegate(self);
-  }
+  VcardTabHelper::FromWebState(webState)->set_delegate(self);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
-  if (VcardTabHelper::FromWebState(webState)) {
-    VcardTabHelper::FromWebState(webState)->set_delegate(nil);
-  }
+  VcardTabHelper::FromWebState(webState)->set_delegate(nil);
 }
 
 #pragma mark - Private

@@ -73,15 +73,14 @@
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(
       _snapshotGeneratorDelegate);
 
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    DCHECK(_baseViewController);
-    DCHECK(_delegate);
-    DCHECK(_commandDispatcher);
-    passwordTabHelper->SetBaseViewController(_baseViewController);
-    passwordTabHelper->SetPasswordControllerDelegate(_delegate);
-    passwordTabHelper->SetDispatcher(_commandDispatcher);
-  }
+  PasswordTabHelper* passwordTabHelper =
+      PasswordTabHelper::FromWebState(webState);
+  DCHECK(_baseViewController);
+  DCHECK(_delegate);
+  DCHECK(_commandDispatcher);
+  passwordTabHelper->SetBaseViewController(_baseViewController);
+  passwordTabHelper->SetPasswordControllerDelegate(_delegate);
+  passwordTabHelper->SetDispatcher(_commandDispatcher);
 
   DCHECK(_delegate);
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
@@ -105,16 +104,12 @@
   PassKitTabHelper::FromWebState(webState)->SetWebContentsHandler(
       webContentsHandler);
 
-  if (AutofillTabHelper::FromWebState(webState)) {
-    DCHECK(_baseViewController);
-    AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
-        _baseViewController);
-  }
+  DCHECK(_baseViewController);
+  AutofillTabHelper::FromWebState(webState)->SetBaseViewController(
+      _baseViewController);
 
-  if (PrintTabHelper::FromWebState(webState)) {
-    DCHECK(_printController);
-    PrintTabHelper::FromWebState(webState)->set_printer(_printController);
-  }
+  DCHECK(_printController);
+  PrintTabHelper::FromWebState(webState)->set_printer(_printController);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
@@ -124,16 +119,12 @@
     followTabHelper->set_follow_iph_presenter(_followIPHPresenter);
   }
 
-  if (CaptivePortalTabHelper::FromWebState(webState)) {
-    DCHECK(_tabInsertionBrowserAgent);
-    CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
-        _tabInsertionBrowserAgent);
-  }
+  DCHECK(_tabInsertionBrowserAgent);
+  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+      _tabInsertionBrowserAgent);
 
-  if (NewTabPageTabHelper::FromWebState(webState)) {
-    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
-        _myNewTabPageTabHelperDelegate);
-  }
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
+      _myNewTabPageTabHelperDelegate);
 
   if (AnnotationsTabHelper::FromWebState(webState)) {
     DCHECK(_baseViewController);
@@ -158,12 +149,11 @@
   // shutdown.
   SnapshotTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  if (PasswordTabHelper* passwordTabHelper =
-          PasswordTabHelper::FromWebState(webState)) {
-    passwordTabHelper->SetBaseViewController(nil);
-    passwordTabHelper->SetPasswordControllerDelegate(nil);
-    passwordTabHelper->SetDispatcher(nil);
-  }
+  PasswordTabHelper* passwordTabHelper =
+      PasswordTabHelper::FromWebState(webState);
+  passwordTabHelper->SetBaseViewController(nil);
+  passwordTabHelper->SetPasswordControllerDelegate(nil);
+  passwordTabHelper->SetDispatcher(nil);
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
@@ -173,13 +163,9 @@
 
   NetExportTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  if (AutofillTabHelper::FromWebState(webState)) {
-    AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
-  }
+  AutofillTabHelper::FromWebState(webState)->SetBaseViewController(nil);
 
-  if (PrintTabHelper::FromWebState(webState)) {
-    PrintTabHelper::FromWebState(webState)->set_printer(nil);
-  }
+  PrintTabHelper::FromWebState(webState)->set_printer(nil);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
@@ -188,14 +174,10 @@
     followTabHelper->set_follow_iph_presenter(nil);
   }
 
-  if (CaptivePortalTabHelper::FromWebState(webState)) {
-    CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
-        nil);
-  }
+  CaptivePortalTabHelper::FromWebState(webState)->SetTabInsertionBrowserAgent(
+      nil);
 
-  if (NewTabPageTabHelper::FromWebState(webState)) {
-    NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
-  }
+  NewTabPageTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   if (AnnotationsTabHelper::FromWebState(webState)) {
     AnnotationsTabHelper::FromWebState(webState)->SetBaseViewController(nil);
