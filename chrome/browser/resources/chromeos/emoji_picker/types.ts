@@ -55,7 +55,7 @@ export interface SubcategoryData {
 
 export interface EmojiGroupElement {
   name: string;
-  category: string;
+  category: CategoryEnum;
   emoji: EmojiVariants[];
   groupId: string;
   active: boolean;

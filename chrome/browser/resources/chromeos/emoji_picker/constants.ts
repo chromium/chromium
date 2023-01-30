@@ -49,7 +49,7 @@ export const EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX =
     `${EMOJI_PICKER_TOTAL_EMOJI_WIDTH}px`;
 export const TAB_BUTTON_MARGIN_PX = `${TAB_BUTTON_MARGIN}px`;
 export const TEXT_GROUP_BUTTON_PADDING_PX = `${TEXT_GROUP_BUTTON_PADDING}px`;
-export const TRENDING = '#trending';
+export const TRENDING = 'Trending';
 // 24 hours is equivalent to 86400000 milliseconds.
 export const TWENTY_FOUR_HOURS = 86400000;
 export const GIF_VALIDATION_DATE = 'gifValidationDate';
