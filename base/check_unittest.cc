@@ -457,6 +457,9 @@ TEST(CheckDeathTest, NotReached) {
   // Expect LOG(ERROR) that looks like CHECK(false) with streamed params intact.
   EXPECT_LOG_ERROR(__LINE__, NOTREACHED() << "foo",
                    "Check failed: false. foo\n");
+#else
+  // Expect nothing.
+  EXPECT_NO_LOG(NOTREACHED() << "foo");
 #endif
 }
 

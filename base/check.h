@@ -101,6 +101,10 @@ class BASE_EXPORT NotReachedError : public CheckError {
  public:
   static NotReachedError NotReached(const char* file, int line);
 
+  // Used to trigger a NOTREACHED() without providing file or line while also
+  // discarding log-stream arguments. See base/notreached.h.
+  NOMERGE NOINLINE NOT_TAIL_CALLED static void TriggerNotReached();
+
   // TODO(crbug.com/851128): Mark [[noreturn]] once this is CHECK-fatal on all
   // builds.
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
