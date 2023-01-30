@@ -5729,6 +5729,7 @@ interface MediaStreamTrack : EventTarget
     getter label
     getter muted
     getter oncapturehandlechange
+    getter onconfigurationchange
     getter onended
     getter onmute
     getter onunmute
@@ -5744,6 +5745,7 @@ interface MediaStreamTrack : EventTarget
     setter contentHint
     setter enabled
     setter oncapturehandlechange
+    setter onconfigurationchange
     setter onended
     setter onmute
     setter onunmute

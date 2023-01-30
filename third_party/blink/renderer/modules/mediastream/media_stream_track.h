@@ -112,6 +112,7 @@ class MODULES_EXPORT MediaStreamTrack
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(capturehandlechange, kCapturehandlechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(configurationchange, kConfigurationchange)
 
   virtual MediaStreamSource::ReadyState GetReadyState() = 0;
 

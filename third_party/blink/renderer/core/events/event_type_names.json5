@@ -79,6 +79,7 @@
     "compositionend",
     "compositionstart",
     "compositionupdate",
+    "configurationchange",
     "connect",
     "connecting",
     "connectionavailable",

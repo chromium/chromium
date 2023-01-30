@@ -105,6 +105,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   DEFINE_ATTRIBUTE_EVENT_LISTENER(unmute, kUnmute)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(capturehandlechange, kCapturehandlechange)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(configurationchange, kConfigurationchange)
 
   // Returns the enum value of the ready state.
   MediaStreamSource::ReadyState GetReadyState() override {

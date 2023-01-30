@@ -1783,6 +1783,11 @@
       name: "MediaCaptureBackgroundBlur",
       status: "experimental",
     },
+    {
+      name: "MediaCaptureConfigurationChange",
+      status: "experimental",
+      implied_by: ["MediaCaptureBackgroundBlur"],
+    },
     // Set to reflect the MediaCastOverlayButton feature.
     {
       name: "MediaCastOverlayButton",
