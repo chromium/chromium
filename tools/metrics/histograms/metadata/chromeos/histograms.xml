@@ -2071,13 +2071,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <owner>jorgelo@chromium.org</owner>
   <owner>chromeos-security-core@google.com</owner>
   <summary>
-    Records when an event representing a deviation from the Chrome OS security
+    Records when an event representing a deviation from the ChromeOS security
     posture happens.
 
-    Writable+executable mount events are checked every thirty seconds, but each
-    anomalous event is reported only once per boot. Memfd anomaly events are
-    checked and reported every 30 seconds, but memfd_create events are only
-    reported once per boot.
+    The list of writable+executable mounts is updated every thirty seconds, and
+    only new anomalous mounts are recorded. This list is cleared every two hours
+    so existing anomalies get recorded again after the two-hour window.
+
+    Memfd execution attempts are checked every thirty seconds and new attempts
+    are recorded. memfd_create events are only recorded once per boot. Prior to
+    M111 memfd_create events were recorded up to ten times per boot.
   </summary>
 </histogram>
 
