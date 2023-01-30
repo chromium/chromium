@@ -91,11 +91,12 @@ class ManageProfileHandlerTest : public testing::Test {
       const base::Value& icon = icons->GetList()[i];
       EXPECT_TRUE(icon.is_dict());
 
-      const std::string* icon_url = icon.FindStringKey("url");
+      const base::Value::Dict& icon_dict = icon.GetDict();
+      const std::string* icon_url = icon_dict.FindString("url");
       EXPECT_TRUE(icon_url);
       EXPECT_FALSE(icon_url->empty());
 
-      int icon_index_int = *icon.FindIntKey("index");
+      int icon_index_int = *icon_dict.FindInt("index");
       EXPECT_TRUE(profiles::IsDefaultAvatarIconIndex(icon_index_int));
       size_t icon_index = static_cast<size_t>(icon_index_int);
       EXPECT_NE(icon_index, profiles::GetPlaceholderAvatarIndex());
@@ -103,8 +104,8 @@ class ManageProfileHandlerTest : public testing::Test {
       size_t url_icon_index;
       EXPECT_TRUE(profiles::IsDefaultAvatarIconUrl(*icon_url, &url_icon_index));
       EXPECT_EQ(icon_index, url_icon_index);
-      EXPECT_TRUE(!icon.FindStringKey("label")->empty());
-      absl::optional<bool> current_selected = icon.FindBoolKey("selected");
+      EXPECT_TRUE(!icon_dict.FindString("label")->empty());
+      absl::optional<bool> current_selected = icon_dict.FindBool("selected");
       if (selected_index == icon_index) {
         EXPECT_FALSE(selected_found);
         EXPECT_TRUE(current_selected.value_or(false));
@@ -134,27 +135,29 @@ class ManageProfileHandlerTest : public testing::Test {
   void VerifyGaiaAvatar(const base::Value* icons, bool gaia_selected) {
     const base::Value& icon = icons->GetList()[0];
     EXPECT_TRUE(icon.is_dict());
-    EXPECT_EQ(*icon.FindIntKey("index"), 0);
+    const base::Value::Dict& icon_dict = icon.GetDict();
+    EXPECT_EQ(*icon_dict.FindInt("index"), 0);
 
     const gfx::Image* avatar_icon = entry()->GetGAIAPicture();
     ASSERT_TRUE(avatar_icon);
-    EXPECT_EQ(*icon.FindStringKey("url"),
+    EXPECT_EQ(*icon_dict.FindString("url"),
               webui::GetBitmapDataUrl(
                   profiles::GetAvatarIconForWebUI(*avatar_icon).AsBitmap()));
-    EXPECT_TRUE(!icon.FindStringKey("label")->empty());
-    EXPECT_EQ(*icon.FindBoolPath("selected"), gaia_selected);
+    EXPECT_TRUE(!icon_dict.FindString("label")->empty());
+    EXPECT_EQ(*icon_dict.FindBool("selected"), gaia_selected);
   }
 
   void VerifyDefaultGenericAvatar(const base::Value* icons,
                                   size_t selected_index) {
     const base::Value& icon = icons->GetList()[0];
     EXPECT_TRUE(icon.is_dict());
-    EXPECT_TRUE(!icon.FindStringKey("label")->empty());
-    int icon_index_int = icon.FindIntKey("index").value_or(0);
+    const base::Value::Dict& icon_dict = icon.GetDict();
+    EXPECT_TRUE(!icon_dict.FindString("label")->empty());
+    int icon_index_int = icon_dict.FindInt("index").value_or(0);
     EXPECT_TRUE(icon_index_int != 0);
     size_t icon_index = static_cast<size_t>(icon_index_int);
     EXPECT_EQ(icon_index, profiles::GetPlaceholderAvatarIndex());
-    EXPECT_EQ(*icon.FindBoolPath("selected"), selected_index == icon_index);
+    EXPECT_EQ(*icon_dict.FindBool("selected"), selected_index == icon_index);
   }
 };
 

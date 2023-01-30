@@ -70,7 +70,7 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
     std::u16string value = base::UTF8ToUTF16(font[1].GetString());
 
     bool has_rtl_chars = base::i18n::StringContainsStrongRTLChars(value);
-    i.Append(has_rtl_chars ? "rtl" : "ltr");
+    font.Append(has_rtl_chars ? "rtl" : "ltr");
   }
 
   base::Value::Dict response;

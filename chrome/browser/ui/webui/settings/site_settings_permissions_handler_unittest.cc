@@ -80,9 +80,9 @@ class SiteSettingsPermissionsHandlerTest : public testing::Test {
     const auto& revoked_permissions =
         handler()->PopulateUnusedSitePermissionsData();
     EXPECT_EQ(revoked_permissions.size(), 1UL);
-    EXPECT_EQ(
-        GURL(kUnusedTestSite),
-        GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
+    EXPECT_EQ(GURL(kUnusedTestSite),
+              GURL(*revoked_permissions[0].GetDict().FindString(
+                  site_settings::kOrigin)));
     handler()->SetClockForTesting(&clock_);
   }
 
@@ -137,9 +137,9 @@ TEST_F(SiteSettingsPermissionsHandlerTest, PopulateUnusedSitePermissionsData) {
   const auto& revoked_permissions =
       handler()->PopulateUnusedSitePermissionsData();
   EXPECT_EQ(revoked_permissions.size(), 1UL);
-  EXPECT_EQ(
-      GURL(kUnusedTestSite),
-      GURL(*revoked_permissions[0].FindStringKey(site_settings::kOrigin)));
+  EXPECT_EQ(GURL(kUnusedTestSite),
+            GURL(*revoked_permissions[0].GetDict().FindString(
+                site_settings::kOrigin)));
 }
 
 TEST_F(SiteSettingsPermissionsHandlerTest,

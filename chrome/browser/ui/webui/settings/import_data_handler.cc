@@ -124,17 +124,23 @@ void ImportDataHandler::HandleImportData(const base::Value::List& args) {
     return;
   }
 
+  const base::Value::Dict& type_dict = types.GetDict();
   uint16_t selected_items = importer::NONE;
-  if (*types.FindBoolKey(prefs::kImportDialogAutofillFormData))
+  if (*type_dict.FindBool(prefs::kImportDialogAutofillFormData)) {
     selected_items |= importer::AUTOFILL_FORM_DATA;
-  if (*types.FindBoolKey(prefs::kImportDialogBookmarks))
+  }
+  if (*type_dict.FindBool(prefs::kImportDialogBookmarks)) {
     selected_items |= importer::FAVORITES;
-  if (*types.FindBoolKey(prefs::kImportDialogHistory))
+  }
+  if (*type_dict.FindBool(prefs::kImportDialogHistory)) {
     selected_items |= importer::HISTORY;
-  if (*types.FindBoolKey(prefs::kImportDialogSavedPasswords))
+  }
+  if (*type_dict.FindBool(prefs::kImportDialogSavedPasswords)) {
     selected_items |= importer::PASSWORDS;
-  if (*types.FindBoolKey(prefs::kImportDialogSearchEngine))
+  }
+  if (*type_dict.FindBool(prefs::kImportDialogSearchEngine)) {
     selected_items |= importer::SEARCH_ENGINES;
+  }
 
   const importer::SourceProfile& source_profile =
       importer_list_->GetSourceProfileAt(browser_index);

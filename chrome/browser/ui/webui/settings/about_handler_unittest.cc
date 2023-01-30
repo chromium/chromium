@@ -78,8 +78,8 @@ class AboutHandlerTest : public testing::Test {
     EXPECT_EQ("cr.webUIResponse", call_data.function_name());
     EXPECT_EQ("handlerFunctionName", call_data.arg1()->GetString());
     EXPECT_EQ(has_eol_passed,
-              call_data.arg3()->FindKey("hasEndOfLife")->GetBool());
-    return call_data.arg3()->FindKey("aboutPageEndOfLifeMessage")->GetString();
+              *call_data.arg3()->GetDict().FindBool("hasEndOfLife"));
+    return *call_data.arg3()->GetDict().FindString("aboutPageEndOfLifeMessage");
   }
 
   void SetCurrentTimeToUtc(const char* utc_date_string) {

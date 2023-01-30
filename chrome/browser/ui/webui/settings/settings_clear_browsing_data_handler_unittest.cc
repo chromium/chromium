@@ -108,15 +108,16 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
     const std::string* event = data.arg1()->GetIfString();
     if (!event || *event != "update-sync-state")
       continue;
-    if (!data.arg2()->is_dict()) {
+    const base::Value::Dict* arg2_dict = data.arg2()->GetIfDict();
+    if (!arg2_dict) {
       continue;
     }
-    ASSERT_THAT(data.arg2()->FindBoolKey("isNonGoogleDse"),
+    ASSERT_THAT(arg2_dict->FindBool("isNonGoogleDse"),
                 Optional(expected_is_non_google_dse));
     if (expected_is_non_google_dse) {
       std::u16string actual_non_google_search_history_string =
           base::UTF8ToUTF16(
-              *data.arg2()->FindStringKey("nonGoogleSearchHistoryString"));
+              *arg2_dict->FindString("nonGoogleSearchHistoryString"));
       ASSERT_EQ(expected_non_google_search_history_string,
                 actual_non_google_search_history_string);
     }

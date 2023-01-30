@@ -95,12 +95,14 @@ void ValidateTopicsInfo(
     const auto& actual_topic = actual_topics[i];
     const auto& expected_topic = expected_topics[i];
     ASSERT_TRUE(actual_topic.is_dict());
+    const base::Value::Dict& actual_topic_dict = actual_topic.GetDict();
     ASSERT_EQ(expected_topic.topic_id().value(),
-              actual_topic.FindIntKey("topicId"));
+              actual_topic_dict.FindInt("topicId"));
     ASSERT_EQ(expected_topic.taxonomy_version(),
-              actual_topic.FindIntKey("taxonomyVersion"));
-    ASSERT_EQ(expected_topic.GetLocalizedRepresentation(),
-              base::UTF8ToUTF16(*actual_topic.FindStringKey("displayString")));
+              actual_topic_dict.FindInt("taxonomyVersion"));
+    ASSERT_EQ(
+        expected_topic.GetLocalizedRepresentation(),
+        base::UTF8ToUTF16(*actual_topic_dict.FindString("displayString")));
   }
 }
 
