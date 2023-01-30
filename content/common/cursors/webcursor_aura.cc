@@ -17,10 +17,11 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
   if (cursor_.type() == ui::mojom::CursorType::kCustom) {
     if (!custom_cursor_) {
       custom_cursor_.emplace(ui::mojom::CursorType::kCustom);
-      SkBitmap bitmap;
-      gfx::Point hotspot;
-      float scale;
-      CreateScaledBitmapAndHotspotFromCustomData(&bitmap, &hotspot, &scale);
+      SkBitmap bitmap = cursor_.custom_bitmap();
+      gfx::Point hotspot = cursor_.custom_hotspot();
+      float scale = GetCursorScaleFactor(&bitmap);
+      wm::ScaleAndRotateCursorBitmapAndHotpoint(scale, rotation_, &bitmap,
+                                                &hotspot);
       custom_cursor_->set_custom_bitmap(bitmap);
       custom_cursor_->set_custom_hotspot(hotspot);
       custom_cursor_->set_image_scale_factor(device_scale_factor_);
@@ -31,16 +32,6 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
     return *custom_cursor_;
   }
   return cursor_.type();
-}
-
-void WebCursor::CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
-                                                           gfx::Point* hotspot,
-                                                           float* scale) {
-  DCHECK_EQ(ui::mojom::CursorType::kCustom, cursor_.type());
-  *bitmap = cursor_.custom_bitmap();
-  *hotspot = cursor_.custom_hotspot();
-  *scale = GetCursorScaleFactor(bitmap);
-  wm::ScaleAndRotateCursorBitmapAndHotpoint(*scale, rotation_, bitmap, hotspot);
 }
 
 #if !BUILDFLAG(IS_OZONE)

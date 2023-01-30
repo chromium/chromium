@@ -182,23 +182,6 @@ TEST(WebCursorTest, CursorScaleFactor) {
   // regardless of the cursor size.
   EXPECT_EQ(webcursor.GetNativeCursor().image_scale_factor(), kDeviceScale);
 }
-
-TEST(WebCursorTest, UnscaledImageCopy) {
-  ui::Cursor cursor(ui::mojom::CursorType::kCustom);
-  cursor.set_custom_hotspot(gfx::Point(0, 1));
-  cursor.set_custom_bitmap(CreateTestBitmap(2, 2));
-  WebCursor webcursor(cursor);
-
-  SkBitmap copy;
-  gfx::Point hotspot;
-  float dsf = 0.f;
-  webcursor.CreateScaledBitmapAndHotspotFromCustomData(&copy, &hotspot, &dsf);
-  EXPECT_EQ(1.f, dsf);
-  EXPECT_EQ(2, copy.width());
-  EXPECT_EQ(2, copy.height());
-  EXPECT_EQ(0, hotspot.x());
-  EXPECT_EQ(1, hotspot.y());
-}
 #endif
 
 #if BUILDFLAG(IS_WIN)

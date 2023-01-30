@@ -44,10 +44,6 @@ class CONTENT_EXPORT WebCursor {
   // Updates |device_scale_factor_| and |rotation_| based on |display|.
   void SetDisplayInfo(const display::Display& display);
 
-  void CreateScaledBitmapAndHotspotFromCustomData(SkBitmap* bitmap,
-                                                  gfx::Point* hotspot,
-                                                  float* scale);
-
   bool has_custom_cursor_for_test() const { return !!custom_cursor_; }
 #endif
 
