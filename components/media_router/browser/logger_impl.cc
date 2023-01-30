@@ -131,10 +131,10 @@ std::string LoggerImpl::GetLogsAsJson() const {
 }
 
 base::Value LoggerImpl::GetLogsAsValue() const {
-  base::Value entries_val(base::Value::Type::LIST);
+  base::Value::List entries_val;
   for (const auto& entry : entries_)
     entries_val.Append(AsValue(entry));
-  return entries_val;
+  return base::Value(std::move(entries_val));
 }
 
 LoggerImpl::Entry::Entry(Severity severity,
