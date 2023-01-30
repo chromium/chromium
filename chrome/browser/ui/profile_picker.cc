@@ -49,8 +49,7 @@ const char ProfilePicker::kTaskManagerUrl[] =
 ProfilePicker::Params::~Params() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   NotifyAccountSelected(std::string());
-  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly,
-                       FirstRunExitSource::kParamDestructor);
+  NotifyFirstRunExited(FirstRunExitStatus::kQuitEarly);
 #endif
 }
 
@@ -113,21 +112,10 @@ ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
   return params;
 }
 
-void ProfilePicker::Params::NotifyFirstRunExited(FirstRunExitStatus exit_status
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                 ,
-                                                 FirstRunExitSource exit_source
-#endif
-) {
+void ProfilePicker::Params::NotifyFirstRunExited(
+    FirstRunExitStatus exit_status) {
   if (!first_run_exited_callback_)
     return;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(ERROR) << "Notifying FirstRun exit with status="
-             << static_cast<int>(exit_status)
-             << " from source=" << static_cast<int>(exit_source);
-#endif
-
   std::move(first_run_exited_callback_).Run(exit_status);
 }
 

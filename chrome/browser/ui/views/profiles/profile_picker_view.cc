@@ -159,9 +159,6 @@ void ProfilePicker::Show(Params&& params) {
   if (g_profile_picker_view) {
     g_profile_picker_view->UpdateParams(std::move(params));
   } else {
-    // TODO(crbug.com/1340791): This is temporarily added to understand
-    // crbug.com/1340791. Remove when it is resolved.
-    LOG(WARNING) << "ProfilePickerView is created";
     g_profile_picker_view = new ProfilePickerView(std::move(params));
   }
   g_profile_picker_view->Display();
@@ -367,9 +364,7 @@ void ProfilePickerView::UpdateParams(ProfilePicker::Params&& params) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Cancel any flow that was in progress.
   params_.NotifyAccountSelected(std::string());
-  params_.NotifyFirstRunExited(
-      ProfilePicker::FirstRunExitStatus::kQuitEarly,
-      ProfilePicker::FirstRunExitSource::kReusingWindow);
+  params_.NotifyFirstRunExited(ProfilePicker::FirstRunExitStatus::kQuitEarly);
 #endif
 
   params_ = std::move(params);
@@ -735,14 +730,8 @@ void ProfilePickerView::WindowClosing() {
   // Now that the window is closed, we can allow a new one to be opened.
   // (WindowClosing comes in asynchronously from the call to Close() and we
   // may have already opened a new instance).
-  // TODO(crbug.com/1340791): The logging message is added to understand
-  // crbug.com/1340791 further temporarily. Remove it when it is resolved.
   if (g_profile_picker_view == this) {
-    LOG(WARNING) << "The ProfilePickerView is deleted";
     g_profile_picker_view = nullptr;
-  } else {
-    LOG(WARNING) << "The WindowClosing event is observed, but which is not "
-                 << "for the global ProfilePickerView.";
   }
 
   // Show a new profile window if it has been requested while the current window

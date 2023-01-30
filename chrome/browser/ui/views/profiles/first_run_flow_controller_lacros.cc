@@ -136,11 +136,6 @@ class LacrosFirstRunSignedInFlowController
     ProfilePickerSignedInFlowController::SwitchToSyncConfirmation();
   }
 
- protected:
-  void PreShowScreenForDebug() override {
-    LOG(WARNING) << "Calling ShowScreen()";
-  }
-
  private:
   void SwitchToIntroFinished(signin::SigninChoiceCallback proceed_callback) {
     base::OnceCallback signin_choice_adapter_callback =
@@ -180,7 +175,7 @@ FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
     Profile* profile,
-    ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback)
+    ProfilePicker::FirstRunExitedCallback first_run_exited_callback)
     : ProfileManagementFlowControllerImpl(host, std::move(clear_host_callback)),
       profile_(profile),
       first_run_exited_callback_(std::move(first_run_exited_callback)) {
@@ -194,8 +189,7 @@ FirstRunFlowControllerLacros::~FirstRunFlowControllerLacros() {
     std::move(first_run_exited_callback_)
         .Run(sync_confirmation_seen_
                  ? ProfilePicker::FirstRunExitStatus::kQuitAtEnd
-                 : ProfilePicker::FirstRunExitStatus::kQuitEarly,
-             ProfilePicker::FirstRunExitSource::kControllerDestructor);
+                 : ProfilePicker::FirstRunExitStatus::kQuitEarly);
     // Since the flow is exited already, we don't have anything to close or
     // finish setting up.
   }
@@ -216,8 +210,7 @@ void FirstRunFlowControllerLacros::CancelPostSignInFlow() {
 
 bool FirstRunFlowControllerLacros::PreFinishWithBrowser() {
   std::move(first_run_exited_callback_)
-      .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
-           ProfilePicker::FirstRunExitSource::kFlowFinished);
+      .Run(ProfilePicker::FirstRunExitStatus::kCompleted);
   return true;
 }
 

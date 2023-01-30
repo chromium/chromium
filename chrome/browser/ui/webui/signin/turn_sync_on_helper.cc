@@ -234,10 +234,6 @@ TurnSyncOnHelper::TurnSyncOnHelper(
                        base::OnceClosure()) {}
 
 TurnSyncOnHelper::~TurnSyncOnHelper() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Destroying TurnSyncOnHelper.";
-#endif
-
   DCHECK_EQ(this, GetCurrentTurnSyncOnHelper(profile_));
   SetCurrentTurnSyncOnHelper(profile_, nullptr);
 }
@@ -253,9 +249,6 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
   DCHECK(!account_info_.email.empty());
 
   if (HasCanOfferSigninError()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    LOG(WARNING) << "crbug.com/1340791 | Not able to offer sign in.";
-#endif
     AbortAndDelete();
     return;
   }
@@ -264,13 +257,6 @@ void TurnSyncOnHelper::TurnSyncOnInternal() {
     TurnSyncOnWithProfileMode(ProfileMode::CURRENT_PROFILE);
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Cross-account error. Last GaiaID: "
-               << profile_->GetPrefs()->GetString(
-                      prefs::kGoogleServicesLastGaiaId)
-               << " -- current GaiaID: " << account_info_.gaia;
-#endif
 
   // Handles cross account sign in error. If |account_info_| does not match the
   // last authenticated account of the current profile, then Chrome will show a
@@ -351,10 +337,6 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
 }
 
 void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Profile mode: "
-               << static_cast<int>(profile_mode);
-#endif
   switch (profile_mode) {
     case ProfileMode::CURRENT_PROFILE: {
       // If this is a new signin (no account authenticated yet) try loading
@@ -379,12 +361,6 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
 }
 
 void TurnSyncOnHelper::OnRegisteredForPolicy(bool is_account_managed) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING)
-      << "crbug.com/1340791 | Policy registration passed, is_account_managed="
-      << is_account_managed;
-#endif
-
   if (!is_account_managed) {
     // Just finish signing in.
     DVLOG(1) << "Policy registration failed";
@@ -406,9 +382,6 @@ void TurnSyncOnHelper::OnRegisteredForPolicy(bool is_account_managed) {
 }
 
 void TurnSyncOnHelper::LoadPolicyWithCachedCredentials() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Requesting policies";
-#endif
   DCHECK(policy_fetch_tracker_);
   bool fetch_started = policy_fetch_tracker_->FetchPolicy(
       base::BindOnce(&TurnSyncOnHelper::SigninAndShowSyncConfirmationUI,
@@ -492,10 +465,6 @@ void TurnSyncOnHelper::OnNewSignedInProfileCreated(Profile* new_profile) {
 }
 
 void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Passed initial set up, getting ready to "
-                  "show the Sync opt-in screen";
-#endif
   auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
 
   // Signin.
@@ -563,20 +532,12 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     if (may_have_cloud_policies &&
         SyncStartupTracker::GetServiceStartupState(sync_service) ==
             SyncStartupTracker::ServiceStartupState::kPending) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      LOG(WARNING) << "crbug.com/1340791 | Waiting for Sync service to start.";
-#endif
       sync_startup_tracker_ = std::make_unique<SyncStartupTracker>(
           sync_service,
           base::BindOnce(&TurnSyncOnHelper::OnSyncStartupStateChanged,
                          weak_pointer_factory_.GetWeakPtr()));
       return;
     }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    LOG(WARNING) << "crbug.com/1340791 | Sync service is ready.";
-  } else {
-    LOG(WARNING) << "crbug.com/1340791 | Sync service is not available.";
-#endif
   }
   ShowSyncConfirmationUI();
 }
@@ -588,18 +549,10 @@ void TurnSyncOnHelper::OnSyncStartupStateChanged(
       NOTREACHED();
       break;
     case SyncStartupTracker::ServiceStartupState::kTimeout:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      LOG(WARNING) << "crbug.com/1340791 | "
-#else
-      DVLOG(1)
-#endif
-                   << "Waiting for Sync Service to start timed out.";
+      DVLOG(1) << "Waiting for Sync Service to start timed out.";
       [[fallthrough]];
     case SyncStartupTracker::ServiceStartupState::kError:
     case SyncStartupTracker::ServiceStartupState::kComplete:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      LOG(WARNING) << "crbug.com/1340791 | Sync startup wait ended.";
-#endif
       DCHECK(sync_startup_tracker_);
       sync_startup_tracker_.reset();
       ShowSyncConfirmationUI();
@@ -620,19 +573,12 @@ bool TurnSyncOnHelper::HasCurrentTurnSyncOnHelperForTesting(Profile* profile) {
 
 void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   if (g_show_sync_enabled_ui_for_testing_ || GetSyncService()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    LOG(WARNING) << "crbug.com/1340791 | Showing Sync opt-in screen.";
-#endif
     signin_metrics::LogSyncOptInStarted(signin_access_point_);
     delegate_->ShowSyncConfirmation(
         base::BindOnce(&TurnSyncOnHelper::FinishSyncSetupAndDelete,
                        weak_pointer_factory_.GetWeakPtr()));
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Proceeding with Sync disabled.";
-#endif
 
   // Sync is disabled. Check if we need to display the disabled confirmation UI
   // first.
@@ -668,11 +614,6 @@ void TurnSyncOnHelper::FinishSyncSetupAndDelete(
       UnifiedConsentServiceFactory::GetForProfile(profile_);
   auto* primary_account_mutator = identity_manager_->GetPrimaryAccountMutator();
   DCHECK(primary_account_mutator);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | FinishSyncSetupAndDelete with result="
-               << static_cast<int>(result);
-#endif
 
   switch (result) {
     case LoginUIService::CONFIGURE_SYNC_FIRST:

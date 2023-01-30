@@ -20,7 +20,7 @@ class FirstRunFlowControllerLacros
       ProfilePickerWebContentsHost* host,
       ClearHostClosure clear_host_callback,
       Profile* profile,
-      ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback);
+      ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
 
   FirstRunFlowControllerLacros(const FirstRunFlowControllerLacros&) = delete;
   FirstRunFlowControllerLacros& operator=(const FirstRunFlowControllerLacros&) =
@@ -51,7 +51,7 @@ class FirstRunFlowControllerLacros
   // Captures the operation that the user expected to run at the time we chose
   // to show them the FRE. When we exit the FRE, we MUST run this. We expect
   // that it will cause a UI for the primary profile to be opened.
-  ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback_;
+  ProfilePicker::FirstRunExitedCallback first_run_exited_callback_;
 
   // Tracks whether the user got to the last step of the FRE flow.
   bool sync_confirmation_seen_ = false;

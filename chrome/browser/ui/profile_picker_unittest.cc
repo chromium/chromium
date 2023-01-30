@@ -237,9 +237,7 @@ TEST_F(ProfilePickerParamsTest, ForFirstRun_Notify) {
     EXPECT_EQ(base::FilePath::FromASCII(chrome::kInitialProfile),
               params.profile_path().BaseName());
     EXPECT_CALL(callback, Run(ProfilePicker::FirstRunExitStatus::kCompleted));
-    params.NotifyFirstRunExited(
-        ProfilePicker::FirstRunExitStatus::kCompleted,
-        ProfilePicker::FirstRunExitSource::kFlowFinished);
+    params.NotifyFirstRunExited(ProfilePicker::FirstRunExitStatus::kCompleted);
   }
 }
 #endif

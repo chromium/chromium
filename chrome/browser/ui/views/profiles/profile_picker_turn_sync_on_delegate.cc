@@ -76,10 +76,6 @@ ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
     const SigninUIError& error) {
   LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Login error: "
-               << static_cast<int>(error.type());
-#endif
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile onboarding is silently skipped if there's any error.
     if (controller_)
@@ -109,9 +105,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Unexpected data merge prompt";
-#endif
   // A brand new profile cannot have a conflict in sync accounts.
   NOTREACHED();
 }
@@ -178,9 +171,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
     bool is_managed_account,
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Sync disabled prompt.";
-#endif
   DCHECK(callback);
   DCHECK(!IsLacrosPrimaryProfileFirstRun(profile_));
   sync_disabled_ = true;
@@ -204,9 +194,6 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
 void ProfilePickerTurnSyncOnDelegate::SwitchToProfile(Profile* new_profile) {
   // A brand new profile cannot have preexisting syncable data and thus
   // switching to another profile does never get offered.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | SwitchToProfile not expected.";
-#endif
   NOTREACHED();
 }
 
@@ -277,12 +264,6 @@ void ProfilePickerTurnSyncOnDelegate::OnEnterpriseWelcomeClosed(
   // For the Profile Picker flows, the profile should always be new. Other flows
   // also handle whether data from the existing profile should be merged.
   DCHECK_EQ(choice, signin::SIGNIN_CHOICE_NEW_PROFILE);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  LOG(WARNING) << "crbug.com/1340791 | Closed EnterpriseWelcome with choice="
-               << static_cast<int>(choice)
-               << " and type=" << static_cast<int>(type);
-#endif
 
   switch (type) {
     case EnterpriseProfileWelcomeUI::ScreenType::kEntepriseAccountSyncEnabled:
