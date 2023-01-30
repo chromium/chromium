@@ -32,7 +32,7 @@ class UConvScoper {
 
   ~UConvScoper() {
     if (converter_)
-      ucnv_close(converter_);
+      ucnv_close(converter_.ExtractAsDangling());
   }
 
   // Returns the converter object, may be NULL.
