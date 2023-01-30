@@ -9411,6 +9411,7 @@
                         "AllowURNsInIframes",
                         "BiddingAndScoringDebugReportingAPI",
                         "BrowsingTopics",
+                        "BrowsingTopicsXHR",
                         "FencedFrames",
                         "FencedFramesAPIChanges",
                         "InterestGroupStorage",
@@ -9436,6 +9437,7 @@
                     },
                     "enable_features": [
                         "BrowsingTopics",
+                        "BrowsingTopicsXHR",
                         "FencedFrames",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
