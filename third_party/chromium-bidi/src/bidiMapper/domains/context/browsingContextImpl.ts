@@ -50,6 +50,7 @@ export class BrowsingContextImpl {
   #cdpSessionId: string;
   #cdpClient: CdpClient;
   #maybeDefaultRealm: Realm | undefined;
+  #browsingContextStorage: BrowsingContextStorage;
 
   get #defaultRealm(): Realm {
     if (this.#maybeDefaultRealm === undefined) {
@@ -66,7 +67,8 @@ export class BrowsingContextImpl {
     cdpClient: CdpClient,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    browsingContextStorage: BrowsingContextStorage
   ) {
     this.#contextId = contextId;
     this.#parentId = parentId;
@@ -74,10 +76,11 @@ export class BrowsingContextImpl {
     this.#cdpBrowserContextId = cdpBrowserContextId;
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
+    this.#browsingContextStorage = browsingContextStorage;
 
     this.#initListeners();
 
-    BrowsingContextStorage.addContext(this);
+    this.#browsingContextStorage.addContext(this);
   }
 
   public static async createFrameContext(
@@ -85,7 +88,8 @@ export class BrowsingContextImpl {
     parentId: string | null,
     cdpClient: CdpClient,
     cdpSessionId: string,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
       contextId,
@@ -93,7 +97,8 @@ export class BrowsingContextImpl {
       cdpClient,
       cdpSessionId,
       null,
-      eventManager
+      eventManager,
+      browsingContextStorage
     );
     context.#targetDefers.targetUnblocked.resolve();
 
@@ -112,7 +117,8 @@ export class BrowsingContextImpl {
     cdpClient: CdpClient,
     cdpSessionId: string,
     cdpBrowserContextId: string | null,
-    eventManager: IEventManager
+    eventManager: IEventManager,
+    browsingContextStorage: BrowsingContextStorage
   ): Promise<void> {
     const context = new BrowsingContextImpl(
       contextId,
@@ -120,7 +126,8 @@ export class BrowsingContextImpl {
       cdpClient,
       cdpSessionId,
       cdpBrowserContextId,
-      eventManager
+      eventManager,
+      browsingContextStorage
     );
 
     // No need in waiting for target to be unblocked.
@@ -164,7 +171,9 @@ export class BrowsingContextImpl {
 
     // Remove context from the parent.
     if (this.parentId !== null) {
-      const parent = BrowsingContextStorage.getKnownContext(this.parentId);
+      const parent = this.#browsingContextStorage.getKnownContext(
+        this.parentId
+      );
       parent.#children.delete(this.contextId);
     }
 
@@ -175,7 +184,7 @@ export class BrowsingContextImpl {
       },
       this.contextId
     );
-    BrowsingContextStorage.removeContext(this.contextId);
+    this.#browsingContextStorage.removeContext(this.contextId);
   }
 
   async #removeChildContexts() {

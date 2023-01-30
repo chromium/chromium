@@ -34,6 +34,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #messageQueue: ProcessingQueue<OutgoingBidiMessage>;
   #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
+  #browsingContextStorage: BrowsingContextStorage;
 
   private constructor(
     bidiTransport: BidiTransport,
@@ -42,6 +43,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     parser?: BidiParser
   ) {
     super();
+    this.#browsingContextStorage = new BrowsingContextStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage
     );
@@ -51,7 +53,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       cdpConnection,
       new EventManager(this),
       selfTargetId,
-      parser
+      parser,
+      this.#browsingContextStorage
     );
     this.#commandProcessor.on(
       'response',
@@ -91,7 +94,9 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
 
   async topLevelContextsLoaded() {
     await Promise.all(
-      BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
+      this.#browsingContextStorage
+        .getTopLevelContexts()
+        .map((c) => c.awaitLoaded())
     );
   }
 
@@ -119,4 +124,8 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
   #handleIncomingMessage = async (message: Message.RawCommandRequest) => {
     this.#commandProcessor.processCommand(message);
   };
+
+  getBrowsingContextStorage(): BrowsingContextStorage {
+    return this.#browsingContextStorage;
+  }
 }

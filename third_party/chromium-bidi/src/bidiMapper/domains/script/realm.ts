@@ -30,6 +30,16 @@ const scriptEvaluator = new ScriptEvaluator();
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();
 
+  readonly #realmId: string;
+  readonly #browsingContextId: string;
+  readonly #navigableId: string;
+  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
+  readonly #origin: string;
+  readonly #type: RealmType;
+  readonly #sandbox: string | undefined;
+  readonly #cdpSessionId: string;
+  readonly #cdpClient: CdpClient;
+
   static create(
     realmId: string,
     browsingContextId: string,
@@ -146,16 +156,6 @@ export class Realm {
     scriptEvaluator.realmDestroyed(this);
   }
 
-  readonly #realmId: string;
-  readonly #browsingContextId: string;
-  readonly #navigableId: string;
-  readonly #executionContextId: Protocol.Runtime.ExecutionContextId;
-  readonly #origin: string;
-  readonly #type: RealmType;
-  readonly #sandbox: string | undefined;
-  readonly #cdpSessionId: string;
-  readonly #cdpClient: CdpClient;
-
   private constructor(
     realmId: string,
     browsingContextId: string,
@@ -221,9 +221,10 @@ export class Realm {
     _this: Script.ArgumentValue,
     _arguments: Script.ArgumentValue[],
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.OwnershipModel,
+    browsingContextStorage: BrowsingContextStorage
   ): Promise<Script.CallFunctionResult> {
-    const context = BrowsingContextStorage.getKnownContext(
+    const context = browsingContextStorage.getKnownContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();
@@ -243,9 +244,10 @@ export class Realm {
   async scriptEvaluate(
     expression: string,
     awaitPromise: boolean,
-    resultOwnership: Script.OwnershipModel
+    resultOwnership: Script.OwnershipModel,
+    browsingContextStorage: BrowsingContextStorage
   ): Promise<Script.EvaluateResult> {
-    const context = BrowsingContextStorage.getKnownContext(
+    const context = browsingContextStorage.getKnownContext(
       this.browsingContextId
     );
     await context.awaitUnblocked();

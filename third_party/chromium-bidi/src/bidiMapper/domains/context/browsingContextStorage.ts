@@ -19,37 +19,35 @@ import {BrowsingContextImpl} from './browsingContextImpl.js';
 import {Message} from '../../../protocol/protocol.js';
 
 export class BrowsingContextStorage {
-  static #contexts: Map<string, BrowsingContextImpl> = new Map();
+  readonly #contexts = new Map<string, BrowsingContextImpl>();
 
-  static getTopLevelContexts(): BrowsingContextImpl[] {
-    return Array.from(BrowsingContextStorage.#contexts.values()).filter(
+  getTopLevelContexts(): BrowsingContextImpl[] {
+    return Array.from(this.#contexts.values()).filter(
       (c) => c.parentId === null
     );
   }
 
-  static removeContext(contextId: string) {
-    BrowsingContextStorage.#contexts.delete(contextId);
+  removeContext(contextId: string) {
+    this.#contexts.delete(contextId);
   }
 
-  static addContext(context: BrowsingContextImpl) {
-    BrowsingContextStorage.#contexts.set(context.contextId, context);
+  addContext(context: BrowsingContextImpl) {
+    this.#contexts.set(context.contextId, context);
     if (context.parentId !== null) {
-      BrowsingContextStorage.getKnownContext(context.parentId).addChild(
-        context
-      );
+      this.getKnownContext(context.parentId).addChild(context);
     }
   }
 
-  static hasKnownContext(contextId: string): boolean {
-    return BrowsingContextStorage.#contexts.has(contextId);
+  hasKnownContext(contextId: string): boolean {
+    return this.#contexts.has(contextId);
   }
 
-  static findContext(contextId: string): BrowsingContextImpl | undefined {
-    return BrowsingContextStorage.#contexts.get(contextId)!;
+  findContext(contextId: string): BrowsingContextImpl {
+    return this.#contexts.get(contextId)!;
   }
 
-  static getKnownContext(contextId: string): BrowsingContextImpl {
-    const result = BrowsingContextStorage.findContext(contextId);
+  getKnownContext(contextId: string): BrowsingContextImpl {
+    const result = this.findContext(contextId);
     if (result === undefined) {
       throw new Message.NoSuchFrameException(`Context ${contextId} not found`);
     }

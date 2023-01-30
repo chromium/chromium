@@ -36,6 +36,11 @@ export class SubscriptionManager {
       Map<Session.SubscribeParametersEvent, number>
     >
   > = new Map();
+  #browsingContextStorage: BrowsingContextStorage;
+
+  constructor(browsingContextStorage: BrowsingContextStorage) {
+    this.#browsingContextStorage = browsingContextStorage;
+  }
 
   getChannelsSubscribedToEvent(
     eventMethod: Session.SubscribeParametersEvent,
@@ -94,7 +99,8 @@ export class SubscriptionManager {
     const result: (CommonDataTypes.BrowsingContext | null)[] = [null];
     while (contextId !== null) {
       result.push(contextId);
-      const maybeParentContext = BrowsingContextStorage.findContext(contextId);
+      const maybeParentContext =
+        this.#browsingContextStorage.findContext(contextId);
       contextId = maybeParentContext?.parentId ?? null;
     }
     return result;

@@ -27,6 +27,7 @@ import {CdpConnection} from './CdpConnection.js';
 import {OutgoingBidiMessage} from './OutgoindBidiMessage.js';
 import {IEventManager} from './domains/events/EventManager.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
+import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
 
 type CommandProcessorEvents = {
   response: Promise<OutgoingBidiMessage>;
@@ -91,14 +92,16 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEvents> {
     cdpConnection: CdpConnection,
     eventManager: IEventManager,
     selfTargetId: string,
-    parser: BidiParser = new BidiNoOpParser()
+    parser: BidiParser = new BidiNoOpParser(),
+    browsingContextStorage: BrowsingContextStorage
   ) {
     super();
     this.#eventManager = eventManager;
     this.#contextProcessor = new BrowsingContextProcessor(
       cdpConnection,
       selfTargetId,
-      eventManager
+      eventManager,
+      browsingContextStorage
     );
     this.#parser = parser;
   }
