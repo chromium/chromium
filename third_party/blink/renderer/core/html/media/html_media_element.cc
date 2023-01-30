@@ -647,8 +647,12 @@ void HTMLMediaElement::DidMoveToNewDocument(Document& old_document) {
 
 bool HTMLMediaElement::ShouldReusePlayer(Document& old_document,
                                          Document& new_document) const {
+  // Don't reuse player if the Document Picture-in-Picture API is disabled for
+  // both documents.
   if (!RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
-          GetExecutionContext())) {
+          old_document.domWindow()->GetExecutionContext()) &&
+      !RuntimeEnabledFeatures::DocumentPictureInPictureAPIEnabled(
+          new_document.domWindow()->GetExecutionContext())) {
     return false;
   }
 
