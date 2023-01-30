@@ -1,0 +1,36 @@
+<!doctype html>
+<title>Spellchecker should not keep an unbounded number of detached nodes alive</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// Spins spellchecker until idle. Return whether it's actually run.
+function spinSpellChecker() {
+  let spellCheckerIsRun = false;
+  while (internals.idleTimeSpellCheckerState(document) !== 'Inactive') {
+    internals.runIdleTimeSpellChecker(document);
+    spellCheckerIsRun = true;
+  }
+  return spellCheckerIsRun;
+}
+
+test(() => {
+  const n = 100;
+  const numLiveNodesBefore = internals.numberOfLiveNodes();
+
+  for (let i = 0; i < n; ++i) {
+    {
+      let input = document.createElement('input');
+      document.body.appendChild(input);
+      input.focus();
+      assert_true(spinSpellChecker(), 'spellchecker is run');
+      input.remove();
+    }
+    gc();
+  }
+
+  const numLiveNodesAfter = internals.numberOfLiveNodes();
+  assert_less_than_equal(numLiveNodesAfter, numLiveNodesBefore + 10);
+});
+</script>
+</body>

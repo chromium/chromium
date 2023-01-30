@@ -92,7 +92,7 @@ class ColdModeSpellCheckRequester
     int previous_checked_length = 0;
     int accumulated_delta = 0;
   };
-  HeapHashMap<Member<const Element>, FullyCheckedEditableEntry>
+  HeapHashMap<WeakMember<const Element>, FullyCheckedEditableEntry>
       fully_checked_root_editables_;
 
   // A test-only flag for forcing lifecycle advancing.
