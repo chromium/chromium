@@ -230,11 +230,12 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion33ToCurrent) {
 
     // Verify that data is preserved across the migration.
     sql::Statement s(
-        db.GetUniqueStatement("SELECT * FROM aggregatable_report_metadata"));
+        db.GetUniqueStatement("SELECT report_time,initial_report_time FROM "
+                              "aggregatable_report_metadata"));
 
     ASSERT_TRUE(s.Step());
-    ASSERT_EQ(6, s.ColumnInt(5));  // report_time
-    ASSERT_EQ(6, s.ColumnInt(7));  // initial_report_time
+    ASSERT_EQ(6, s.ColumnInt(0));
+    ASSERT_EQ(6, s.ColumnInt(1));
     ASSERT_FALSE(s.Step());
   }
 
@@ -701,6 +702,111 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion42ToCurrent) {
     ASSERT_TRUE(s.Step());
     ASSERT_EQ(9, s.ColumnInt64(0));  // from time
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion43ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(43), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    {
+      static constexpr char kSql[] = "SELECT * FROM event_level_reports";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ(1, s.ColumnInt(0));
+      ASSERT_EQ(2, s.ColumnInt(1));
+      ASSERT_EQ(3, s.ColumnInt(2));
+      ASSERT_EQ(4, s.ColumnInt(3));
+      ASSERT_EQ(5, s.ColumnInt(4));
+      ASSERT_EQ(6, s.ColumnInt(5));
+      ASSERT_EQ(7, s.ColumnInt(6));
+      ASSERT_EQ(8, s.ColumnInt(7));
+      ASSERT_EQ(9, s.ColumnInt(8));
+      ASSERT_FALSE(s.Step());
+    }
+
+    {
+      static constexpr char kSql[] =
+          "SELECT * FROM aggregatable_report_metadata";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ(1, s.ColumnInt(0));
+      ASSERT_EQ(2, s.ColumnInt(1));
+      ASSERT_EQ(3, s.ColumnInt(2));
+      ASSERT_EQ(4, s.ColumnInt(3));
+      ASSERT_EQ(5, s.ColumnInt(4));
+      ASSERT_EQ(6, s.ColumnInt(5));
+      ASSERT_EQ(7, s.ColumnInt(6));
+      ASSERT_EQ(8, s.ColumnInt(7));
+      ASSERT_EQ(9, s.ColumnInt(8));
+      ASSERT_EQ(10, s.ColumnInt(9));
+      ASSERT_FALSE(s.Step());
+    }
+  }
+
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    // Check version.
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    {
+      static constexpr char kSql[] = "SELECT * FROM event_level_reports";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ(1, s.ColumnInt(0));
+      ASSERT_EQ(2, s.ColumnInt(1));
+      ASSERT_EQ(3, s.ColumnInt(2));
+      ASSERT_EQ(4, s.ColumnInt(3));
+      ASSERT_EQ(5, s.ColumnInt(4));
+      ASSERT_EQ(6, s.ColumnInt(5));
+      ASSERT_EQ(7, s.ColumnInt(6));
+      ASSERT_EQ(8, s.ColumnInt(7));
+      ASSERT_EQ(9, s.ColumnInt(8));
+      ASSERT_EQ("https://d.test", s.ColumnString(9));
+      ASSERT_FALSE(s.Step());
+    }
+
+    {
+      static constexpr char kSql[] =
+          "SELECT * FROM aggregatable_report_metadata";
+      sql::Statement s(db.GetUniqueStatement(kSql));
+
+      ASSERT_TRUE(s.Step());
+      ASSERT_EQ(1, s.ColumnInt(0));
+      ASSERT_EQ(2, s.ColumnInt(1));
+      ASSERT_EQ(3, s.ColumnInt(2));
+      ASSERT_EQ(4, s.ColumnInt(3));
+      ASSERT_EQ(5, s.ColumnInt(4));
+      ASSERT_EQ(6, s.ColumnInt(5));
+      ASSERT_EQ(7, s.ColumnInt(6));
+      ASSERT_EQ(8, s.ColumnInt(7));
+      ASSERT_EQ(9, s.ColumnInt(8));
+      ASSERT_EQ(10, s.ColumnInt(9));
+      ASSERT_EQ("https://d.test", s.ColumnString(10));
+      ASSERT_FALSE(s.Step());
+    }
   }
 
   // DB creation histograms should be recorded.

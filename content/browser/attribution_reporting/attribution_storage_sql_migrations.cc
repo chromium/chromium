@@ -611,6 +611,139 @@ bool MigrateToVersion43(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion44(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  {
+    static constexpr char kConversionTableSql[] =
+        "CREATE TABLE new_event_level_reports("
+        "report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+        "source_id INTEGER NOT NULL,"
+        "trigger_data INTEGER NOT NULL,"
+        "trigger_time INTEGER NOT NULL,"
+        "report_time INTEGER NOT NULL,"
+        "priority INTEGER NOT NULL,"
+        "failed_send_attempts INTEGER NOT NULL,"
+        "external_report_id TEXT NOT NULL,"
+        "debug_key INTEGER,"
+        "destination_origin TEXT NOT NULL)";
+    if (!db->Execute(kConversionTableSql)) {
+      return false;
+    }
+
+    // Use the destination site as the destination origin since we don't have
+    // finer-grained data available.
+    static constexpr char kInsertReportsSql[] =
+        "INSERT INTO new_event_level_reports "
+        "SELECT R.report_id,R.source_id,R.trigger_data,R.trigger_time,"
+        "R.report_time,R.priority,R.failed_send_attempts,R.external_report_id,"
+        "R.debug_key,I.destination_site "
+        "FROM event_level_reports R "
+        "JOIN sources I ON I.source_id=R.source_id";
+    if (!db->Execute(kInsertReportsSql)) {
+      return false;
+    }
+
+    if (!db->Execute("DROP TABLE event_level_reports")) {
+      return false;
+    }
+
+    static constexpr char kRenameSql[] =
+        "ALTER TABLE new_event_level_reports "
+        "RENAME TO event_level_reports";
+    if (!db->Execute(kRenameSql)) {
+      return false;
+    }
+
+    static constexpr char kConversionReportTimeIndexSql[] =
+        "CREATE INDEX event_level_reports_by_report_time "
+        "ON event_level_reports(report_time)";
+    if (!db->Execute(kConversionReportTimeIndexSql)) {
+      return false;
+    }
+
+    static constexpr char kConversionImpressionIdIndexSql[] =
+        "CREATE INDEX event_level_reports_by_source_id "
+        "ON event_level_reports(source_id)";
+    if (!db->Execute(kConversionImpressionIdIndexSql)) {
+      return false;
+    }
+  }
+
+  {
+    static constexpr char kAggregatableReportMetadataTableSql[] =
+        "CREATE TABLE new_aggregatable_report_metadata("
+        "aggregation_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+        "source_id INTEGER NOT NULL,"
+        "trigger_time INTEGER NOT NULL,"
+        "debug_key INTEGER,"
+        "external_report_id TEXT NOT NULL,"
+        "report_time INTEGER NOT NULL,"
+        "failed_send_attempts INTEGER NOT NULL,"
+        "initial_report_time INTEGER NOT NULL,"
+        "aggregation_coordinator INTEGER NOT NULL,"
+        "attestation_token TEXT,"
+        "destination_origin TEXT NOT NULL)";
+    if (!db->Execute(kAggregatableReportMetadataTableSql)) {
+      return false;
+    }
+
+    // Use the destination site as the destination origin since we don't have
+    // finer-grained data available.
+    static constexpr char kInsertReportsSql[] =
+        "INSERT INTO new_aggregatable_report_metadata "
+        "SELECT R.aggregation_id,R.source_id,R.trigger_time,R.debug_key,"
+        "R.external_report_id,R.report_time,R.failed_send_attempts,"
+        "R.initial_report_time,R.aggregation_coordinator,R.attestation_token,"
+        "I.destination_site "
+        "FROM aggregatable_report_metadata R "
+        "JOIN sources I ON I.source_id=R.source_id";
+    if (!db->Execute(kInsertReportsSql)) {
+      return false;
+    }
+
+    if (!db->Execute("DROP TABLE aggregatable_report_metadata")) {
+      return false;
+    }
+
+    static constexpr char kRenameSql[] =
+        "ALTER TABLE new_aggregatable_report_metadata "
+        "RENAME TO aggregatable_report_metadata";
+    if (!db->Execute(kRenameSql)) {
+      return false;
+    }
+
+    static constexpr char kAggregateSourceIdIndexSql[] =
+        "CREATE INDEX aggregate_source_id_idx "
+        "ON aggregatable_report_metadata(source_id)";
+    if (!db->Execute(kAggregateSourceIdIndexSql)) {
+      return false;
+    }
+
+    static constexpr char kAggregateTriggerTimeIndexSql[] =
+        "CREATE INDEX aggregate_trigger_time_idx "
+        "ON aggregatable_report_metadata(trigger_time)";
+    if (!db->Execute(kAggregateTriggerTimeIndexSql)) {
+      return false;
+    }
+
+    static constexpr char kAggregateReportTimeIndexSql[] =
+        "CREATE INDEX aggregate_report_time_idx "
+        "ON aggregatable_report_metadata(report_time)";
+    if (!db->Execute(kAggregateReportTimeIndexSql)) {
+      return false;
+    }
+  }
+
+  meta_table->SetVersionNumber(44);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -670,6 +803,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 42) {
     if (!MigrateToVersion43(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 43) {
+    if (!MigrateToVersion44(db, meta_table)) {
       return false;
     }
   }
