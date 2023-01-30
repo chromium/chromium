@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -80,13 +81,13 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
       case CSSSelector::kPseudoTargetText:
       case CSSSelector::kPseudoGrammarError:
       case CSSSelector::kPseudoSpellingError:
-        if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
+      case CSSSelector::kPseudoHighlight:
+        if (UsesHighlightPseudoInheritance(
+                component->GetPseudoId(component->GetPseudoType()))) {
           return ValidPropertyFilter::kHighlight;
         } else {
           return ValidPropertyFilter::kHighlightLegacy;
         }
-      case CSSSelector::kPseudoHighlight:
-        return ValidPropertyFilter::kHighlight;
       default:
         break;
     }

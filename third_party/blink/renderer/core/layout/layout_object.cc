@@ -113,6 +113,7 @@
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
@@ -2569,41 +2570,12 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
 
       if (style_->HasPseudoElementStyle(pseudo) ||
           style->HasPseudoElementStyle(pseudo)) {
-        const ComputedStyle* pseudo_old_style = nullptr;
-        const ComputedStyle* pseudo_new_style = nullptr;
-
-        // TODO(rego): Refactor this code so we can call something like
-        // HighlightData()->PseudoStyle(pseudo) and avoid the switch (we could
-        // also avoid the switch in
-        // HighlightPaintingUtils::HighlightPseudoStyle().
-        switch (pseudo) {
-          case kPseudoIdTargetText:
-            pseudo_old_style = style_->HighlightData()
-                                   ? style_->HighlightData()->TargetText()
+        const ComputedStyle* pseudo_old_style =
+            style_->HighlightData() ? style_->HighlightData()->Style(pseudo)
+                                    : nullptr;
+        const ComputedStyle* pseudo_new_style =
+            style->HighlightData() ? style->HighlightData()->Style(pseudo)
                                    : nullptr;
-            pseudo_new_style = style->HighlightData()
-                                   ? style->HighlightData()->TargetText()
-                                   : nullptr;
-            break;
-          case kPseudoIdSpellingError:
-            pseudo_old_style = style_->HighlightData()
-                                   ? style_->HighlightData()->SpellingError()
-                                   : nullptr;
-            pseudo_new_style = style->HighlightData()
-                                   ? style->HighlightData()->SpellingError()
-                                   : nullptr;
-            break;
-          case kPseudoIdGrammarError:
-            pseudo_old_style = style_->HighlightData()
-                                   ? style_->HighlightData()->GrammarError()
-                                   : nullptr;
-            pseudo_new_style = style->HighlightData()
-                                   ? style->HighlightData()->GrammarError()
-                                   : nullptr;
-            break;
-          default:
-            NOTREACHED();
-        }
 
         if (pseudo_old_style && pseudo_new_style) {
           diff.Merge(pseudo_old_style->VisualInvalidationDiff(
@@ -2614,16 +2586,19 @@ void LayoutObject::SetStyle(scoped_refptr<const ComputedStyle> style,
       }
     };
 
-    if (RuntimeEnabledFeatures::HighlightInheritanceEnabled()) {
-      // TODO(rego): We don't do anything regarding ::selection, as ::selection
-      // uses its own mechanism for this (see
-      // LayoutObject::InvalidateSelectedChildrenOnStyleChange()). Maybe in the
-      // future we could detect changes here for ::selection too.
+    // See HighlightRegistry for ::highlight() paint invalidation.
+    // TODO(rego): We don't do anything regarding ::selection, as ::selection
+    // uses its own mechanism for this (see
+    // LayoutObject::InvalidateSelectedChildrenOnStyleChange()). Maybe in the
+    // future we could detect changes here for ::selection too.
+    if (UsesHighlightPseudoInheritance(kPseudoIdTargetText)) {
       HighlightPseudoUpdateDiff(kPseudoIdTargetText);
-      if (RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-        HighlightPseudoUpdateDiff(kPseudoIdSpellingError);
-        HighlightPseudoUpdateDiff(kPseudoIdGrammarError);
-      }
+    }
+    if (UsesHighlightPseudoInheritance(kPseudoIdSpellingError)) {
+      HighlightPseudoUpdateDiff(kPseudoIdSpellingError);
+    }
+    if (UsesHighlightPseudoInheritance(kPseudoIdGrammarError)) {
+      HighlightPseudoUpdateDiff(kPseudoIdGrammarError);
     }
   }
 
