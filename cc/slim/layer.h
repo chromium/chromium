@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   // ancestor layers. The root layer's position is not used as it always
   // appears at the origin of the viewport.
   void SetPosition(const gfx::PointF& position);
+  // TODO(crbug.com/1408128): Return by reference after no longer wrapping cc.
   const gfx::PointF position() const;
 
   // Set and get the layers bounds. This is specified in layer space, which
@@ -181,6 +182,12 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   explicit Layer(scoped_refptr<cc::Layer> cc_layer);
   virtual ~Layer();
 
+  // Called by LayerTree.
+  virtual bool HasDrawableContent() const;
+
+  void NotifyTreeChanged();
+  void NotifyPropertyChanged();
+
   const scoped_refptr<cc::Layer> cc_layer_;
 
  private:
@@ -197,6 +204,21 @@ class COMPONENT_EXPORT(CC_SLIM) Layer : public base::RefCounted<Layer> {
   std::vector<scoped_refptr<Layer>> children_;
 
   raw_ptr<LayerTree> layer_tree_ = nullptr;
+
+  gfx::PointF position_;
+  gfx::Size bounds_;
+  gfx::Transform transform_;
+  gfx::Point3F transform_origin_;
+
+  std::vector<Filter> filters_;
+
+  SkColor4f background_color_ = SkColors::kTransparent;
+  float opacity_ = 1.0f;
+  bool is_drawable_ : 1;
+  bool contents_opaque_ : 1;
+  bool draws_content_ : 1;
+  bool hide_layer_and_subtree_ : 1;
+  bool masks_to_bounds_ : 1;
 };
 
 }  // namespace cc::slim

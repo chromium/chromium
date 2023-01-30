@@ -11,10 +11,12 @@
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "cc/layers/layer.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/paint/filter_operations.h"
+#include "cc/slim/features.h"
 #include "cc/slim/layer_tree.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -47,12 +49,20 @@ cc::FilterOperations ToCcFilters(std::vector<cc::slim::Filter> filters) {
 // static
 scoped_refptr<Layer> Layer::Create() {
   scoped_refptr<cc::Layer> cc_layer;
-  cc_layer = cc::Layer::Create();
+  if (!features::IsSlimCompositorEnabled()) {
+    cc_layer = cc::Layer::Create();
+  }
   return base::AdoptRef(new Layer(std::move(cc_layer)));
 }
 
 Layer::Layer(scoped_refptr<cc::Layer> cc_layer)
-    : cc_layer_(std::move(cc_layer)), id_(g_next_id.GetNext()) {}
+    : cc_layer_(std::move(cc_layer)),
+      id_(g_next_id.GetNext()),
+      is_drawable_(false),
+      contents_opaque_(false),
+      draws_content_(false),
+      hide_layer_and_subtree_(false),
+      masks_to_bounds_(false) {}
 
 Layer::~Layer() {
   RemoveAllChildren();
@@ -95,6 +105,7 @@ void Layer::InsertChildSlim(scoped_refptr<Layer> child, size_t position) {
   WillAddChildSlim(child.get());
   const size_t index = std::min(position, children_.size());
   children_.insert(children_.begin() + index, std::move(child));
+  NotifyTreeChanged();
 }
 
 void Layer::WillAddChildSlim(Layer* child) {
@@ -124,6 +135,7 @@ void Layer::ReplaceChild(Layer* old_child, scoped_refptr<Layer> new_child) {
   } else {
     children_.erase(it);
   }
+  NotifyTreeChanged();
 }
 
 void Layer::RemoveFromParent() {
@@ -142,6 +154,7 @@ void Layer::RemoveFromParentSlim() {
   base::EraseIf(parent_->children_,
                 [&](auto& ptr) { return ptr.get() == this; });
   parent_ = nullptr;
+  NotifyTreeChanged();
 }
 
 void Layer::RemoveAllChildren() {
@@ -158,6 +171,7 @@ void Layer::RemoveAllChildren() {
     child->parent_ = nullptr;
   }
   children_.clear();
+  NotifyTreeChanged();
 }
 
 bool Layer::HasAncestor(Layer* layer) const {
@@ -172,91 +186,208 @@ bool Layer::HasAncestor(Layer* layer) const {
 }
 
 void Layer::SetPosition(const gfx::PointF& position) {
-  cc_layer()->SetPosition(position);
+  if (cc_layer()) {
+    cc_layer()->SetPosition(position);
+    return;
+  }
+  if (position_ == position) {
+    return;
+  }
+  position_ = position;
+  NotifyPropertyChanged();
 }
 
 const gfx::PointF Layer::position() const {
-  return cc_layer()->position();
+  return cc_layer() ? cc_layer()->position() : position_;
 }
 
 void Layer::SetBounds(const gfx::Size& bounds) {
-  cc_layer()->SetBounds(bounds);
+  if (cc_layer()) {
+    cc_layer()->SetBounds(bounds);
+    return;
+  }
+  if (bounds_ == bounds) {
+    return;
+  }
+  bounds_ = bounds;
+  NotifyPropertyChanged();
 }
 
 const gfx::Size& Layer::bounds() const {
-  return cc_layer()->bounds();
+  return cc_layer() ? cc_layer()->bounds() : bounds_;
 }
 
 void Layer::SetTransform(const gfx::Transform& transform) {
-  cc_layer()->SetTransform(transform);
+  if (cc_layer()) {
+    cc_layer()->SetTransform(transform);
+    return;
+  }
+  if (transform_ == transform) {
+    return;
+  }
+  transform_ = transform;
+  NotifyPropertyChanged();
 }
 
 const gfx::Transform& Layer::transform() const {
-  return cc_layer()->transform();
+  return cc_layer() ? cc_layer()->transform() : transform_;
 }
 
 void Layer::SetTransformOrigin(const gfx::Point3F& origin) {
-  cc_layer()->SetTransformOrigin(origin);
+  if (cc_layer()) {
+    cc_layer()->SetTransformOrigin(origin);
+    return;
+  }
+  if (transform_origin_ == origin) {
+    return;
+  }
+  transform_origin_ = origin;
+  NotifyPropertyChanged();
 }
 
 gfx::Point3F Layer::transform_origin() const {
-  return cc_layer()->transform_origin();
+  return cc_layer() ? cc_layer()->transform_origin() : transform_origin_;
 }
 
 void Layer::SetIsDrawable(bool drawable) {
-  cc_layer()->SetIsDrawable(drawable);
+  if (cc_layer()) {
+    cc_layer()->SetIsDrawable(drawable);
+    return;
+  }
+  if (is_drawable_ == drawable) {
+    return;
+  }
+  is_drawable_ = drawable;
+  SetDrawsContent(HasDrawableContent());
 }
 
 void Layer::SetBackgroundColor(SkColor4f color) {
-  cc_layer()->SetBackgroundColor(color);
+  if (cc_layer()) {
+    cc_layer()->SetBackgroundColor(color);
+    return;
+  }
+  if (background_color_ == color) {
+    return;
+  }
+  background_color_ = color;
+  NotifyPropertyChanged();
 }
 
 SkColor4f Layer::background_color() const {
-  return cc_layer()->background_color();
+  return cc_layer() ? cc_layer()->background_color() : background_color_;
 }
 
 void Layer::SetContentsOpaque(bool opaque) {
-  cc_layer()->SetContentsOpaque(opaque);
+  if (cc_layer()) {
+    cc_layer()->SetContentsOpaque(opaque);
+    return;
+  }
+  if (contents_opaque_ == opaque) {
+    return;
+  }
+  contents_opaque_ = opaque;
+  NotifyPropertyChanged();
 }
 
 bool Layer::contents_opaque() const {
-  return cc_layer()->contents_opaque();
+  return cc_layer() ? cc_layer()->contents_opaque() : contents_opaque_;
 }
 
 void Layer::SetOpacity(float opacity) {
-  cc_layer()->SetOpacity(opacity);
+  if (cc_layer()) {
+    cc_layer()->SetOpacity(opacity);
+    return;
+  }
+  if (opacity_ == opacity) {
+    return;
+  }
+  opacity_ = opacity;
+  NotifyPropertyChanged();
 }
 
 float Layer::opacity() const {
-  return cc_layer()->opacity();
+  return cc_layer() ? cc_layer()->opacity() : opacity_;
 }
 
 bool Layer::draws_content() const {
-  return cc_layer()->draws_content();
+  return cc_layer() ? cc_layer()->draws_content() : draws_content_;
 }
 
 void Layer::SetDrawsContent(bool value) {
-  cc_layer()->SetDrawsContent(value);
+  if (cc_layer()) {
+    cc_layer()->SetDrawsContent(value);
+    return;
+  }
+  if (draws_content_ == value) {
+    return;
+  }
+  draws_content_ = value;
+  NotifyPropertyChanged();
 }
 
 void Layer::SetHideLayerAndSubtree(bool hide) {
-  cc_layer()->SetHideLayerAndSubtree(hide);
+  if (cc_layer()) {
+    cc_layer()->SetHideLayerAndSubtree(hide);
+    return;
+  }
+  if (hide_layer_and_subtree_ == hide) {
+    return;
+  }
+  hide_layer_and_subtree_ = hide;
+  NotifyPropertyChanged();
 }
 
 bool Layer::hide_layer_and_subtree() const {
-  return cc_layer()->hide_layer_and_subtree();
+  return cc_layer() ? cc_layer()->hide_layer_and_subtree()
+                    : hide_layer_and_subtree_;
 }
 
 void Layer::SetMasksToBounds(bool masks_to_bounds) {
-  cc_layer()->SetMasksToBounds(masks_to_bounds);
+  if (cc_layer()) {
+    cc_layer()->SetMasksToBounds(masks_to_bounds);
+    return;
+  }
+  if (masks_to_bounds_ == masks_to_bounds) {
+    return;
+  }
+  masks_to_bounds_ = masks_to_bounds;
+  NotifyPropertyChanged();
 }
 
 bool Layer::masks_to_bounds() const {
-  return cc_layer()->masks_to_bounds();
+  return cc_layer() ? cc_layer()->masks_to_bounds() : masks_to_bounds_;
 }
 
 void Layer::SetFilters(std::vector<Filter> filters) {
-  cc_layer()->SetFilters(ToCcFilters(std::move(filters)));
+  if (cc_layer()) {
+    cc_layer()->SetFilters(ToCcFilters(std::move(filters)));
+    return;
+  }
+  if (filters_ == filters) {
+    return;
+  }
+  filters_ = std::move(filters);
+  NotifyPropertyChanged();
+}
+
+bool Layer::HasDrawableContent() const {
+  return is_drawable_;
+}
+
+void Layer::NotifyTreeChanged() {
+  if (cc_layer()) {
+    return;
+  }
+  if (layer_tree_) {
+    // TODO(crbug.com/1408128): Implement.
+  }
+}
+
+void Layer::NotifyPropertyChanged() {
+  DCHECK(!cc_layer());
+  if (layer_tree_) {
+    // TODO(crbug.com/1408128): Implement.
+  }
 }
 
 }  // namespace cc::slim

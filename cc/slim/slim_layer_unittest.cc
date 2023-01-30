@@ -2,15 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+#include <vector>
+
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
+#include "cc/slim/features.h"
+#include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc::slim {
 
 namespace {
 
-TEST(SlimLayerTest, LayerTreeManipulation) {
+class SlimLayerTest : public testing::TestWithParam<bool> {
+ public:
+  SlimLayerTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kSlimCompositor);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kSlimCompositor);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(SlimLayerTest, LayerTreeManipulation) {
   scoped_refptr<Layer> layer1 = Layer::Create();
   scoped_refptr<Layer> layer2 = Layer::Create();
   scoped_refptr<Layer> layer3 = Layer::Create();
@@ -65,6 +91,55 @@ TEST(SlimLayerTest, LayerTreeManipulation) {
   EXPECT_TRUE(layer3->HasOneRef());
   EXPECT_TRUE(layer4->HasOneRef());
 }
+
+TEST_P(SlimLayerTest, LayerProperties) {
+  scoped_refptr<Layer> layer = Layer::Create();
+
+  layer->SetPosition(gfx::PointF(1.f, 2.f));
+  EXPECT_EQ(layer->position(), gfx::PointF(1.f, 2.f));
+
+  layer->SetBounds(gfx::Size(1, 2));
+  EXPECT_EQ(layer->bounds(), gfx::Size(1, 2));
+
+  layer->SetTransform(gfx::Transform::MakeTranslation(1.f, 2.f));
+  EXPECT_EQ(layer->transform(), gfx::Transform::MakeTranslation(1.f, 2.f));
+
+  layer->SetTransformOrigin(gfx::Point3F(1.f, 2.f, 3.f));
+  EXPECT_EQ(layer->transform_origin(), gfx::Point3F(1.f, 2.f, 3.f));
+
+  layer->SetIsDrawable(true);
+  layer->SetDrawsContent(true);
+  EXPECT_TRUE(layer->draws_content());
+  layer->SetDrawsContent(false);
+  EXPECT_FALSE(layer->draws_content());
+
+  layer->SetBackgroundColor(SkColors::kGray);
+  EXPECT_EQ(layer->background_color(), SkColors::kGray);
+
+  layer->SetContentsOpaque(true);
+  EXPECT_TRUE(layer->contents_opaque());
+  layer->SetContentsOpaque(false);
+  EXPECT_FALSE(layer->contents_opaque());
+
+  layer->SetOpacity(0.5f);
+  EXPECT_EQ(layer->opacity(), 0.5f);
+
+  layer->SetHideLayerAndSubtree(true);
+  EXPECT_TRUE(layer->hide_layer_and_subtree());
+  layer->SetHideLayerAndSubtree(false);
+  EXPECT_FALSE(layer->hide_layer_and_subtree());
+
+  layer->SetMasksToBounds(true);
+  EXPECT_TRUE(layer->masks_to_bounds());
+  layer->SetMasksToBounds(false);
+  EXPECT_FALSE(layer->masks_to_bounds());
+
+  std::vector<Filter> filters;
+  filters.push_back(Filter::CreateBrightness(0.5f));
+  layer->SetFilters(std::move(filters));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, SlimLayerTest, testing::Bool());
 
 }  // namespace
 

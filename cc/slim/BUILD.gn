@@ -4,6 +4,8 @@
 
 component("slim") {
   sources = [
+    "features.cc",
+    "features.h",
     "filter.cc",
     "filter.h",
     "frame_sink.cc",
