@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
@@ -20,7 +21,10 @@ tsc_folder = "tsc"
 
 preprocess_if_expr("preprocess") {
   out_folder = preprocess_folder
-  defines = [ "enable_ink=$enable_ink" ]
+  defines = [
+    "enable_ink=$enable_ink",
+    "enable_screen_ai_service=$enable_screen_ai_service",
+  ]
   in_files = ts_files + html_files + icons_html_files + css_files
 }
 

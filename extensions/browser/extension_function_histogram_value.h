@@ -1820,6 +1820,8 @@ enum HistogramValue {
   OS_TELEMETRY_GETAUDIOINFO = 1757,
   OS_TELEMETRY_GETMARKETINGINFO = 1758,
   OS_TELEMETRY_GETUSBBUSINFO = 1759,
+  PDFVIEWERPRIVATE_ISPDFOCRALWAYSACTIVE = 1760,
+  PDFVIEWERPRIVATE_SETPDFOCRPREF = 1761,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

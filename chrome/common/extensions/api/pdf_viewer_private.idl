@@ -7,6 +7,8 @@
 // is exclusively for the PDF Viewer.
 namespace pdfViewerPrivate {
   callback IsAllowedLocalFileAccessCallback = void(boolean result);
+  callback IsPdfOcrAlwaysActiveCallback = void(boolean result);
+  callback OnPdfOcrPrefSetCallback = void(boolean result);
 
   interface Functions {
     // Determines if the given URL should be allowed to access local files from
@@ -15,5 +17,17 @@ namespace pdfViewerPrivate {
     [supportsPromises] static void isAllowedLocalFileAccess(
         DOMString url,
         IsAllowedLocalFileAccessCallback callback);
+
+    // Determines if the preference for PDF OCR is set to run PDF OCR always.
+    // |callback|: Called with true if PDF OCR is set to be always active;
+    // false otherwise.
+    [supportsPromises] static void isPdfOcrAlwaysActive(
+        IsPdfOcrAlwaysActiveCallback callback);
+
+    // Sets a pref value for PDF OCR.
+    // |value|: The new value of the pref.
+    // |callback|: The callback for whether the pref was set or not.
+    [supportsPromises] static void setPdfOcrPref(
+        boolean value, OnPdfOcrPrefSetCallback callback);
   };
 };

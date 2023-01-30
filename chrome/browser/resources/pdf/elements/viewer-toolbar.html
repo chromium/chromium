@@ -293,6 +293,20 @@
     $i18n{annotationsShowToggle}
   </button>
 
+<if expr="enable_screen_ai_service">
+  <template is="dom-if" if="[[pdfOcrEnabled]]">
+    <button id="pdf-ocr-button"
+        class="dropdown-item" on-click="onPdfOcrClick_" role="checkbox"
+        aria-checked="[[getAriaChecked_(pdfOcrAlwaysActive_)]]">
+      <span class="check-container">
+        <iron-icon icon="pdf:check" hidden="[[!pdfOcrAlwaysActive_]]">
+        </iron-icon>
+      </span>
+      $i18n{pdfOcrShowToggle}
+    </button>
+  </template>
+</if>
+
   <hr>
 
   <button id="present-button" class="dropdown-item" on-click="onPresentClick_">

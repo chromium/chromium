@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//pdf/features.gni")
 
 # Files holding a Polymer element definition AND have an equivalent .html file
@@ -96,9 +97,13 @@ ts_files += web_component_files
 if (enable_ink) {
   ts_files += [
     "annotation_tool.ts",
-    "ink_controller.ts",
     "ink/ink_api.ts",
+    "ink_controller.ts",
   ]
+}
+
+if (enable_screen_ai_service) {
+  ts_files += [ "pdf_viewer_private_proxy.ts" ]
 }
 
 ts_definitions = [

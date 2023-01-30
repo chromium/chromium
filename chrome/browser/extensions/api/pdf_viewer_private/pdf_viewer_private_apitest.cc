@@ -51,7 +51,7 @@ class PdfViewerPrivateApiTest : public ExtensionApiTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, IsAllowedLocalFileAccess) {
+IN_PROC_BROWSER_TEST_F(PdfViewerPrivateApiTest, All) {
   ASSERT_TRUE(RunExtensionTest("pdf_viewer_private")) << message_;
 }
 

@@ -45,4 +45,36 @@ chrome.test.runTests([
     chrome.test.assertFalse(result);
     chrome.test.succeed();
   },
+  /**
+   * Test that the isPdfOcrAlwaysActive function can fetch the pref correctly.
+   * This function fetches the pref defined with the following name:
+   * `settings.a11y.pdf_ocr_always_active`
+   */
+  async function testIsPdfOcrAlwaysActive() {
+    const isPdfOcrAlwaysActive =
+        await chrome.pdfViewerPrivate.isPdfOcrAlwaysActive();
+    chrome.test.assertTrue(isPdfOcrAlwaysActive !== null);
+    chrome.test.succeed();
+  },
+  /**
+   * Test that the setPdfOcrPref function can set the pref correctly.
+   * This function sets the pref defined with the following name:
+   * `settings.a11y.pdf_ocr_always_active`
+   */
+  async function testSetPdfOcrPrefToTrue() {
+    const result = await chrome.pdfViewerPrivate.setPdfOcrPref(true);
+    chrome.test.assertTrue(result);
+    const isPdfOcrAlwaysActive =
+        await chrome.pdfViewerPrivate.isPdfOcrAlwaysActive();
+    chrome.test.assertTrue(isPdfOcrAlwaysActive);
+    chrome.test.succeed();
+  },
+  async function testSetPdfOcrPrefToFalse() {
+    const result = await chrome.pdfViewerPrivate.setPdfOcrPref(false);
+    chrome.test.assertTrue(result);
+    const isPdfOcrAlwaysActive =
+        await chrome.pdfViewerPrivate.isPdfOcrAlwaysActive();
+    chrome.test.assertFalse(isPdfOcrAlwaysActive);
+    chrome.test.succeed();
+  }
 ]);
