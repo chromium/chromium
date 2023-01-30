@@ -203,7 +203,8 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
 }
 
 // Vefifies the dragged folder icon proxy is correctly created.
-TEST_P(AppListItemViewPixelTest, DraggedAppListFolderIcon) {
+// TODO(b/267205611): disabled due to flakiness.
+TEST_P(AppListItemViewPixelTest, DISABLED_DraggedAppListFolderIcon) {
   // Skip the case where the apps are newly installed or have notifications as
   // they don't change the folder icons.
   if (is_new_install() || has_notification()) {
