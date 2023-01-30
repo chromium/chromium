@@ -271,7 +271,7 @@ absl::optional<base::Value> ChromeTracingDelegate::GenerateMetadataDict() {
   variations::GetFieldTrialActiveGroupIdsAsStrings(base::StringPiece(),
                                                    &variations);
 
-  base::Value variations_list(base::Value::Type::LIST);
+  base::Value::List variations_list;
   for (const auto& it : variations)
     variations_list.Append(it);
 
