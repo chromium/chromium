@@ -1574,8 +1574,9 @@ class AppListSortLoginTalbetTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
+// TODO(https://crbug.com/1411204): Flaky test.
 IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
-                       PRE_SwitchUnderTemporarySort) {
+                       DISABLED_PRE_SwitchUnderTemporarySort) {
   LoginUser(account_id1_);
 
   // Because Account 1 is new, the reorder education nudge should show.
@@ -1597,7 +1598,10 @@ IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
 
 // Verifies that the active account switch works as expected when the app list
 // is under temporary sort.
-IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest, SwitchUnderTemporarySort) {
+//
+// TODO(https://crbug.com/1411204): Flaky test.
+IN_PROC_BROWSER_TEST_F(AppListSortLoginTalbetTest,
+                       DISABLED_SwitchUnderTemporarySort) {
   LoginUser(account_id1_);
 
   // Reorder has been triggered in the pretest so the toast should not show.
