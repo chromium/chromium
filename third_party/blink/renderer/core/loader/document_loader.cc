@@ -1108,7 +1108,14 @@ void DocumentLoader::BodyLoadingFinished(
 
       // We only automatically report resource timing when Timing-Allow-Origin
       // passes, to avoid exposing cross-origin navigation behavior.
-      if (frame_->Owner() && (response_.TimingAllowPassed())) {
+      // Also, as per spec, we avoid adding resource-timing information for
+      // link/back-forward navigations.
+      // TODO (crbug.com/1410705): Using navigation_type_ for this covers
+      // most cases but might still have very rare racy edge cases, such as
+      // extension or window.open with target cancelling an ongoing navigation
+      // and start a new navigation to the same URL.
+      if (frame_->Owner() && (response_.TimingAllowPassed()) &&
+          navigation_type_ == WebNavigationType::kWebNavigationTypeOther) {
         // The response is being copied here to pass the Encoded and Decoded
         // sizes.
         // TODO(yoav): copy the sizes info directly.

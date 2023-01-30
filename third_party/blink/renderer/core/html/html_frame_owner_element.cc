@@ -487,6 +487,16 @@ void HTMLFrameOwnerElement::AddResourceTiming(const ResourceTimingInfo& info) {
     return;
   }
 
+  // This would only happen in rare cases, where the frame is navigated from the
+  // outside, e.g. by a web extension or window.open() with target, and that
+  // navigation would cancel the container-initiated navigation. This safeguard
+  // would make this type of race harmless.
+  // TODO(crbug.com/1410705): fix this properly by moving IFrame reporting to
+  // the browser side.
+  if (fallback_timing_info_->InitialURL() != info.InitialURL()) {
+    return;
+  }
+
   DOMWindowPerformance::performance(*GetDocument().domWindow())
       ->GenerateAndAddResourceTiming(info, localName());
   DidReportResourceTiming();
