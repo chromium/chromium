@@ -53,9 +53,8 @@ var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
-// TODO(crbug.com/1403981): Test is flaky on chromeos dbg builds.
 TEST_F(
-    'OSSettingsDevicePageV3Test', 'DISABLED_All',
+    'OSSettingsDevicePageV3Test', 'All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
 // TODO(crbug.com/1347746): move this to the generic test lists below after the

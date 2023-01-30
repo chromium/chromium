@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, microTask} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -689,181 +689,6 @@ suite('SettingsDevicePage', function() {
   suite(assert(TestNames.Audio), function() {
     let audioPage;
 
-    setup(async function() {
-      loadTimeData.overrideValues({
-        enableAudioSettingsPage: true,
-      });
-      await init();
-      return showAndGetDeviceSubpage('audio', routes.AUDIO)
-          .then(function(page) {
-            audioPage = page;
-          });
-    });
-
-    test('subpage visibility', function() {
-      assertEquals(routes.AUDIO, Router.getInstance().getCurrentRoute());
-      assertTrue(
-          isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
-      assertTrue(isVisible(
-          audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
-      assertTrue(
-          isVisible(audioPage.shadowRoot.querySelector('#audioInputSection')));
-      const sectionHeader =
-          audioPage.shadowRoot.querySelector('#audioInputTitle');
-      assertTrue(isVisible(sectionHeader));
-      assertEquals('Input', sectionHeader.textContent.trim());
-      const deviceSubsectionHeader =
-          audioPage.shadowRoot.querySelector('#audioInputDeviceLabel');
-      assertTrue(isVisible(deviceSubsectionHeader));
-      assertEquals('Device', deviceSubsectionHeader.textContent.trim());
-      const deviceSubsectionDropdown =
-          audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
-      assertTrue(isVisible(deviceSubsectionDropdown));
-      const inputGainSubsectionHeader =
-          audioPage.shadowRoot.querySelector('#audioInputGainLabel');
-      assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
-      const inputVolumeButton =
-          audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
-      assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
-      const inputVolumeSlider =
-          audioPage.shadowRoot.querySelector('#audioInputGainVolumeSlider');
-      assertTrue(isVisible(inputVolumeSlider), 'audioInputGainVolumeSlider');
-      const noiseCancellationSubsectionHeader =
-          audioPage.shadowRoot.querySelector(
-              '#audioInputNoiseCancellationLabel');
-      assertTrue(isVisible(noiseCancellationSubsectionHeader));
-      assertEquals(
-          'Noise Cancellation',
-          noiseCancellationSubsectionHeader.textContent.trim());
-      const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
-          '#audioInputNoiseCancellationToggle');
-      assertTrue(isVisible(noiseCancellationToggle));
-    });
-  });
-
-  suite(assert(TestNames.PerDeviceMouse), function() {
-    let perDeviceMousePage;
-    let inputDeviceSettingsProvider;
-
-    suiteSetup(() => {
-      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
-      inputDeviceSettingsProvider.setFakeMice(fakeMice);
-      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
-    });
-
-    setup(async function() {
-      await init();
-      const row = assert(
-          devicePage.shadowRoot.querySelector(`#main #perDeviceMouseRow`));
-      row.click();
-      assertEquals(
-          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
-      const page =
-          devicePage.shadowRoot.querySelector('settings-per-device-mouse');
-      assert(page);
-      return Promise.resolve(page).then(function(page) {
-        perDeviceMousePage = page;
-      });
-    });
-
-    test('per-device mouse subpage visibility', function() {
-      assertEquals(
-          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
-          '#perDeviceMouseSubpageTitle')));
-    });
-
-    test('per-device mouse page populated', function() {
-      const connectedMice = perDeviceMousePage.mice;
-      assertTrue(!!connectedMice);
-      assertDeepEquals(connectedMice, fakeMice);
-    });
-  });
-
-  suite(assert(TestNames.PerDeviceTouchpad), function() {
-    let perDeviceTouchpadPage;
-    let inputDeviceSettingsProvider;
-
-    suiteSetup(() => {
-      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
-      inputDeviceSettingsProvider.setFakeKeyboards(fakeTouchpads);
-      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
-    });
-
-    setup(async function() {
-      await init();
-      const row = assert(
-          devicePage.shadowRoot.querySelector(`#main #perDeviceTouchpadRow`));
-      row.click();
-      assertEquals(
-          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
-      const page =
-          devicePage.shadowRoot.querySelector('settings-per-device-touchpad');
-      assert(page);
-      return Promise.resolve(page).then(function(page) {
-        perDeviceTouchpadPage = page;
-      });
-    });
-
-    test('per-device touchpad subpage visibility', function() {
-      assertEquals(
-          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
-          '#perDeviceTouchpadSubpageTitle')));
-    });
-
-    test('per-device touchpad page populated', function() {
-      const connectedTouchpads = perDeviceTouchpadPage.touchpads;
-      assertTrue(!!connectedTouchpads);
-      assertDeepEquals(connectedTouchpads, fakeTouchpads);
-    });
-  });
-
-  suite(assert(TestNames.PerDevicePointingStick), function() {
-    let perDevicePointingStickPage;
-    let inputDeviceSettingsProvider;
-
-    suiteSetup(() => {
-      inputDeviceSettingsProvider = new FakeInputDeviceSettingsProvider();
-      inputDeviceSettingsProvider.setFakePointingSticks(fakePointingSticks);
-      setInputDeviceSettingsProviderForTesting(inputDeviceSettingsProvider);
-    });
-
-    setup(async function() {
-      await init();
-      const row = assert(devicePage.shadowRoot.querySelector(
-          `#main #perDevicePointingStickRow`));
-      row.click();
-      assertEquals(
-          routes.PER_DEVICE_POINTING_STICK,
-          Router.getInstance().getCurrentRoute());
-      const page = devicePage.shadowRoot.querySelector(
-          'settings-per-device-pointing-stick');
-      assert(page);
-      return Promise.resolve(page).then(function(page) {
-        perDevicePointingStickPage = page;
-      });
-    });
-
-    test('per-device pointing stick subpage visibility', function() {
-      assertEquals(
-          routes.PER_DEVICE_POINTING_STICK,
-          Router.getInstance().getCurrentRoute());
-      assertTrue(isVisible(perDevicePointingStickPage.shadowRoot.querySelector(
-          '#perDevicePointingStickSubpageTitle')));
-    });
-
-    test('per-device pointing stick page populated', function() {
-      const connectedPointingSticks = perDevicePointingStickPage.pointingSticks;
-      assertTrue(!!connectedPointingSticks);
-      assertDeepEquals(connectedPointingSticks, fakePointingSticks);
-    });
-  });
-
-  suite(assert(TestNames.Audio), function() {
-    let audioPage;
-
     /** @type {?FakeCrosAudioConfig} */
     let crosAudioConfig;
 
@@ -1038,6 +863,47 @@ suite('SettingsDevicePage', function() {
             audioPage = page;
             return flushTasks();
           });
+    });
+
+    test('subpage visibility', function() {
+      assertEquals(routes.AUDIO, Router.getInstance().getCurrentRoute());
+      assertTrue(
+          isVisible(audioPage.shadowRoot.querySelector('#audioOutputTitle')));
+      assertTrue(isVisible(
+          audioPage.shadowRoot.querySelector('#audioOutputSubsection')));
+      assertTrue(
+          isVisible(audioPage.shadowRoot.querySelector('#audioInputSection')));
+      const sectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputTitle');
+      assertTrue(isVisible(sectionHeader));
+      assertEquals('Input', sectionHeader.textContent.trim());
+      const deviceSubsectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceLabel');
+      assertTrue(isVisible(deviceSubsectionHeader));
+      assertEquals('Device', deviceSubsectionHeader.textContent.trim());
+      const deviceSubsectionDropdown =
+          audioPage.shadowRoot.querySelector('#audioInputDeviceDropdown');
+      assertTrue(isVisible(deviceSubsectionDropdown));
+      const inputGainSubsectionHeader =
+          audioPage.shadowRoot.querySelector('#audioInputGainLabel');
+      assertTrue(isVisible(inputGainSubsectionHeader), 'audioInputGainLabel');
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
+      const inputVolumeButton =
+          audioPage.shadowRoot.querySelector('#audioInputGainMuteButton');
+      assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
+      const inputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#audioInputGainVolumeSlider');
+      assertTrue(isVisible(inputVolumeSlider), 'audioInputGainVolumeSlider');
+      const noiseCancellationSubsectionHeader =
+          audioPage.shadowRoot.querySelector(
+              '#audioInputNoiseCancellationLabel');
+      assertTrue(isVisible(noiseCancellationSubsectionHeader));
+      assertEquals(
+          'Noise Cancellation',
+          noiseCancellationSubsectionHeader.textContent.trim());
+      const noiseCancellationToggle = audioPage.shadowRoot.querySelector(
+          '#audioInputNoiseCancellationToggle');
+      assertTrue(isVisible(noiseCancellationToggle));
     });
 
     test('output volume mojo test', async function() {
@@ -1386,6 +1252,86 @@ suite('SettingsDevicePage', function() {
       assertFalse(
           isVisible(noiseCancellationSubsection),
       );
+    });
+  });
+
+  suite(assert(TestNames.PerDeviceMouse), function() {
+    let perDeviceMousePage;
+
+    setup(async function() {
+      await init();
+      const row = assert(
+          devicePage.shadowRoot.querySelector(`#main #perDeviceMouseRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      const page =
+          devicePage.shadowRoot.querySelector('settings-per-device-mouse');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDeviceMousePage = page;
+      });
+    });
+
+    test('per-device mouse subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_MOUSE, Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDeviceMousePage.shadowRoot.querySelector(
+          '#perDeviceMouseSubpageTitle')));
+    });
+  });
+
+  suite(assert(TestNames.PerDeviceTouchpad), function() {
+    let perDeviceTouchpadPage;
+
+    setup(async function() {
+      await init();
+      const row = assert(
+          devicePage.shadowRoot.querySelector(`#main #perDeviceTouchpadRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+      const page =
+          devicePage.shadowRoot.querySelector('settings-per-device-touchpad');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDeviceTouchpadPage = page;
+      });
+    });
+
+    test('per-device touchpad subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_TOUCHPAD, Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDeviceTouchpadPage.shadowRoot.querySelector(
+          '#perDeviceTouchpadSubpageTitle')));
+    });
+  });
+
+  suite(assert(TestNames.PerDevicePointingStick), function() {
+    let perDevicePointingStickPage;
+
+    setup(async function() {
+      await init();
+      const row = assert(devicePage.shadowRoot.querySelector(
+          `#main #perDevicePointingStickRow`));
+      row.click();
+      assertEquals(
+          routes.PER_DEVICE_POINTING_STICK,
+          Router.getInstance().getCurrentRoute());
+      const page = devicePage.shadowRoot.querySelector(
+          'settings-per-device-pointing-stick');
+      assert(page);
+      return Promise.resolve(page).then(function(page) {
+        perDevicePointingStickPage = page;
+      });
+    });
+
+    test('per-device pointing stick subpage visibility', function() {
+      assertEquals(
+          routes.PER_DEVICE_POINTING_STICK,
+          Router.getInstance().getCurrentRoute());
+      assertTrue(isVisible(perDevicePointingStickPage.shadowRoot.querySelector(
+          '#perDevicePointingStickSubpageTitle')));
     });
   });
 
@@ -2083,7 +2029,7 @@ suite('SettingsDevicePage', function() {
 
               flush();
 
-              displayPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(() => {
@@ -2372,7 +2318,7 @@ suite('SettingsDevicePage', function() {
                  webUIListenerCallback(
                      'battery-status-changed',
                      Object.assign({}, batteryStatus));
-                 powerPage.async(resolve);
+                 microTask.run(resolve);
                })
             .then(function() {
               const batteryIdleSelect = assert(
@@ -2446,7 +2392,7 @@ suite('SettingsDevicePage', function() {
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
                      false /* adaptiveChargingManaged */);
-                 powerPage.async(resolve);
+                 microTask.run(resolve);
                })
             .then(function() {
               // Indicate battery presence so that battery idle settings
@@ -2463,7 +2409,7 @@ suite('SettingsDevicePage', function() {
               webUIListenerCallback(
                   'battery-status-changed', Object.assign({}, batteryStatus));
               return new Promise(function(resolve) {
-                powerPage.async(resolve);
+                microTask.run(resolve);
               });
             })
             .then(function() {
@@ -2505,7 +2451,7 @@ suite('SettingsDevicePage', function() {
                   true /* hasLid */, false /* adaptiveCharging */,
                   false /* adaptiveChargingManaged */);
               return new Promise(function(resolve) {
-                powerPage.async(resolve);
+                microTask.run(resolve);
               });
             })
             .then(function() {
@@ -2546,7 +2492,7 @@ suite('SettingsDevicePage', function() {
                      false /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
                      false /* adaptiveChargingManaged */);
-                 powerPage.async(resolve);
+                 microTask.run(resolve);
                })
             .then(function() {
               // Indicate battery presence so that battery idle settings
@@ -2563,7 +2509,7 @@ suite('SettingsDevicePage', function() {
               webUIListenerCallback(
                   'battery-status-changed', Object.assign({}, batteryStatus));
               return new Promise(function(resolve) {
-                powerPage.async(resolve);
+                microTask.run(resolve);
               });
             })
             .then(function() {
@@ -2604,7 +2550,7 @@ suite('SettingsDevicePage', function() {
                   true /* hasLid */, false /* adaptiveCharging */,
                   false /* adaptiveChargingManaged */);
               return new Promise(function(resolve) {
-                powerPage.async(resolve);
+                microTask.run(resolve);
               });
             })
             .then(function() {
@@ -2656,7 +2602,7 @@ suite('SettingsDevicePage', function() {
                      true /* lidClosedControlled */, true /* hasLid */,
                      false /* adaptiveCharging */,
                      false /* adaptiveChargingManaged */);
-                 powerPage.async(resolve);
+                 microTask.run(resolve);
                })
             .then(function() {
               acIdleSelect =
@@ -2693,7 +2639,7 @@ suite('SettingsDevicePage', function() {
                   false /* adaptiveCharging */,
                   false /* adaptiveChargingManaged */);
               return new Promise(function(resolve) {
-                powerPage.async(resolve);
+                microTask.run(resolve);
               });
             })
             .then(function() {
@@ -2743,7 +2689,7 @@ suite('SettingsDevicePage', function() {
                      false /* lidClosedControlled */, false /* hasLid */,
                      false /* adaptiveCharging */,
                      false /* adaptiveChargingManaged */);
-                 powerPage.async(resolve);
+                 microTask.run(resolve);
                })
             .then(function() {
               assertTrue(powerPage.shadowRoot.querySelector('#lidClosedToggle')
@@ -2766,7 +2712,7 @@ suite('SettingsDevicePage', function() {
                          'battery-status-changed',
                          Object.assign({}, batteryStatus));
                      flush();
-                     powerPage.async(resolve);
+                     microTask.run(resolve);
                    })
                 .then(function() {
                   assertEquals(
@@ -3041,7 +2987,7 @@ suite('SettingsDevicePage', function() {
       return new Promise(function(resolve) {
                // No apps available.
                browserProxy.setNoteTakingApps([]);
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3053,7 +2999,7 @@ suite('SettingsDevicePage', function() {
             browserProxy.addNoteTakingApp(
                 entry('n1', 'v1', true, LockScreenSupport.NOT_SUPPORTED));
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3066,7 +3012,7 @@ suite('SettingsDevicePage', function() {
             browserProxy.addNoteTakingApp(
                 entry('n2', 'v2', false, LockScreenSupport.SUPPORTED));
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3082,7 +3028,7 @@ suite('SettingsDevicePage', function() {
             assertEquals('v2', browserProxy.getPreferredNoteTakingAppId());
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3098,7 +3044,7 @@ suite('SettingsDevicePage', function() {
               entry('n2', 'v2', true, LockScreenSupport.ENABLED),
             ]);
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3115,7 +3061,7 @@ suite('SettingsDevicePage', function() {
             assertEquals('v1', browserProxy.getPreferredNoteTakingAppId());
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3130,7 +3076,7 @@ suite('SettingsDevicePage', function() {
       return new Promise(function(resolve) {
                browserProxy.setNoteTakingApps(
                    [entry('n1', 'v1', true, LockScreenSupport.SUPPORTED)]);
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3144,7 +3090,7 @@ suite('SettingsDevicePage', function() {
                 [entry('n1', 'v1', true, LockScreenSupport.ENABLED)]);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3158,7 +3104,7 @@ suite('SettingsDevicePage', function() {
                 [entry('n1', 'v1', true, LockScreenSupport.SUPPORTED)]);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3170,7 +3116,7 @@ suite('SettingsDevicePage', function() {
 
             browserProxy.setNoteTakingApps([]);
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3183,7 +3129,7 @@ suite('SettingsDevicePage', function() {
       return new Promise(function(resolve) {
                browserProxy.setNoteTakingApps(
                    [entry('n1', 'v1', true, LockScreenSupport.SUPPORTED)]);
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3196,7 +3142,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(1, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3212,7 +3158,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(2, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3229,7 +3175,7 @@ suite('SettingsDevicePage', function() {
       return new Promise(function(resolve) {
                browserProxy.setNoteTakingApps(
                    [entry('n1', 'v1', true, LockScreenSupport.SUPPORTED)]);
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3241,7 +3187,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(1, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3257,7 +3203,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(2, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3277,7 +3223,7 @@ suite('SettingsDevicePage', function() {
                // Add an app with lock screen support.
                browserProxy.addNoteTakingApp(entry(
                    'n2', 'v2', true, LockScreenSupport.NOT_ALLOWED_BY_POLICY));
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3292,7 +3238,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(0, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3303,7 +3249,7 @@ suite('SettingsDevicePage', function() {
             assertEquals(0, browserProxy.setAppOnLockScreenCount_);
 
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3325,7 +3271,7 @@ suite('SettingsDevicePage', function() {
                  entry('n1', 'v1', true, LockScreenSupport.NOT_SUPPORTED),
                  entry('n2', 'v2', false, LockScreenSupport.SUPPORTED),
                ]);
-               stylusPage.async(resolve);
+               microTask.run(resolve);
              })
           .then(function() {
             flush();
@@ -3337,7 +3283,7 @@ suite('SettingsDevicePage', function() {
               entry('n2', 'v2', true, LockScreenSupport.SUPPORTED),
             ]);
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
@@ -3349,7 +3295,7 @@ suite('SettingsDevicePage', function() {
               entry('n2', 'v2', true, LockScreenSupport.ENABLED),
             ]);
             return new Promise(function(resolve) {
-              stylusPage.async(resolve);
+              microTask.run(resolve);
             });
           })
           .then(function() {
