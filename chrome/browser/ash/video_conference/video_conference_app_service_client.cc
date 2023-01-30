@@ -104,7 +104,10 @@ void VideoConferenceAppServiceClient::ReturnToApp(
   }
 
   for (auto* instance : instance_registry_->GetInstances(app_id)) {
+    // This is required in unit tests to reactivate an app.
     instance->Window()->Show();
+    // This is required in virtual desktop to reactivate an arc++ app.
+    instance->Window()->Focus();
   }
   std::move(callback).Run(true);
 }

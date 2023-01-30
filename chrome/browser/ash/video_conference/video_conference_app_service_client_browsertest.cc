@@ -13,7 +13,7 @@
 #include "ash/shell.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_media_state.h"
-#include "ash/system/video_conference/video_conference_tray_controller.h"
+#include "ash/test/test_window_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +37,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
-#include "ui/aura/test/test_windows.h"
 
 namespace ash {
 namespace {
@@ -82,8 +81,7 @@ class FakeAppInstance {
   FakeAppInstance(apps::InstanceRegistry* instance_registry,
                   const AppIdString& app_id) {
     instance_registry_ = instance_registry;
-    window_ = std::unique_ptr<aura::Window>(
-        aura::test::CreateTestWindowWithId(/*id=*/++next_window_id_, nullptr));
+    window_ = TestWindowBuilder().Build();
     instance_ = std::make_unique<apps::Instance>(
         app_id, base::UnguessableToken::Create(), window_.get());
   }
@@ -124,11 +122,7 @@ class FakeAppInstance {
   std::unique_ptr<aura::Window> window_;
   std::unique_ptr<apps::Instance> instance_;
   base::raw_ptr<apps::InstanceRegistry> instance_registry_;
-
-  static int next_window_id_;
 };
-
-int FakeAppInstance::next_window_id_ = 0;
 
 }  // namespace
 
@@ -229,7 +223,6 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
  protected:
-  int next_window_id_ = 0;
   apps::InstanceRegistry* instance_registry_ = nullptr;
   apps::AppRegistryCache* app_registry_cache_ = nullptr;
   apps::AppCapabilityAccessCache* capability_cache_ = nullptr;
