@@ -347,6 +347,12 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
   [self.delegate bookmarkEditorWantsDismissal:self];
 }
 
+// Enable or disable the left and right bar buttons.
+- (void)sidesBarButton:(BOOL)enabled {
+  self.navigationItem.leftBarButtonItem.enabled = enabled;
+  self.navigationItem.rightBarButtonItem.enabled = enabled;
+}
+
 #pragma mark - Layout
 
 - (void)updateSaveButtonState {
@@ -672,13 +678,11 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES)
                 action:^{
-                  weakSelf.navigationItem.leftBarButtonItem.enabled = YES;
-                  weakSelf.navigationItem.rightBarButtonItem.enabled = YES;
+                  [weakSelf sidesBarButton:YES];
                 }
                  style:UIAlertActionStyleCancel];
 
-  self.navigationItem.leftBarButtonItem.enabled = NO;
-  self.navigationItem.rightBarButtonItem.enabled = NO;
+  [self sidesBarButton:NO];
   [self.actionSheetCoordinator start];
 }
 
