@@ -3219,6 +3219,9 @@ extern const char kImeSystemEmojiPickerSearchExtensionDescription[];
 extern const char kImeStylusHandwritingName[];
 extern const char kImeStylusHandwritingDescription[];
 
+extern const char kJellyColorsName[];
+extern const char kJellyColorsDescription[];
+
 extern const char kLacrosAvailabilityIgnoreName[];
 extern const char kLacrosAvailabilityIgnoreDescription[];
 

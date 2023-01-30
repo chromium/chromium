@@ -5582,6 +5582,9 @@ const char kImeStylusHandwritingName[] = "Stylus Handwriting";
 const char kImeStylusHandwritingDescription[] =
     "Enable VK UI for stylus in text fields";
 
+const char kJellyColorsName[] = "Jelly Colors";
+const char kJellyColorsDescription[] = "Enable Jelly coloring";
+
 const char kLacrosAvailabilityIgnoreName[] =
     "Ignore lacros-availability policy";
 const char kLacrosAvailabilityIgnoreDescription[] =

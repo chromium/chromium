@@ -3563,6 +3563,9 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          ash::features::kCryptAuthV2DedupDeviceLastActivityTime)},
+    {"jelly-colors", flag_descriptions::kJellyColorsName,
+     flag_descriptions::kJellyColorsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kJelly)},
     {"oobe-hid-detection-revamp",
      flag_descriptions::kOobeHidDetectionRevampName,
      flag_descriptions::kOobeHidDetectionRevampDescription, kOsCrOS,

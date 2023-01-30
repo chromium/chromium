@@ -63852,6 +63852,7 @@ from previous Chrome versions.
   <int value="1473838479" label="EnableVirtualKeyboardMdUi:disabled"/>
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
   <int value="1474433736" label="NtpRealboxTailSuggest:enabled"/>
+  <int value="1474707811" label="Jelly:enabled"/>
   <int value="1474861626" label="disable-multi-mirroring"/>
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
   <int value="1475771788" label="BackgroundResourceFetch:enabled"/>
@@ -63978,6 +63979,7 @@ from previous Chrome versions.
   <int value="1553430984" label="Projector:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1556554961" label="DriveFsBidirectionalNativeMessaging:enabled"/>
+  <int value="1556739957" label="Jelly:disabled"/>
   <int value="1557680135" label="PartitionedCookies:disabled"/>
   <int value="1558410842" label="FilesZipNoNaCl:disabled"/>
   <int value="1558757619"

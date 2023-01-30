@@ -4465,6 +4465,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "jelly-colors",
+    "owners": [ "skau", "zafzal", "zxdan" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "keyboard-shortcuts-menu",
     "owners": [ "lpromero", "bling-flags@google.com" ],
     "expiry_milestone": 112
