@@ -99,9 +99,9 @@ bool JwkKeyOpToWebCryptoUsage(base::StringPiece key_op,
 }
 
 // Creates a JWK key_ops list from a Web Crypto usage mask.
-base::Value CreateJwkKeyOpsFromWebCryptoUsages(
+base::Value::List CreateJwkKeyOpsFromWebCryptoUsages(
     blink::WebCryptoKeyUsageMask usages) {
-  base::Value jwk_key_ops(base::Value::Type::LIST);
+  base::Value::List jwk_key_ops;
   for (const auto& crypto_usage_entry : kJwkWebCryptoUsageMap) {
     if (usages & crypto_usage_entry.webcrypto_usage)
       jwk_key_ops.Append(crypto_usage_entry.jwk_key_op);

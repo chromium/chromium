@@ -488,8 +488,7 @@ TEST_F(WebCryptoAesCbcTest, ImportKeyJwkKeyOpsEncryptDecrypt) {
   base::Value::Dict dict;
   dict.Set("kty", "oct");
   dict.Set("k", "GADWrMRHwQfoNaXU5fZvTg");
-  base::Value* key_ops =
-      dict.Set("key_ops", base::Value(base::Value::Type::LIST));
+  base::Value::List* key_ops = dict.EnsureList("key_ops");
 
   key_ops->Append("encrypt");
 
