@@ -43,14 +43,15 @@ DEFINE_PROTO_FUZZER(
     maybe_storage_key =
         blink::StorageKey::Deserialize(storage_key_fuzzer.deserialize());
     if (maybe_storage_key) {
-      assert(maybe_storage_key.Serialize() == storage_key_fuzzer.deserialize());
+      assert(maybe_storage_key->Serialize() ==
+             storage_key_fuzzer.deserialize());
     }
 
     // LocalStorage deserialization test.
     maybe_storage_key = blink::StorageKey::DeserializeForLocalStorage(
         storage_key_fuzzer.deserialize());
     if (maybe_storage_key) {
-      assert(maybe_storage_key.SerializeForLocalStorage() ==
+      assert(maybe_storage_key->SerializeForLocalStorage() ==
              storage_key_fuzzer.deserialize());
     }
   }
