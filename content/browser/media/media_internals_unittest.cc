@@ -420,18 +420,18 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   WaitForCallbackCount(1);
 
   // Get the |request_id| for the top session.
-  std::string request_id1 = GetRequestIdForTopFocusRequest();
+  const std::string request_id1 = GetRequestIdForTopFocusRequest();
 
   // Check JSON is what we expect.
   {
     base::Value found_sessions = GetSessionsFromValueAndReset();
     EXPECT_EQ(1u, found_sessions.GetList().size());
 
-    const base::Value& session = found_sessions.GetList()[0];
-    EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
-    EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
-    EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
-    EXPECT_TRUE(session.FindKeyOfType("state", base::Value::Type::STRING));
+    const base::Value::Dict& session = found_sessions.GetList()[0].GetDict();
+    EXPECT_EQ(request_id1, *session.FindString("id"));
+    EXPECT_NE(session.FindString("name"), nullptr);
+    EXPECT_NE(session.FindString("owner"), nullptr);
+    EXPECT_NE(session.FindString("state"), nullptr);
   }
 
   // Create another media session.
@@ -451,17 +451,17 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
     base::Value found_sessions = GetSessionsFromValueAndReset();
     EXPECT_EQ(2u, found_sessions.GetList().size());
 
-    const base::Value& session1 = found_sessions.GetList()[0];
-    EXPECT_EQ(base::Value(request_id2), *session1.FindKey("id"));
-    EXPECT_TRUE(session1.FindKeyOfType("name", base::Value::Type::STRING));
-    EXPECT_TRUE(session1.FindKeyOfType("owner", base::Value::Type::STRING));
-    EXPECT_TRUE(session1.FindKeyOfType("state", base::Value::Type::STRING));
+    const base::Value::Dict& session1 = found_sessions.GetList()[0].GetDict();
+    EXPECT_EQ(request_id2, *session1.FindString("id"));
+    EXPECT_NE(session1.FindString("name"), nullptr);
+    EXPECT_NE(session1.FindString("owner"), nullptr);
+    EXPECT_NE(session1.FindString("state"), nullptr);
 
-    const base::Value& session2 = found_sessions.GetList()[1];
-    EXPECT_EQ(base::Value(request_id1), *session2.FindKey("id"));
-    EXPECT_TRUE(session2.FindKeyOfType("name", base::Value::Type::STRING));
-    EXPECT_TRUE(session2.FindKeyOfType("owner", base::Value::Type::STRING));
-    EXPECT_TRUE(session2.FindKeyOfType("state", base::Value::Type::STRING));
+    const base::Value::Dict& session2 = found_sessions.GetList()[1].GetDict();
+    EXPECT_EQ(request_id1, *session2.FindString("id"));
+    EXPECT_NE(session2.FindString("name"), nullptr);
+    EXPECT_NE(session2.FindString("owner"), nullptr);
+    EXPECT_NE(session2.FindString("state"), nullptr);
   }
 
   // Abandon audio focus.
@@ -473,11 +473,11 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
     base::Value found_sessions = GetSessionsFromValueAndReset();
     EXPECT_EQ(1u, found_sessions.GetList().size());
 
-    const base::Value& session = found_sessions.GetList()[0];
-    EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
-    EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
-    EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
-    EXPECT_TRUE(session.FindKeyOfType("state", base::Value::Type::STRING));
+    const base::Value::Dict& session = found_sessions.GetList()[0].GetDict();
+    EXPECT_EQ(request_id1, *session.FindString("id"));
+    EXPECT_NE(session.FindString("name"), nullptr);
+    EXPECT_NE(session.FindString("owner"), nullptr);
+    EXPECT_NE(session.FindString("state"), nullptr);
   }
 
   // Abandon audio focus.
