@@ -38,47 +38,9 @@ enum TimeoutEvent {
 
 }  // namespace
 
-// Note: Most of these constants were taken directly from the default (unscaled)
-// versions found in Android's ViewConfiguration. Do not change these default
-// values without explicitly consulting an OWNER.
-//
-// Many of these default values get over-ridden by GestureConfiguration
-// parameters.  We have encountered exceptions to this behavior in certain
-// tests, see https://crbug.com/1294244.
-GestureDetector::Config::Config()
-    : shortpress_timeout(base::Milliseconds(400)),
-      longpress_timeout(base::Milliseconds(500)),
-      showpress_timeout(base::Milliseconds(180)),
-      double_tap_timeout(base::Milliseconds(300)),
-      double_tap_min_time(base::Milliseconds(40)),
-      stylus_slop(12),
-      touch_slop(8),
-      double_tap_slop(100),
-      minimum_fling_velocity(50),
-      maximum_fling_velocity(8000),
-      swipe_enabled(false),
-      minimum_swipe_velocity(20),
-      maximum_swipe_deviation_angle(20.f),
-      two_finger_tap_enabled(false),
-      two_finger_tap_max_separation(300),
-      two_finger_tap_timeout(base::Milliseconds(700)),
-      single_tap_repeat_interval(1),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      stylus_button_accelerated_longpress_enabled(true),
-#else
-      stylus_button_accelerated_longpress_enabled(false),
-#endif
-#if BUILDFLAG(IS_ANDROID)
-      deep_press_accelerated_longpress_enabled(true),
-#else
-      deep_press_accelerated_longpress_enabled(false),
-#endif
-      velocity_tracker_strategy(VelocityTracker::Strategy::STRATEGY_DEFAULT) {
-}
-
+GestureDetector::Config::Config() = default;
 GestureDetector::Config::Config(const Config& other) = default;
-
-GestureDetector::Config::~Config() {}
+GestureDetector::Config::~Config() = default;
 
 class GestureDetector::TimeoutGestureHandler {
  public:
@@ -144,35 +106,12 @@ GestureDetector::GestureDetector(
     : timeout_handler_(new TimeoutGestureHandler(config, this)),
       listener_(listener),
       double_tap_listener_(optional_double_tap_listener),
-      stylus_slop_square_(0),
-      touch_slop_square_(0),
-      double_tap_touch_slop_square_(0),
-      double_tap_slop_square_(0),
-      two_finger_tap_distance_square_(0),
-      min_fling_velocity_(1),
-      max_fling_velocity_(1),
-      min_swipe_velocity_(0),
-      min_swipe_direction_component_ratio_(0),
-      still_down_(false),
-      defer_confirm_single_tap_(false),
-      all_pointers_within_slop_regions_(false),
-      always_in_bigger_tap_region_(false),
-      two_finger_tap_allowed_for_gesture_(false),
-      is_double_tapping_(false),
-      is_down_candidate_for_repeated_single_tap_(false),
-      maximum_pointer_count_(0),
-      current_single_tap_repeat_count_(0),
-      single_tap_repeat_interval_(1),
-      last_focus_x_(0),
-      last_focus_y_(0),
-      down_focus_x_(0),
-      down_focus_y_(0),
       velocity_tracker_(config.velocity_tracker_strategy) {
   DCHECK(listener_);
   Init(config);
 }
 
-GestureDetector::~GestureDetector() {}
+GestureDetector::~GestureDetector() = default;
 
 bool GestureDetector::OnTouchEvent(const MotionEvent& ev,
                                    bool should_process_double_tap) {
