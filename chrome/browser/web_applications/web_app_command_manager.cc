@@ -154,15 +154,14 @@ void WebAppCommandManager::OnAboutBlankLoadedForCommandStart(
   // about:blank must always be loaded.
   DCHECK_EQ(WebAppUrlLoader::Result::kUrlLoaded, result);
   if (result != WebAppUrlLoader::Result::kUrlLoaded) {
-    base::Value url_loader_error(base::Value::Type::DICT);
-    url_loader_error.SetStringKey("WebAppUrlLoader::Result",
-                                  ConvertUrlLoaderResultToString(result));
+    base::Value::Dict url_loader_error;
+    url_loader_error.Set("WebAppUrlLoader::Result",
+                         ConvertUrlLoaderResultToString(result));
     if (command->lock_description().app_ids().size() == 1) {
-      url_loader_error.SetStringKey(
-          "task.app_id_to_expect",
-          *command->lock_description().app_ids().begin());
+      url_loader_error.Set("task.app_id_to_expect",
+                           *command->lock_description().app_ids().begin());
     }
-    url_loader_error.SetStringKey("!stage", "OnWebContentsReady");
+    url_loader_error.Set("!stage", "OnWebContentsReady");
     provider_->install_manager().TakeCommandErrorLog(
         PassKey(), std::move(url_loader_error));
   }
@@ -249,8 +248,7 @@ void WebAppCommandManager::LogToInstallManager(base::Value::Dict log) {
   // production builds.
   DVLOG(1) << log.DebugString();
 #endif
-  provider_->install_manager().TakeCommandErrorLog(PassKey(),
-                                                   base::Value(std::move(log)));
+  provider_->install_manager().TakeCommandErrorLog(PassKey(), std::move(log));
 }
 
 bool WebAppCommandManager::IsInstallingForWebContents(

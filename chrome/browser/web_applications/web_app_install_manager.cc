@@ -192,9 +192,9 @@ void WebAppInstallManager::TakeTaskErrorLog(WebAppInstallTask* task) {
 
 void WebAppInstallManager::TakeCommandErrorLog(
     base::PassKey<WebAppCommandManager>,
-    base::Value log) {
+    base::Value::Dict log) {
   if (error_log_)
-    LogErrorObject(std::move(log));
+    LogErrorObject(base::Value(std::move(log)));
 }
 
 void WebAppInstallManager::DeleteTask(WebAppInstallTask* task) {

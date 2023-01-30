@@ -95,7 +95,7 @@ class WebAppInstallManager {
   // TODO(crbug.com/1322974): migrate loggign to WebAppCommandManager after all
   // tasks are migrated to the command system.
   void TakeCommandErrorLog(base::PassKey<WebAppCommandManager>,
-                           base::Value log);
+                           base::Value::Dict log);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppInstallManagerTest,
