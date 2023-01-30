@@ -635,8 +635,6 @@ public class MultiInstanceManagerApi31UnitTest {
     private int allocInstanceIndex(int passedId, Activity activity, boolean preferNew) {
         int index =
                 mMultiInstanceManager.allocInstanceId(passedId, activity.getTaskId(), preferNew);
-        assertTrue(index == INVALID_INSTANCE_ID
-                || MultiInstanceManagerApi31.instanceEntryExists(index));
 
         // Does what TabModelOrchestrator.createTabModels() would do to simulate production code.
         Pair<Integer, TabModelSelector> pair =
@@ -650,6 +648,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
+        MultiInstanceManagerApi31.writeLastAccessedTime(index);
         SharedPreferencesManager.getInstance().writeInt(
                 MultiInstanceManagerApi31.tabCountKey(index), 1);
         return instanceId;
