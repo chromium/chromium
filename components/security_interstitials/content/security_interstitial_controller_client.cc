@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "content/public/browser/navigation_entry.h"
@@ -92,6 +93,7 @@ void SecurityInterstitialControllerClient::OpenEnhancedProtectionSettings() {
 #else
   if (base::FeatureList::IsEnabled(
           safe_browsing::kEsbIphBubbleAndCollapseSettings)) {
+    safe_browsing::LogShowEnhancedProtectionAction();
     settings_page_helper_->OpenEnhancedProtectionSettingsWithIph(web_contents_);
   } else {
     settings_page_helper_->OpenEnhancedProtectionSettings(web_contents_);

@@ -64,6 +64,10 @@ enum class UserAction : int {
   kMaxValue = kDisableSafeBrowsingDialogDenied
 };
 
+// Records the user action when the user navigates to the Enhanced Protection
+// page.
+void LogShowEnhancedProtectionAction();
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_SETTINGS_METRICS_H_

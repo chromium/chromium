@@ -41,6 +41,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -444,8 +445,7 @@ void ShowPasswordCheck(Browser* browser) {
 }
 
 void ShowSafeBrowsingEnhancedProtection(Browser* browser) {
-  base::RecordAction(
-      UserMetricsAction("Options_ShowSafeBrowsingEnhancedProtection"));
+  safe_browsing::LogShowEnhancedProtectionAction();
   ShowSettingsSubPage(browser, kSafeBrowsingEnhancedProtectionSubPage);
 }
 

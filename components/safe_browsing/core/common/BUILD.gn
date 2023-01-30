@@ -65,6 +65,8 @@ source_set("common") {
   sources = [
     "features.cc",
     "features.h",
+    "safe_browsing_settings_metrics.cc",
+    "safe_browsing_settings_metrics.h",
     "safebrowsing_constants.cc",
     "safebrowsing_constants.h",
     "safebrowsing_switches.cc",
