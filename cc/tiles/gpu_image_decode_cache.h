@@ -18,6 +18,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
@@ -543,6 +544,7 @@ class CC_EXPORT GpuImageDecodeCache
     bool is_bitmap_backed;
     bool is_budgeted = false;
     absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
+    base::TimeTicks last_use;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.
@@ -769,6 +771,10 @@ class CC_EXPORT GpuImageDecodeCache
                             scoped_refptr<ImageData> data);
   template <typename Iterator>
   Iterator RemoveFromPersistentCache(Iterator it);
+
+  // Purges any old entries from the PersistentCache if the feature to enable
+  // this behavior is turned on.
+  void MaybePurgeOldCacheEntries();
 
   // Adds mips to an image if required.
   void UpdateMipsIfNeeded(const DrawImage& draw_image, ImageData* image_data);
