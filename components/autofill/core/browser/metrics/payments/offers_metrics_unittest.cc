@@ -16,10 +16,15 @@ using ::base::BucketsAre;
 
 namespace autofill::autofill_metrics {
 
-class OffersMetricsTest : public metrics::AutofillMetricsBaseTest {
+class OffersMetricsTest : public metrics::AutofillMetricsBaseTest,
+                          public testing::Test {
  public:
   OffersMetricsTest() = default;
   ~OffersMetricsTest() override = default;
+
+  void SetUp() override { SetUpHelper(); }
+
+  void TearDown() override { TearDownHelper(); }
 };
 
 TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {

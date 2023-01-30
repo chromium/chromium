@@ -110,7 +110,8 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
 }
 
 class AutofillShadowPredictionMetricsTest
-    : public autofill::metrics::AutofillMetricsBaseTest {
+    : public autofill::metrics::AutofillMetricsBaseTest,
+      public testing::Test {
  public:
   AutofillShadowPredictionMetricsTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -121,6 +122,10 @@ class AutofillShadowPredictionMetricsTest
   }
 
   ~AutofillShadowPredictionMetricsTest() override = default;
+
+  void SetUp() override { SetUpHelper(); }
+
+  void TearDown() override { TearDownHelper(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

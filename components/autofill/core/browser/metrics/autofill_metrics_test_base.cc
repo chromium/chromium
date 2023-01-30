@@ -39,7 +39,7 @@ AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
 
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
-void AutofillMetricsBaseTest::SetUp() {
+void AutofillMetricsBaseTest::SetUpHelper() {
   autofill_client_ = std::make_unique<MockAutofillClient>();
   autofill_client_->SetPrefs(test::PrefServiceForTesting());
   test_ukm_recorder_ = autofill_client_->GetTestUkmRecorder();
@@ -96,7 +96,7 @@ void AutofillMetricsBaseTest::SetUp() {
   CreateTestAutofillProfiles();
 }
 
-void AutofillMetricsBaseTest::TearDown() {
+void AutofillMetricsBaseTest::TearDownHelper() {
   test_ukm_recorder_->Purge();
   autofill_driver_.reset();
   autofill_client_.reset();
