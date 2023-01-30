@@ -122,11 +122,12 @@ void DeskModel::HandleTemplateConversionToPolicyJson(
     return;
   }
 
-  base::Value template_list(base::Value::Type::LIST);
+  base::Value::List template_list;
   template_list.Append(desk_template_conversion::SerializeDeskTemplateAsPolicy(
       entry.get(), app_cache));
 
-  std::move(callback).Run(GetTemplateJsonStatus::kOk, template_list);
+  std::move(callback).Run(GetTemplateJsonStatus::kOk,
+                          base::Value(std::move(template_list)));
 }
 
 }  // namespace desks_storage

@@ -794,12 +794,13 @@ std::string LaunchContainerToString(apps::LaunchContainer launch_container) {
   }
 }
 
-base::Value ConvertURLsToBrowserAppTabValues(const std::vector<GURL>& urls) {
-  base::Value tab_list = base::Value(base::Value::Type::LIST);
+base::Value::List ConvertURLsToBrowserAppTabValues(
+    const std::vector<GURL>& urls) {
+  base::Value::List tab_list;
 
   for (const auto& url : urls) {
-    base::Value browser_tab = base::Value(base::Value::Type::DICT);
-    browser_tab.SetKey(kTabUrl, base::Value(url.spec()));
+    base::Value::Dict browser_tab;
+    browser_tab.Set(kTabUrl, url.spec());
     tab_list.Append(std::move(browser_tab));
   }
 
@@ -859,122 +860,114 @@ base::Value ConvertWindowToDeskApp(const std::string& app_id,
     return base::Value(base::Value::Type::NONE);
   }
 
-  base::Value app_data = base::Value(base::Value::Type::DICT);
+  base::Value::Dict app_data;
 
   if (app->current_bounds.has_value()) {
-    app_data.SetKey(kWindowBound,
-                    ConvertWindowBoundToValue(app->current_bounds.value()));
+    app_data.Set(kWindowBound,
+                 ConvertWindowBoundToValue(app->current_bounds.value()));
   }
 
   if (app->bounds_in_root.has_value()) {
-    app_data.SetKey(kBoundsInRoot,
-                    ConvertWindowBoundToValue(app->bounds_in_root.value()));
+    app_data.Set(kBoundsInRoot,
+                 ConvertWindowBoundToValue(app->bounds_in_root.value()));
   }
 
   if (app->minimum_size.has_value()) {
-    app_data.SetKey(kMinimumSize,
-                    ConvertSizeToValue(app->minimum_size.value()));
+    app_data.Set(kMinimumSize, ConvertSizeToValue(app->minimum_size.value()));
   }
 
   if (app->maximum_size.has_value()) {
-    app_data.SetKey(kMaximumSize,
-                    ConvertSizeToValue(app->maximum_size.value()));
+    app_data.Set(kMaximumSize, ConvertSizeToValue(app->maximum_size.value()));
   }
 
   if (app->title.has_value()) {
-    app_data.SetKey(kTitle, base::Value(base::UTF16ToUTF8(app->title.value())));
+    app_data.Set(kTitle, base::UTF16ToUTF8(app->title.value()));
   }
 
   chromeos::WindowStateType window_state = chromeos::WindowStateType::kDefault;
   if (app->window_state_type.has_value()) {
     window_state = app->window_state_type.value();
-    app_data.SetKey(kWindowState,
-                    base::Value(ChromeOsWindowStateToString(window_state)));
+    app_data.Set(kWindowState, ChromeOsWindowStateToString(window_state));
   }
 
   // TODO(crbug.com/1311801): Add support for actual event_flag values.
-  app_data.SetKey(kEventFlag, base::Value(0));
+  app_data.Set(kEventFlag, 0);
 
   if (app->activation_index.has_value())
-    app_data.SetKey(kZIndex, base::Value(app->activation_index.value()));
+    app_data.Set(kZIndex, app->activation_index.value());
 
-  app_data.SetKey(kAppType, base::Value(app_type));
+  app_data.Set(kAppType, app_type);
 
   if (app->urls.has_value())
-    app_data.SetKey(kTabs, ConvertURLsToBrowserAppTabValues(app->urls.value()));
+    app_data.Set(kTabs, ConvertURLsToBrowserAppTabValues(app->urls.value()));
 
   if (app->tab_group_infos.has_value()) {
-    base::Value tab_groups_value(base::Value::Type::LIST);
+    base::Value::List tab_groups_value;
 
     for (const auto& tab_group : app->tab_group_infos.value()) {
       tab_groups_value.Append(ConvertTabGroupInfoToValue(tab_group));
     }
 
-    app_data.SetKey(kTabGroups, std::move(tab_groups_value));
+    app_data.Set(kTabGroups, std::move(tab_groups_value));
   }
 
   if (app->active_tab_index.has_value()) {
-    app_data.SetKey(kActiveTabIndex,
-                    base::Value(app->active_tab_index.value()));
+    app_data.Set(kActiveTabIndex, app->active_tab_index.value());
   }
 
   if (app->first_non_pinned_tab_index.has_value()) {
-    app_data.SetKey(kFirstNonPinnedTabIndex,
-                    base::Value(app->first_non_pinned_tab_index.value()));
+    app_data.Set(kFirstNonPinnedTabIndex,
+                 app->first_non_pinned_tab_index.value());
   }
 
   if (app->app_type_browser.has_value()) {
-    app_data.SetKey(kIsAppTypeBrowser,
-                    base::Value(app->app_type_browser.value()));
+    app_data.Set(kIsAppTypeBrowser, app->app_type_browser.value());
   }
 
   if (app_type != kAppTypeBrowser)
-    app_data.SetKey(kAppId, base::Value(app_id));
+    app_data.Set(kAppId, app_id);
 
-  app_data.SetKey(kWindowId, base::Value(window_id));
+  app_data.Set(kWindowId, window_id);
 
   if (app->display_id.has_value()) {
-    app_data.SetKey(kDisplayId,
-                    base::Value(base::NumberToString(app->display_id.value())));
+    app_data.Set(kDisplayId, base::NumberToString(app->display_id.value()));
   }
 
   if (app->pre_minimized_show_state_type.has_value() &&
       window_state == chromeos::WindowStateType::kMinimized) {
-    app_data.SetKey(kPreMinimizedWindowState,
-                    base::Value(UiWindowStateToString(
-                        app->pre_minimized_show_state_type.value())));
+    app_data.Set(
+        kPreMinimizedWindowState,
+        UiWindowStateToString(app->pre_minimized_show_state_type.value()));
   }
 
   if (app->snap_percentage.has_value()) {
-    app_data.SetKey(
-        kSnapPercentage,
-        base::Value(static_cast<int>(app->snap_percentage.value())));
+    app_data.Set(kSnapPercentage,
+                 static_cast<int>(app->snap_percentage.value()));
   }
 
   if (app->app_name.has_value())
-    app_data.SetKey(kAppName, base::Value(app->app_name.value()));
+    app_data.Set(kAppName, app->app_name.value());
 
   if (app->disposition.has_value()) {
     WindowOpenDisposition disposition =
         static_cast<WindowOpenDisposition>(app->disposition.value());
-    app_data.SetKey(kWindowOpenDisposition,
-                    base::Value(WindowOpenDispositionToString(disposition)));
+    app_data.Set(kWindowOpenDisposition,
+                 WindowOpenDispositionToString(disposition));
   }
 
   if (app->container.has_value()) {
     apps::LaunchContainer container =
         static_cast<apps::LaunchContainer>(app->container.value());
-    app_data.SetKey(kLaunchContainer,
-                    base::Value(LaunchContainerToString(container)));
+    app_data.Set(kLaunchContainer, LaunchContainerToString(container));
   }
 
-  return app_data;
+  return base::Value(std::move(app_data));
 }
 
 base::Value ConvertRestoreDataToValue(
     const app_restore::RestoreData* restore_data,
     apps::AppRegistryCache* apps_cache) {
-  base::Value desk_data = base::Value(base::Value::Type::LIST);
+  base::Value::List desk_data;
 
   for (const auto& app : restore_data->app_id_to_launch_list()) {
     for (const auto& window : app.second) {
@@ -987,9 +980,9 @@ base::Value ConvertRestoreDataToValue(
     }
   }
 
-  base::Value apps = base::Value(base::Value::Type::DICT);
-  apps.SetKey(kApps, std::move(desk_data));
-  return apps;
+  base::Value::Dict apps;
+  apps.Set(kApps, std::move(desk_data));
+  return base::Value(std::move(apps));
 }
 
 std::string SerializeDeskTypeAsString(ash::DeskTemplateType desk_type) {
