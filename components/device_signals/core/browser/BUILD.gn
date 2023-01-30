@@ -53,6 +53,13 @@ static_library("browser") {
     public += [ "pref_names.h" ]
     sources += [ "pref_names.cc" ]
   }
+
+  if (is_win || is_mac) {
+    public += [ "crowdstrike_client.h" ]
+    sources += [ "crowdstrike_client.cc" ]
+
+    deps += [ "//services/data_decoder/public/cpp" ]
+  }
 }
 
 static_library("test_support") {
@@ -101,6 +108,11 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win || is_mac) {
+    sources += [ "crowdstrike_client_unittest.cc" ]
+    deps += [ "//services/data_decoder/public/cpp:test_support" ]
+  }
 
   if (is_win) {
     deps += [ "//components/device_signals/core/browser/win:unit_tests" ]

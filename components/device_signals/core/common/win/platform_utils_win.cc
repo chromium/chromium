@@ -6,8 +6,10 @@
 
 #include <windows.h>
 
+#include "base/base_paths_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -131,6 +133,18 @@ absl::optional<CrowdStrikeSignals> GetCrowdStrikeSignals() {
   }
 
   return absl::nullopt;
+}
+
+base::FilePath GetCrowdStrikeZtaFilePath() {
+  static constexpr base::FilePath::CharType kZtaFilePathSuffix[] =
+      FILE_PATH_LITERAL("CrowdStrike\\ZeroTrustAsssessment\\data.zta");
+
+  base::FilePath app_data_dir;
+  if (!base::PathService::Get(base::DIR_COMMON_APP_DATA, &app_data_dir)) {
+    // Returning the empty path when failing.
+    return app_data_dir;
+  }
+  return app_data_dir.Append(kZtaFilePathSuffix);
 }
 
 }  // namespace device_signals

@@ -87,8 +87,8 @@ struct GetFileSystemInfoOptions {
 };
 
 struct CrowdStrikeSignals {
-  std::string customer_id;
-  std::string agent_id;
+  std::string customer_id{};
+  std::string agent_id{};
 
   // Returns a Value with the non-empty values. Returns absl::nullopt if neither
   // values are set.

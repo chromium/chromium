@@ -3,4 +3,5 @@ include_rules = [
   "+components/signin/public",
   "+components/policy/core",
   "+components/prefs",
+  "+services/data_decoder/public/cpp",
 ]

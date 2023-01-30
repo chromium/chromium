@@ -25751,6 +25751,14 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="5" label="STORE_VALIDATION_ERROR"/>
 </enum>
 
+<enum name="DeviceSignalsParsingError">
+  <int value="0" label="Hit max data size"/>
+  <int value="1" label="Data malformed"/>
+  <int value="2" label="Base64 decoding failed"/>
+  <int value="3" label="JSON parsing failed"/>
+  <int value="4" label="Missing required property"/>
+</enum>
+
 <enum name="DeviceSignalsSignalCollectionError">
   <int value="0" label="Consent Required"/>
   <int value="1" label="Unaffiliated User"/>

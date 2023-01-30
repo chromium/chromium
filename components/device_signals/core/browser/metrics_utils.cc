@@ -120,4 +120,10 @@ void LogSignalCollectionSucceeded(SignalName signal_name,
   }
 }
 
+void LogCrowdStrikeParsingError(SignalsParsingError error) {
+  static constexpr char kCrowdStrikeErrorHistogram[] =
+      "Enterprise.DeviceSignals.Collection.CrowdStrike.Error";
+  base::UmaHistogramEnumeration(kCrowdStrikeErrorHistogram, error);
+}
+
 }  // namespace device_signals

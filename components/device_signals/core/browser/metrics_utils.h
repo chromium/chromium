@@ -14,6 +14,18 @@ enum class SignalCollectionError;
 enum class SignalName;
 enum class UserPermission;
 
+// Set of possible errors encountered when parsing some signal values from a
+// file or other data source. Do not reorder the values. Also change
+// DeviceSignalsParsingError in enums.xml if adding new values here.
+enum class SignalsParsingError {
+  kHitMaxDataSize = 0,
+  kDataMalformed = 1,
+  kBase64DecodingFailed = 2,
+  kJsonParsingFailed = 3,
+  kMissingRequiredProperty = 4,
+  kMaxValue = kMissingRequiredProperty
+};
+
 // Records that `permission` was the outcome of a permission check.
 void LogUserPermissionChecked(UserPermission permission);
 
@@ -44,6 +56,10 @@ void LogSignalCollectionSucceeded(
     base::TimeTicks start_time,
     absl::optional<size_t> signal_collection_size,
     absl::optional<size_t> signal_request_size = absl::nullopt);
+
+// Records that an error occurred when trying to parse signals from the
+// CrowdStrike data.zta file.
+void LogCrowdStrikeParsingError(SignalsParsingError error);
 
 }  // namespace device_signals
 

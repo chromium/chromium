@@ -719,6 +719,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceSignals.Collection.CrowdStrike.Error"
+    enum="DeviceSignalsParsingError" expires_after="2023-12-01">
+  <owner>seblalancette@chromium.org</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Captures an error that occured while trying to get signals from the
+    CrowdStrike agent.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.DeviceSignals.Collection.Failure.{Signal}.{ErrorType}Error"
     enum="DeviceSignalsSignalCollectionError" expires_after="2023-12-01">
