@@ -258,6 +258,7 @@ class BaseTest(unittest.TestCase):
     self.AssertTextEquals(golden_text, generated_text)
 
 
+@unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class TestGenerator(BaseTest):
 
   def testInspectCaller(self):
@@ -1376,6 +1377,7 @@ class Foo {
         generated_text, golden_file='SampleForTestsWithSplit_jni.golden')
 
 
+@unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class ProxyTestGenerator(BaseTest):
 
   def _BuildRegDictFromSample(self):
@@ -1820,6 +1822,7 @@ class ProxyTestGenerator(BaseTest):
     self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
 
 
+@unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class MultiplexTestGenerator(BaseTest):
   options = JniRegistrationGeneratorOptions()
   options.enable_jni_multiplexing = True
