@@ -9105,7 +9105,10 @@
             ],
             "experiments": [
                 {
-                    "name": "FixLinkPrefetchDNSAndPreconnectInNetworkService_20230120",
+                    "name": "FixLinkPrefetchDNSAndPreconnectInNetworkService_20230130",
+                    "params": {
+                        "prefetch_dns_all_anchor_elements": "false"
+                    },
                     "enable_features": [
                         "PreconnectInNetworkService",
                         "PrefetchDNSWithURL",
