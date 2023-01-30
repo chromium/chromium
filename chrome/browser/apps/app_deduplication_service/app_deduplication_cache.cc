@@ -6,42 +6,58 @@
 
 #include <string>
 
-#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/system/sys_info.h"
+
+namespace {
+// File name for the file where deduplication data is stored.
+constexpr char kAppDeduplicationDataFileName[] = "deduplication_data.pb";
+
+// Maximum size of App Deduplication Response is 1MB, current size of file
+// at initial launch (v1 of deduplication endpoint) is ~6KB.
+constexpr int kMaxRequiredDiskSpaceBytes = 1024 * 1024;
+}  // namespace
 
 namespace apps::deduplication {
 
-AppDeduplicationCache::AppDeduplicationCache(base::FilePath& path)
-    : folder_path_(path) {
-  if (!base::PathExists(folder_path_)) {
-    base::CreateDirectory(folder_path_);
+AppDeduplicationCache::AppDeduplicationCache(base::FilePath& path) {
+  file_path_ = path.AppendASCII(kAppDeduplicationDataFileName);
+  if (!base::PathExists(file_path_)) {
+    base::CreateDirectory(file_path_.DirName());
   }
 }
 
 AppDeduplicationCache::~AppDeduplicationCache() = default;
 
 bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
-    const base::FilePath& deduplicate_data_path,
     proto::DeduplicateData& data) {
-  base::File file(deduplicate_data_path,
-                  (base::File::FLAG_CREATE | base::File::FLAG_WRITE));
-
-  if (!file.IsValid() || !file.created()) {
-    LOG(ERROR) << "Failed to create deduplicate data file at "
-               << deduplicate_data_path.MaybeAsASCII();
+  if (base::SysInfo::AmountOfFreeDiskSpace(file_path_.DirName()) <
+      kMaxRequiredDiskSpaceBytes) {
+    LOG(ERROR) << "Not enough disk space left.";
     return false;
   }
 
-  std::string deduplicate_data_string;
-  data.SerializeToString(&deduplicate_data_string);
+  // Create temporary file.
+  base::FilePath temp_file;
+  if (!base::CreateTemporaryFileInDir(file_path_.DirName(), &temp_file)) {
+    LOG(ERROR) << "Failed to create a temporary file.";
+    return false;
+  }
 
-  const int written = file.WriteAtCurrentPos(deduplicate_data_string.c_str(),
-                                             deduplicate_data_string.length());
+  // Write to temporary file.
+  std::string serialized_data = data.SerializeAsString();
+  if (!base::WriteFile(temp_file, serialized_data)) {
+    LOG(ERROR) << "Failed to write to temporary file.";
+    base::DeleteFile(temp_file);
+    return false;
+  }
 
-  if (written != static_cast<int>(deduplicate_data_string.length())) {
-    LOG(ERROR) << "Failed to write all data to deduplicate data file.";
-    base::DeleteFile(deduplicate_data_path);
+  // Replace the current file with the temporary file.
+  if (!base::ReplaceFile(temp_file, file_path_, /*error=*/nullptr)) {
+    LOG(ERROR) << "Failed to replace the temporary file.";
+    base::DeleteFile(temp_file);
     return false;
   }
 
@@ -49,17 +65,10 @@ bool AppDeduplicationCache::WriteDeduplicateDataToDisk(
 }
 
 absl::optional<proto::DeduplicateData>
-AppDeduplicationCache::ReadDeduplicateDataFromDisk(
-    const base::FilePath& deduplicate_data_path) {
+AppDeduplicationCache::ReadDeduplicateDataFromDisk() {
   std::string deduplicate_data_string;
 
-  if (!base::PathExists(deduplicate_data_path)) {
-    LOG(ERROR) << "Path to deduplicate data file does not exist.";
-    return absl::nullopt;
-  }
-
-  if (!base::ReadFileToString(deduplicate_data_path,
-                              &deduplicate_data_string)) {
+  if (!base::ReadFileToString(file_path_, &deduplicate_data_string)) {
     LOG(ERROR) << "Reading deduplicate data file from disk failed.";
     return absl::nullopt;
   }
@@ -69,6 +78,7 @@ AppDeduplicationCache::ReadDeduplicateDataFromDisk(
     LOG(ERROR) << "Parsing proto to string failed.";
     return absl::nullopt;
   }
+
   return deduplicate_data;
 }
 
