@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -64,8 +65,7 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
     public void setupFeatureOverrides() {
         FeatureList.TestValues testValuesOverride = new FeatureList.TestValues();
         testValuesOverride.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, true);
-        testValuesOverride.addFieldTrialParamOverride(ChromeFeatureList.BOOKMARKS_REFRESH,
-                BookmarkFeatures.BOOKMARK_VISUALS_ENABLED, "true");
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
         FeatureList.setTestValues(testValuesOverride);
     }
 
@@ -105,6 +105,11 @@ public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCas
             mPowerBookmarkShoppingItemRow.init(mImageFetcher, mBookmarkModel, mSnackbarManager);
             mPowerBookmarkShoppingItemRow.setCurrencyFormatterForTesting(mCurrencyFormatter);
         });
+    }
+
+    @Override
+    public void tearDownTest() throws Exception {
+        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     @Test

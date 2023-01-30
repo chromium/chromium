@@ -149,7 +149,7 @@ public class GoogleServicesSettings extends PreferenceFragmentCompat
         }
 
         mPriceNotificationSection = findPreference(PREF_PRICE_NOTIFICATION_SECTION);
-        if (ShoppingFeatures.isShoppingListEnabled()) {
+        if (ShoppingFeatures.isShoppingListEligible()) {
             mPriceNotificationSection.setVisible(true);
         } else {
             removePreference(getPreferenceScreen(), mPriceNotificationSection);

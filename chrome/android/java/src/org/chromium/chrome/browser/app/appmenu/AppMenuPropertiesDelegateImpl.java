@@ -1157,7 +1157,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         }
 
         // If price tracking isn't enabled or the page isn't eligible, then hide both items.
-        if (!ShoppingFeatures.isShoppingListEnabled()
+        if (!ShoppingFeatures.isShoppingListEligible()
                 || !PowerBookmarkUtils.isPriceTrackingEligible(currentTab)
                 || mIsTypeSpecificBookmarkItemRowPresent || !mBookmarkModelSupplier.hasValue()) {
             startPriceTrackingMenuItem.setVisible(false);

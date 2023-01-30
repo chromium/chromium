@@ -154,7 +154,7 @@ public class ToolbarButtonInProductHelpController
      * @param tab The tab currently being displayed to the user.
      */
     private void showPriceTrackingIPH(Tab tab) {
-        if (!ShoppingFeatures.isShoppingListEnabled()
+        if (!ShoppingFeatures.isShoppingListEligible()
                 || !PowerBookmarkUtils.isPriceTrackingEligible(tab)
                 || AdaptiveToolbarFeatures.isContextualPageActionUiEnabled()) {
             return;

@@ -117,7 +117,7 @@ public class BookmarkSaveFlowCoordinator {
             setupAutodismiss();
         }
 
-        if (ShoppingFeatures.isShoppingListEnabled()
+        if (ShoppingFeatures.isShoppingListEligible()
                 && PriceTrackingUtils.isBookmarkPriceTracked(
                         Profile.getLastUsedRegularProfile(), bookmarkId.getId())) {
             if (shown) {

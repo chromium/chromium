@@ -27,8 +27,6 @@ import java.util.concurrent.TimeUnit;
  * </ul>
  */
 public class ReadingListFeatures {
-    /** @see BookmarkFeatures#VERSION */
-    static final int VERSION = BookmarkFeatures.VERSION;
     private static final int DEFAULT_SESSION_LENGTH_SECONDS = (int) TimeUnit.HOURS.toSeconds(1);
 
     private static Boolean sShouldUseCustomTabForTesting;
@@ -75,10 +73,7 @@ public class ReadingListFeatures {
     private static boolean isReadingListEnabled() {
         // This feature is enabled by default in native.
         return FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                           ChromeFeatureList.READ_LATER, "read_later_min_version", 0)
-                <= VERSION;
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER);
     }
 
     public static void setShouldUseCustomTabForTesting(boolean enabled) {

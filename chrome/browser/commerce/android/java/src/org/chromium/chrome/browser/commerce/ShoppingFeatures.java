@@ -4,40 +4,30 @@
 
 package org.chromium.chrome.browser.commerce;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
-import org.chromium.chrome.browser.preferences.Pref;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.commerce.core.ShoppingService;
 
-/** Self-documenting feature class for shopping.  */
+/** Self-documenting feature class for shopping. */
 public class ShoppingFeatures {
-    private static final MutableFlagWithSafeDefault sShoppingListFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.SHOPPING_LIST, false);
-    /** Returns whether shopping is enabled. */
-    public static boolean isShoppingListEnabled() {
-        return sShoppingListFlag.isEnabled() && isSignedIn()
-                && isAnonymizedUrlDataCollectionEnabled() && isWebAndAppActivityEnabled();
+    private static Boolean sShoppingListEligibleForTestsing;
+
+    /** Wrapper function for ShoppingService.isShoppingListEligibile(). */
+    public static boolean isShoppingListEligible() {
+        if (sShoppingListEligibleForTestsing != null) return sShoppingListEligibleForTestsing;
+        if (!ProfileManager.isInitialized()) return false;
+
+        Profile profile = Profile.getLastUsedRegularProfile();
+        if (profile == null) return false;
+        ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
+        if (service == null) return false;
+        return service.isShoppingListEligible();
     }
 
-    private static boolean isSignedIn() {
-        return IdentityServicesProvider.get()
-                .getIdentityManager(Profile.getLastUsedRegularProfile())
-                .hasPrimaryAccount(ConsentLevel.SYNC);
-    }
-
-    private static boolean isAnonymizedUrlDataCollectionEnabled() {
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
-    }
-
-    private static boolean isWebAndAppActivityEnabled() {
-        PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-        return prefService != null
-                && prefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING);
+    @VisibleForTesting
+    public static void setShoppingListEligibleForTesting(Boolean eligible) {
+        sShoppingListEligibleForTestsing = eligible;
     }
 }

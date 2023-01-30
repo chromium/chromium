@@ -58,7 +58,6 @@ found in the LICENSE file.
 
     <!-- Modern List Item V2 dimensions -->
     <dimen name="list_item_v2_margin">6dp</dimen>
-    <dimen name="list_item_v2_start_icon_width">96dp</dimen>
     <dimen name="list_item_v2_start_icon_width_compact">70dp</dimen>
     <dimen name="list_item_v2_start_icon_corner_radius">16dp</dimen>
 

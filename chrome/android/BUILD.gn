@@ -1393,6 +1393,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/android/browserservices/intents:java",
       "//chrome/browser/android/browserservices/verification:java",
       "//chrome/browser/android/crypto:java",
+      "//chrome/browser/commerce/android:java",
       "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
       "//chrome/browser/contextmenu:java",
       "//chrome/browser/download/android:download_java_tests",

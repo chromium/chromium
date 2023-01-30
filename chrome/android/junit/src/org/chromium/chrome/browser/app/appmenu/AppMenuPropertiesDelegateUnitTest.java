@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
@@ -69,8 +70,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -101,7 +100,6 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -166,8 +164,6 @@ public class AppMenuPropertiesDelegateUnitTest {
     private IdentityManager mIdentityManagerMock;
     @Mock
     private IdentityServicesProvider mIdentityServicesProviderMock;
-    @Mock
-    private SyncService mSyncServiceMock;
     @Mock
     private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock
@@ -235,6 +231,16 @@ public class AppMenuPropertiesDelegateUnitTest {
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
+    @After
+    public void tearDown() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
+        ReadingListUtils.setReadingListSupportedForTesting(null);
+        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(null);
+        ShoppingFeatures.setShoppingListEligibleForTesting(null);
+    }
+
     private void setupFeatureDefaults() {
         setBookmarkItemRowEnabled(false);
         setReadingListItemRowEnabled(false);
@@ -246,9 +252,9 @@ public class AppMenuPropertiesDelegateUnitTest {
     }
 
     private void setBookmarkItemRowEnabled(boolean enabled) {
+        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
-        mTestValues.addFieldTrialParamOverride(
-                ChromeFeatureList.BOOKMARKS_REFRESH, "bookmark_in_app_menu", "true");
+        FeatureList.setTestValues(mTestValues);
     }
 
     private void setReadingListItemRowEnabled(boolean enabled) {
@@ -256,22 +262,14 @@ public class AppMenuPropertiesDelegateUnitTest {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.READ_LATER, enabled);
         mTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.READ_LATER, "reading_list_in_app_menu", "true");
-        FeatureList.setTestValues(mTestValues);
     }
 
     private void setShoppingListItemRowEnabled(boolean enabled) {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        when(mIdentityServicesProviderMock.getIdentityManager(any(Profile.class)))
-                .thenReturn(mIdentityManagerMock);
-        TestThreadUtils.runOnUiThreadBlocking(() -> SyncService.overrideForTests(mSyncServiceMock));
-        when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(enabled);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabledForTesting(
-                    enabled);
-        });
-        mTestValues.addFeatureFlagOverride(ChromeFeatureList.SHOPPING_LIST, enabled);
+        ShoppingFeatures.setShoppingListEligibleForTesting(enabled);
         when(mPrefService.getBoolean(Pref.WEB_AND_APP_ACTIVITY_ENABLED_FOR_SHOPPING))
                 .thenReturn(true);
+        mTestValues.addFeatureFlagOverride(ChromeFeatureList.BOOKMARKS_REFRESH, enabled);
+        FeatureList.setTestValues(mTestValues);
     }
 
     private void setDesktopSiteExceptionsEnabled(boolean enabled) {
@@ -286,15 +284,6 @@ public class AppMenuPropertiesDelegateUnitTest {
 
     private void setWebApkUniqueIdEnabled(boolean enabled) {
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.WEB_APK_UNIQUE_ID, enabled);
-    }
-
-    @After
-    public void tearDown() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(false);
-        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
-        ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
-        ReadingListUtils.setReadingListSupportedForTesting(null);
-        ChromeFeatureList.sTabSelectionEditorV2.setForTesting(null);
     }
 
     @Test

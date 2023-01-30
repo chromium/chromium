@@ -29,6 +29,7 @@ specific_include_rules = {
   ],
   'ToolbarButtonInProductHelpController.java': [
     "+chrome/android/java/src/org/chromium/chrome/browser",
+    "+components/commerce/core/android/java/src/org/chromium/components/commerce/core/ShoppingService.java",
     "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],

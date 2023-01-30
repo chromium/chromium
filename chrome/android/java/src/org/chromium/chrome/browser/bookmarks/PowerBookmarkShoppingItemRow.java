@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
@@ -132,23 +130,12 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
             textView.setText(formattedCurrentPrice);
             setCustomContent(textView);
         } else {
-            TextView primaryText;
-            TextView secondaryText;
-            if (BookmarkFeatures.isCompactBookmarksVisualRefreshEnabled()) {
-                ViewGroup row = (ViewGroup) LayoutInflater.from(getContext())
-                                        .inflate(R.layout.compact_price_drop_view, null, false);
-                primaryText = row.findViewById(R.id.primary_text);
-                secondaryText = row.findViewById(R.id.secondary_text);
-                setCustomContent(row);
-            } else {
-                ChipView chipView = new ChipView(getContext(), null);
-                chipView.setBorder(0, Color.TRANSPARENT);
-                chipView.setBackgroundColor(
-                        getContext().getColor(R.color.price_drop_annotation_bg_color));
-                primaryText = chipView.getPrimaryTextView();
-                secondaryText = chipView.getSecondaryTextView();
-                setCustomContent(chipView);
-            }
+            ViewGroup row = (ViewGroup) LayoutInflater.from(getContext())
+                                    .inflate(R.layout.compact_price_drop_view, null, false);
+            TextView primaryText = row.findViewById(R.id.primary_text);
+            TextView secondaryText = row.findViewById(R.id.secondary_text);
+            setCustomContent(row);
+
             assignPriceDropProperties(primaryText, secondaryText,
                     getFormattedCurrencyStringForPrice(originalPrice), formattedCurrentPrice);
         }

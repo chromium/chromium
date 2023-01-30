@@ -22,7 +22,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -89,11 +88,10 @@ class BookmarkBridge {
                 removeExplicitShoppingSubscriptions(subscriptions);
             }
         };
-        if (ShoppingFeatures.isShoppingListEnabled()) {
-            mShoppingService =
-                    ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-            mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
-        }
+
+        mShoppingService =
+                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        mShoppingService.addSubscriptionsObserver(mSubscriptionsObserver);
     }
 
     @VisibleForTesting

@@ -31,6 +31,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -109,6 +110,7 @@ public class TabbedAppMenuTest {
         ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
 
         CompositorAnimationHandler.setTestingMode(false);
+        ShoppingFeatures.setShoppingListEligibleForTesting(null);
     }
 
     /**
@@ -246,7 +248,6 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_in_app_menu/false"})
     public void testBookmarkMenuItem() throws IOException {
         PropertyModel bookmarkStarPropertyModel = AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.bookmark_this_page_id);
@@ -399,8 +400,12 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_in_app_menu/true"})
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
     public void testAddBookmarkMenuItem() throws IOException {
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
+        showAppMenuAndAssertMenuShown();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         int addBookmark = AppMenuTestSupport.findIndexOfMenuItemById(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.add_bookmark_menu_id);
         Assert.assertNotEquals("No add bookmark found.", -1, addBookmark);
@@ -410,11 +415,9 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:bookmark_in_app_menu/true"})
-    public void
-    testEditBookmarkMenuItem() throws IOException {
+    @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH})
+    public void testEditBookmarkMenuItem() throws IOException {
+        ShoppingFeatures.setShoppingListEligibleForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
         showAppMenuAndAssertMenuShown();

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -278,19 +277,6 @@ public class BookmarkSaveFlowTest {
 
         // Dismiss the activity.
         Espresso.pressBack();
-    }
-
-    @Test
-    @MediumTest
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.BOOKMARKS_IMPROVED_SAVE_FLOW + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:" + BookmarkFeatures.AUTODISMISS_ENABLED_PARAM_NAME
-                    + "/true/" + BookmarkFeatures.AUTODISMISS_LENGTH_PARAM_NAME + "/0"})
-    public void
-    testBookmarkSaveFlowAutodismiss() {
-        // The test parameters above will make the save flow autodismiss immediately.
-        onView(withId(R.id.title_text)).check(doesNotExist());
     }
 
     private void loadBookmarkModel() {

@@ -234,7 +234,7 @@ public class BookmarkManager implements BookmarkDelegate, SearchDelegate,
         mBookmarkModel = BookmarkModel.getForProfile(profile);
         mMainView = (ViewGroup) LayoutInflater.from(mContext).inflate(R.layout.bookmark_main, null);
 
-        if (ShoppingFeatures.isShoppingListEnabled()) {
+        if (ShoppingFeatures.isShoppingListEligible()) {
             ShoppingServiceFactory.getForProfile(profile).scheduleSavedProductUpdate();
         }
 

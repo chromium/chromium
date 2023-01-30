@@ -88,8 +88,8 @@ found in the LICENSE file.
         <item name="android:contentDescription">@null</item>
     </style>
     <style name="ListItemStartIconV2" parent="ListItemStartIcon">
-        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width</item>
-        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width</item>
+        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width_compact</item>
+        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width_compact</item>
     </style>
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
