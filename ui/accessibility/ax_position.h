@@ -5247,7 +5247,9 @@ class AXPosition {
 
   // AbortMovePredicate function used to detect crossing through the boundaries
   // of a window-like container, such as a webpage, a PDF, a dialog, the
-  // browser's UI (AKA Views), or the whole desktop.
+  // browser's UI (AKA Views), or the whole desktop. Window-like containers
+  // that are ignored should not cause us to abort. For example, a hidden dialog
+  // should not cause a break.
   static bool AbortMoveAtRootBoundary(const AXPosition& move_from,
                                       const AXPosition& move_to,
                                       const AXMoveType move_type,
@@ -5261,28 +5263,31 @@ class AXPosition {
     const ax::mojom::Role move_to_role = move_to.GetAnchorRole();
     switch (move_type) {
       case AXMoveType::kAncestor:
-        // For Ancestor moves, only abort when exiting a window-like container.
-        // We don't care if the ancestor is the root of a window-like container
-        // or not, since the descendant is contained by it. However, we do care
-        // if the ancestor is an iframe because a webpage should be navigated as
-        // a single document together with all its iframes, (out-of-process or
-        // otherwise).
-        return IsRootLike(move_from_role) && !IsIframe(move_to_role);
-      case AXMoveType::kDescendant:
-        // For Descendant moves, only abort when entering a window-like
+        // For Ancestor moves, only abort when exiting an unignored window-like
         // container. We don't care if the ancestor is the root of a window-like
         // container or not, since the descendant is contained by it. However,
         // we do care if the ancestor is an iframe because a webpage should be
         // navigated as a single document together with all its iframes,
         // (out-of-process or otherwise).
-        return IsRootLike(move_to_role) && !IsIframe(move_from_role);
+        return IsRootLike(move_from_role) && !IsIframe(move_to_role) &&
+               !move_from.IsIgnored();
+      case AXMoveType::kDescendant:
+        // For Descendant moves, only abort when entering an unignored
+        // window-like container. We don't care if the ancestor is the root of a
+        // window-like container or not, since the descendant is contained by
+        // it. However, we do care if the ancestor is an iframe because a
+        // webpage should be navigated as a single document together with all
+        // its iframes, (out-of-process or otherwise).
+        return IsRootLike(move_to_role) && !IsIframe(move_from_role) &&
+               !move_to.IsIgnored();
       case AXMoveType::kSibling:
         // For Sibling moves, abort if both of the siblings are at the root of
-        // window-like containers because that would mean exiting and/or
-        // entering a new window-like container. Iframes should not be present
-        // in this case because an iframe should never contain more than one
-        // kRootWebArea as its immediate child.
-        return IsRootLike(move_from_role) && IsRootLike(move_to_role);
+        // unignored window-like containers because that would mean exiting
+        // and/or entering a new window-like container. Iframes should not be
+        // present in this case because an iframe should never contain more than
+        // one kRootWebArea as its immediate child.
+        return IsRootLike(move_from_role) && IsRootLike(move_to_role) &&
+               !move_from.IsIgnored() && !move_to.IsIgnored();
     }
   }
 

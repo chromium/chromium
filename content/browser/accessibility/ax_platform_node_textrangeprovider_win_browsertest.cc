@@ -3126,6 +3126,31 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       MoveByWordWithDialogAndButton) {
+  const std::string html_markup = R"HTML(<!DOCTYPE html>
+  <html>
+    <body>
+      <h1>One</h1>
+      <h1>Two</h1>
+      <div style="visibility:hidden">
+        <div role="dialog">
+          <div>
+            <div>
+              <button aria-label="close" type="button"></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h1>Three</h1>
+    </body>
+  </html>)HTML";
+
+  const std::vector<const wchar_t*> words = {L"One", L"Two", L"Three"};
+
+  AssertMoveByUnitForMarkup(TextUnit_Word, html_markup, words);
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        BoundingRectangleOfWordBeforeListItemMarker) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
