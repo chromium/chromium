@@ -19,12 +19,15 @@ enum LinkRelAttribute {
 };
 
 // Represents subset of possible values for `as` attribute of the Link header.
+// https://fetch.spec.whatwg.org/#concept-potential-destination
+// https://fetch.spec.whatwg.org/#concept-request-destination
 enum LinkAsAttribute {
   kUnspecified,
   kFont,
   kImage,
   kScript,
   kStyleSheet,
+  kFetch,
 };
 
 // Represents subset of possible values for `crossorigin` attribute.

@@ -135,15 +135,17 @@ TEST(LinkHeaderParserTest, LinkAsAttribute) {
   headers->AddHeader("link", "</image.jpg>; rel=preload; as=image");
   headers->AddHeader("link", "</script.js>; rel=preload; as=script");
   headers->AddHeader("link", "</style.css>; rel=preload; as=style");
+  headers->AddHeader("link", "</foo.json>; rel=preload; as=fetch; crossorigin");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
-  ASSERT_EQ(parsed_headers.size(), 5UL);
+  ASSERT_EQ(parsed_headers.size(), 6UL);
   EXPECT_EQ(parsed_headers[0]->as, mojom::LinkAsAttribute::kUnspecified);
   EXPECT_EQ(parsed_headers[1]->as, mojom::LinkAsAttribute::kFont);
   EXPECT_EQ(parsed_headers[2]->as, mojom::LinkAsAttribute::kImage);
   EXPECT_EQ(parsed_headers[3]->as, mojom::LinkAsAttribute::kScript);
   EXPECT_EQ(parsed_headers[4]->as, mojom::LinkAsAttribute::kStyleSheet);
+  EXPECT_EQ(parsed_headers[5]->as, mojom::LinkAsAttribute::kFetch);
 }
 
 TEST(LinkHeaderParserTest, CrossOriginAttribute) {

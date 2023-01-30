@@ -62,6 +62,8 @@ absl::optional<mojom::LinkAsAttribute> ParseAsAttribute(
     return mojom::LinkAsAttribute::kScript;
   } else if (value == "style") {
     return mojom::LinkAsAttribute::kStyleSheet;
+  } else if (value == "fetch") {
+    return mojom::LinkAsAttribute::kFetch;
   }
   return absl::nullopt;
 }
