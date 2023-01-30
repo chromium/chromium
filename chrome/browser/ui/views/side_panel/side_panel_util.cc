@@ -118,7 +118,7 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::GetOrCreateForBrowser(browser)
-        ->RegisterExtensionEntries(global_registry);
+        ->RegisterExtensionEntries();
   }
 #endif
 

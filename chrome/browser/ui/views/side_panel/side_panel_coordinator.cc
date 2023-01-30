@@ -754,6 +754,10 @@ void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {
   combobox_model_->UpdateIconForEntry(entry);
 }
 
+void SidePanelCoordinator::OnRegistryDestroying(SidePanelRegistry* registry) {
+  registry_observations_.RemoveObservation(registry);
+}
+
 void SidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

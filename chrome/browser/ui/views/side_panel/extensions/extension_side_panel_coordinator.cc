@@ -8,13 +8,9 @@
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/common/extensions/api/side_panel.h"
-#include "components/omnibox/browser/vector_icons.h"
-#include "components/sessions/core/session_id.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_icon_placeholder.h"
 #include "extensions/common/constants.h"
@@ -30,9 +26,15 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     Browser* browser,
     const Extension* extension,
     SidePanelRegistry* global_registry)
-    : browser_(browser), extension_(extension) {
+    : browser_(browser),
+      extension_(extension),
+      global_registry_(global_registry) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionSidePanelIntegration));
+
+  // The global registry should always be available for this class.
+  DCHECK(global_registry_);
+
   SidePanelService* service = SidePanelService::Get(browser->profile());
   // `service` can be null for some tests.
   if (service) {
@@ -43,7 +45,7 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
     if (default_options.enabled.has_value() && *default_options.enabled &&
         default_options.path.has_value()) {
       side_panel_url_ = extension->GetResourceURL(*default_options.path);
-      CreateAndRegisterEntry(global_registry);
+      CreateAndRegisterEntry();
     }
   }
 }
@@ -67,10 +69,7 @@ SidePanelEntry::Key ExtensionSidePanelCoordinator::GetEntryKey() const {
 }
 
 void ExtensionSidePanelCoordinator::DeregisterGlobalEntry() {
-  if (auto* global_registry =
-          SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_)) {
-    global_registry->Deregister(GetEntryKey());
-  }
+  global_registry_->Deregister(GetEntryKey());
 }
 
 void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
@@ -98,24 +97,15 @@ void ExtensionSidePanelCoordinator::OnPanelOptionsChanged(
     return;
   }
 
-  SidePanelRegistry* global_registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
-  if (!global_registry) {
-    return;
-  }
-
   // If there is no entry for this extension and `enabled` is true, create and
   // register the entry.
   SidePanelEntry::Key key = GetEntryKey();
-  auto* entry = global_registry->GetEntryForKey(key);
+  auto* entry = global_registry_->GetEntryForKey(key);
   if (!entry) {
-    CreateAndRegisterEntry(global_registry);
-    return;
-  }
-
-  if (previous_url != side_panel_url_) {
-    if (global_registry->active_entry().has_value() &&
-        (*global_registry->active_entry())->key() == key) {
+    CreateAndRegisterEntry();
+  } else if (previous_url != side_panel_url_) {
+    if (global_registry_->active_entry().has_value() &&
+        (*global_registry_->active_entry())->key() == key) {
       // If this extension's entry is active, navigate the entry's view to the
       // updated URL.
       NavigateIfNecessary();
@@ -147,17 +137,12 @@ void ExtensionSidePanelCoordinator::OnExtensionIconImageChanged(
   // If the SidePanelEntry exists for this extension, update its icon.
   // TODO(crbug.com/1378048): Update the icon for all extension entries in
   // contextual registries.
-  if (auto* global_registry =
-          SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_)) {
-    if (SidePanelEntry* entry =
-            global_registry->GetEntryForKey(GetEntryKey())) {
-      entry->ResetIcon(ui::ImageModel::FromImage(updated_icon->image()));
-    }
+  if (SidePanelEntry* entry = global_registry_->GetEntryForKey(GetEntryKey())) {
+    entry->ResetIcon(ui::ImageModel::FromImage(updated_icon->image()));
   }
 }
 
-void ExtensionSidePanelCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
+void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
   // The extension icon should be initialized in the constructor, so this should
   // not be null.
   DCHECK(extension_icon_);
@@ -166,7 +151,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry(
   // SidePanelEntry exists for the extension, and the extension's SidePanelEntry
   // is always deregistered when this class is destroyed, so CreateView can't be
   // called after the destruction of `this`.
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+  global_registry_->Register(std::make_unique<SidePanelEntry>(
       GetEntryKey(), base::UTF8ToUTF16(extension_->short_name()),
       ui::ImageModel::FromImage(extension_icon_->image()),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,

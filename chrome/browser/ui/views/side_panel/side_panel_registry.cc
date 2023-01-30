@@ -16,7 +16,11 @@ const char kSidePanelRegistryKey[] = "side_panel_registry_key";
 
 SidePanelRegistry::SidePanelRegistry() = default;
 
-SidePanelRegistry::~SidePanelRegistry() = default;
+SidePanelRegistry::~SidePanelRegistry() {
+  for (SidePanelRegistryObserver& observer : observers_) {
+    observer.OnRegistryDestroying(this);
+  }
+}
 
 // static
 SidePanelRegistry* SidePanelRegistry::Get(content::WebContents* web_contents) {

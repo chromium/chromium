@@ -75,7 +75,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
   // Creates and registers the SidePanelEntry for this extension, and observes
   // the entry. This is called if the extension has a default side panel path
   // when the browser view is created or when the extension is loaded.
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
+  void CreateAndRegisterEntry();
 
   // Creates a view for the extension's resource URL. This is called when this
   // extension's SidePanelEntry is about to be shown in the side panel and a
@@ -92,6 +92,7 @@ class ExtensionSidePanelCoordinator : public ExtensionViewViews::Observer,
 
   raw_ptr<Browser> browser_;
   raw_ptr<const Extension> extension_;
+  raw_ptr<SidePanelRegistry> global_registry_;
 
   // The current URL set for the extension's global side panel. This is set in
   // the constructor or during OnPanelOptionsChanged.

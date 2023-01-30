@@ -184,6 +184,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void OnEntryWillDeregister(SidePanelRegistry* registry,
                              SidePanelEntry* entry) override;
   void OnEntryIconUpdated(SidePanelEntry* entry) override;
+  void OnRegistryDestroying(SidePanelRegistry* registry) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

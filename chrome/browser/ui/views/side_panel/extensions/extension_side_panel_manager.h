@@ -8,8 +8,9 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_user_data.h"
+#include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -30,15 +31,16 @@ class Extension;
 // when extensions are loaded or unloaded. Registration of an extension's
 // SidePanelEntry and creating the view to be shown are delegated to each
 // extension's ExtensionSidePanelCoordinator.
-class ExtensionSidePanelManager
-    : public BrowserUserData<ExtensionSidePanelManager>,
-      public extensions::ExtensionRegistryObserver {
+class ExtensionSidePanelManager : public SidePanelRegistryObserver,
+                                  public extensions::ExtensionRegistryObserver,
+                                  public base::SupportsUserData::Data {
  public:
-  explicit ExtensionSidePanelManager(Browser* browser);
   ExtensionSidePanelManager(const ExtensionSidePanelManager&) = delete;
   ExtensionSidePanelManager& operator=(const ExtensionSidePanelManager&) =
       delete;
   ~ExtensionSidePanelManager() override;
+
+  static ExtensionSidePanelManager* GetOrCreateForBrowser(Browser* browser);
 
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
       const ExtensionId& extension_id);
@@ -47,7 +49,7 @@ class ExtensionSidePanelManager
   // ExtensionSidePanelCoordinators (which in turn, registers extension
   // SidePanelEntries) for all enabled extensions that are capable of hosting
   // side panel content.
-  void RegisterExtensionEntries(SidePanelRegistry* global_registry);
+  void RegisterExtensionEntries();
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -56,24 +58,27 @@ class ExtensionSidePanelManager
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // SidePanelRegistryObserver implementation.
+  void OnRegistryDestroying(SidePanelRegistry* registry) override;
+
  private:
-  friend class BrowserUserData<ExtensionSidePanelManager>;
+  ExtensionSidePanelManager(Browser* browser,
+                            SidePanelRegistry* global_registry);
 
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
-  void MaybeCreateExtensionSidePanelCoordinator(
-      const Extension* extension,
-      SidePanelRegistry* global_registry);
+  void MaybeCreateExtensionSidePanelCoordinator(const Extension* extension);
 
   raw_ptr<Browser> browser_;
+  raw_ptr<SidePanelRegistry> global_registry_;
 
   base::flat_map<ExtensionId, std::unique_ptr<ExtensionSidePanelCoordinator>>
       coordinators_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  BROWSER_USER_DATA_KEY_DECL();
+  base::ScopedObservation<SidePanelRegistry, SidePanelRegistryObserver>
+      side_panel_registry_observation_{this};
 };
 
 }  // namespace extensions
