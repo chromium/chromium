@@ -78,12 +78,9 @@ bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,
   if (!parsed_style)
     return false;
 
-  scoped_refptr<ComputedStyle> font_style =
-      ComputedStyle::Clone(*default_font_style_.get());
-  document_->GetStyleEngine().ComputeFont(element, font_style.get(),
-                                          *parsed_style);
-  fonts_resolved_using_default_style_.insert(font_string,
-                                             font_style->GetFont());
+  fonts_resolved_using_default_style_.insert(
+      font_string, document_->GetStyleEngine().ComputeFont(
+                       element, *default_font_style_, *parsed_style));
   resolved_font = fonts_resolved_using_default_style_.find(font_string)->value;
   return true;
 }

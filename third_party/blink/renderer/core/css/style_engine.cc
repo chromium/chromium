@@ -711,11 +711,11 @@ void StyleEngine::SetRuleUsageTracker(StyleRuleUsageTracker* tracker) {
   }
 }
 
-void StyleEngine::ComputeFont(Element& element,
-                              ComputedStyle* font_style,
+Font StyleEngine::ComputeFont(Element& element,
+                              ComputedStyle& font_style,
                               const CSSPropertyValueSet& font_properties) {
   UpdateActiveStyle();
-  GetStyleResolver().ComputeFont(element, font_style, font_properties);
+  return GetStyleResolver().ComputeFont(element, font_style, font_properties);
 }
 
 RuleSet* StyleEngine::RuleSetForSheet(CSSStyleSheet& sheet) {

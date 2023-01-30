@@ -202,10 +202,8 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   builder.SetFontDescription(default_font_description);
   scoped_refptr<ComputedStyle> style = builder.TakeStyle();
 
-  GetDocument()->GetStyleEngine().ComputeFont(*GetDocument()->documentElement(),
-                                              style.get(), *parsed_style);
-
-  font = style->GetFont();
+  font = GetDocument()->GetStyleEngine().ComputeFont(
+      *GetDocument()->documentElement(), *style, *parsed_style);
 
   // StyleResolver::ComputeFont() should have set the document's FontSelector
   // to |style|.

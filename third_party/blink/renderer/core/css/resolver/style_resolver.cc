@@ -2401,8 +2401,8 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromRuleSet(
 // Font properties are also handled by FontStyleResolver outside the main
 // thread. If you add/remove properties here, make sure they are also properly
 // handled by FontStyleResolver.
-void StyleResolver::ComputeFont(Element& element,
-                                ComputedStyle* style,
+Font StyleResolver::ComputeFont(Element& element,
+                                ComputedStyle& style,
                                 const CSSPropertyValueSet& property_set) {
   static const CSSProperty* properties[6] = {
       &GetCSSPropertyFontSize(),        &GetCSSPropertyFontFamily(),
@@ -2413,8 +2413,8 @@ void StyleResolver::ComputeFont(Element& element,
   // TODO(timloh): This is weird, the style is being used as its own parent
   StyleResolverState state(GetDocument(), element,
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(style));
-  state.SetStyle(style);
+                           StyleRequest(&style));
+  state.SetStyle(&style);
   if (const ComputedStyle* parent_style = element.GetComputedStyle()) {
     state.SetParentStyle(parent_style);
   }
@@ -2432,6 +2432,8 @@ void StyleResolver::ComputeFont(Element& element,
                        &GetDocument()));
   }
   state.UpdateFont();
+  scoped_refptr<const ComputedStyle> font_style = state.TakeStyle();
+  return font_style->GetFont();
 }
 
 void StyleResolver::UpdateMediaType() {
