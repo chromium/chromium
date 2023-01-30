@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,10 +16,9 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "storage/browser/blob/blob_data_handle.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom.h"
-#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
 
 namespace content {
 
