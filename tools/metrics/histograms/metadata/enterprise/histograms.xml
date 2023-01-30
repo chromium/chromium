@@ -2642,7 +2642,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Enterprise.TimeToFirstPolicyLoad.Profile{ProfileType}"
+<histogram name="Enterprise.TimeToFirstPolicyLoad.Profile.{ProfileType}"
     units="ms" expires_after="2023-07-01">
   <owner>emaxx@chromium.org</owner>
   <owner>pmarko@chromium.org</owner>
