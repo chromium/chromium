@@ -65,7 +65,7 @@ class HealthModule : public base::RefCountedThreadSafe<HealthModule> {
   void PostHealthRecord(HealthDataHistory history);
 
   // Gets health data and send to |cb|.
-  void GetHealthData(base::OnceCallback<void(ERPHealthData)> cb);
+  void GetHealthData(HealthCallback cb);
 
  protected:
   // Constructor can only be called by |Create| factory method.

@@ -14,7 +14,7 @@
 
 namespace reporting {
 
-using HealthCallback = base::OnceCallback<void(const ERPHealthData)>;
+using HealthCallback = base::OnceCallback<void(ERPHealthData)>;
 
 // Interface between the Health Module and the underlying data that needs to
 // be stored. Fully implemented for production, overridden for testing.
