@@ -30,6 +30,7 @@ import com.zpj.recyclerview.EasyViewHolder;
 import com.zpj.recyclerview.IEasy;
 import com.zpj.recyclerview.decoration.ShadowItemDecoration;
 import com.zpj.skin.SkinEngine;
+import com.zpj.statemanager.State;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.ClickHelper;
 import com.zpj.utils.FileUtils;
@@ -194,6 +195,11 @@ public abstract class DownloadChildFragment extends SkinFragment
                 })
                 .build();
         mRecycler.showLoading();
+    }
+
+    @Override
+    public void onLazyInitView(@Nullable Bundle savedInstanceState) {
+        super.onLazyInitView(savedInstanceState);
         downloadManagerService.addDownloadObserver(this);
         downloadManagerService.getAllDownloads(null);
     }
@@ -403,16 +409,14 @@ public abstract class DownloadChildFragment extends SkinFragment
 
     @Override
     public void onAllDownloadsRetrieved(List<DownloadItem> list, ProfileKey profileKey) {
-        postOnLazyInit(() -> {
-            mAllDownloadItems.clear();
-            for (DownloadItem item : list) {
-                if (item.isComplete() != isDownloading()) {
-                    mAllDownloadItems.add(item);
-                }
+        mAllDownloadItems.clear();
+        for (DownloadItem item : list) {
+            if (item.isComplete() != isDownloading()) {
+                mAllDownloadItems.add(item);
             }
+        }
 
-            filterDownloadItems(mFilterIndex);
-        });
+        filterDownloadItems(mFilterIndex);
     }
 
     @Override
@@ -422,7 +426,7 @@ public abstract class DownloadChildFragment extends SkinFragment
             for (int i = 0; i < mAllDownloadItems.size(); i++) {
                 if (item.getId().equals(mAllDownloadItems.get(i).getId())) {
                     mAllDownloadItems.remove(i);
-                    return;
+                    break;
                 }
             }
             for (int i = 0; i < downloadMissionList.size(); i++) {
@@ -433,6 +437,7 @@ public abstract class DownloadChildFragment extends SkinFragment
                 }
             }
         } else {
+
             for (DownloadItem downloadItem : mAllDownloadItems) {
                 if (TextUtils.equals(item.getId(), downloadItem.getId())) {
                     return;

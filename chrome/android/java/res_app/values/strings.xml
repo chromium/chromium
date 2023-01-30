@@ -68,4 +68,8 @@
     <string name="website_settings_embedded_in">"嵌入位置：%1$s"</string>
     <string name="text_url_copied">"已复制网址。"</string>
 
+    <string name="contextmenu_free_copy">自由复制</string>
+    <string name="contextmenu_move_to_new_tab">移动至新窗口</string>
+    <string name="contextmenu_mark_ads">标记广告</string>
+
 </resources>

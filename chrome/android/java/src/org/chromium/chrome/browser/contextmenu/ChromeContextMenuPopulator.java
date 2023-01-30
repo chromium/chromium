@@ -312,6 +312,15 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
         List<Pair<Integer, ModelList>> groupedItems = new ArrayList<>();
 
+        ModelList myGroup = new ModelList();
+        myGroup.add(createListItem(Item.FREE_COPY));
+        if (mItemDelegate.canMoveTab()) {
+            myGroup.add(createListItem(Item.MOVE_TO_NEW_TAB));
+        }
+        myGroup.add(createListItem(Item.MARK_ADS));
+        groupedItems.add(new Pair<>(null, myGroup));
+
+
         if (mParams.isAnchor()) {
             ModelList linkGroup = new ModelList();
             if (!isEmptyUrl(mParams.getUrl())
@@ -497,7 +506,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public boolean onItemSelected(int itemId) {
-        if (itemId == R.id.contextmenu_open_in_new_tab) {
+        if (itemId == R.id.contextmenu_move_to_new_tab) {
+            mItemDelegate.moveTab();
+        } else if (itemId == R.id.contextmenu_mark_ads) {
+            Toast.makeText(mContext, "TODO mark ads", Toast.LENGTH_SHORT).show();
+        }  else if (itemId == R.id.contextmenu_free_copy) {
+            Toast.makeText(mContext, "TODO free copy", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
             mItemDelegate.onOpenInNewTab(
                     mParams.getUrl(), mParams.getReferrer(), /*navigateToTab=*/false);

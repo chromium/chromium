@@ -215,4 +215,12 @@ public interface ContextMenuItemDelegate {
      * @param title The title text to be shown for this item in the reading list.
      */
     void onReadLater(GURL url, String title);
+
+    default boolean canMoveTab() {
+        return false;
+    }
+
+    default void moveTab() {
+
+    }
 }

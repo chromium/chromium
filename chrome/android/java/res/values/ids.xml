@@ -88,6 +88,9 @@
 
     <!-- Other Group -->
     <item type="id" name="contextmenu_save_video" />
+    <item type="id" name="contextmenu_free_copy" />
+    <item type="id" name="contextmenu_move_to_new_tab" />
+    <item type="id" name="contextmenu_mark_ads" />
 
     <!-- Menu item IDs for FullscreenActivities -->
     <item type="id" name="contextmenu_open_in_chrome" />

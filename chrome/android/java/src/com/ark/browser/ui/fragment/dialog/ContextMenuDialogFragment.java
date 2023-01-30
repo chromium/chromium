@@ -58,7 +58,7 @@ public class ContextMenuDialogFragment extends RecyclerAttachDialogFragment<MVCL
 
     public ContextMenuDialogFragment() {
         setAdapter(this);
-        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 1.5f);
+        mMinWidth = (int) (ScreenUtils.getScreenWidth() / 1.8f);
     }
 
     public ContextMenuDialogFragment setOnItemClicked(Callback<Integer> onItemClicked) {

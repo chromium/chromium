@@ -15,7 +15,10 @@ import android.widget.Toast;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
+import com.ark.browser.event.LoadUrlEvent;
 import com.ark.browser.tab.ArkTabImpl;
+import com.ark.browser.tab.TabListManager;
+import com.zpj.toast.ZToast;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -181,15 +184,13 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInNewTab(GURL url, Referrer referrer, boolean navigateToTab) {
-//        RecordUserAction.record("MobileNewTabOpened");
-//        RecordUserAction.record("LinkOpenedInNewTab");
-//        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-//        loadUrlParams.setReferrer(referrer);
-//        mTabModelSelector.openNewTab(loadUrlParams,
-//                navigateToTab ? TabLaunchType.FROM_LONGPRESS_FOREGROUND
-//                              : TabLaunchType.FROM_LONGPRESS_BACKGROUND,
-//                mTab, isIncognito());
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenInNewTab", Toast.LENGTH_SHORT).show();
+
+
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setReferrer(referrer);
+        LoadUrlEvent.post(params, true);
+
     }
 
     @Override
@@ -201,11 +202,14 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 //        mTabModelSelector.openNewTab(loadUrlParams,
 //                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP, mTab, isIncognito());
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenInNewTabInGroup", Toast.LENGTH_SHORT).show();
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setReferrer(referrer);
+        LoadUrlEvent.post(params, true);
     }
 
     @Override
     public void onOpenInNewIncognitoTab(GURL url, Origin initiatorOrigin) {
-        Toast.makeText(ContextUtils.getApplicationContext(), "onOpenInNewIncognitoTab", Toast.LENGTH_SHORT).show();
+        Toast.makeText(ContextUtils.getApplicationContext(), "TODO onOpenInNewIncognitoTab", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -223,13 +227,10 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenImageInNewTab(GURL url, Referrer referrer) {
-//        LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-//        loadUrlParams.setReferrer(referrer);
-//        mTabModelSelector.openNewTab(
-//                loadUrlParams, TabLaunchType.FROM_LONGPRESS_BACKGROUND, mTab, isIncognito());
-
         Toast.makeText(ContextUtils.getApplicationContext(), "onOpenImageInNewTab", Toast.LENGTH_SHORT).show();
-
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setReferrer(referrer);
+        LoadUrlEvent.post(params, true);
     }
 
     @Override
@@ -297,5 +298,20 @@ public class ArkTabContextMenuItemDelegate implements ContextMenuItemDelegate {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getSpec()));
         CustomTabsIntent.setAlwaysUseBrowserUI(intent);
         IntentUtils.safeStartActivity(mTab.getContext(), intent);
+    }
+
+    @Override
+    public boolean canMoveTab() {
+        return mTab.getTabInfo().getPages().size() > 1;
+    }
+
+    @Override
+    public void moveTab() {
+        boolean r = TabListManager.getInstance().moveToNewTab(mTab.getPageInfo());
+        if (r) {
+            ZToast.success("移动页面成功！");
+        } else {
+            ZToast.error("移动页面失败！");
+        }
     }
 }
