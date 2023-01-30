@@ -85,10 +85,14 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
       flatten: true,
     });
 
+    await server.topLevelContextsLoaded();
+    return server;
+  }
+
+  async topLevelContextsLoaded() {
     await Promise.all(
       BrowsingContextStorage.getTopLevelContexts().map((c) => c.awaitLoaded())
     );
-    return server;
   }
 
   #processOutgoingMessage = async (messageEntry: OutgoingBidiMessage) => {

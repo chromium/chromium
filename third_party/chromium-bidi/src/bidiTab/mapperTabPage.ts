@@ -16,12 +16,6 @@
  */
 import {LogType} from '../utils/log.js';
 
-declare global {
-  interface Window {
-    MapperTabPage: MapperTabPage;
-  }
-}
-
 /** HTML source code for the user-facing Mapper tab. */
 const mapperPageSource =
   '<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto, serif; font-size: 13px; color: #202124;}.log{padding: 12px; font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; font-size: 11px; line-height: 180%; background: #f1f3f4; border-radius: 4px;}.pre{overflow-wrap: break-word; padding: 10px;}.card{margin: 60px auto; padding: 2px 0; max-width: 900px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px;}.divider{height: 1px; background: #f0f0f0;}.item{padding: 16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="divider"></div><details id="details"><summary class="item">Debug information</summary></details></div>';
@@ -69,21 +63,19 @@ export function generatePage() {
   findOrCreateTypeLogContainer('CDP');
 }
 
-export class MapperTabPage {
-  static log(logType: LogType, ...messages: unknown[]) {
-    // If run not in browser (e.g. unit test), do nothing.
-    if (!globalThis.document?.documentElement) {
-      return;
-    }
-    const typeLogContainer = findOrCreateTypeLogContainer(logType);
-
-    // This piece of HTML should be added:
-    /*
-      <div class="pre">...log message...</div>
-    */
-    const lineElement = document.createElement('div');
-    lineElement.className = 'pre';
-    lineElement.textContent = messages.join(', ');
-    typeLogContainer.appendChild(lineElement);
+export function log(logType: LogType, ...messages: unknown[]) {
+  // If run not in browser (e.g. unit test), do nothing.
+  if (!globalThis.document?.documentElement) {
+    return;
   }
+  const typeLogContainer = findOrCreateTypeLogContainer(logType);
+
+  // This piece of HTML should be added:
+  /*
+    <div class="pre">...log message...</div>
+  */
+  const lineElement = document.createElement('div');
+  lineElement.className = 'pre';
+  lineElement.textContent = messages.join(', ');
+  typeLogContainer.appendChild(lineElement);
 }

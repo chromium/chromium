@@ -25,6 +25,23 @@ const debugInternal = debug('bidiServer:internal');
 const debugSend = debug('bidiServer:SEND ►');
 const debugRecv = debug('bidiServer:RECV ◀');
 
+async function getHttpRequestPayload(
+  request: http.IncomingMessage
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    request.on('data', (chunk) => {
+      data += chunk;
+    });
+    request.on('end', () => {
+      resolve(data);
+    });
+    request.on('error', (error) => {
+      reject(error);
+    });
+  });
+}
+
 export class BidiServerRunner {
   /**
    *
@@ -68,7 +85,7 @@ export class BidiServerRunner {
             )} request for ${JSON.stringify(
               request.url
             )} with payload ${JSON.stringify(
-              await BidiServerRunner.#getHttpRequestPayload(request)
+              await getHttpRequestPayload(request)
             )}. 200 returned.`
           );
 
@@ -88,7 +105,7 @@ export class BidiServerRunner {
             )} request for ${JSON.stringify(
               request.url
             )} with payload ${JSON.stringify(
-              await BidiServerRunner.#getHttpRequestPayload(request)
+              await getHttpRequestPayload(request)
             )}. 404 returned.`
           );
           response.writeHead(404);
@@ -144,20 +161,6 @@ export class BidiServerRunner {
 
       bidiServer.initialise((messageStr) => {
         return this.#sendClientMessageStr(messageStr, connection);
-      });
-    });
-  }
-
-  static async #getHttpRequestPayload(
-    request: http.IncomingMessage
-  ): Promise<string> {
-    return new Promise((resolve) => {
-      let data = '';
-      request.on('data', (chunk) => {
-        data += chunk;
-      });
-      request.on('end', () => {
-        resolve(data);
       });
     });
   }
