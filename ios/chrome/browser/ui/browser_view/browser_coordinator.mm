@@ -713,6 +713,10 @@ enum class ToolbarKind {
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:self.browser->GetBrowserState()->IsOffTheRecord()];
+  LayoutGuideCenter* layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  _toolbarAccessoryPresenter.toolbarLayoutGuide =
+      [layoutGuideCenter makeLayoutGuideNamed:kPrimaryToolbarGuide];
 
   _sideSwipeController =
       [[SideSwipeController alloc] initWithBrowser:self.browser];

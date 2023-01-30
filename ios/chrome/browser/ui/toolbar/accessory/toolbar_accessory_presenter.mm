@@ -216,14 +216,11 @@ const CGFloat kAnimationDuration = 0.15;
   self.animationConstraint = [self.backgroundView.leadingAnchor
       constraintEqualToAnchor:self.baseViewController.view.trailingAnchor];
 
-  UILayoutGuide* toolbarLayoutGuide =
-      [NamedGuide guideWithName:kPrimaryToolbarGuide
-                           view:self.baseViewController.view];
-
+  [self.baseViewController.view addLayoutGuide:_toolbarLayoutGuide];
   [NSLayoutConstraint activateConstraints:@[
     // Anchors accessory below the the toolbar.
     [self.backgroundView.topAnchor
-        constraintEqualToAnchor:toolbarLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:_toolbarLayoutGuide.bottomAnchor],
     self.animationConstraint,
     widthConstraint,
     [self.backgroundView.widthAnchor
@@ -251,11 +248,9 @@ const CGFloat kAnimationDuration = 0.15;
 
   // Make sure the background doesn't shrink when the toolbar goes to fullscreen
   // mode.
-  UILayoutGuide* toolbarLayoutGuide =
-      [NamedGuide guideWithName:kPrimaryToolbarGuide
-                           view:self.baseViewController.view];
+  [self.baseViewController.view addLayoutGuide:_toolbarLayoutGuide];
   [self.backgroundView.bottomAnchor
-      constraintGreaterThanOrEqualToAnchor:toolbarLayoutGuide.bottomAnchor]
+      constraintGreaterThanOrEqualToAnchor:_toolbarLayoutGuide.bottomAnchor]
       .active = YES;
 }
 

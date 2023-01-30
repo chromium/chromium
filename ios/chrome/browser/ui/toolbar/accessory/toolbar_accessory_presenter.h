@@ -26,6 +26,9 @@
 // The main presented view.
 @property(nonatomic, strong, readonly) UIView* backgroundView;
 
+// The layout guide representing the primary toolbar.
+@property(nonatomic, strong) UILayoutGuide* toolbarLayoutGuide;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_ACCESSORY_TOOLBAR_ACCESSORY_PRESENTER_H_

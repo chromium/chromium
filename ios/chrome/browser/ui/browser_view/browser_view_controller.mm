@@ -1828,7 +1828,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // Create the NamedGuides and add them to the browser view.
     NSArray<GuideName*>* guideNames = @[
       kContentAreaGuide,
-      kPrimaryToolbarGuide,
       kOmniboxGuide,
     ];
     AddNamedGuidesToView(guideNames, self.view);

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
+#import "ios/chrome/browser/ui/main/layout_guide_util.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
@@ -100,6 +101,8 @@
   self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PopupMenuCommands);
   self.viewController.delegate = self;
+  self.viewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
   self.orchestrator.toolbarAnimatee = self.viewController;
