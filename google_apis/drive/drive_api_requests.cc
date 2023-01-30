@@ -1040,7 +1040,7 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
     case PERMISSION_ROLE_COMMENTER:
       root.Set("role", "reader");
       {
-        base::Value list(base::Value::Type::LIST);
+        base::Value::List list;
         list.Append("commenter");
         root.Set("additionalRoles", std::move(list));
       }
