@@ -21,28 +21,28 @@ class TracingUITest : public testing::Test {
 };
 
 std::string GetConfig() {
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
   base::Value filter1(base::trace_event::MemoryDumpManager::kTraceCategory);
   base::Value filter2("filter2");
-  base::Value included(base::Value::Type::LIST);
+  base::Value::List included;
   included.Append(std::move(filter1));
-  base::Value excluded(base::Value::Type::LIST);
+  base::Value::List excluded;
   excluded.Append(std::move(filter2));
 
-  dict.SetKey("included_categories", std::move(included));
-  dict.SetKey("excluded_categories", std::move(excluded));
-  dict.SetStringKey("record_mode", "record-continuously");
-  dict.SetBoolKey("enable_systrace", true);
-  dict.SetStringKey("stream_format", "protobuf");
+  dict.Set("included_categories", std::move(included));
+  dict.Set("excluded_categories", std::move(excluded));
+  dict.Set("record_mode", "record-continuously");
+  dict.Set("enable_systrace", true);
+  dict.Set("stream_format", "protobuf");
 
-  base::Value memory_config(base::Value::Type::DICT);
-  base::Value trigger(base::Value::Type::DICT);
-  trigger.SetStringKey("mode", "detailed");
-  trigger.SetIntKey("periodic_interval_ms", 10000);
-  base::Value triggers(base::Value::Type::LIST);
+  base::Value::Dict memory_config;
+  base::Value::Dict trigger;
+  trigger.Set("mode", "detailed");
+  trigger.Set("periodic_interval_ms", 10000);
+  base::Value::List triggers;
   triggers.Append(std::move(trigger));
-  memory_config.SetKey("triggers", std::move(triggers));
-  dict.SetKey("memory_dump_config", std::move(memory_config));
+  memory_config.Set("triggers", std::move(triggers));
+  dict.Set("memory_dump_config", std::move(memory_config));
 
   std::string results;
   if (!base::JSONWriter::Write(dict, &results))
