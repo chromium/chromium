@@ -370,7 +370,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
 
+  // Register HTTPS related settings.
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
+  registry->RegisterBooleanPref(prefs::kMixedContentAutoupgradeEnabled, true);
 
   // Register pref storing whether the Incognito interstitial for third-party
   // intents is enabled.

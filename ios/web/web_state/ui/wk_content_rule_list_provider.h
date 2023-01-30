@@ -18,7 +18,7 @@ namespace web {
 // rules.
 class WKContentRuleListProvider {
  public:
-  explicit WKContentRuleListProvider();
+  explicit WKContentRuleListProvider(bool mixed_content_autoupgrade_enabled);
   ~WKContentRuleListProvider();
 
   // Sets the WKUserContentController that this provider will install its rules

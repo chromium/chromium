@@ -119,6 +119,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { policy::key::kShoppingListEnabled,
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
+  { policy::key::kMixedContentAutoupgradeEnabled,
+    prefs::kMixedContentAutoupgradeEnabled,
+    base::Value::Type::BOOLEAN},
 };
 // clang-format on
 

@@ -141,4 +141,9 @@ void WebClient::StopTextSearchInWebState(web::WebState* web_state) {
   NOTREACHED();
 }
 
+bool WebClient::IsMixedContentAutoupgradeEnabled(
+    web::BrowserState* browser_state) const {
+  return true;
+}
+
 }  // namespace web

@@ -72,6 +72,7 @@ extern const char kAllowChromeDataInBackups[];
 extern const char kNewTabPageLocationOverride[];
 
 extern const char kHttpsOnlyModeEnabled[];
+extern const char kMixedContentAutoupgradeEnabled[];
 
 extern const char kAutofillBrandingIconAnimationRemainingCountPrefName[];
 

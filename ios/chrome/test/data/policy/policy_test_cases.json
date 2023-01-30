@@ -417,6 +417,34 @@
       }
     ]
   },
+  "MixedContentAutoupgradeEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "MixedContentAutoupgradeEnabled": true
+        },
+        "prefs": {
+          "ios.mixed_content_autoupgrade_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check non-default value.",
+        "policies": {
+          "MixedContentAutoupgradeEnabled": false
+        },
+        "prefs": {
+          "ios.mixed_content_autoupgrade_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
   "NewTabPageLocation": {
     "os": [ "ios" ],
     "policy_pref_mapping_tests": [

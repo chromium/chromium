@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
@@ -57,6 +58,7 @@
 #import "ios/chrome/browser/web/print/print_java_script_feature.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
 #import "ios/chrome/browser/web/web_performance_metrics/web_performance_metrics_java_script_feature.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_blocking_page.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_container.h"
 #import "ios/components/security_interstitials/https_only_mode/https_only_mode_controller_client.h"
@@ -463,4 +465,18 @@ void ChromeWebClient::StartTextSearchInWebState(web::WebState* web_state) {
 
 void ChromeWebClient::StopTextSearchInWebState(web::WebState* web_state) {
   ios::provider::StopTextSearchInWebState(web_state);
+}
+
+bool ChromeWebClient::IsMixedContentAutoupgradeEnabled(
+    web::BrowserState* browser_state) const {
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  if (!chrome_browser_state->GetPrefs()->GetBoolean(
+          prefs::kMixedContentAutoupgradeEnabled) &&
+      chrome_browser_state->GetPrefs()->IsManagedPreference(
+          prefs::kMixedContentAutoupgradeEnabled)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+      security_interstitials::features::kMixedContentAutoupgrade);
 }

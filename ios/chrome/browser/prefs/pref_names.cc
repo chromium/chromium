@@ -233,6 +233,10 @@ const char kNewTabPageLocationOverride[] = "ios.ntp.location_override";
 // A boolean specifying whether HTTPS-Only Mode is enabled.
 const char kHttpsOnlyModeEnabled[] = "ios.https_only_mode_enabled";
 
+// A boolean specifying whether Mixed Content Autoupgrading is enabled.
+const char kMixedContentAutoupgradeEnabled[] =
+    "ios.mixed_content_autoupgrade_enabled";
+
 // An int counting the remaining number of times the autofill branding icon
 // should show inside form input accessories.
 const char kAutofillBrandingIconAnimationRemainingCountPrefName[] =

@@ -301,6 +301,7 @@ source_set("web_internal") {
     "//ios/chrome/common",
     "//ios/components/security_interstitials",
     "//ios/components/security_interstitials/https_only_mode",
+    "//ios/components/security_interstitials/https_only_mode:feature",
     "//ios/components/security_interstitials/lookalikes",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/components/webui:url_constants",
