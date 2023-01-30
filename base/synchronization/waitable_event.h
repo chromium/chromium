@@ -115,13 +115,10 @@ class BASE_EXPORT WaitableEvent {
   // not synchronously waiting on this event before resuming ongoing work). This
   // is useful to avoid telling base-internals that this thread is "blocked"
   // when it's merely idle and ready to do work. As such, this is only expected
-  // to be used by thread and thread pool impls.
-  void declare_only_used_while_idle() { waiting_is_blocking_ = false; }
-
-  // Declares that this WaitableEvent should not emit wakeup.flow trace events
-  // in order to prevent duplicate flow events when the owner is emitting their
-  // flow events more specifically.
-  void opt_out_of_wakeup_flow_events() { emit_wakeup_flow_ = false; }
+  // to be used by thread and thread pool impls. In such cases wakeup.flow
+  // events aren't emitted on |Signal|/|Wait|, because threading implementations
+  // are responsible for emitting the cause of their wakeup from idle.
+  void declare_only_used_while_idle() { only_used_while_idle_ = true; }
 
   // Wait, synchronously, on multiple events.
   //   waitables: an array of WaitableEvent pointers
@@ -265,12 +262,10 @@ class BASE_EXPORT WaitableEvent {
 #endif
 
   // Whether a thread invoking Wait() on this WaitableEvent should be considered
-  // blocked as opposed to idle (and potentially replaced if part of a pool).
-  bool waiting_is_blocking_ = true;
-
-  // Whether this WaitableEvent should emit a wakeup.flow event on
-  // Signal => TimedWait.
-  bool emit_wakeup_flow_ = true;
+  // blocked as opposed to idle (and potentially replaced if part of a pool),
+  // and whether WaitableEvent should emit a wakeup.flow event on Signal =>
+  // TimedWait.
+  bool only_used_while_idle_ = false;
 };
 
 }  // namespace base

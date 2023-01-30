@@ -195,6 +195,11 @@ void ThreadControllerWithMessagePumpImpl::ScheduleWork() {
   base::internal::CheckedLock::AssertNoLockHeldOnCurrentThread();
   if (work_deduplicator_.OnWorkRequested() ==
       ShouldScheduleWork::kScheduleImmediate) {
+    if (!associated_thread_->IsBoundToCurrentThread()) {
+      run_level_tracker_.RecordScheduleWork();
+    } else {
+      TRACE_EVENT_INSTANT("wakeup.flow", "ScheduleWorkToSelf");
+    }
     pump_->ScheduleWork();
   }
 }

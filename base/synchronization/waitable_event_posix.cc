@@ -168,8 +168,9 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
   }
 
   SyncWaiter sw;
-  if (!waiting_is_blocking_)
+  if (only_used_while_idle_) {
     sw.cv()->declare_only_used_while_idle();
+  }
   sw.lock()->Acquire();
 
   Enqueue(&sw);

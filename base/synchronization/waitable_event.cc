@@ -13,7 +13,7 @@ namespace base {
 void WaitableEvent::Signal() {
   // Must be ordered before SignalImpl() to guarantee it's emitted before the
   // matching TerminatingFlow in TimedWait().
-  if (emit_wakeup_flow_) {
+  if (!only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow", "WaitableEvent::Signal",
                         perfetto::Flow::FromPointer(this));
   }
@@ -35,14 +35,14 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
   absl::optional<debug::ScopedEventWaitActivity> event_activity;
   absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
-  if (waiting_is_blocking_) {
+  if (!only_used_while_idle_) {
     event_activity.emplace(this);
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
   }
 
   const bool result = TimedWaitImpl(wait_delta);
 
-  if (result && emit_wakeup_flow_) {
+  if (result && !only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow", "WaitableEvent::Wait Complete",
                         perfetto::TerminatingFlow::FromPointer(this));
   }

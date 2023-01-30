@@ -152,7 +152,6 @@ WorkerThread::WorkerThread(ThreadType thread_type_hint,
   DCHECK(CanUseUtilityThreadTypeForWorkerThread() ||
          thread_type_hint != ThreadType::kUtility);
   wake_up_event_.declare_only_used_while_idle();
-  wake_up_event_.opt_out_of_wakeup_flow_events();
 }
 
 bool WorkerThread::Start(
