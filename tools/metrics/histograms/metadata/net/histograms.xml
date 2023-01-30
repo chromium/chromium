@@ -1564,24 +1564,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ErrAborted.CountPerUpload2" units="aborts"
-    expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The count of the ABORTED bucket in Net.ErrorCodesForMainFrame3 at the time
-    histograms are being uploaded.
-  </summary>
-</histogram>
-
-<histogram name="Net.ErrAborted.ProportionPerUpload" units="%"
-    expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
-  <summary>
-    The bucket proportion of the ABORTED bucket in Net.ErrorCodesForMainFrame3
-    at the time histograms are being uploaded.
-  </summary>
-</histogram>
-
 <histogram name="Net.ErrorCodesForHTTPSGoogleMainFrame3" enum="NetErrorCodes"
     expires_after="never">
 <!-- expires-never: Core network stack health metric -->

@@ -8633,17 +8633,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NCN.CellularConnectionSubtype" enum="ConnectionSubtype"
-    expires_after="M77">
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    The connection subtype of the network the client is connected to, when the
-    client is on a cellular connection. This histogram is logged once per UMA
-    record, if the user is on a cellular connection, at the time the record is
-    finalized.
-  </summary>
-</histogram>
-
 <histogram name="NCN.NetworkOperatorMCCMNC" units="units"
     expires_after="2021-10-27">
   <obsolete>

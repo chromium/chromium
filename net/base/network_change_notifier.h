@@ -65,10 +65,7 @@ class NET_EXPORT NetworkChangeNotifier {
   };
 
   // This is the NetInfo v3 set of connection technologies as seen in
-  // http://w3c.github.io/netinfo/. This enum is duplicated in histograms.xml
-  // so be sure to change both at once. Additionally, since this enum is used in
-  // a UMA histogram, it should not be re-ordered and any new values should be
-  // added to the end.
+  // http://w3c.github.io/netinfo/.
   //
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net

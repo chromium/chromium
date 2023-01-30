@@ -76,8 +76,6 @@ class NetworkMetricsProvider
                            ConnectionTypeIsAmbiguous);
 
   // MetricsProvider:
-  void ProvideCurrentSessionData(
-      ChromeUserMetricsExtension* uma_proto) override;
   void ProvideSystemProfileMetrics(SystemProfileProto* system_profile) override;
 
   // NetworkConnectionObserver:
@@ -93,20 +91,12 @@ class NetworkMetricsProvider
   // net::GetWifiPHYLayerProtocol.
   void OnWifiPHYLayerProtocolResult(net::WifiPHYLayerProtocol mode);
 
-  // Logs metrics that are functions of other metrics being uploaded.
-  void LogAggregatedMetrics();
-
   void OnEffectiveConnectionTypeChanged(net::EffectiveConnectionType type);
 
   // Used as a callback to be given to NetworkConnectionTracker async getter to
   // set the |network_connection_tracker_|.
   void SetNetworkConnectionTracker(
       network::NetworkConnectionTracker* network_connection_tracker);
-
-  // Invoked at the time a new user metrics log record is being finalized, on
-  // the main thread. NCN Histograms that want to be logged once per record
-  // should be logged in this method.
-  void FinalizingMetricsLogRecord();
 
   // Watches for network connection changes.
   // This |network_connection_tracker_| raw pointer is not owned by this class.
@@ -127,11 +117,6 @@ class NetworkMetricsProvider
   // The PHY mode of the currently associated access point obtained via
   // net::GetWifiPHYLayerProtocol.
   net::WifiPHYLayerProtocol wifi_phy_layer_protocol_;
-
-  // These metrics track histogram totals for the Net.ErrorCodesForMainFrame4
-  // histogram. They are used to compute deltas at upload time.
-  base::HistogramBase::Count total_aborts_;
-  base::HistogramBase::Count total_codes_;
 
   // Provides the network quality estimator. May be null.
   std::unique_ptr<NetworkQualityEstimatorProvider>

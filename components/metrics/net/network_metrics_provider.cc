@@ -65,8 +65,6 @@ NetworkMetricsProvider::NetworkMetricsProvider(
       network_connection_tracker_initialized_(false),
       wifi_phy_layer_protocol_is_ambiguous_(false),
       wifi_phy_layer_protocol_(net::WIFI_PHY_LAYER_PROTOCOL_UNKNOWN),
-      total_aborts_(0),
-      total_codes_(0),
       network_quality_estimator_provider_(
           std::move(network_quality_estimator_provider)),
       effective_connection_type_(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN),
@@ -104,31 +102,6 @@ void NetworkMetricsProvider::SetNetworkConnectionTracker(
                      weak_ptr_factory_.GetWeakPtr()));
   if (connection_type_ != network::mojom::ConnectionType::CONNECTION_UNKNOWN)
     network_connection_tracker_initialized_ = true;
-}
-
-void NetworkMetricsProvider::FinalizingMetricsLogRecord() {
-#if BUILDFLAG(IS_ANDROID)
-  // Metrics logged here will be included in every metrics log record.  It's not
-  // yet clear if these metrics are generally useful enough to warrant being
-  // added to the SystemProfile proto, so they are logged here as histograms for
-  // now.
-  if (network::NetworkConnectionTracker::IsConnectionCellular(
-          connection_type_)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "NCN.CellularConnectionSubtype",
-        net::NetworkChangeNotifier::GetConnectionSubtype(),
-        net::NetworkChangeNotifier::ConnectionSubtype::SUBTYPE_LAST + 1);
-  }
-#endif
-}
-
-void NetworkMetricsProvider::ProvideCurrentSessionData(
-    ChromeUserMetricsExtension*) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // ProvideCurrentSessionData is called on the main thread, at the time a
-  // metrics record is being finalized.
-  FinalizingMetricsLogRecord();
-  LogAggregatedMetrics();
 }
 
 void NetworkMetricsProvider::ProvideSystemProfileMetrics(
@@ -280,26 +253,6 @@ void NetworkMetricsProvider::OnWifiPHYLayerProtocolResult(
     wifi_phy_layer_protocol_is_ambiguous_ = true;
   }
   wifi_phy_layer_protocol_ = mode;
-}
-
-void NetworkMetricsProvider::LogAggregatedMetrics() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::HistogramBase* error_codes = base::SparseHistogram::FactoryGet(
-      "Net.ErrorCodesForMainFrame4",
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-  std::unique_ptr<base::HistogramSamples> samples =
-      error_codes->SnapshotSamples();
-  base::HistogramBase::Count new_aborts =
-      samples->GetCount(-net::ERR_ABORTED) - total_aborts_;
-  base::HistogramBase::Count new_codes = samples->TotalCount() - total_codes_;
-  if (new_codes > 0) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("Net.ErrAborted.CountPerUpload2", new_aborts, 1,
-                                100000000, 50);
-    UMA_HISTOGRAM_PERCENTAGE("Net.ErrAborted.ProportionPerUpload",
-                             (100 * new_aborts) / new_codes);
-    total_codes_ += new_codes;
-    total_aborts_ += new_aborts;
-  }
 }
 
 void NetworkMetricsProvider::OnEffectiveConnectionTypeChanged(
