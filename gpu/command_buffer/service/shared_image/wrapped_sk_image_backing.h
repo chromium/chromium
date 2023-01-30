@@ -6,14 +6,22 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_WRAPPED_SK_IMAGE_BACKING_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkSurfaceProps.h"
+#include "third_party/skia/include/gpu/GrTypes.h"
+
+class SkSurface;
+class SkPixmap;
 
 namespace gpu {
 

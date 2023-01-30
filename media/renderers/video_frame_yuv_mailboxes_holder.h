@@ -7,9 +7,14 @@
 
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+
+class SkColorSpace;
+class SkImage;
+class SkSurface;
 
 namespace viz {
 class RasterContextProvider;
