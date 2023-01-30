@@ -143,14 +143,18 @@ void GestureListenerManager::SetMultiTouchZoomSupportEnabled(
     rwhva_->SetMultiTouchZoomSupportEnabled(enabled);
 }
 
-void GestureListenerManager::SetHasListenersAttached(JNIEnv* env,
-                                                     jboolean enabled) {
-  if (has_listeners_attached_ == enabled)
+void GestureListenerManager::SetRootScrollOffsetUpdateFrequency(
+    JNIEnv* env,
+    jint frequency) {
+  auto new_frequency =
+      static_cast<cc::mojom::RootScrollOffsetUpdateFrequency>(frequency);
+  if (root_scroll_offset_update_frequency_ == new_frequency) {
     return;
+  }
 
-  has_listeners_attached_ = enabled;
+  root_scroll_offset_update_frequency_ = new_frequency;
   if (rwhva_)
-    rwhva_->UpdateReportAllRootScrolls();
+    rwhva_->UpdateRootScrollOffsetUpdateFrequency();
 }
 
 void GestureListenerManager::GestureEventAck(

@@ -42,9 +42,10 @@ void RenderFrameMetadataProviderImpl::Bind(
   // later forwarded in the case of a renderer crash.
   render_frame_metadata_observer_remote_.reset_on_disconnect();
 #if BUILDFLAG(IS_ANDROID)
-  if (pending_report_all_root_scrolls_.has_value()) {
-    ReportAllRootScrolls(*pending_report_all_root_scrolls_);
-    pending_report_all_root_scrolls_.reset();
+  if (pending_root_scroll_offset_update_frequency_.has_value()) {
+    UpdateRootScrollOffsetUpdateFrequency(
+        *pending_root_scroll_offset_update_frequency_);
+    pending_root_scroll_offset_update_frequency_.reset();
   }
 #endif
   if (pending_report_all_frame_submission_for_testing_.has_value()) {
@@ -55,13 +56,15 @@ void RenderFrameMetadataProviderImpl::Bind(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RenderFrameMetadataProviderImpl::ReportAllRootScrolls(bool enabled) {
+void RenderFrameMetadataProviderImpl::UpdateRootScrollOffsetUpdateFrequency(
+    cc::mojom::RootScrollOffsetUpdateFrequency frequency) {
   if (!render_frame_metadata_observer_remote_) {
-    pending_report_all_root_scrolls_ = enabled;
+    pending_root_scroll_offset_update_frequency_ = frequency;
     return;
   }
 
-  render_frame_metadata_observer_remote_->ReportAllRootScrolls(enabled);
+  render_frame_metadata_observer_remote_->UpdateRootScrollOffsetUpdateFrequency(
+      frequency);
 }
 #endif
 

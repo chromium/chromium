@@ -4,6 +4,9 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
+
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -21,7 +24,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.RenderFrameHostTestExt;
@@ -43,7 +46,7 @@ public class GestureListenerManagerTest {
             "<html><body style='height: 10000px'><script>"
             + "window.addEventListener('load', () => { document.title = 'loaded'; });</script>");
 
-    private static final class GestureStateListenerImpl extends GestureStateListenerWithScroll {
+    private static final class GestureStateListenerImpl extends GestureStateListener {
         private int mNumOnScrollOffsetOrExtentChangedCalls;
         public CallbackHelper mCallbackHelper = new CallbackHelper();
         private boolean mGotStarted;
@@ -122,11 +125,12 @@ public class GestureListenerManagerTest {
             GestureListenerManagerImpl manager =
                     (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
                             webContents);
-            // shouldReportAllRootScrolls() should initially be false (as there are no listeners).
-            Assert.assertFalse(manager.shouldReportAllRootScrolls());
-            manager.addListener(listener);
-            // Adding a listener enables root-scrolls.
-            Assert.assertTrue(manager.shouldReportAllRootScrolls());
+            // getRootScrollOffsetUpdateFrequency() should initially return NONE (as there are no
+            // listeners).
+            Assert.assertEquals(NONE, manager.getRootScrollOffsetUpdateFrequency());
+            manager.addListener(listener, ALL_UPDATES);
+            // Adding a listener changes this to ALL_UPDATES.
+            Assert.assertEquals(ALL_UPDATES, manager.getRootScrollOffsetUpdateFrequency());
             View webContentsView = webContents.getViewAndroidDelegate().getContainerView();
             mCurrentX = webContentsView.getWidth() / 2;
             mCurrentY = webContentsView.getHeight() / 2;
@@ -143,8 +147,8 @@ public class GestureListenerManagerTest {
                     (GestureListenerManagerImpl) GestureListenerManager.fromWebContents(
                             webContents);
             manager.removeListener(listener);
-            // Removing the only listener disbles root-scrolls.
-            Assert.assertFalse(manager.shouldReportAllRootScrolls());
+            // Should go back to NONE after removing the only listener.
+            Assert.assertEquals(NONE, manager.getRootScrollOffsetUpdateFrequency());
         });
     }
 }

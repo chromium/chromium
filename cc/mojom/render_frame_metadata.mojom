@@ -122,21 +122,42 @@ struct RenderFrameMetadata {
   bool has_transparent_background;
 };
 
+[EnableIf=is_android]
+enum RootScrollOffsetUpdateFrequency {
+  // The client will only be notified of root scroll offsets via the regular
+  // RenderFrameMetadata updates. This is the default behavior. See
+  // `RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata()` for
+  // details on when the RenderFrameMetadata updates occur.
+  kNone,
+  // The client will also be notified with an updated root scroll offset when a
+  // scroll ends in addition to offset updates sent via RenderFrameMetadata
+  // updates.
+  kOnScrollEnd,
+  // The client will be notified of any change to the root scroll offset.
+  kAllUpdates,
+};
+
 // This interface is provided by the renderer. It impacts the frequency with
 // which a fully populated RenderFrameMetadata object (above) is delivered to
 // the RenderFrameMetadataObserverClient.
 interface RenderFrameMetadataObserver {
-  // When |enabled| is set to true this notifies the client of any change to the
-  // root scroll offset. The client is notified in two ways:
+  // When `frequency` is set to a value other than `kNone`, this notifies the
+  // client of changes to the root scroll offset. The client is notified in
+  // several ways:
   // . OnRenderFrameMetadataChanged(), is sent if the client would normally be
-  //   notified of the frame (for example, the viewport changed).
+  //   notified of the frame (for example, the viewport changed). If `frequency`
+  //   is `kNone`, the client is not sent `OnRootScrollOffsetChanged()`.
   // . OnRootScrollOffsetChanged() if the client is not notified of the frame
-  //   change, but the root scroll offset has changed. In other words, if this
-  //   is sent, *only* the root-scroll-offset has changed and the client is not
-  //   sent a OnRenderFrameMetadataChanged() for the frame.
+  //   change:
+  //   - but `frequency` is `kOnScrollEnd` and a scroll has just ended.
+  //   - but `frequency` is `kAllUpdates` and the scroll offset has changed.
+  //
+  // In other words, if this is sent, *only* the root-scroll-offset has changed
+  // and the client is not sent a OnRenderFrameMetadataChanged() for the frame.
   // Used on Android for acessibility and GestureListenerManager.
   [EnableIf=is_android]
-  ReportAllRootScrolls(bool enabled);
+  UpdateRootScrollOffsetUpdateFrequency(
+      RootScrollOffsetUpdateFrequency frequency);
 
   // When |enabled| is set to true, this will send RenderFrameMetadata to
   // the RenderFrameMetadataObserverClient for all frames. Only used for

@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview;
 
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -26,7 +28,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.GestureListenerManager;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
+import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -91,7 +93,7 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
     private boolean mRotationChanged;
 
     // Gesture accounting for handle hiding while scrolling.
-    private final GestureStateListenerWithScroll mGestureStateListener;
+    private final GestureStateListener mGestureStateListener;
 
     // There are no guarantees that the side effects of setting the position of
     // the PopupWindow and the visibility of its content View will be realized
@@ -143,7 +145,7 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
 
         mParentPositionObserver = new ViewPositionObserver(containerView);
         mParentPositionListener = (x, y) -> updateParentPosition(x, y);
-        mGestureStateListener = new GestureStateListenerWithScroll() {
+        mGestureStateListener = new GestureStateListener() {
             @Override
             public void onScrollStarted(
                     int scrollOffsetX, int scrollOffsetY, boolean isDirectionUp) {
@@ -175,7 +177,8 @@ public class PopupTouchHandleDrawable extends View implements DisplayAndroidObse
                 destroy();
             }
         };
-        GestureListenerManager.fromWebContents(mWebContents).addListener(mGestureStateListener);
+        GestureListenerManager.fromWebContents(mWebContents)
+                .addListener(mGestureStateListener, ALL_UPDATES);
         mNativeDrawable = PopupTouchHandleDrawableJni.get().init(PopupTouchHandleDrawable.this,
                 HandleViewResources.getHandleHorizontalPaddingRatio());
     }

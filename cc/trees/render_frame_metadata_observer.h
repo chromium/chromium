@@ -37,6 +37,11 @@ class CC_EXPORT RenderFrameMetadataObserver {
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
       bool force_send) = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Notification of the scroll end event.
+  virtual void DidEndScroll() = 0;
+#endif
 };
 
 }  // namespace cc

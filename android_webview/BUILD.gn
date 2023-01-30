@@ -669,6 +669,7 @@ android_library("browser_java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//cc/mojom:mojom_java",
     "//components/android_autofill/browser:java",
     "//components/autofill/android:autofill_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",

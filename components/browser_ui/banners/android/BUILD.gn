@@ -9,6 +9,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//cc/mojom:mojom_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

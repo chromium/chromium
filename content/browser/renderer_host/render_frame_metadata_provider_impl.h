@@ -56,10 +56,11 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
   const cc::RenderFrameMetadata& LastRenderFrameMetadata() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Notifies the renderer to begin sending a notification on all root scroll
-  // changes, which is needed for accessibility and GestureListenerManager on
-  // Android.
-  void ReportAllRootScrolls(bool enabled);
+  // Notifies the renderer of the changes in the notification frequency of the
+  // root scroll updates, which is needed for accessibility and
+  // GestureListenerManager on Android.
+  void UpdateRootScrollOffsetUpdateFrequency(
+      cc::mojom::RootScrollOffsetUpdateFrequency frequency);
 #endif
 
   // Notifies the renderer to begin sending a notification on all frame
@@ -111,7 +112,8 @@ class CONTENT_EXPORT RenderFrameMetadataProviderImpl
       render_frame_metadata_observer_remote_;
 
 #if BUILDFLAG(IS_ANDROID)
-  absl::optional<bool> pending_report_all_root_scrolls_;
+  absl::optional<cc::mojom::RootScrollOffsetUpdateFrequency>
+      pending_root_scroll_offset_update_frequency_;
 #endif
   absl::optional<bool> pending_report_all_frame_submission_for_testing_;
 

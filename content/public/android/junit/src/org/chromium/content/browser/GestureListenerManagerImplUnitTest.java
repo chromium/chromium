@@ -11,6 +11,10 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
+
 import android.graphics.Point;
 import android.view.ViewGroup;
 
@@ -31,7 +35,6 @@ import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.GestureStateListener;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 /**
@@ -51,7 +54,7 @@ public class GestureListenerManagerImplUnitTest {
     @Mock
     GestureListenerManagerImpl.Natives mMockJniGestureListenerManager;
     @Mock
-    GestureStateListenerWithScroll mGestureStateListener;
+    GestureStateListener mGestureStateListener;
 
     private GestureListenerManagerImpl mGestureManager;
 
@@ -63,7 +66,7 @@ public class GestureListenerManagerImplUnitTest {
         setupMockWebContents();
 
         mGestureManager = new GestureListenerManagerImpl(mWebContents);
-        mGestureManager.addListener(mGestureStateListener);
+        mGestureManager.addListener(mGestureStateListener, ALL_UPDATES);
     }
 
     @Test
@@ -124,6 +127,22 @@ public class GestureListenerManagerImplUnitTest {
 
         mGestureManager.onFlingEnd();
         verify(mGestureStateListener).onFlingEndGesture(anyInt(), anyInt());
+    }
+
+    @Test
+    public void updateFrequency() {
+        // This will be ALL_UPDATES because of the listener we add in setup.
+        Assert.assertEquals(ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequency());
+
+        // Adding listeners with lower frequency will not change the result.
+        mGestureManager.addListener(new GestureStateListener() {}, NONE);
+        mGestureManager.addListener(new GestureStateListener() {}, NONE);
+        mGestureManager.addListener(new GestureStateListener() {}, ON_SCROLL_END);
+        Assert.assertEquals(ALL_UPDATES, mGestureManager.getRootScrollOffsetUpdateFrequency());
+
+        // Now, remove the ALL_UPDATES listener. This will leave us with ON_SCROLL_END.
+        mGestureManager.removeListener(mGestureStateListener);
+        Assert.assertEquals(ON_SCROLL_END, mGestureManager.getRootScrollOffsetUpdateFrequency());
     }
 
     private void setupMockWebContents() {

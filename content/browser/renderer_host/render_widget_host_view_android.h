@@ -22,6 +22,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
+#include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/selection.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -284,7 +285,9 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   }
   void SetGestureListenerManager(GestureListenerManager* manager);
 
-  void UpdateReportAllRootScrolls();
+  // See
+  // `RenderFrameMetadataProviderImpl::UpdateRootScrollOffsetUpdateFrequency()`.
+  void UpdateRootScrollOffsetUpdateFrequency();
 
   base::WeakPtr<RenderWidgetHostViewAndroid> GetWeakPtrAndroid();
 
@@ -470,7 +473,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
     raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
   };
 
-  bool ShouldReportAllRootScrolls();
+  cc::mojom::RootScrollOffsetUpdateFrequency RootScrollOffsetUpdateFrequency();
 
   MouseWheelPhaseHandler* GetMouseWheelPhaseHandler() override;
 

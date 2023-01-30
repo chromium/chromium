@@ -8949,6 +8949,9 @@ class LayerTreeHostTestRequestForceSendMetadata
       target_->OnRenderFrameSubmission(render_frame_metadata,
                                        compositor_frame_metadata, force_send);
     }
+#if BUILDFLAG(IS_ANDROID)
+    void DidEndScroll() override { target_->DidEndScroll(); }
+#endif
 
    private:
     raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
@@ -9001,6 +9004,9 @@ class LayerTreeHostTestRequestForceSendMetadata
     if (force_send)
       num_force_sends_++;
   }
+#if BUILDFLAG(IS_ANDROID)
+  void DidEndScroll() override {}
+#endif
 
  private:
   FakeContentLayerClient client_;
@@ -9184,6 +9190,9 @@ class LayerTreeHostTestDelegatedInkMetadataBase
       target_->OnRenderFrameSubmission(render_frame_metadata,
                                        compositor_frame_metadata, force_send);
     }
+#if BUILDFLAG(IS_ANDROID)
+    void DidEndScroll() override { target_->DidEndScroll(); }
+#endif
 
    private:
     raw_ptr<RenderFrameMetadataObserver> target_ = nullptr;
@@ -9258,6 +9267,9 @@ class LayerTreeHostTestDelegatedInkMetadataBase
     ExpectMetadata(render_frame_metadata.delegated_ink_metadata,
                    compositor_frame_metadata->delegated_ink_metadata.get());
   }
+#if BUILDFLAG(IS_ANDROID)
+  void DidEndScroll() override {}
+#endif
 
  protected:
   absl::optional<gfx::DelegatedInkMetadata> expected_metadata_;

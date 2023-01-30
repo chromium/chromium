@@ -4,6 +4,8 @@
 
 package org.chromium.weblayer_private;
 
+import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ALL_UPDATES;
+
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.pm.PackageManager;
@@ -48,7 +50,6 @@ import org.chromium.components.webapps.AddToHomescreenCoordinator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
-import org.chromium.content_public.browser.GestureStateListenerWithScroll;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.SelectionClient;
@@ -140,7 +141,7 @@ public final class TabImpl extends ITab.Stub {
     private Set<FaviconCallbackProxy> mFaviconCallbackProxies = new HashSet<>();
 
     // Only non-null if scroll offsets have been requested.
-    private @Nullable GestureStateListenerWithScroll mGestureStateListenerWithScroll;
+    private @Nullable GestureStateListener mGestureStateListener;
 
     private static class InternalAccessDelegateImpl
             implements ViewEventSink.InternalAccessDelegate {
@@ -284,7 +285,7 @@ public final class TabImpl extends ITab.Stub {
                             throw new APICallException(e);
                         }
                     }
-                });
+                }, ALL_UPDATES);
     }
 
     private void doInitAfterSettingContainerView() {
@@ -606,8 +607,8 @@ public final class TabImpl extends ITab.Stub {
     public void setScrollOffsetsEnabled(boolean enabled) {
         StrictModeWorkaround.apply();
         if (enabled) {
-            if (mGestureStateListenerWithScroll == null) {
-                mGestureStateListenerWithScroll = new GestureStateListenerWithScroll() {
+            if (mGestureStateListener == null) {
+                mGestureStateListener = new GestureStateListener() {
                     @Override
                     public void onScrollOffsetOrExtentChanged(
                             int scrollOffsetY, int scrollExtentY) {
@@ -619,12 +620,12 @@ public final class TabImpl extends ITab.Stub {
                     }
                 };
                 GestureListenerManager.fromWebContents(mWebContents)
-                        .addListener(mGestureStateListenerWithScroll);
+                        .addListener(mGestureStateListener, ALL_UPDATES);
             }
-        } else if (mGestureStateListenerWithScroll != null) {
+        } else if (mGestureStateListener != null) {
             GestureListenerManager.fromWebContents(mWebContents)
-                    .removeListener(mGestureStateListenerWithScroll);
-            mGestureStateListenerWithScroll = null;
+                    .removeListener(mGestureStateListener);
+            mGestureStateListener = null;
         }
     }
 

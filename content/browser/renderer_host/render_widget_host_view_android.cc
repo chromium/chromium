@@ -1307,15 +1307,17 @@ bool RenderWidgetHostViewAndroid::TransformPointToCoordSpaceForView(
 void RenderWidgetHostViewAndroid::SetGestureListenerManager(
     GestureListenerManager* manager) {
   gesture_listener_manager_ = manager;
-  UpdateReportAllRootScrolls();
+  UpdateRootScrollOffsetUpdateFrequency();
 }
 
-void RenderWidgetHostViewAndroid::UpdateReportAllRootScrolls() {
+void RenderWidgetHostViewAndroid::UpdateRootScrollOffsetUpdateFrequency() {
   if (!host())
     return;
 
-  host()->render_frame_metadata_provider()->ReportAllRootScrolls(
-      ShouldReportAllRootScrolls());
+  host()
+      ->render_frame_metadata_provider()
+      ->UpdateRootScrollOffsetUpdateFrequency(
+          RootScrollOffsetUpdateFrequency());
 }
 
 base::WeakPtr<RenderWidgetHostViewAndroid>
@@ -2477,13 +2479,18 @@ void RenderWidgetHostViewAndroid::UpdateNativeViewTree(
   CreateOverscrollControllerIfPossible();
 }
 
-bool RenderWidgetHostViewAndroid::ShouldReportAllRootScrolls() {
+cc::mojom::RootScrollOffsetUpdateFrequency
+RenderWidgetHostViewAndroid::RootScrollOffsetUpdateFrequency() {
   // In order to provide support for onScrollOffsetOrExtentChanged()
-  // GestureListenerManager needs root-scroll-offsets. This is only necessary
-  // if a GestureStateListenerWithScroll is added.
-  return web_contents_accessibility_ != nullptr ||
-         (gesture_listener_manager_ &&
-          gesture_listener_manager_->has_listeners_attached());
+  // GestureListenerManager needs root-scroll-offsets. The frequency of the
+  // updates depends on the needs of the `GestureStateListenerWithScroll`s, if
+  // any.
+  if (web_contents_accessibility_ != nullptr) {
+    return cc::mojom::RootScrollOffsetUpdateFrequency::kAllUpdates;
+  }
+  return gesture_listener_manager_
+             ? gesture_listener_manager_->root_scroll_offset_update_frequency()
+             : cc::mojom::RootScrollOffsetUpdateFrequency::kNone;
 }
 
 MouseWheelPhaseHandler*
@@ -3208,7 +3215,7 @@ void RenderWidgetHostViewAndroid::OnUpdateScopedSelectionHandles() {
 void RenderWidgetHostViewAndroid::SetWebContentsAccessibility(
     WebContentsAccessibilityAndroid* web_contents_accessibility) {
   web_contents_accessibility_ = web_contents_accessibility;
-  UpdateReportAllRootScrolls();
+  UpdateRootScrollOffsetUpdateFrequency();
 }
 
 void RenderWidgetHostViewAndroid::SetNeedsBeginFrameForFlingProgress() {

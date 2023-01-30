@@ -103,6 +103,11 @@ public abstract class GestureStateListener {
     public void didOverscroll(float accumulatedOverscrollX, float accumulatedOverscrollY) {}
 
     /**
+     * Called when the scroll offsets or extents may have changed.
+     */
+    public void onScrollOffsetOrExtentChanged(int scrollOffsetY, int scrollExtentY) {}
+
+    /**
      * Called when the gesture source is being destroyed.
      */
     public void onDestroyed() {}

@@ -338,6 +338,12 @@ void LayerTreeHostImpl::DidStartScroll() {
 void LayerTreeHostImpl::DidEndScroll() {
   scroll_affects_scroll_handler_ = false;
   current_scroll_did_checkerboard_large_area_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  if (render_frame_metadata_observer_) {
+    render_frame_metadata_observer_->DidEndScroll();
+  }
+#endif
 }
 
 void LayerTreeHostImpl::DidMouseLeave() {

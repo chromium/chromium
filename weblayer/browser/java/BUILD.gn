@@ -205,6 +205,7 @@ android_library("java") {
     "//base:jni_java",
     "//build/android:build_java",
     "//cc:cc_java",
+    "//cc/mojom:mojom_java",
     "//components/android_autofill/browser:java",
     "//components/browser_ui/accessibility/android:java",
     "//components/browser_ui/banners/android:java",
