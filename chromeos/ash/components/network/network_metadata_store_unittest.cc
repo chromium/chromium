@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -69,6 +71,8 @@ constexpr char kApnAuthentication[] = "authentication";
 constexpr char kApnLocalizedName[] = "localizedName";
 constexpr char kApnLanguage[] = "language";
 constexpr char kApnAttach[] = "attach";
+constexpr base::TimeDelta kMigrationAge = base::Days(5);
+constexpr char kMigrationAgeASCII[] = "5";
 }  // namespace
 
 class TestNetworkMetadataObserver : public NetworkMetadataObserver {
@@ -576,6 +580,30 @@ TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampNonExistentNetwork) {
   task_environment()->FastForwardBy(base::Days(14));
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
             base::Time::Now().UTCMidnight());
+}
+
+TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampMigrationAgeOverride) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kHiddenNetworkMigrationAge, kMigrationAgeASCII);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
+  ConfigureService(kConfigWifi0Connectable);
+
+  // Verify that the amount of time a network must have existed before its
+  // timestamp is overwritten can be controlled by the command line flag. We do
+  // this by checking just before the minimum age and at the minimum age.
+
+  const base::Time creation_timestamp =
+      metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid);
+
+  EXPECT_EQ(creation_timestamp, base::Time::Now().UTCMidnight());
+  task_environment()->FastForwardBy(kMigrationAge - base::Days(1));
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            creation_timestamp);
+  task_environment()->FastForwardBy(base::Days(1));
+  EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
+            base::Time::UnixEpoch());
 }
 
 TEST_F(NetworkMetadataStoreTest, FixSyncedHiddenNetworks) {

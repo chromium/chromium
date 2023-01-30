@@ -5,12 +5,15 @@
 #include "chromeos/ash/components/network/network_metadata_store.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/network/network_configuration_handler.h"
@@ -46,8 +49,9 @@ const char kEnableTrafficCountersAutoReset[] =
 const char kDayOfTrafficCountersAutoReset[] =
     "day_of_traffic_counters_auto_reset";
 
+constexpr base::TimeDelta kDefaultOverrideAge = base::Days(1);
 // Wait two weeks before overwriting the creation timestamp for a given
-// network
+// network.
 constexpr base::TimeDelta kTwoWeeks = base::Days(14);
 
 std::string GetPath(const std::string& guid, const std::string& subkey) {
@@ -71,6 +75,24 @@ bool IsApnListValid(const base::Value::List& list) {
   }
 
   return true;
+}
+
+base::TimeDelta ComputeMigrationMinimumAge() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  if (!command_line->HasSwitch(switches::kHiddenNetworkMigrationAge)) {
+    return kTwoWeeks;
+  }
+
+  int age_in_days = -1;
+  const std::string ascii =
+      command_line->GetSwitchValueASCII(switches::kHiddenNetworkMigrationAge);
+
+  if (ascii.empty() || !base::StringToInt(ascii, &age_in_days) ||
+      age_in_days < 0) {
+    return kDefaultOverrideAge;
+  }
+  return base::Days(age_in_days);
 }
 
 }  // namespace
@@ -430,7 +452,9 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
 
   const base::Time creation_timestamp =
       base::Time::FromDoubleT(creation_timestamp_pref->GetDouble());
-  if (creation_timestamp + kTwoWeeks <= current_timestamp) {
+  const base::TimeDelta minimum_age = ComputeMigrationMinimumAge();
+
+  if (creation_timestamp + minimum_age <= current_timestamp) {
     SetPref(network_guid, kCreationTimestamp,
             base::Value(base::Time::UnixEpoch().ToDoubleT()));
     return base::Time::UnixEpoch();
