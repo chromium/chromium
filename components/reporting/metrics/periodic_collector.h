@@ -66,7 +66,7 @@ class PeriodicCollector : public CollectorBase {
 
   void SetReportingControllerCb();
 
-  const raw_ptr<MetricReportQueue, DanglingUntriaged> metric_report_queue_;
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   // `rate_controller_` should be initialized before the setting update
   // callbacks of `reporting_controller_` are set, as `reporting_controller`

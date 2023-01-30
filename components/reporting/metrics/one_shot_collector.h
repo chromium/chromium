@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/metrics/collector_base.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -65,7 +64,7 @@ class OneShotCollector : public CollectorBase {
  private:
   void SetReportingControllerCb();
 
-  const raw_ptr<MetricReportQueue, DanglingUntriaged> metric_report_queue_;
+  const raw_ptr<MetricReportQueue> metric_report_queue_;
 
   std::unique_ptr<MetricReportingController> reporting_controller_;
 

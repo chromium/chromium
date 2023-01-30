@@ -111,6 +111,7 @@ MetricReportingManager::CreateForTesting(
 
 MetricReportingManager::~MetricReportingManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Shutdown();
 }
 
 void MetricReportingManager::OnLogin(Profile* profile) {
@@ -191,12 +192,12 @@ void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   delegate_.reset();
-  telemetry_collectors_.clear();
-  info_collectors_.clear();
   event_observer_managers_.clear();
+  info_collectors_.clear();
+  telemetry_collectors_.clear();
+  network_bandwidth_collector_.reset();
   samplers_.clear();
   info_report_queue_.reset();
-  network_bandwidth_collector_.reset();
   telemetry_report_queue_.reset();
   user_telemetry_report_queue_.reset();
   event_report_queue_.reset();
