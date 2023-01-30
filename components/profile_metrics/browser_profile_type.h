@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PROFILE_METRICS_BROWSER_PROFILE_TYPE_H_
 #define COMPONENTS_PROFILE_METRICS_BROWSER_PROFILE_TYPE_H_
 
-#include "base/supports_user_data.h"
+namespace base {
+class SupportsUserData;
+}
 
 namespace profile_metrics {
 
