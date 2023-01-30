@@ -48,6 +48,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "content/public/browser/render_process_host.h"
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -203,18 +209,21 @@ void ProcessMirrorHeader(
   signin_metrics::LogAccountReconcilorStateOnGaiaResponse(
       account_reconcilor->GetState());
 
-  bool should_ignore_guest_webview = true;
+  bool should_process_guest_webview_request = false;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The mirror headers from some guest web views need to be processed.
-  should_ignore_guest_webview =
-      HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
+  bool is_guest = extensions::WebViewRendererState::GetInstance()->IsGuest(
+      web_contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+  should_process_guest_webview_request =
+      is_guest &&
+      !HeaderModificationDelegateImpl::ShouldIgnoreGuestWebViewRequest(
           web_contents);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   // Do not do anything if the navigation happened in the "background".
   if ((!browser || !browser->window()->IsActive()) &&
-      should_ignore_guest_webview) {
+      !should_process_guest_webview_request) {
     return;
   }
 

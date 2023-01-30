@@ -9754,7 +9754,10 @@ if (!is_android) {
         deps += [ "../browser/pdf:pdf_extension_test_utils" ]
       }
       if (is_chromeos) {
-        sources += [ "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc" ]
+        sources += [
+          "../browser/signin/mirror_interactive_uitest.cc",
+          "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc",
+        ]
       }
       if (is_linux || is_chromeos_lacros) {
         # Desktop linux.
@@ -9877,6 +9880,8 @@ if (!is_android) {
       # These tests require a MessageCenter which isn't available on Lacros.
       sources -=
           [ "../browser/notifications/notification_interactive_uitest.cc" ]
+
+      deps += [ ":lacros_test_support_ui" ]
     }
 
     if (is_win) {
