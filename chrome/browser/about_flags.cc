@@ -8396,13 +8396,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kDesksTemplates)},
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"default-link-capturing-in-browser",
-     flag_descriptions::kDefaultLinkCapturingInBrowserName,
-     flag_descriptions::kDefaultLinkCapturingInBrowserDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kDefaultLinkCapturingInBrowser)},
-#endif
-
     {"large-favicon-from-google",
      flag_descriptions::kLargeFaviconFromGoogleName,
      flag_descriptions::kLargeFaviconFromGoogleDescription, kOsAndroid,

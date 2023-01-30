@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"
@@ -124,8 +122,6 @@ class ArcAppsPublisherTest : public testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kDefaultLinkCapturingInBrowser);
 
     // Do not destroy the ArcServiceManager during TearDown, so that Arc
     // KeyedServices can be correctly destroyed during profile shutdown.
@@ -221,7 +217,6 @@ class ArcAppsPublisherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   ArcAppTest arc_test_;
   TestingProfile profile_;
   apps::AppServiceTest app_service_test_;
@@ -230,9 +225,9 @@ class ArcAppsPublisherTest : public testing::Test {
   std::unique_ptr<arc::ArcFileSystemBridge> arc_file_system_bridge_;
 };
 
-// Verifies that a call to set the supported links preference from ARC persists
-// the setting in app service.
-TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
+// Verifies that a call to set the supported links preference from the ARC
+// system doesn't change the setting in app service.
+TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArcSystem) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
@@ -249,8 +244,8 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
-                        GURL("https://www.example.com/foo")));
+  ASSERT_EQ(absl::nullopt, preferred_apps().FindPreferredAppForUrl(
+                               GURL("https://www.example.com/foo")));
 }
 
 // Verifies that a call to set the supported links preference from App Service
@@ -273,36 +268,9 @@ TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromAppService) {
       intent_helper_instance()->verified_links().find(package_name)->second);
 }
 
-// Verifies that when the behavior to open links in the browser by default is
-// enabled, Android apps are not set to handle links during first install.
-TEST_F(ArcAppsPublisherTest, SetSupportedLinksDefaultBrowserBehavior) {
-  base::test::ScopedFeatureList scoped_features(
-      features::kDefaultLinkCapturingInBrowser);
-
-  constexpr char kTestAuthority[] = "www.example.com";
-  const auto& fake_apps = arc_test()->fake_apps();
-  std::string package_name = fake_apps[0]->package_name;
-  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
-                                                 fake_apps[0]->activity);
-  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
-
-  // Update intent filters and supported links for the app, as if it was just
-  // installed.
-  intent_helper()->OnIntentFiltersUpdatedForPackage(
-      package_name, CreateFilterList(package_name, {kTestAuthority}));
-  VerifyIntentFilters(app_id, {kTestAuthority});
-  intent_helper()->OnSupportedLinksChanged(
-      CreateSupportedLinks(package_name), {},
-      arc::mojom::SupportedLinkChangeSource::kArcSystem);
-
-  ASSERT_EQ(absl::nullopt, preferred_apps().FindPreferredAppForUrl(
-                               GURL("https://www.example.com/foo")));
-}
-
-// Verifies that when the behavior to open links in the browser by default is
-// enabled, apps which are already preferred can still update their filters.
-TEST_F(ArcAppsPublisherTest,
-       SetSupportedLinksDefaultBrowserBehaviorAllowsUpdates) {
+// Verifies that the ARC system can still update preferred intent filters for
+// apps which are already preferred.
+TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsUpdates) {
   constexpr char kTestAuthority[] = "www.example.com";
   constexpr char kTestAuthority2[] = "www.newexample.com";
   const auto& fake_apps = arc_test()->fake_apps();
@@ -316,12 +284,10 @@ TEST_F(ArcAppsPublisherTest,
   intent_helper()->OnIntentFiltersUpdatedForPackage(
       package_name, CreateFilterList(package_name, {kTestAuthority}));
   VerifyIntentFilters(app_id, {kTestAuthority});
-  intent_helper()->OnSupportedLinksChanged(
-      CreateSupportedLinks(package_name), {},
-      arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
-  base::test::ScopedFeatureList scoped_features(
-      features::kDefaultLinkCapturingInBrowser);
+  // Set a user preference for the app.
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->SetSupportedLinksPreference(app_id);
 
   // Update filters with a new authority added.
   intent_helper()->OnIntentFiltersUpdatedForPackage(
@@ -332,17 +298,13 @@ TEST_F(ArcAppsPublisherTest,
       CreateSupportedLinks(package_name), {},
       arc::mojom::SupportedLinkChangeSource::kArcSystem);
 
+  // Verify that the user preference has been extended to the new filter.
   ASSERT_EQ(app_id, preferred_apps().FindPreferredAppForUrl(
                         GURL("https://www.newexample.com/foo")));
 }
 
-// Verifies that when the behavior to open links in the browser by default is
-// enabled, the user can still set an app as preferred through ARC settings.
-TEST_F(ArcAppsPublisherTest,
-       SetSupportedLinksDefaultBrowserBehaviorAllowsUserChanges) {
-  base::test::ScopedFeatureList scoped_features(
-      features::kDefaultLinkCapturingInBrowser);
-
+// Verifies that the user can set an app as preferred through ARC settings.
+TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsUserChanges) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0]->package_name;
@@ -362,13 +324,8 @@ TEST_F(ArcAppsPublisherTest,
                         GURL("https://www.example.com/foo")));
 }
 
-// Verifies that when the behavior to open links in the browser by default is
-// enabled, the Play Store app can still be set as preferred by the system.
-TEST_F(ArcAppsPublisherTest,
-       SetSupportedLinksDefaultBrowserBehaviorAllowsPlayStore) {
-  base::test::ScopedFeatureList scoped_features(
-      features::kDefaultLinkCapturingInBrowser);
-
+// Verifies that the Play Store app can be set as preferred by the system.
+TEST_F(ArcAppsPublisherTest, SetSupportedLinksAllowsPlayStoreDefault) {
   constexpr char kTestAuthority[] = "play.google.com";
 
   std::vector<arc::mojom::AppInfoPtr> apps;

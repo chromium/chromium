@@ -204,15 +204,6 @@ BASE_FEATURE(kDataLeakPreventionFilesRestriction,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// When enabled, newly installed ARC apps will not capture links clicked in the
-// browser by default. Users can still enable link capturing for apps through
-// the intent picker or settings.
-BASE_FEATURE(kDefaultLinkCapturingInBrowser,
-             "DefaultLinkCapturingInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables passing additional user authentication in requests to DMServer
 // (policy fetch, status report upload).
 BASE_FEATURE(kDMServerOAuthForChildUser,

@@ -1288,13 +1288,11 @@ void ArcApps::OnArcSupportedLinksChanged(
       continue;
     }
 
-    // When kDefaultLinkCapturingInBrowser is enabled, ignore any requests from
-    // ARC to set an app as handling supported links by default. We allow
-    // requests if they were initiated by user action, or if the app already
-    // has a non-default setting on the Ash side.
+    // Ignore any requests from the ARC system to set an app as handling
+    // supported links by default. We allow requests if they were initiated by
+    // user action, or if the app already has a non-default setting on the Ash
+    // side.
     bool should_ignore_update =
-        base::FeatureList::GetInstance()->IsEnabled(
-            features::kDefaultLinkCapturingInBrowser) &&
         AppShouldDefaultHandleLinksInBrowser(app_id) &&
         source == arc::mojom::SupportedLinkChangeSource::kArcSystem &&
         !proxy()->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id);

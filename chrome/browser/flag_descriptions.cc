@@ -4882,12 +4882,6 @@ const char kCalendarModelDebugModeDescription[] =
     "the system logs, where they are potentially visible to all users of the "
     "device.";
 
-const char kDefaultLinkCapturingInBrowserName[] =
-    "Default link capturing in the browser";
-const char kDefaultLinkCapturingInBrowserDescription[] =
-    "When enabled, newly installed apps will not capture links clicked in the "
-    "browser.";
-
 extern const char kDesks16Name[] = "Enable up to 16 virtual desks";
 extern const char kDesks16Description[] =
     "When enabled, up to 16 virtual desks are allowed.";
