@@ -139,11 +139,11 @@ void PolicyLogger::AddLog(PolicyLogger::Log&& new_log) {
 }
 
 base::Value PolicyLogger::GetAsValue() const {
-  base::Value all_logs_value(base::Value::Type::LIST);
+  base::Value::List all_logs_value;
   for (const Log& log : logs_) {
     all_logs_value.Append(log.GetAsValue());
   }
-  return all_logs_value;
+  return base::Value(std::move(all_logs_value));
 }
 
 bool PolicyLogger::IsPolicyLoggingEnabled() {
