@@ -253,6 +253,16 @@ TEST_P(CookiePartitionKeyTest, IsSerializeable) {
                                              .IsSerializeable());
 }
 
+TEST_P(CookiePartitionKeyTest, Equality) {
+  // Same eTLD+1 but different scheme are not equal.
+  EXPECT_NE(CookiePartitionKey::FromURLForTesting(GURL("https://foo.com")),
+            CookiePartitionKey::FromURLForTesting(GURL("http://foo.com")));
+
+  // Different subdomains of the same site are equal.
+  EXPECT_EQ(CookiePartitionKey::FromURLForTesting(GURL("https://a.foo.com")),
+            CookiePartitionKey::FromURLForTesting(GURL("https://b.foo.com")));
+}
+
 TEST_P(CookiePartitionKeyTest, Equality_WithNonce) {
   SchemefulSite top_level_site =
       SchemefulSite(GURL("https://toplevelsite.com"));
