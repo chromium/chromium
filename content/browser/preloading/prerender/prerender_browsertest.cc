@@ -6328,21 +6328,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessCrashes) {
     host_observer.WaitForDestroyed();
   }
 
+  ExpectFinalStatusForSpeculationRule(
 #if BUILDFLAG(IS_ANDROID)
-  ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kRendererProcessKilled);
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.KilledPrerenderProcessTerminationStatus."
-      "SpeculationRule",
-      PrerenderProcessTerminationStatus::kOomProtected, 1);
 #else
-  ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kRendererProcessCrashed);
-  histogram_tester().ExpectTotalCount(
-      "Prerender.Experimental.KilledPrerenderProcessTerminationStatus."
-      "SpeculationRule",
-      0);
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Test if the host is abandoned when the renderer page is killed.
@@ -6368,18 +6359,6 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, AbandonIfRendererProcessIsKilled) {
 
   ExpectFinalStatusForSpeculationRule(
       PrerenderFinalStatus::kRendererProcessKilled);
-  PrerenderProcessTerminationStatus expected_termination_status =
-#if BUILDFLAG(IS_ANDROID)
-      PrerenderProcessTerminationStatus::kOomProtected;
-#elif BUILDFLAG(IS_WIN)
-      PrerenderProcessTerminationStatus::kNormalTermination;
-#else
-      PrerenderProcessTerminationStatus::kProcessWasKilled;
-#endif
-  histogram_tester().ExpectUniqueSample(
-      "Prerender.Experimental.KilledPrerenderProcessTerminationStatus."
-      "SpeculationRule",
-      expected_termination_status, 1);
 }
 
 // Test if the host is abandoned when the primary main page that triggers a

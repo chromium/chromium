@@ -47,41 +47,19 @@ enum class PrerenderCrossOriginRedirectionMismatch {
   kMaxValue = kSchemeHostPortMismatch
 };
 
-// Use this enum instead of base::TerminationStatus so that all numbers can be
-// mapped to their dedicated labels, regardless of the platform.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PrerenderProcessTerminationStatus {
-  kNormalTermination = 0,
-  kAbnormalTermination = 1,
-  kProcessWasKilled = 2,
-  kProcessCrashed = 3,
-  kStillRunning = 4,
-  kProcessWasKilledByOom = 5,
-  kOomProtected = 6,
-  kLaunchFailed = 7,
-  kOom = 8,
-  kIntegrityFailure = 9,
-  kInvalid = 10,
-  kMaxValue = kInvalid,
-};
-
 // Assembles PrerenderHostFinalStatus with a detailed explanation if applicable.
 // Some FinalStatus enums cover multiple sub cases. To explain them in detail,
 // some explanations can be attached to the status.
 class PrerenderCancellationReason {
  public:
-  using DetailedReasonVariant = absl::
-      variant<absl::monostate, uint64_t, base::TerminationStatus, std::string>;
+  using DetailedReasonVariant =
+      absl::variant<absl::monostate, uint64_t, std::string>;
 
   static PrerenderCancellationReason BuildForDisallowActivationState(
       uint64_t disallow_activation_reason);
 
   static PrerenderCancellationReason BuildForMojoBinderPolicy(
       const std::string& interface_name);
-
-  static PrerenderCancellationReason BuildForRendererProcessGone(
-      base::TerminationStatus status_code);
 
   explicit PrerenderCancellationReason(PrerenderFinalStatus final_status);
   ~PrerenderCancellationReason();

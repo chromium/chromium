@@ -3051,8 +3051,10 @@ void RenderFrameHostImpl::RenderProcessGone(
                   kRendererProcessKilled);
   }
 
-  CancelPrerendering(
-      PrerenderCancellationReason::BuildForRendererProcessGone(info.status));
+  CancelPrerendering(PrerenderCancellationReason(
+      info.status == base::TERMINATION_STATUS_PROCESS_CRASHED
+          ? PrerenderFinalStatus::kRendererProcessCrashed
+          : PrerenderFinalStatus::kRendererProcessKilled));
 
   if (owned_render_widget_host_)
     owned_render_widget_host_->RendererExited();
