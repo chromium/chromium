@@ -820,12 +820,12 @@ const std::vector<std::string> kSpellcheckDictionariesAfter = {
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                        PRE_WindowsHybridSpellcheckDelayInit) {
   GetPrefs()->SetString(language::prefs::kSelectedLanguages, kAcceptLanguages);
-  base::Value spellcheck_dictionaries_list(base::Value::Type::LIST);
+  base::Value::List spellcheck_dictionaries_list;
   for (const auto& dictionary : kSpellcheckDictionariesBefore) {
     spellcheck_dictionaries_list.Append(std::move(dictionary));
   }
-  GetPrefs()->Set(spellcheck::prefs::kSpellCheckDictionaries,
-                  spellcheck_dictionaries_list);
+  GetPrefs()->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                      std::move(spellcheck_dictionaries_list));
 }
 
 IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
