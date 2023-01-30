@@ -177,20 +177,19 @@ class UpgradeDetectorImplTest : public ::testing::Test {
   // Sets the browser.relaunch_window preference in Local State.
   void SetRelaunchWindowPref(int hour, int minute, int duration_mins) {
     // Create the dict representing relaunch time interval.
-    base::Value entry(base::Value::Type::DICT);
-    entry.SetIntPath("start.hour", hour);
-    entry.SetIntPath("start.minute", minute);
-    entry.SetIntKey("duration_mins", duration_mins);
+    base::Value::Dict entry;
+    entry.SetByDottedPath("start.hour", hour);
+    entry.SetByDottedPath("start.minute", minute);
+    entry.Set("duration_mins", duration_mins);
     // Put it in a list.
-    base::Value entries(base::Value::Type::LIST);
+    base::Value::List entries;
     entries.Append(std::move(entry));
     // Put the list in the policy value.
-    base::Value value(base::Value::Type::DICT);
-    value.SetKey("entries", std::move(entries));
+    base::Value::Dict dict;
+    dict.Set("entries", std::move(entries));
 
-    scoped_local_state_.Get()->SetManagedPref(
-        prefs::kRelaunchWindow,
-        std::make_unique<base::Value>(std::move(value)));
+    scoped_local_state_.Get()->SetManagedPref(prefs::kRelaunchWindow,
+                                              base::Value(std::move(dict)));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
