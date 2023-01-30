@@ -16,6 +16,7 @@
 #include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)

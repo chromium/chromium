@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 namespace content {
 
