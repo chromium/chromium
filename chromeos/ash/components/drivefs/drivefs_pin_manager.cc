@@ -6,8 +6,6 @@
 
 #include <locale>
 #include <type_traits>
-#include <utility>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -301,28 +299,41 @@ Progress& Progress::operator=(const Progress&) = default;
 // queue.
 constexpr base::TimeDelta kPeriodicRemovalInterval = base::Seconds(10);
 
-bool PinManager::Add(const Id id, const std::string& path, const int64_t size) {
+bool PinManager::Add(const Id id,
+                     const std::string& path,
+                     const int64_t size,
+                     const bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(size, 0) << " for " << id << " " << Quote(path);
 
-  const auto [it, ok] =
-      files_to_pin_.try_emplace(id, File{.path = path, .total = size});
+  const auto [it, ok] = files_to_track_.try_emplace(
+      id, File{.path = path, .total = size, .pinned = pinned});
   DCHECK_EQ(id, it->first);
   if (!ok) {
     LOG_IF(ERROR, !ok) << "Cannot add " << id << " " << Quote(path)
                        << " with size " << HumanReadableSize(size)
-                       << " to the files to pin: Conflicting entry "
+                       << " to the files to track: Conflicting entry "
                        << it->second;
     return false;
   }
 
   VLOG(3) << "Added " << id << " " << Quote(path) << " with size "
-          << HumanReadableSize(size) << " to the files to pin";
+          << HumanReadableSize(size) << " to the files to track";
   progress_.bytes_to_pin += size;
   progress_.required_space += RoundToBlockSize(size);
   progress_.files_to_pin++;
   DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin),
-            files_to_pin_.size() + files_to_track_.size());
+            files_to_track_.size());
+
+  if (pinned) {
+    progress_.syncing_files++;
+    DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
+  } else {
+    files_to_pin_.push_back(id);
+    DCHECK_LE(files_to_pin_.size(),
+              static_cast<size_t>(progress_.files_to_pin));
+  }
+
   return true;
 }
 
@@ -343,10 +354,12 @@ bool PinManager::Remove(const Id id,
     Update(*it, path, transferred, transferred);
   }
 
+  if (it->second.pinned) {
+    progress_.syncing_files--;
+  }
+
   files_to_track_.erase(it);
-  progress_.syncing_files--;
-  DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
-            files_to_track_.size());
+  DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
   VLOG(3) << "Stopped tracking " << id << " " << Quote(path);
   return true;
 }
@@ -541,26 +554,13 @@ void PinManager::OnSearchResultForSizeCalculation(
 
       VLOG(1) << "Already pinned but not available offline yet: " << id << " "
               << Quote(path);
-      const auto [it, ok] = files_to_track_.try_emplace(
-          id, File{.path = path.value(), .total = size, .pinned = true});
-      DCHECK(ok);
-      DCHECK_EQ(it->first, id);
-      progress_.syncing_files++;
-      DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
-                files_to_track_.size());
-      progress_.bytes_to_pin += size;
-      progress_.required_space += RoundToBlockSize(size);
-      progress_.files_to_pin++;
-      DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin),
-                files_to_pin_.size() + files_to_track_.size());
-      continue;
+    } else {
+      VLOG_IF(1, md.available_offline)
+          << "Not pinned yet but already available offline: " << id << " "
+          << Quote(path) << ": " << Quote(md);
     }
 
-    VLOG_IF(1, md.available_offline)
-        << "Not pinned yet but already available offline: " << id << " "
-        << Quote(path) << ": " << Quote(md);
-
-    Add(id, path.value(), size);
+    Add(id, path.value(), size, md.pinned);
   }
 
   NotifyProgress();
@@ -637,13 +637,14 @@ void PinManager::StartPinning() {
     return Complete(Stage::kSuccess);
   }
 
-  if (files_to_track_.empty() && files_to_pin_.empty()) {
+  if (files_to_track_.empty()) {
     VLOG(1) << "Nothing to pin or track";
+    DCHECK(files_to_pin_.empty());
+    DCHECK_EQ(progress_.files_to_pin, 0);
+    DCHECK_EQ(progress_.syncing_files, 0);
     return Complete(Stage::kSuccess);
   }
 
-  VLOG(1) << "Pinning and tracking "
-          << (files_to_pin_.size() + files_to_track_.size()) << " files...";
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kSyncing;
   NotifyProgress();
@@ -665,27 +666,33 @@ void PinManager::PinSomeFiles() {
     return Complete(Stage::kSuccess);
   }
 
-  while (files_to_track_.size() < 50 && !files_to_pin_.empty()) {
-    Files::node_type node = files_to_pin_.extract(files_to_pin_.begin());
-    DCHECK(node);
-    const Id id = node.key();
-    File& file = node.mapped();
+  while (progress_.syncing_files < 50 && !files_to_pin_.empty()) {
+    const Id id = files_to_pin_.back();
+    files_to_pin_.pop_back();
+
+    const Files::iterator it = files_to_track_.find(id);
+    if (it == files_to_track_.end()) {
+      VLOG(2) << "Not tracked: " << id;
+      continue;
+    }
+
+    DCHECK_EQ(it->first, id);
+    File& file = it->second;
     const std::string& path = file.path;
+
+    if (file.pinned) {
+      VLOG(2) << "Already pinned: " << id << " " << Quote(path);
+      continue;
+    }
 
     VLOG(2) << "Pinning " << id << " " << Quote(path);
     drivefs_->SetPinnedByStableId(
         static_cast<int64_t>(id), true,
         base::BindOnce(&PinManager::OnFilePinned, GetWeakPtr(), id, path));
 
-    DCHECK(!file.pinned);
-    DCHECK(!file.in_progress);
     file.pinned = true;
-    const Files::insert_return_type ir =
-        files_to_track_.insert(std::move(node));
-    DCHECK(ir.inserted) << " for " << id << " " << path;
     progress_.syncing_files++;
-    DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
-              files_to_track_.size());
+    DCHECK_EQ(progress_.syncing_files, CountPinnedFiles());
   }
 
   VLOG(1) << "Progress "

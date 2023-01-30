@@ -48,6 +48,7 @@ using std::vector;
 using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
+using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Return;
@@ -265,24 +266,25 @@ TEST_F(DriveFsPinManagerTest, Add) {
   EXPECT_THAT(manager.files_to_track_, IsEmpty());
 
   // Add an item.
-  EXPECT_TRUE(manager.Add(id1, path1, size1));
-  EXPECT_THAT(manager.files_to_pin_, SizeIs(1));
-  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_TRUE(manager.Add(id1, path1, size1, false));
+  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   // Try to add a conflicting item with the same ID, but different path and
   // size.
-  EXPECT_FALSE(manager.Add(id1, path2, size2));
-  EXPECT_THAT(manager.files_to_pin_, SizeIs(1));
-  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  EXPECT_FALSE(manager.Add(id1, path2, size2, true));
+  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(1));
 
   {
-    const auto it = manager.files_to_pin_.find(id1);
-    ASSERT_NE(it, manager.files_to_pin_.end());
+    const auto it = manager.files_to_track_.find(id1);
+    ASSERT_NE(it, manager.files_to_track_.end());
     const auto& [id, file] = *it;
     EXPECT_EQ(id, id1);
     EXPECT_EQ(file.path, path1);
     EXPECT_EQ(file.total, size1);
     EXPECT_EQ(file.transferred, 0);
+    EXPECT_FALSE(file.pinned);
     EXPECT_FALSE(file.in_progress);
   }
 
@@ -292,22 +294,25 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.pinned_bytes, 0);
     EXPECT_EQ(progress.bytes_to_pin, size1);
     EXPECT_EQ(progress.required_space, 698249216);
+    EXPECT_EQ(progress.syncing_files, 0);
+    EXPECT_EQ(progress.files_to_pin, 1);
   }
 
-  // Add a second item.
-  EXPECT_TRUE(manager.Add(id2, path2, size2));
-  EXPECT_THAT(manager.files_to_pin_, SizeIs(2));
-  EXPECT_THAT(manager.files_to_track_, IsEmpty());
+  // Add a second item, but which is already pinned this time.
+  EXPECT_TRUE(manager.Add(id2, path2, size2, true));
+  EXPECT_THAT(manager.files_to_pin_, ElementsAre(id1));
+  EXPECT_THAT(manager.files_to_track_, SizeIs(2));
 
   {
-    const auto it = manager.files_to_pin_.find(id2);
-    ASSERT_NE(it, manager.files_to_pin_.end());
+    const auto it = manager.files_to_track_.find(id2);
+    ASSERT_NE(it, manager.files_to_track_.end());
     const auto& [id, file] = *it;
     EXPECT_EQ(id, id2);
     EXPECT_EQ(file.path, path2);
     EXPECT_EQ(file.total, size2);
     EXPECT_EQ(file.transferred, 0);
     EXPECT_FALSE(file.in_progress);
+    EXPECT_TRUE(file.pinned);
   }
 
   {
@@ -316,6 +321,8 @@ TEST_F(DriveFsPinManagerTest, Add) {
     EXPECT_EQ(progress.pinned_bytes, 0);
     EXPECT_EQ(progress.bytes_to_pin, size1 + size2);
     EXPECT_EQ(progress.required_space, 777216000);
+    EXPECT_EQ(progress.syncing_files, 1);
+    EXPECT_EQ(progress.files_to_pin, 2);
   }
 }
 
@@ -548,6 +555,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
         id1, PinManager::File{.path = path1,
                               .transferred = 1200,
                               .total = 3000,
+                              .pinned = true,
                               .in_progress = true});
     ASSERT_TRUE(ok);
     manager.progress_.syncing_files++;
@@ -600,9 +608,9 @@ TEST_F(DriveFsPinManagerTest, Remove) {
         id1, PinManager::File{.path = path1,
                               .transferred = 1200,
                               .total = 3000,
+                              .pinned = false,
                               .in_progress = true});
     ASSERT_TRUE(ok);
-    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
@@ -626,6 +634,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
         id1, PinManager::File{.path = path1,
                               .transferred = 5000,
                               .total = 6000,
+                              .pinned = true,
                               .in_progress = true});
     ASSERT_TRUE(ok);
     manager.progress_.syncing_files++;
@@ -673,13 +682,13 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
   // Put in place a couple of files to track.
   {
     const auto [it, ok] = manager.files_to_track_.try_emplace(
-        id1, PinManager::File{.path = path1, .total = 10000});
+        id1, PinManager::File{.path = path1, .total = 10000, .pinned = true});
     ASSERT_TRUE(ok);
     manager.progress_.syncing_files++;
   }
   {
     const auto [it, ok] = manager.files_to_track_.try_emplace(
-        id2, PinManager::File{.path = path2, .total = 20000});
+        id2, PinManager::File{.path = path2, .total = 20000, .pinned = true});
     ASSERT_TRUE(ok);
     manager.progress_.syncing_files++;
   }
@@ -740,6 +749,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(file.path, path1);
     EXPECT_EQ(file.total, 10000);
     EXPECT_EQ(file.transferred, 0);
+    EXPECT_TRUE(file.pinned);
     EXPECT_TRUE(file.in_progress);
   }
 
@@ -775,6 +785,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     EXPECT_EQ(file.path, path1);
     EXPECT_EQ(file.total, 10000);
     EXPECT_EQ(file.transferred, 5000);
+    EXPECT_TRUE(file.pinned);
     EXPECT_TRUE(file.in_progress);
   }
 

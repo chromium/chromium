@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_DRIVEFS_DRIVEFS_PIN_MANAGER_H_
 
+#include <algorithm>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -203,7 +204,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   }
 
  private:
-  // Struct keeping track of the progress of a file being synced.
+  // Progress of a file being synced or to be synced.
   struct File {
     // Path inside the Drive folder.
     // TODO(b/265209836) Remove this field when not needed anymore.
@@ -230,22 +231,21 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   using Files = std::map<Id, File>;
 
-  // Adds an item to the files to pin.  Does nothing if an item with the same ID
-  // already exists in files_to_pin_. Updates the total number of bytes to
-  // transfer and the required space. Returns whether an item was actually
-  // added.
-  bool Add(Id id, const std::string& path, int64_t size);
+  // Adds an item to the files to track.  Does nothing if an item with the same
+  // ID already exists in the map. Updates the total number of bytes to transfer
+  // and the required space. Returns whether an item was actually added.
+  bool Add(Id id, const std::string& path, int64_t size, bool pinned);
 
-  // Removes an item from the map. Does nothing if the item is not in the map.
-  // Updates the total number of bytes transferred so far. If `transferred` is
-  // negative, use the total expected size. Returns whether an item was actually
-  // removed.
+  // Removes an item from the files to track. Does nothing if the item is not in
+  // the map. Updates the total number of bytes transferred so far. If
+  // `transferred` is negative, use the total expected size. Returns whether an
+  // item was actually removed.
   bool Remove(Id id, const std::string& path, int64_t transferred = -1);
 
-  // Updates an item in the map. Does nothing if the item is not in the map.
-  // Updates the total number of bytes transferred so far. Updates the required
-  // space. If `transferred` or `total` is negative, then the matching argument
-  // is ignored. Returns whether anything has actually been updated.
+  // Updates an item in the files to track. Does nothing if the item is not in
+  // the map. Updates the total number of bytes transferred so far. Updates the
+  // required space. If `transferred` or `total` is negative, then the matching
+  // argument is ignored. Returns whether anything has actually been updated.
   bool Update(Id id,
               const std::string& path,
               int64_t transferred,
@@ -300,6 +300,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Report progress to all the observers.
   void NotifyProgress();
 
+  // Counts the files that have been marked as pinned and that are still being
+  // tracked. Should always be equal to progress_.syncing_files. For debugging
+  // only.
+  int CountPinnedFiles() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return std::count_if(
+        files_to_track_.cbegin(), files_to_track_.cend(),
+        [](const Files::value_type& entry) { return entry.second.pinned; });
+  }
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Should the feature actually pin files, or should it stop after checking the
@@ -321,8 +331,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   mojo::Remote<mojom::SearchQuery> search_query_;
   base::ElapsedTimer timer_;
 
-  // Map that tracks the in-progress files indexed by their stable ID.
-  Files files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Stable IDs of the files to pin, and which are not already marked as pinned.
+  std::vector<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Map that tracks the in-progress files indexed by their stable ID. This
+  // contains all the files, either pinned or not, that are not completely
+  // cached yet.
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
