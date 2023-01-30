@@ -206,6 +206,10 @@ void GrpcServicesInitializer::StartGrpcHttpConnectionClient(
   http_connection_client_->Start();
 }
 
+void GrpcServicesInitializer::StopGrpcHttpConnectionClient() {
+  http_connection_client_.reset();
+}
+
 void GrpcServicesInitializer::InitAssistantGrpcServer() {
   auto connect_type = GetGrpcLocalConnectType(assistant_service_address_);
   // Listen on the given address with the specified credentials.

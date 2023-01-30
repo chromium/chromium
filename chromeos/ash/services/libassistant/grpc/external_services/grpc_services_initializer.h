@@ -57,6 +57,7 @@ class GrpcServicesInitializer : public ServicesInitializerBase {
   bool Start();
 
   void StartGrpcHttpConnectionClient(assistant_client::HttpConnectionFactory*);
+  void StopGrpcHttpConnectionClient();
 
   // Add observer for each handler driver.
   void AddAlarmTimerEventObserver(
