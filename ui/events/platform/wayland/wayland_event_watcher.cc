@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
+#include "ui/events/platform/wayland/wayland_event_watcher.h"
 
 #include <wayland-client-core.h>
 #include <cstring>
@@ -23,8 +23,9 @@ namespace {
 void FormatErrorMessage(std::string* message) {
   const re2::RE2 kInvalidChars[] = {"\n", "\r", "\t", "[@]+[0-9]+"};
   if (message) {
-    for (const auto& pattern : kInvalidChars)
+    for (const auto& pattern : kInvalidChars) {
       re2::RE2::Replace(message, pattern, "");
+    }
   }
 }
 
@@ -97,8 +98,9 @@ void WaylandEventWatcher::SetShutdownCb(
 }
 
 void WaylandEventWatcher::StartProcessingEvents() {
-  if (watching_)
+  if (watching_) {
     return;
+  }
 
   // Set the log handler right before starting to watch the fd so that Wayland
   // is able to send us nicely formatted error messages.
@@ -122,12 +124,14 @@ void WaylandEventWatcher::RoundTripQueue() {
 }
 
 void WaylandEventWatcher::StopProcessingEvents() {
-  if (!watching_)
+  if (!watching_) {
     return;
+  }
 
   // Cancel read before stopping to watch.
-  if (prepared_)
+  if (prepared_) {
     WlDisplayCancelRead();
+  }
 
   StopWatchingFD();
 
@@ -135,13 +139,15 @@ void WaylandEventWatcher::StopProcessingEvents() {
 }
 
 bool WaylandEventWatcher::WlDisplayPrepareToRead() {
-  if (prepared_)
+  if (prepared_) {
     return true;
+  }
 
   // Nothing to read. According to the spec, we must notify the caller it must
   // dispatch the events.
-  if (wl_display_prepare_read_queue(display_, event_queue_) != 0)
+  if (wl_display_prepare_read_queue(display_, event_queue_) != 0) {
     return false;
+  }
 
   prepared_ = true;
 
@@ -152,8 +158,9 @@ bool WaylandEventWatcher::WlDisplayPrepareToRead() {
 }
 
 void WaylandEventWatcher::WlDisplayReadEvents() {
-  if (!prepared_)
+  if (!prepared_) {
     return;
+  }
 
   prepared_ = false;
 
@@ -161,8 +168,9 @@ void WaylandEventWatcher::WlDisplayReadEvents() {
 }
 
 void WaylandEventWatcher::WlDisplayCancelRead() {
-  if (!prepared_)
+  if (!prepared_) {
     return;
+  }
 
   prepared_ = false;
 
@@ -172,8 +180,9 @@ void WaylandEventWatcher::WlDisplayCancelRead() {
 void WaylandEventWatcher::WlDisplayDispatchPendingQueue() {
   // If the dispatch fails, it must set the errno. Check that and stop the
   // browser as this is an unrecoverable error.
-  if (wl_display_dispatch_queue_pending(display_, event_queue_) < 0)
+  if (wl_display_dispatch_queue_pending(display_, event_queue_) < 0) {
     WlDisplayCheckForErrors();
+  }
 }
 
 void WaylandEventWatcher::WlDisplayCheckForErrors() {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher_glib.h"
+#include "ui/events/platform/wayland/wayland_event_watcher_glib.h"
 
 #include <glib.h>
 
@@ -30,8 +30,9 @@ gboolean WatchSourcePrepare(GSource* source, gint* timeout_ms) {
 
   auto* event_watcher_glib =
       static_cast<GLibWaylandSource*>(source)->event_watcher.get();
-  if (event_watcher_glib->HandlePrepare())
+  if (event_watcher_glib->HandlePrepare()) {
     return FALSE;
+  }
 
   // Return true if there are events to dispatch without polling.
   return TRUE;
@@ -67,8 +68,9 @@ WaylandEventWatcherGlib::~WaylandEventWatcherGlib() {
 }
 
 bool WaylandEventWatcherGlib::StartWatchingFD(int fd) {
-  if (started_)
+  if (started_) {
     return true;
+  }
 
   wayland_poll_ = std::make_unique<GPollFD>();
   wayland_poll_->fd = fd;
@@ -84,8 +86,9 @@ bool WaylandEventWatcherGlib::StartWatchingFD(int fd) {
   g_source_add_poll(wayland_source_, wayland_poll_.get());
   g_source_set_can_recurse(wayland_source_, TRUE);
   auto* context = g_main_context_get_thread_default();
-  if (!context)
+  if (!context) {
     context = g_main_context_default();
+  }
   g_source_attach(wayland_source_, context);
   g_source_set_priority(wayland_source_, kPriorityFdWatch);
 
@@ -94,8 +97,9 @@ bool WaylandEventWatcherGlib::StartWatchingFD(int fd) {
 }
 
 void WaylandEventWatcherGlib::StopWatchingFD() {
-  if (!started_)
+  if (!started_) {
     return;
+  }
 
   g_source_destroy(wayland_source_);
   g_source_unref(wayland_source_.ExtractAsDangling());
@@ -108,10 +112,11 @@ bool WaylandEventWatcherGlib::HandlePrepare() {
 }
 
 void WaylandEventWatcherGlib::HandleCheck(bool is_io_in) {
-  if (is_io_in)
+  if (is_io_in) {
     WlDisplayReadEvents();
-  else
+  } else {
     WlDisplayCancelRead();
+  }
 }
 
 void WaylandEventWatcherGlib::HandleDispatch() {

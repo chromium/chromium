@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_GLIB_H_
-#define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_GLIB_H_
+#ifndef UI_EVENTS_PLATFORM_WAYLAND_WAYLAND_EVENT_WATCHER_GLIB_H_
+#define UI_EVENTS_PLATFORM_WAYLAND_WAYLAND_EVENT_WATCHER_GLIB_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
+#include "ui/events/platform/wayland/wayland_event_watcher.h"
 
 using GPollFD = struct _GPollFD;
 using GSource = struct _GSource;
@@ -46,4 +46,4 @@ class WaylandEventWatcherGlib : public WaylandEventWatcher {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_EVENT_WATCHER_GLIB_H_
+#endif  // UI_EVENTS_PLATFORM_WAYLAND_WAYLAND_EVENT_WATCHER_GLIB_H_

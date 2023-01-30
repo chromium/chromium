@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher_fdwatch.h"
+#include "ui/events/platform/wayland/wayland_event_watcher_fdwatch.h"
 
 #include "base/notreached.h"
 #include "base/task/current_thread.h"
@@ -45,8 +45,9 @@ void WaylandEventWatcherFdWatch::OnFileCanReadWithoutBlocking(int fd) {
   WlDisplayDispatchPendingQueue();
 
   // If prepare failed, dispatch the events once again.
-  if (!WlDisplayPrepareToRead())
+  if (!WlDisplayPrepareToRead()) {
     WlDisplayDispatchPendingQueue();
+  }
 }
 
 void WaylandEventWatcherFdWatch::OnFileCanWriteWithoutBlocking(int fd) {

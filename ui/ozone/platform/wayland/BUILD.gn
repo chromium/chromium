@@ -113,8 +113,6 @@ source_set("wayland") {
     "host/wayland_drm.h",
     "host/wayland_event_source.cc",
     "host/wayland_event_source.h",
-    "host/wayland_event_watcher.cc",
-    "host/wayland_event_watcher.h",
     "host/wayland_exchange_data_provider.cc",
     "host/wayland_exchange_data_provider.h",
     "host/wayland_frame_manager.cc",
@@ -239,7 +237,6 @@ source_set("wayland") {
     "//mojo/public/cpp/system",
     "//skia",
     "//third_party/libsync",
-    "//third_party/re2",
     "//third_party/wayland:wayland_client",
     "//third_party/wayland:wayland_cursor",
     "//third_party/wayland:wayland_egl",
@@ -377,19 +374,10 @@ source_set("wayland") {
     "host/proxy/wayland_proxy_impl.h",
   ]
 
-  deps += [ ":wayland_proxy" ]
-
-  if (use_glib) {
-    sources += [
-      "host/wayland_event_watcher_glib.cc",
-      "host/wayland_event_watcher_glib.h",
-    ]
-  } else {
-    sources += [
-      "host/wayland_event_watcher_fdwatch.cc",
-      "host/wayland_event_watcher_fdwatch.h",
-    ]
-  }
+  deps += [
+    ":wayland_proxy",
+    "//ui/events/platform/wayland:wayland_event_watcher",
+  ]
 
   configs += [ "//third_party/khronos:khronos_headers" ]
 }

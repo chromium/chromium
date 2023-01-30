@@ -1,0 +1,6 @@
+specific_include_rules = {
+  ".*wayland_event_watcher.cc": [
+    "+components/crash/core/common/crash_key.h",
+    "+third_party/re2/src/re2/re2.h",
+  ],
+}

@@ -1,0 +1,35 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
+
+assert(ozone_platform_wayland)
+
+source_set("wayland_event_watcher") {
+  sources = [
+    "wayland_event_watcher.cc",
+    "wayland_event_watcher.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/crash/core/common:crash_key",
+    "//third_party/re2",
+    "//third_party/wayland:wayland_client",
+  ]
+
+  if (use_glib) {
+    sources += [
+      "wayland_event_watcher_glib.cc",
+      "wayland_event_watcher_glib.h",
+    ]
+    configs += [ "//build/config/linux:glib" ]
+  } else {
+    sources += [
+      "wayland_event_watcher_fdwatch.cc",
+      "wayland_event_watcher_fdwatch.h",
+    ]
+  }
+}
