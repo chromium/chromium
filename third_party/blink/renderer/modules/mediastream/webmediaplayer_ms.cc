@@ -414,9 +414,6 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
   if (frame_deliverer_)
     video_task_runner_->DeleteSoon(FROM_HERE, frame_deliverer_.release());
 
-  if (compositor_)
-    compositor_->StopUsingProvider();
-
   if (video_frame_provider_)
     video_frame_provider_->Stop();
 
