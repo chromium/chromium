@@ -331,9 +331,11 @@ void PairerBrokerImpl::OnFastPairProcedureComplete(
 
   // If we get to this point in the flow for the initial and retroactive pairing
   // scenarios, this means that the account key has successfully been written
-  // to these devices.
-  if (device->protocol() == Protocol::kFastPairInitial ||
-      device->protocol() == Protocol::kFastPairRetroactive) {
+  // for devices with a version of V2 or higher.
+  if (device->version().has_value() &&
+      device->version().value() != DeviceFastPairVersion::kV1 &&
+      (device->protocol() == Protocol::kFastPairInitial ||
+       device->protocol() == Protocol::kFastPairRetroactive)) {
     for (auto& observer : observers_) {
       observer.OnAccountKeyWrite(device, /*error=*/absl::nullopt);
     }

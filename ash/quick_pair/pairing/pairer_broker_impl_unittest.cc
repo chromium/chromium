@@ -319,7 +319,25 @@ class PairerBrokerImplTest : public AshTestBase, public PairerBroker::Observer {
   scoped_refptr<Device> device_;
 };
 
-TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
+TEST_F(PairerBrokerImplTest, PairV1Device_Initial) {
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
+
+  CreateMockDevice(DeviceFastPairVersion::kV1,
+                   /*protocol=*/Protocol::kFastPairInitial);
+  pairer_broker_->PairDevice(device_);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()->TriggerPairedCallback();
+
+  EXPECT_EQ(device_paired_count_, 1);
+  histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 1);
+
+  fast_pair_pairer_factory_->fake_fast_pair_pairer()
+      ->TriggerPairingProcedureCompleteCallback();
+
+  EXPECT_EQ(account_key_write_count_, 0);
+}
+
+TEST_F(PairerBrokerImplTest, PairV2Device_Initial) {
   histogram_tester_.ExpectTotalCount(kFastPairRetryCountMetricName, 0);
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
@@ -337,7 +355,9 @@ TEST_F(PairerBrokerImplTest, PairDevice_Initial) {
 
   fast_pair_pairer_factory_->fake_fast_pair_pairer()
       ->TriggerPairingProcedureCompleteCallback();
+
   EXPECT_FALSE(pairer_broker_->IsPairing());
+  EXPECT_EQ(account_key_write_count_, 1);
 }
 
 TEST_F(PairerBrokerImplTest, PairDevice_Subsequent) {
