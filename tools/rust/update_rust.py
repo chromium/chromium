@@ -29,7 +29,7 @@ sys.path.append(
 
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
-RUST_REVISION = 'c8e6a9e8b6251bbc8276cb78cabe1998deecbed7'
+RUST_REVISION = '7919ef0ec5776c72dace7fec1c68551a617505ad'
 RUST_SUB_REVISION = 1
 
 # Trunk on 2022-10-15.
@@ -59,7 +59,7 @@ CRUBIT_SUB_REVISION = 1
 # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
 # include Crubit binaries in the generated package.  See also a TODO comment
 # in BuildCrubit in package_rust.py.
-FALLBACK_REVISION = '20221209-1-llvmorg-16-init-13328-g110fe4f4-1'
+FALLBACK_REVISION = '7919ef0ec5776c72dace7fec1c68551a617505ad-1-llvmorg-16-init-17653-g39da55e8-2'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -79,7 +79,7 @@ VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 def GetPackageVersionForBuild():
     from update import (CLANG_REVISION, CLANG_SUB_REVISION)
     return (f'{RUST_REVISION}-{RUST_SUB_REVISION}'
-            '-{CLANG_REVISION}-{CLANG_SUB_REVISION}')
+            f'-{CLANG_REVISION}-{CLANG_SUB_REVISION}')
 
 
 # Package version for download. Ideally this is the latest Clang+Rust roll,
