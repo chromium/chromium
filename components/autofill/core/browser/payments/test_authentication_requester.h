@@ -20,15 +20,15 @@
 
 namespace autofill {
 
-// Test class for requesting authentication from CreditCardCVCAuthenticator or
+// Test class for requesting authentication from CreditCardCvcAuthenticator or
 // CreditCardFidoAuthenticator.
 #if BUILDFLAG(IS_IOS)
 class TestAuthenticationRequester
-    : public CreditCardCVCAuthenticator::Requester,
+    : public CreditCardCvcAuthenticator::Requester,
       public CreditCardOtpAuthenticator::Requester {
 #else
 class TestAuthenticationRequester
-    : public CreditCardCVCAuthenticator::Requester,
+    : public CreditCardCvcAuthenticator::Requester,
       public CreditCardFidoAuthenticator::Requester,
       public CreditCardOtpAuthenticator::Requester {
 #endif
@@ -36,9 +36,9 @@ class TestAuthenticationRequester
   TestAuthenticationRequester();
   ~TestAuthenticationRequester() override;
 
-  // CreditCardCVCAuthenticator::Requester:
-  void OnCVCAuthenticationComplete(
-      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response)
+  // CreditCardCvcAuthenticator::Requester:
+  void OnCvcAuthenticationComplete(
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response)
       override;
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuth() const override;

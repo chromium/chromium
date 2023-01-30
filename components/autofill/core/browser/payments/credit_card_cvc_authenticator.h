@@ -23,33 +23,33 @@ class AutofillMetricsBaseTest;
 }
 
 // Authenticates credit card unmasking through CVC verification.
-class CreditCardCVCAuthenticator
+class CreditCardCvcAuthenticator
     : public payments::FullCardRequest::ResultDelegate,
       public payments::FullCardRequest::UIDelegate {
  public:
-  struct CVCAuthenticationResponse {
-    CVCAuthenticationResponse();
-    ~CVCAuthenticationResponse();
+  struct CvcAuthenticationResponse {
+    CvcAuthenticationResponse();
+    ~CvcAuthenticationResponse();
 
-    CVCAuthenticationResponse& with_did_succeed(bool b) {
+    CvcAuthenticationResponse& with_did_succeed(bool b) {
       did_succeed = b;
       return *this;
     }
     // Data pointed to by |c| must outlive this object.
-    CVCAuthenticationResponse& with_card(const CreditCard* c) {
+    CvcAuthenticationResponse& with_card(const CreditCard* c) {
       card = c;
       return *this;
     }
-    CVCAuthenticationResponse& with_cvc(const std::u16string s) {
+    CvcAuthenticationResponse& with_cvc(const std::u16string s) {
       cvc = std::u16string(s);
       return *this;
     }
-    CVCAuthenticationResponse& with_request_options(
+    CvcAuthenticationResponse& with_request_options(
         absl::optional<base::Value::Dict> v) {
       request_options = std::move(v);
       return *this;
     }
-    CVCAuthenticationResponse& with_card_authorization_token(std::string s) {
+    CvcAuthenticationResponse& with_card_authorization_token(std::string s) {
       card_authorization_token = s;
       return *this;
     }
@@ -62,8 +62,8 @@ class CreditCardCVCAuthenticator
   class Requester {
    public:
     virtual ~Requester() = default;
-    virtual void OnCVCAuthenticationComplete(
-        const CVCAuthenticationResponse& response) = 0;
+    virtual void OnCvcAuthenticationComplete(
+        const CvcAuthenticationResponse& response) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
     // Returns whether or not the user, while on the CVC prompt, should be
@@ -81,13 +81,13 @@ class CreditCardCVCAuthenticator
     virtual bool UserOptedInToFidoFromSettingsPageOnMobile() const = 0;
 #endif
   };
-  explicit CreditCardCVCAuthenticator(AutofillClient* client);
+  explicit CreditCardCvcAuthenticator(AutofillClient* client);
 
-  CreditCardCVCAuthenticator(const CreditCardCVCAuthenticator&) = delete;
-  CreditCardCVCAuthenticator& operator=(const CreditCardCVCAuthenticator&) =
+  CreditCardCvcAuthenticator(const CreditCardCvcAuthenticator&) = delete;
+  CreditCardCvcAuthenticator& operator=(const CreditCardCvcAuthenticator&) =
       delete;
 
-  ~CreditCardCVCAuthenticator() override;
+  ~CreditCardCvcAuthenticator() override;
 
   // Authentication
   void Authenticate(
@@ -129,7 +129,7 @@ class CreditCardCVCAuthenticator
   friend class AutofillMetricsTest;
   friend class metrics::AutofillMetricsBaseTest;
   friend class CreditCardAccessManagerTest;
-  friend class CreditCardCVCAuthenticatorTest;
+  friend class CreditCardCvcAuthenticatorTest;
 
   // The associated autofill client. Weak reference.
   const raw_ptr<AutofillClient> client_;
@@ -141,7 +141,7 @@ class CreditCardCVCAuthenticator
   // Weak pointer to object that is requesting authentication.
   base::WeakPtr<Requester> requester_;
 
-  base::WeakPtrFactory<CreditCardCVCAuthenticator> weak_ptr_factory_{this};
+  base::WeakPtrFactory<CreditCardCvcAuthenticator> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

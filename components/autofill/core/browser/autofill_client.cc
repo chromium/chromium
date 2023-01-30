@@ -59,7 +59,7 @@ AutofillClient::CreateSingleFieldFormFillRouter() {
       GetMerchantPromoCodeManager());
 }
 
-CreditCardCVCAuthenticator* AutofillClient::GetCVCAuthenticator() {
+CreditCardCvcAuthenticator* AutofillClient::GetCvcAuthenticator() {
   return nullptr;
 }
 

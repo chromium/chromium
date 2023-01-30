@@ -267,13 +267,13 @@ class CreditCardAccessManagerTest : public testing::Test {
     personal_data().AddServerCreditCard(server_card);
   }
 
-  CreditCardCVCAuthenticator* GetCVCAuthenticator() {
-    return autofill_client_.GetCVCAuthenticator();
+  CreditCardCvcAuthenticator* GetCvcAuthenticator() {
+    return autofill_client_.GetCvcAuthenticator();
   }
 
   void MockUserResponseForCvcAuth(std::u16string cvc, bool enable_fido) {
     payments::FullCardRequest* full_card_request =
-        GetCVCAuthenticator()->full_card_request_.get();
+        GetCvcAuthenticator()->full_card_request_.get();
     if (!full_card_request)
       return;
 
@@ -294,7 +294,7 @@ class CreditCardAccessManagerTest : public testing::Test {
                             bool follow_with_fido_auth = false,
                             bool is_virtual_card = false) {
     payments::FullCardRequest* full_card_request =
-        GetCVCAuthenticator()->full_card_request_.get();
+        GetCvcAuthenticator()->full_card_request_.get();
 
     if (!full_card_request)
       return false;
@@ -498,8 +498,8 @@ class CreditCardAccessManagerTest : public testing::Test {
 
     switch (challenge_option.type) {
       case CardUnmaskChallengeOptionType::kCvc: {
-        CreditCardCVCAuthenticator* cvc_authenticator =
-            autofill_client_.GetCVCAuthenticator();
+        CreditCardCvcAuthenticator* cvc_authenticator =
+            autofill_client_.GetCvcAuthenticator();
         DCHECK(cvc_authenticator);
         payments::PaymentsClient::UnmaskRequestDetails* request_details =
             cvc_authenticator->GetFullCardRequest()->request_.get();
@@ -2236,8 +2236,8 @@ TEST_F(CreditCardAccessManagerTest,
       /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);
 
   CreditCard card = test::GetCreditCard();
-  credit_card_access_manager_->OnCVCAuthenticationComplete(
-      CreditCardCVCAuthenticator::CVCAuthenticationResponse()
+  credit_card_access_manager_->OnCvcAuthenticationComplete(
+      CreditCardCvcAuthenticator::CvcAuthenticationResponse()
           .with_did_succeed(true)
           .with_card(&card)
           .with_cvc(u"123"));
@@ -2278,8 +2278,8 @@ TEST_F(CreditCardAccessManagerTest,
       }
       case CardUnmaskChallengeOptionType::kCvc: {
         CreditCard card = test::GetCreditCard();
-        credit_card_access_manager_->OnCVCAuthenticationComplete(
-            CreditCardCVCAuthenticator::CVCAuthenticationResponse()
+        credit_card_access_manager_->OnCvcAuthenticationComplete(
+            CreditCardCvcAuthenticator::CvcAuthenticationResponse()
                 .with_did_succeed(true)
                 .with_card(&card)
                 .with_cvc(u"123"));

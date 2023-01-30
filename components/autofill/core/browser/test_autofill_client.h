@@ -70,7 +70,7 @@ class TestAutofillClient : public AutofillClient {
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   IBANManager* GetIBANManager() override;
   MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
-  CreditCardCVCAuthenticator* GetCVCAuthenticator() override;
+  CreditCardCvcAuthenticator* GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -228,7 +228,7 @@ class TestAutofillClient : public AutofillClient {
   }
 
   void set_cvc_authenticator(
-      std::unique_ptr<CreditCardCVCAuthenticator> authenticator) {
+      std::unique_ptr<CreditCardCvcAuthenticator> authenticator) {
     cvc_authenticator_ = std::move(authenticator);
   }
 
@@ -384,7 +384,7 @@ class TestAutofillClient : public AutofillClient {
   std::unique_ptr<PrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
   std::unique_ptr<payments::PaymentsClient> payments_client_;
-  std::unique_ptr<CreditCardCVCAuthenticator> cvc_authenticator_;
+  std::unique_ptr<CreditCardCvcAuthenticator> cvc_authenticator_;
   std::unique_ptr<CreditCardOtpAuthenticator> otp_authenticator_;
 
   // AutofillOfferManager and TestFormDataImporter must be destroyed before

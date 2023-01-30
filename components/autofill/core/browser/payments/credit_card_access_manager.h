@@ -86,7 +86,7 @@ struct CachedServerCardInfo {
 
 // Manages logic for accessing credit cards either stored locally or stored
 // with Google Payments. Owned by BrowserAutofillManager.
-class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
+class CreditCardAccessManager : public CreditCardCvcAuthenticator::Requester,
 #if !BUILDFLAG(IS_IOS)
                                 public CreditCardFidoAuthenticator::Requester,
 #endif
@@ -161,9 +161,9 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   CreditCardFidoAuthenticator* GetOrCreateFidoAuthenticator();
 #endif
 
-  // CreditCardCVCAuthenticator::Requester:
-  void OnCVCAuthenticationComplete(
-      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response)
+  // CreditCardCvcAuthenticator::Requester:
+  void OnCvcAuthenticationComplete(
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response)
       override;
 
   // CreditCardOtpAuthenticator::Requester:
@@ -296,20 +296,20 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // this function and ShouldRegisterCardWithFido() are mutually exclusive (can
   // not both be true).
   bool ShouldRespondImmediately(
-      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response);
 
   // Returns true if FIDO registration should occur. The result of this function
   // and ShouldRespondImmediately() are mutually exclusive (can not both be
   // true).
   bool ShouldRegisterCardWithFido(
-      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response);
 
   // Returns true if the we can offer FIDO opt-in for the user. In the
   // downstream flow, after we offer FIDO opt-in, if the user accepts we might
   // also offer FIDO authentication for the downstreamed card so that the FIDO
   // registration flow is complete.
   bool ShouldOfferFidoOptInDialog(
-      const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response);
+      const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response);
 
   // TODO(crbug.com/991037): Move this function under the build flags after the
   // refactoring is done. Offer the option to use WebAuthn for authenticating
@@ -387,7 +387,7 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
   // Is set to true only when waiting for the callback to
-  // OnCVCAuthenticationComplete() to be executed.
+  // OnCvcAuthenticationComplete() to be executed.
   bool is_authentication_in_progress_ = false;
 
   // The associated autofill driver. Weak reference.

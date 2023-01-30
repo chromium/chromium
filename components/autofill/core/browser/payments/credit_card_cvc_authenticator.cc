@@ -16,17 +16,17 @@
 
 namespace autofill {
 
-CreditCardCVCAuthenticator::CVCAuthenticationResponse::
-    CVCAuthenticationResponse() {}
-CreditCardCVCAuthenticator::CVCAuthenticationResponse::
-    ~CVCAuthenticationResponse() {}
+CreditCardCvcAuthenticator::CvcAuthenticationResponse::
+    CvcAuthenticationResponse() {}
+CreditCardCvcAuthenticator::CvcAuthenticationResponse::
+    ~CvcAuthenticationResponse() {}
 
-CreditCardCVCAuthenticator::CreditCardCVCAuthenticator(AutofillClient* client)
+CreditCardCvcAuthenticator::CreditCardCvcAuthenticator(AutofillClient* client)
     : client_(client) {}
 
-CreditCardCVCAuthenticator::~CreditCardCVCAuthenticator() {}
+CreditCardCvcAuthenticator::~CreditCardCvcAuthenticator() {}
 
-void CreditCardCVCAuthenticator::Authenticate(
+void CreditCardCvcAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
     PersonalDataManager* personal_data_manager,
@@ -78,7 +78,7 @@ void CreditCardCVCAuthenticator::Authenticate(
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr());
 }
 
-void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
+void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
     const std::u16string& cvc) {
@@ -90,8 +90,8 @@ void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
 
   payments::PaymentsClient::UnmaskResponseDetails response =
       full_card_request.unmask_response_details();
-  requester_->OnCVCAuthenticationComplete(
-      CVCAuthenticationResponse()
+  requester_->OnCvcAuthenticationComplete(
+      CvcAuthenticationResponse()
           .with_did_succeed(true)
           .with_card(&card)
           .with_cvc(cvc)
@@ -99,7 +99,7 @@ void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(
           .with_card_authorization_token(response.card_authorization_token));
 }
 
-void CreditCardCVCAuthenticator::OnFullCardRequestFailed(
+void CreditCardCvcAuthenticator::OnFullCardRequestFailed(
     CreditCard::RecordType card_type,
     payments::FullCardRequest::FailureType failure_type) {
   autofill_metrics::CvcAuthEvent event =
@@ -131,34 +131,34 @@ void CreditCardCVCAuthenticator::OnFullCardRequestFailed(
   if (!requester_)
     return;
 
-  requester_->OnCVCAuthenticationComplete(
-      CVCAuthenticationResponse().with_did_succeed(false));
+  requester_->OnCvcAuthenticationComplete(
+      CvcAuthenticationResponse().with_did_succeed(false));
 }
 
-void CreditCardCVCAuthenticator::ShowUnmaskPrompt(
+void CreditCardCvcAuthenticator::ShowUnmaskPrompt(
     const CreditCard& card,
     const CardUnmaskPromptOptions& card_unmask_prompt_options,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   client_->ShowUnmaskPrompt(card, card_unmask_prompt_options, delegate);
 }
 
-void CreditCardCVCAuthenticator::OnUnmaskVerificationResult(
+void CreditCardCvcAuthenticator::OnUnmaskVerificationResult(
     AutofillClient::PaymentsRpcResult result) {
   client_->OnUnmaskVerificationResult(result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool CreditCardCVCAuthenticator::ShouldOfferFidoAuth() const {
+bool CreditCardCvcAuthenticator::ShouldOfferFidoAuth() const {
   return requester_ && requester_->ShouldOfferFidoAuth();
 }
 
-bool CreditCardCVCAuthenticator::UserOptedInToFidoFromSettingsPageOnMobile()
+bool CreditCardCvcAuthenticator::UserOptedInToFidoFromSettingsPageOnMobile()
     const {
   return requester_ && requester_->UserOptedInToFidoFromSettingsPageOnMobile();
 }
 #endif
 
-payments::FullCardRequest* CreditCardCVCAuthenticator::GetFullCardRequest() {
+payments::FullCardRequest* CreditCardCvcAuthenticator::GetFullCardRequest() {
   // TODO(crbug.com/951669): iOS and Android clients should use
   // CreditCardAccessManager to retrieve cards from payments instead of calling
   // this function directly.
@@ -171,7 +171,7 @@ payments::FullCardRequest* CreditCardCVCAuthenticator::GetFullCardRequest() {
 }
 
 base::WeakPtr<payments::FullCardRequest::UIDelegate>
-CreditCardCVCAuthenticator::GetAsFullCardRequestUIDelegate() {
+CreditCardCvcAuthenticator::GetAsFullCardRequestUIDelegate() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
