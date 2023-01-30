@@ -492,13 +492,12 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     return;
   }
 
-  base::Value item_results(base::Value::Type::LIST);
-  DCHECK(encoded_pngs);
+  base::Value::List item_results;
 
   // Check after asynchronous PNG encoding finishes to make sure we have not
   // entered a state where clipboard history is disabled, e.g., a locked screen.
   if (!clipboard_history_util::IsEnabledInCurrentMode()) {
-    std::move(callback).Run(std::move(item_results));
+    std::move(callback).Run(base::Value(std::move(item_results)));
     return;
   }
 
@@ -512,7 +511,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
       continue;
     }
 
-    base::Value item_value(base::Value::Type::DICT);
+    base::Value::Dict item_dict;
     switch (clipboard_history_util::CalculateDisplayFormat(item.data())) {
       case clipboard_history_util::DisplayFormat::kPng: {
         if (!item.data().maybe_png().has_value()) {
@@ -534,29 +533,28 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
 
         const auto& maybe_png = item.data().maybe_png();
         if (maybe_png.has_value()) {
-          item_value.SetKey(kImageDataKey, base::Value(webui::GetPngDataUrl(
-                                               maybe_png.value().data(),
-                                               maybe_png.value().size())));
-          item_value.SetKey(kFormatDataKey, base::Value(kPngFormat));
+          item_dict.Set(kImageDataKey,
+                        webui::GetPngDataUrl(maybe_png.value().data(),
+                                             maybe_png.value().size()));
+          item_dict.Set(kFormatDataKey, kPngFormat);
         }
         break;
       }
       case clipboard_history_util::DisplayFormat::kHtml: {
         const SkBitmap& bitmap =
             *(resource_manager_->GetImageModel(item).GetImage().ToSkBitmap());
-        item_value.SetKey(kImageDataKey,
-                          base::Value(webui::GetBitmapDataUrl(bitmap)));
-        item_value.SetKey(kFormatDataKey, base::Value(kHtmlFormat));
+        item_dict.Set(kImageDataKey, webui::GetBitmapDataUrl(bitmap));
+        item_dict.Set(kFormatDataKey, kHtmlFormat);
         break;
       }
       case clipboard_history_util::DisplayFormat::kText:
-        item_value.SetKey(kTextDataKey, base::Value(item.data().text()));
-        item_value.SetKey(kFormatDataKey, base::Value(kTextFormat));
+        item_dict.Set(kTextDataKey, item.data().text());
+        item_dict.Set(kFormatDataKey, kTextFormat);
         break;
       case clipboard_history_util::DisplayFormat::kFile: {
         std::string file_name =
             base::UTF16ToUTF8(resource_manager_->GetLabel(item));
-        item_value.SetKey(kTextDataKey, base::Value(file_name));
+        item_dict.Set(kTextDataKey, file_name);
         ui::ImageModel image_model =
             clipboard_history_util::GetIconForFileClipboardItem(item,
                                                                 file_name);
@@ -568,15 +566,14 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
                 ->GetColorProvider();
         std::string data_url = webui::GetBitmapDataUrl(
             *image_model.Rasterize(color_provider).bitmap());
-        item_value.SetKey(kImageDataKey, base::Value(data_url));
-        item_value.SetKey(kFormatDataKey, base::Value(kFileFormat));
+        item_dict.Set(kImageDataKey, data_url);
+        item_dict.Set(kFormatDataKey, kFileFormat);
         break;
       }
     }
-    item_value.SetKey("id", base::Value(item.id().ToString()));
-    item_value.SetKey("timeCopied",
-                      base::Value(item.time_copied().ToJsTimeIgnoringNull()));
-    item_results.Append(std::move(item_value));
+    item_dict.Set("id", item.id().ToString());
+    item_dict.Set("timeCopied", item.time_copied().ToJsTimeIgnoringNull());
+    item_results.Append(std::move(item_dict));
   }
 
   if (!all_images_encoded) {
@@ -584,7 +581,7 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
     return;
   }
 
-  std::move(callback).Run(std::move(item_results));
+  std::move(callback).Run(base::Value(std::move(item_results)));
 }
 
 std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()
