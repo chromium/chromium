@@ -243,6 +243,9 @@ CookieSettings::GetCookieSettingWithMetadata(
     // setting to `CONTENT_SETTING_BLOCK` so as not to accidentally change the
     // setting from `CONTENT_SETTING_SESSION_ONLY` to `CONTENT_SETTING_ALLOW` or
     // vice versa.
+
+    // TODO(https://crbug.com/1401089): don't consider Storage Access API grants
+    // unless kHasStorageAccess is present in `overrides`.
     if (ShouldConsiderStorageAccessGrants(query_reason) &&
         IsAllowedByStorageAccessGrant(url, first_party_url)) {
       storage_access_result = net::cookie_util::StorageAccessResult::
