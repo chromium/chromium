@@ -639,9 +639,7 @@ config("compiler") {
     # clause, above.
     cflags_c += [ "-std=c11" ]
 
-    if (is_fuchsia || use_cxx17) {
-      # TODO(crbug.com/fuchsia/108751): The FIDL compiler generates code that
-      # will not compile in C++20 mode. Switch to C++20 when this is resolved.
+    if (use_cxx17) {
       cflags_cc += [ "-std=c++17" ]
     } else {
       cflags_cc += [ "-std=c++20" ]
