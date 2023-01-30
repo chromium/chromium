@@ -1547,7 +1547,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferShowDlpToast").EnableDlp(),
         TestCase("dlpShowManagedIcon").EnableDlp(),
         TestCase("dlpContextMenuRestrictionDetails").EnableDlp(),
-        TestCase("saveAsDlpRestrictedDirectory").EnableDlp(),
+        TestCase("saveAsDlpRestrictedAndroid").EnableArcVm().EnableDlp(),
         TestCase("saveAsDlpRestrictedCrostini").EnableDlp(),
         TestCase("saveAsNonDlpRestricted").EnableDlp(),
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),

@@ -1273,8 +1273,7 @@ export class FileManager extends EventTarget {
     if (util.isGuestOsEnabled()) {
       this.guestOsController_ = new GuestOsController(
           this.directoryModel_, assert(this.directoryTree),
-          this.volumeManager_.isDisabled(
-              VolumeManagerCommon.VolumeType.GUEST_OS));
+          this.volumeManager_);
       await this.guestOsController_.refresh();
     }
   }

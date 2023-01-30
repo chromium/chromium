@@ -845,6 +845,8 @@ js_library("guest_os_controller") {
     "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
     "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_manager",
   ]
 }
 

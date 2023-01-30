@@ -701,6 +701,8 @@ export class NavigationListModel extends EventTarget {
         const androidVolume =
             getSingleVolume(VolumeManagerCommon.VolumeType.ANDROID_FILES);
         if (androidVolume) {
+          androidVolume.disabled = this.volumeManager_.isDisabled(
+              VolumeManagerCommon.VolumeType.ANDROID_FILES);
           guestOsVolumes = guestOsVolumes.concat(androidVolume);
         }
       }
