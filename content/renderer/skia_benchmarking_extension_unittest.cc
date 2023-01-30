@@ -23,7 +23,7 @@ testing::AssertionResult HasArg(const base::Value::List& args,
                                          << i;
     }
 
-    if (arg.FindKey(name)) {
+    if (arg.GetDict().contains(name)) {
       return testing::AssertionSuccess() << " argument '" << name
                                          << "' found at index " << i;
     }
@@ -31,7 +31,8 @@ testing::AssertionResult HasArg(const base::Value::List& args,
 
   return testing::AssertionFailure() << "argument not found: '" << name << "'";
 }
-}
+
+}  // namespace
 
 namespace content {
 
@@ -125,4 +126,4 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   EXPECT_TRUE(op_args->empty());
 }
 
-} // namespace content
+}  // namespace content

@@ -213,18 +213,19 @@ class V8ValueConverterImplTest : public testing::Test {
                   .ToLocalChecked(),
               val)
         .Check();
-    std::unique_ptr<base::Value> dictionary(
+    std::unique_ptr<base::Value> dictionary_val(
         converter.FromV8Value(object, context));
-    ASSERT_TRUE(dictionary.get());
-    ASSERT_TRUE(dictionary->is_dict());
+    ASSERT_TRUE(dictionary_val.get());
+    ASSERT_TRUE(dictionary_val->is_dict());
+    const base::Value::Dict& dictionary = dictionary_val->GetDict();
 
     if (expected_value) {
-      const base::Value* temp = dictionary->FindKey("test");
+      const base::Value* temp = dictionary.Find("test");
       ASSERT_TRUE(temp);
       EXPECT_EQ(expected_type, temp->type());
       EXPECT_EQ(*expected_value, *temp);
     } else {
-      EXPECT_FALSE(dictionary->FindKey("test"));
+      EXPECT_FALSE(dictionary.contains("test"));
     }
 
     v8::Local<v8::Array> array(v8::Array::New(isolate_));
