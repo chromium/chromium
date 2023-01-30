@@ -379,15 +379,10 @@ class SaveCardOfferObserver
   base::RunLoop run_loop_;
 };
 
-// TODO(crbug.com/1366531): Fails on Mac 12.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SaveCardIcon DISABLED_SaveCardIcon
-#else
-#define MAYBE_SaveCardIcon SaveCardIcon
-#endif
+// TODO(crbug.com/1366531): Test is flaky.
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       MAYBE_SaveCardIcon) {
+                       DISABLED_SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
   ASSERT_TRUE(autofill_manager_injector_[web_contents_]->WaitForFormsSeen(1));
