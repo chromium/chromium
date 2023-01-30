@@ -158,4 +158,87 @@ TEST_F(FtrlOptimizerTest, TrainSeveralTimes) {
   EXPECT_GT(proto.weights()[1], 0.9);
 }
 
+// Test training when there're more than 1 providers and that items
+// from different call of score was selected for training purpose.
+TEST_F(FtrlOptimizerTest, TrainWithMultipleProvidersDifferentScore) {
+  WriteWeightsToDisk({0.5, 0.5});
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
+  Wait();
+
+  // Train when the selected result have higher score from the first expert.
+  ftrl.Score({"a", "b", "c", "d"},
+             {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+  ftrl.Score({"e", "f"}, {{1.0, 2.0}, {5.0, 1.0}});
+  ftrl.Train("d");
+  Wait();
+
+  // The first expert should outweigh the second.
+  auto proto = ReadFromDisk();
+  EXPECT_GT(proto.weights()[0], 0.52);
+  EXPECT_LT(proto.weights()[1], 0.48);
+
+  // Train when the selected result have higher
+  // score from the second expert.
+  ftrl.Train("e");
+  Wait();
+
+  // The second expert should outweigh the first.
+  proto = ReadFromDisk();
+  EXPECT_LT(proto.weights()[0], 0.49);
+  EXPECT_GT(proto.weights()[1], 0.51);
+}
+
+// Test if score has been successfully override.
+TEST_F(FtrlOptimizerTest, TrainWithMultipleProvidersOverrideScore) {
+  WriteWeightsToDisk({0.5, 0.5});
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
+  Wait();
+
+  // Call score twice with same items, the latest one score call
+  // should override the older one.
+  ftrl.Score({"a", "b", "c", "d"},
+             {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+  ftrl.Score({"a", "b", "c", "d"},
+             {{4.0, 3.0, 2.0, 1.0}, {1.0, 2.0, 3.0, 4.0}});
+  ftrl.Train("d");
+  Wait();
+
+  // The second expert should outweigh the first.
+  auto proto = ReadFromDisk();
+  EXPECT_LT(proto.weights()[0], 0.35);
+  EXPECT_GT(proto.weights()[1], 0.65);
+}
+
+// Test if the last_expert_scores_ is empty after calling Clear.
+TEST_F(FtrlOptimizerTest, Clear) {
+  WriteWeightsToDisk({0.5, 0.5});
+  FtrlOptimizer ftrl(GetProto(), TestingParams(/*num_experts=*/2u));
+  Wait();
+
+  // Call Clear() after calling Score(). Train should have no effect on weights.
+  ftrl.Score({"a", "b", "c", "d"},
+             {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+  ftrl.Clear();
+  ftrl.Train("d");
+  Wait();
+
+  // The weight should not change since the last_expert_scores_ is empty.
+  // The loss should return 0.
+  auto proto = ReadFromDisk();
+  EXPECT_EQ(proto.weights()[0], 0.5);
+  EXPECT_EQ(proto.weights()[1], 0.5);
+
+  // Call the Clear() after training.
+  ftrl.Score({"a", "b", "c", "d"},
+             {{1.0, 2.0, 3.0, 4.0}, {4.0, 3.0, 2.0, 1.0}});
+  ftrl.Train("d");
+  ftrl.Clear();
+  Wait();
+
+  // The weights should be trained normally.
+  proto = ReadFromDisk();
+  EXPECT_GT(proto.weights()[0], 0.65);
+  EXPECT_LT(proto.weights()[1], 0.35);
+}
+
 }  // namespace app_list::test
