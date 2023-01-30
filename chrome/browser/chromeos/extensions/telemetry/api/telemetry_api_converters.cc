@@ -310,6 +310,69 @@ telemetry_api::TpmInfo UncheckedConvertPtr(
   return result;
 }
 
+telemetry_api::UsbBusInterfaceInfo UncheckedConvertPtr(
+    telemetry_service::ProbeUsbBusInterfaceInfoPtr input) {
+  telemetry_api::UsbBusInterfaceInfo result;
+
+  if (input->interface_number) {
+    result.interface_number = input->interface_number->value;
+  }
+  if (input->class_id) {
+    result.class_id = input->class_id->value;
+  }
+  if (input->subclass_id) {
+    result.subclass_id = input->subclass_id->value;
+  }
+  if (input->protocol_id) {
+    result.protocol_id = input->protocol_id->value;
+  }
+  result.driver = input->driver;
+
+  return result;
+}
+
+telemetry_api::FwupdFirmwareVersionInfo UncheckedConvertPtr(
+    telemetry_service::ProbeFwupdFirmwareVersionInfoPtr input) {
+  telemetry_api::FwupdFirmwareVersionInfo result;
+
+  result.version = input->version;
+  result.version_format = Convert(input->version_format);
+
+  return result;
+}
+
+telemetry_api::UsbBusInfo UncheckedConvertPtr(
+    telemetry_service::ProbeUsbBusInfoPtr input) {
+  telemetry_api::UsbBusInfo result;
+
+  if (input->class_id) {
+    result.class_id = input->class_id->value;
+  }
+  if (input->subclass_id) {
+    result.subclass_id = input->subclass_id->value;
+  }
+  if (input->protocol_id) {
+    result.protocol_id = input->protocol_id->value;
+  }
+  if (input->vendor_id) {
+    result.vendor_id = input->vendor_id->value;
+  }
+  if (input->product_id) {
+    result.product_id = input->product_id->value;
+  }
+  if (input->interfaces) {
+    result.interfaces = ConvertPtrVector<telemetry_api::UsbBusInterfaceInfo>(
+        std::move(input->interfaces.value()));
+  }
+  result.fwupd_firmware_version_info =
+      ConvertPtr<telemetry_api::FwupdFirmwareVersionInfo>(
+          std::move(input->fwupd_firmware_version_info));
+  result.version = Convert(input->version);
+  result.spec_speed = Convert(input->spec_speed);
+
+  return result;
+}
+
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(
@@ -386,6 +449,75 @@ chromeos::api::os_telemetry::TpmGSCVersion Convert(
       return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_CR50;
     case telemetry_service::ProbeTpmGSCVersion::kTi50:
       return telemetry_api::TpmGSCVersion::TPM_GSC_VERSION_TI50;
+  }
+  NOTREACHED();
+}
+
+telemetry_api::FwupdVersionFormat Convert(
+    telemetry_service::ProbeFwupdVersionFormat input) {
+  switch (input) {
+    case crosapi::mojom::ProbeFwupdVersionFormat::kUnknown:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kPlain:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kNumber:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_NUMBER;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kPair:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kTriplet:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_TRIPLET;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kQuad:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_QUAD;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kBcd:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_BCD;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME2;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy:
+      return telemetry_api::FwupdVersionFormat::
+          FWUPD_VERSION_FORMAT_SURFACELEGACY;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kSurface:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACE;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kDellBios:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_DELLBIOS;
+    case crosapi::mojom::ProbeFwupdVersionFormat::kHex:
+      return telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX;
+  }
+  NOTREACHED();
+}
+
+telemetry_api::UsbVersion Convert(telemetry_service::ProbeUsbVersion input) {
+  switch (input) {
+    case crosapi::mojom::ProbeUsbVersion::kUnknown:
+      return telemetry_api::UsbVersion::USB_VERSION_UNKNOWN;
+    case crosapi::mojom::ProbeUsbVersion::kUsb1:
+      return telemetry_api::UsbVersion::USB_VERSION_USB1;
+    case crosapi::mojom::ProbeUsbVersion::kUsb2:
+      return telemetry_api::UsbVersion::USB_VERSION_USB2;
+    case crosapi::mojom::ProbeUsbVersion::kUsb3:
+      return telemetry_api::UsbVersion::USB_VERSION_USB3;
+  }
+  NOTREACHED();
+}
+
+telemetry_api::UsbSpecSpeed Convert(
+    telemetry_service::ProbeUsbSpecSpeed input) {
+  switch (input) {
+    case crosapi::mojom::ProbeUsbSpecSpeed::kUnknown:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_UNKNOWN;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N1_5MBPS;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N12MBPS;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N480MBPS;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N5GBPS;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N10GBPS;
+    case crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps:
+      return telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS;
   }
   NOTREACHED();
 }

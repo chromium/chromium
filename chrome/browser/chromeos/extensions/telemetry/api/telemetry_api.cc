@@ -386,6 +386,34 @@ void OsTelemetryGetTpmInfoFunction::OnResult(
   Respond(ArgumentList(telemetry::GetTpmInfo::Results::Create(result)));
 }
 
+// OsTelemetryGetUsbBusInfoFunction --------------------------------------------
+
+void OsTelemetryGetUsbBusInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetUsbBusInfoFunction::OnResult, this);
+
+  GetRemoteService()->ProbeTelemetryInfo(
+      {crosapi::mojom::ProbeCategoryEnum::kBus}, std::move(cb));
+}
+
+void OsTelemetryGetUsbBusInfoFunction::OnResult(
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->bus_result || !ptr->bus_result->is_bus_devices_info()) {
+    Respond(Error("API internal error"));
+    return;
+  }
+
+  telemetry::UsbBusDevices result;
+  auto bus_infos = std::move(ptr->bus_result->get_bus_devices_info());
+  for (auto& info : bus_infos) {
+    if (info->is_usb_bus_info()) {
+      result.devices.push_back(converters::ConvertPtr<telemetry::UsbBusInfo>(
+          std::move(info->get_usb_bus_info())));
+    }
+  }
+
+  Respond(ArgumentList(telemetry::GetUsbBusInfo::Results::Create(result)));
+}
+
 // OsTelemetryGetVpdInfoFunction -----------------------------------------------
 
 void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {

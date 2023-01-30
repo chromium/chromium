@@ -29,5 +29,17 @@
       "lacros"
     ],
     "channel": "stable"
+  },
+  "os.telemetry.getUsbBusInfo": {
+    "dependencies": [ "permission:os.telemetry" ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable",
+    "feature_flag": "TelemetryExtensionPendingApprovalApi"
   }
 }

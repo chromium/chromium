@@ -742,5 +742,198 @@ TEST(TelemetryApiConverters, TpmInfo) {
                 *dictionary_attack_result.lockout_seconds_remaining));
 }
 
+TEST(TelemetryApiConverters, UsbVersion) {
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUnknown),
+            telemetry_api::UsbVersion::USB_VERSION_UNKNOWN);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb1),
+            telemetry_api::UsbVersion::USB_VERSION_USB1);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb2),
+            telemetry_api::UsbVersion::USB_VERSION_USB2);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbVersion::kUsb3),
+            telemetry_api::UsbVersion::USB_VERSION_USB3);
+}
+
+TEST(TelemetryApiConverters, UsbSpecSpeed) {
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::kUnknown),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_UNKNOWN);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k1_5Mbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N1_5MBPS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k12Mbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N12MBPS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k480Mbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N480MBPS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k5Gbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N5GBPS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k10Gbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N10GBPS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps),
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS);
+}
+
+TEST(TelemetryApiConverters, FwupdVersionFormat) {
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kUnknown),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPlain),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PLAIN);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kNumber),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_NUMBER);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kPair),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kTriplet),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_TRIPLET);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kBcd),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_BCD);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kIntelMe2),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_INTELME2);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurfaceLegacy),
+      telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACELEGACY);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kSurface),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_SURFACE);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kDellBios),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_DELLBIOS);
+
+  EXPECT_EQ(Convert(crosapi::mojom::ProbeFwupdVersionFormat::kHex),
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX);
+}
+
+TEST(TelemetryApiConverters, FwupdFirmwareVersionInfo) {
+  constexpr char kVersion[] = "MyVersion";
+
+  auto input = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
+      kVersion, crosapi::mojom::ProbeFwupdVersionFormat::kHex);
+
+  auto result =
+      ConvertPtr<telemetry_api::FwupdFirmwareVersionInfo>(std::move(input));
+
+  EXPECT_EQ(result.version, kVersion);
+  EXPECT_EQ(result.version_format,
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_HEX);
+}
+
+TEST(TelemetryApiConverters, UsbBusInterfaceInfo) {
+  constexpr uint8_t kInterfaceNumber = 41;
+  constexpr uint8_t kClassId = 42;
+  constexpr uint8_t kSubclassId = 43;
+  constexpr uint8_t kProtocolId = 44;
+  constexpr char kDriver[] = "MyDriver";
+
+  auto input = crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
+      crosapi::mojom::UInt8Value::New(kInterfaceNumber),
+      crosapi::mojom::UInt8Value::New(kClassId),
+      crosapi::mojom::UInt8Value::New(kSubclassId),
+      crosapi::mojom::UInt8Value::New(kProtocolId), kDriver);
+
+  auto result =
+      ConvertPtr<telemetry_api::UsbBusInterfaceInfo>(std::move(input));
+
+  ASSERT_TRUE(result.interface_number);
+  EXPECT_EQ(static_cast<uint8_t>(*result.interface_number), kInterfaceNumber);
+  ASSERT_TRUE(result.class_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.class_id), kClassId);
+  ASSERT_TRUE(result.subclass_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.subclass_id), kSubclassId);
+  ASSERT_TRUE(result.protocol_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.protocol_id), kProtocolId);
+  ASSERT_TRUE(result.driver);
+  EXPECT_EQ(result.driver, kDriver);
+}
+
+TEST(TelemetryApiConverters, UsbBusInfo) {
+  constexpr uint8_t kInterfaceNumberInterface = 41;
+  constexpr uint8_t kClassIdInterface = 42;
+  constexpr uint8_t kSubclassIdInterface = 43;
+  constexpr uint8_t kProtocolIdInterface = 44;
+  constexpr char kDriverInterface[] = "MyDriver";
+
+  std::vector<crosapi::mojom::ProbeUsbBusInterfaceInfoPtr> interfaces;
+  interfaces.push_back(crosapi::mojom::ProbeUsbBusInterfaceInfo::New(
+      crosapi::mojom::UInt8Value::New(kInterfaceNumberInterface),
+      crosapi::mojom::UInt8Value::New(kClassIdInterface),
+      crosapi::mojom::UInt8Value::New(kSubclassIdInterface),
+      crosapi::mojom::UInt8Value::New(kProtocolIdInterface), kDriverInterface));
+
+  constexpr uint8_t kClassId = 45;
+  constexpr uint8_t kSubclassId = 46;
+  constexpr uint8_t kProtocolId = 47;
+  constexpr uint16_t kVendor = 48;
+  constexpr uint16_t kProductId = 49;
+
+  constexpr char kVersion[] = "MyVersion";
+
+  auto fwupd_version = crosapi::mojom::ProbeFwupdFirmwareVersionInfo::New(
+      kVersion, crosapi::mojom::ProbeFwupdVersionFormat::kPair);
+
+  auto input = crosapi::mojom::ProbeUsbBusInfo::New();
+  input->class_id = crosapi::mojom::UInt8Value::New(kClassId);
+  input->subclass_id = crosapi::mojom::UInt8Value::New(kSubclassId);
+  input->protocol_id = crosapi::mojom::UInt8Value::New(kProtocolId);
+  input->vendor_id = crosapi::mojom::UInt16Value::New(kVendor);
+  input->product_id = crosapi::mojom::UInt16Value::New(kProductId);
+  input->interfaces = std::move(interfaces);
+  input->fwupd_firmware_version_info = std::move(fwupd_version);
+  input->version = crosapi::mojom::ProbeUsbVersion::kUsb3;
+  input->spec_speed = crosapi::mojom::ProbeUsbSpecSpeed::k20Gbps;
+
+  auto result = ConvertPtr<telemetry_api::UsbBusInfo>(std::move(input));
+
+  ASSERT_TRUE(result.class_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.class_id), kClassId);
+  ASSERT_TRUE(result.subclass_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.subclass_id), kSubclassId);
+  ASSERT_TRUE(result.protocol_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.protocol_id), kProtocolId);
+  ASSERT_TRUE(result.product_id);
+  EXPECT_EQ(static_cast<uint16_t>(*result.product_id), kProductId);
+  ASSERT_TRUE(result.vendor_id);
+  EXPECT_EQ(static_cast<uint16_t>(*result.vendor_id), kVendor);
+
+  ASSERT_EQ(result.interfaces.size(), 1UL);
+  ASSERT_TRUE(result.interfaces[0].interface_number);
+  EXPECT_EQ(static_cast<uint8_t>(*result.interfaces[0].interface_number),
+            kInterfaceNumberInterface);
+  ASSERT_TRUE(result.interfaces[0].class_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.interfaces[0].class_id),
+            kClassIdInterface);
+  ASSERT_TRUE(result.interfaces[0].subclass_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.interfaces[0].subclass_id),
+            kSubclassIdInterface);
+  ASSERT_TRUE(result.interfaces[0].protocol_id);
+  EXPECT_EQ(static_cast<uint8_t>(*result.interfaces[0].protocol_id),
+            kProtocolIdInterface);
+  ASSERT_TRUE(result.interfaces[0].driver);
+  EXPECT_EQ(result.interfaces[0].driver, kDriverInterface);
+
+  ASSERT_TRUE(result.fwupd_firmware_version_info);
+  EXPECT_EQ(result.fwupd_firmware_version_info->version, kVersion);
+  EXPECT_EQ(result.fwupd_firmware_version_info->version_format,
+            telemetry_api::FwupdVersionFormat::FWUPD_VERSION_FORMAT_PAIR);
+
+  EXPECT_EQ(result.version, telemetry_api::UsbVersion::USB_VERSION_USB3);
+  EXPECT_EQ(result.spec_speed,
+            telemetry_api::UsbSpecSpeed::USB_SPEC_SPEED_N20GBPS);
+}
+
 }  // namespace converters
 }  // namespace chromeos

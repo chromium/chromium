@@ -152,18 +152,6 @@ class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
-class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
-  DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
-
- private:
-  ~OsTelemetryGetVpdInfoFunction() override = default;
-
-  // BaseTelemetryExtensionApiGuardFunction:
-  void RunIfAllowed() override;
-
-  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
-};
-
 class OsTelemetryGetStatefulPartitionInfoFunction
     : public TelemetryApiFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.telemetry.getStatefulPartitionInfo",
@@ -183,6 +171,31 @@ class OsTelemetryGetTpmInfoFunction : public TelemetryApiFunctionBase {
 
  private:
   ~OsTelemetryGetTpmInfoFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
+class OsTelemetryGetUsbBusInfoFunction : public TelemetryApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getUsbBusInfo",
+                             OS_TELEMETRY_GETUSBBUSINFO)
+
+ private:
+  ~OsTelemetryGetUsbBusInfoFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
+};
+
+class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
+
+ private:
+  ~OsTelemetryGetVpdInfoFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

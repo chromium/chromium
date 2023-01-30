@@ -136,6 +136,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function getUsbBusInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getUsbBusInfo(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.telemetry.getUsbBusInfo. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function getVpdInfo() {
         await chrome.test.assertPromiseRejects(
             chrome.os.telemetry.getVpdInfo(),

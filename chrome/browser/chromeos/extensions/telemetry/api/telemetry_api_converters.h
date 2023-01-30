@@ -74,6 +74,15 @@ chromeos::api::os_telemetry::TpmDictionaryAttack UncheckedConvertPtr(
 chromeos::api::os_telemetry::TpmInfo UncheckedConvertPtr(
     crosapi::mojom::ProbeTpmInfoPtr input);
 
+chromeos::api::os_telemetry::UsbBusInterfaceInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeUsbBusInterfaceInfoPtr input);
+
+chromeos::api::os_telemetry::FwupdFirmwareVersionInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeFwupdFirmwareVersionInfoPtr input);
+
+chromeos::api::os_telemetry::UsbBusInfo UncheckedConvertPtr(
+    crosapi::mojom::ProbeUsbBusInfoPtr input);
+
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(
@@ -87,6 +96,15 @@ chromeos::api::os_telemetry::NetworkType Convert(
 
 chromeos::api::os_telemetry::TpmGSCVersion Convert(
     crosapi::mojom::ProbeTpmGSCVersion input);
+
+chromeos::api::os_telemetry::FwupdVersionFormat Convert(
+    crosapi::mojom::ProbeFwupdVersionFormat input);
+
+chromeos::api::os_telemetry::UsbVersion Convert(
+    crosapi::mojom::ProbeUsbVersion input);
+
+chromeos::api::os_telemetry::UsbSpecSpeed Convert(
+    crosapi::mojom::ProbeUsbSpecSpeed input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

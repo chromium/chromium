@@ -178,6 +178,121 @@ namespace os.telemetry {
 
   callback OsVersionInfoCallback = void (OsVersionInfo osVersionInfo);
 
+  // The info related to usb interfaces.
+  dictionary UsbBusInterfaceInfo {
+    // The zero-based number (index) of the interface.
+    double? interfaceNumber;
+    // These fields can be used to classify / identify the usb interfaces. See the
+    // usb.ids database for the values. (https://github.com/gentoo/hwids)
+    double? classId;
+    double? subclassId;
+    double? protocolId;
+    // The driver used by the device. This is the name of the matched driver which
+    // is registered in the kernel. See "{kernel root}/drivers/" for the list of
+    // the built in drivers.
+    DOMString? driver;
+  };
+
+  // An enumeration of the formats of firmware version in fwpud. See the fwupd
+  // repo for the values. (https://github.com/fwupd/fwupd)
+  enum FwupdVersionFormat {
+    // An unidentified format text string.
+    plain,
+    // A single integer version number.
+    number,
+    // Two AABB.CCDD version numbers.
+    pair,
+    // Microsoft-style AA.BB.CCDD version numbers.
+    triplet,
+    // UEFI-style AA.BB.CC.DD version numbers.
+    quad,
+    // Binary coded decimal notation.
+    bcd,
+    // Intel ME-style bitshifted notation.
+    intelMe,
+    // Intel ME-style A.B.CC.DDDD notation.
+    intelMe2,
+    // Legacy Microsoft Surface 10b.12b.10b.
+    surfaceLegacy,
+    // Microsoft Surface 8b.16b.8b.
+    surface,
+    // Dell BIOS BB.CC.DD style.
+    dellBios,
+    // Hexadecimal 0xAABCCDD style.
+    hex
+  };
+
+  // The info related to a firmware version obtained from fwupd.
+  dictionary FwupdFirmwareVersionInfo {
+    // The string form of the firmware version.
+    DOMString? version;
+    // The format for parsing the version string.
+    FwupdVersionFormat? version_format;
+  };
+
+  enum UsbVersion {
+    // Can't determine the usb version.
+    unknown,
+    // Usb 1.
+    usb1,
+    // Usb 2.
+    usb2,
+    // Usb 3.
+    usb3
+  };
+
+  // An enumeration of the usb spec speed in Mbps.
+  // Source:
+  //   - https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-usb
+  //   - https://www.kernel.org/doc/Documentation/ABI/stable/sysfs-bus-usb
+  //   - https://en.wikipedia.org/wiki/USB
+  //
+  enum UsbSpecSpeed {
+    // Unknown speed.
+    unknown,
+    // Low speed.
+    n1_5Mbps,
+    // Full speed.
+    n12Mbps,
+    // High Speed.
+    n480Mbps,
+    // Super Speed.
+    n5Gbps,
+    // Super Speed+.
+    n10Gbps,
+    // Super Speed+ Gen 2x2.
+    n20Gbps
+  };
+
+  // The info related to usb.
+  dictionary UsbBusInfo {
+    // These fields can be used to classify / identify the usb devices. See the
+    // usb.ids database for the values. (https://github.com/gentoo/hwids)
+    double? classId;
+    double? subclassId;
+    double? protocolId;
+    double? vendorId;
+    double? productId;
+    // The usb interfaces under the device. A usb device has at least one
+    // interface. Each interface may or may not work independently, based on each
+    // device. This allows a usb device to provide multiple features.
+    // The interfaces are sorted by the `interface_number` field.
+    UsbBusInterfaceInfo[] interfaces;
+    // The firmware version obtained from fwupd.
+    FwupdFirmwareVersionInfo? fwupdFirmwareVersionInfo;
+    // The recognized usb version. It may not be the highest USB version supported
+    // by the hardware.
+    UsbVersion? version;
+    // The spec usb speed.
+    UsbSpecSpeed? spec_speed;
+  };
+
+  dictionary UsbBusDevices {
+    UsbBusInfo[] devices;
+  };
+
+  callback UsbBusDevicesCallback = void (UsbBusDevices UsbBusDevices);
+
   dictionary VpdInfo {
     // Device activate date. Format: YYYY-WW.
     DOMString? activateDate;
@@ -275,6 +390,8 @@ namespace os.telemetry {
     [supportsPromises] static void getOemData(OemDataCallback callback);
 
     [supportsPromises] static void getOsVersionInfo(OsVersionInfoCallback callback);
+
+    [supportsPromises] static void getUsbBusInfo(UsbBusDevicesCallback callback);
 
     [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
 
