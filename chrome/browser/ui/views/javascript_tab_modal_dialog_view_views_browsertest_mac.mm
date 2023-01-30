@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <Accessibility/Accessibility.h>
 #include <string>
 
 #include "base/functional/bind.h"
@@ -15,9 +16,8 @@
 
 using JavaScriptTabModalDialogViewViewsBrowserTestMac = InProcessBrowserTest;
 
-// Test is flaky. https://crbug.com/1379104.
 IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
-                       DISABLED_AlertDialogAccessibleNameDescriptionAndRole) {
+                       AlertDialogAccessibleNameDescriptionAndRole) {
   std::u16string title = u"Title";
   std::u16string message = u"The message";
   auto* dialog_views =
@@ -43,10 +43,30 @@ IN_PROC_BROWSER_TEST_F(JavaScriptTabModalDialogViewViewsBrowserTestMac,
       isEqualToString:(NSString*)[native_dialog accessibilitySubrole]]);
 
   // JavaScriptTabModalDialogViewViews sets the accessible description of the
-  // RootView to the message contents. That description is exposed on the Mac
-  // via accessibilityHelp.
-  EXPECT_EQ(message,
-            base::SysNSStringToUTF16([native_dialog accessibilityHelp]));
+  // RootView to the message contents. That description is set with
+  // kDescriptionFrom set to kAriaDescription, which is exposed in
+  // accessibilityHelp before macOS 11 and in accessibilityCustomContent
+  // for macOS 11 and later.
+  if (@available(macOS 11.0, *)) {
+    NSString* description = nil;
+    ASSERT_TRUE(
+        [native_dialog conformsToProtocol:@protocol(AXCustomContentProvider)]);
+    auto element_with_content =
+        static_cast<id<AXCustomContentProvider>>(native_dialog);
+    for (AXCustomContent* content in element_with_content
+             .accessibilityCustomContent) {
+      if ([content.label isEqualToString:@"description"]) {
+        // There should be only one AXCustomContent with the label
+        // "description".
+        EXPECT_EQ(description, nil);
+        description = content.value;
+      }
+    }
+    EXPECT_EQ(message, base::SysNSStringToUTF16(description));
+  } else {
+    EXPECT_EQ(message,
+              base::SysNSStringToUTF16([native_dialog accessibilityHelp]));
+  }
 
   // While some screen readers use the accessible description to know what to
   // present to the user, VoiceOver currently does not. Therefore, we set the
