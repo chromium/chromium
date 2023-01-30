@@ -426,8 +426,6 @@ void BrowserNonClientFrameViewMac::WindowControlsOverlayEnabledChanged() {
     RemoveChildView(caption_button_placeholder_container_);
     caption_button_placeholder_container_ = nullptr;
   }
-
-  frame()->client_view()->InvalidateLayout();
 }
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameViewMac, views::View implementation:
@@ -609,7 +607,12 @@ gfx::Rect BrowserNonClientFrameViewMac::GetCaptionButtonPlaceholderBounds(
 }
 
 void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
-  gfx::Rect frame_available_bounds(0, 0, width(), GetTopInset(false));
+  int frame_available_height =
+      base::FeatureList::IsEnabled(features::kWebAppFrameToolbarInBrowserView)
+          ? browser_view()->GetWebAppFrameToolbarPreferredSize().height() +
+                2 * kWebAppMenuMargin
+          : GetTopInset(false);
+  gfx::Rect frame_available_bounds(0, 0, width(), frame_available_height);
 
   // Pad the width of caption_button_placeholder_container so the button on the
   // inner edge doesn't look like it's touching the overlay, but rather has a
@@ -623,33 +626,37 @@ void BrowserNonClientFrameViewMac::LayoutWindowControlsOverlay() {
   caption_button_placeholder_container_->SetBoundsRect(
       caption_button_container_bounds);
 
-  // Remove caption buttons from remaining available bounds, and layout
-  // WebAppFrameToolbarView.
-  frame_available_bounds.Inset(caption_button_insets);
-  web_app_frame_toolbar()->LayoutForWindowControlsOverlay(
-      frame_available_bounds);
+  if (web_app_frame_toolbar()) {
+    // Remove caption buttons from remaining available bounds, and layout
+    // WebAppFrameToolbarView.
+    frame_available_bounds.Inset(caption_button_insets);
 
-  content::WebContents* web_contents = browser_view()->GetActiveWebContents();
-  // WebContents can be null when an app window is first launched.
-  if (web_contents) {
-    // Subtract WebAppFrameToolbarView from remaining available bounds to
-    // determine space available for web contents.
-    frame_available_bounds.Subtract(web_app_frame_toolbar()->bounds());
+    web_app_frame_toolbar()->LayoutForWindowControlsOverlay(
+        frame_available_bounds);
 
-    if (frame_available_bounds.IsEmpty()) {
-      web_contents->UpdateWindowControlsOverlay(gfx::Rect());
-    } else {
-      web_contents->UpdateWindowControlsOverlay(
-          GetMirroredRect(frame_available_bounds));
+    content::WebContents* web_contents = browser_view()->GetActiveWebContents();
+    // WebContents can be null when an app window is first launched.
+    if (web_contents) {
+      // Subtract WebAppFrameToolbarView from remaining available bounds to
+      // determine space available for web contents.
+      frame_available_bounds.Subtract(web_app_frame_toolbar()->bounds());
+
+      if (frame_available_bounds.IsEmpty()) {
+        web_contents->UpdateWindowControlsOverlay(gfx::Rect());
+      } else {
+        web_contents->UpdateWindowControlsOverlay(
+            GetMirroredRect(frame_available_bounds));
+      }
     }
-  }
 
-  // WebAppFrameToolbarView visible property needs to be explicitly shown based
-  // on the fullscreen preference and also after exiting fullscreen. Otherwise
-  // upon exiting fullscreen when the toolbar is set to be hidden, the
-  // WebAppFrameToolbarView does not get added back. See crbug.com/1351179.
-  web_app_frame_toolbar()->SetVisible(
-      browser_view()->IsFullscreen() ? !ShouldHideTopUIForFullscreen() : true);
+    // WebAppFrameToolbarView visible property needs to be explicitly shown
+    // based on the fullscreen preference and also after exiting fullscreen.
+    // Otherwise upon exiting fullscreen when the toolbar is set to be hidden,
+    // the WebAppFrameToolbarView does not get added back. See
+    // crbug.com/1351179.
+    web_app_frame_toolbar()->SetVisible(!browser_view()->IsFullscreen() ||
+                                        !ShouldHideTopUIForFullscreen());
+  }
 }
 
 void BrowserNonClientFrameViewMac::

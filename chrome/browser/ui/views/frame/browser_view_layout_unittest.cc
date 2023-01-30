@@ -104,6 +104,8 @@ class MockBrowserViewLayoutDelegate : public BrowserViewLayoutDelegate {
   bool BrowserIsTypeNormal() const override { return true; }
   bool HasFindBarController() const override { return false; }
   void MoveWindowForFindBarIfNecessary() const override {}
+  bool IsWindowControlsOverlayEnabled() const override { return false; }
+  void UpdateWindowControlsOverlay(const gfx::Rect& rect) const override {}
 
  private:
   bool tab_strip_visible_ = true;

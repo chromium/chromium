@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/base/hit_test.h"
 #include "ui/gfx/geometry/insets.h"
@@ -444,6 +445,23 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
   return gfx::Size();
 }
 
+std::vector<views::View*> BrowserViewLayout::GetChildViewsInPaintOrder(
+    const views::View* host) const {
+  std::vector<views::View*> result =
+      views::LayoutManager::GetChildViewsInPaintOrder(host);
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppFrameToolbarInBrowserView)) {
+    // Make sure `top_container_` is last in paint order when this is a window
+    // using WindowControlsOverlay, to make sure the window controls are in fact
+    // drawn on top of anything else.
+    if (delegate_->IsWindowControlsOverlayEnabled()) {
+      auto iter = base::ranges::find(result, top_container_);
+      std::rotate(iter, iter + 1, result.end());
+    }
+  }
+  return result;
+}
+
 int BrowserViewLayout::GetMinWebContentsWidthForTesting() const {
   return GetMinWebContentsWidth();
 }
@@ -465,6 +483,16 @@ int BrowserViewLayout::LayoutTitleBarForWebApp(int top) {
     web_app_window_title_->SetVisible(!toolbar_bounds.IsEmpty());
   }
   if (toolbar_bounds.IsEmpty()) {
+    return top;
+  }
+
+  if (delegate_->IsWindowControlsOverlayEnabled()) {
+    web_app_frame_toolbar_->LayoutForWindowControlsOverlay(toolbar_bounds);
+    toolbar_bounds.Subtract(web_app_frame_toolbar_->bounds());
+    delegate_->UpdateWindowControlsOverlay(toolbar_bounds);
+    if (web_app_window_title_) {
+      web_app_window_title_->SetVisible(false);
+    }
     return top;
   }
 

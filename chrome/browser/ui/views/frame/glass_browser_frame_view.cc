@@ -213,7 +213,6 @@ gfx::Size GlassBrowserFrameView::GetMinimumSize() const {
 
 void GlassBrowserFrameView::WindowControlsOverlayEnabledChanged() {
   caption_button_container_->OnWindowControlsOverlayEnabledChanged();
-  InvalidateLayout();
 }
 
 TabSearchBubbleHost* GlassBrowserFrameView::GetTabSearchBubbleHost() {

@@ -659,6 +659,26 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
     return controller->find_bar()->MoveWindowIfNecessary();
   }
 
+  bool IsWindowControlsOverlayEnabled() const override {
+    return browser_view_->IsWindowControlsOverlayEnabled();
+  }
+
+  void UpdateWindowControlsOverlay(
+      const gfx::Rect& available_titlebar_area) const override {
+    content::WebContents* web_contents = browser_view_->GetActiveWebContents();
+    if (!web_contents) {
+      return;
+    }
+
+    // The rect passed to WebContents is directly exposed to websites. In case
+    // of an empty rectangle, this should be exposed as 0,0 0x0 rather than
+    // whatever coordinates might be in rect.
+    web_contents->UpdateWindowControlsOverlay(
+        available_titlebar_area.IsEmpty()
+            ? gfx::Rect()
+            : browser_view_->GetMirroredRect(available_titlebar_area));
+  }
+
  private:
   raw_ptr<BrowserView> browser_view_;
 };
@@ -2126,6 +2146,11 @@ void BrowserView::UpdateWindowControlsOverlayEnabled() {
   if (frame_ && frame_->GetFrameView()) {
     frame_->GetFrameView()->WindowControlsOverlayEnabledChanged();
   }
+
+  // When Window Controls Overlay is enabled or disabled, the browser window
+  // needs to be re-layed out to make sure the title bar and web contents appear
+  // in the correct locations.
+  InvalidateLayout();
 
   const std::u16string& state_change_text =
       IsWindowControlsOverlayEnabled()
