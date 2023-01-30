@@ -1553,7 +1553,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("saveAsDlpRestrictedRedirectsToMyFiles").EnableDlp(),
         TestCase("saveAsDlpRestrictedVm").EnableDlp(),
         TestCase("openDlpRestrictedFile").EnableDlp(),
-        TestCase("openFolderDlpRestricted").EnableDlp()));
+        TestCase("openFolderDlpRestricted").EnableDlp(),
+        TestCase("fileTasksDlpRestricted").EnableDlp()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

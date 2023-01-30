@@ -7,6 +7,7 @@ import {addEntries, ENTRIES, EntryType, RootPath, sendBrowserTestCommand, sendTe
 import {testcase} from '../testcase.js';
 
 import {navigateWithDirectoryTree, openAndWaitForClosingDialog, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {FakeTask} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
@@ -565,4 +566,46 @@ testcase.openFolderDlpRestricted = async () => {
     openType: 'open',
   });
   await remoteCall.waitAndClickElement(dialog, enabledOkButton);
+};
+
+/**
+ * Tests that DLP disabled file tasks are shown as disabled in the menu.
+ */
+testcase.fileTasksDlpRestricted = async () => {
+  const entry = ENTRIES.hello;
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+  // Override file tasks so that some are DLP disabled.
+  const fakeTasks = [
+    new FakeTask(
+        true, {appId: 'dummyId1', taskType: 'file', actionId: 'open-with'},
+        'DummyTask1', false, true),
+    new FakeTask(
+        false, {appId: 'dummyId2', taskType: 'file', actionId: 'open-with'},
+        'DummyTask2', false, false),
+    new FakeTask(
+        false, {appId: 'dummyId3', taskType: 'file', actionId: 'open-with'},
+        'DummyTask3', false, true),
+  ];
+  await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
+
+  // Select file.
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
+
+  // Check that multiple tasks are available and then click on "Open ▼" button.
+  await remoteCall.waitAndClickElement(appId, '#tasks[multiple]');
+
+  // Wait for dropdown menu to show.
+  await remoteCall.waitForElement(
+      appId, '#tasks-menu:not([hidden]) cr-menu-item');
+
+  // Verify that the first and third tasks are disabled, and the second one is
+  // not.
+  await remoteCall.waitForElement(
+      appId, ['#tasks-menu:not([hidden]) cr-menu-item[disabled]:nth-child(1)']);
+  await remoteCall.waitForElement(
+      appId,
+      ['#tasks-menu:not([hidden]) cr-menu-item:not([disabled]):nth-child(2)']);
+  await remoteCall.waitForElement(
+      appId, ['#tasks-menu:not([hidden]) cr-menu-item[disabled]:nth-child(3)']);
 };
