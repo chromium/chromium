@@ -268,26 +268,37 @@ class DriverContext:
           script = os.path.join(scripts_dir, "profile.d")
 
         pid = browser_process.pid
-        output_filename = os.path.join(dtraces_output_dir, f"{pid}.txt")
+        iteration = 1
 
-        dtrace_args = [
-            'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-s',
-            script, f"{pid}"
-        ]
+        # Capture until the scenario is done running.
+        while True:
+          output_filename = os.path.join(dtraces_output_dir,
+                                         f"{pid}_{iteration}.txt")
+          dtrace_args = [
+              'sudo', 'dtrace', '-p', f"{pid}", "-o", output_filename, '-s',
+              script, f"{pid}"
+          ]
 
-        # No need to add |dtrace_process| to |self._started_processeds| as it's
-        # explicitly waited on later.
-        dtrace_process = subprocess.Popen(dtrace_args,
-                                          env=dtrace_env,
-                                          stdout=dtrace_log,
-                                          stderr=dtrace_log)
-      scenario_driver.Wait()
+          dtrace_process = subprocess.Popen(dtrace_args,
+                                            env=dtrace_env,
+                                            stdout=dtrace_log,
+                                            stderr=dtrace_log)
+
+          # This timeout was chosen experimentally to on an M1 MBA to avoid
+          # running for too long and losing samples (because of suspected
+          #  bug in Dtrace) and running too little and thus having too much
+          # overhead.
+          time.sleep(7.199)
+          utils.TerminateRootProcess(dtrace_process)
+          iteration = iteration + 1
+
+          if scenario_driver.script_process.poll() is not None:
+            break
 
     finally:
       scenario_driver.TearDown()
 
     logging.debug(f"Waiting for dtrace to exit")
-    dtrace_process.wait(30)
 
   def Trace(self, scenario_driver: scenarios.ScenarioOSADriver):
     self.WriteScenarioSummary(scenario_driver)
