@@ -604,4 +604,6 @@ void FakeDriveFs::ToggleSyncForPath(
 
 void FakeDriveFs::PollHostedFilePinStates() {}
 
+void FakeDriveFs::CancelUploadByPath(const base::FilePath& path) {}
+
 }  // namespace drivefs

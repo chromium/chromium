@@ -132,6 +132,10 @@ interface DriveFs {
   // Get the metadata for the supplied `stable_id`.
   GetMetadataByStableId(int64 stable_id) => (
       FileError error, FileMetadata? metadata);
+
+  // Attempts to cancel an in progress upload. `path` must be made absolute
+  // from the drive mount point.
+  CancelUploadByPath(mojo_base.mojom.FilePath path);
 };
 
 // Implemented by Chrome, used from DriveFS.

@@ -175,6 +175,8 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   void PollHostedFilePinStates() override;
 
+  void CancelUploadByPath(const base::FilePath& path) override;
+
   const base::FilePath mount_path_;
   int64_t next_stable_id_ = 1;
 
