@@ -53,7 +53,15 @@ void BreadcrumbManager::AddEvent(const std::string& event) {
 
 void BreadcrumbManager::SetPreviousSessionEvents(
     const std::vector<std::string>& events) {
-  breadcrumbs_.insert(breadcrumbs_.begin(), events.begin(), events.end());
+  // Insert `events` into the event log, skipping the oldest events (which are
+  // at the front) if needed to keep the event log below `kMaxBreadcrumbs`.
+  const size_t breadcrumbs_capacity = kMaxBreadcrumbs - breadcrumbs_.size();
+  const size_t breadcrumbs_to_insert =
+      std::min(events.size(), breadcrumbs_capacity);
+
+  breadcrumbs_.insert(breadcrumbs_.begin(),
+                      events.end() - breadcrumbs_to_insert, events.end());
+
   for (auto& observer : observers_) {
     observer.PreviousSessionEventsAdded();
   }
