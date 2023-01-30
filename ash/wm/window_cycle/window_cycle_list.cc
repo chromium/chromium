@@ -21,6 +21,8 @@
 #include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -38,6 +40,9 @@
 namespace ash {
 
 namespace {
+
+constexpr char kSameAppWindowCycleSkippedWindowsHistogramName[] =
+    "Ash.WindowCycleController.SameApp.SkippedWindows";
 
 bool g_disable_initial_delay = false;
 
@@ -150,6 +155,7 @@ WindowCycleList::~WindowCycleList() {
   if (!windows_.empty() && user_did_accept_) {
     if (!target_window)
       target_window = windows_[current_index_];
+    MaybeReportNonSameAppSkippedWindows(target_window);
     SelectWindow(target_window);
   }
   Shell::Get()->frame_throttling_controller()->EndThrottling();
@@ -179,6 +185,8 @@ void WindowCycleList::Step(
     bool starting_alt_tab_or_switching_mode) {
   if (windows_.empty())
     return;
+
+  last_cycling_direction_ = direction;
 
   // If the position of the window cycle list is out-of-sync with the currently
   // selected item, scroll to the selected item and then step.
@@ -494,6 +502,55 @@ int WindowCycleList::GetNumberOfWindowsAllDesks() const {
       ->mru_window_tracker()
       ->BuildWindowForCycleWithPipList(kAllDesks)
       .size();
+}
+
+void WindowCycleList::MaybeReportNonSameAppSkippedWindows(
+    aura::Window* target_window) const {
+  if (!same_app_only_ || windows_.size() < 2 || current_index_ == 0) {
+    return;
+  }
+
+  const WindowList original_windows =
+      Shell::Get()->mru_window_tracker()->BuildWindowForCycleWithPipList(
+          Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk()
+              ? kActiveDesk
+              : kAllDesks);
+
+  // Count up the skipped windows between the starting window and the chosen
+  // window.
+  int skipped_windows = 0;
+  const std::string* const mru_window_app_id =
+      target_window->GetProperty(kAppIDKey);
+  if (!mru_window_app_id) {
+    return;
+  }
+  // The window at index 0 is the window cycling started on. It can't be a
+  // skipped window, so start at index 1.
+  int start = 1;
+  int increment = 1;
+
+  // If we're cycling backwards, start from the end and work backwards.
+  if (last_cycling_direction_ ==
+      WindowCycleController::WindowCyclingDirection::kBackward) {
+    start = original_windows.size() - 1;
+    increment = -1;
+  }
+
+  aura::Window* current_window = nullptr;
+  for (int i = start; i >= 0 && i < static_cast<int>(original_windows.size()) &&
+                      current_window != target_window;
+       i += increment) {
+    current_window = original_windows[i];
+    const auto* const app_id = current_window->GetProperty(kAppIDKey);
+    if (!app_id || *app_id != *mru_window_app_id) {
+      skipped_windows++;
+    }
+  }
+  // Make sure looping stopped because we found the window.
+  DCHECK_EQ(current_window, target_window);
+
+  base::UmaHistogramCounts100(kSameAppWindowCycleSkippedWindowsHistogramName,
+                              skipped_windows);
 }
 
 }  // namespace ash

@@ -152,6 +152,11 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns the number of windows in the window cycle list for all desks.
   int GetNumberOfWindowsAllDesks() const;
 
+  // Computes and reports the number of non-same-app windows skipped metric if
+  // `same_app_only_`. This must be called from the destructor before the call
+  // to `SelectWindow()` as it relies on the previous state of the MRU list.
+  void MaybeReportNonSameAppSkippedWindows(aura::Window* target_window) const;
+
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the
   // first time) and is emptied when the gesture is complete (i.e. releases the
@@ -192,6 +197,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Tracks what window was active when starting to cycle and used to determine
   // if alt-tab should highlight the first or the second window in the list.
   aura::Window* active_window_before_window_cycle_ = nullptr;
+
+  // The most recent direction `Step()` was called with.
+  WindowCycleController::WindowCyclingDirection last_cycling_direction_;
 };
 
 }  // namespace ash

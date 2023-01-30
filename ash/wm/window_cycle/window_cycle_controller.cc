@@ -49,6 +49,10 @@ constexpr char kAltTabSwitchModeHistogramName[] =
     "Ash.WindowCycleController.SwitchMode";
 constexpr char kAltTabModeSwitchSourceHistogramName[] =
     "Ash.WindowCycleController.ModeSwitchSource";
+constexpr char kSameAppWindowCycleIsSameAppHistogramName[] =
+    "Ash.WindowCycleController.SameApp.IsSameApp";
+constexpr char kSameAppWindowCycleDeskModeHistogramName[] =
+    "Ash.WindowCycleController.SameApp.DeskMode";
 
 // Enumeration of the alt-tab modes to record initial mode and mode switch.
 // Note that these values are persisted to histograms so existing values should
@@ -224,6 +228,8 @@ void WindowCycleController::StartCycling(bool same_app_only) {
   window_cycle_list_ =
       std::make_unique<WindowCycleList>(window_list, same_app_only);
   event_filter_ = std::make_unique<WindowCycleEventFilter>();
+  base::UmaHistogramBoolean(kSameAppWindowCycleIsSameAppHistogramName,
+                            same_app_only);
   if (!same_app_only) {
     base::RecordAction(base::UserMetricsAction("WindowCycleController_Cycle"));
     base::UmaHistogramCounts100(kAltTabItemsHistogramName, window_list.size());
@@ -434,8 +440,14 @@ void WindowCycleController::StopCycling() {
   aura::Window* active_window_after_window_cycle =
       window_util::GetActiveWindow();
 
-  if (!was_same_app_only && active_window_after_window_cycle != nullptr &&
-      active_window_before_window_cycle_ != active_window_after_window_cycle) {
+  if (was_same_app_only) {
+    base::UmaHistogramEnumeration(kSameAppWindowCycleDeskModeHistogramName,
+                                  IsAltTabPerActiveDesk()
+                                      ? AltTabMode::kCurrentDesk
+                                      : AltTabMode::kAllDesks);
+  } else if (active_window_after_window_cycle != nullptr &&
+             active_window_before_window_cycle_ !=
+                 active_window_after_window_cycle) {
     Shell::Get()->metrics()->task_switch_metrics_recorder().OnTaskSwitch(
         TaskSwitchSource::WINDOW_CYCLE_CONTROLLER);
 

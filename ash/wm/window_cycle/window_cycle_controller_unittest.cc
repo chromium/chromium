@@ -3783,4 +3783,158 @@ TEST_F(SameAppWindowCycleControllerTest, PerDeskMode) {
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
 }
 
+TEST_F(SameAppWindowCycleControllerTest, RecordingSameAppCycleMetrics) {
+  // Create another desk so that desk mode metrics are collected.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+
+  // Create 2 windows of app A and 3 windows of app B.
+  std::unique_ptr<aura::Window> w1(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w2(CreateTestWindowWithAppID(std::string("A")));
+  std::unique_ptr<aura::Window> w3(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w4(CreateTestWindowWithAppID(std::string("B")));
+  std::unique_ptr<aura::Window> w5(CreateTestWindowWithAppID(std::string("B")));
+
+  // Alt backtick once. The new MRU order should be w4 - w5 - w3 - w2 - w1.
+  base::HistogramTester histogram_tester;
+  auto* generator = GetEventGenerator();
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w4.get()));
+
+  // DeskMode should have 1 in kAllDesks since all desks mode is default.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.WindowCycleController.SameApp.DeskMode", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+
+  // IsSameApp should be 1 since we've alt backticked once and haven't yet alt
+  // tabbed.
+  histogram_tester.ExpectTotalCount(
+      "Ash.WindowCycleController.SameApp.IsSameApp", 1);
+
+  // Skipped should have 1 entry in the 0 bucket since there were no windows of
+  // app type A between the two windows of app type B in the MRU order.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+
+  // Alt tab to w2 and then to w4. This should change none of the alt backtick
+  // metrics. The new MRU order should be w4 - w2 - w5 - w3 - w1.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w4.get()));
+
+  // Alt backticking once should get us from w4 to w5, skipping w2. The new MRU
+  // order should be w5 - w4 - w2 - w3 - w1.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w5.get()));
+
+  // The kAllDesks bucket in DeskMode should now be 2. We've alt backticked
+  // twice so the true bucket for IsSameApp should be 2. Skipped should have a
+  // new bucket with a skip distance of 1, and a value of 1 entry in that
+  // bucket.
+  histogram_tester.ExpectUniqueSample(
+      "Ash.WindowCycleController.SameApp.DeskMode", /*sample=*/0,
+      /*expected_bucket_count=*/2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.IsSameApp", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/1,
+      /*expected_count=*/1);
+
+  // Alt tab to w2 and switch the per desk mode to current desk. The new MRU
+  // order should be w2 - w5 - w4 - w3 - w1.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->MoveMouseTo(
+      GetWindowCycleTabSliderButtons()[1]->GetBoundsInScreen().CenterPoint());
+  generator->ClickLeftButton();
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  // Alt Backtick once from w2 to w1, skipping w5, w4, and w3. The new MRU order
+  // should be w1 - w2 - w5 - w4 - w3.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  // DeskMode should have a new bucket for kCurrentDesk with a value of 1,
+  // IsSameApp true should be 3, and we should have a new skip distance bucket
+  // of 3 with 1 entry.
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.DeskMode", /*sample=*/1,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.IsSameApp", true, 3);
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/3,
+      /*expected_count=*/1);
+
+  // DeskMode and Skipped should both only have 3 entries between all their
+  // buckets: the number of times we alt backticked.
+  histogram_tester.ExpectTotalCount(
+      "Ash.WindowCycleController.SameApp.DeskMode", 3);
+  histogram_tester.ExpectTotalCount(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", 3);
+
+  // Alt tab to w5 and then back to w1. The new MRU order should be w1 - w5 - w2
+  // - w4 - w3.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w5.get()));
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  // Alt backtick through the whole cycle list and then to w2. The loop
+  // shouldn't double count the skipped window. The new MRU order should be w2 -
+  // w1 - w5 - w4 - w3.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3, ui::EF_ALT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w2.get()));
+
+  // Skipping the same window twice should only count as one window skipped, so
+  // the bucket for a skip distance of 1 should have one more.
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/1,
+      /*expected_count=*/2);
+
+  // We've alt tabbed 5 times, so the false bucket of IsSameApp should be 5.
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.IsSameApp", false, 5);
+
+  // Shift Alt backtick once to w1. A skip distance of 3 should be counted.
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  generator->PressAndReleaseKey(ui::VKEY_OEM_3,
+                                ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.WindowCycleController.SameApp.SkippedWindows", /*sample=*/3,
+      /*expected_count=*/2);
+}
+
 }  // namespace ash
