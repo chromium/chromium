@@ -29,8 +29,6 @@ TEST_LLVM_PROFILE_DIR = 'llvm-profile'
 TEST_PERF_RESULT_FILE = 'test_perf_summary.json'
 TEST_RESULT_FILE = 'test_summary.json'
 
-TEST_REALM_NAME = 'chromium_tests'
-
 
 class CustomArtifactsTestOutputs():
   """A TestOutputs implementation for CFv2 tests, where tests emit files into
