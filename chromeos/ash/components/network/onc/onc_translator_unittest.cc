@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_test_utils.h"
@@ -90,6 +92,21 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("wifi_eap_ttls_with_hardcoded_password.onc",
                        "shill_wifi_eap_ttls_with_hardcoded_password.json")));
 
+TEST_F(ONCTranslatorOncToShillTest, TranslateCellularApnRevamp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  base::Value onc_network =
+      test_utils::ReadTestDictionaryValue("cellular_apn_revamp.onc");
+  base::Value expected_shill_network =
+      test_utils::ReadTestDictionaryValue("shill_cellular_apn_revamp.json");
+
+  base::Value translation = TranslateONCObjectToShill(
+      &chromeos::onc::kNetworkConfigurationSignature, onc_network);
+
+  EXPECT_TRUE(test_utils::Equals(&expected_shill_network, &translation));
+}
+
 // First parameter: Filename of source Shill json.
 // Second parameter: Filename of expected translated ONC network part.
 //
@@ -109,7 +126,7 @@ TEST_P(ONCTranslatorShillToOncTest, Translate) {
 
   base::Value translation = TranslateShillServiceToONCPart(
       shill_network, ::onc::ONC_SOURCE_NONE,
-      &chromeos::onc::kNetworkWithStateSignature, nullptr /* network_state */);
+      &chromeos::onc::kNetworkWithStateSignature, /*network_state=*/nullptr);
 
   EXPECT_TRUE(test_utils::Equals(&expected_onc_network, &translation));
 }
@@ -185,5 +202,21 @@ INSTANTIATE_TEST_SUITE_P(
                        "and_inactive.onc"),
         std::make_pair("shill_wifi_eap_empty_certid.json",
                        "translation_of_shill_wifi_eap_empty_certid.onc")));
+
+TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnRevamp) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kApnRevamp);
+
+  base::Value shill_network = test_utils::ReadTestDictionaryValue(
+      "shill_cellular_with_state_apn_revamp.json");
+  base::Value expected_onc_network = test_utils::ReadTestDictionaryValue(
+      "translation_of_shill_cellular_with_state_apn_revamp.onc");
+
+  base::Value translation = TranslateShillServiceToONCPart(
+      shill_network, ::onc::ONC_SOURCE_NONE,
+      &chromeos::onc::kNetworkWithStateSignature, /*network_state=*/nullptr);
+
+  EXPECT_TRUE(test_utils::Equals(&expected_onc_network, &translation));
+}
 
 }  // namespace ash::onc

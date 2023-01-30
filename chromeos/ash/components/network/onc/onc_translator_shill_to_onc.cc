@@ -11,6 +11,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
@@ -614,10 +615,40 @@ void ShillToONCTranslator::TranslateApnProperties() {
   } else if (shill_apn_ip_type == shill::kApnIpTypeV4V6) {
     ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
   } else {
-    return;  // Ignore unhandled ApnIpType types
+    NET_LOG(ERROR) << "APN has an invalid APN IP type: " << shill_apn_ip_type;
+  }
+  if (!ip_type.empty()) {
+    onc_object_.Set(::onc::cellular_apn::kIpType, ip_type);
   }
 
-  onc_object_.Set(::onc::cellular_apn::kIpType, ip_type);
+  const std::string shill_apn_types =
+      FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnTypesProperty);
+
+  // Convert comma-delimited string of APN types to de-duped array of strings,
+  // i.e. "DEFAULT,IA,DEFAULT" -> ["Default", "Attach"].
+  bool contains_default = false;
+  bool contains_attach = false;
+  for (const auto& apn_type :
+       base::SplitStringPiece(shill_apn_types,
+                              /*separators=*/",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    if (apn_type == shill::kApnTypeDefault) {
+      contains_default = true;
+    } else if (apn_type == shill::kApnTypeIA) {
+      contains_attach = true;
+    } else {
+      NET_LOG(ERROR) << "APN has an invalid APN type:" << apn_type;
+    }
+  }
+  base::Value::List apn_types;
+  if (contains_default) {
+    apn_types.Append(::onc::cellular_apn::kApnTypeDefault);
+  }
+  if (contains_attach) {
+    apn_types.Append(::onc::cellular_apn::kApnTypeAttach);
+  }
+  DCHECK(!apn_types.empty()) << "APN must have at least one APN type";
+  onc_object_.Set(::onc::cellular_apn::kApnTypes, std::move(apn_types));
 }
 
 void ShillToONCTranslator::TranslateNetworkWithState() {

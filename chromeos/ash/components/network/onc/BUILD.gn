@@ -53,6 +53,7 @@ source_set("onc") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//ash/constants",
     "//base/test:test_support",
     "//chromeos:test_utils",
     "//chromeos/ash/components/network",

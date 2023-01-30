@@ -1,0 +1,29 @@
+{
+  "AutoConnect": true,
+  "Type": "cellular",
+  "Cellular.AllowRoaming": true,
+  "Cellular.APN": {
+    "apn": "test-apn",
+    "apn_types": "DEFAULT",
+    "authentication": "chap",
+    "username": "test-username",
+    "password": "test-password",
+  },
+  "Cellular.UserAPNList": [
+    {
+      "apn": "test-apn-1",
+      "apn_types": "IA",
+      "authentication": "chap",
+      "username": "test-username",
+      "password": "test-password",
+    },
+    {
+      "apn": "test-apn-3",
+      "apn_types": "DEFAULT,IA",
+      "authentication": "chap",
+      "username": "test-username",
+      "password": "test-password"
+    }
+  ],
+  "StaticIPConfig": {}
+}

@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -114,6 +115,7 @@ class LocalTranslator {
   void TranslateStaticIPConfig();
   void TranslateNetworkConfiguration();
   void TranslateCellular();
+  void TranslateApn();
 
   // Copies all entries from |onc_object_| to |shill_dictionary_| for which a
   // translation (shill_property_name) is defined by the translation table for
@@ -145,28 +147,32 @@ class LocalTranslator {
 };
 
 void LocalTranslator::TranslateFields() {
-  if (onc_signature_ == &chromeos::onc::kNetworkConfigurationSignature)
+  if (onc_signature_ == &chromeos::onc::kNetworkConfigurationSignature) {
     TranslateNetworkConfiguration();
-  else if (onc_signature_ == &chromeos::onc::kCellularSignature)
+  } else if (onc_signature_ == &chromeos::onc::kCellularSignature) {
     TranslateCellular();
-  else if (onc_signature_ == &chromeos::onc::kEthernetSignature)
+  } else if (ash::features::IsApnRevampEnabled() &&
+             onc_signature_ == &chromeos::onc::kCellularApnSignature) {
+    TranslateApn();
+  } else if (onc_signature_ == &chromeos::onc::kEthernetSignature) {
     TranslateEthernet();
-  else if (onc_signature_ == &chromeos::onc::kVPNSignature)
+  } else if (onc_signature_ == &chromeos::onc::kVPNSignature) {
     TranslateVPN();
-  else if (onc_signature_ == &chromeos::onc::kOpenVPNSignature)
+  } else if (onc_signature_ == &chromeos::onc::kOpenVPNSignature) {
     TranslateOpenVPN();
-  else if (onc_signature_ == &chromeos::onc::kIPsecSignature)
+  } else if (onc_signature_ == &chromeos::onc::kIPsecSignature) {
     TranslateIPsec();
-  else if (onc_signature_ == &chromeos::onc::kL2TPSignature)
+  } else if (onc_signature_ == &chromeos::onc::kL2TPSignature) {
     TranslateL2TP();
-  else if (onc_signature_ == &chromeos::onc::kWiFiSignature)
+  } else if (onc_signature_ == &chromeos::onc::kWiFiSignature) {
     TranslateWiFi();
-  else if (onc_signature_ == &chromeos::onc::kEAPSignature)
+  } else if (onc_signature_ == &chromeos::onc::kEAPSignature) {
     TranslateEAP();
-  else if (onc_signature_ == &chromeos::onc::kStaticIPConfigSignature)
+  } else if (onc_signature_ == &chromeos::onc::kStaticIPConfigSignature) {
     TranslateStaticIPConfig();
-  else
+  } else {
     CopyFieldsAccordingToSignature();
+  }
 }
 
 void LocalTranslator::TranslateEthernet() {
@@ -496,6 +502,44 @@ void LocalTranslator::TranslateCellular() {
     shill_dictionary_->Set(kShillCellularUserApnList,
                            base::Value(std::move(enabled_apns)));
   }
+
+  CopyFieldsAccordingToSignature();
+}
+
+void LocalTranslator::TranslateApn() {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  const base::Value::List* apn_types =
+      onc_object_->FindList(::onc::cellular_apn::kApnTypes);
+  DCHECK(apn_types) << "APN must have APN types";
+
+  // Convert array of APN types to comma-delimited, de-duped string, i.e.
+  // ["Default", "Attach", "Default"] -> "DEFAULT,IA".
+  bool contains_default = false;
+  bool contains_attach = false;
+  for (const auto& apn_type : *apn_types) {
+    std::string apn_type_string = apn_type.GetString();
+    if (apn_type_string == ::onc::cellular_apn::kApnTypeDefault) {
+      contains_default = true;
+    } else if (apn_type_string == ::onc::cellular_apn::kApnTypeAttach) {
+      contains_attach = true;
+    } else {
+      NOTREACHED() << "Invalid APN type: " << apn_type;
+    }
+  }
+  std::stringstream apn_types_stream;
+  if (contains_default) {
+    apn_types_stream << shill::kApnTypeDefault;
+  }
+  if (contains_attach) {
+    if (contains_default) {
+      apn_types_stream << ",";
+    }
+    apn_types_stream << shill::kApnTypeIA;
+  }
+
+  std::string apn_types_string = apn_types_stream.str();
+  DCHECK(!apn_types_string.empty()) << "APN must have at least one APN type";
+  shill_dictionary_->Set(shill::kApnTypesProperty, apn_types_string);
 
   CopyFieldsAccordingToSignature();
 }

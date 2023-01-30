@@ -8,19 +8,5 @@
     "username": "test-username",
     "password": "test-password"
   },
-  "Cellular.UserAPNList": [
-    {
-      "apn": "test-apn-1",
-      "authentication": "chap",
-      "username": "test-username",
-      "password": "test-password"
-    },
-    {
-      "apn": "test-apn-3",
-      "authentication": "chap",
-      "username": "test-username",
-      "password": "test-password"
-    }
-  ],
   "StaticIPConfig": {}
 }

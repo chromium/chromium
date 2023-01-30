@@ -1,0 +1,41 @@
+{
+  "Type": "Cellular",
+  "Name": "Test Network",
+  "Cellular": {
+    "AllowRoaming": true,
+    "APN": {
+      "AccessPointName": "test-apn",
+      "ApnTypes": ["Default"],
+      "Authentication": "chap",
+      "Username": "test-username",
+      "Password": "test-password"
+    },
+    "AutoConnect": true,
+    "UserAPNList": [
+      {
+        "AccessPointName": "test-apn-1",
+        "ApnTypes": ["Attach"],
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled"
+      },
+      {
+        "AccessPointName": "test-apn-2",
+        "ApnTypes": ["Default"],
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Disabled"
+      },
+      {
+        "AccessPointName": "test-apn-3",
+        "ApnTypes": ["Default", "Attach"],
+        "Authentication": "chap",
+        "Username": "test-username",
+        "Password": "test-password",
+        "State": "Enabled"
+      }
+    ]
+  }
+}

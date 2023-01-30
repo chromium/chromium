@@ -19,7 +19,6 @@ namespace mojom = ::chromeos::network_config::mojom;
 // TODO(b/162365553) Remove when shill constants are added.
 constexpr char kShillApnId[] = "id";
 constexpr char kShillApnAuthenticationType[] = "authentication_type";
-constexpr char kShillApnTypes[] = "apn_types";
 
 bool IsPropertyEquals(const base::Value::Dict& apn,
                       const char* key,
@@ -122,10 +121,18 @@ base::Value::Dict TestApnData::AsShillApn() const {
     apn.Set(kShillApnAuthenticationType, onc_authentication_type);
     apn.Set(shill::kApnIpTypeProperty, onc_ip_type);
 
-    base::Value::List apn_types;
-    for (const std::string& apn_type : onc_apn_types)
-      apn_types.Append(apn_type);
-    apn.Set(kShillApnTypes, std::move(apn_types));
+    std::string apn_types;
+    for (const std::string& apn_type : onc_apn_types) {
+      if (apn_type == ::onc::cellular_apn::kApnTypeDefault) {
+        apn_types += shill::kApnTypeDefault;
+      } else if (apn_type == ::onc::cellular_apn::kApnTypeAttach) {
+        apn_types += shill::kApnTypeIA;
+      }
+      apn_types += ",";
+    }
+    // Remove trailing comma.
+    apn_types.pop_back();
+    apn.Set(shill::kApnTypesProperty, base::Value(apn_types));
   }
   return apn;
 }
