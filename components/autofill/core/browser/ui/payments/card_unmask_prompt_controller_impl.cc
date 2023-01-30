@@ -262,14 +262,15 @@ int CardUnmaskPromptControllerImpl::GetCvcImageRid() const {
   if (IsChallengeOptionPresent()) {
     return card_unmask_prompt_options_.challenge_option->cvc_position ==
                    CvcPosition::kFrontOfCard
-               ? IDR_CREDIT_CARD_CVC_HINT_AMEX
-               : IDR_CREDIT_CARD_CVC_HINT;
+               ? IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX
+               : IDR_CREDIT_CARD_CVC_HINT_BACK;
   }
 
   // For normal CVC unmask case, depend on the network to inform where the CVC
   // is on the card.
-  return card_.network() == kAmericanExpressCard ? IDR_CREDIT_CARD_CVC_HINT_AMEX
-                                                 : IDR_CREDIT_CARD_CVC_HINT;
+  return card_.network() == kAmericanExpressCard
+             ? IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX
+             : IDR_CREDIT_CARD_CVC_HINT_BACK;
 }
 
 bool CardUnmaskPromptControllerImpl::ShouldRequestExpirationDate() const {

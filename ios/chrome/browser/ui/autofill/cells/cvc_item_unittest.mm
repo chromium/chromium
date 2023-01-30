@@ -34,7 +34,7 @@ TEST_F(CVCItemTest, ConfigureCell) {
   item.monthText = monthText;
   item.yearText = yearText;
   item.CVCText = CVCText;
-  item.CVCImageResourceID = IDR_CREDIT_CARD_CVC_HINT_AMEX;
+  item.CVCImageResourceID = IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX;
 
   id cell = [[[item cellClass] alloc] init];
   ASSERT_TRUE([cell isMemberOfClass:[CVCCell class]]);

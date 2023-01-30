@@ -36,8 +36,8 @@
     <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MIGRATION_DIALOG_HEADER_DARK" file="google_chrome/autofill/migration_header_dark.png" />
   </if>
 
-  <structure type="chrome_scaled_image" name="IDR_CREDIT_CARD_CVC_HINT" file="autofill/credit_card_cvc_hint.png" />
-  <structure type="chrome_scaled_image" name="IDR_CREDIT_CARD_CVC_HINT_AMEX" file="autofill/credit_card_cvc_hint_amex.png" />
+  <structure type="chrome_scaled_image" name="IDR_CREDIT_CARD_CVC_HINT_BACK" file="autofill/credit_card_cvc_hint.png" />
+  <structure type="chrome_scaled_image" name="IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX" file="autofill/credit_card_cvc_hint_amex.png" />
   <if expr="is_ios or is_android">
     <structure type="chrome_scaled_image" name="IDR_INFOBAR_AUTOFILL_CC" file="autofill/infobar_autofill_cc.png" />
   </if>

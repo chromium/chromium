@@ -105,5 +105,5 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_AUTOFILL_ADDRESS,
                     R.drawable.gm_filled_location_on_24)
 
 // We use PNG files for the following images.
-LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT, R.drawable.cvc_icon)
-LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_AMEX, R.drawable.cvc_icon_amex)
+LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_BACK, R.drawable.cvc_icon)
+LINK_RESOURCE_ID(IDR_CREDIT_CARD_CVC_HINT_FRONT_AMEX, R.drawable.cvc_icon_amex)
