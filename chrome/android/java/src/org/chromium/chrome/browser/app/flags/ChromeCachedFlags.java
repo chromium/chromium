@@ -108,6 +108,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sQueryTiles,
                 ChromeFeatureList.sQueryTilesOnStart,
                 ChromeFeatureList.sReadLater,
+                ChromeFeatureList.sShouldIgnoreIntentSkipInternalCheck,
                 ChromeFeatureList.sStartSurfaceAndroid,
                 ChromeFeatureList.sStartSurfaceDisabledFeedImprovement,
                 ChromeFeatureList.sStartSurfaceReturnTime,
