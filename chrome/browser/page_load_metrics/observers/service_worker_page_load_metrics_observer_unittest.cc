@@ -280,10 +280,8 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
       internal::kHistogramServiceWorkerLoad, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramServiceWorkerLargestContentfulPaint, 0);
-  // TODO(crbug.com/686590): The following expectation fails on Win7 Tests
-  // (dbg)(1) builder, so is disabled for the time being.
-  // tester()->histogram_tester().ExpectTotalCount(
-  //     internal::kBackgroundHistogramServiceWorkerParseStart, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kBackgroundHistogramServiceWorkerParseStart, 1);
 
   const auto& entries = tester()->test_ukm_recorder().GetEntriesByName(
       ukm::builders::PageLoad_ServiceWorkerControlled::kEntryName);
