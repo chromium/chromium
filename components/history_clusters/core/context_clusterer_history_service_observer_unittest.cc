@@ -99,6 +99,10 @@ class MockHistoryService : public history::HistoryService {
                const std::vector<history::ClusterVisit>&,
                base::CancelableTaskTracker*),
               (override));
+  MOCK_METHOD(base::CancelableTaskTracker::TaskId,
+              UpdateClusterVisit,
+              (const history::ClusterVisit&, base::CancelableTaskTracker*),
+              (override));
 };
 
 class TestSiteEngagementScoreProvider
@@ -409,14 +413,24 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
   EXPECT_EQ(2, GetNumClustersCreated());
 }
 
-TEST_F(ContextClustererHistoryServiceObserverTest, SkipsSyncedVisits) {
+TEST_F(ContextClustererHistoryServiceObserverTest,
+       DoesNotClusterSyncedVisitsButUpdatesDetails) {
   SetPersistenceExpectedConfig();
+
+  history::ClusterVisit updated_cluster_visit;
+  EXPECT_CALL(*history_service_, UpdateClusterVisit(_, _))
+      .WillOnce(DoAll(SaveArg<0>(&updated_cluster_visit),
+                      Return(base::CancelableTaskTracker::TaskId())));
 
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
            history::kInvalidVisitID, history::kInvalidVisitID,
            /*is_synced_visit=*/true);
 
   EXPECT_EQ(0, GetNumClustersCreated());
+  // Details should be somewhat populated.
+  EXPECT_FALSE(updated_cluster_visit.normalized_url.is_empty());
+  EXPECT_FALSE(updated_cluster_visit.url_for_deduping.is_empty());
+  EXPECT_FALSE(updated_cluster_visit.url_for_display.empty());
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {

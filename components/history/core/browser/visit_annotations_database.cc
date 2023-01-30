@@ -794,6 +794,30 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
   });
 }
 
+void VisitAnnotationsDatabase::UpdateClusterVisit(
+    int64_t cluster_id,
+    const history::ClusterVisit& cluster_visit) {
+  sql::Statement statement(
+      GetDB().GetCachedStatement(SQL_FROM_HERE,
+                                 "UPDATE clusters_and_visits "
+                                 "SET "
+                                 "engagement_score=?,url_for_deduping=?,"
+                                 "normalized_url=?,url_for_display=? "
+                                 "WHERE cluster_id=? AND visit_id=?"));
+  statement.BindDouble(0, cluster_visit.engagement_score);
+  statement.BindString(1, cluster_visit.url_for_deduping.spec());
+  statement.BindString(2, cluster_visit.normalized_url.spec());
+  statement.BindString16(3, cluster_visit.url_for_display);
+  statement.BindInt64(4, cluster_id);
+  statement.BindInt64(5, cluster_visit.annotated_visit.visit_row.visit_id);
+  if (!statement.Run()) {
+    DVLOG(0) << "Failed to execute 'clusters_and_visits' update statement in "
+                "`UpdateClusterVisit()`: "
+             << "cluster_id = " << cluster_id << ", visit_id = "
+             << cluster_visit.annotated_visit.visit_row.visit_id;
+  }
+}
+
 Cluster VisitAnnotationsDatabase::GetCluster(int64_t cluster_id) {
   DCHECK_GT(cluster_id, 0);
   sql::Statement statement(GetDB().GetCachedStatement(

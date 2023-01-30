@@ -66,12 +66,6 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
     history::HistoryService* history_service,
     const history::URLRow& url_row,
     const history::VisitRow& new_visit) {
-  if (!new_visit.originator_cache_guid.empty()) {
-    // Skip remote synced visits. Remote synced visits are context clustered on
-    // the originator machine and persisted via `HistorySyncBridge`.
-    return;
-  }
-
   if (optimization_guide_decider_ &&
       optimization_guide_decider_->CanApplyOptimization(
           url_row.url(), optimization_guide::proto::HISTORY_CLUSTERS,
@@ -91,6 +85,26 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
       normalized_url = search_metadata->normalized_url.possibly_invalid_spec();
       search_terms = search_metadata->search_terms;
     }
+  }
+
+  history::ClusterVisit cluster_visit =
+      CreateClusterVisit(normalized_url, new_visit);
+
+  if (!new_visit.originator_cache_guid.empty()) {
+    // Skip determining the exact cluster id for remote synced visits.
+
+    if (ShouldUseNavigationContextClustersFromPersistence()) {
+      // Remote synced visits are context clustered on the originator machine
+      // and persisted via `HistorySyncBridge`; however, it still requires it's
+      // ClusterVisit metadata. It is calculated here instead of in
+      // `HistorySyncBridge` to avoid a circular dependency.
+      //
+      // If the sender device does not have context clustering at nav time
+      // enabled, this ends up being a no-op.
+      history_service_->UpdateClusterVisit(std::move(cluster_visit),
+                                           &task_tracker_);
+    }
+    return;
   }
 
   // See what cluster we should add it to.
@@ -154,18 +168,6 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   // cluster maps in case newer visits reference it though.
   if (ShouldUseNavigationContextClustersFromPersistence() &&
       IsTransitionUserVisible(new_visit.transition)) {
-    history::ClusterVisit cluster_visit;
-    cluster_visit.annotated_visit.visit_row.visit_id = new_visit.visit_id;
-    cluster_visit.normalized_url = GURL(normalized_url);
-    cluster_visit.url_for_deduping =
-        ComputeURLForDeduping(cluster_visit.normalized_url);
-    cluster_visit.url_for_display =
-        ComputeURLForDisplay(cluster_visit.normalized_url);
-    if (engagement_score_provider_) {
-      cluster_visit.engagement_score =
-          engagement_score_provider_->GetScore(cluster_visit.normalized_url);
-    }
-
     // For new clusters, asyncly reserve an ID and have the
     //   `OnPersistedClusterIdReceived()` callback add the visits.
     // For clusters created recently for which history service hasn't yet
@@ -305,6 +307,24 @@ void ContextClustererHistoryServiceObserver::OnPersistedClusterIdReceived(
   // This is safe to clear here as the vector should have already been copied to
   // the history DB thread in `AddVisitsToCluster()`.
   cluster_it->second.unpersisted_visits.clear();
+}
+
+history::ClusterVisit
+ContextClustererHistoryServiceObserver::CreateClusterVisit(
+    const std::string& normalized_url,
+    const history::VisitRow& visit_row) {
+  history::ClusterVisit cluster_visit;
+  cluster_visit.annotated_visit.visit_row.visit_id = visit_row.visit_id;
+  cluster_visit.normalized_url = GURL(normalized_url);
+  cluster_visit.url_for_deduping =
+      ComputeURLForDeduping(cluster_visit.normalized_url);
+  cluster_visit.url_for_display =
+      ComputeURLForDisplay(cluster_visit.normalized_url);
+  if (engagement_score_provider_) {
+    cluster_visit.engagement_score =
+        engagement_score_provider_->GetScore(cluster_visit.normalized_url);
+  }
+  return cluster_visit;
 }
 
 void ContextClustererHistoryServiceObserver::OverrideClockForTesting(
