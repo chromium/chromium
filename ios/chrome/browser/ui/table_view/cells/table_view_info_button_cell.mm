@@ -129,11 +129,11 @@ const CGFloat kInfoSymbolSize = 22;
 
     // Set up the constraint assuming that the button is hidden.
     _trailingButtonVisibleConstraint = [textLayoutGuide.trailingAnchor
-        constraintLessThanOrEqualToAnchor:_statusTextLabel.leadingAnchor
+        constraintLessThanOrEqualToAnchor:_trailingButton.leadingAnchor
                                  constant:-kTableViewHorizontalSpacing];
     _trailingButtonHiddenConstraint = [textLayoutGuide.trailingAnchor
-        constraintEqualToAnchor:_trailingButton.trailingAnchor
-                       constant:-kTableViewHorizontalSpacing];
+        constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
+                                 constant:-kTableViewHorizontalSpacing];
 
     // Set up the constraints assuming that the icon image is hidden.
     _iconVisibleConstraint = [textLayoutGuide.leadingAnchor
@@ -202,9 +202,7 @@ const CGFloat kInfoSymbolSize = 22;
       [_trailingButton.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:-kTableViewLargeVerticalSpacing],
-      [textLayoutGuide.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.contentView.trailingAnchor
-                                   constant:-kTableViewHorizontalSpacing],
+      _trailingButtonHiddenConstraint,
     ];
 
     _topPaddingConstraint = [textLayoutGuide.topAnchor
@@ -300,8 +298,17 @@ const CGFloat kInfoSymbolSize = 22;
     self.trailingButtonHiddenConstraint.active = YES;
     self.trailingButtonVisibleConstraint.active = NO;
   } else {
-    self.trailingButtonHiddenConstraint.active = NO;
-    self.trailingButtonVisibleConstraint.active = YES;
+    // In `standardConstraints`, `textLayoutGuide` is constrained to
+    // trailingButton.leadingAnchor. In `accessibilityConstraints`,
+    // trailingButton.leadingAnchor is constrained to contentView.leadingAnchor.
+    // Therefore, if accessibility features are used, we should not activate a
+    // constraint between `textLayoutGuide` and `trailingButton` since this
+    // would mean the textLayoutGuide would be positioned before the
+    // contentView.leadingAnchor.
+    BOOL accessibilityEnabled = UIContentSizeCategoryIsAccessibilityCategory(
+        self.traitCollection.preferredContentSizeCategory);
+    self.trailingButtonHiddenConstraint.active = accessibilityEnabled;
+    self.trailingButtonVisibleConstraint.active = !accessibilityEnabled;
   }
 }
 
