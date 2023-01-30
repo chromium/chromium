@@ -1508,6 +1508,46 @@ void MaybeEmitInputWithEmptyIdAndNameIssue(
   }
 }
 
+bool HasAutocompleteAttribute(const WebElement& element) {
+  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
+  return element.HasAttribute(*kAutocomplete);
+}
+
+void MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
+    const WebFormControlElement& element,
+    uint64_t max_length) {
+  if (HasAutocompleteAttribute(element)) {
+    return;
+  }
+
+  auto ParsedHtmlAttributeValueToAutocompleteHasFieldType =
+      [&max_length](const std::string& attribute_value) {
+        absl::optional<AutocompleteParsingResult>
+            parsed_attribute_to_autocomplete =
+                ParseAutocompleteAttribute(attribute_value, max_length);
+        if (!parsed_attribute_to_autocomplete) {
+          return false;
+        }
+
+        return parsed_attribute_to_autocomplete->field_type !=
+                   HtmlFieldType::kUnspecified &&
+               parsed_attribute_to_autocomplete->field_type !=
+                   HtmlFieldType::kUnrecognized;
+      };
+
+  static base::NoDestructor<WebString> kName("name");
+  if (ParsedHtmlAttributeValueToAutocompleteHasFieldType(
+          element.GetAttribute(*kName).Utf8()) ||
+      ParsedHtmlAttributeValueToAutocompleteHasFieldType(
+          element.GetIdAttribute().Utf8())) {
+    element.GetDocument().GetFrame()->AddGenericIssue(
+        GenericIssueErrorType::
+            kFormInputAssignedAutocompleteValueToIdOrNameAttributeError,
+        element.GetDevToolsNodeId());
+    return;
+  }
+}
+
 // Populates the |form|'s
 //  * FormData::fields
 //  * FormData::child_frames
@@ -1580,6 +1620,8 @@ bool FormOrFieldsetsToFormData(
 
     if (base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
       MaybeEmitInputWithEmptyIdAndNameIssue(control_element);
+      MaybeEmitInputAssignedAutocompleteValueToIdOrNameAttributesIssue(
+          control_element, form->fields.back().max_length);
     }
 
     if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
@@ -1774,11 +1816,6 @@ std::string GetAutocompleteAttribute(const WebElement& element) {
     return "x-max-data-length-exceeded";
   }
   return autocomplete_attribute;
-}
-
-bool HasAutocompleteAttribute(const WebElement& element) {
-  static base::NoDestructor<WebString> kAutocomplete("autocomplete");
-  return element.HasAttribute(*kAutocomplete);
 }
 
 void ValidateAutocompleteAttributeForElement(const WebElement& element) {

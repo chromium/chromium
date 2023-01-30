@@ -749,6 +749,7 @@ experimental domain Audits
       FormAutocompleteAttributeEmptyError
       FormEmptyIdAndNameAttributesForInputError
       FormAriaLabelledByToNonExistingId
+      FormInputAssignedAutocompleteValueToIdOrNameAttributeError
 
   # Depending on the concrete errorType, different properties are set.
   type GenericIssueDetails extends object

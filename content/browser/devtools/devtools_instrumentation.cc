@@ -1737,6 +1737,10 @@ protocol::Audits::GenericIssueErrorType GenericIssueErrorTypeToProtocol(
         kFormAriaLabelledByToNonExistingId:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormAriaLabelledByToNonExistingId;
+    case blink::mojom::GenericIssueErrorType::
+        kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
   }
 }
 

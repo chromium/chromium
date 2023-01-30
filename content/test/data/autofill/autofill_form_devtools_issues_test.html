@@ -6,8 +6,8 @@
   <body>
     <form id="testform" method="post">
       <!-- for attribute associated to an input name. -->
-      <label for="name">I should be associated to an id attribute.</label>
-      <input type="text" name="name" id="input_1">
+      <label for="input_1_name">I should be associated to an id attribute.</label>
+      <input type="text" name="input_1_name" id="input_1">
       <!-- Inputs with duplicated ids. -->
       <input aria-label="I have a label" type="text" id="not_unique_id">
       <input aria-label="I have a label" type="text" id="not_unique_id">
@@ -19,6 +19,8 @@
       <input aria-label="I have a label" type="text">
       <!-- Input to aria-labelledby that does not exist. -->
       <input type="text" id="input_6" aria-labelledby="non-existing-id">
+      <!-- Inputs with autocomplete values assigned to id or name. -->
+      <input aria-label="I have a label" type="text" id="given-name">
     </form>
   </body>
 </html>
