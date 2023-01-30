@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_mediator.h"

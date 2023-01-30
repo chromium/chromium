@@ -6,27 +6,16 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@class BookmarksEditorViewController;
 class Browser;
 @protocol SnackbarCommands;
 
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
-
-@protocol BookmarksEditorViewControllerDelegate
-
-// Called when the controller should be dismissed.
-- (void)bookmarkEditorWantsDismissal:(BookmarksEditorViewController*)controller;
-
-// Called when the controller is going to commit the title or URL change.
-- (void)bookmarkEditorWillCommitTitleOrUrlChange:
-    (BookmarksEditorViewController*)controller;
-
-@end
 
 // View controller for editing bookmarks. Allows editing of the title, URL and
 // the parent folder of the bookmark.

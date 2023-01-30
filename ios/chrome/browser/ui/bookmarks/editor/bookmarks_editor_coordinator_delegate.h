@@ -10,8 +10,12 @@
 // Delegate for BookmarksEditorCoordinator.
 @protocol BookmarksEditorCoordinatorDelegate <NSObject>
 
-// Called when the coordinator needs to be stopped.
+// Called when the coordinator editor is done editing.
 - (void)bookmarksEditorCoordinatorShouldStop:
+    (BookmarksEditorCoordinator*)coordinator;
+
+// Called when the editor is going to commit the title or URL change.
+- (void)bookmarkEditorWillCommitTitleOrURLChange:
     (BookmarksEditorCoordinator*)coordinator;
 
 @end

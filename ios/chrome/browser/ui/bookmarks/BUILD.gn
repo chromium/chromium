@@ -7,8 +7,6 @@ source_set("bookmarks") {
   sources = [
     "bookmark_navigation_controller.h",
     "bookmark_navigation_controller.mm",
-    "bookmark_navigation_controller_delegate.h",
-    "bookmark_navigation_controller_delegate.mm",
     "bookmark_promo_controller.h",
     "bookmark_promo_controller.mm",
     "bookmarks_coordinator.h",
@@ -67,6 +65,8 @@ source_set("core") {
   sources = [
     "bookmark_mediator.h",
     "bookmark_mediator.mm",
+    "bookmark_navigation_controller_delegate.h",
+    "bookmark_navigation_controller_delegate.mm",
     "bookmark_path_cache.h",
     "bookmark_path_cache.mm",
     "bookmark_utils_ios.h",
@@ -77,6 +77,7 @@ source_set("core") {
     "undo_manager_wrapper.mm",
   ]
   deps = [
+    "//base",
     "//components/bookmarks/browser",
     "//components/pref_registry",
     "//components/prefs",
@@ -90,6 +91,8 @@ source_set("core") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/ui/default_promo:utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:url_with_title",
     "//ios/chrome/browser/undo",

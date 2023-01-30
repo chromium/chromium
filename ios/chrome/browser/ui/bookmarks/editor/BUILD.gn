@@ -8,8 +8,25 @@ source_set("editor") {
     "bookmarks_editor_coordinator.h",
     "bookmarks_editor_coordinator.mm",
     "bookmarks_editor_coordinator_delegate.h",
+  ]
+  deps = [
+    ":editor_ui",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/bookmarks/folder_chooser",
+    "//ios/chrome/browser/ui/bookmarks/folder_editor",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/table_view",
+    "//url",
+  ]
+}
+
+source_set("editor_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
     "bookmarks_editor_view_controller.h",
     "bookmarks_editor_view_controller.mm",
+    "bookmarks_editor_view_controller_delegate.h",
   ]
   deps = [
     "//base",
@@ -48,7 +65,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "bookmarks_editor_view_controller_unittest.mm" ]
   deps = [
-    ":editor",
+    ":editor_ui",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",

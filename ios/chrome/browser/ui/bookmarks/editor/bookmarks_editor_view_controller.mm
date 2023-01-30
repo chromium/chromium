@@ -322,7 +322,7 @@ const CGFloat kEstimatedTableSectionFooterHeight = 40;
       (self.bookmark->GetTitle() !=
            base::SysNSStringToUTF16([self inputBookmarkName]) ||
        self.bookmark->url() != url)) {
-    [self.delegate bookmarkEditorWillCommitTitleOrUrlChange:self];
+    [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
   }
 
   [self.snackbarCommandsHandler

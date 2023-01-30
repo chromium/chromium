@@ -7,13 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller_delegate.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-class GURL;
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
+
+@protocol SnackbarCommands;
+@protocol BookmarksEditorCoordinatorDelegate;
 
 // Coordinator to edit a bookmark based on an bookmark node or on an URL.
 @interface BookmarksEditorCoordinator : ChromeCoordinator
@@ -26,15 +28,14 @@ class BookmarkNode;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                       node:(const bookmarks::BookmarkNode*)node
-    NS_DESIGNATED_INITIALIZER;
-// Initializes BookmarksEditorCoordinator. Edits the first bookmark node
-// pointing to `URL`.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                                       URL:(const GURL&)URL
+                   snackbarCommandsHandler:
+                       (id<SnackbarCommands>)snackbarCommandsHandler
     NS_DESIGNATED_INITIALIZER;
 
 @property(nonatomic, weak) id<BookmarksEditorCoordinatorDelegate> delegate;
+
+// Whether the dismissal is animated.
+@property(nonatomic, assign) BOOL animatedDismissal;
 
 @end
 

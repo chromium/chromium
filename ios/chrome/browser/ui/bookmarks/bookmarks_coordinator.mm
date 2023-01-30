@@ -28,7 +28,8 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_view_controller.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator.h"
+#import "ios/chrome/browser/ui/bookmarks/editor/bookmarks_editor_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_chooser/bookmarks_folder_chooser_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/folder_editor/bookmarks_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/home/bookmarks_home_view_controller.h"
@@ -69,7 +70,7 @@ enum class PresentedState {
 }  // namespace
 
 @interface BookmarksCoordinator () <
-    BookmarksEditorViewControllerDelegate,
+    BookmarksEditorCoordinatorDelegate,
     BookmarksFolderEditorViewControllerDelegate,
     BookmarksFolderChooserViewControllerDelegate,
     BookmarksHomeViewControllerDelegate> {
@@ -90,9 +91,14 @@ enum class PresentedState {
 // The type of view controller that is being presented.
 @property(nonatomic, assign) PresentedState currentPresentedState;
 
+// A reference to the potentially presented single bookmark editor. This will
+// be non-nil when `currentPresentedState` is BOOKMARK_EDITOR.
+@property(nonatomic, strong)
+    BookmarksEditorCoordinator* bookmarkEditorCoordinator;
+
 // The navigation controller that is being presented, if any.
-// `self.bookmarkBrowser`, `self.bookmarkEditor`, and `self.folderEditor` are
-// children of this navigation controller.
+// `self.bookmarkBrowser`, `bookmarkEditorCoordinator`, and `self.folderEditor`
+// are children of this navigation controller.
 @property(nonatomic, strong)
     UINavigationController* bookmarkNavigationController;
 
@@ -106,10 +112,6 @@ enum class PresentedState {
 // A reference to the potentially presented bookmark browser. This will be
 // non-nil when `currentPresentedState` is BOOKMARK_BROWSER.
 @property(nonatomic, strong) BookmarksHomeViewController* bookmarkBrowser;
-
-// A reference to the potentially presented single bookmark editor. This will be
-// non-nil when `currentPresentedState` is BOOKMARK_EDITOR.
-@property(nonatomic, strong) BookmarksEditorViewController* bookmarkEditor;
 
 // A reference to the potentially presented folder editor. This will be non-nil
 // when `currentPresentedState` is FOLDER_EDITOR.
@@ -153,7 +155,6 @@ enum class PresentedState {
 @synthesize snackbarCommandsHandler = _snackbarCommandsHandler;
 @synthesize baseViewController = _baseViewController;
 @synthesize bookmarkBrowser = _bookmarkBrowser;
-@synthesize bookmarkEditor = _bookmarkEditor;
 @synthesize bookmarkModel = _bookmarkModel;
 @synthesize bookmarkNavigationController = _bookmarkNavigationController;
 @synthesize bookmarkNavigationControllerDelegate =
@@ -194,9 +195,9 @@ enum class PresentedState {
   [_bookmarkBrowser shutdown];
   _bookmarkBrowser = nil;
 
-  _bookmarkEditor.delegate = nil;
-  [_bookmarkEditor shutdown];
-  _bookmarkEditor = nil;
+  _bookmarkEditorCoordinator.delegate = nil;
+  [_bookmarkEditorCoordinator stop];
+  _bookmarkEditorCoordinator = nil;
 }
 
 - (id<ApplicationCommands>)applicationCommandsHandler {
@@ -309,15 +310,15 @@ enum class PresentedState {
   [self dismissSnackbar];
 
   self.currentPresentedState = PresentedState::BOOKMARK_EDITOR;
-  BookmarksEditorViewController* bookmarkEditor =
-      [[BookmarksEditorViewController alloc] initWithBookmark:node
-                                                      browser:_browser];
-  bookmarkEditor.delegate = self;
-  bookmarkEditor.snackbarCommandsHandler = self.snackbarCommandsHandler;
-  self.bookmarkEditor = bookmarkEditor;
-
-  [self presentTableViewController:bookmarkEditor
-      withReplacementViewControllers:nil];
+  BookmarksEditorCoordinator* bookmarkEditorCoordinator =
+      [[BookmarksEditorCoordinator alloc]
+          initWithBaseViewController:self.baseViewController
+                             browser:_browser
+                                node:node
+             snackbarCommandsHandler:self.snackbarCommandsHandler];
+  bookmarkEditorCoordinator.delegate = self;
+  _bookmarkEditorCoordinator = bookmarkEditorCoordinator;
+  [bookmarkEditorCoordinator start];
 }
 
 - (void)presentEditorForFolderNode:(const bookmarks::BookmarkNode*)node {
@@ -403,15 +404,11 @@ enum class PresentedState {
   if (self.currentPresentedState != PresentedState::BOOKMARK_EDITOR) {
     return;
   }
-  DCHECK(self.bookmarkNavigationController);
 
-  self.bookmarkEditor.delegate = nil;
-  self.bookmarkEditor = nil;
-  [self.bookmarkNavigationController
-      dismissViewControllerAnimated:animated
-                         completion:^{
-                           self.bookmarkNavigationController = nil;
-                         }];
+  self.bookmarkEditorCoordinator.animatedDismissal = animated;
+  [self.bookmarkEditorCoordinator stop];
+  self.bookmarkEditorCoordinator.delegate = nil;
+  self.bookmarkEditorCoordinator = nil;
   self.currentPresentedState = PresentedState::NONE;
 }
 
@@ -463,15 +460,15 @@ enum class PresentedState {
           bookmark_utils_ios::kBookmarksSnackbarCategory];
 }
 
-#pragma mark - BookmarksEditorViewControllerDelegate
+#pragma mark - BookmarksEditorCoordinatorDelegate
 
-- (void)bookmarkEditorWantsDismissal:
-    (BookmarksEditorViewController*)controller {
+- (void)bookmarksEditorCoordinatorShouldStop:
+    (BookmarksEditorCoordinator*)coordinator {
   [self dismissBookmarkEditorAnimated:YES];
 }
 
-- (void)bookmarkEditorWillCommitTitleOrUrlChange:
-    (BookmarksEditorViewController*)controller {
+- (void)bookmarkEditorWillCommitTitleOrURLChange:
+    (BookmarksEditorCoordinator*)coordinator {
   [self.delegate bookmarksCoordinatorWillCommitTitleOrURLChange:self];
 }
 
