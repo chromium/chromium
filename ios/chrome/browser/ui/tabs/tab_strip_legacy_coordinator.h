@@ -26,6 +26,10 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// The base view controller for this coordinator. This is required because the
+// TabStripLegacyCoordinator is instantiated before the BrowserViewController.
+@property(nonatomic, weak, readwrite) UIViewController* baseViewController;
+
 // Delegate for the long press gesture recognizer triggering popup menu.
 @property(nonatomic, weak) id<PopupMenuLongPressDelegate> longPressDelegate;
 

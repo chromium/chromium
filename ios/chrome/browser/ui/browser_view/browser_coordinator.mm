@@ -831,6 +831,7 @@ enum class ToolbarKind {
   _primaryToolbarCoordinator.popupPresenterDelegate = self.viewController;
   [_primaryToolbarCoordinator start];
 
+  _legacyTabStripCoordinator.baseViewController = self.viewController;
   _NTPCoordinator.baseViewController = self.viewController;
 
   [_dispatcher startDispatchingToTarget:self.viewController

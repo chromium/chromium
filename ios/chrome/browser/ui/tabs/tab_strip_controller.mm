@@ -16,7 +16,9 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
@@ -24,12 +26,16 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/commands/popup_menu_commands.h"
+#import "ios/chrome/browser/ui/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
@@ -38,6 +44,7 @@
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_long_press_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_constants.h"
 #import "ios/chrome/browser/ui/tabs/requirements/tab_strip_presentation.h"
 #import "ios/chrome/browser/ui/tabs/tab_strip_constants.h"
@@ -284,9 +291,16 @@ const CGFloat kSymbolSize = 18;
 // YES if the controller has been disconnected.
 @property(nonatomic) BOOL disconnected;
 
+// The base view controller from which to present UI.
+@property(nonatomic, readwrite, weak) UIViewController* baseViewController;
+
 // Provider of context menu configurations.
 @property(nonatomic, strong) id<TabStripContextMenuProvider>
     contextMenuProvider;
+
+// Coordinator that manages the various pieces of UI used to create, remove and
+// edit a bookmark.
+@property(nonatomic, strong) BookmarksCoordinator* bookmarksCoordinator;
 
 // If set to `YES`, tabs at either end of the tabstrip are "collapsed" into a
 // stack, such that the visible width of the tabstrip is constant.  If set to
@@ -448,12 +462,14 @@ const CGFloat kSymbolSize = 18;
 @synthesize animationWaitDuration = _animationWaitDuration;
 @synthesize panGestureHandler = _panGestureHandler;
 
-- (instancetype)initWithBrowser:(Browser*)browser style:(TabStripStyle)style {
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                     style:(TabStripStyle)style {
   if ((self = [super init])) {
     _tabArray = [[NSMutableArray alloc] initWithCapacity:10];
     _closingTabs = [[NSMutableSet alloc] initWithCapacity:5];
     DCHECK(browser);
-
+    _baseViewController = baseViewController;
     _browser = browser;
     _webStateList = _browser->GetWebStateList();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
@@ -494,9 +510,14 @@ const CGFloat kSymbolSize = 18;
     [_view addSubview:_tabStripView];
     _view.tabStripView = _tabStripView;
 
-    _contextMenuProvider =
-        [[TabStripContextMenuHelper alloc] initWithBrowser:_browser
-                               tabStripContextMenuDelegate:self];
+    if (IsTabStripContextMenuEnabled()) {
+      _contextMenuProvider =
+          [[TabStripContextMenuHelper alloc] initWithBrowser:_browser
+                                 tabStripContextMenuDelegate:self];
+      _bookmarksCoordinator =
+          [[BookmarksCoordinator alloc] initWithBrowser:_browser];
+      _bookmarksCoordinator.baseViewController = _baseViewController;
+    }
 
     // `self.buttonNewTab` setup.
     CGRect buttonNewTabFrame = tabStripFrame;
@@ -571,10 +592,16 @@ const CGFloat kSymbolSize = 18;
 - (void)disconnect {
   [_tabStripView setDelegate:nil];
   [_tabStripView setLayoutDelegate:nil];
+
+  self.presentationProvider = nil;
+  self.baseViewController = nil;
+  self.bookmarksCoordinator = nil;
+
   _allWebStateObservationForwarder.reset();
   _webStateListFaviconObserver.reset();
   _webStateList->RemoveObserver(_webStateListObserver.get());
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   self.disconnected = YES;
 }
 
@@ -892,27 +919,49 @@ const CGFloat kSymbolSize = 18;
 #pragma mark - TabStripContextMenuDelegate
 
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
-  // TODO(crbug.com/1409893): Implement this.
+  ReadingListAddCommand* command =
+      [[ReadingListAddCommand alloc] initWithURL:URL title:title];
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
+  // protocol clean up.
+  id<BrowserCommands> readingListAdder =
+      static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
+  [readingListAdder addToReadingList:command];
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {
-  // TODO(crbug.com/1409893): Implement this.
+  bookmarks::BookmarkModel* bookmarkModel =
+      ios::BookmarkModelFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+  bool currentlyBookmarked =
+      bookmarkModel && bookmarkModel->GetMostRecentlyAddedUserNodeForURL(URL);
+
+  if (currentlyBookmarked) {
+    [self editBookmarkWithURL:URL];
+  } else {
+    [self.bookmarksCoordinator bookmarkURL:URL title:title];
+  }
 }
 
 - (void)editBookmarkWithURL:(const GURL&)URL {
-  // TODO(crbug.com/1409893): Implement this.
+  [self.bookmarksCoordinator presentBookmarkEditorForURL:URL];
 }
 
 - (void)pinTabWithIdentifier:(NSString*)identifier {
-  // TODO(crbug.com/1409893): Implement this.
+  SetWebStatePinnedState(_webStateList, identifier, YES);
 }
 
 - (void)unpinTabWithIdentifier:(NSString*)identifier {
-  // TODO(crbug.com/1409893): Implement this.
+  SetWebStatePinnedState(_webStateList, identifier, NO);
 }
 
 - (void)closeTabWithIdentifier:(NSString*)identifier {
-  // TODO(crbug.com/1409893): Implement this.
+  for (int index = 0; index < static_cast<int>(_tabArray.count); ++index) {
+    web::WebState* web_state = _webStateList->GetWebStateAt(index);
+    if ([identifier isEqualToString:web_state->GetStableIdentifier()]) {
+      _webStateList->CloseWebStateAt(index, WebStateList::CLOSE_USER_ACTION);
+      return;
+    }
+  }
 }
 
 #pragma mark - Tab Drag and Drop methods

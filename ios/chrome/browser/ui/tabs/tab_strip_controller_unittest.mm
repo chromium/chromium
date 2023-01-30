@@ -69,8 +69,10 @@ class TabStripControllerTest : public PlatformTest {
 
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
 
-    controller_ = [[TabStripController alloc] initWithBrowser:browser_.get()
-                                                        style:NORMAL];
+    controller_ =
+        [[TabStripController alloc] initWithBaseViewController:nil
+                                                       browser:browser_.get()
+                                                         style:NORMAL];
   }
 
   void TearDown() override {

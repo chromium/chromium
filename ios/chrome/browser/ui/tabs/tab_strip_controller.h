@@ -42,9 +42,11 @@ class Browser;
 // it needs to be run in sync with BVC.
 @property(nonatomic, readonly, strong) id<ViewRevealingAnimatee> animatee;
 
-// Designated initializer, `dispatcher` is not retained.
-- (instancetype)initWithBrowser:(Browser*)browser
-                          style:(TabStripStyle)style NS_DESIGNATED_INITIALIZER;
+// Designated initializer.
+- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
+                                   browser:(Browser*)browser
+                                     style:(TabStripStyle)style
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

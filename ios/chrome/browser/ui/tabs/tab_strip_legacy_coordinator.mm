@@ -26,6 +26,7 @@
 @synthesize started = _started;
 @synthesize tabStripController = _tabStripController;
 @synthesize animationWaitDuration = _animationWaitDuration;
+@synthesize baseViewController = _baseViewController;
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   DCHECK(browser);
@@ -81,8 +82,10 @@
   DCHECK(self.presentationProvider);
   TabStripStyle style =
       self.browser->GetBrowserState()->IsOffTheRecord() ? INCOGNITO : NORMAL;
-  self.tabStripController =
-      [[TabStripController alloc] initWithBrowser:self.browser style:style];
+  self.tabStripController = [[TabStripController alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                           style:style];
   self.tabStripController.presentationProvider = self.presentationProvider;
   self.tabStripController.animationWaitDuration = self.animationWaitDuration;
   self.tabStripController.longPressDelegate = self.longPressDelegate;
