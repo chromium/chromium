@@ -101,7 +101,9 @@ ACTION_P(PopulateSearchItems, items) {
   result.reserve(items.size());
   for (const DriveItem& item : items) {
     QueryItemPtr p = QueryItem::New();
-    p->path = item.path;
+    // Paths must be parented at "/root" to be considered for space
+    // calculations.
+    p->path = item.path.empty() ? base::FilePath("/root/file.txt") : item.path;
     p->metadata = MakeMetadata(item);
     result.push_back(std::move(p));
   }

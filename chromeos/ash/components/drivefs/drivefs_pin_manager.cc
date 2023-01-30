@@ -219,6 +219,13 @@ bool CanPinItem(const mojom::FileMetadata& md, const base::FilePath& path) {
     return false;
   }
 
+  // TODO(b/266037569): Setting root in the query made to DriveFS is currently
+  // unsupported.
+  if (!base::FilePath("/root").IsParent(path)) {
+    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
+    return false;
+  }
+
   return true;
 }
 
