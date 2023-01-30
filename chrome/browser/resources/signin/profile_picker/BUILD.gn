@@ -69,10 +69,7 @@ build_webui("build") {
       "profile_picker.js",
       "lazy_load.js",
     ]
-    optimize_webui_excludes = [
-      "chrome://resources/js/cr.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-    ]
+    optimize_webui_excludes =
+        [ "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js" ]
   }
 }

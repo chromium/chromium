@@ -53,9 +53,5 @@ build_webui("build") {
   if (optimize) {
     optimize_webui_host = "downloads"
     optimize_webui_in_files = [ "downloads.js" ]
-    optimize_webui_excludes = [
-      "chrome://resources/js/cr.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-    ]
   }
 }

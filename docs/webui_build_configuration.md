@@ -459,9 +459,9 @@ optimize: Specifies whether any optimization steps will be used, defaults to
           false. When true, html_to_wrapper() and css_to_wrapper() will be
           invoked with the |minify| flag on, to minify HTML/CSS code.
           optimize_webui() will be invoked to bundle+minify JS code (using
-          Rollup and Terser). All other |optimize_*| parameters below must be
-          specified if |optimize| is true.
-optimize_webui_excludes: See |excludes| in optimize_webui().
+          Rollup and Terser). |optimize_webui_host| and
+          |optimize_webui_in_files| must be specified if |optimize| is true.
+optimize_webui_excludes: See |excludes| in optimize_webui(). Optional.
 optimize_webui_host: See |host| in optimize_webui().
 optimize_webui_in_files: See |in_files| in optimize_webui().
 

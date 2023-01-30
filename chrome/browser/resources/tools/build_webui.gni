@@ -241,7 +241,9 @@ template("build_webui") {
       input = rebase_path(tsc_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
       out_manifest = "$target_gen_dir/$bundle_manifest"
-      excludes = invoker.optimize_webui_excludes
+      if (defined(invoker.optimize_webui_excludes)) {
+        excludes = invoker.optimize_webui_excludes
+      }
 
       deps = [ ":build_ts" ]
     }

@@ -59,7 +59,6 @@ if (optimize_webui) {
       # Exclude pdf_scripting_api so that Print Preview can import
       # pdfCreateOutOfProcessPlugin without importing the entire PDF bundle.
       "pdf_scripting_api.js",
-      "chrome://resources/js/cr.js",
     ]
     if (enable_ink) {
       excludes += [
@@ -80,10 +79,7 @@ optimize_webui("build_internal_plugin") {
   out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
 
   deps = [ ":build_ts" ]
-  excludes = [
-    "browser_api.js",
-    "chrome://resources/js/cr.js",
-  ]
+  excludes = [ "browser_api.js" ]
 }
 
 if (optimize_webui) {

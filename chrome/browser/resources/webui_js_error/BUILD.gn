@@ -19,6 +19,5 @@ build_webui("build") {
   if (optimize) {
     optimize_webui_host = "webuijserror"
     optimize_webui_in_files = [ "webui_js_error.js" ]
-    optimize_webui_excludes = []
   }
 }
