@@ -48,11 +48,9 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // |context_origin| is the source origin for `kSource` or the destination
   // origin for `kAttribution`.
   // |reporting_origin| is the reporting origin of the impression/conversion.
-  // |time| is the time of either the source registration or the attribution
-  // trigger, depending on |scope|.
-  // |expiry_time| is only meaningful when |scope| is
-  // `RateLimitTable::Scope::kSource` and contains the source's expiry time,
-  // otherwise it is set to `base::Time()`.
+  // |time| is the time of the source registration.
+  // |source_expiry_or_attribution_time| is either the source's expiry time or
+  // the attribution time, depending on |scope|.
   static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE rate_limits("
       "id INTEGER PRIMARY KEY NOT NULL,"
@@ -63,7 +61,7 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "context_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
-      "expiry_time INTEGER NOT NULL)";
+      "source_expiry_or_attribution_time INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql)) {
     return false;
   }
@@ -106,19 +104,19 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
                                            const StoredSource& source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, Scope::kSource, source);
+  return AddRateLimit(db, source, /*trigger_time=*/absl::nullopt);
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
     sql::Database* db,
     const AttributionInfo& attribution_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AddRateLimit(db, Scope::kAttribution, attribution_info.source);
+  return AddRateLimit(db, attribution_info.source, attribution_info.time);
 }
 
 bool RateLimitTable::AddRateLimit(sql::Database* db,
-                                  Scope scope,
-                                  const StoredSource& source) {
+                                  const StoredSource& source,
+                                  absl::optional<base::Time> trigger_time) {
   const CommonSourceInfo& common_info = source.common_info();
 
   // Only delete expired rate limits periodically to avoid excessive DB
@@ -134,23 +132,23 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
     last_cleared_ = now;
   }
 
+  Scope scope;
   const attribution_reporting::SuitableOrigin* context_origin;
-  base::Time expiry_time;
-  switch (scope) {
-    case Scope::kSource:
-      context_origin = &common_info.source_origin();
-      expiry_time = common_info.expiry_time();
-      break;
-    case Scope::kAttribution:
-      context_origin = &common_info.destination_origin();
-      expiry_time = base::Time();
-      break;
+  base::Time source_expiry_or_attribution_time;
+  if (trigger_time.has_value()) {
+    scope = Scope::kAttribution;
+    context_origin = &common_info.destination_origin();
+    source_expiry_or_attribution_time = *trigger_time;
+  } else {
+    scope = Scope::kSource;
+    context_origin = &common_info.source_origin();
+    source_expiry_or_attribution_time = common_info.expiry_time();
   }
 
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
-      "(scope,source_id,source_site,"
-      "destination_site,context_origin,reporting_origin,time,expiry_time)"
+      "(scope,source_id,source_site,destination_site,context_origin,"
+      "reporting_origin,time,source_expiry_or_attribution_time)"
       "VALUES(?,?,?,?,?,?,?,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
@@ -161,7 +159,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
   statement.BindString(4, context_origin->Serialize());
   statement.BindString(5, common_info.reporting_origin().Serialize());
   statement.BindTime(6, common_info.source_time());
-  statement.BindTime(7, expiry_time);
+  statement.BindTime(7, source_expiry_or_attribution_time);
 
   return statement.Run();
 }
@@ -218,7 +216,8 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
                 "update `scope=0` query below");
 
   // Check the number of unique destinations covered by all source registrations
-  // whose [source_time, expiry_time] intersect with the current source_time.
+  // whose [source_time, source_expiry_or_attribution_time] intersect with the
+  // current source_time.
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kRateLimitSourceAllowedSql));
 
@@ -324,6 +323,7 @@ bool RateLimitTable::ClearAllDataInRange(sql::Database* db,
   DCHECK(!((delete_begin.is_null() || delete_begin.is_min()) &&
            delete_end.is_max()));
 
+  // TODO(linnan): Optimize using a more appropriate index.
   sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kDeleteRateLimitRangeSql));
   statement.BindTime(0, delete_begin);
@@ -359,6 +359,7 @@ bool RateLimitTable::ClearDataForOriginsInRange(
     return false;
   }
 
+  // TODO(linnan): Optimize using a more appropriate index.
   sql::Statement select_statement(db->GetCachedStatement(
       SQL_FROM_HERE, attribution_queries::kSelectRateLimitsForDeletionSql));
   select_statement.BindTime(0, delete_begin);

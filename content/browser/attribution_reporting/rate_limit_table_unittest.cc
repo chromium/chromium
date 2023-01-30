@@ -47,6 +47,8 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::SizeIs;
 
+constexpr base::TimeDelta kExpiry = base::Milliseconds(30);
+
 struct RateLimitInput {
   template <typename... Args>
   static RateLimitInput Source(Args&&... args) {
@@ -63,13 +65,15 @@ struct RateLimitInput {
                  std::string destination_origin,
                  std::string reporting_origin,
                  base::Time time,
-                 base::TimeDelta source_expiry = base::Milliseconds(30))
+                 base::TimeDelta source_expiry = kExpiry,
+                 absl::optional<base::Time> attribution_time = absl::nullopt)
       : scope(scope),
         source_origin(std::move(source_origin)),
         destination_origin(std::move(destination_origin)),
         reporting_origin(std::move(reporting_origin)),
         time(time),
-        source_expiry(source_expiry) {}
+        source_expiry(source_expiry),
+        attribution_time(attribution_time) {}
 
   RateLimitScope scope;
   std::string source_origin;
@@ -77,6 +81,7 @@ struct RateLimitInput {
   std::string reporting_origin;
   base::Time time;
   base::TimeDelta source_expiry;
+  absl::optional<base::Time> attribution_time;
 
   SourceBuilder NewSourceBuilder() const {
     // Ensure that operations involving attributions use the trigger time, not
@@ -95,7 +100,9 @@ struct RateLimitInput {
   AttributionInfo BuildAttributionInfo() const {
     CHECK_EQ(scope, RateLimitScope::kAttribution);
     auto source = NewSourceBuilder().BuildStored();
-    return AttributionInfoBuilder(std::move(source)).SetTime(time).Build();
+    return AttributionInfoBuilder(std::move(source))
+        .SetTime(attribution_time.value_or(time))
+        .Build();
   }
 };
 
@@ -115,13 +122,15 @@ struct RateLimitRow {
                std::string destination_site,
                std::string reporting_origin,
                std::string context_origin,
-               base::Time time)
+               base::Time time,
+               base::Time source_expiry_or_attribution_time)
       : scope(scope),
         source_site(std::move(source_site)),
         destination_site(std::move(destination_site)),
         reporting_origin(std::move(reporting_origin)),
         context_origin(std::move(context_origin)),
-        time(time) {}
+        time(time),
+        source_expiry_or_attribution_time(source_expiry_or_attribution_time) {}
 
   RateLimitScope scope;
   std::string source_site;
@@ -129,12 +138,14 @@ struct RateLimitRow {
   std::string reporting_origin;
   std::string context_origin;
   base::Time time;
+  base::Time source_expiry_or_attribution_time;
 };
 
 bool operator==(const RateLimitRow& a, const RateLimitRow& b) {
   const auto tie = [](const RateLimitRow& row) {
     return std::make_tuple(row.scope, row.source_site, row.destination_site,
-                           row.reporting_origin, row.context_origin, row.time);
+                           row.reporting_origin, row.context_origin, row.time,
+                           row.source_expiry_or_attribution_time);
   };
   return tie(a) == tie(b);
 }
@@ -151,13 +162,15 @@ std::ostream& operator<<(std::ostream& out, const RateLimitScope scope) {
 std::ostream& operator<<(std::ostream& out, const RateLimitInput& i) {
   return out << "{" << i.scope << "," << i.source_origin << ","
              << i.destination_origin << "," << i.reporting_origin << ","
-             << "," << i.time << "," << i.source_expiry << "}";
+             << "," << i.time << "," << i.source_expiry << ","
+             << i.attribution_time.value_or(base::Time()) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const RateLimitRow& row) {
   return out << "{" << row.scope << "," << row.source_site << ","
              << row.destination_site << "," << row.reporting_origin << ","
-             << row.context_origin << "," << row.time << "}";
+             << row.context_origin << "," << row.time << ","
+             << row.source_expiry_or_attribution_time << "}";
 }
 
 class RateLimitTableTest : public testing::Test {
@@ -175,7 +188,8 @@ class RateLimitTableTest : public testing::Test {
 
     static constexpr char kSelectSql[] =
         "SELECT id,scope,source_site,destination_site,"
-        "reporting_origin,context_origin,time FROM rate_limits";
+        "reporting_origin,context_origin,time,"
+        "source_expiry_or_attribution_time FROM rate_limits";
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
 
     while (statement.Step()) {
@@ -186,7 +200,7 @@ class RateLimitTableTest : public testing::Test {
                        /*destination_site=*/statement.ColumnString(3),
                        /*reporting_origin=*/statement.ColumnString(4),
                        /*context_origin=*/statement.ColumnString(5),
-                       statement.ColumnTime(6)));
+                       statement.ColumnTime(6), statement.ColumnTime(7)));
     }
 
     EXPECT_TRUE(statement.Succeeded());
@@ -583,7 +597,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
       },
       {
           "no deletions: no rows in time range",
-          now + base::Days(1) + base::Milliseconds(1),
+          now + base::Days(1) + base::Milliseconds(11),
           base::Time::Max(),
           base::NullCallback(),
           {},
@@ -609,21 +623,40 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
           {},
       },
       {
-          "1 deletion: time range and filter match for reporting origin",
+          "2 deletions: time range and filter match for reporting origin",
           now + base::Milliseconds(1),
-          base::Time::Max(),
+          now + base::Days(1) + base::Milliseconds(5),
           base::BindRepeating([](const blink::StorageKey& storage_key) {
             return storage_key == blink::StorageKey::CreateFromStringForTesting(
                                       "https://c.r.test");
           }),
-          {3},
+          {3, 5},
       },
       {
-          "4 deletions: null filter matches everything",
+          "6 deletions: null filter matches everything",
           now,
           base::Time::Max(),
           base::NullCallback(),
-          {1, 2, 3, 4},
+          {1, 2, 3, 4, 5, 6},
+      },
+      {
+          "1 deletion: attribution time range and filter match for reporting "
+          "origin"
+          "origin",
+          now + base::Days(1) + base::Milliseconds(5),
+          now + base::Days(1) + base::Milliseconds(10),
+          base::BindRepeating([](const blink::StorageKey& storage_key) {
+            return storage_key == blink::StorageKey::CreateFromStringForTesting(
+                                      "https://c.r.test");
+          }),
+          {5},
+      },
+      {
+          "2 deletions: attribution time range and null filter",
+          now + base::Days(1) + base::Milliseconds(5),
+          now + base::Days(1) + base::Milliseconds(10),
+          base::NullCallback(),
+          {5, 6},
       },
   };
 
@@ -639,6 +672,14 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
                                      "https://c.r.test", now + base::Days(1))},
         {4, RateLimitInput::Source("https://b.s1.test", "https://b.d1.test",
                                    "https://d.r.test", now + base::Days(1))},
+        {5, RateLimitInput::Attribution(
+                "https://a.s1.test", "https://a.d1.test", "https://c.r.test",
+                now + base::Days(1), kExpiry,
+                now + base::Days(1) + base::Milliseconds(10))},
+        {6, RateLimitInput::Attribution(
+                "https://a.s1.test", "https://a.d1.test", "https://d.r.test",
+                now + base::Days(1), kExpiry,
+                now + base::Days(1) + base::Milliseconds(10))},
     };
 
     for (const auto& [key, input] : inputs) {
@@ -655,18 +696,28 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
     base::flat_map<int64_t, RateLimitRow> rows = {
         {1, RateLimitRow::Attribution("https://s1.test", "https://d1.test",
                                       "https://a.r.test", "https://a.d1.test",
-                                      now)},
+                                      now, now)},
         {2, RateLimitRow::Source("https://s1.test", "https://d1.test",
-                                 "https://b.r.test", "https://b.s1.test", now)},
-        {3, RateLimitRow::Attribution("https://s1.test", "https://d1.test",
-                                      "https://c.r.test", "https://a.d1.test",
-                                      now + base::Days(1))},
+                                 "https://b.r.test", "https://b.s1.test", now,
+                                 now + kExpiry)},
+        {3, RateLimitRow::Attribution(
+                "https://s1.test", "https://d1.test", "https://c.r.test",
+                "https://a.d1.test", now + base::Days(1), now + base::Days(1))},
         {4, RateLimitRow::Source("https://s1.test", "https://d1.test",
                                  "https://d.r.test", "https://b.s1.test",
-                                 now + base::Days(1))},
+                                 now + base::Days(1),
+                                 now + base::Days(1) + kExpiry)},
+        {5, RateLimitRow::Attribution(
+                "https://s1.test", "https://d1.test", "https://c.r.test",
+                "https://a.d1.test", now + base::Days(1),
+                now + base::Days(1) + base::Milliseconds(10))},
+        {6, RateLimitRow::Attribution(
+                "https://s1.test", "https://d1.test", "https://d.r.test",
+                "https://a.d1.test", now + base::Days(1),
+                now + base::Days(1) + base::Milliseconds(10))},
     };
 
-    ASSERT_EQ(GetRateLimitRows(), rows);
+    ASSERT_EQ(GetRateLimitRows(), rows) << test_case.desc;
 
     ASSERT_TRUE(table_.ClearDataForOriginsInRange(
         &db_, test_case.delete_min, test_case.delete_max, test_case.filter))

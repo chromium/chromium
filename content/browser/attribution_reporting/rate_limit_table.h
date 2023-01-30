@@ -15,6 +15,7 @@
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 class Database;
@@ -98,8 +99,8 @@ class CONTENT_EXPORT RateLimitTable {
 
  private:
   [[nodiscard]] bool AddRateLimit(sql::Database* db,
-                                  Scope scope,
-                                  const StoredSource& source)
+                                  const StoredSource& source,
+                                  absl::optional<base::Time> trigger_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   [[nodiscard]] RateLimitResult AllowedForReportingOriginLimit(

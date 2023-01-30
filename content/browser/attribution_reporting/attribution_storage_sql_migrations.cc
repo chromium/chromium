@@ -583,6 +583,34 @@ bool MigrateToVersion42(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion43(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // `MigrateToVersion34`.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  static constexpr char kRenameExpiryTimeSql[] =
+      "ALTER TABLE rate_limits "
+      "RENAME COLUMN expiry_time TO source_expiry_or_attribution_time";
+  if (!db->Execute(kRenameExpiryTimeSql)) {
+    return false;
+  }
+
+  static_assert(static_cast<int>(RateLimitTable::Scope::kAttribution) == 1);
+
+  static constexpr char kSetAttributionTimeSql[] =
+      "UPDATE rate_limits "
+      "SET source_expiry_or_attribution_time=time WHERE scope=1";
+  if (!db->Execute(kSetAttributionTimeSql)) {
+    return false;
+  }
+
+  meta_table->SetVersionNumber(43);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
@@ -637,6 +665,11 @@ bool UpgradeAttributionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 41) {
     if (!MigrateToVersion42(db, meta_table)) {
+      return false;
+    }
+  }
+  if (meta_table->GetVersionNumber() == 42) {
+    if (!MigrateToVersion43(db, meta_table)) {
       return false;
     }
   }
