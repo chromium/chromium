@@ -2284,6 +2284,8 @@ test("content_unittests") {
     "../browser/interest_group/interest_group_permissions_checker_unittest.cc",
     "../browser/interest_group/interest_group_priority_util_unittest.cc",
     "../browser/interest_group/interest_group_storage_unittest.cc",
+    "../browser/interest_group/mock_auction_process_manager.cc",
+    "../browser/interest_group/mock_auction_process_manager.h",
     "../browser/interest_group/subresource_url_authorizations_unittest.cc",
     "../browser/interest_group/subresource_url_builder_unittest.cc",
     "../browser/loader/cors_origin_pattern_setter_unittest.cc",
