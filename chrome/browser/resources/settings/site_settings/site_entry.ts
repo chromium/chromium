@@ -252,14 +252,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
     // For an extension |siteGroup|, try to show the extension name if the
     // extension name is not empty.
-    if (this.isExtension_(siteGroup)) {
-      const extensionId =
-          this.originRepresentation(siteGroup.origins[0].origin);
-      this.getExtensionName_(extensionId).then(extensionName => {
-        if (extensionName !== '') {
-          this.displayName_ = extensionName;
-        }
-      });
+    if (this.isExtension_(siteGroup) && siteGroup.extensionName !== undefined) {
+      this.displayName_ = siteGroup.extensionName;
     }
   }
 
@@ -600,16 +594,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
   }
 
   /**
-   * Get the extension name of a given extension id.
-   */
-  private getExtensionName_(id: string): Promise<string> {
-    return this.browserProxy.getExtensionName(id);
-  }
-
-  /**
    * Get extension id description string for an extension |siteGroup|.
    */
-
   private extensionIdDescription_(siteGroup: SiteGroup): string {
     const id = this.originRepresentation(siteGroup.origins[0].origin);
     return loadTimeData.getStringF('siteSettingsExtensionIdDescription', id);

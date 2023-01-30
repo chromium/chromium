@@ -610,17 +610,15 @@ suite('SiteEntry', function() {
         JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
     extensionSiteGroup.origins[0].origin =
         'chrome-extension://mhabknllooicelmdboebjilbohdbihln';
+    extensionSiteGroup.extensionName = 'Test Extension';
     testElement.siteGroup = extensionSiteGroup;
     flush();
-
-    const arg = await browserProxy.whenCalled('getExtensionName');
-    assertEquals(arg, 'mhabknllooicelmdboebjilbohdbihln');
 
     // Check if the extension name shown correctly.
     assertEquals(
         testElement.$.collapseParent.querySelector('.url-directionality')!
             .textContent!.trim(),
-        'Test Extension mhabknllooicelmdboebjilbohdbihln');
+        'Test Extension');
 
     // Check if the extension id is shown correctly.
     assertFalse(testElement.$.extensionIdDescription.hidden);

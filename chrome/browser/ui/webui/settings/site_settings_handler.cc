@@ -568,14 +568,20 @@ void ConvertSiteGroupMapToList(
     base::Value::Dict site_group;
     site_group.Set(kEffectiveTopLevelDomainPlus1Name, entry.first);
 
-    // Isolated Web Apps do not support sub domains, so the origins set always
-    // contains only 1 entry.
+    // Isolated Web Apps or extension do not support sub domains, so the origins
+    // set always contains only 1 entry.
+    const GURL primary_origin_url(entry.second.begin()->first);
     absl::optional<std::string> isolated_web_app_name =
-        site_settings::GetIsolatedWebAppName(profile,
-                                             GURL(entry.second.begin()->first));
+        site_settings::GetIsolatedWebAppName(profile, primary_origin_url);
     if (isolated_web_app_name.has_value()) {
       site_group.Set(site_settings::kIsolatedWebAppName,
                      isolated_web_app_name.value());
+    }
+
+    absl::optional<std::string> extension_name =
+        site_settings::GetExtensionDisplayName(profile, primary_origin_url);
+    if (extension_name.has_value() && !extension_name.value().empty()) {
+      site_group.Set(site_settings::kExtensionName, extension_name.value());
     }
 
     bool has_installed_pwa = false;
@@ -811,12 +817,6 @@ void SiteSettingsHandler::RegisterMessages() {
       "getNumCookiesString",
       base::BindRepeating(&SiteSettingsHandler::HandleGetNumCookiesString,
                           base::Unretained(this)));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  web_ui()->RegisterMessageCallback(
-      "getExtensionName",
-      base::BindRepeating(&SiteSettingsHandler::HandleGetExtensionName,
-                          base::Unretained(this)));
-#endif
 }
 
 void SiteSettingsHandler::OnJavascriptAllowed() {
@@ -1451,13 +1451,10 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
         site_settings::ContentSettingsTypeFromGroupName(type);
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(profile_);
-    const auto* extension_registry =
-        extensions::ExtensionRegistry::Get(profile_);
 
     std::string source_string, display_name;
     ContentSetting content_setting = site_settings::GetContentSettingForOrigin(
-        profile_, map, origin_url, content_type, &source_string,
-        extension_registry, &display_name);
+        profile_, map, origin_url, content_type, &source_string, &display_name);
     std::string content_setting_string =
         content_settings::ContentSettingToString(content_setting);
 
@@ -1471,6 +1468,15 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     if (isolated_web_app_name.has_value()) {
       raw_site_exception.Set(site_settings::kIsolatedWebAppName,
                              isolated_web_app_name.value());
+    }
+    absl::optional<std::string> extension_name =
+        site_settings::GetExtensionDisplayName(profile_, origin_url);
+    if (extension_name.has_value()) {
+      raw_site_exception.Set(site_settings::kExtensionNameWithId,
+                             l10n_util::GetStringFUTF8(
+                                 IDS_SETTINGS_EXTENSION_DISPLAY_NAME,
+                                 base::UTF8ToUTF16(extension_name.value()),
+                                 base::UTF8ToUTF16(origin_url.host_piece())));
     }
     raw_site_exception.Set(site_settings::kDisplayName, display_name);
     raw_site_exception.Set(site_settings::kSetting, content_setting_string);
@@ -2286,27 +2292,6 @@ void SiteSettingsHandler::HandleGetNumCookiesString(
 
   ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void SiteSettingsHandler::HandleGetExtensionName(
-    const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  std::string callback_id;
-  callback_id = args[0].GetString();
-  std::string extension_id = args[1].GetString();
-
-  AllowJavascript();
-  const auto* extension_registry = extensions::ExtensionRegistry::Get(profile_);
-  const extensions::Extension* extension = extension_registry->GetExtensionById(
-      extension_id, extensions::ExtensionRegistry::EVERYTHING);
-  if (extension) {
-    ResolveJavascriptCallback(base::Value(callback_id),
-                              base::Value(extension->name()));
-  } else {
-    ResolveJavascriptCallback(base::Value(callback_id), base::Value(""));
-  }
-}
-#endif
 
 void SiteSettingsHandler::RemoveNonTreeModelData(
     const std::vector<url::Origin>& origins) {

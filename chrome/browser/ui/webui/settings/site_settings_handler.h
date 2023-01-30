@@ -339,11 +339,6 @@ class SiteSettingsHandler
   // Gets a plural string for the given number of cookies.
   void HandleGetNumCookiesString(const base::Value::List& args);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Get the extension name for a given extension id.
-  void HandleGetExtensionName(const base::Value::List& args);
-#endif
-
   // Provides an opportunity for site data which is not integrated into the
   // tree model to be removed when entries for |origins| are removed.
   // TODO(crbug.com/1271155): This function is a temporary hack while the

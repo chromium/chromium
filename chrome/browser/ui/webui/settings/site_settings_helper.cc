@@ -554,35 +554,18 @@ base::Value::Dict GetExceptionForPage(
   return exception;
 }
 
-std::string GetDisplayNameForExtension(
-    const GURL& url,
-    const extensions::ExtensionRegistry* extension_registry) {
-  if (extension_registry && url.SchemeIs(extensions::kExtensionScheme)) {
-    // For the extension scheme, the pattern must be a valid URL.
-    DCHECK(url.is_valid());
-    const extensions::Extension* extension =
-        extension_registry->GetExtensionById(
-            url.host(), extensions::ExtensionRegistry::EVERYTHING);
-    if (extension)
-      return extension->name();
-  }
-  return std::string();
-}
-
 // Takes |url| and converts it into an individual origin string or retrieves
 // name of the extension it belongs to.
-std::string GetDisplayNameForGURL(
-    const GURL& url,
-    const extensions::ExtensionRegistry* extension_registry) {
+std::string GetDisplayNameForGURL(Profile* profile, const GURL& url) {
   const url::Origin origin = url::Origin::Create(url);
   if (origin.opaque())
     return url.spec();
 
-  std::string display_name =
-      GetDisplayNameForExtension(url, extension_registry);
-  if (!display_name.empty())
-    return display_name;
-
+  absl::optional<std::string> extension_display_name =
+      GetExtensionDisplayName(profile, url);
+  if (extension_display_name.has_value()) {
+    return extension_display_name.value();
+  }
   auto url_16 = url_formatter::FormatUrl(
       url,
       url_formatter::kFormatUrlOmitDefaults |
@@ -595,14 +578,13 @@ std::string GetDisplayNameForGURL(
 
 // If the given |pattern| represents an individual origin or extension, retrieve
 // a string to display it as such. If not, return the pattern as a string.
-std::string GetDisplayNameForPattern(
-    const ContentSettingsPattern& pattern,
-    const extensions::ExtensionRegistry* extension_registry) {
-  const GURL url(pattern.ToString());
-  const std::string extension_display_name =
-      GetDisplayNameForExtension(url, extension_registry);
-  if (!extension_display_name.empty())
-    return extension_display_name;
+std::string GetDisplayNameForPattern(Profile* profile,
+                                     const ContentSettingsPattern& pattern) {
+  absl::optional<std::string> extension_display_name =
+      GetExtensionDisplayName(profile, GURL(pattern.ToString()));
+  if (extension_display_name.has_value()) {
+    return extension_display_name.value();
+  }
   return pattern.ToString();
 }
 
@@ -707,7 +689,7 @@ void GetExceptionsForContentType(
        base::Reversed(all_patterns_settings)) {
     const auto& [primary_pattern, source] = primary_pattern_and_source;
     const std::string display_name =
-        GetDisplayNameForPattern(primary_pattern, extension_registry);
+        GetDisplayNameForPattern(profile, primary_pattern);
 
     auto& this_provider_exceptions = all_provider_exceptions
         [HostContentSettingsMap::GetProviderTypeFromSource(source)];
@@ -764,14 +746,12 @@ void GetContentCategorySetting(const HostContentSettingsMap* map,
     object->Set(kSource, provider);
 }
 
-ContentSetting GetContentSettingForOrigin(
-    Profile* profile,
-    const HostContentSettingsMap* map,
-    const GURL& origin,
-    ContentSettingsType content_type,
-    std::string* source_string,
-    const extensions::ExtensionRegistry* extension_registry,
-    std::string* display_name) {
+ContentSetting GetContentSettingForOrigin(Profile* profile,
+                                          const HostContentSettingsMap* map,
+                                          const GURL& origin,
+                                          ContentSettingsType content_type,
+                                          std::string* source_string,
+                                          std::string* display_name) {
   // TODO(patricialor): In future, PermissionManager should know about all
   // content settings, not just the permissions, plus all the possible sources,
   // and the calls to HostContentSettingsMap should be removed.
@@ -808,7 +788,7 @@ ContentSetting GetContentSettingForOrigin(
   // Retrieve the source of the content setting.
   *source_string = SiteSettingSourceToString(
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
-  *display_name = GetDisplayNameForGURL(origin, extension_registry);
+  *display_name = GetDisplayNameForGURL(profile, origin);
 
   if (info.metadata.session_model == content_settings::SessionModel::OneTime) {
     DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
@@ -898,8 +878,7 @@ void GetPolicyAllowedUrls(
             std::greater<ContentSettingsPattern>());
 
   for (const ContentSettingsPattern& pattern : patterns) {
-    std::string display_name =
-        GetDisplayNameForPattern(pattern, extension_registry);
+    std::string display_name = GetDisplayNameForPattern(profile, pattern);
     exceptions->push_back(GetExceptionForPage(
         type, profile, pattern, ContentSettingsPattern(), display_name,
         CONTENT_SETTING_ALLOW,
@@ -1061,6 +1040,25 @@ absl::optional<std::string> GetIsolatedWebAppName(Profile* profile,
     }
   }
   return app_name;
+}
+
+absl::optional<std::string> GetExtensionDisplayName(Profile* profile,
+                                                    GURL url) {
+  if (!url.SchemeIs(extensions::kExtensionScheme)) {
+    return {};
+  }
+  auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
+  if (!extension_registry) {
+    return {};
+  }
+  // For the extension scheme, the pattern must be a valid URL.
+  DCHECK(url.is_valid());
+  const extensions::Extension* extension = extension_registry->GetExtensionById(
+      url.host(), extensions::ExtensionRegistry::EVERYTHING);
+  if (!extension) {
+    return {};
+  }
+  return extension->name();
 }
 
 }  // namespace site_settings

@@ -69,6 +69,7 @@ export interface SiteGroup {
   fpsEnterpriseManaged?: boolean;
   hasInstalledPWA: boolean;
   isolatedWebAppName?: string;
+  extensionName?: string;
 }
 
 /**
@@ -82,6 +83,7 @@ export interface RawSiteException {
   origin: string;
   displayName: string;
   isolatedWebAppName?: string;
+  extensionNameWithId?: string;
   type: string;
   setting: ContentSetting;
   source: SiteSettingSource;
@@ -496,12 +498,6 @@ export interface SiteSettingsPrefsBrowserProxy {
    * @param numCookies The number of cookies.
    */
   getNumCookiesString(numCookies: number): Promise<string>;
-
-  /**
-   * Gets the extension name for a given extension id.
-   * @param id The extension id.
-   */
-  getExtensionName(id: string): Promise<string>;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -694,10 +690,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   getNumCookiesString(numCookies: number) {
     return sendWithPromise('getNumCookiesString', numCookies);
-  }
-
-  getExtensionName(id: string) {
-    return sendWithPromise('getExtensionName', id);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {
