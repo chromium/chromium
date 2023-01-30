@@ -127,12 +127,6 @@ class HttpCookieBrowserTest : public ContentBrowserTest,
     return EvalJs(frame, "document.body.textContent").ExtractString();
   }
 
-  void NavigateFrameHostToURL(RenderFrameHost* iframe, const GURL& url) {
-    TestNavigationObserver nav_observer(shell()->web_contents());
-    ExecuteScriptAsync(iframe, JsReplace("location = $1", url));
-    nav_observer.Wait();
-  }
-
   uint32_t ClearCookies() {
     return DeleteCookies(shell()->web_contents()->GetBrowserContext(),
                          network::mojom::CookieDeletionFilter());
