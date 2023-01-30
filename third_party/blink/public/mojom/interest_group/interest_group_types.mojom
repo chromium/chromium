@@ -35,15 +35,20 @@ struct SellerCapabilities {
 // by (owner, name) already exists, we "merge" by overwriting specified fields,
 // leaving other existing fields intact.
 //
+// Interest groups are persisted and used as inputs to FLEDGE auctions.
+// Therefore, any enumeration types used in the interest group should be
+// marked [Stable].
+//
 // All URLs and origins must use https.
 //
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#11-joining-interest-groups
 struct InterestGroup {
+  [Stable, Extensible]
   enum ExecutionMode {
     // kCompatibilityMode creates a new context for every execution. This is
     // potentially slow as it is only able to reuse the compilation cache from
     // other interest groups with the same bidding script.
-    kCompatibilityMode,
+    [Default] kCompatibilityMode,
     // kGroupedByOriginMode, mode uses the same JavaScript context for groups
     // with the same joining origin. This can be much faster, but to mitigate
     // any privacy leaks FLEDGE will clear all of the interest groups for a

@@ -744,9 +744,9 @@ TEST_F(ValidateBlinkInterestGroupTest, InvalidExecutionMode) {
     const char* execution_mode_text;
   } test_cases[] = {
       {blink::InterestGroup::ExecutionMode::kFrozenContext, "2"},
-      {static_cast<blink::InterestGroup::ExecutionMode>(-1), "-1"},
   };
   for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.execution_mode);
     mojom::blink::InterestGroupPtr blink_interest_group =
         CreateMinimalInterestGroup();
     blink_interest_group->execution_mode = test_case.execution_mode;
