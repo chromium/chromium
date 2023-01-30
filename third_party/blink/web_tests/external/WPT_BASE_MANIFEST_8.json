@@ -328902,7 +328902,7 @@
       []
      ],
      "content-visibility-auto-shared-element-ref.html": [
-      "5c3fb1616d6e01276eced88d3a97b784ba1deb59",
+      "f4a34967ec066c67b5f8b486b7079411a9adb884",
       []
      ],
      "content-visibility-auto-shared-element.html.ini": [
@@ -352907,11 +352907,11 @@
        []
       ],
       "gentestutils.py": [
-       "2517568a5a83c9e8539a7c93e69aaf8a085504f4",
+       "59fa9e73e51bc19c5c1bcc827684e078ee132058",
        []
       ],
       "gentestutilsunion.py": [
-       "4c65d688c25f27d6d29f4732f1f250323385a945",
+       "3afb54de477e6fbfff4bf5790376153128b79741",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -369633,7 +369633,7 @@
      []
     ],
     "popover.tentative.idl": [
-     "bf23c7641d94e80567623d2b406cb4f746ddbebd",
+     "4e8c85f7dacb1447719ab4ed4cfc345c4033f467",
      []
     ],
     "portals.idl": [
@@ -388541,7 +388541,11 @@
      ],
      "resources": {
       "requestStorageAccessForOrigin-iframe.html": [
-       "3e2f6d5b6288993714f3ee56ae89631e03d563b9",
+       "43d16705c8515b48685420c8d14925af90afb62a",
+       []
+      ],
+      "requestStorageAccessForOrigin-iframe.https.html": [
+       "db03b25e14d7883a89cac79746c11b280ec24dae",
        []
       ]
      }
@@ -394688,6 +394692,10 @@
      "30c8c9d0add996e5e425732815f3a40f53c17655",
      []
     ],
+    "RTCRtpParameters-encodings-expected.txt": [
+     "0d37e5ed839ef42e54f575e5ff7fbb99c5b20e60",
+     []
+    ],
     "RTCRtpParameters-encodings.html.ini": [
      "2a25ea2c0e4f60d996f349f91dd4255b9be6f382",
      []
@@ -394738,6 +394746,10 @@
    "webrtc-svc": {
     "META.yml": [
      "17d93c51a9f195f5093882b1934c79f0a0635554",
+     []
+    ],
+    "RTCRtpParameters-scalability-expected.txt": [
+     "816a25344ca588a17fcd1caea0c114885cf3d0fb",
      []
     ],
     "RTCRtpParameters-scalability.html.ini": [
@@ -549187,7 +549199,7 @@
        ]
       ],
       "idlharness.tentative.html": [
-       "d1a258bb4ad3ac3031a882a2b20d58a483cebcf2",
+       "1cab891261cfd46ceb42706c2fe7a9229abcbacf",
        [
         null,
         {}
@@ -549273,7 +549285,7 @@
        ]
       ],
       "popover-events.tentative.html": [
-       "b96a0f5a53f489d8cf8c1bb2008cd4985fdf6c31",
+       "b299424570024c81238ae076fdacbfa2badc83b4",
        [
         null,
         {}
@@ -549402,7 +549414,7 @@
        ]
       ],
       "toggleevent-interface.tentative.html": [
-       "4d437b0c0ad523c8c9837d917f5c3064933de479",
+       "45709458b00c466805c63d1bc4530d37677718a9",
        [
         null,
         {}
@@ -593631,6 +593643,13 @@
        {}
       ]
      ],
+     "scroll-timeline-with-percent-delay.tentative.html": [
+      "4f2e1761de29d80c8377926f734e0cfbfe831a8c",
+      [
+       null,
+       {}
+      ]
+     ],
      "timeline-range-name-offset-in-keyframes.tentative.html": [
       "993046c5f2b8d3eb62dcda1adb33ad7a82137524",
       [
@@ -593738,6 +593757,13 @@
      ],
      "view-timeline-used-values.html": [
       "6627eeb9988096f136a85408093e1b76fc4a06f2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "view-timeline-with-delay-and-range.tentative.html": [
+      "40548bf5cd4548c105872d1066a05e5848c4bfce",
       [
        null,
        {}
@@ -611062,10 +611088,32 @@
    },
    "top-level-storage-access-api": {
     "tentative": {
-     "requestStorageAccessForOrigin.sub.window.js": [
+     "requestStorageAccessForOrigin-insecure.sub.window.js": [
+      "b4bcb2cd34074a6d6d182fef470df88590bb7ca6",
+      [
+       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin-insecure.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/storage-access-api/helpers.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "requestStorageAccessForOrigin.sub.https.window.js": [
       "f7dd478a7078673643d91fece6f64bf0148c7ec6",
       [
-       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin.sub.window.html",
+       "top-level-storage-access-api/tentative/requestStorageAccessForOrigin.sub.https.window.html",
        {
         "script_metadata": [
          [
@@ -631990,7 +632038,7 @@
      ]
     ],
     "RTCRtpParameters-adaptivePtime.html": [
-     "8a7a8b6ba689c2b671e22d91a371777fde581f3a",
+     "a0cc989c13da0b6533faadfa3ac123e6df898862",
      [
       null,
       {}
@@ -632109,7 +632157,7 @@
      ]
     ],
     "RTCRtpParameters-encodings.html": [
-     "1519ee84f736c1a4be4e87834fcf069c7c80ac7b",
+     "37c1b919b417fa03b2c9566839b529a3c0aae07c",
      [
       null,
       {}
@@ -632214,7 +632262,7 @@
      ]
     ],
     "RTCRtpParameters-scalability.html": [
-     "ff28c2b5e95636708568cdc20c5da5fc2db0dcba",
+     "d8b1c6e1350601c45b0eee62ebce7ca7ea6e9c08",
      [
       null,
       {
