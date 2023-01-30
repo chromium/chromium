@@ -169,6 +169,11 @@ declare_args() {
   # For use by tools/clang/scripts/analyze_includes.py
   show_includes = false
 
+  # Enable Profi algorithm. Profi can infer block and edge counts.
+  # https://clang.llvm.org/docs/UsersManual.html#using-sampling-profilers
+  # TODO(crbug.com/1375958i:) Possibly enable this for Android too.
+  use_profi = is_chromeos
+
   # If true, linker crashes will be rerun with `--reproduce` which causes
   # a reproducer file to be saved.
   save_reproducers_on_lld_crash = false
@@ -2344,6 +2349,9 @@ config("afdo") {
       rebased_clang_sample_profile =
           rebase_path(_clang_sample_profile, root_build_dir)
       cflags += [ "-fprofile-sample-use=${rebased_clang_sample_profile}" ]
+      if (use_profi) {
+        cflags += [ "-fsample-profile-use-profi" ]
+      }
       inputs = [ _clang_sample_profile ]
     }
   } else if (auto_profile_path != "" && is_a_target_toolchain) {
