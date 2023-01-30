@@ -59,7 +59,7 @@ void ForceInstalledTestBase::SetUp() {
 }
 
 void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
-  base::Value list(base::Value::Type::LIST);
+  base::Value::List list;
   const std::string update_url = origin == ExtensionOrigin::kWebStore
                                      ? kExtensionUpdateUrl
                                      : kOffStoreUpdateUrl;
@@ -86,7 +86,7 @@ void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
   policy::PolicyMap map;
   map.Set("ExtensionInstallForcelist", policy::POLICY_LEVEL_MANDATORY,
           policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_PLATFORM,
-          std::move(list), nullptr);
+          base::Value(std::move(list)), nullptr);
   policy_provider_.UpdateChromePolicy(map);
   base::RunLoop().RunUntilIdle();
 }
