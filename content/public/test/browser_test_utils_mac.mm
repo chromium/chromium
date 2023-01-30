@@ -21,11 +21,4 @@ bool EnableNativeWindowActivation() {
              : false;
 }
 
-bool MacOSVersionSupportsDarkMode() {
-  if (@available(macOS 10.14, *)) {
-    return true;
-  }
-  return false;
-}
-
 }  // namespace content
