@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython3
+#!/usr/bin/env python3
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -12,6 +12,7 @@ import glob
 import json
 import logging
 import os
+import pathlib
 import re
 import shutil
 import subprocess
@@ -31,6 +32,12 @@ from util import resource_utils
 
 sys.path.append(os.path.dirname(_BUILD_ANDROID))
 import gn_helpers
+
+# Typically these should track the versions that works on the slowest release
+# channel, i.e. Android Studio stable.
+_DEFAULT_ANDROID_GRADLE_PLUGIN_VERSION = '7.3.1'
+_DEFAULT_KOTLIN_GRADLE_PLUGIN_VERSION = '1.8.0'
+_DEFAULT_GRADLE_WRAPPER_VERSION = '7.4'
 
 _DEPOT_TOOLS_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party',
                                  'depot_tools')
@@ -85,11 +92,6 @@ def _RebasePath(path_or_list, new_cwd=None, old_cwd=None):
     new_cwd = os.path.abspath(new_cwd)
     return os.path.relpath(os.path.join(old_cwd, path_or_list), new_cwd)
   return os.path.abspath(os.path.join(old_cwd, path_or_list))
-
-
-def _IsSubpathOf(child, parent):
-  """Returns whether |child| is a subpath of |parent|."""
-  return not os.path.relpath(child, parent).startswith(os.pardir)
 
 
 def _WriteFile(path, data):
@@ -413,37 +415,42 @@ def _ComputeExcludeFilters(wanted_files, unwanted_files, parent_dir):
   return excludes
 
 
-def _ComputeJavaSourceDirsAndExcludes(output_dir, java_files):
+def _ComputeJavaSourceDirsAndExcludes(output_dir, source_files):
   """Computes the list of java source directories and exclude patterns.
 
-  1. Computes the root java source directories from the list of files.
+  This includes both Java and Kotlin files since both are listed in the same
+  "java" section for gradle.
+
+  1. Computes the root source directories from the list of files.
   2. Compute exclude patterns that exclude all extra files only.
-  3. Returns the list of java source directories and exclude patterns.
+  3. Returns the list of source directories and exclude patterns.
   """
   java_dirs = []
   excludes = []
-  if java_files:
-    java_files = _RebasePath(java_files)
-    computed_dirs = _ComputeJavaSourceDirs(java_files)
+  if source_files:
+    source_files = _RebasePath(source_files)
+    computed_dirs = _ComputeJavaSourceDirs(source_files)
     java_dirs = list(computed_dirs.keys())
-    all_found_java_files = set()
+    all_found_source_files = set()
 
     for directory, files in computed_dirs.items():
-      found_java_files = build_utils.FindInDirectory(directory, '*.java')
-      all_found_java_files.update(found_java_files)
-      unwanted_java_files = set(found_java_files) - set(files)
-      if unwanted_java_files:
+      found_source_files = (build_utils.FindInDirectory(directory, '*.java') +
+                            build_utils.FindInDirectory(directory, '*.kt'))
+      all_found_source_files.update(found_source_files)
+      unwanted_source_files = set(found_source_files) - set(files)
+      if unwanted_source_files:
         logging.debug('Directory requires excludes: %s', directory)
         excludes.extend(
-            _ComputeExcludeFilters(files, unwanted_java_files, directory))
+            _ComputeExcludeFilters(files, unwanted_source_files, directory))
 
-    missing_java_files = set(java_files) - all_found_java_files
+    missing_source_files = set(source_files) - all_found_source_files
     # Warn only about non-generated files that are missing.
-    missing_java_files = [p for p in missing_java_files
-                          if not p.startswith(output_dir)]
-    if missing_java_files:
-      logging.warning(
-          'Some java files were not found: %s', missing_java_files)
+    missing_source_files = [
+        p for p in missing_source_files if not p.startswith(output_dir)
+    ]
+    if missing_source_files:
+      logging.warning('Some source files were not found: %s',
+                      missing_source_files)
 
   return java_dirs, excludes
 
@@ -476,6 +483,19 @@ def _CreateJniLibsDir(output_dir, entry_output_dir, so_files):
   return []
 
 
+def _ParseVersionFromFile(file_path, version_regex_string, default_version):
+  if os.path.exists(file_path):
+    content = pathlib.Path(file_path).read_text()
+    match = re.search(version_regex_string, content)
+    if match:
+      version = match.group(1)
+      logging.info('Using existing version %s in %s.', version, file_path)
+      return version
+    logging.warning('Unable to find %s in %s:\n%s', version_regex_string,
+                    file_path, content)
+  return default_version
+
+
 def _GenerateLocalProperties(sdk_dir):
   """Returns the data for local.properties as a string."""
   return '\n'.join([
@@ -485,12 +505,17 @@ def _GenerateLocalProperties(sdk_dir):
   ])
 
 
-def _GenerateGradleWrapperProperties():
+def _GenerateGradleWrapperProperties(file_path):
   """Returns the data for gradle-wrapper.properties as a string."""
+
+  version = _ParseVersionFromFile(file_path,
+                                  r'/distributions/gradle-([\d.]+)-all.zip',
+                                  _DEFAULT_GRADLE_WRAPPER_VERSION)
+
   return '\n'.join([
       '# Generated by //build/android/gradle/generate_gradle.py',
-      ('distributionUrl=https\\://services.gradle.org/distributions/'
-       'gradle-7.3.3-all.zip\n'),
+      ('distributionUrl=https\\://services.gradle.org'
+       f'/distributions/gradle-{version}-all.zip'),
       '',
   ])
 
@@ -629,12 +654,12 @@ def _GenerateModuleAll(gradle_output_dir, generator, build_vars,
       'android_manifest': Relativize(_DEFAULT_ANDROID_MANIFEST_PATH),
       'java_dirs': Relativize(main_java_dirs),
       'prebuilts': Relativize(prebuilts),
-      'java_excludes': ['**/*.java'],
+      'java_excludes': ['**/*.java', '**/*.kt'],
       'res_dirs': Relativize(res_dirs),
   }
   variables['android_test'] = [{
       'java_dirs': Relativize(junit_test_java_dirs),
-      'java_excludes': ['**/*.java'],
+      'java_excludes': ['**/*.java', '**/*.kt'],
   }]
   if native_targets:
     variables['native'] = _GetNative(
@@ -649,9 +674,20 @@ def _GenerateModuleAll(gradle_output_dir, generator, build_vars,
         os.path.join(gradle_output_dir, _MODULE_ALL, _CMAKE_FILE), cmake_data)
 
 
-def _GenerateRootGradle(jinja_processor):
+def _GenerateRootGradle(jinja_processor, file_path):
   """Returns the data for the root project's build.gradle."""
-  return jinja_processor.Render(_TemplatePath('root'))
+  android_gradle_plugin_version = _ParseVersionFromFile(
+      file_path, r'com.android.tools.build:gradle:([\d.]+)',
+      _DEFAULT_ANDROID_GRADLE_PLUGIN_VERSION)
+  kotlin_gradle_plugin_version = _ParseVersionFromFile(
+      file_path, r'org.jetbrains.kotlin:kotlin-gradle-plugin:([\d.]+)',
+      _DEFAULT_KOTLIN_GRADLE_PLUGIN_VERSION)
+
+  return jinja_processor.Render(
+      _TemplatePath('root'), {
+          'android_gradle_plugin_version': android_gradle_plugin_version,
+          'kotlin_gradle_plugin_version': kotlin_gradle_plugin_version,
+      })
 
 
 def _GenerateSettingsGradle(project_entries):
@@ -851,8 +887,9 @@ def main():
     _GenerateModuleAll(_gradle_output_dir, generator, build_vars,
                        jinja_processor, args.native_targets)
 
-  _WriteFile(os.path.join(generator.project_dir, _GRADLE_BUILD_FILE),
-             _GenerateRootGradle(jinja_processor))
+  root_gradle_path = os.path.join(generator.project_dir, _GRADLE_BUILD_FILE)
+  _WriteFile(root_gradle_path,
+             _GenerateRootGradle(jinja_processor, root_gradle_path))
 
   _WriteFile(os.path.join(generator.project_dir, 'settings.gradle'),
              _GenerateSettingsGradle(project_entries))
@@ -870,9 +907,8 @@ def main():
 
   wrapper_properties = os.path.join(generator.project_dir, 'gradle', 'wrapper',
                                     'gradle-wrapper.properties')
-  if os.path.exists(wrapper_properties):
-    os.unlink(wrapper_properties)
-  _WriteFile(wrapper_properties, _GenerateGradleWrapperProperties())
+  _WriteFile(wrapper_properties,
+             _GenerateGradleWrapperProperties(wrapper_properties))
 
   generated_inputs = set()
   for entry in entries:
@@ -882,7 +918,11 @@ def main():
       # Build all paths references by .gradle that exist within output_dir.
       generated_inputs.update(generator.GeneratedInputs(entry_to_gen))
   if generated_inputs:
-    targets = _RebasePath(generated_inputs, output_dir)
+    # Skip targets outside the output_dir since those are not generated.
+    targets = [
+        p for p in _RebasePath(generated_inputs, output_dir)
+        if not p.startswith(os.pardir)
+    ]
     _RunNinja(output_dir, targets)
 
   print('Generated projects for Android Studio.')
