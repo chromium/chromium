@@ -418,23 +418,24 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
     return base::Time::Now().UTCMidnight();
   }
 
-  const base::Value* creation_timestamp =
+  const base::Value* creation_timestamp_pref =
       GetPref(network_guid, kCreationTimestamp);
   const base::Time current_timestamp = base::Time::Now().UTCMidnight();
 
-  if (creation_timestamp &&
-      base::Time::FromDoubleT(creation_timestamp->GetDouble()) + kTwoWeeks <=
-          current_timestamp) {
+  if (!creation_timestamp_pref) {
+    SetPref(network_guid, kCreationTimestamp,
+            base::Value(current_timestamp.ToDoubleT()));
+    return current_timestamp;
+  }
+
+  const base::Time creation_timestamp =
+      base::Time::FromDoubleT(creation_timestamp_pref->GetDouble());
+  if (creation_timestamp + kTwoWeeks <= current_timestamp) {
     SetPref(network_guid, kCreationTimestamp,
             base::Value(base::Time::UnixEpoch().ToDoubleT()));
     return base::Time::UnixEpoch();
   }
-  if (!creation_timestamp) {
-    SetPref(network_guid, kCreationTimestamp,
-            base::Value(current_timestamp.ToDoubleT()));
-  }
-
-  return current_timestamp;
+  return creation_timestamp;
 }
 
 bool NetworkMetadataStore::GetIsConfiguredBySync(

@@ -527,12 +527,21 @@ TEST_F(NetworkMetadataStoreTest, OwnOobeNetworks_NotFirstLogin) {
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 }
 
-TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestampDefault) {
+TEST_F(NetworkMetadataStoreTest, NetworkCreationTimestamp) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kHiddenNetworkMigration);
   ConfigureService(kConfigWifi0Connectable);
+
+  const base::Time creation_timestamp =
+      metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid);
+  EXPECT_EQ(creation_timestamp, base::Time::Now().UTCMidnight());
+
+  // Fast forward one day to check that the timestamp returned is still the one
+  // that was initially persisted.
+  task_environment()->FastForwardBy(base::Days(1));
+
   EXPECT_EQ(metadata_store()->UpdateAndRetrieveWiFiTimestamp(kGuid),
-            base::Time::Now().UTCMidnight());
+            creation_timestamp);
 }
 
 TEST_F(NetworkMetadataStoreTest,
