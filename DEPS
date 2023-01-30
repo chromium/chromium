@@ -372,6 +372,10 @@ vars = {
   # and whatever else without interference from each other.
   'catapult_revision': '35d06490ad8ba91feb48301edd8f842046ce7fd9',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling CrossBench
+  # and whatever else without interference from each other.
+  'crossbench_revision': '146c4da6088475e6e34aa4f3c30150d53f2c15a9',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
   'libfuzzer_revision': 'debe7d2d1982e540fbd6bd78604bf001753f9e74',
@@ -1179,6 +1183,10 @@ deps = {
       'url': Var('chromium_git') + '/chromiumos/platform2/system_api.git' + '@' + 'e424b890c2a36af44151d328f73cb725e152efa8',
       'condition': 'checkout_linux',
   },
+
+  'src/third_party/crossbench':
+    Var('chromium_git') + '/crossbench.git' + '@' + Var('crossbench_revision'),
+
 
   'src/third_party/crubit/src': {
       'url': Var('chromium_git') + '/external/github.com/google/crubit.git' + '@' + Var('crubit_revision'),

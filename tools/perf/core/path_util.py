@@ -46,6 +46,10 @@ def GetPyUtilsDir():
       GetChromiumSrcDir(), 'third_party', 'catapult', 'common', 'py_utils')
 
 
+def GetCrossBenchDir():
+  return os.path.join(GetChromiumSrcDir(), 'third_party', 'crossbench')
+
+
 def GetPerfDir():
   return os.path.join(GetChromiumSrcDir(), 'tools', 'perf')
 
@@ -98,6 +102,12 @@ def AddAndroidPylibToPath():
   android_pylib_path = GetAndroidPylibDir()
   if android_pylib_path not in sys.path:
     sys.path.insert(1, android_pylib_path)
+
+
+def AddCrossBenchToPath():
+  crossbench_path = GetCrossBenchDir()
+  if crossbench_path not in sys.path:
+    sys.path.insert(1, crossbench_path)
 
 
 def GetExpectationsPath():

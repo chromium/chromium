@@ -531,8 +531,16 @@ wheel: <
 >
 
 # Used by:
+#   tools/perf/crossbench
+wheel: <
+  name: "infra/python/wheels/hjson-py2_py3"
+  version: "version:3.1.0"
+>
+
+# Used by:
 #   chrome/test/mini_installer/test_chrome_with_chromedriver.py
 #   testing/script/run_variations_smoke_tests.py
+#   tools/perf/crossbench
 # Keep this to the same revision as third_party/webdriver/pylib, which is pulled
 # in via DEPS.
 wheel: <
