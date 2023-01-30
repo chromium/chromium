@@ -111,19 +111,19 @@ void BackgroundTracingStateManager::SaveState(
     const ScenarioUploadTimestampMap& scenario_upload_times,
     BackgroundTracingState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetIntKey(kTracingStateKey, static_cast<int>(state));
-  base::Value upload_times(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set(kTracingStateKey, static_cast<int>(state));
+  base::Value::List upload_times;
   for (const auto& it : scenario_upload_times) {
-    base::Value scenario(base::Value::Type::DICT);
-    scenario.SetStringKey(kScenarioKey, StripScenarioName(it.first));
-    scenario.SetKey(kUploadTimestampKey, base::TimeToValue(it.second));
+    base::Value::Dict scenario;
+    scenario.Set(kScenarioKey, StripScenarioName(it.first));
+    scenario.Set(kUploadTimestampKey, base::TimeToValue(it.second));
     upload_times.Append(std::move(scenario));
   }
 
-  dict.SetKey(kUploadTimesKey, std::move(upload_times));
+  dict.Set(kUploadTimesKey, std::move(upload_times));
 
-  local_state_->Set(kBackgroundTracingSessionState, std::move(dict));
+  local_state_->SetDict(kBackgroundTracingSessionState, std::move(dict));
   local_state_->CommitPendingWrite();
 }
 
