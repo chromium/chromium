@@ -697,6 +697,9 @@ const char kLacrosChromePath[] = "lacros-chrome-path";
 // 2. A terminal to start lacros-chrome with a debugger.
 const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
 
+// When this flag is set, the lacros-selection policy is ignored.
+const char kLacrosSelectionPolicyIgnore[] = "lacros-selection-policy-ignore";
+
 // Start Chrome in RMA mode. Launches RMA app automatically.
 // kRmaNotAllowed switch takes priority over this one.
 const char kLaunchRma[] = "launch-rma";

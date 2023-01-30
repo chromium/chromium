@@ -4567,6 +4567,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-selection-ignore",
+    "owners": [ "asumaneev", "lacros-team@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "lacros-stability",
     "owners": [ "jamescook", "erikchen", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this

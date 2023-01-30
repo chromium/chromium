@@ -10,13 +10,17 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/update_client/update_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +35,33 @@ constexpr char kLacrosComponentName[] = "lacros-dogfood-dev";
 constexpr char kLacrosComponentId[] = "ldobopbhiamakmncndpkeelenhdmgfhk";
 constexpr char kLacrosMounterUpstartJob[] = "lacros_2dmounter";
 constexpr char kLacrosUnmounterUpstartJob[] = "lacros_2dunmounter";
+
+// This implementation of RAII for LacrosSelection is to make it easy reset
+// the state between runs.
+class ScopedLacrosSelectionCache {
+ public:
+  explicit ScopedLacrosSelectionCache(
+      browser_util::LacrosSelectionPolicy lacros_selection) {
+    SetLacrosSelection(lacros_selection);
+  }
+  ScopedLacrosSelectionCache(const ScopedLacrosSelectionCache&) = delete;
+  ScopedLacrosSelectionCache& operator=(const ScopedLacrosSelectionCache&) =
+      delete;
+  ~ScopedLacrosSelectionCache() {
+    browser_util::ClearLacrosSelectionCacheForTest();
+  }
+
+ private:
+  void SetLacrosSelection(
+      browser_util::LacrosSelectionPolicy lacros_selection) {
+    policy::PolicyMap policy;
+    policy.Set(policy::key::kLacrosSelection, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(GetLacrosSelectionPolicyName(lacros_selection)),
+               /*external_data_fetcher=*/nullptr);
+    browser_util::CacheLacrosSelection(policy);
+  }
+};
 
 }  // namespace
 
@@ -227,6 +258,72 @@ TEST_F(BrowserLoaderTest, OnLoadVersionSelectionRootfsIsOlder) {
       /*rootfs_lacros_version=*/base::Version("2.0.0"));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsRootfs) {
+  ScopedLacrosSelectionCache cache(
+      browser_util::LacrosSelectionPolicy::kRootfs);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      browser_util::kLacrosSelectionSwitch,
+      browser_util::kLacrosSelectionStateful);
+
+  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
+  browser_loader_->Load(future.GetCallback<const base::FilePath&,
+                                           LacrosSelection, base::Version>());
+
+  const LacrosSelection selection = future.Get<1>();
+  EXPECT_EQ(selection, LacrosSelection::kRootfs);
+}
+
+TEST_F(BrowserLoaderTest, OnLoadSelectionPolicyIsStateful) {
+  ScopedLacrosSelectionCache cache(
+      browser_util::LacrosSelectionPolicy::kStateful);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      browser_util::kLacrosSelectionSwitch,
+      browser_util::kLacrosSelectionRootfs);
+
+  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
+  browser_loader_->Load(future.GetCallback<const base::FilePath&,
+                                           LacrosSelection, base::Version>());
+
+  const LacrosSelection selection = future.Get<1>();
+  EXPECT_EQ(selection, LacrosSelection::kStateful);
+}
+
+TEST_F(BrowserLoaderTest,
+       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsRootfs) {
+  ScopedLacrosSelectionCache cache(
+      browser_util::LacrosSelectionPolicy::kUserChoice);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      browser_util::kLacrosSelectionSwitch,
+      browser_util::kLacrosSelectionRootfs);
+
+  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
+  browser_loader_->Load(future.GetCallback<const base::FilePath&,
+                                           LacrosSelection, base::Version>());
+
+  const LacrosSelection selection = future.Get<1>();
+  EXPECT_EQ(selection, LacrosSelection::kRootfs);
+}
+
+TEST_F(BrowserLoaderTest,
+       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful) {
+  ScopedLacrosSelectionCache cache(
+      browser_util::LacrosSelectionPolicy::kUserChoice);
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      browser_util::kLacrosSelectionSwitch,
+      browser_util::kLacrosSelectionStateful);
+
+  base::test::TestFuture<base::FilePath, LacrosSelection, base::Version> future;
+  browser_loader_->Load(future.GetCallback<const base::FilePath&,
+                                           LacrosSelection, base::Version>());
+
+  const LacrosSelection selection = future.Get<1>();
+  EXPECT_EQ(selection, LacrosSelection::kStateful);
 }
 
 }  // namespace crosapi

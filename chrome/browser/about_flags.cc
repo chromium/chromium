@@ -955,6 +955,9 @@ const FeatureEntry::Choice kLacrosSelectionChoices[] = {
      crosapi::browser_util::kLacrosSelectionRootfs},
 };
 
+const char kLacrosSelectionPolicyIgnoreInternalName[] =
+    "lacros-selection-ignore";
+
 const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {crosapi::browser_util::kLacrosAvailabilityPolicyUserChoice,
@@ -3634,6 +3637,10 @@ const FeatureEntry kFeatureEntries[] = {
     {kLacrosSelectionInternalName, flag_descriptions::kLacrosSelectionName,
      flag_descriptions::kLacrosSelectionDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kLacrosSelectionChoices)},
+    {kLacrosSelectionPolicyIgnoreInternalName,
+     flag_descriptions::kLacrosSelectionPolicyIgnoreName,
+     flag_descriptions::kLacrosSelectionPolicyIgnoreDescription, kOsCrOS,
+     SINGLE_VALUE_TYPE(ash::switches::kLacrosSelectionPolicyIgnore)},
     {kWebAppsCrosapiInternalName, flag_descriptions::kWebAppsCrosapiName,
      flag_descriptions::kWebAppsCrosapiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebAppsCrosapi)},
@@ -9388,6 +9395,11 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                   kLacrosDataBackwardMigrationModePolicyInternalName,
               entry.internal_name)) {
     return true;
+  }
+  // Skip lacros-selection if it is controlled by LacrosSelection policy.
+  if (!strcmp(kLacrosSelectionInternalName, entry.internal_name)) {
+    return crosapi::browser_util::GetCachedLacrosSelectionPolicy() !=
+           crosapi::browser_util::LacrosSelectionPolicy::kUserChoice;
   }
 
   if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {

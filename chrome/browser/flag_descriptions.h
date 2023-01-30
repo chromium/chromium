@@ -3233,6 +3233,9 @@ extern const char kLacrosSelectionDescription[];
 extern const char kLacrosSelectionRootfsDescription[];
 extern const char kLacrosSelectionStatefulDescription[];
 
+extern const char kLacrosSelectionPolicyIgnoreName[];
+extern const char kLacrosSelectionPolicyIgnoreDescription[];
+
 extern const char kLacrosSupportName[];
 extern const char kLacrosSupportDescription[];
 

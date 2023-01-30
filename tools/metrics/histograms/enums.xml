@@ -64817,6 +64817,7 @@ from previous Chrome versions.
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>
   <int value="2032880973" label="U2FSecurityKeyAPI:disabled"/>
   <int value="2034198538" label="TabHoverCards:enabled"/>
+  <int value="2035351945" label="lacros-selection-policy-ignore"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>
   <int value="2035524582" label="WebViewRecordAppDataDirectorySize:disabled"/>
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>

@@ -348,6 +348,20 @@ void CacheLacrosAvailability(const policy::PolicyMap& map);
 // LacrosDataBackwardMigrationMode policy.
 void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map);
 
+// To be called at primary user login, to cache the policy value for
+// LacrosSelection policy. The effective value of the policy does not
+// change for the duration of the user session, so cached value shall be
+// checked.
+void CacheLacrosSelection(const policy::PolicyMap& map);
+
+// Returns cached value of LacrosSelection policy. See `CacheLacrosSelection`
+// for details.
+LacrosSelectionPolicy GetCachedLacrosSelectionPolicy();
+
+// Returns lacros selection option according to LarcrosSelectionPolicy and
+// lacros-selection flag. Returns nullopt if there is no preference.
+absl::optional<LacrosSelection> DetermineLacrosSelection();
+
 // Returns the lacros ComponentInfo for a given channel.
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel);
 
@@ -382,6 +396,9 @@ void ClearLacrosAvailabilityCacheForTest();
 
 // Clears the cached value for LacrosDataBackwardMigrationMode.
 void ClearLacrosDataBackwardMigrationModeCacheForTest();
+
+// Clears the cached value for LacrosSelection policy.
+void ClearLacrosSelectionCacheForTest();
 
 bool IsProfileMigrationEnabled(const AccountId& account_id);
 
@@ -465,6 +482,10 @@ ParseLacrosDataBackwardMigrationMode(base::StringPiece value);
 // Returns the policy string representation from the given enum value.
 base::StringPiece GetLacrosDataBackwardMigrationModeName(
     LacrosDataBackwardMigrationMode value);
+
+// Returns the LacrosSelection policy value name from the given value. Returned
+// StringPiece is guaranteed to never be invalidated.
+base::StringPiece GetLacrosSelectionPolicyName(LacrosSelectionPolicy value);
 
 // Stores that "Go to files button" on the migration error screen is clicked.
 void SetGotoFilesClicked(PrefService* local_state,

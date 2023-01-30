@@ -5603,6 +5603,12 @@ const char kLacrosSelectionDescription[] =
 const char kLacrosSelectionRootfsDescription[] = "Rootfs";
 const char kLacrosSelectionStatefulDescription[] = "Stateful";
 
+const char kLacrosSelectionPolicyIgnoreName[] =
+    "Ignore lacros-selection policy";
+const char kLacrosSelectionPolicyIgnoreDescription[] =
+    "Makes the lacros-selection policy have no effect. Instead Lacros "
+    "selection will be controlled by experiment and/or user flags.";
+
 const char kLacrosSupportName[] = "Lacros support";
 const char kLacrosSupportDescription[] =
     "Support for the experimental lacros-chrome browser. Please note that the "

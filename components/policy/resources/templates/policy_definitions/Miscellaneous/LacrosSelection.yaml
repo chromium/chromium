@@ -61,6 +61,6 @@ schema:
   - stateful
   type: string
 supported_on:
-- chrome_os:110-
+- chrome_os:112-
 tags: []
 type: string-enum
