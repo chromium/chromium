@@ -875,6 +875,13 @@ config("compiler") {
     # we discover a reason to turn them off.
     "-Coverflow-checks=on",
 
+    # By default Rust passes `-nodefaultlibs` to the linker, however this
+    # conflicts with our `--unwind=none` flag for Android dylibs, as the latter
+    # is then unused and produces a warning/error. So this removes the
+    # `-nodefaultlibs` from the linker invocation from Rust, which would be used
+    # to compile dylibs on Android, such as for constructing unit test APKs.
+    "-Cdefault-linker-libraries",
+
     # Turn warnings into the "deny" lint level, which produce compiler errors.
     # The equivalent of -Werror for clang/gcc.
     "-Dwarnings",

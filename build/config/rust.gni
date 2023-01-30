@@ -66,19 +66,9 @@ declare_args() {
   # more work is done.
   use_goma_rust = false
 
-  # Rust code may end up being linked into a final executable by:
-  # * rustc (which calls lld)
-  # * our pre-existing C++ linker invocations
-  # At the moment, this first pipeline is incompatible with the ldflags we use
-  # for thin LTO, due to some problem in escaping gn rules. There's a further
-  # problem with -lunwind on Android.
-  # However, Rust code is still useful if it's contributing to our existing
-  # C++ linker invocations, so this doesn't disable Rust entirely. It does
-  # disable Rust unit test executables, so we do need to fix this.
-  # https://crbug.com/1229423
-  # NB this may be overridden by individual toolchains
-  rustc_can_link = !is_android
-
+  # The host toolchain to use when you don't want sanitizers enabled. By default
+  # it is the regular toolchain, but when that toolchain has sanitizers, then
+  # this variable is changed to avoid them.
   host_toolchain_no_sanitizers = host_toolchain
 }
 
@@ -112,10 +102,10 @@ toolchain_has_rust =
      (!use_chromium_rust_toolchain && android_toolchain_supports_platform) ||
      (rust_sysroot_absolute != "" && custom_toolchain_supports_platform))
 
-# We use the Rust linker for building test executables, so we only build them
-# if we're able to use the Rust linker. We could use the C++ linker for this
-# too, we've just not set up GN to do so at the moment.
-can_build_rust_unit_tests = toolchain_has_rust && rustc_can_link
+# TODO(crbug.com/1278030): To build unit tests for Android we need to build
+# them as a dylib and put them into an APK. We should reuse all the same logic
+# for gtests from the `//testing/test:test` template.
+can_build_rust_unit_tests = toolchain_has_rust && !is_android
 
 # We want to store rust_sysroot as a source-relative variable for ninja
 # portability. In practice if an external toolchain was specified, it might

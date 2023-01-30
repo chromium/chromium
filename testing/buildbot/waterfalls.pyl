@@ -5517,7 +5517,7 @@
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
-          # `rustc_can_link` is false).
+          # we need to construct an APK instead of compile an exe).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },
       },
@@ -5530,7 +5530,7 @@
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           # Currently `can_build_rust_unit_tests` is false on Android (because
-          # `rustc_can_link` is false).
+          # we need to construct an APK instead of compile an exe).
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },
       },

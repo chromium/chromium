@@ -66,26 +66,24 @@ test("gnrt_unittests") {
   ]
 }
 
-if (rustc_can_link) {
-  rust_executable("gnrt") {
-    # Mark this tool testonly so we can use more third-party crates. This tool
-    # is neither built into Chromium nor used directly in the build process. It
-    # is only run by developers and the output is checked in.
-    testonly = true
+rust_executable("gnrt") {
+  # Mark this tool testonly so we can use more third-party crates. This tool
+  # is neither built into Chromium nor used directly in the build process. It
+  # is only run by developers and the output is checked in.
+  testonly = true
 
-    crate_root = "main.rs"
-    sources = [ "main.rs" ]
+  crate_root = "main.rs"
+  sources = [ "main.rs" ]
 
-    deps = [
-      ":gnrt_lib",
-      "//third_party/rust/cargo_metadata/v0_14:test_support",
-      "//third_party/rust/clap/v3:test_support",
-      "//third_party/rust/semver/v1:test_support",
-      "//third_party/rust/serde/v1:lib",
-      "//third_party/rust/serde_json/v1:test_support",
-      "//third_party/rust/toml/v0_5:test_support",
-    ]
+  deps = [
+    ":gnrt_lib",
+    "//third_party/rust/cargo_metadata/v0_14:test_support",
+    "//third_party/rust/clap/v3:test_support",
+    "//third_party/rust/semver/v1:test_support",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:test_support",
+    "//third_party/rust/toml/v0_5:test_support",
+  ]
 
-    test_inputs = [ "test_metadata.json" ]
-  }
+  test_inputs = [ "test_metadata.json" ]
 }

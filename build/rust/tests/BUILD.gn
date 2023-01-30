@@ -5,9 +5,17 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_unit_tests_group.gni")
 
+if (toolchain_has_rust) {
+  target_has_exe = !is_android
+
+  # TODO(crbug.com/1278030): Dylib linking on Android fails due to trying to
+  # link the unwinder from `-lgcc`.
+  target_has_dylib = !is_android
+}
+
+# Build some minimal binaries to exercise the Rust toolchain
+# only if that toolchain is enabled in gn args.
 group("tests") {
-  # Build some minimal binaries to exercise the Rust toolchain
-  # only if that toolchain is enabled in gn args.
   testonly = true
 
   deps = [ ":deps" ]
@@ -29,12 +37,27 @@ group("deps") {
       "test_rlib_crate:target2",
       "test_rust_static_library",
       "test_serde_json_lenient",
+
+      # TODO(https://crbug.com/1329611): Enable the additional target below
+      # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
+      # meantime see the instructions in
+      # `//build/rust/run_rs_bindings_from_cc.py`.
+      #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
     ]
-    if (rustc_can_link) {
+    if (target_has_exe) {
       deps += [
         "bindgen_test",
-        "test_rust_shared_library",
+        "test_aliased_deps:test_aliased_deps_exe",
+        "test_bin_crate",
+        "test_rlib_crate:test_rlib_crate_associated_bin",
+        "test_rust_exe",
+        "test_rust_multiple_dep_versions_exe",
+        "test_simple_rust_exe",
+        "//third_party/rust/bindgen/v0_60:bindgen",
       ]
+    }
+    if (target_has_dylib) {
+      deps += [ "test_rust_shared_library" ]
     }
     if (can_build_rust_unit_tests) {
       deps += [
@@ -67,28 +90,12 @@ group("deps") {
             [ "test_rust_shared_library:test_rust_shared_library_unittests" ]
       }
     }
-    if (rustc_can_link) {
-      deps += [
-        "test_aliased_deps:test_aliased_deps_exe",
-        "test_bin_crate",
-        "test_rlib_crate:test_rlib_crate_associated_bin",
-        "test_rust_exe",
-        "test_rust_multiple_dep_versions_exe",
-        "test_simple_rust_exe",
-        "//third_party/rust/bindgen/v0_60:bindgen",
-
-        # TODO(https://crbug.com/1329611): Enable the additional target below
-        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
-        # meantime see the instructions in
-        # `//build/rust/run_rs_bindings_from_cc.py`.
-        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
-      ]
-    }
   }
 }
 
 if (can_build_rust_unit_tests) {
-  # A group covering all native Rust unit tests under //build/rust directory.
+  # Generates a script that will run all the native Rust unit tests, in order
+  # to have them all part of a single test step on infra bots.
   rust_unit_tests_group("build_rust_tests") {
     deps = [ ":deps" ]
   }

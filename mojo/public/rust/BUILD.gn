@@ -19,7 +19,7 @@ rust_unit_tests_group("mojo_rust_tests") {
   if (can_build_rust_unit_tests) {
     deps += [ ":mojo_rust_unittests" ]
   }
-  if (rustc_can_link) {
+  if (can_build_rust_unit_tests) {
     deps += [ ":mojo_rust_extra_tests" ]
   }
 }
@@ -90,7 +90,7 @@ rust_static_library("mojo_rust") {
   rustenv = [ "BINDGEN_RS_FILE=" + rebase_path(bindgen_output[0]) ]
 }
 
-if (rustc_can_link) {
+if (can_build_rust_unit_tests) {
   rust_unit_test("mojo_rust_extra_tests") {
     testonly = true
     crate_root = "tests/lib.rs"

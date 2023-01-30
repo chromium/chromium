@@ -6,12 +6,10 @@ import("//build/config/rust.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
 
-if (rustc_can_link) {
-  rust_executable("test_aliased_deps_exe") {
-    crate_root = "main.rs"
-    sources = [ crate_root ]
-    deps = [ ":test_aliased_deps" ]
-  }
+rust_executable("test_aliased_deps_exe") {
+  crate_root = "main.rs"
+  sources = [ crate_root ]
+  deps = [ ":test_aliased_deps" ]
 }
 
 rust_static_library("test_aliased_deps") {

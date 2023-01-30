@@ -37,21 +37,19 @@ cargo_crate("target2") {
   rustenv = [ "ENV_VAR_FOR_BUILD_SCRIPT=42" ]
 }
 
-if (rustc_can_link) {
-  # Exists to test the case that a single crate has both a library
-  # and a binary, to ensure that shared build products (e.g. the
-  # build script) don't conflict.
-  cargo_crate("test_rlib_crate_associated_bin") {
-    crate_root = "crate/src/main.rs"
-    crate_type = "bin"
-    sources = [ "crate/src/main.rs" ]
-    build_sources = [ "crate/build.rs" ]
-    build_root = "crate/build.rs"
-    features = [
-      "my-feature_a",
-      "my-feature_b",
-    ]
-    rustenv = [ "ENV_VAR_FOR_BUILD_SCRIPT=42" ]
-    deps = [ ":target1" ]
-  }
+# Exists to test the case that a single crate has both a library
+# and a binary, to ensure that shared build products (e.g. the
+# build script) don't conflict.
+cargo_crate("test_rlib_crate_associated_bin") {
+  crate_root = "crate/src/main.rs"
+  crate_type = "bin"
+  sources = [ "crate/src/main.rs" ]
+  build_sources = [ "crate/build.rs" ]
+  build_root = "crate/build.rs"
+  features = [
+    "my-feature_a",
+    "my-feature_b",
+  ]
+  rustenv = [ "ENV_VAR_FOR_BUILD_SCRIPT=42" ]
+  deps = [ ":target1" ]
 }

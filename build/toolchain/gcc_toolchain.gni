@@ -156,11 +156,6 @@ template("single_gcc_toolchain") {
       if (!defined(invoker_toolchain_args.v8_current_cpu)) {
         v8_current_cpu = invoker_toolchain_args.current_cpu
       }
-
-      # Whether rustc can successfully link binaries. (If not, rust code
-      # can still be linked by our C++ toolchain). See
-      # //build/config/rust.gni
-      rustc_can_link = current_os != "android"
     }
 
     # When the invoker has explicitly overridden use_remoteexec, use_goma or
@@ -741,39 +736,37 @@ template("single_gcc_toolchain") {
         outputs = [ rust_outfile ]
       }
 
-      if (toolchain_args.rustc_can_link) {
-        tool("rust_bin") {
-          rust_outfile = "{{root_out_dir}}/{{target_output_name}}"
-          depfile = "{{output}}.d"
-          rspfile = "$rust_outfile.rsp"
-          rspfile_content = "{{rustdeps}} {{externs}}"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
-          description = "RUST $rust_outfile"
-          rust_sysroot = rust_sysroot_relative_to_out
-          outputs = [ rust_outfile ]
-        }
+      tool("rust_bin") {
+        rust_outfile = "{{root_out_dir}}/{{target_output_name}}"
+        depfile = "{{output}}.d"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
+        outputs = [ rust_outfile ]
+      }
 
-        tool("rust_cdylib") {
-          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
-          depfile = "{{output}}.d"
-          rspfile = "$rust_outfile.rsp"
-          rspfile_content = "{{rustdeps}} {{externs}}"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
-          description = "RUST $rust_outfile"
-          rust_sysroot = rust_sysroot_relative_to_out
-          outputs = [ rust_outfile ]
-        }
+      tool("rust_cdylib") {
+        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
+        depfile = "{{output}}.d"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
+        outputs = [ rust_outfile ]
+      }
 
-        tool("rust_macro") {
-          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
-          depfile = "{{output}}.d"
-          rspfile = "$rust_outfile.rsp"
-          rspfile_content = "{{rustdeps}} {{externs}}"
-          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
-          description = "RUST $rust_outfile"
-          rust_sysroot = rust_sysroot_relative_to_out
-          outputs = [ rust_outfile ]
-        }
+      tool("rust_macro") {
+        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.so"
+        depfile = "{{output}}.d"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- -Clinker=\"${invoker.cxx}\" $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS {{ldflags}} ${extra_ldflags} RUSTENV {{rustenv}}"
+        description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
+        outputs = [ rust_outfile ]
       }
     }
 

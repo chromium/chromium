@@ -17,6 +17,10 @@ if (toolchain_has_rust) {
   #   "checkout_clang_libs": True,
   # }
   rust_static_library("clanglibs") {
+    # Clang libs are used to build developer tools that run on a developer
+    # machine.
+    assert(!is_android)
+
     crate_root = get_label_info(":find_clanglibs", "target_gen_dir") + "/lib.rs"
     sources = [ crate_root ]
     deps = [ ":find_clanglibs" ]
