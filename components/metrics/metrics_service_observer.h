@@ -88,9 +88,11 @@ class MetricsServiceObserver : public MetricsLogsEventManager::Observer {
   ~MetricsServiceObserver() override;
 
   // MetricsLogsEventManager::Observer:
-  void OnLogCreated(base::StringPiece log_hash,
-                    base::StringPiece log_data,
-                    base::StringPiece log_timestamp) override;
+  void OnLogCreated(
+      base::StringPiece log_hash,
+      base::StringPiece log_data,
+      base::StringPiece log_timestamp,
+      metrics::MetricsLogsEventManager::CreateReason reason) override;
   void OnLogEvent(MetricsLogsEventManager::LogEvent event,
                   base::StringPiece log_hash,
                   base::StringPiece message) override;

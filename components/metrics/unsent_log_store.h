@@ -132,7 +132,9 @@ class UnsentLogStore : public LogStore {
   // signature will be computed.
   // TODO(crbug/1052796): Remove this function, and use StoreLogInfo()
   // everywhere instead.
-  void StoreLog(const std::string& log_data, const LogMetadata& log_metadata);
+  void StoreLog(const std::string& log_data,
+                const LogMetadata& log_metadata,
+                MetricsLogsEventManager::CreateReason reason);
 
   // Adds a log to the list, represented by a LogInfo object. This is useful
   // if the LogInfo instance needs to be created outside the main thread
@@ -140,7 +142,8 @@ class UnsentLogStore : public LogStore {
   // also pass the size of the log data before being compressed. This is simply
   // for calculating and emitting some metrics, and is otherwise unused.
   void StoreLogInfo(std::unique_ptr<LogInfo> log_info,
-                    size_t uncompressed_log_size);
+                    size_t uncompressed_log_size,
+                    MetricsLogsEventManager::CreateReason reason);
 
   // Gets log data at the given index in the list.
   const std::string& GetLogAtIndex(size_t index);
@@ -193,8 +196,10 @@ class UnsentLogStore : public LogStore {
   void RecordMetaDataMetrics();
 
   // Wrapper functions for the notify functions of |logs_event_manager_|.
-  void NotifyLogCreated(const LogInfo& info);
-  void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs);
+  void NotifyLogCreated(const LogInfo& info,
+                        MetricsLogsEventManager::CreateReason reason);
+  void NotifyLogsCreated(base::span<std::unique_ptr<LogInfo>> logs,
+                         MetricsLogsEventManager::CreateReason reason);
   void NotifyLogEvent(MetricsLogsEventManager::LogEvent event,
                       base::StringPiece log_hash,
                       base::StringPiece message = "");

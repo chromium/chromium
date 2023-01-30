@@ -70,22 +70,24 @@ void MetricsLogStore::LoadPersistedUnsentLogs() {
 
 void MetricsLogStore::StoreLog(const std::string& log_data,
                                MetricsLog::LogType log_type,
-                               const LogMetadata& log_metadata) {
+                               const LogMetadata& log_metadata,
+                               MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
       logs_event_manager_, log_type);
-  GetLogStoreForLogType(log_type)->StoreLog(log_data, log_metadata);
+  GetLogStoreForLogType(log_type)->StoreLog(log_data, log_metadata, reason);
 }
 
 void MetricsLogStore::StoreLogInfo(
     std::unique_ptr<UnsentLogStore::LogInfo> log_info,
     size_t uncompressed_log_size,
-    MetricsLog::LogType log_type) {
+    MetricsLog::LogType log_type,
+    MetricsLogsEventManager::CreateReason reason) {
   MetricsLogsEventManager::ScopedNotifyLogType scoped_log_type(
       logs_event_manager_, log_type);
   GetLogStoreForLogType(log_type)->StoreLogInfo(std::move(log_info),
-                                                uncompressed_log_size);
+                                                uncompressed_log_size, reason);
 }
 
 void MetricsLogStore::Purge() {

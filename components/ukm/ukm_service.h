@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/delegating_provider.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -93,7 +94,7 @@ class UkmService : public UkmRecorderImpl {
 #endif
 
   // Records all collected data into logs, and writes to disk.
-  void Flush();
+  void Flush(metrics::MetricsLogsEventManager::CreateReason reason);
 
   // Deletes all unsent local data (Sources, Events, aggregate info for
   // collected event metrics, etc.).
@@ -170,7 +171,7 @@ class UkmService : public UkmRecorderImpl {
 
   // Constructs a new Report from available data and stores it in
   // unsent_log_store_.
-  void BuildAndStoreLog();
+  void BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason reason);
 
   // Starts an upload of the next log from unsent_log_store_.
   void StartScheduledUpload();

@@ -18,23 +18,49 @@ namespace metrics {
 class MetricsLogsEventManager {
  public:
   enum class LogEvent {
-    // The log was staged.
+    // The log was staged (queued to be uploaded).
     kLogStaged,
     // The log was discarded.
     kLogDiscarded,
     // The log was trimmed.
     kLogTrimmed,
-    // The log is currently being uploaded.
+    // The log has been sent out and is currently being uploaded.
     kLogUploading,
     // The log was successfully uploaded.
     kLogUploaded,
+    // The log was created.
+    kLogCreated,
+  };
+
+  enum class CreateReason {
+    kUnknown,
+    // The log is a periodic log, which are created at regular intervals.
+    kPeriodic,
+    // The log was created due to the UMA/UKM service shutting down.
+    kServiceShutdown,
+    // The log was loaded from a previous session.
+    kLoadFromPreviousSession,
+    // The log was created due to the browser being backgrounded.
+    kBackgrounded,
+    // The log was created due to the browser being foregrounded.
+    kForegrounded,
+    // The log was created due to a new alternate ongoing log store being set.
+    kAlternateOngoingLogStoreSet,
+    // The log was created due to the alternate ongoing log store being unset.
+    kAlternateOngoingLogStoreUnset,
+    // The log was created due to the previous session having stability metrics
+    // to report.
+    kStability,
+    // The log was fully created and provided by a metrics provider.
+    kIndependent,
   };
 
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnLogCreated(base::StringPiece log_hash,
                               base::StringPiece log_data,
-                              base::StringPiece log_timestamp) = 0;
+                              base::StringPiece log_timestamp,
+                              CreateReason reason) = 0;
     virtual void OnLogEvent(MetricsLogsEventManager::LogEvent event,
                             base::StringPiece log_hash,
                             base::StringPiece message) = 0;
@@ -85,7 +111,8 @@ class MetricsLogsEventManager {
   // |log_timestamp| is the time at which the log was closed.
   void NotifyLogCreated(base::StringPiece log_hash,
                         base::StringPiece log_data,
-                        base::StringPiece log_timestamp);
+                        base::StringPiece log_timestamp,
+                        CreateReason reason);
 
   // Notifies observers that an event |event| occurred on the log associated
   // with |log_hash|. Optionally, a |message| can be associated with the event.

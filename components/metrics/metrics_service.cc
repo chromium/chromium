@@ -447,7 +447,8 @@ void MetricsService::DisableRecording() {
 
   base::UmaHistogramBoolean("UMA.MetricsService.PendingOngoingLogOnDisable",
                             pending_ongoing_log_);
-  PushPendingLogsToPersistentStorage();
+  PushPendingLogsToPersistentStorage(
+      MetricsLogsEventManager::CreateReason::kServiceShutdown);
 
   // If kEmitHistogramsForIndependentLogs is set, call OnDidCreateMetricsLog()
   // to provide histograms.
@@ -516,7 +517,8 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
     base::UmaHistogramBoolean(
         "UMA.MetricsService.PendingOngoingLogOnBackgrounded",
         pending_ongoing_log_);
-    PushPendingLogsToPersistentStorage();
+    PushPendingLogsToPersistentStorage(
+        MetricsLogsEventManager::CreateReason::kBackgrounded);
     // Persisting logs closes the current log, so start recording a new log
     // immediately to capture any background work that might be done before the
     // process is killed.
@@ -536,7 +538,8 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
         pending_ongoing_log_);
     // Because state_ >= SENDING_LOGS, PushPendingLogsToPersistentStorage()
     // will close the log, allowing a new log to be opened.
-    PushPendingLogsToPersistentStorage();
+    PushPendingLogsToPersistentStorage(
+        MetricsLogsEventManager::CreateReason::kForegrounded);
     OpenNewLog();
   }
 }
@@ -572,7 +575,8 @@ void MetricsService::SetUserLogStore(
   if (state_ >= SENDING_LOGS) {
     // Closes the current log so that a new log can be opened in the user log
     // store.
-    PushPendingLogsToPersistentStorage();
+    PushPendingLogsToPersistentStorage(
+        MetricsLogsEventManager::CreateReason::kAlternateOngoingLogStoreSet);
     log_store()->SetAlternateOngoingLogStore(std::move(user_log_store));
     OpenNewLog();
     RecordUserLogStoreState(kSetPostSendLogsState);
@@ -595,7 +599,8 @@ void MetricsService::UnsetUserLogStore() {
     return;
 
   if (state_ >= SENDING_LOGS) {
-    PushPendingLogsToPersistentStorage();
+    PushPendingLogsToPersistentStorage(
+        MetricsLogsEventManager::CreateReason::kAlternateOngoingLogStoreUnset);
     log_store()->UnsetAlternateOngoingLogStore();
     OpenNewLog();
     RecordUserLogStoreState(kUnsetPostSendLogsState);
@@ -661,7 +666,8 @@ MetricsService::GetSyntheticTrialRegistry() {
 }
 
 bool MetricsService::StageCurrentLogForTest() {
-  CloseCurrentLog(/*async=*/false);
+  CloseCurrentLog(/*async=*/false,
+                  MetricsLogsEventManager::CreateReason::kUnknown);
 
   MetricsLogStore* const log_store = reporting_service_.metrics_log_store();
   log_store->StageNextLog();
@@ -889,8 +895,10 @@ void MetricsService::StartInitTask() {
       &MetricsService::FinishedInitTask, self_ptr_factory_.GetWeakPtr()));
 }
 
-void MetricsService::CloseCurrentLog(bool async,
-                                     base::OnceClosure log_stored_callback) {
+void MetricsService::CloseCurrentLog(
+    bool async,
+    MetricsLogsEventManager::CreateReason reason,
+    base::OnceClosure log_stored_callback) {
   if (!log_manager_.current_log())
     return;
 
@@ -950,7 +958,7 @@ void MetricsService::CloseCurrentLog(bool async,
                        std::move(signing_key)),
         base::BindOnce(&MetricsService::MaybeCleanUpAndStoreFinalizedLog,
                        self_ptr_factory_.GetWeakPtr(),
-                       std::move(log_histogram_writer), log_type,
+                       std::move(log_histogram_writer), log_type, reason,
                        std::move(log_stored_callback)));
     async_ongoing_log_posted_time_ = base::TimeTicks::Now();
   } else {
@@ -958,22 +966,26 @@ void MetricsService::CloseCurrentLog(bool async,
         std::move(log_histogram_writer), std::move(current_log),
         /*truncate_events=*/true, client_->GetVersionString(),
         std::move(signing_key));
-    StoreFinalizedLog(log_type, std::move(log_stored_callback),
+    StoreFinalizedLog(log_type, reason, std::move(log_stored_callback),
                       std::move(finalized_log));
   }
 }
 
-void MetricsService::StoreFinalizedLog(MetricsLog::LogType log_type,
-                                       base::OnceClosure done_callback,
-                                       FinalizedLog finalized_log) {
+void MetricsService::StoreFinalizedLog(
+    MetricsLog::LogType log_type,
+    MetricsLogsEventManager::CreateReason reason,
+    base::OnceClosure done_callback,
+    FinalizedLog finalized_log) {
   log_store()->StoreLogInfo(std::move(finalized_log.log_info),
-                            finalized_log.uncompressed_log_size, log_type);
+                            finalized_log.uncompressed_log_size, log_type,
+                            reason);
   std::move(done_callback).Run();
 }
 
 void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
     std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
     MetricsLog::LogType log_type,
+    MetricsLogsEventManager::CreateReason reason,
     base::OnceClosure done_callback,
     FinalizedLog finalized_log) {
   UMA_HISTOGRAM_TIMES("UMA.MetricsService.PeriodicOngoingLog.ReplyTime",
@@ -1009,7 +1021,7 @@ void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
 
   log_histogram_writer->histogram_snapshot_manager()
       ->MarkUnloggedSamplesAsLogged();
-  StoreFinalizedLog(log_type, std::move(done_callback),
+  StoreFinalizedLog(log_type, reason, std::move(done_callback),
                     std::move(finalized_log));
 
   // Call OnDidCreateMetricsLog() after storing a log instead of directly after
@@ -1019,7 +1031,8 @@ void MetricsService::MaybeCleanUpAndStoreFinalizedLog(
   delegating_provider_.OnDidCreateMetricsLog();
 }
 
-void MetricsService::PushPendingLogsToPersistentStorage() {
+void MetricsService::PushPendingLogsToPersistentStorage(
+    MetricsLogsEventManager::CreateReason reason) {
   if (IsTooEarlyToCloseLog()) {
     return;
   }
@@ -1030,7 +1043,7 @@ void MetricsService::PushPendingLogsToPersistentStorage() {
   // Close and store a log synchronously because this is usually called in
   // critical code paths (e.g., shutdown) where we may not have time to run
   // background tasks.
-  CloseCurrentLog(/*async=*/false);
+  CloseCurrentLog(/*async=*/false, reason);
   log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 }
 
@@ -1123,10 +1136,14 @@ void MetricsService::OnFinalLogInfoCollectionDone() {
       base::BindOnce(&MetricsService::OnPeriodicOngoingLogStored,
                      self_ptr_factory_.GetWeakPtr());
   if (base::FeatureList::IsEnabled(features::kMetricsServiceAsyncCollection)) {
-    CloseCurrentLog(/*async=*/true, std::move(log_stored_callback));
+    CloseCurrentLog(/*async=*/true,
+                    MetricsLogsEventManager::CreateReason::kPeriodic,
+                    std::move(log_stored_callback));
     OpenNewLog(/*call_providers=*/false);
   } else {
-    CloseCurrentLog(/*async=*/false, std::move(log_stored_callback));
+    CloseCurrentLog(/*async=*/false,
+                    MetricsLogsEventManager::CreateReason::kPeriodic,
+                    std::move(log_stored_callback));
     OpenNewLog();
   }
 }
@@ -1189,7 +1206,8 @@ bool MetricsService::PrepareInitialStabilityLog(
       std::move(log_histogram_writer), std::move(initial_stability_log),
       /*truncate_events=*/false, client_->GetVersionString(),
       std::move(signing_key));
-  StoreFinalizedLog(log_type, base::DoNothing(), std::move(finalized_log));
+  StoreFinalizedLog(log_type, MetricsLogsEventManager::CreateReason::kStability,
+                    base::DoNothing(), std::move(finalized_log));
 
   // Store unsent logs, including the stability log that was just saved, so
   // that they're not lost in case of a crash before upload time.
@@ -1284,7 +1302,9 @@ void MetricsService::PrepareProviderMetricsLogDone(
     FinalizedLog finalized_log =
         FinalizeLog(std::move(log), /*truncate_events=*/false,
                     client_->GetVersionString(), std::move(signing_key));
-    StoreFinalizedLog(log_type, base::DoNothing(), std::move(finalized_log));
+    StoreFinalizedLog(log_type,
+                      MetricsLogsEventManager::CreateReason::kIndependent,
+                      base::DoNothing(), std::move(finalized_log));
   }
 
   independent_loader_active_ = false;

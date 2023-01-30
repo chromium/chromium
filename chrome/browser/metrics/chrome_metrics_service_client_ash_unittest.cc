@@ -22,6 +22,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -380,7 +381,8 @@ TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
   RecordTestEvent1(ukm::SourceIdType::NAVIGATION_ID);
   RecordTestEvent1(ukm::SourceIdType::APP_ID);
 
-  GetUkmService()->Flush();
+  GetUkmService()->Flush(
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
   // Remove the consent for |purged_consent|. This will cause
   // UKM metrics associated with this type to be purged.
@@ -490,7 +492,8 @@ TEST_P(ChromeMetricsServiceClientTestIgnoredForAppMetrics,
     TestEvent1(id).Record(GetUkmService());
   }
 
-  GetUkmService()->Flush();
+  GetUkmService()->Flush(
+      metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 
   // Build UKM report to verity that all of the events and sources have been
   // recorded.

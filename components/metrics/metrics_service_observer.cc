@@ -12,9 +12,22 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 
 namespace metrics {
 namespace {
+
+MetricsServiceObserver::Log::Event CreateEventStruct(
+    MetricsLogsEventManager::LogEvent event,
+    base::StringPiece message) {
+  MetricsServiceObserver::Log::Event event_struct;
+  event_struct.event = event;
+  event_struct.timestampMs = base::Time::Now().ToJsTimeIgnoringNull();
+  if (!message.empty()) {
+    event_struct.message = std::string(message);
+  }
+  return event_struct;
+}
 
 std::string LogTypeToString(MetricsLog::LogType log_type) {
   switch (log_type) {
@@ -40,8 +53,38 @@ std::string EventToString(MetricsLogsEventManager::LogEvent event) {
       return "Uploading";
     case MetricsLogsEventManager::LogEvent::kLogUploaded:
       return "Uploaded";
+    case MetricsLogsEventManager::LogEvent::kLogCreated:
+      return "Created";
   }
   NOTREACHED();
+}
+
+std::string CreateReasonToString(
+    metrics::MetricsLogsEventManager::CreateReason reason) {
+  switch (reason) {
+    case MetricsLogsEventManager::CreateReason::kUnknown:
+      return std::string();
+    case MetricsLogsEventManager::CreateReason::kPeriodic:
+      return "Reason: Periodic log creation";
+    case MetricsLogsEventManager::CreateReason::kServiceShutdown:
+      return "Reason: Shutting down";
+    case MetricsLogsEventManager::CreateReason::kLoadFromPreviousSession:
+      return "Reason: Loaded from previous session";
+    case MetricsLogsEventManager::CreateReason::kBackgrounded:
+      return "Reason: Browser backgrounded";
+    case MetricsLogsEventManager::CreateReason::kForegrounded:
+      return "Reason: Browser foregrounded";
+    case MetricsLogsEventManager::CreateReason::kAlternateOngoingLogStoreSet:
+      return "Reason: Alternate ongoing log store set";
+    case MetricsLogsEventManager::CreateReason::kAlternateOngoingLogStoreUnset:
+      return "Reason: Alternate ongoing log store unset";
+    case MetricsLogsEventManager::CreateReason::kStability:
+      return "Reason: Stability metrics from previous session";
+    case MetricsLogsEventManager::CreateReason::kIndependent:
+      // TODO(crbug/1363747): Give more insight here (e.g. "independent log
+      // generated from pma file").
+      return "Reason: Independent log";
+  }
 }
 
 }  // namespace
@@ -60,9 +103,11 @@ MetricsServiceObserver::Log::Event&
 MetricsServiceObserver::Log::Event::operator=(const Event&) = default;
 MetricsServiceObserver::Log::Event::~Event() = default;
 
-void MetricsServiceObserver::OnLogCreated(base::StringPiece log_hash,
-                                          base::StringPiece log_data,
-                                          base::StringPiece log_timestamp) {
+void MetricsServiceObserver::OnLogCreated(
+    base::StringPiece log_hash,
+    base::StringPiece log_data,
+    base::StringPiece log_timestamp,
+    metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK(!GetLogFromHash(log_hash));
 
   // Insert a new log into |logs_| with the given |log_hash| to indicate that
@@ -75,6 +120,12 @@ void MetricsServiceObserver::OnLogCreated(base::StringPiece log_hash,
     DCHECK_EQ(service_type_, MetricsServiceType::UMA);
     log->type = uma_log_type_;
   }
+
+  // Immediately create a |kLogCreated| log event, along with the reason why the
+  // log was created.
+  log->events.push_back(
+      CreateEventStruct(MetricsLogsEventManager::LogEvent::kLogCreated,
+                        CreateReasonToString(reason)));
 
   indexed_logs_.emplace(log->hash, log.get());
   logs_.push_back(std::move(log));
@@ -94,12 +145,7 @@ void MetricsServiceObserver::OnLogEvent(MetricsLogsEventManager::LogEvent event,
   if (!log)
     return;
 
-  Log::Event log_event;
-  log_event.event = event;
-  log_event.timestampMs = base::Time::Now().ToJsTimeIgnoringNull();
-  if (!message.empty())
-    log_event.message = std::string(message);
-  log->events.push_back(std::move(log_event));
+  log->events.push_back(CreateEventStruct(event, message));
 
   // Call all registered callbacks.
   notified_callbacks_.Notify();

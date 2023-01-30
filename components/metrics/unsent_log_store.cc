@@ -361,18 +361,21 @@ void UnsentLogStore::LoadPersistedUnsentLogs() {
 }
 
 void UnsentLogStore::StoreLog(const std::string& log_data,
-                              const LogMetadata& log_metadata) {
+                              const LogMetadata& log_metadata,
+                              MetricsLogsEventManager::CreateReason reason) {
   std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
   info->Init(log_data, signing_key_, log_metadata);
-  StoreLogInfo(std::move(info), log_data.size());
+  StoreLogInfo(std::move(info), log_data.size(), reason);
 }
 
-void UnsentLogStore::StoreLogInfo(std::unique_ptr<LogInfo> log_info,
-                                  size_t uncompressed_log_size) {
+void UnsentLogStore::StoreLogInfo(
+    std::unique_ptr<LogInfo> log_info,
+    size_t uncompressed_log_size,
+    MetricsLogsEventManager::CreateReason reason) {
   DCHECK(log_info);
   metrics_->RecordCompressionRatio(log_info->compressed_log_data.size(),
                                    uncompressed_log_size);
-  NotifyLogCreated(*log_info);
+  NotifyLogCreated(*log_info, reason);
   list_.emplace_back(std::move(log_info));
 }
 
@@ -403,8 +406,10 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
   metrics_->RecordCompressionRatio(info->compressed_log_data.size(),
                                    new_log_data.size());
 
+  // TODO(crbug/1363747): Pass a message to make it clear that the new log is
+  // replacing the old log.
   NotifyLogEvent(MetricsLogsEventManager::LogEvent::kLogDiscarded, old_hash);
-  NotifyLogCreated(*info);
+  NotifyLogCreated(*info, MetricsLogsEventManager::CreateReason::kUnknown);
   list_[index] = std::move(info);
   return old_log_data;
 }
@@ -479,7 +484,8 @@ void UnsentLogStore::ReadLogsFromPrefList(const base::Value::List& list_value) {
   // Only notify log observers after loading all logs from pref instead of
   // notifying as logs are loaded. This is because we may return early and end
   // up not loading any logs.
-  NotifyLogsCreated(list_);
+  NotifyLogsCreated(
+      list_, MetricsLogsEventManager::CreateReason::kLoadFromPreviousSession);
 
   metrics_->RecordLogReadStatus(UnsentLogStoreMetrics::RECALL_SUCCESS);
 }
@@ -518,20 +524,23 @@ void UnsentLogStore::RecordMetaDataMetrics() {
   }
 }
 
-void UnsentLogStore::NotifyLogCreated(const LogInfo& info) {
+void UnsentLogStore::NotifyLogCreated(
+    const LogInfo& info,
+    MetricsLogsEventManager::CreateReason reason) {
   if (!logs_event_manager_)
     return;
   logs_event_manager_->NotifyLogCreated(info.hash, info.compressed_log_data,
-                                        info.timestamp);
+                                        info.timestamp, reason);
 }
 
 void UnsentLogStore::NotifyLogsCreated(
-    base::span<std::unique_ptr<LogInfo>> logs) {
+    base::span<std::unique_ptr<LogInfo>> logs,
+    MetricsLogsEventManager::CreateReason reason) {
   if (!logs_event_manager_)
     return;
   for (const std::unique_ptr<LogInfo>& info : logs) {
     logs_event_manager_->NotifyLogCreated(info->hash, info->compressed_log_data,
-                                          info->timestamp);
+                                          info->timestamp, reason);
   }
 }
 

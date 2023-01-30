@@ -1074,7 +1074,8 @@ TEST_P(MetricsServiceTestWithFeatures, FirstLogCreatedBeforeUnsentLogsSent) {
   // is never deserialized to proto, so we're just passing some dummy content.
   ASSERT_EQ(0u, test_log_store->initial_log_count());
   ASSERT_EQ(0u, test_log_store->ongoing_log_count());
-  test_log_store->StoreLog("blah_blah", MetricsLog::ONGOING_LOG, LogMetadata());
+  test_log_store->StoreLog("blah_blah", MetricsLog::ONGOING_LOG, LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
   // Note: |initial_log_count()| refers to initial stability logs, so the above
   // log is counted an ongoing log (per its type).
   ASSERT_EQ(0u, test_log_store->initial_log_count());
@@ -1302,15 +1303,19 @@ TEST_P(MetricsServiceTestWithFeatures, PurgeLogsOnClonedInstallDetected) {
   // Store various logs.
   MetricsLogStore* test_log_store = service.LogStoreForTest();
   test_log_store->StoreLog("dummy log data", MetricsLog::ONGOING_LOG,
-                           LogMetadata());
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
   test_log_store->StageNextLog();
   test_log_store->StoreLog("more dummy log data", MetricsLog::ONGOING_LOG,
-                           LogMetadata());
+                           LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
   test_log_store->StoreLog("dummy stability log",
-                           MetricsLog::INITIAL_STABILITY_LOG, LogMetadata());
+                           MetricsLog::INITIAL_STABILITY_LOG, LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
   test_log_store->SetAlternateOngoingLogStore(InitializeTestLogStoreAndGet());
   test_log_store->StoreLog("dummy log for alternate ongoing log store",
-                           MetricsLog::ONGOING_LOG, LogMetadata());
+                           MetricsLog::ONGOING_LOG, LogMetadata(),
+                           MetricsLogsEventManager::CreateReason::kUnknown);
   EXPECT_TRUE(test_log_store->has_staged_log());
   EXPECT_TRUE(test_log_store->has_unsent_logs());
 

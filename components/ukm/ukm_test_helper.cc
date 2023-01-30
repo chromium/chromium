@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "components/metrics/log_decoder.h"
+#include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/unsent_log_store.h"
 #include "ukm_test_helper.h"
 
@@ -89,7 +90,7 @@ void UkmTestHelper::BuildAndStoreLog() {
       run_loop.QuitClosure());
   run_loop.Run();
 
-  ukm_service_->Flush();
+  ukm_service_->Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
 }
 
 bool UkmTestHelper::HasUnsentLogs() {

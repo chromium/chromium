@@ -277,7 +277,7 @@ void UkmService::DisableReporting() {
   metrics_providers_.OnRecordingDisabled();
 
   scheduler_->Stop();
-  Flush();
+  Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -309,14 +309,14 @@ void UkmService::OnAppEnterBackground() {
   // Give providers a chance to persist ukm data as part of being backgrounded.
   metrics_providers_.OnAppEnterBackground();
 
-  Flush();
+  Flush(metrics::MetricsLogsEventManager::CreateReason::kBackgrounded);
 }
 #endif
 
-void UkmService::Flush() {
+void UkmService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (initialize_complete_)
-    BuildAndStoreLog();
+    BuildAndStoreLog(reason);
   reporting_service_.ukm_log_store()->TrimAndPersistUnsentLogs(
       /*overwrite_in_memory_store=*/true);
 }
@@ -453,7 +453,7 @@ void UkmService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "UkmService::RotateLog";
   if (!reporting_service_.ukm_log_store()->has_unsent_logs())
-    BuildAndStoreLog();
+    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
   reporting_service_.Start();
   scheduler_->RotationFinished();
 }
@@ -468,7 +468,8 @@ void UkmService::AddSyncedUserNoiseBirthYearAndGenderToReport(Report* report) {
       report);
 }
 
-void UkmService::BuildAndStoreLog() {
+void UkmService::BuildAndStoreLog(
+    metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "UkmService::BuildAndStoreLog";
 
@@ -506,7 +507,8 @@ void UkmService::BuildAndStoreLog() {
   std::string serialized_log =
       UkmService::SerializeReportProtoToString(&report);
   metrics::LogMetadata log_metadata;
-  reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata);
+  reporting_service_.ukm_log_store()->StoreLog(serialized_log, log_metadata,
+                                               reason);
 }
 
 void UkmService::SetInitializationCompleteCallbackForTesting(

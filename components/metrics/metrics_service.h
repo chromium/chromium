@@ -460,10 +460,12 @@ class MetricsService {
   // by the caller).
   void CloseCurrentLog(
       bool async,
+      MetricsLogsEventManager::CreateReason reason,
       base::OnceClosure log_stored_callback = base::DoNothing());
 
   // Stores the |finalized_log| in |log_store()|.
   void StoreFinalizedLog(MetricsLog::LogType log_type,
+                         MetricsLogsEventManager::CreateReason reason,
                          base::OnceClosure done_callback,
                          FinalizedLog finalized_log);
 
@@ -475,11 +477,13 @@ class MetricsService {
   void MaybeCleanUpAndStoreFinalizedLog(
       std::unique_ptr<MetricsLogHistogramWriter> log_histogram_writer,
       MetricsLog::LogType log_type,
+      MetricsLogsEventManager::CreateReason reason,
       base::OnceClosure done_callback,
       FinalizedLog finalized_log);
 
   // Pushes the text of the current and staged logs into persistent storage.
-  void PushPendingLogsToPersistentStorage();
+  void PushPendingLogsToPersistentStorage(
+      MetricsLogsEventManager::CreateReason reason);
 
   // Ensures that scheduler is running, assuming the current settings are such
   // that metrics should be reported. If not, this is a no-op.

@@ -37,12 +37,12 @@ void MetricsLogsEventManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void MetricsLogsEventManager::NotifyLogCreated(
-    base::StringPiece log_hash,
-    base::StringPiece log_data,
-    base::StringPiece log_timestamp) {
+void MetricsLogsEventManager::NotifyLogCreated(base::StringPiece log_hash,
+                                               base::StringPiece log_data,
+                                               base::StringPiece log_timestamp,
+                                               CreateReason reason) {
   for (Observer& observer : observers_)
-    observer.OnLogCreated(log_hash, log_data, log_timestamp);
+    observer.OnLogCreated(log_hash, log_data, log_timestamp, reason);
 }
 
 void MetricsLogsEventManager::NotifyLogEvent(LogEvent event,
