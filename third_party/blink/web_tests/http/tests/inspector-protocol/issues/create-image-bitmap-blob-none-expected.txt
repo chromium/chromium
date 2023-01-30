@@ -1,0 +1,21 @@
+Verifies that ObsoleteCreateImageBitmapImageOrientationNone deprecation issue is created from page with {imageOrientation: "none"}.
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 16
+                    lineNumber : 22
+                    scriptId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/create-image-bitmap-blob-none.html
+                }
+                type : ObsoleteCreateImageBitmapImageOrientationNone
+            }
+        }
+    }
+}
+

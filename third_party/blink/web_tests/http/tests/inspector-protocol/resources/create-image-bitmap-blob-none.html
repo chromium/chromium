@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<title>Webpage for testing Content-Security-Policy in PaymentRequest</title>
+<!-- Deny connections to all payment method identifiers. -->
+<meta http-equiv="Content-Security-Policy" content="connect-src 'none'">
+</head>
+<body>
+<script>
+
+async function runTest() {
+  // Source: https://commons.wikimedia.org/wiki/File:1x1.png (Public Domain)
+  const IMAGE = atob("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAA" +
+                     "ACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII=");
+
+  let bytes = new Array(IMAGE.length);
+  for (let i = 0; i < IMAGE.length; i++) {
+    bytes[i] = IMAGE.charCodeAt(i);
+  }
+
+  let blob = new Blob([new Uint8Array(bytes)], { type: "text/html"});
+
+  await window.createImageBitmap(blob, { imageOrientation: 'none' });
+}
+
+runTest();
+</script>
+</body>
+</html>

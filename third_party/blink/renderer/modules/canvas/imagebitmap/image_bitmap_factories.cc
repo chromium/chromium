@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
@@ -83,6 +84,8 @@ enum CreateImageBitmapSource {
   kCreateImageBitmapSourceVideoFrame = 8,
   kMaxValue = kCreateImageBitmapSourceVideoFrame,
 };
+
+constexpr const char* kImageBitmapOptionNone = "none";
 
 gfx::Rect NormalizedCropRect(int x, int y, int width, int height) {
   if (width < 0) {
@@ -153,6 +156,18 @@ ScriptPromise ImageBitmapFactories::CreateImageBitmapFromBlob(
     absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options) {
   DCHECK(script_state->ContextIsValid());
+
+  // imageOrientation: 'from-image' will be used to replace imageOrientation:
+  // 'none'. Adding a deprecation warning when 'none' is called in
+  // createImageBitmap.
+  if (options->imageOrientation() == kImageBitmapOptionNone) {
+    auto* execution_context =
+        ExecutionContext::From(script_state->GetContext());
+    Deprecation::CountDeprecation(
+        execution_context,
+        WebFeature::kObsoleteCreateImageBitmapImageOrientationNone);
+  }
+
   ImageBitmapFactories& factory = From(*ExecutionContext::From(script_state));
   ImageBitmapLoader* loader = ImageBitmapFactories::ImageBitmapLoader::Create(
       factory, crop_rect, options, script_state);
