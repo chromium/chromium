@@ -1270,7 +1270,13 @@ TEST_P(AshNotificationViewDragTest, DragPopup) {
   const gfx::Point drag_area_center =
       gfx::Rect(drag_area_origin, drag_area_bounds->size()).CenterPoint();
 
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->GetPopupNotifications().empty());
   Drag(drag_area_center, kMoveStep);
+
+  // After drag, the popup notification is dismissed.
+  EXPECT_TRUE(
+      message_center::MessageCenter::Get()->GetPopupNotifications().empty());
 }
 
 }  // namespace ash

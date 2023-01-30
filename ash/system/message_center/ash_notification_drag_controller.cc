@@ -4,13 +4,17 @@
 
 #include "ash/system/message_center/ash_notification_drag_controller.h"
 
+#include "ash/shell.h"
 #include "ash/system/message_center/ash_notification_view.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/message_center/message_center.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -18,6 +22,15 @@ namespace ash {
 AshNotificationDragController::AshNotificationDragController() = default;
 
 AshNotificationDragController::~AshNotificationDragController() = default;
+
+void AshNotificationDragController::OnDragCompleted(
+    const ui::DropTargetEvent& event) {
+  OnNotificationViewDragEnded();
+}
+
+void AshNotificationDragController::OnDragCancelled() {
+  OnNotificationViewDragEnded();
+}
 
 void AshNotificationDragController::WriteDragDataForView(
     views::View* sender,
@@ -55,13 +68,48 @@ bool AshNotificationDragController::CanStartDragForView(
     views::View* sender,
     const gfx::Point& press_pt,
     const gfx::Point& p) {
+  AshNotificationView* notification_view =
+      static_cast<AshNotificationView*>(sender);
   const absl::optional<gfx::Rect> drag_area =
-      static_cast<AshNotificationView*>(sender)->GetDragAreaBounds();
+      notification_view->GetDragAreaBounds();
 
   // Enable dragging `notification_view_` if:
   // 1. `notification_view_` is draggable; and
   // 2. `drag_area` contains the initial press point.
-  return drag_area && drag_area->Contains(press_pt);
+  const bool can_start_drag = (drag_area && drag_area->Contains(press_pt));
+
+  // Assume that the drag on `sender` will start when `can_start_drag` is true.
+  // TODO(https://crbug.com/1410276): in some edge cases, the view drag does not
+  // start when `CanStartDragForView()` returns true. We should come up with a
+  // general solution to observe drag start.
+  if (can_start_drag) {
+    OnNotificationViewDragStarted(notification_view);
+  }
+
+  return can_start_drag;
+}
+
+void AshNotificationDragController::OnNotificationViewDragStarted(
+    AshNotificationView* dragged_view) {
+  DCHECK(dragged_view);
+  DCHECK(!dragged_notification_id_);
+  dragged_notification_id_ = dragged_view->notification_id();
+
+  // The drag drop client in Ash, i.e. `DragDropController`, is a singleton.
+  // Hence, always use the primary root window to access the drag drop client.
+  drag_drop_client_observer_.Observe(
+      aura::client::GetDragDropClient(Shell::GetPrimaryRootWindow()));
+
+  // Hide the dragged notification popup if any.
+  message_center::MessageCenter::Get()->MarkSinglePopupAsShown(
+      *dragged_notification_id_,
+      /*mark_notification_as_read=*/true);
+}
+
+void AshNotificationDragController::OnNotificationViewDragEnded() {
+  DCHECK(dragged_notification_id_);
+  dragged_notification_id_.reset();
+  drag_drop_client_observer_.Reset();
 }
 
 }  // namespace ash
