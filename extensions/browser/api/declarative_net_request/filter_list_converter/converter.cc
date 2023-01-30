@@ -261,8 +261,8 @@ class ProtoToJSONRuleConverter {
     return true;
   }
 
-  base::Value GetResourceTypeList(int element_mask) {
-    base::Value resource_types(base::Value::Type::LIST);
+  base::Value::List GetResourceTypeList(int element_mask) {
+    base::Value::List resource_types;
     for (int element_type = 1; element_type <= proto::ElementType_MAX;
          element_type <<= 1) {
       CHECK(proto::ElementType_IsValid(element_type));
@@ -374,14 +374,14 @@ class ProtoToJSONRuleConverter {
     if (element_mask == (proto::ELEMENT_TYPE_ALL & ~kMaskUnsupported))
       return true;
 
-    base::Value resource_types = GetResourceTypeList(element_mask);
+    base::Value::List resource_types = GetResourceTypeList(element_mask);
     if (is_allow_all_requests_rule_) {
       resource_types.Append(
           dnr_api::ToString(dnr_api::RESOURCE_TYPE_MAIN_FRAME));
     }
 
     CHECK(json_rule_.SetPath({kRuleConditionKey, kResourceTypesKey},
-                             std::move(resource_types)));
+                             base::Value(std::move(resource_types))));
     return true;
   }
 
