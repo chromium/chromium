@@ -16,6 +16,10 @@
     user-select: text;
 }
 
+:fullscreen {
+    top-layer: browser !important;
+}
+
 iframe:fullscreen {
     border: none !important;
     padding: 0 !important;
@@ -27,6 +31,7 @@ iframe:fullscreen {
     position: fixed;
     inset: 0;
     background: black;
+    top-layer: browser !important;
 }
 
 /* Anything below are extensions over what the Fullscreen API (29 May 2018) mandates. */

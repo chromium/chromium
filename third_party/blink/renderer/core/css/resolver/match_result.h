@@ -26,6 +26,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layer_map.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/cascade_origin.h"
 #include "third_party/blink/renderer/core/css/resolver/match_flags.h"
@@ -92,7 +93,7 @@ class AddMatchedPropertiesOptions {
  private:
   unsigned link_match_type_ = CSSSelector::kMatchAll;
   ValidPropertyFilter valid_property_filter_ = ValidPropertyFilter::kNoFilter;
-  unsigned layer_order_ = 0;
+  unsigned layer_order_ = CascadeLayerMap::kImplicitOuterLayerOrder;
   bool is_inline_style_ = false;
 
   friend class Builder;

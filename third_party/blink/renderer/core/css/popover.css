@@ -34,6 +34,10 @@ dialog[popover]:not(:closed) {
   anchor-scroll: implicit;
 }
 
+[popover]:open:not(dialog), dialog:open:not([open]) {
+  top-layer: browser !important;
+}
+
 [popover]:open::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
@@ -42,4 +46,5 @@ dialog[popover]:not(:closed) {
   pointer-events: none !important;
   /* https://github.com/openui/open-ui/issues/561#issuecomment-1242297093 */
   background-color: transparent;
+  top-layer: browser !important;
 }
