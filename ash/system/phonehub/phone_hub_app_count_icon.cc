@@ -51,5 +51,6 @@ class NumberIconImageSource : public gfx::CanvasImageSource {
 
 AppCountIcon::AppCountIcon(const int count)
     : SmallAppIcon(gfx::Image(
-          gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(0))) {}
+          gfx::CanvasImageSource::MakeImageSkia<NumberIconImageSource>(
+              count))) {}
 }  // namespace ash
