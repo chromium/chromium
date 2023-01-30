@@ -28,40 +28,6 @@ namespace reporting {
 
 using DmServerUploader = DmServerUploadService::DmServerUploader;
 
-namespace {
-// Thread-safe helper callback class: calls callback once |Decrement|
-// is invoked |count| times and then self-destructs. |Increment| can be
-// called at any time, provided that the counter has not dropped to 0 yet.
-class CollectorCallback {
- public:
-  CollectorCallback(size_t count, base::OnceClosure done_cb)
-      : count_(count), done_cb_(std::move(done_cb)) {
-    DCHECK_GT(count, 0u);
-  }
-  CollectorCallback(CollectorCallback& other) = delete;
-  CollectorCallback& operator=(CollectorCallback& other) = delete;
-  ~CollectorCallback() { std::move(done_cb_).Run(); }
-
-  void Decrement() {
-    size_t old_count = count_.fetch_sub(1);
-    DCHECK_GT(old_count, 0u);
-    if (old_count > 1) {
-      return;
-    }
-    delete this;
-  }
-
-  void Increment() {
-    size_t old_count = count_.fetch_add(1);
-    DCHECK_GT(old_count, 0u) << "Cannot increment if already 0";
-  }
-
- private:
-  std::atomic<size_t> count_;
-  base::OnceClosure done_cb_;
-};
-}  // namespace
-
 DmServerUploadService::RecordHandler::RecordHandler() = default;
 
 DmServerUploader::DmServerUploader(
