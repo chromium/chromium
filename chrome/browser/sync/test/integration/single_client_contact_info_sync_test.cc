@@ -6,9 +6,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/autofill/core/browser/contact_info_sync_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -131,6 +133,41 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoSyncTest, ClearOnDisableSync) {
   EXPECT_TRUE(
       PersonalDataManagerProfileChecker(GetPersonalDataManager(), IsEmpty())
           .Wait());
+}
+
+// Specialized fixture to test the behavior for custom passphrase users with and
+// without kSyncEnableContactInfoDataTypeForCustomPassphraseUsers enabled.
+class SingleClientContactInfoPassphraseSyncTest
+    : public SingleClientContactInfoSyncTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SingleClientContactInfoPassphraseSyncTest() {
+    feature_.InitWithFeatureState(
+        syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
+        EnabledForPassphraseUsersTestParam());
+  }
+
+  bool EnabledForPassphraseUsersTestParam() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientContactInfoPassphraseSyncTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SingleClientContactInfoPassphraseSyncTest, Passphrase) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("123456");
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
+  ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
+  EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
+            EnabledForPassphraseUsersTestParam());
 }
 
 // Specialized fixture that enables AutofillAccountProfilesOnSignIn.

@@ -245,7 +245,8 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
                   db_thread_,
                   base::BindRepeating(
                       &ContactInfoDelegateFromDataService,
-                      base::RetainedRef(web_data_service_on_disk_)))));
+                      base::RetainedRef(web_data_service_on_disk_))),
+              sync_service));
     }
 
     // Wallet data sync is enabled by default. Register unless explicitly
