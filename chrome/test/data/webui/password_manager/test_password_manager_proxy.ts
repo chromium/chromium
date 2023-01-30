@@ -53,6 +53,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'requestPlaintextPassword',
       'showAddShortcutDialog',
       'startBulkPasswordCheck',
+      'switchBiometricAuthBeforeFillingState',
       'unmuteInsecureCredential',
     ]);
 
@@ -215,5 +216,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
 
   cancelExportPasswords() {
     this.methodCalled('cancelExportPasswords');
+  }
+
+  switchBiometricAuthBeforeFillingState() {
+    this.methodCalled('switchBiometricAuthBeforeFillingState');
   }
 }

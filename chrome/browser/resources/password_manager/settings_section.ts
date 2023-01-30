@@ -48,6 +48,16 @@ export class SettingsSectionElement extends I18nMixin
           return loadTimeData.getBoolean('isPasswordManagerShortcutInstalled');
         },
       },
+
+      // <if expr="is_win or is_macosx">
+      isBiometricAuthenticationForFillingToggleVisible_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'biometricAuthenticationForFillingToggleVisible');
+        },
+      },
+      // </if>
     };
   }
 
@@ -96,6 +106,15 @@ export class SettingsSectionElement extends I18nMixin
       event: DomRepeatEvent<chrome.passwordsPrivate.ExceptionEntry>) {
     PasswordManagerImpl.getInstance().removeBlockedSite(event.model.item.id);
   }
+
+  // <if expr="is_win or is_macosx">
+  private switchBiometricAuthBeforeFillingState_(e: Event) {
+    const biometricAuthenticationForFillingToggle =
+        e!.target as PrefToggleButtonElement;
+    assert(biometricAuthenticationForFillingToggle);
+    PasswordManagerImpl.getInstance().switchBiometricAuthBeforeFillingState();
+  }
+  // </if>
 }
 
 declare global {

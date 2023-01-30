@@ -14,6 +14,13 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {createBlockedSiteEntry, makePasswordManagerPrefs} from './test_util.js';
 
+// Disable clang format to keep OS-specific includes.
+// clang-format off
+// <if expr="is_win or is_macosx">
+import {PrefToggleButtonElement} from 'chrome://password-manager/password_manager.js';
+ // </if>
+// clang-format on
+
 /**
  * Helper method that validates a that elements in the exception list match
  * the expected data.
@@ -80,6 +87,50 @@ suite('SettingsSectionTest', function() {
 
     assertFalse(settings.$.autosigninToggle.checked);
   });
+
+  // <if expr="is_win or is_macosx">
+  // Tests that biometric auth pref is visible, and clicking on it triggers
+  // biometric auth validation instead of directly updating the pref value.
+  test('biometric auth prefs when feature is available', async function() {
+    await prefsProxy.setPref('biometric_authentication_filling', false);
+    loadTimeData.overrideValues(
+        {biometricAuthenticationForFillingToggleVisible: true});
+
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
+
+    const biometricAuthenticationToggle =
+        settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+            '#biometricAuthenticationToggle') as PrefToggleButtonElement;
+    assertTrue(!!biometricAuthenticationToggle);
+    assertFalse(biometricAuthenticationToggle.checked);
+    biometricAuthenticationToggle.click();
+
+    // Pref settings should not change until authentication succeeds.
+    await passwordManager.whenCalled('switchBiometricAuthBeforeFillingState');
+    assertFalse(biometricAuthenticationToggle.checked);
+
+    // Imitate prefs changing after successful identification.
+    prefsProxy.prefs = makePasswordManagerPrefs();
+    await prefsProxy.setPref('biometric_authentication_filling', true);
+    assertTrue(biometricAuthenticationToggle.checked);
+  });
+
+  // Tests that biometric auth pref is not shown, if biometric auth is
+  // unavailable.
+  test('biometric auth prefs when feature is unavailable', async function() {
+    loadTimeData.overrideValues(
+        {biometricAuthenticationForFillingToggleVisible: false});
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
+    assertFalse(!!settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
+        '#biometricAuthenticationToggle'));
+  });
+  // </if>
 
   test('settings section shows blockedSites', async function() {
     passwordManager.data.blockedSites = [

@@ -203,6 +203,12 @@ export interface PasswordManagerProxy {
    * Cancels the export in progress.
    */
   cancelExportPasswords(): void;
+
+  /**
+   * Switches Biometric authentication before filling state after
+   * successful authentication.
+   */
+  switchBiometricAuthBeforeFillingState(): void;
 }
 
 /**
@@ -331,6 +337,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   cancelExportPasswords() {
     chrome.passwordsPrivate.cancelExportPasswords();
+  }
+
+  switchBiometricAuthBeforeFillingState() {
+    chrome.passwordsPrivate.switchBiometricAuthBeforeFillingState();
   }
 
   static getInstance(): PasswordManagerProxy {

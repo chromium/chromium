@@ -49,6 +49,16 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
         notify: true,
         reflectToAttribute: true,
       },
+
+      /**
+       * If true, do not automatically set the preference value on user click.
+       * Confirm the change first then call either sendPrefChange or
+       * resetToPrefValue accordingly.
+       */
+      changeRequiresValidation: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -59,6 +69,7 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
   label: string;
   subLabel: string;
   checked: boolean;
+  changeRequiresValidation: boolean;
 
   override ready() {
     super.ready();
@@ -77,6 +88,12 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
    */
   private onHostClick_(e: Event) {
     e.stopPropagation();
+
+    if (this.changeRequiresValidation) {
+      this.dispatchEvent(new CustomEvent(
+          'validate-and-change-pref', {bubbles: true, composed: true}));
+      return;
+    }
 
     this.checked = !this.checked;
     this.updatePrefValue_();
