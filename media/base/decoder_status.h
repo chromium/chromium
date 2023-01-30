@@ -53,10 +53,6 @@ using DecoderStatus = TypedStatus<DecoderStatusTraits>;
 // owns the class it's guaranteed to be unique.
 class MEDIA_EXPORT ScopedDecodeTrace {
  public:
-  // Returns true if tracing is enabled for the media category. If false,
-  // clients should avoid creating ScopedDecodeTrace objects.
-  static bool IsEnabled();
-
   // Begins an asynchronous trace with the given name and properties. Providing
   // the DecoderBuffer itself yields the most information in the trace.
   ScopedDecodeTrace(const char* trace_name, const DecoderBuffer& buffer);

@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
@@ -118,6 +120,8 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
   // Cache of parameters for sanity verification.
   size_t output_buffer_size_;
   gfx::Size input_coded_size_;
+
+  base::LRUCache<int64_t, base::TimeTicks> timestamps_;
 
   // Note that this class is already thread hostile when bound.
   SEQUENCE_CHECKER(sequence_checker_);

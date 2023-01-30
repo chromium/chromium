@@ -4,6 +4,8 @@
 
 #include "media/base/media_util.h"
 
+#include "base/trace_event/trace_event.h"
+
 namespace media {
 
 std::vector<uint8_t> EmptyExtraData() {
@@ -28,4 +30,9 @@ AudioParameters::Format ConvertAudioCodecToBitstreamFormat(AudioCodec codec) {
   }
 }
 
+bool MediaTraceIsEnabled() {
+  bool enable_decode_traces = false;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &enable_decode_traces);
+  return enable_decode_traces;
+}
 }  // namespace media

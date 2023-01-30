@@ -47,13 +47,6 @@ const std::string GetDecodeStatusString(const DecoderStatus& status) {
 
 }  // namespace
 
-// static
-bool ScopedDecodeTrace::IsEnabled() {
-  bool enable_decode_traces = false;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED("media", &enable_decode_traces);
-  return enable_decode_traces;
-}
-
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      bool is_key_frame,
                                      base::TimeDelta timestamp)

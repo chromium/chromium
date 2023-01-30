@@ -36,6 +36,8 @@ class MEDIA_EXPORT NullMediaLog : public media::MediaLog {
 MEDIA_EXPORT AudioParameters::Format ConvertAudioCodecToBitstreamFormat(
     media::AudioCodec codec);
 
+// Returns true if tracing is enabled for the media category.
+MEDIA_EXPORT bool MediaTraceIsEnabled();
 }  // namespace media
 
 #endif  // MEDIA_BASE_MEDIA_UTIL_H_

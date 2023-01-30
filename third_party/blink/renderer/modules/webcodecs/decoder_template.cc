@@ -16,6 +16,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/decoder_status.h"
+#include "media/base/media_util.h"
 #include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/public/common/features.h"
@@ -421,7 +422,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   --num_pending_decodes_;
   ScheduleDequeueEvent();
 
-  if (media::ScopedDecodeTrace::IsEnabled()) {
+  if (media::MediaTraceIsEnabled()) {
     request->decode_trace = std::make_unique<media::ScopedDecodeTrace>(
         GetTraceNames()->decode.c_str(), *request->decoder_buffer);
   }
