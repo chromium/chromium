@@ -48,6 +48,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "media/media_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chromeos/extensions/controlled_pref_mapping.h"
