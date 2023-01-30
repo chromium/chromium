@@ -11,10 +11,17 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
+#include "components/device_signals/core/common/cached_signal.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -22,30 +29,70 @@
 
 namespace device_signals {
 
+using SignalsCallback =
+    base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)>;
+
 namespace {
 
+constexpr int kCacheExpiryInHours = 1;
 constexpr size_t kMaxZtaFileSize = 32 * 1024;
-constexpr char kAgentIdPropertyKey[] = "sub";
 
-void OnPayloadParsed(
-    base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)> callback,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    LogCrowdStrikeParsingError(SignalsParsingError::kJsonParsingFailed);
-    std::move(callback).Run(absl::nullopt);
+constexpr char kAgentIdJwtPropertyKey[] = "sub";
+constexpr char kCustomerIdJwtPropertyKey[] = "cid";
+
+// Core logic of getting the CrowdStrike agent information. Extracted into
+// a function in the anonymous namespace to have it run in a background
+// thread. `zta_file_path` points to the data.zta file. `json_decode_callback`
+// can be used to decode JSON values out-of-process and then lead into invoking
+// the final callback. `results_callback` is the final callback which ultimately
+// returns the collected signals to the caller.
+void GetZtaJwtPayload(
+    const base::FilePath& zta_file_path,
+    base::OnceCallback<void(const std::string&, SignalsCallback)>
+        json_decode_callback,
+    SignalsCallback results_callback) {
+  if (!base::PathExists(zta_file_path)) {
+    // Not finding a file is a supported use-case (not an error).
+    std::move(results_callback).Run(absl::nullopt);
+    return;
+  }
+  std::string file_content;
+  if (!base::ReadFileToStringWithMaxSize(zta_file_path, &file_content,
+                                         kMaxZtaFileSize)) {
+    LogCrowdStrikeParsingError(SignalsParsingError::kHitMaxDataSize);
+    std::move(results_callback).Run(absl::nullopt);
     return;
   }
 
-  const std::string* agent_id = result->FindStringPath(kAgentIdPropertyKey);
-  if (!agent_id) {
-    LogCrowdStrikeParsingError(SignalsParsingError::kMissingRequiredProperty);
-    std::move(callback).Run(absl::nullopt);
+  if (file_content.empty()) {
+    // Having an empty file is a supported use-case (not an error).
+    std::move(results_callback).Run(absl::nullopt);
     return;
   }
 
-  CrowdStrikeSignals identifiers;
-  identifiers.agent_id = *agent_id;
-  std::move(callback).Run(identifiers);
+  // A valid ZTA file represents a JWT. For parsing out the identifiers, only
+  // the payload section is relevant. More information on JWTs here:
+  // https://en.wikipedia.org/wiki/JSON_Web_Token
+  std::vector<std::string> jwt_sections = base::SplitString(
+      file_content, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  if (jwt_sections.size() != 3) {
+    // A JWT payload must have three sections.
+    LogCrowdStrikeParsingError(SignalsParsingError::kDataMalformed);
+    std::move(results_callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::string json_payload;
+  if (!base::Base64UrlDecode(jwt_sections[1],
+                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
+                             &json_payload)) {
+    LogCrowdStrikeParsingError(SignalsParsingError::kBase64DecodingFailed);
+    std::move(results_callback).Run(absl::nullopt);
+    return;
+  }
+
+  std::move(json_decode_callback)
+      .Run(json_payload, std::move(results_callback));
 }
 
 }  // namespace
@@ -53,17 +100,35 @@ void OnPayloadParsed(
 class CrowdStrikeClientImpl : public CrowdStrikeClient {
  public:
   explicit CrowdStrikeClientImpl(const base::FilePath& zta_file_path);
-
   ~CrowdStrikeClientImpl() override;
 
   // CrowdStrikeClient:
-  void GetIdentifiers(
-      base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)> callback)
-      override;
+  void GetIdentifiers(SignalsCallback callback) override;
 
  private:
+  // Delegated the JSON decoding of `json_content` to a out-of-process utility.
+  // Will invoke OnPayloadParsed with the result, while forwarding `callback`.
+  void DecodeJson(const std::string& json_content, SignalsCallback callback);
+
+  // Invoked after decoding some JSON content with `result`. That result is
+  // then parsed for the required signals. Then, `callback` is invoked with
+  // any signals that were found.
+  void OnPayloadParsed(SignalsCallback callback,
+                       data_decoder::DataDecoder::ValueOrError result);
+
+  // Final function to be called in this flow with `signals` containing any
+  // value that was successfully found. This function will set the cache and
+  // then invoke the original caller's `callback`.
+  void OnSignalsRetrieved(SignalsCallback callback,
+                          absl::optional<CrowdStrikeSignals> signals);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   const base::FilePath zta_file_path_;
   data_decoder::DataDecoder data_decoder_;
+  CachedSignal<CrowdStrikeSignals> cached_signals_;
+
+  base::WeakPtrFactory<CrowdStrikeClientImpl> weak_ptr_factory_{this};
 };
 
 // static
@@ -83,55 +148,96 @@ std::unique_ptr<CrowdStrikeClient> CrowdStrikeClient::CreateForTesting(
 
 CrowdStrikeClientImpl::CrowdStrikeClientImpl(
     const base::FilePath& zta_file_path)
-    : zta_file_path_(zta_file_path) {}
+    : zta_file_path_(zta_file_path),
+      cached_signals_(base::Hours(kCacheExpiryInHours)) {}
 
 CrowdStrikeClientImpl::~CrowdStrikeClientImpl() = default;
 
-void CrowdStrikeClientImpl::GetIdentifiers(
-    base::OnceCallback<void(absl::optional<CrowdStrikeSignals>)> callback) {
-  if (!base::PathExists(zta_file_path_)) {
-    // Not finding a file is a supported use-case (not an error).
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-  std::string file_content;
-  if (!base::ReadFileToStringWithMaxSize(zta_file_path_, &file_content,
-                                         kMaxZtaFileSize)) {
-    LogCrowdStrikeParsingError(SignalsParsingError::kHitMaxDataSize);
-    std::move(callback).Run(absl::nullopt);
+void CrowdStrikeClientImpl::GetIdentifiers(SignalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto& cached_values = cached_signals_.Get();
+  if (cached_values) {
+    std::move(callback).Run(cached_values.value());
     return;
   }
 
-  if (file_content.empty()) {
-    // Having an empty file is a supported use-case (not an error).
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
+  base::OnceCallback<void(const std::string&, SignalsCallback)>
+      json_decode_callback =
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             base::BindOnce(&CrowdStrikeClientImpl::DecodeJson,
+                                            weak_ptr_factory_.GetWeakPtr()));
 
-  // A valid ZTA file represents a JWT. For parsing out the identifiers, only
-  // the payload section is relevant. More information on JWTs here:
-  // https://en.wikipedia.org/wiki/JSON_Web_Token
-  std::vector<std::string> jwt_sections = base::SplitString(
-      file_content, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (jwt_sections.size() != 3) {
-    // A JWT payload must have three sections.
-    LogCrowdStrikeParsingError(SignalsParsingError::kDataMalformed);
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
+  SignalsCallback result_callback = base::BindPostTask(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&CrowdStrikeClientImpl::OnSignalsRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  std::string json_payload;
-  if (!base::Base64UrlDecode(jwt_sections[1],
-                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                             &json_payload)) {
-    LogCrowdStrikeParsingError(SignalsParsingError::kBase64DecodingFailed);
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetZtaJwtPayload, zta_file_path_,
+                     std::move(json_decode_callback),
+                     std::move(result_callback)));
+}
 
-  // Parse the JSON payload in a child process.
+void CrowdStrikeClientImpl::DecodeJson(const std::string& json_content,
+                                       SignalsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Parse the JSON content in a child process.
   data_decoder_.ParseJson(
-      json_payload, base::BindOnce(&OnPayloadParsed, std::move(callback)));
+      json_content,
+      base::BindOnce(&CrowdStrikeClientImpl::OnPayloadParsed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrowdStrikeClientImpl::OnPayloadParsed(
+    SignalsCallback callback,
+    data_decoder::DataDecoder::ValueOrError result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!result.has_value()) {
+    LogCrowdStrikeParsingError(SignalsParsingError::kJsonParsingFailed);
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  const std::string* agent_id = result->FindStringPath(kAgentIdJwtPropertyKey);
+  if (!agent_id) {
+    LogCrowdStrikeParsingError(SignalsParsingError::kMissingRequiredProperty);
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  CrowdStrikeSignals identifiers;
+  identifiers.agent_id = *agent_id;
+
+  const std::string* customer_id =
+      result->FindStringPath(kCustomerIdJwtPropertyKey);
+  if (customer_id) {
+    identifiers.customer_id = *customer_id;
+  }
+
+  std::move(callback).Run(identifiers);
+}
+
+void CrowdStrikeClientImpl::OnSignalsRetrieved(
+    SignalsCallback callback,
+    absl::optional<CrowdStrikeSignals> signals) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!signals) {
+    // If signals could not be retrieved via the ZTA file, then fallback to
+    // some other platform-specific mechanism. However, do not cache that
+    // value as it is inexpensive to retrieve and the ZTA file is preferred.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+        base::BindOnce(&GetCrowdStrikeSignals), std::move(callback));
+    return;
+  }
+
+  cached_signals_.Set(signals.value());
+  std::move(callback).Run(std::move(signals));
 }
 
 }  // namespace device_signals

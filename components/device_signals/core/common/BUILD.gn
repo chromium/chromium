@@ -4,6 +4,7 @@
 
 static_library("common") {
   public = [
+    "cached_signal.h",
     "common_types.h",
     "platform_utils.h",
     "signals_constants.h",
