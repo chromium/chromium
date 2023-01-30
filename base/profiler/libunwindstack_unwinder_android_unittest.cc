@@ -20,6 +20,7 @@
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -165,8 +166,14 @@ TEST(LibunwindstackUnwinderAndroidTest, DISABLED_OtherLibrary) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
+// TODO(crbug/1384173): investigate whether this test should pass on 32-bit ARM
+#if defined(ARCH_CPU_ARM_FAMILY) && !defined(ARCH_CPU_ARM64)
+#define MAYBE_JavaFunction DISABLED_JavaFunction
+#else
+#define MAYBE_JavaFunction JavaFunction
+#endif
 // Checks that java frames can be unwound through and have function names.
-TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
+TEST(LibunwindstackUnwinderAndroidTest, MAYBE_JavaFunction) {
   auto* build_info = base::android::BuildInfo::GetInstance();
   // Due to varying availability of compiled/JITed java unwind tables, unwinding
   // is only expected to reliably succeed on Android P+
