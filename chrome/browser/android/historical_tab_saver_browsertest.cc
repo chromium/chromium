@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/gtest_util.h"
 #include "chrome/browser/android/historical_tab_saver.h"
+
+#include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/gtest_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-
-#include "base/memory/raw_ptr.h"
 
 namespace historical_tab_saver {
 

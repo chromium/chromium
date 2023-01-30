@@ -5,6 +5,9 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_REQUEST_CONTEXT_MANAGER_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_REQUEST_CONTEXT_MANAGER_H_
 
+#include <memory>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
@@ -12,10 +15,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/network_service.mojom.h"
-
-#include <memory>
-#include <string>
 
 namespace content {
 class ResourceContext;
