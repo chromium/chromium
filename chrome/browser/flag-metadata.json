@@ -1602,7 +1602,7 @@
   {
     "name": "drive-fs-chrome-networking",
     "owners": [ "travislane@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "drop-input-events-before-first-paint",
