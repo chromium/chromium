@@ -349,6 +349,7 @@ TEST_F(DriveFsPinManagerTest, Update) {
     const auto [it, ok] = manager.files_to_track_.try_emplace(
         id1, PinManager::File{.path = path1, .total = size1});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
@@ -549,13 +550,16 @@ TEST_F(DriveFsPinManagerTest, Remove) {
                               .total = 3000,
                               .in_progress = true});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.syncing_files, 1);
 
   // Try to remove an unknown file.
   EXPECT_FALSE(manager.Remove(id2, path2));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
+  EXPECT_EQ(manager.progress_.syncing_files, 1);
 
   {
     const auto it = manager.files_to_track_.find(id1);
@@ -574,6 +578,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
     EXPECT_EQ(progress.pinned_bytes, 5000);
     EXPECT_EQ(progress.bytes_to_pin, 10000);
     EXPECT_EQ(progress.required_space, 20480);
+    EXPECT_EQ(progress.syncing_files, 1);
   }
 
   // Remove file with default final size.
@@ -586,6 +591,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
     EXPECT_EQ(progress.pinned_bytes, 6800);
     EXPECT_EQ(progress.bytes_to_pin, 10000);
     EXPECT_EQ(progress.required_space, 20480);
+    EXPECT_EQ(progress.syncing_files, 0);
   }
 
   // Put in place a file to track.
@@ -596,6 +602,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
                               .total = 3000,
                               .in_progress = true});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
@@ -610,6 +617,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
     EXPECT_EQ(progress.pinned_bytes, 5600);
     EXPECT_EQ(progress.bytes_to_pin, 7000);
     EXPECT_EQ(progress.required_space, 16384);
+    EXPECT_EQ(progress.syncing_files, 0);
   }
 
   // Put in place a file to track.
@@ -620,6 +628,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
                               .total = 6000,
                               .in_progress = true});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
@@ -634,6 +643,7 @@ TEST_F(DriveFsPinManagerTest, Remove) {
     EXPECT_EQ(progress.pinned_bytes, 10600);
     EXPECT_EQ(progress.bytes_to_pin, 11000);
     EXPECT_EQ(progress.required_space, 20480);
+    EXPECT_EQ(progress.syncing_files, 0);
   }
 }
 
@@ -665,11 +675,13 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
     const auto [it, ok] = manager.files_to_track_.try_emplace(
         id1, PinManager::File{.path = path1, .total = 10000});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
   {
     const auto [it, ok] = manager.files_to_track_.try_emplace(
         id2, PinManager::File{.path = path2, .total = 20000});
     ASSERT_TRUE(ok);
+    manager.progress_.syncing_files++;
   }
 
   EXPECT_THAT(manager.files_to_track_, SizeIs(2));
@@ -689,6 +701,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
   {
     const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
     EXPECT_EQ(progress.failed_files, 0);
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 0);
@@ -711,6 +724,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
   {
     const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
     EXPECT_EQ(progress.failed_files, 0);
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 0);
@@ -745,6 +759,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
   {
     const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 2);
     EXPECT_EQ(progress.failed_files, 0);
     EXPECT_EQ(progress.pinned_files, 0);
     EXPECT_EQ(progress.pinned_bytes, 5000);
@@ -779,6 +794,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
   {
     const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 1);
     EXPECT_EQ(progress.failed_files, 0);
     EXPECT_EQ(progress.pinned_files, 1);
     EXPECT_EQ(progress.pinned_bytes, 10000);
@@ -807,6 +823,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingEvent) {
 
   {
     const Progress progress = manager.GetProgress();
+    EXPECT_EQ(progress.syncing_files, 0);
     EXPECT_EQ(progress.failed_files, 1);
     EXPECT_EQ(progress.pinned_files, 1);
     EXPECT_EQ(progress.pinned_bytes, 10000);

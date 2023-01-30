@@ -112,6 +112,7 @@ function onBulkPinningProgress(progress) {
   $('bulk-pinning-files-to-pin').innerText = progress.files_to_pin;
   $('bulk-pinning-pinned-files').innerText = progress.pinned_files;
   $('bulk-pinning-failed-files').innerText = progress.failed_files;
+  $('bulk-pinning-syncing-files').innerText = progress.syncing_files;
 }
 
 function updateStartupArguments(args) {

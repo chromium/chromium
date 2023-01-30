@@ -92,6 +92,9 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) Progress {
   // Number of errors encountered so far.
   int32_t failed_files = 0;
 
+  // Number of files being synced right now.
+  int32_t syncing_files = 0;
+
   // Number of "useful" (ie non-duplicated) events received from DriveFS so far.
   int32_t useful_events = 0;
 
@@ -212,13 +215,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     // Total expected number of bytes for this file.
     int64_t total = 0;
 
+    // Is this file already pinned?
+    bool pinned = false;
+
     // Have we received in-progress events for this file?
     bool in_progress = false;
 
+    std::ostream& PrintTo(std::ostream& out) const;
+
     friend std::ostream& operator<<(std::ostream& out, const File& p) {
-      return out << "{transferred: " << HumanReadableSize(p.transferred)
-                 << ", total: " << HumanReadableSize(p.total)
-                 << ", in_progress: " << p.in_progress << "}";
+      return p.PrintTo(out);
     }
   };
 

@@ -199,33 +199,24 @@ int64_t GetSize(const mojom::FileMetadata& metadata) {
              : metadata.size;
 }
 
-bool CanPinItem(const mojom::FileMetadata& metadata,
-                const base::FilePath& path) {
+bool CanPinItem(const mojom::FileMetadata& md, const base::FilePath& path) {
   using Type = mojom::FileMetadata::Type;
-  const auto id = PinManager::Id(metadata.stable_id);
+  const auto id = PinManager::Id(md.stable_id);
 
-  if (metadata.type == Type::kDirectory) {
+  if (md.type == Type::kDirectory) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Directory";
     return false;
   }
 
   // TODO (b/264596214) Drive shortcuts masquerade as empty files. Is there a
   // better way to recognize Drive shortcuts?
-  if (metadata.type == Type::kFile && metadata.size == 0) {
+  if (md.type == Type::kFile && md.size == 0) {
     VLOG(2) << "Skipped " << id << " " << Quote(path)
             << ": Empty file or shortcut";
     return false;
   }
 
-  if (metadata.pinned) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
-    VLOG_IF(3, !metadata.available_offline)
-        << "Already pinned but not available offline yet: " << id << " "
-        << Quote(path);
-    return false;
-  }
-
-  if (metadata.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
+  if (md.can_pin != mojom::FileMetadata::CanPinStatus::kOk) {
     VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Cannot be pinned";
     return false;
   }
@@ -294,6 +285,13 @@ std::ostream& operator<<(std::ostream& out, const Stage stage) {
              << ")";
 }
 
+std::ostream& PinManager::File::PrintTo(std::ostream& out) const {
+  return out << "{transferred: " << HumanReadableSize(transferred)
+             << ", total: " << HumanReadableSize(total)
+             << ", pinned: " << pinned << ", in_progress: " << in_progress
+             << "}";
+}
+
 Progress::Progress() = default;
 Progress::Progress(const Progress&) = default;
 Progress& Progress::operator=(const Progress&) = default;
@@ -323,7 +321,8 @@ bool PinManager::Add(const Id id, const std::string& path, const int64_t size) {
   progress_.bytes_to_pin += size;
   progress_.required_space += RoundToBlockSize(size);
   progress_.files_to_pin++;
-  DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin), files_to_pin_.size());
+  DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin),
+            files_to_pin_.size() + files_to_track_.size());
   return true;
 }
 
@@ -345,6 +344,9 @@ bool PinManager::Remove(const Id id,
   }
 
   files_to_track_.erase(it);
+  progress_.syncing_files--;
+  DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
+            files_to_track_.size());
   VLOG(3) << "Stopped tracking " << id << " " << Quote(path);
   return true;
 }
@@ -439,6 +441,7 @@ void PinManager::Start() {
   progress_ = {};
   files_to_pin_.clear();
   files_to_track_.clear();
+  DCHECK_EQ(progress_.syncing_files, 0);
 
   VLOG(1) << "Calculating free space...";
   timer_ = base::ElapsedTimer();
@@ -528,11 +531,36 @@ void PinManager::OnSearchResultForSizeCalculation(
       continue;
     }
 
+    int64_t size = GetSize(md);
+
+    if (md.pinned) {
+      if (md.available_offline) {
+        VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Already pinned";
+        continue;
+      }
+
+      VLOG(1) << "Already pinned but not available offline yet: " << id << " "
+              << Quote(path);
+      const auto [it, ok] = files_to_track_.try_emplace(
+          id, File{.path = path.value(), .total = size, .pinned = true});
+      DCHECK(ok);
+      DCHECK_EQ(it->first, id);
+      progress_.syncing_files++;
+      DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
+                files_to_track_.size());
+      progress_.bytes_to_pin += size;
+      progress_.required_space += RoundToBlockSize(size);
+      progress_.files_to_pin++;
+      DCHECK_EQ(static_cast<size_t>(progress_.files_to_pin),
+                files_to_pin_.size() + files_to_track_.size());
+      continue;
+    }
+
     VLOG_IF(1, md.available_offline)
         << "Not pinned yet but already available offline: " << id << " "
         << Quote(path) << ": " << Quote(md);
 
-    Add(id, path.value(), GetSize(md));
+    Add(id, path.value(), size);
   }
 
   NotifyProgress();
@@ -571,6 +599,7 @@ void PinManager::Complete(const Stage stage) {
   search_query_.reset();
   files_to_pin_.clear();
   files_to_track_.clear();
+  progress_.syncing_files = 0;
 
   if (completion_callback_) {
     std::move(completion_callback_).Run(stage);
@@ -640,7 +669,7 @@ void PinManager::PinSomeFiles() {
     Files::node_type node = files_to_pin_.extract(files_to_pin_.begin());
     DCHECK(node);
     const Id id = node.key();
-    const File& file = node.mapped();
+    File& file = node.mapped();
     const std::string& path = file.path;
 
     VLOG(2) << "Pinning " << id << " " << Quote(path);
@@ -648,9 +677,15 @@ void PinManager::PinSomeFiles() {
         static_cast<int64_t>(id), true,
         base::BindOnce(&PinManager::OnFilePinned, GetWeakPtr(), id, path));
 
+    DCHECK(!file.pinned);
+    DCHECK(!file.in_progress);
+    file.pinned = true;
     const Files::insert_return_type ir =
         files_to_track_.insert(std::move(node));
     DCHECK(ir.inserted) << " for " << id << " " << path;
+    progress_.syncing_files++;
+    DCHECK_EQ(static_cast<size_t>(progress_.syncing_files),
+              files_to_track_.size());
   }
 
   VLOG(1) << "Progress "
@@ -810,9 +845,9 @@ void PinManager::CheckStalledFiles() {
   }
 
   for (const auto& [id, file] : files_to_track_) {
-    if (!file.in_progress) {
+    if (file.pinned && !file.in_progress) {
       const std::string& path = file.path;
-      VLOG(2) << "Checking unstarted " << id << " " << Quote(path);
+      VLOG(2) << "Checking stalled " << id << " " << Quote(path);
       drivefs_->GetMetadataByStableId(
           static_cast<int64_t>(id),
           base::BindOnce(&PinManager::OnMetadataRetrieved, GetWeakPtr(), id,
