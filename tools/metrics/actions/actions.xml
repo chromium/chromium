@@ -2560,6 +2560,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="AmbientMode.ScreenSaverPreview.Started">
+  <owner>safarli@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <description>
+    User clicked the button to start screen saver preview. Records the button
+    click event. Recorded on ChromeOS only.
+  </description>
+</action>
+
 <action name="Android.AddToHomescreenIPH.Message.Clicked">
   <owner>shaktisahu@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>

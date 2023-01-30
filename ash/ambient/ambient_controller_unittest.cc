@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -33,6 +34,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
@@ -141,6 +143,9 @@ class AmbientControllerTest : public AmbientAshTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+
+ protected:
+  base::UserActionTester user_action_tester_;
 };
 
 // Tests for behavior that are agnostic to the AmbientAnimationTheme selected by
@@ -1457,11 +1462,15 @@ TEST_P(AmbientControllerTestForAnyTheme, MetricsStartupTimeFailedToStart) {
 }
 
 TEST_F(AmbientControllerTest, ShouldStartScreenSaverPreview) {
+  ASSERT_EQ(0,
+            user_action_tester_.GetActionCount(kScreenSaverPreviewUserAction));
   ambient_controller()->StartScreenSaverPreview();
   FastForwardToLockScreenTimeout();
   FastForwardTiny();
   EXPECT_TRUE(ambient_controller()->IsShown());
   EXPECT_FALSE(IsLocked());
+  EXPECT_EQ(1,
+            user_action_tester_.GetActionCount(kScreenSaverPreviewUserAction));
 }
 
 TEST_F(AmbientControllerTest,

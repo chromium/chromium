@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
@@ -44,6 +45,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
@@ -551,6 +553,7 @@ void AmbientController::StartScreenSaverPreview() {
   }
 
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kPreview);
+  base::RecordAction(base::UserMetricsAction(kScreenSaverPreviewUserAction));
 }
 
 void AmbientController::ShowHiddenUi() {

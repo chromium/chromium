@@ -59,6 +59,10 @@ constexpr int kMediaStringMaxWidthDip = 280;
 
 constexpr int kMediaStringGradientWidthDip = 20;
 
+// UMA user action constants.
+constexpr char kScreenSaverPreviewUserAction[] =
+    "AmbientMode.ScreenSaverPreview.Started";
+
 }  // namespace ash
 
 #endif  // ASH_AMBIENT_AMBIENT_CONSTANTS_H_
