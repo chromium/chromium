@@ -3922,6 +3922,29 @@
             ]
         }
     ],
+    "DesktopOmniboxDriveDenoise": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Denoise_1_v1",
+                    "params": {
+                        "DocumentProviderMaxLowQualitySuggestions": "1"
+                    },
+                    "enable_features": [
+                        "OmniboxDocumentProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxPostAutocompletion": [
         {
             "platforms": [
