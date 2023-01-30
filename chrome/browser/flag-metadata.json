@@ -6298,16 +6298,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "sharing-hub-desktop-app-menu",
-    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
-    "name": "sharing-hub-desktop-omnibox",
-    "owners": [ "kristipark", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "shelf-auto-hide-separation",
     "owners": [ "yulunwu", "etuck", "//ash/shelf/OWNERS" ],
     "expiry_milestone": 114
