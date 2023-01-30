@@ -495,8 +495,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {
   EXPECT_TRUE(app_browser_->app_controller()->HasReloadButton());
 }
 
+// TODO(crbug.com/1411344): Flaky test.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
+IN_PROC_BROWSER_TEST_P(HostedAppTest, DISABLED_LoadIcon) {
   SetupApp("hosted_app");
 
   EXPECT_TRUE(app_service_test().AreIconImageEqual(
