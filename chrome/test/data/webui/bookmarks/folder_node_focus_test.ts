@@ -16,6 +16,7 @@ import {createFolder, createItem, findFolderNode, getAllFoldersOpenState, replac
 suite('<bookmarks-folder-node>', function() {
   let rootNode: BookmarksFolderNodeElement;
   let store: TestStore;
+  let bookmarkManagerProxy: TestBookmarkManagerApiProxy;
 
   function getFolderNode(id: string) {
     return findFolderNode(rootNode, id) as BookmarksFolderNodeElement;
@@ -60,8 +61,8 @@ suite('<bookmarks-folder-node>', function() {
     store.setReducersEnabled(true);
     store.replaceSingleton();
 
-    const proxy = new TestBookmarkManagerApiProxy();
-    BookmarkManagerApiProxyImpl.setInstance(proxy);
+    bookmarkManagerProxy = new TestBookmarkManagerApiProxy();
+    BookmarkManagerApiProxyImpl.setInstance(bookmarkManagerProxy);
 
     rootNode = document.createElement('bookmarks-folder-node');
     rootNode.itemId = '0';
@@ -199,9 +200,12 @@ suite('<bookmarks-folder-node>', function() {
     document.body.style.direction = 'ltr';
   });
 
-  test('keyboard commands are passed to command manager', function() {
+  test('keyboard commands are passed to command manager', async function() {
     const testCommandManager = new TestCommandManager();
     document.body.appendChild(testCommandManager.getCommandManager());
+
+    const toastManager = document.createElement('cr-toast-manager');
+    document.body.appendChild(toastManager);
 
     store.data.selection.items = new Set(['3', '4']);
     store.data.selectedFolder = '2';
@@ -209,6 +213,7 @@ suite('<bookmarks-folder-node>', function() {
 
     getFolderNode('2').$.container.focus();
     keydown('2', 'Delete');
+    await bookmarkManagerProxy.whenCalled('removeTrees');
 
     testCommandManager.assertLastCommand(Command.DELETE, ['2']);
   });
