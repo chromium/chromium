@@ -297,9 +297,9 @@ TEST_F(ScanningHandlerTest, GetMyFilesPath) {
 TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
   const std::string file1 = "path/to/file/file1.jpg";
   const std::string file2 = "path/to/file/file2.jpg";
-  base::Value file_paths_value(base::Value::Type::LIST);
-  file_paths_value.Append(base::Value(file1));
-  file_paths_value.Append(base::Value(file2));
+  base::Value::List file_paths_value;
+  file_paths_value.Append(file1);
+  file_paths_value.Append(file2);
 
   base::Value::List args;
   args.Append(std::move(file_paths_value));
