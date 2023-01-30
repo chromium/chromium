@@ -533,9 +533,7 @@ IN_PROC_BROWSER_TEST_F(ScreenOrientationLockForPrerenderBrowserTest,
 
   // Shut down the prerendered page. It shouldn't trigger orientation unlock.
   test::PrerenderHostObserver prerender_observer(*web_contents(), host_id);
-  PrerenderHostRegistry* registry =
-      static_cast<WebContentsImpl*>(web_contents())->GetPrerenderHostRegistry();
-  registry->CancelHost(host_id, PrerenderFinalStatus::kRendererProcessKilled);
+  prerender_helper_.CancelPrerenderedPage(host_id);
   prerender_observer.WaitForDestroyed();
 
   // Delegate should not apply unlock.

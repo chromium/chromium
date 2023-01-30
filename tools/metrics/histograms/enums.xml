@@ -83788,6 +83788,20 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Prerender hit finished"/>
 </enum>
 
+<enum name="PrerenderProcessTerminationStatus">
+  <int value="0" label="kNormalTermination"/>
+  <int value="1" label="kAbnormalTermination"/>
+  <int value="2" label="kProcessWasKilled"/>
+  <int value="3" label="kProcessCrashed"/>
+  <int value="4" label="kStillRunning"/>
+  <int value="5" label="kProcessWasKilledByOom"/>
+  <int value="6" label="kOomProtected"/>
+  <int value="7" label="kLaunchFailed"/>
+  <int value="8" label="kOom"/>
+  <int value="9" label="kIntegrityFailure"/>
+  <int value="10" label="kInvalid"/>
+</enum>
+
 <enum name="PrerenderRelTypes">
   <int value="0" label="PRERENDER_REL_TYPE_NONE"/>
   <int value="1" label="PRERENDER_REL_TYPE_PRERENDER"/>

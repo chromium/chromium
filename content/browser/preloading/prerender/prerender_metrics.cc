@@ -7,8 +7,11 @@
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/notreached.h"
+#include "base/process/kill.h"
 #include "base/strings/string_util.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/prerender_trigger_type.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -27,6 +30,43 @@ enum HeaderMismatchType : uint32_t {
   kValueMismatch = 3,
   kMaxValue = kValueMismatch
 };
+
+PrerenderProcessTerminationStatus TranslateToPrerenderUmaTerminationStatus(
+    base::TerminationStatus status) {
+  switch (status) {
+    case base::TerminationStatus::TERMINATION_STATUS_NORMAL_TERMINATION:
+      return PrerenderProcessTerminationStatus::kNormalTermination;
+    case base::TerminationStatus::TERMINATION_STATUS_ABNORMAL_TERMINATION:
+      return PrerenderProcessTerminationStatus::kAbnormalTermination;
+    case base::TerminationStatus::TERMINATION_STATUS_PROCESS_WAS_KILLED:
+      return PrerenderProcessTerminationStatus::kProcessWasKilled;
+    case base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED:
+      return PrerenderProcessTerminationStatus::kProcessCrashed;
+    case base::TerminationStatus::TERMINATION_STATUS_STILL_RUNNING:
+      return PrerenderProcessTerminationStatus::kStillRunning;
+#if BUILDFLAG(IS_CHROMEOS)
+    case base::TerminationStatus::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
+      return PrerenderProcessTerminationStatus::kProcessWasKilledByOom;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID)
+    case base::TerminationStatus::TERMINATION_STATUS_OOM_PROTECTED:
+      return PrerenderProcessTerminationStatus::kOomProtected;
+#endif  // BUILDFLAG(IS_ANDROID)
+    case base::TerminationStatus::TERMINATION_STATUS_LAUNCH_FAILED:
+      return PrerenderProcessTerminationStatus::kLaunchFailed;
+    case base::TerminationStatus::TERMINATION_STATUS_OOM:
+      return PrerenderProcessTerminationStatus::kOom;
+#if BUILDFLAG(IS_WIN)
+    case base::TerminationStatus::TERMINATION_STATUS_INTEGRITY_FAILURE:
+      return PrerenderProcessTerminationStatus::kIntegrityFailure;
+#endif  //  BUILDFLAG(IS_WIN)
+    case base::TerminationStatus::TERMINATION_STATUS_MAX_ENUM:
+      NOTREACHED();
+      return PrerenderProcessTerminationStatus::kInvalid;
+  }
+  NOTREACHED();
+  return PrerenderProcessTerminationStatus::kInvalid;
+}
 
 PrerenderCancelledInterface GetCancelledInterfaceType(
     const std::string& interface_name) {
@@ -103,6 +143,17 @@ void RecordPrerenderCancelledInterface(
   }
 }
 
+void RecordRendererProcessKilledTerminationStatus(
+    base::TerminationStatus status_code,
+    PrerenderTriggerType trigger_type,
+    const std::string& embedder_histogram_suffix) {
+  base::UmaHistogramEnumeration(
+      GenerateHistogramName(
+          "Prerender.Experimental.KilledPrerenderProcessTerminationStatus",
+          trigger_type, embedder_histogram_suffix),
+      TranslateToPrerenderUmaTerminationStatus(status_code));
+}
+
 void RecordPrerenderFinalStatusUma(
     PrerenderFinalStatus final_status,
     PrerenderTriggerType trigger_type,
@@ -130,6 +181,18 @@ PrerenderCancellationReason::BuildForMojoBinderPolicy(
     const std::string& interface_name) {
   return PrerenderCancellationReason(PrerenderFinalStatus::kMojoBinderPolicy,
                                      interface_name);
+}
+
+// static
+PrerenderCancellationReason
+PrerenderCancellationReason::BuildForRendererProcessGone(
+    base::TerminationStatus status_code) {
+  if (status_code == base::TERMINATION_STATUS_PROCESS_CRASHED) {
+    return PrerenderCancellationReason(
+        PrerenderFinalStatus::kRendererProcessCrashed);
+  }
+  return PrerenderCancellationReason(
+      PrerenderFinalStatus::kRendererProcessKilled, status_code);
 }
 
 PrerenderCancellationReason::PrerenderCancellationReason(
@@ -165,6 +228,12 @@ void PrerenderCancellationReason::ReportMetrics(
                                         trigger_type,
                                         embedder_histogram_suffix);
       break;
+    case PrerenderFinalStatus::kRendererProcessKilled:
+      DCHECK(absl::holds_alternative<base::TerminationStatus>(explanation_));
+      RecordRendererProcessKilledTerminationStatus(
+          absl::get<base::TerminationStatus>(explanation_), trigger_type,
+          embedder_histogram_suffix);
+      break;
     default:
       DCHECK(absl::holds_alternative<absl::monostate>(explanation_));
       // Other types need not to report.
@@ -179,6 +248,11 @@ std::string PrerenderCancellationReason::ToDevtoolReasonString() const {
       // TODO(https://crbug.com/1328365): It seems we have to return an integer.
       // And devtool has to handle it based on the enum.xml, as the content
       // layer cannot know about the enums added by the embedder layer.
+      return "";
+    case PrerenderFinalStatus::kRendererProcessKilled:
+      DCHECK(absl::holds_alternative<base::TerminationStatus>(explanation_));
+      // We do not have a plan to send the detailed crash reason to devtools
+      // yet.
       return "";
     case PrerenderFinalStatus::kMojoBinderPolicy:
       DCHECK(absl::holds_alternative<std::string>(explanation_));

@@ -1653,6 +1653,20 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram
+    name="Prerender.Experimental.KilledPrerenderProcessTerminationStatus{PrerenderTriggerType}"
+    enum="PrerenderProcessTerminationStatus" expires_after="2023-06-05">
+  <owner>lingqi@chromium.org</owner>
+  <owner>nhiroki@chromium.org</owner>
+  <summary>
+    This is a breakdown metric for
+    PrerenderHostFinalStatus::kRendererProcessKilled. Recorded by
+    PrerenderCancellationReason to track the detailed termination status when a
+    prerender is cancelled with this final status.
+  </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
+</histogram>
+
 <histogram name="Prerender.Experimental.PredictionStatus.DefaultSearchEngine"
     enum="PrerenderPredictionStatus" expires_after="2023-06-18">
   <owner>asamidoi@chromium.org</owner>
