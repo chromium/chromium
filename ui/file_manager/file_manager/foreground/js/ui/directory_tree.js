@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
+import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {VolumeEntry} from '../../../common/js/files_app_entry_types.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
-import {str, util} from '../../../common/js/util.js';
+import {strf, util} from '../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../../externs/background/file_operation_manager.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
@@ -790,13 +790,15 @@ export class DirectoryItem extends FilesTreeItem {
    * Set up eject button. It is placed as the last element of the elements that
    * compose the tree row content.
    * @param {!HTMLElement} rowElement Tree row element.
+   * @param {string} targetLabel Label for the ejectable target.
    * @private
    */
-  setupEjectButton_(rowElement) {
+  setupEjectButton_(rowElement, targetLabel) {
     const ejectButton = document.createElement('cr-button');
 
     ejectButton.className = 'root-eject align-right-icon';
-    ejectButton.setAttribute('aria-label', str('UNMOUNT_DEVICE_BUTTON_LABEL'));
+    ejectButton.setAttribute(
+        'aria-label', strf('UNMOUNT_BUTTON_LABEL', targetLabel));
     ejectButton.setAttribute('tabindex', '0');
 
     // Block mouse handlers, handle click.
@@ -987,7 +989,7 @@ export class EntryListItem extends DirectoryItem {
     this.disabled = modelItem.disabled;
 
     if (rootType === VolumeManagerCommon.RootType.REMOVABLE) {
-      this.setupEjectButton_(this.rowElement);
+      this.setupEjectButton_(this.rowElement, modelItem.label);
 
       // For removable add menus for roots to be able to unmount, format, etc.
       if (tree.contextMenuForRootItems) {
@@ -1151,7 +1153,7 @@ class VolumeItem extends DirectoryItem {
       // This placeholder is added to allow to put textbox before eject button
       // while executing renaming action on external drive.
       this.setupRenamePlaceholder_(this.rowElement);
-      this.setupEjectButton_(this.rowElement);
+      this.setupEjectButton_(this.rowElement, modelItem.label);
     }
 
     // Sets up context menu of the item.

@@ -354,6 +354,9 @@
   <message name="IDS_FILE_BROWSER_CONFIGURE_VOLUME_BUTTON_LABEL" desc="Title of the action for configuring the selected volume.">
     Configure
   </message>
+  <message name="IDS_FILE_BROWSER_UNMOUNT_BUTTON_LABEL" desc="Title of the action for unmounting a given filesystem.">
+    Eject <ph name="TARGET_NAME">$1<ex>zipfile.zip</ex></ph>
+  </message>
   <message name="IDS_FILE_BROWSER_UNMOUNT_DEVICE_BUTTON_LABEL" desc="Title of the action for unmounting removable device.">
     Eject device
   </message>
