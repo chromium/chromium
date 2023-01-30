@@ -801,7 +801,21 @@ void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
 
   if (progress_.stage != Stage::kSyncing) {
     for (const mojom::FileChange& change : changes) {
-      VLOG(1) << "Ignored FileChange " << Quote(change);
+      switch (change.type) {
+        case mojom::FileChange::Type::kDelete:
+          VLOG(1) << "Got FileChange " << Quote(change);
+          drivefs_->SetPinnedByStableId(
+              change.stable_id, /*pinned=*/false,
+              base::BindOnce([](drive::FileError status) {
+                LOG_IF(ERROR, status != drive::FILE_ERROR_OK)
+                    << "Failed to unpin file: "
+                    << drive::FileErrorToString(status);
+              }));
+          break;
+        default:
+          VLOG(1) << "Ignored FileChange " << Quote(change);
+          break;
+      }
     }
     return;
   }

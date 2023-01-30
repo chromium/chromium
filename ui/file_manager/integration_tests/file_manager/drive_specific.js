@@ -1298,3 +1298,27 @@ testcase.driveLocalDeleteUnpinsItem = async () => {
   // Ensure the file was unpinned prior to deleting.
   await remoteCall.expectDriveItemPinnedStatus(appId, '/root/test.txt', false);
 };
+
+/**
+ * Test that when files get deleted in the cloud, they get unpinned after being
+ * deleted.
+ */
+testcase.driveCloudDeleteUnpinsItem = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+
+  // Select test.txt which is already pinned.
+  await remoteCall.waitAndClickElement(
+      appId, '#file-list [file-name="test.txt"]');
+  await remoteCall.waitForElement(
+      appId, '[file-name="test.txt"][selected] xf-icon[type=offline]');
+
+  // Ensure the metadata for the file is set to pinned.
+  await remoteCall.expectDriveItemPinnedStatus(appId, '/root/test.txt', true);
+
+  await remoteCall.sendDriveCloudDeleteEvent(appId, '/root/test.txt');
+  await remoteCall.waitForElementLost(
+      appId, '#file-list [file-name="test.txt"]');
+
+  // Ensure the file was unpinned prior to deleting.
+  await remoteCall.expectDriveItemPinnedStatus(appId, '/root/test.txt', false);
+};

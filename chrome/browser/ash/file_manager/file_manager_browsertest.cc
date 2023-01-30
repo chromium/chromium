@@ -1466,7 +1466,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveDeleteDialogDoesntMentionPermanentDelete"),
         TestCase("driveInlineSyncStatusSingleFile").EnableInlineStatusSync(),
         TestCase("driveInlineSyncStatusParentFolder").EnableInlineStatusSync(),
-        TestCase("driveLocalDeleteUnpinsItem").EnableBulkPinning()
+        TestCase("driveLocalDeleteUnpinsItem").EnableBulkPinning(),
+        TestCase("driveCloudDeleteUnpinsItem").EnableBulkPinning()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

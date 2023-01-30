@@ -1321,6 +1321,21 @@ class DriveFsTestVolume : public TestVolume {
     drivefs_delegate.FlushForTesting();
   }
 
+  void SendCloudDeleteEvent(const std::string& path) {
+    const base::FilePath file_path(path);
+    absl::optional<drivefs::FakeDriveFs::FileMetadata> metadata =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    ASSERT_TRUE(metadata.has_value()) << "No file metadata with path: " << path;
+
+    std::vector<drivefs::mojom::FileChangePtr> file_changes;
+    file_changes.emplace_back(absl::in_place, file_path,
+                              drivefs::mojom::FileChange::Type::kDelete,
+                              metadata.value().stable_id);
+    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
+    drivefs_delegate->OnFilesChanged(std::move(file_changes));
+    drivefs_delegate.FlushForTesting();
+  }
+
   absl::optional<drivefs::mojom::DialogResult> last_dialog_result() {
     return last_dialog_result_;
   }
@@ -3263,6 +3278,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     absl::optional<bool> is_pinned = drive_volume_->IsItemPinned(*path);
     ASSERT_TRUE(is_pinned.has_value()) << "Supplied path is unknown: " << *path;
     base::JSONWriter::Write(base::Value(is_pinned.value()), output);
+    return;
+  }
+
+  if (name == "sendDriveCloudDeleteEvent") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path) << "No supplied path to sendDriveFilesChangedEvent";
+    drive_volume_->SendCloudDeleteEvent(*path);
     return;
   }
 

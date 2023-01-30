@@ -84,8 +84,29 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
 
   absl::optional<bool> IsItemPinned(const std::string& path);
 
+  struct FileMetadata {
+    FileMetadata();
+    FileMetadata(const FileMetadata&);
+    FileMetadata& operator=(const FileMetadata&);
+    ~FileMetadata();
+
+    std::string mime_type;
+    bool pinned = false;
+    bool hosted = false;
+    bool shared = false;
+    bool available_offline = false;
+    std::string original_name;
+    mojom::Capabilities capabilities;
+    mojom::FolderFeature folder_feature;
+    std::string doc_id;
+    int64_t stable_id = 0;
+    std::string alternate_url;
+  };
+
+  absl::optional<FakeDriveFs::FileMetadata> GetItemMetadata(
+      const base::FilePath& path);
+
  private:
-  struct FileMetadata;
   class SearchQuery;
 
   // drivefs::mojom::DriveFsBootstrap:

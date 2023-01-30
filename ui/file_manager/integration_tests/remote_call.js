@@ -998,4 +998,18 @@ export class RemoteCallFilesApp extends RemoteCall {
         }),
         String(status));
   }
+
+  /**
+   * Send a delete event via the `OnFilesChanged` drivefs delegate method.
+   * @param {string} appId app window ID.
+   * @param {string} path Path from the drive mount point, e.g. /root/test.txt
+   */
+  async sendDriveCloudDeleteEvent(appId, path) {
+    await this.waitFor('isFileManagerLoaded', appId, true);
+    await sendTestMessage({
+      appId,
+      name: 'sendDriveCloudDeleteEvent',
+      path,
+    });
+  }
 }

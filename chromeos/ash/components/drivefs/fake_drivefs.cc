@@ -90,20 +90,6 @@ FakeDriveFsBootstrapListener::bootstrap() {
   return std::move(bootstrap_);
 }
 
-struct FakeDriveFs::FileMetadata {
-  std::string mime_type;
-  bool pinned = false;
-  bool hosted = false;
-  bool shared = false;
-  bool available_offline = false;
-  std::string original_name;
-  mojom::Capabilities capabilities;
-  mojom::FolderFeature folder_feature;
-  std::string doc_id;
-  int64_t stable_id = 0;
-  std::string alternate_url;
-};
-
 class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
  public:
   SearchQuery(base::WeakPtr<FakeDriveFs> drive_fs,
@@ -258,6 +244,13 @@ class FakeDriveFs::SearchQuery : public mojom::SearchQuery {
   base::WeakPtrFactory<SearchQuery> weak_ptr_factory_{this};
 };
 
+FakeDriveFs::FileMetadata::FileMetadata() = default;
+FakeDriveFs::FileMetadata::FileMetadata(const FakeDriveFs::FileMetadata&) =
+    default;
+FakeDriveFs::FileMetadata& FakeDriveFs::FileMetadata::operator=(
+    const FakeDriveFs::FileMetadata&) = default;
+FakeDriveFs::FileMetadata::~FileMetadata() = default;
+
 FakeDriveFs::FakeDriveFs(const base::FilePath& mount_path)
     : mount_path_(mount_path) {
   CHECK(mount_path.IsAbsolute());
@@ -329,6 +322,15 @@ absl::optional<bool> FakeDriveFs::IsItemPinned(const std::string& path) {
     }
   }
   return absl::nullopt;
+}
+
+absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
+    const base::FilePath& path) {
+  const auto& metadata = metadata_.find(path);
+  if (metadata == metadata_.end()) {
+    return absl::nullopt;
+  }
+  return metadata->second;
 }
 
 void FakeDriveFs::Init(
