@@ -633,7 +633,7 @@ class CC_EXPORT GpuImageDecodeCache
   // freeing unreferenced cache entries to make room.
   bool EnsureCapacity(size_t required_size);
   bool CanFitInWorkingSet(size_t size) const;
-  bool ExceedsPreferredCount() const;
+  bool ExceedsCacheLimits() const;
 
   void InsertTransferCacheEntry(
       const ClientImageTransferCacheEntry& image_entry,
@@ -793,6 +793,10 @@ class CC_EXPORT GpuImageDecodeCache
   base::Lock lock_;
 
   PersistentCache persistent_cache_;
+
+  // Tracks the total number of bytes of image data represented by the elements
+  // in `persistent_cache_`. Must be updated on AddTo/RemoveFromPersistentCache.
+  size_t persistent_cache_memory_size_ = 0;
 
   struct CacheEntries {
     PaintImage::ContentId content_ids[2] = {PaintImage::kInvalidContentId,
