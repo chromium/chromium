@@ -13,6 +13,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -133,16 +134,28 @@ void ModifyPrivacyIndicatorsNotification(
 void UpdatePrivacyIndicatorsView(const std::string& app_id,
                                  bool is_camera_used,
                                  bool is_microphone_used) {
+  // Privacy indicators don't exist when video conference controls are enabled.
+  if (!features::IsPrivacyIndicatorsEnabled() ||
+      features::IsVideoConferenceEnabled()) {
+    return;
+  }
   DCHECK(ash::Shell::HasInstance());
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
     DCHECK(root_window_controller);
-    DCHECK(root_window_controller->GetStatusAreaWidget());
+    auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+    DCHECK(status_area_widget);
 
-    root_window_controller->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->privacy_indicators_view()
-        ->Update(app_id, is_camera_used, is_microphone_used);
+    auto* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? status_area_widget->notification_center_tray()
+                  ->privacy_indicators_view()
+            : status_area_widget->unified_system_tray()
+                  ->privacy_indicators_view();
+
+    DCHECK(privacy_indicators_view);
+
+    privacy_indicators_view->Update(app_id, is_camera_used, is_microphone_used);
   }
 }
 
@@ -154,12 +167,19 @@ void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
   for (auto* root_window_controller :
        ash::Shell::Get()->GetAllRootWindowControllers()) {
     DCHECK(root_window_controller);
-    DCHECK(root_window_controller->GetStatusAreaWidget());
+    auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+    DCHECK(status_area_widget);
 
-    root_window_controller->GetStatusAreaWidget()
-        ->unified_system_tray()
-        ->privacy_indicators_view()
-        ->UpdateScreenShareStatus(is_screen_sharing);
+    auto* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? status_area_widget->notification_center_tray()
+                  ->privacy_indicators_view()
+            : status_area_widget->unified_system_tray()
+                  ->privacy_indicators_view();
+
+    DCHECK(privacy_indicators_view);
+
+    privacy_indicators_view->UpdateScreenShareStatus(is_screen_sharing);
   }
 }
 
