@@ -7,7 +7,6 @@
  * that the user can select from.
  */
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
@@ -395,8 +394,7 @@ export class AvatarList extends WithPersonalizationStore {
       string {
     // If the image is a default avatar loaded from gstatic resources,
     // return a static encoded background image.
-    if (loadTimeData.getBoolean('isAvatarsCloudMigrationEnabled') &&
-        defaultImageIndex) {
+    if (defaultImageIndex) {
       return `background-image: url('` + url + `&staticEncode=true')`;
     }
 

@@ -629,7 +629,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ArePromiseIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreSystemSoundsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutocompleteExtendedSuggestionsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoEnrollmentKioskInOobeEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAvatarsCloudMigrationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool DoWindowsFollowCursor();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool Is16DesksEnabled();

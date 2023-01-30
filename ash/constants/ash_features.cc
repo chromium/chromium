@@ -2264,10 +2264,6 @@ bool IsAutoEnrollmentKioskInOobeEnabled() {
   return base::FeatureList::IsEnabled(kAutoEnrollmentKioskInOobe);
 }
 
-bool IsAvatarsCloudMigrationEnabled() {
-  return base::FeatureList::IsEnabled(kAvatarsCloudMigration);
-}
-
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
 }

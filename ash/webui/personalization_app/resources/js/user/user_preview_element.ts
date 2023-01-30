@@ -147,8 +147,7 @@ export class UserPreview extends WithPersonalizationStore {
    */
   private getImgBackgroudStyle_(url: Url|null): string {
     // Only add background image for default user images.
-    if (!loadTimeData.getBoolean('isAvatarsCloudMigrationEnabled') ||
-        !this.image_ || this.image_.invalidImage || !this.image_.defaultImage) {
+    if (!this.image_ || this.image_.invalidImage || !this.image_.defaultImage) {
       return '';
     }
 

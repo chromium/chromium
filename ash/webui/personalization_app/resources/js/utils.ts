@@ -81,10 +81,6 @@ export function decodeString16(str: String16|null): string {
  * migration is enabled.
  */
 export function getSanitizedDefaultImageUrl(url: Url): Url {
-  if (!loadTimeData.getBoolean('isAvatarsCloudMigrationEnabled')) {
-    return url;
-  }
-
   return {url: 'chrome://image/?url=' + url.url};
 }
 

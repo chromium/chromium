@@ -378,9 +378,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
       features::IsRgbKeyboardEnabled() &&
           Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 
-  source->AddBoolean("isAvatarsCloudMigrationEnabled",
-                     features::IsAvatarsCloudMigrationEnabled());
-
   source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
 
   source->AddBoolean("isScreenSaverPreviewEnabled",
