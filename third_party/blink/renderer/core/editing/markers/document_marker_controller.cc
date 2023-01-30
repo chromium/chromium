@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 
 #include <algorithm>
+#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -640,7 +641,7 @@ DocumentMarkerController::MarkersAroundPosition(
 
   if (start > end) {
     // TODO(crbug/1114021): Investigate why this might happen.
-    NOTREACHED() << "|start| should be before |end|.";
+    base::debug::DumpWithoutCrashing();
     return node_marker_pairs;
   }
 
