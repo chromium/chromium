@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -81,69 +82,6 @@ void SetNetworkData(
   }
   base::RunLoop().RunUntilIdle();
 }
-
-class FakeNetworkDiagnostics : public NetworkDiagnostics {
- public:
-  FakeNetworkDiagnostics() : NetworkDiagnostics(&fake_debug_daemon_client_) {}
-
-  FakeNetworkDiagnostics(const FakeNetworkDiagnostics&) = delete;
-  FakeNetworkDiagnostics& operator=(const FakeNetworkDiagnostics&) = delete;
-
-  ~FakeNetworkDiagnostics() override = default;
-
-  void RunHttpsLatency(RunHttpsLatencyCallback callback) override {
-    ASSERT_FALSE(callback_);
-    callback_ = std::move(callback);
-  }
-
-  void ExecuteCallback() {
-    // Block until all previously posted tasks are executed to make sure
-    // `RunHttpsLatency` is called and `callback_` is set.
-    base::RunLoop run_loop;
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-    ASSERT_TRUE(callback_);
-    std::move(callback_).Run(routine_result_.Clone());
-  }
-
-  void SetReceiver(
-      mojo::PendingReceiver<NetworkDiagnosticsRoutines> pending_receiver) {
-    receiver_ = std::make_unique<mojo::Receiver<NetworkDiagnosticsRoutines>>(
-        this, std::move(pending_receiver));
-  }
-
-  void SetResultNoProblem(int latency_ms) {
-    routine_result_.result_value =
-        RoutineResultValue::NewHttpsLatencyResultValue(
-            HttpsLatencyResultValue::New(base::Milliseconds(latency_ms)));
-    routine_result_.verdict = RoutineVerdictMojom::kNoProblem;
-    routine_result_.problems = RoutineProblems::NewHttpsLatencyProblems({});
-  }
-
-  void SetResultProblem(HttpsLatencyProblemMojom problem) {
-    routine_result_.problems =
-        RoutineProblems::NewHttpsLatencyProblems({problem});
-    routine_result_.verdict = RoutineVerdictMojom::kProblem;
-  }
-
-  void SetResultProblemLatency(HttpsLatencyProblemMojom problem,
-                               int latency_ms) {
-    routine_result_.result_value =
-        RoutineResultValue::NewHttpsLatencyResultValue(
-            HttpsLatencyResultValue::New(base::Milliseconds(latency_ms)));
-    SetResultProblem(problem);
-  }
-
- private:
-  RoutineResult routine_result_;
-
-  std::unique_ptr<mojo::Receiver<NetworkDiagnosticsRoutines>> receiver_;
-
-  RunHttpsLatencyCallback callback_;
-
-  ash::FakeDebugDaemonClient fake_debug_daemon_client_;
-};
 
 class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
  public:
