@@ -734,6 +734,7 @@
 <translation id="492453977506755176">ਕੈਪਚਰ ਮੋਡ ਕੁੰਜੀ</translation>
 <translation id="4925542575807923399">ਇਸ ਖਾਤੇ ਦੇ ਪ੍ਰਬੰਧਕ ਨੂੰ ਇਹ ਜ਼ਰੂਰੀ ਹੈ ਕਿ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈਸ਼ਨ ਵਿੱਚ ਇਹ ਖਾਤਾ ਸਭ ਤੋਂ ਪਹਿਲਾ ਸਾਈਨ-ਇਨ ਕਰਨ ਵਾਲਾ ਖਾਤਾ ਹੋਵੇ।</translation>
 <translation id="4929163402621253029">ਕੀ ਤੁਸੀਂ ਬੋਲ ਰਹੇ ਹੋ? ਤੁਸੀਂ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ। ਹੋਰ ਜਾਣੋ</translation>
+<translation id="4936329710968938986">ਹਰ ਕੋਈ, ਬੰਦ</translation>
 <translation id="4938176435186993759">ਸਾਰੇ ਸੁਝਾਵਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="4945196315133970626">ਸੂਚਨਾਵਾਂ ਬੰਦ ਕਰੋ</translation>
 <translation id="4946376291507881335">ਕੈਪਚਰ ਕਰੋ</translation>
@@ -1388,6 +1389,7 @@
 <translation id="8477270416194247200">ਰੱਦ ਕਰਨ ਲਈ Alt+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। ਰੈਜ਼ੋਲਿਊਸ਼ਨ <ph name="FALLBACK_RESOLUTION" /> ਵਿੱਚ ਬਦਲਿਆ ਗਿਆ ਸੀ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਬਣਾਈ ਰੱਖਣ ਲਈ 'ਤਸਦੀਕ ਕਰੋ' 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਪਿਛਲੀਆਂ ਸੈਟਿੰਗਾਂ ਨੂੰ <ph name="TIMEOUT_SECONDS" /> ਵਿੱਚ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8496402167048257517">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਸੈਟਿੰਗਾਂ ਨੂੰ ਦਿਖਾਓ</translation>
+<translation id="8507563469658346379">ਹਰ ਕੋਈ, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">ਤੁਹਾਡੀ Chromebook ਦਾ ਬਲੂਟੁੱਥ ਬੰਦ ਹੈ। ਆਪਣੀ Chromebook ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
 <translation id="851458219935658693">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>

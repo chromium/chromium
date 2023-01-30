@@ -735,6 +735,7 @@
 <translation id="492453977506755176">مفتاح وضع تصوير الشاشة</translation>
 <translation id="4925542575807923399">يحتاج مشرف هذا الحساب أن يكون هذا الحساب الأول في تسجيل الدخول إلى جلسة دخول متعدد.</translation>
 <translation id="4929163402621253029">هل تتحدّث؟ إنّ وضع "كتم الصوت" مُفعَّل على مستوى النظام. مزيد من المعلومات</translation>
+<translation id="4936329710968938986">الجميع: غير مفعّل</translation>
 <translation id="4938176435186993759">إخفاء جميع الاقتراحات</translation>
 <translation id="4945196315133970626">إيقاف الإشعارات</translation>
 <translation id="4946376291507881335">التقاط</translation>
@@ -1389,6 +1390,7 @@
 <translation id="8477270416194247200">‏اضغط على Alt+مفتاح البحث، أو اضغط على المفتاح Shift للإلغاء.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />. انقر على "تأكيد" لحفظ التغييرات. ستتم استعادة الإعدادات السابقة خلال <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">عرض إعدادات ميزة "المشاركة عن قرب"</translation>
+<translation id="8507563469658346379">الجميع: <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">‏البلوتوث غير مفعّل على جهاز Chromebook. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>
 <translation id="8513108775083588393">التدوير تلقائي</translation>
 <translation id="851458219935658693">عرض النوافذ المفتوحة في سطح المكتب الحالي، تم النقر على زر الاختيار.</translation>

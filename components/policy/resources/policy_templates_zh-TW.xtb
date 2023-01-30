@@ -468,6 +468,7 @@
       如果將這項政策設為 Fast，<ph name="PRODUCT_NAME" /> 會盡可能避免執行點陣化。減少點陣化作業量有助於降低列印工作大小及提升列印速度。
 
       如果不設定這項政策，<ph name="PRODUCT_NAME" /> 會採用 Full 模式。</translation>
+<translation id="1451597482289285597">裝置螢幕保護程式閒置逾時。</translation>
 <translation id="1455351936334569779">系統不會搜尋拒絕清單上列出的印表機類型，也不會擷取這類印表機可支援的列印功能。
 
       在拒絕清單上列出所有印表機類型的效果與停用列印功能相同，因為這樣一來，系統傳送文件進行列印時就沒有可用的目的地。
@@ -1101,6 +1102,9 @@
 <translation id="2018425641414671849">不允許使用者在裝置鎖定時播放媒體</translation>
 <translation id="2021087124402050619">允許 Chrome 清理功能定期執行系統掃描，並啟用手動掃描選項</translation>
 <translation id="2024476116966025075">設定遠端存取用戶端的網域名稱 (必要)</translation>
+<translation id="2027764364653772586">設定裝置進入閒置狀態並顯示登入畫面螢幕保護程式前的等待時間 (秒)。
+
+有效值範圍介於 1 秒到 9999 秒之間。如未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會使用預設值 (7 秒)。如果將 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策將不會有任何作用。</translation>
 <translation id="2029985289397958781">針對 Enterprise 使用者停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />相機輔助搜尋功能</translation>
 <translation id="2030905906517501646">預設搜尋引擎關鍵字</translation>
 <translation id="203096360153626918">這項政策對 Android 應用程式沒有影響。即使將這項政策設為 <ph name="FALSE" />，Android 應用程式仍可進入全螢幕模式。</translation>
@@ -1454,6 +1458,15 @@
 <translation id="2366301887862414321">允許使用者層級和系統層級的原生訊息傳遞主機</translation>
 <translation id="2373014700224092497">允許使用者新增 Kerberos 帳戶</translation>
 <translation id="2376134474855349829">在登入畫面上停用螢幕小鍵盤，並允許使用者暫時啟用</translation>
+<translation id="2377822335794178310">設定裝置層級的登入畫面螢幕保護程式。
+
+如果將這項政策設為 True，<ph name="PRODUCT_OS_NAME" /> 裝置的登入畫面就會在裝置閒置時顯示螢幕保護程式。
+
+如果將這項政策設為 False 或未設定，登入畫面就不會顯示螢幕保護程式。
+
+裝置螢幕保護程式會顯示 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 政策參照的圖片。如未設定 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" />、將政策設為參照空白清單，或清單中沒有任何有效的圖片，登入畫面將不會顯示螢幕保護程式。
+
+如要修改觸發螢幕保護程式的閒置逾時，請調整 <ph name="DEVICE_SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 政策；如要修改圖片顯示間隔時間，請調整 <ph name="DEVICE_SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 政策。如未設定上述任一政策，系統將改用預設值。</translation>
 <translation id="2382672620906337383">系統要在達到較高巢狀閾值後，才會延遲 JavaScript setTimeout()。</translation>
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
@@ -1907,6 +1920,9 @@
 
       如果將這項政策設為停用或不設定，已產生的 Kerberos SPN 不會包含連接埠。</translation>
 <translation id="2834965199373338033">啟用背景模式</translation>
+<translation id="2835648603076938116">登入畫面螢幕保護程式有多張可顯示的圖片時，設定圖片的顯示間隔時間 (秒)。
+
+有效值範圍介於 1 秒到 9999 秒之間。如未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會使用預設值 (60 秒)。如果將 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策將不會有任何作用。</translation>
 <translation id="2835686964326214400">自訂重新啟動裝置的時間表</translation>
 <translation id="2838830882081735096">不允許資料遷移和 ARC</translation>
 <translation id="2839294585867804686">網路檔案共用功能設定</translation>
@@ -3485,6 +3501,7 @@
 
 如果設定這項政策，<ph name="PRODUCT_OS_NAME" /> 只會允許使用者連接特定藍牙服務，但清單中沒有任何項目時則屬例外，表示開放使用所有服務。藍牙 SIG 預留的 UUID 格式為 <ph name="BLUETOOTH_RESERVED_UUID_WITH_0X" /> 或 <ph name="BLUETOOTH_RESERVED_UUID_WITHOUT_0X" />，自訂 UUID 的格式則為 <ph name="BLUETOOTH_CUSTOM_UUID" />。UUID 不區分大小寫。如果不設定這項政策，使用者就可以連接至任何藍牙服務。</translation>
 <translation id="4332177773549877617">Android 應用程式安裝記錄事件</translation>
+<translation id="4340809889556703745">裝置螢幕保護程式圖片來源。</translation>
 <translation id="4341199399451274159">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策來指定搜尋引擎支援的字元編碼。編碼就是 UTF-8、GB2312 和 ISO-8859-1 等字碼頁名稱，系統會依提供的順序嘗試使用編碼。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ENCODINGS_POLICY_NAME" /> 政策，系統會使用 UTF-8。</translation>
@@ -4053,6 +4070,7 @@
           設好這項政策後，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，系統會在初次顯示登入畫面時停用單聲道音訊，但使用者隨時可以啟用。</translation>
+<translation id="4933079174563348731">裝置螢幕保護程式圖片顯示間隔時間。</translation>
 <translation id="4933301190614090397">控管允許瀏覽器在關閉前處理保持運作要求的時間長度 (以秒為單位)。
 
       指定這項政策後，可以阻止瀏覽器在指定的秒數內關閉，藉此處理保持運作 (https://fetch.spec.whatwg.org/#request-keepalive-flag) 要求。
@@ -4384,6 +4402,7 @@
 
       如果將這項政策設為啟用或不設定，系統會啟用快速解答的翻譯功能。
       如果停用這項政策，系統會停用快速解答的翻譯功能。</translation>
+<translation id="5252745944062824150">裝置螢幕保護程式已啟用。</translation>
 <translation id="5252995168844634755">如果將這項政策設為 True，系統會啟用整合桌面，這個功能可讓應用程式在多個螢幕上展開畫面。使用者可停用個別螢幕的整合桌面。
 
       如果將這項政策設為 False 或不設定，系統會停用整合桌面，且使用者無法啟用這項功能。</translation>
@@ -4683,6 +4702,11 @@
 <translation id="5535256585099022933">設定重新啟動的時間間隔</translation>
 <translation id="553806128266843748">布林值標記，表示是否已啟用節流功能。</translation>
 <translation id="5540885720415375851">允許本機裝置搜尋</translation>
+<translation id="5545132877693005604">設定登入畫面螢幕保護程式顯示圖片清單。
+
+每個清單項目會參照可在螢幕保護程式中顯示的圖片，項目中必須含有圖片網址和用於驗證的圖片檔案 SHA-256 雜湊值。圖片格式必須是 JPEG。<ph name="PRODUCT_OS_NAME" /> 裝置會下載這些圖片，然後在本機上保留這些參照內容的副本。
+
+如果將 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策將不會有任何作用。如未設定這項政策或清單沒有任何有效的參照圖片，即使已設定 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策的值，登入畫面也不會顯示螢幕保護程式。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登入畫面上啟用高對比模式</translation>
 <translation id="555077880566103058">允許所有網站自動執行 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
@@ -6440,6 +6464,7 @@
       如果將這項政策設為 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (值 3)，根據預設，系統會在網站要求視窗放置權限時提示使用者。如果使用者授予權限，網站就能執行以下操作：查看裝置螢幕相關資訊、使用該資訊開啟及放置視窗，或在特定畫面上要求進入全螢幕模式。
 
       如果未設定這項政策，系統會套用 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> 政策，但使用者可以變更這項設定。</translation>
+<translation id="7238955809343698945">啟用登入畫面螢幕保護程式。</translation>
 <translation id="7244600351241637530">如果啟用這項設定，已開啟 Phone Hub 的使用者將能夠透過 Chrome OS 查看及下載手機上最近拍攝的相片和影片。
 
       如果停用這項設定，使用者就無法使用這項功能。如果停用 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策，使用者也將無法使用這項功能。
@@ -7659,6 +7684,7 @@
 
       如果將這項政策設為 True 或不予設定，系統會將 Crostini 容器的 Root 權限授予這位使用者。
       如果將這項政策設為 False，系統不會將現有或新 Crostini 容器的 Root 權限授予這位使用者。</translation>
+<translation id="8409672666693526293">不啟用登入畫面螢幕保護程式。</translation>
 <translation id="8410477879938914253">這項政策僅適用於受管理的訪客工作階段。
       如果將這項政策設為 True 或不設定，系統會在使用者關閉最後一個視窗時顯示對話方塊，要求對方確認或拒絕登出。
       如果將這項政策設為 False，系統就不會顯示上述對話方塊，因此也會在關閉最後一個視窗後停用自動登出功能。</translation>

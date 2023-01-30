@@ -182,6 +182,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1995884366040846621">Lai turpinātu, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kopīgos jūsu vārdu, e-pasta adresi, adresi un profila attēlu ar šo vietni. Skatiet šīs vietnes <ph name="BEGIN_LINK1" />konfidencialitātes politiku<ph name="END_LINK1" />.</translation>
 <translation id="2000419248597011803">Nosūta dažus sīkfailus un meklēšanas vaicājumus no adreses joslas un meklēšanas lodziņa uz jūsu noklusējuma meklētājprogrammu.</translation>
 <translation id="200114059308480249">Vai iekļaut apkārtējo tekstu Google meklēšanā?</translation>
+<translation id="2009341475524975924">Lai novērtētu reklāmas veiktspēju, starp vietnēm var tikt kopīgoti noteiktu veidu dati, piemēram, diennakts laiks, kad reklāma tika parādīta jums.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# fails}zero{# faili}one{# fails}other{# faili}}</translation>
 <translation id="2021896219286479412">Pilnekrāna vietnes vadīklas</translation>
 <translation id="2038563949887743358">Ieslēgt iestatījumu “Pieprasīt datora vietni”</translation>
@@ -652,6 +653,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4616150815774728855">Atvērt <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Apstiprināt identitāti</translation>
 <translation id="4634124774493850572">Izmantot paroli</translation>
+<translation id="4637420359569396807">Izmantojot reklāmu izvērtēšanu, lai izvērtētu vietņu un lietotņu reklāmu veiktspēju, starp šīm vietnēm un lietotnēm var tikt kopīgoti noteiktu veidu dati, piemēram, diennakts laiks, kad reklāma tika parādīta jums.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 uzlauzta parole}zero{# uzlauztu paroļu}one{# uzlauzta parole}other{# uzlauztas paroles}}</translation>
 <translation id="4650364565596261010">Sistēmas noklusējums</translation>
 <translation id="465657074423018424">Drošas pārlūkošanas režīmā jūs tiekat aizsargāts pret maldinošām tīmekļa vietnēm. Ja izslēgsiet šo režīmu, pārlūkošanas laikā ievērojiet īpašu piesardzību, it sevišķi tad, kad grasāties ievadīt paroli.</translation>

@@ -18,6 +18,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1066060668811609597">Stjórna samstillingu</translation>
 <translation id="1076421457278169141">Kóði skannaður</translation>
 <translation id="1076785341346483463">Samstilla við stýrðan reikning</translation>
+<translation id="1080365971383768617">Aðgangsorð í öllum tækjum</translation>
 <translation id="1084365883616172403">Facebook-færsla birt.</translation>
 <translation id="1085696779717592361">Nota Chrome sjálfgefið</translation>
 <translation id="1103523840287552314">Þýða alltaf <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5056446788882570708">Vandamál fundust <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Í lagi</translation>
 <translation id="5062321486222145940">Setja upp Google Drive</translation>
+<translation id="50641035439563602">Nú eru aðgangsorðin vistuð á Google-reikningnum þínum (<ph name="ACCOUNT" />). Þú getur notað þau hvar sem þú skráir þig inn. Þú getur slökkt á þessu í <ph name="BEGIN_LINK" />stillingunum<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Ekki var hægt að ákvarða skráarstærð.</translation>
 <translation id="5090832849094901128">Reikningnum þínum á <ph name="WEBSITE" /> verður ekki eytt þótt þessu aðgangsorði verði eytt.</translation>
 <translation id="5094827893301452931">Tíst birt.</translation>
@@ -595,6 +597,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5520466080178053306">Ýttu á „Aðgangsorðastjórnun“ og svo á „Bæta við“</translation>
 <translation id="5525095647255982834">Til að senda þennan flipa í annað tæki þarftu að skrá þig þar inn í Chrome.</translation>
 <translation id="5525269841082836315">Búa til aðgangsorð</translation>
+<translation id="5530084793407600786">Leita á mynd með Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> fannst/fundust</translation>
 <translation id="5548760955356983418">Handoff gerir þér kleift að byrja að skoða vefsvæði í þessu tæki og halda því síðan áfram á einfaldan hátt í Mac-tölvunni. Vefsvæðið sem er opið birtist í kvínni í Mac-tölvunni.
 

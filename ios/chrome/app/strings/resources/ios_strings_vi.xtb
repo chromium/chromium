@@ -18,6 +18,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xóa nh�
 <translation id="1066060668811609597">Quản lý dữ liệu đồng bộ hóa</translation>
 <translation id="1076421457278169141">Đã quét mã</translation>
 <translation id="1076785341346483463">Đồng bộ hoá với tài khoản được quản lý</translation>
+<translation id="1080365971383768617">Mật khẩu trên tất cả thiết bị của bạn</translation>
 <translation id="1084365883616172403">Đã đăng lên Facebook.</translation>
 <translation id="1085696779717592361">Sử dụng Chrome theo mặc định</translation>
 <translation id="1103523840287552314">Luôn dịch <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5056446788882570708">Đã phát hiện thấy sự cố <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Cài đặt Google Drive</translation>
+<translation id="50641035439563602">Mật khẩu hiện được lưu vào Tài khoản Google của bạn (<ph name="ACCOUNT" />). Bạn có thể sử dụng các mật khẩu này trên mọi thiết bị bạn đăng nhập. Để tắt tính năng này, hãy vào phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Không thể xác định kích thước tệp.</translation>
 <translation id="5090832849094901128">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Đã đăng lên Twitter.</translation>
@@ -595,6 +597,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5520466080178053306">Nhấn vào Trình quản lý mật khẩu rồi nhấn vào Thêm</translation>
 <translation id="5525095647255982834">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên thiết bị đó.</translation>
 <translation id="5525269841082836315">Tạo cụm mật khẩu</translation>
+<translation id="5530084793407600786">Tìm kiếm trong hình ảnh bằng Google</translation>
 <translation id="5542540507657872337">Đã tìm thấy <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Tính năng tiếp nối cho phép bạn bắt đầu duyệt web trên thiết bị này và sau đó dễ dàng tiếp tục trên máy Mac của mình. Trang web hiện đang mở sẽ xuất hiện trong thanh Dock trên máy Mac của bạn.
 

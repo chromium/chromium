@@ -732,6 +732,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="492453977506755176">Taste für den Aufnahmemodus</translation>
 <translation id="4925542575807923399">Der Administrator dieses Kontos hat festgelegt, dass dieses Konto in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein muss.</translation>
 <translation id="4929163402621253029">Sprichst du gerade? Du bist stummgeschaltet. Weitere Informationen</translation>
+<translation id="4936329710968938986">Alle, aus</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
 <translation id="4946376291507881335">Aufnahme</translation>
@@ -1386,6 +1387,7 @@ Neuinstallation</translation>
 <translation id="8477270416194247200">Drücke Alt + Such-Taste oder die Umschalttaste, um die Aktivierung aufzuheben.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert. Bitte bestätigen, um die Änderungen beizubehalten. Die vorherigen Einstellungen werden in <ph name="TIMEOUT_SECONDS" /> wiederhergestellt.</translation>
 <translation id="8496402167048257517">Nearby Share-Einstellungen anzeigen</translation>
+<translation id="8507563469658346379">Alle, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Auf deinem Chromebook ist Bluetooth deaktiviert. Gib zum Entsperren das Passwort ein.</translation>
 <translation id="8513108775083588393">Autom. drehen</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>

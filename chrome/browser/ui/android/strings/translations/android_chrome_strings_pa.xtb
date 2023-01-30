@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">ਜਾਰੀ ਰੱਖਣ ਲਈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਤੁਹਾਡੇ ਨਾਮ, ਈਮੇਲ ਪਤੇ ਅਤੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਨੂੰ ਇਸ ਸਾਈਟ ਨਾਲ ਸਾਂਝਾ ਕਰੇਗਾ। ਇਸ ਸਾਈਟ ਦੀ <ph name="BEGIN_LINK1" />ਪਰਦੇਦਾਰੀ ਨੀਤੀ<ph name="END_LINK1" /> ਦੇਖੋ।</translation>
 <translation id="2000419248597011803">ਪਤਾ ਬਾਰ ਅਤੇ ਖੋਜ ਬਾਕਸ ਤੋਂ ਕੁਝ ਕੁਕੀਜ਼ ਅਤੇ ਖੋਜਾਂ ਤੁਹਾਡੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਨੂੰ ਭੇਜਦੀ ਹੈ</translation>
 <translation id="200114059308480249">ਕੀ Google ਖੋਜਾਂ ਵਿੱਚ ਆਲੇ-ਦੁਆਲੇ ਦੀ ਲਿਖਤ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨਾ ਹੈ?</translation>
+<translation id="2009341475524975924">ਕਿਸੇ ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਲਈ, ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸੀਮਤ ਕਿਸਮ ਦਾ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਦਿਨ ਦਾ ਉਹ ਸਮਾਂ ਜਦੋਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਇਆ ਗਿਆ ਸੀ।</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ਫ਼ਾਈਲ}one{# ਫ਼ਾਈਲ}other{# ਫ਼ਾਈਲਾਂ}}</translation>
 <translation id="2021896219286479412">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇ ਸਾਈਟ ਕੰਟਰੋਲ</translation>
 <translation id="2038563949887743358">ਬੇਨਤੀ ਡੈਸਕਟਾਪ ਸਾਈਟ ਚਾਲੂ ਕਰੋ</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">ਪਾਸਵਰਡ ਤਿਆਰ ਕੀਤੇ ਜਾ ਰਹੇ ਹਨ…</translation>
 <translation id="2323763861024343754">ਸਾਈਟ ਸਟੋਰੇਜ</translation>
 <translation id="2328985652426384049">ਸਾਈਨ-ਇਨ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="234265804618409743">ਤੁਹਾਡੇ ਕੈਮਰੇ ਨੂੰ ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਕੋਈ ਗੜਬੜ ਹੋਈ।</translation>
 <translation id="2349710944427398404">Chrome ਵੱਲੋਂ ਵਰਤਿਆ ਜਾਣ ਵਾਲਾ ਕੁੱਲ ਡਾਟਾ, ਜਿਸ ਵਿੱਚ ਖਾਤੇ, ਬੁੱਕਮਾਰਕ, ਅਤੇ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਸੈਟਿੰਗਾਂ ਸ਼ਾਮਲ ਹਨ</translation>
 <translation id="235789365079050412">Google ਪਰਦੇਦਾਰੀ ਨੀਤੀ</translation>
@@ -344,6 +346,7 @@
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
 <translation id="2912296070571964914">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2912345083818861431">ਖੁੱਲ੍ਹੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਨੂੰ ਦੇਖਣ ਲਈ ਸਕ੍ਰੀਨ ਲਾਕ ਵਰਤੋ</translation>
+<translation id="2922568440285376746">Google ਨਾਲ ਚਿੱਤਰ ਵਿੱਚ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">ਨਾਮ ਅਵੈਧ ਹੈ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ਸਟੋਰੇਜ</translation>
 <translation id="2932222164150889403">ਤੁਹਾਡਾ ਕੀ-ਬੋਰਡ ਨਹੀਂ ਬਦਲੇਗਾ</translation>
@@ -652,6 +655,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ਖੋਲ੍ਹੋ</translation>
 <translation id="4619564267100705184">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4634124774493850572">ਪਾਸਵਰਡ ਵਰਤੋ</translation>
+<translation id="4637420359569396807">ਵਿਗਿਆਪਨ ਦੇ ਮੁਲਾਂਕਣ ਨਾਲ, ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਲਈ ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿਚਕਾਰ ਸੀਮਤ ਕਿਸਮ ਦਾ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਦਿਨ ਦਾ ਉਹ ਸਮਾਂ ਜਦੋਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਇਆ ਗਿਆ ਸੀ।</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}one{# ਪਾਸਵਰਡ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}other{# ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਈ}}</translation>
 <translation id="4650364565596261010">ਸਿਸਟਮ ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="465657074423018424">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਧੋਖੇਬਾਜ਼ ਵੈੱਬਸਾਈਟਾਂ ਤੋਂ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕਰਦੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸਨੂੰ ਬੰਦ ਕਰਦੇ ਹੋ, ਤਾਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕਰਨ ਦੌਰਾਨ ਜ਼ਿਆਦਾ ਸਾਵਧਾਨ ਰਹੋ, ਖਾਸ ਕਰਕੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ।</translation>
@@ -664,6 +668,7 @@
 <translation id="4684427112815847243">ਸਭ ਕੁਝ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="4685741273709472646">ਡ੍ਰੌਪ-ਡਾਊਨ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣੋ</translation>
 <translation id="4687718960473379118">ਸਾਈਟ ਵੱਲੋਂ ਸੁਝਾਏ ਗਏ ਵਿਗਿਆਪਨ</translation>
+<translation id="4689792375321623175">Google ਨਾਲ ਚਿੱਤਰ ਖੋਜੋ <ph name="BEGIN_NEW" />ਨਵਾਂ<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ਅਤੇ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ਹੋਰ}}</translation>
 <translation id="4699172675775169585">ਕੈਚ ਕੀਤੇ ਚਿੱਤਰ ਅਤੇ ਫਾਈਲਾਂ</translation>
 <translation id="4719927025381752090">ਅਨੁਵਾਦ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
@@ -810,6 +815,7 @@
 <translation id="5438292632479953702">ਦੁਬਾਰਾ ਡਾਉਨਲੋਡ ਕਰੋ</translation>
 <translation id="5441466871879044658">ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="5441522332038954058">ਪਤਾ ਬਾਰ 'ਤੇ ਜਾਓ</translation>
+<translation id="5444999712122199445">ਸਾਈਟ 'ਤੇ ਵਾਪਸ ਜਾਓ</translation>
 <translation id="544776284582297024">ਟੈਬਾਂ ਨੂੰ ਖੋਲ੍ਹਣ ਅਤੇ ਇੱਕੋ ਵੇਲੇ ਵੱਖ-ਵੱਖ ਪੰਨਿਆਂ 'ਤੇ ਜਾਣ ਲਈ, 'ਟੈਬਾਂ ਖੋਲ੍ਹੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ਨਾਲ</translation>
 <translation id="5456381639095306749">ਪੰਨਾ ਡਾਊਨਲੋਡ ਕਰੋ</translation>

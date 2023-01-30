@@ -546,7 +546,7 @@
 <translation id="5056446788882570708">發現問題：<ph name="TIME" />。</translation>
 <translation id="5059136629401106827">確定</translation>
 <translation id="5062321486222145940">安裝「Google 雲端硬碟」</translation>
-<translation id="50641035439563602">密碼目前已儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />)，只要登入帳戶即可使用。如要關閉這項功能，請前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />。</translation>
+<translation id="50641035439563602">密碼目前已儲存至您的 Google 帳戶 (<ph name="ACCOUNT" />)，只要登入帳戶即可使用。如要關閉此功能，請前往「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」。</translation>
 <translation id="5083464117946352670">無法判斷檔案大小。</translation>
 <translation id="5090832849094901128">刪除此密碼不會刪除您在 <ph name="WEBSITE" /> 的帳戶。</translation>
 <translation id="5094827893301452931">已發佈 Tweet。</translation>

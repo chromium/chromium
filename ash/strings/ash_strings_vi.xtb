@@ -733,6 +733,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="492453977506755176">Phím kích hoạt chế độ chụp</translation>
 <translation id="4925542575807923399">Quản trị viên của tài khoản này yêu cầu tài khoản này là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
 <translation id="4929163402621253029">Bạn đang nói à? Bạn đang tắt tiếng. Tìm hiểu thêm</translation>
+<translation id="4936329710968938986">Mọi người, đang tắt</translation>
 <translation id="4938176435186993759">Ẩn tất cả đề xuất</translation>
 <translation id="4945196315133970626">Tắt thông báo</translation>
 <translation id="4946376291507881335">Chụp</translation>
@@ -1387,6 +1388,7 @@ Mới cài đặt</translation>
 <translation id="8477270416194247200">Nhấn phím Alt+Search hoặc Shift để hủy.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> không hỗ trợ <ph name="SPECIFIED_RESOLUTION" />. Độ phân giải đã được thay đổi thành <ph name="FALLBACK_RESOLUTION" />. Hãy nhấp vào xác nhận để lưu các thay đổi. Các tùy chọn cài đặt trước sẽ được khôi phục sau <ph name="TIMEOUT_SECONDS" /> nữa.</translation>
 <translation id="8496402167048257517">Hiện chế độ cài đặt Chia sẻ lân cận</translation>
+<translation id="8507563469658346379">Mọi người, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth trên Chromebook đang tắt. Hãy nhập mật khẩu để mở khoá Chromebook của bạn.</translation>
 <translation id="8513108775083588393">Tự động xoay</translation>
 <translation id="851458219935658693">Hiển thị cửa sổ từ không gian làm việc hiện tại, đã chọn nút chọn</translation>

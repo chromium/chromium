@@ -188,6 +188,7 @@
 <translation id="1384725838384960382">Güvənli ödəniş məlumatları üzrə doğrulama vərəqəsi</translation>
 <translation id="1386623374109090026">Annotasiyalar</translation>
 <translation id="1391289752476847787">Səhmlər və istiqrazlar</translation>
+<translation id="1391625539203220400">IBAN bu cihazda saxlansın?</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hər hansı data göndərməyib.</translation>
 <translation id="1396259464226642517">Bu nəticə gözlənilməz oldu? <ph name="BEGIN_LINK" />Rəy göndərin<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Açıq-yaşıl</translation>
@@ -2738,6 +2739,7 @@
 <translation id="7755287808199759310">Valideyniniz kilidi aça bilər</translation>
 <translation id="7755624218968747854">Əsas Rulon</translation>
 <translation id="7758069387465995638">Qoruyucu divar və ya antivirus proqramı bağlantını blok etmiş ola bilər.</translation>
+<translation id="7759809451544302770">İstəyə görə</translation>
 <translation id="7760497246331667482">Reggi və karib adaları musiqisi</translation>
 <translation id="776110834126722255">Müddəti keçib</translation>
 <translation id="7761159795823346334">Kamera icazəsi verilsin?</translation>

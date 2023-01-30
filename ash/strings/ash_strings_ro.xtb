@@ -733,6 +733,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="492453977506755176">Tasta modului de capturare</translation>
 <translation id="4925542575807923399">Administratorul acestui cont solicită ca acest cont să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="4929163402621253029">Ai spus ceva? Ai sunetul dezactivat. Află mai multe</translation>
+<translation id="4936329710968938986">Toți, dezactivat</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
@@ -1387,6 +1388,7 @@ Instalare nouă</translation>
 <translation id="8477270416194247200">Apasă pe Alt + tasta de căutare sau pe Shift pentru a anula.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> nu acceptă <ph name="SPECIFIED_RESOLUTION" />. Rezoluția a fost modificată la <ph name="FALLBACK_RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Afișează setările Trimiterii în apropiere</translation>
+<translation id="8507563469658346379">Toți, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth-ul Chromebook-ului este dezactivat. Pentru a-ți debloca Chromebookul, introdu parola.</translation>
 <translation id="8513108775083588393">Rotire autom.</translation>
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>

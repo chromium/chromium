@@ -733,6 +733,7 @@
 <translation id="492453977506755176">Клавіша режиму зйомки</translation>
 <translation id="4925542575807923399">Адміністратору облікового запису потрібно, щоб цей обліковий запис був першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="4929163402621253029">Ви почали говорити? Ваш мікрофон вимкнено. Докладніше.</translation>
+<translation id="4936329710968938986">Усі, вимкнено</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">Щоб скасувати, натисніть Alt+Search або Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />. Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Показати налаштування функції "Передавання поблизу"</translation>
+<translation id="8507563469658346379">Усі, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">На Chromebook вимкнено Bluetooth. Щоб розблокувати пристрій, введіть пароль.</translation>
 <translation id="8513108775083588393">Автообертання</translation>
 <translation id="851458219935658693">Показувати вікна з поточного робочого столу, перемикач вибрано</translation>

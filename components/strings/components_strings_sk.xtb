@@ -275,6 +275,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1572765991610098222"><ph name="WIDTH" /> × <ph name="HEIGHT" /> palcov</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Pri zobrazovaní webovej stránky sa niečo pokazilo.</translation>
+<translation id="1584492003828271317">Zobrazenie prispôsobenej reklamy pri prehliadaní závisí od reklám navrhovaných webmi, vašich nastavení súborov cookie a od toho, či prehliadaný web prispôsobuje reklamy</translation>
 <translation id="1586541204584340881">Ktoré rozšírenia ste nainštalovali</translation>
 <translation id="1588438908519853928">Normálny</translation>
 <translation id="1592005682883173041">Prístup k miestnym údajom</translation>
@@ -856,6 +857,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3121994479408824897">Prejsť na <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Žiadne}=1{prihlasovacie údaje pre 1 účet}few{prihlasovacie údaje pre # účty}many{sign-in data for # accounts}other{prihlasovacie údaje pre # účtov}}</translation>
 <translation id="3141093262818886744">Otvoriť aj tak</translation>
+<translation id="3141641372357166056">Žiadne rozhodnutie o súhlase</translation>
 <translation id="3145945101586104090">Odpoveď sa nepodarilo dekódovať</translation>
 <translation id="3150653042067488994">Dočasná chyba servera</translation>
 <translation id="3154506275960390542">Táto stránka obsahuje formulár, ktorý zrejme nebude možné bezpečne odoslať. Odoslané dáta si môžu pri prenose zobraziť iní používatelia a prípadný útočník ich môže zmeniť. Server preto môže prijať niečo iné, než ste odoslali.</translation>
@@ -1374,6 +1376,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4359160567981085931">Práve ste zadali svoje heslo na podvodnom webe. Chrome vám s tým pomôže. Ak chcete zmeniť heslo a upozorniť Google, že váš účet môže byť ohrozený, kliknite na Ochrániť účet.</translation>
 <translation id="4363222835916186793">Upozornenia na tento výrobok boli vypnuté</translation>
 <translation id="437040971055499437">Vyskytne sa bezpečnostná udalosť</translation>
+<translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4372948949327679948">Očakávaná hodnota <ph name="VALUE_TYPE" />.</translation>
 <translation id="4375864595697821259">Pridajte položku späť, ak ju chcete pridať do skupiny tém, z ktorých môže Chrome vyberať pri odhadovaní vašich záujmov</translation>
 <translation id="4377125064752653719">Pokúsili ste sa o prístup na stránky <ph name="DOMAIN" />, avšak certifikát poskytnutý serverom bol vydavateľom zrušený. Znamená to, že povereniam zabezpečenia, ktoré predložil server, sa celkom nedá dôverovať. Je možné, že komunikujete s útočníkom.</translation>
@@ -1400,6 +1403,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="443673843213245140">Použitie servera proxy je zakázané, ale je určená explicitná konfigurácia servera proxy.</translation>
 <translation id="4441832193888514600">Ignorované, pretože pravidlá sa dajú nastaviť iba pravidlami cloudu pre používateľov.</translation>
 <translation id="4451135742916150903">Môže žiadať o povolenie pripájať sa k zariadeniam HID</translation>
+<translation id="4451684391620232683">Text prezentovaný používateľovi:</translation>
 <translation id="4452328064229197696">Heslo, ktoré ste práve použili, bolo nájdené v zozname hesiel odhalených pri porušení ochrany údajov. Ak chcete svoje účty zabezpečiť, správca hesiel od Googlu odporúča skontrolovať uložené heslá.</translation>
 <translation id="4460315069258617173">Povolené, kým nezavriete karty tohto webu</translation>
 <translation id="4464826014807964867">Weby s informáciami od vašej organizácie</translation>
@@ -1517,6 +1521,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4749011317274908093">Ste v režime inkognito</translation>
 <translation id="4750671009706599284">tohto telefónu</translation>
 <translation id="4750917950439032686">Vaše údaje, napríklad heslá alebo čísla kreditných kariet, sú pri odosielaní na tento web utajené.</translation>
+<translation id="4751249061288707459">Posledná aktualizácia súhlasu:</translation>
 <translation id="4751476147751820511">Senzory pohybu alebo svetla</translation>
 <translation id="4754461935447132332">Nepovolené pre nezabezpečené weby</translation>
 <translation id="4756388243121344051">&amp;História</translation>
@@ -1681,6 +1686,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5126510351761255129">Overenie karty</translation>
 <translation id="512670116361803001">Veľkosť aplikácie <ph name="APP_NAME" /> sa nemusí náležite zmeniť. Ak chcete predísť problémom v aplikácii, použite predvolené veľkosti okna.</translation>
 <translation id="5127934926273826089">Kvety</translation>
+<translation id="5129534298163637277">Dialógové okno potvrdenia</translation>
 <translation id="5135404736266831032">Spravovať adresy…</translation>
 <translation id="5136841603454277753">Zadajte správny kód</translation>
 <translation id="5138014172396933048">Virtuálna karta nie je momentálne k dispozícii, kontaktujte svoju banku</translation>
@@ -1986,6 +1992,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5921639886840618607">Chcete uložiť kartu do účtu Google?</translation>
 <translation id="5922853866070715753">Takmer dokončené</translation>
 <translation id="5923492272538889093">Chcete namiesto overovacieho kódu karty použiť odomknutie zariadením?</translation>
+<translation id="5924782825030413055">Zdroj poslednej aktualizácie súhlasu:</translation>
 <translation id="5928444777041341328">Domov a záhrada</translation>
 <translation id="5932224571077948991">Web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="5937560539988385583">Stránka je preložená</translation>
@@ -2676,6 +2683,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7619838219691048931">Koncový hárok</translation>
 <translation id="7625242817712715120">Pravidlá správcu neodporúčajú tlač tohto obsahu</translation>
 <translation id="762844065391966283">Jednotlivo</translation>
+<translation id="7630470133768862132">Stav súhlasu:</translation>
 <translation id="7631444403134069754">Ľahká atletika</translation>
 <translation id="7633909222644580952">Údaje o výkonnosti a správy o zlyhaní</translation>
 <translation id="7637571805876720304">Chcete kreditnú kartu odstrániť z prehliadača Chromium?</translation>
@@ -2852,6 +2860,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8055534648776115597">Odborné a celoživotné vzdelávanie</translation>
 <translation id="8057711352706143257">Softvér <ph name="SOFTWARE_NAME" /> nie je správne nakonfigurovaný. Tento problém sa zvyčajne odstráni odinštalovaním softvéru <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Výroba jedál</translation>
+<translation id="8058603697124206642">Nepovinné</translation>
 <translation id="8066225060526005217">Spravované nastaveniami súborov cookie</translation>
 <translation id="8067872629359326442">Práve ste zadali svoje heslo na podvodnom webe. Chromium vám s tým pomôže. Ak chcete zmeniť heslo a upozorniť Google, že váš účet môže byť ohrozený, kliknite na Ochrániť účet.</translation>
 <translation id="8070439594494267500">Ikona aplikácie</translation>

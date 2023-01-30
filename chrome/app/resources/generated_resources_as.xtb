@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">অভিধানত &amp;যোগ কৰক</translation>
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1022489261739821355">আপোনাৰ <ph name="BEGIN_LINK" /> Google একাউণ্ট<ph name="END_LINK" />ৰ পৰা পাছৱৰ্ডসমূহ দেখুওৱা হৈছে</translation>
+<translation id="1022669824195822609">আপোনাৰ ডিভাইচটো <ph name="DOMAIN" />এ পৰিচালনা কৰে। প্ৰশাসকে এই ডিভাইচটোত থকা যিকোনো প্ৰ’ফাইলত ডেটা এক্সেছ কৰিব পাৰে।</translation>
 <translation id="1026655690966755180">প’ৰ্ট যোগ কৰক</translation>
 <translation id="1026822031284433028">প্ৰতিচ্ছবি ল’ড কৰক</translation>
 <translation id="1028604629594230522">Chromeএ আপুনি চোৱাৰ সম্ভাৱনা থকা পৃষ্ঠাসমূহ আগতীয়াকৈ ল’ড কৰে, যাতে আপুনি সেইবোৰ চালে সেইবোৰ অধিক ক্ষিপ্ৰতাৰে ল’ড হয়।</translation>
@@ -1878,6 +1879,7 @@
 <translation id="2643064289437760082">আপোনাৰ ব্ৰাউজিঙৰ ডেটা মচি আপুনি যিকোনো সময়তে বিজ্ঞাপনৰ জোখ-মাখৰ ডেটা মচিব পাৰে</translation>
 <translation id="2643698698624765890">ৱিণ্ড’ মেনুৰ এক্সটেনশ্বন বুটামটোত ক্লিক কৰি আপোনাৰ এক্সটেনশ্বনসমূহ পৰিচালনা কৰক।</translation>
 <translation id="2645047101481282803">আপোনাৰ ডিভাইচটো <ph name="PROFILE_NAME" />এ পৰিচালনা কৰে</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" />লৈ এই টেবটো কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-এনক’ড কৰা ASCII, প্ৰমাণপত্ৰৰ চেইন</translation>
 <translation id="265156376773362237">মান্য আগতীয়া ল’ডিং</translation>
@@ -2750,6 +2752,7 @@
 <translation id="3446274660183028131">Windows ইনষ্টল কৰিবলৈ অনুগ্ৰহ কৰি Parallels Desktop লঞ্চ কৰক।</translation>
 <translation id="344630545793878684">আপোনাৰ ডেটা ৱেবছাইটসমূহত পঢ়ে</translation>
 <translation id="3447644283769633681">আটাইবোৰ তৃতীয় পক্ষৰ কুকি অৱৰোধ কৰক</translation>
+<translation id="3447797901512053632"><ph name="DEVICE_NAME" />লৈ <ph name="TAB_NAME" /> কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="3448492834076427715">একাউণ্ট আপডে'ট কৰক</translation>
 <translation id="3449393517661170867">টিপা নতুন ৱিণ্ড’</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" />লৈ নিৰ্দেশ পঠিয়াবলৈ <ph name="SEARCH_KEY" /> টিপক</translation>
@@ -2904,6 +2907,7 @@
 <translation id="3590295622232282437">পৰিচালিত ছেশ্বন ব্যৱহাৰ কৰিবলৈ গৈ আছে।</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> ৰাখক</translation>
 <translation id="3592260987370335752">&amp;অধিক জানক</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" />লৈ এটা টেব কাষ্ট কৰি থকা হৈছে</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin ম’ড সক্ষম কৰক</translation>
 <translation id="3593965109698325041">প্ৰমাণপত্ৰৰ নামৰ সীমাবদ্ধতা</translation>
 <translation id="3596012367874587041">এপৰ ছেটিং</translation>

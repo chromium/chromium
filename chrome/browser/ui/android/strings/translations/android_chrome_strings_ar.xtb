@@ -236,6 +236,7 @@
 <translation id="2321086116217818302">جارٍ تحضير كلمات المرور…</translation>
 <translation id="2323763861024343754">مساحة تخزين الموقع</translation>
 <translation id="2328985652426384049">تعذر تسجيل الدخول</translation>
+<translation id="2341410551640223969">تعذَّر تثبيت <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">تعذّر فتح الكاميرا. حدث خطأ ما.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
@@ -345,6 +346,7 @@
 <translation id="2909615210195135082">‏النظام الأساسي لإشعارات Google</translation>
 <translation id="2912296070571964914">إدارة المواضيع التي تحظى باهتمامك</translation>
 <translation id="2912345083818861431">استخدام قفل الشاشة للاطّلاع على علامات التبويب المفتوحة في وضع التصفُّح المتخفي</translation>
+<translation id="2922568440285376746">‏البحث داخل الصور على Google <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">الاسم غير صحيح</translation>
 <translation id="2932150158123903946">‏مساحة تخزين <ph name="APP_NAME" /> Google</translation>
 <translation id="2932222164150889403">لن يتم تغيير اللغة في لوحة المفاتيح.</translation>
@@ -665,6 +667,7 @@
 <translation id="4684427112815847243">مزامنة كل شيء</translation>
 <translation id="4685741273709472646">الاختيار من القائمة المنسدلة</translation>
 <translation id="4687718960473379118">الإعلانات المقترَحة من المواقع الإلكترونية</translation>
+<translation id="4689792375321623175">‏البحث في الصور على Google <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخيار إضافي واحد (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}zero{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 وخياران إضافيان (<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />)}few{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارات إضافية}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيارًا إضافيًا}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> خيار إضافي}}</translation>
 <translation id="4699172675775169585">الصور والملفات المخزنة مؤقتًا</translation>
 <translation id="4719927025381752090">عرض ترجمة</translation>
@@ -811,6 +814,7 @@
 <translation id="5438292632479953702">تنزيل الملف مرة أخرى</translation>
 <translation id="5441466871879044658">ترجمة لهذه اللغة</translation>
 <translation id="5441522332038954058">الانتقال السريع إلى شريط العناوين</translation>
+<translation id="5444999712122199445">الرجوع إلى الموقع الإلكتروني</translation>
 <translation id="544776284582297024">لفتح علامات تبويب وزيارة صفحات مختلفة في آنٍ واحد، انقر على زر "علامات التبويب المفتوحة".</translation>
 <translation id="5454166040603940656">مع <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">تنزيل الصفحة</translation>

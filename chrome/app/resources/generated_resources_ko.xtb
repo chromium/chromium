@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">사전에 추가(&amp;A)</translation>
 <translation id="1018656279737460067">취소됨</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에 저장된 비밀번호를 표시합니다.</translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" />에서 관리하는 기기입니다. 관리자는 기기에 등록된 모든 프로필의 데이터에 액세스할 수 있습니다.</translation>
 <translation id="1026655690966755180">포트 추가</translation>
 <translation id="1026822031284433028">이미지 로드</translation>
 <translation id="1028604629594230522">Chrome은 사용자가 방문할 가능성이 있는 페이지를 미리 로드하여 사용자가 방문할 때 페이지를 더 빠르게 로드합니다.</translation>
@@ -1191,7 +1192,7 @@
 <translation id="2048554637254265991">컨테이너 관리자 시작 중에 오류가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="2048653237708779538">실행할 수 없는 작업</translation>
 <translation id="204914487372604757">바로가기 만들기</translation>
-<translation id="2050339315714019657">인물</translation>
+<translation id="2050339315714019657">세로 방향</translation>
 <translation id="2051555741181591333">핫스팟 자동 사용 중지</translation>
 <translation id="2052572566310583903">다른 기기에서 설치됨</translation>
 <translation id="2053105195397337973">Google은 추적을 제한하고 사이트에서 광고 스팸과 사기를 방지하도록 돕는 방안을 모색하고 있습니다.</translation>
@@ -1881,6 +1882,7 @@
 <translation id="2643064289437760082">언제든지 인터넷 사용 기록을 삭제하여 광고 측정 데이터를 삭제할 수 있습니다.</translation>
 <translation id="2643698698624765890">창 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" />님이 관리하는 기기입니다</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" /> 기기로 이 탭 전송 중</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
 <translation id="265156376773362237">표준 미리 로드</translation>
@@ -2753,6 +2755,7 @@
 <translation id="3446274660183028131">Windows를 설치하려면 Parallels Desktop을 실행하세요.</translation>
 <translation id="344630545793878684">다수의 웹사이트에서 데이터 읽기</translation>
 <translation id="3447644283769633681">모든 타사 쿠키 차단</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" />에서 <ph name="DEVICE_NAME" /> 기기로 전송 중</translation>
 <translation id="3448492834076427715">계정 업데이트</translation>
 <translation id="3449393517661170867">새 탭 창</translation>
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> 키를 눌러 <ph name="EXTENSION_NAME" />에 명령 보내기</translation>
@@ -2907,6 +2910,7 @@
 <translation id="3590295622232282437">관리 세션을 시작합니다.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> 유지</translation>
 <translation id="3592260987370335752">자세히 알아보기(&amp;L)</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" /> 기기로 탭 전송 중</translation>
 <translation id="3593152357631900254">퍼지 병음 모드 사용</translation>
 <translation id="3593965109698325041">인증서 이름 제약조건</translation>
 <translation id="3596012367874587041">앱 설정</translation>
@@ -3182,6 +3186,7 @@
 <translation id="3823310065043511710">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다.</translation>
 <translation id="3824621460022590830">기기 등록 토큰이 잘못되었습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}other{<ph name="FILE_TYPES" /> 파일 형식에 대한 내 선택사항 기억하기}}</translation>
+<translation id="3825635794653163640">앱 알림에서 앱 아이콘에 점 표시</translation>
 <translation id="3826071569074535339">움직임 감지 센서 사용이 허용됨</translation>
 <translation id="3826440694796503677">관리자가 Google 계정 추가를 사용 중지했습니다.</translation>
 <translation id="3827774300009121996">전체화면(&amp;F)</translation>
@@ -4500,6 +4505,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5063480226653192405">사용</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS 설정에서 보안 DNS 관리</translation>
+<translation id="5066160542186949327">다른 폴더로 이동</translation>
 <translation id="5067399438976153555">항상 사용</translation>
 <translation id="5067867186035333991"><ph name="HOST" />에서 마이크에 액세스하려는 경우 메시지 표시</translation>
 <translation id="5068553687099139861">비밀번호 표시</translation>

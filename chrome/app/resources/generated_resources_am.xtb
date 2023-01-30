@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;ወደ መዝገበ ቃላት አክል</translation>
 <translation id="1018656279737460067">ተሰርዟል</translation>
 <translation id="1022489261739821355">የይለፍ ቃሎችን ከእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ማሳየት</translation>
+<translation id="1022669824195822609">መሣሪያዎ የሚተዳደረው በ<ph name="DOMAIN" /> ነው። አስተዳዳሪዎች በዚህ መሣሪያ ላይ በማንኛውም መገለጫ ውስጥ ያለውን ውሂብ መድረስ ይችላሉ።</translation>
 <translation id="1026655690966755180">ወደብ አክል</translation>
 <translation id="1026822031284433028">ምስል አክል</translation>
 <translation id="1028604629594230522">እርስዎ የመጎብኘት ዕድልዎ ከፍተኛ የሆኑባቸው ገጾች ሲጎበኟቸው ይበልጥ በፍጥነት እንዲጫኑ Chrome በቅድሚያ ይጭናቸዋል።</translation>
@@ -1874,6 +1875,7 @@
 <translation id="2643064289437760082">የአሰሳ ውሂብዎን በመሰረዝ የማስታወቂያ ልኬት ውሂብን ሁልጊዜ መሰረዝ ይችላሉ</translation>
 <translation id="2643698698624765890">በመስኮት ምናሌ ውስጥ ያለውን «ቅጥያዎች» ጠቅ በማድረግ ቅጥያዎችዎን ያቀናብሩ።</translation>
 <translation id="2645047101481282803">የእርስዎ መሣሪያ በ<ph name="PROFILE_NAME" /> ነው የሚተዳደረው</translation>
+<translation id="2645388244376970260">ይህን ትር ወደ <ph name="DEVICE_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII፣ የሰርቲፊኬት ሰንሰለት</translation>
 <translation id="265156376773362237">መደበኛ ቅድሚያ መጫን</translation>
@@ -2746,6 +2748,7 @@
 <translation id="3446274660183028131">Windowsን ለመጫን እባክዎ Parallels ዴስክቶፕን ያስጀምሩ።</translation>
 <translation id="344630545793878684">የእርስዎን ውሂብ በበርካታ የድር ጣቢያዎች ላይ ያንብቡ</translation>
 <translation id="3447644283769633681">ሁሉንም የሶስተኛ ወገን ኩኪዎችን አግድ</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" />ን ወደ <ph name="DEVICE_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="3448492834076427715">መለያን አዘምን</translation>
 <translation id="3449393517661170867">አዲስ የትር መስኮት</translation>
 <translation id="3449839693241009168">ትዕዛዞችን ለ<ph name="EXTENSION_NAME" /> ለመላክ <ph name="SEARCH_KEY" />ን ይጫኑ</translation>
@@ -2900,6 +2903,7 @@
 <translation id="3590295622232282437">ወደሚተዳደር ክፍለ-ጊዜ በመግባት ላይ።</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" />ን አቆይ</translation>
 <translation id="3592260987370335752">&amp;ተጨማሪ ይወቁ</translation>
+<translation id="3592344177526089979">ትርን ወደ <ph name="DEVICE_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="3593152357631900254">ያልጠራ-በቻይና ፊደል መጻፊያ ሁነታን ያንቁ</translation>
 <translation id="3593965109698325041">የሰርቲፊኬት ስም እገዳዎች</translation>
 <translation id="3596012367874587041">የመተግበሪያ ቅንብሮች</translation>

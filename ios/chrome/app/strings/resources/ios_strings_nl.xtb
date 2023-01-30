@@ -18,6 +18,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1066060668811609597">Synchronisatie beheren</translation>
 <translation id="1076421457278169141">Code gescand</translation>
 <translation id="1076785341346483463">Synchroniseren met beheerd account</translation>
+<translation id="1080365971383768617">Wachtwoorden op al je apparaten</translation>
 <translation id="1084365883616172403">Facebook-bericht voltooid.</translation>
 <translation id="1085696779717592361">Chrome standaard gebruiken</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> altijd vertalen</translation>
@@ -545,6 +546,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5056446788882570708">Problemen gevonden (<ph name="TIME" />).</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Google Drive installeren</translation>
+<translation id="50641035439563602">Wachtwoorden worden nu opgeslagen in je Google-account (<ph name="ACCOUNT" />). Je kunt ze gebruiken overal waar je bent ingelogd. Ga naar <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" /> om dit uit te zetten.</translation>
 <translation id="5083464117946352670">Kan bestandsgrootte niet bepalen.</translation>
 <translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
 <translation id="5094827893301452931">Tweet voltooid.</translation>
@@ -595,6 +597,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="5520466080178053306">Tik op Wachtwoordmanager en tik dan op Toevoegen</translation>
 <translation id="5525095647255982834">Als je dit tabblad naar een ander apparaat wilt sturen, log je daar in bij Chrome.</translation>
 <translation id="5525269841082836315">Wachtwoordzin maken</translation>
+<translation id="5530084793407600786">Zoeken in afbeelding met Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> gevonden</translation>
 <translation id="5548760955356983418">Met Handoff kun je een website op dit apparaat bezoeken en vervolgens makkelijk verder bezoeken op je Mac. De momenteel geopende website zie je in het Dock van je Mac.
 

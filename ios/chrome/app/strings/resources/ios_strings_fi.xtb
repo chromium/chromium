@@ -18,6 +18,7 @@ Hakukoneesi on <ph name="DSE_NAME" />. Katso tarvittaessa hakukoneen ohjeet haku
 <translation id="1066060668811609597">Synkronointiasetusten määritys</translation>
 <translation id="1076421457278169141">Koodi skannattiin.</translation>
 <translation id="1076785341346483463">Synkronoi hallinnoidun tilin kanssa</translation>
+<translation id="1080365971383768617">Salasanat kaikilla laitteillasi</translation>
 <translation id="1084365883616172403">Facebook-viesti julkaistu.</translation>
 <translation id="1085696779717592361">Chromen käyttö oletuksena</translation>
 <translation id="1103523840287552314">Käännä <ph name="LANGUAGE" /> aina</translation>
@@ -545,6 +546,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5056446788882570708">Ongelmia havaittiin <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Asenna Google Drive</translation>
+<translation id="50641035439563602">Salasanat tallennetaan nyt Google-tilillesi (<ph name="ACCOUNT" />). Voit käyttää niitä kaikkialla, missä olet kirjautuneena. Voit laittaa tämän pois päältä <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Tiedostokokoa ei voi määrittää</translation>
 <translation id="5090832849094901128">Vaikka poistat salasanan, tiliäsi (<ph name="WEBSITE" />) ei poisteta.</translation>
 <translation id="5094827893301452931">Tweet julkaistu.</translation>
@@ -595,6 +597,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5520466080178053306">Valitse Salasanat ja sitten Lisää</translation>
 <translation id="5525095647255982834">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu sillä Chromeen.</translation>
 <translation id="5525269841082836315">Luo tunnuslause</translation>
+<translation id="5530084793407600786">Hae kuvasta Googlella</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> löytyi</translation>
 <translation id="5548760955356983418">Handoffin avulla voit aloittaa verkkosivuston lukemisen laitteellasi ja jatkaa sitä Macilla. Avoin verkkosivusto näytetään Dockissa.
 

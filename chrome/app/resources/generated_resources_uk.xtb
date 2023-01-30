@@ -3188,6 +3188,7 @@
 <translation id="3823310065043511710">Для Linux потрібно принаймні <ph name="INSTALL_SIZE" /> вільного місця.</translation>
 <translation id="3824621460022590830">Маркер реєстрації пристрою недійсний. Зв'яжіться з адміністратором або власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запам’ятати мій вибір для цього типу файлу: <ph name="FILE_TYPES" />}one{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}few{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}many{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}other{Запам’ятати мій вибір для цих типів файлів: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Показувати крапку на значку додатка, щоб повідомляти про сповіщення</translation>
 <translation id="3826071569074535339">Дозволено використовувати датчики руху</translation>
 <translation id="3826440694796503677">Адміністратор заборонив додавати інші облікові записи Google</translation>
 <translation id="3827774300009121996">&amp;На весь екран</translation>
@@ -4508,6 +4509,7 @@
 <translation id="5063480226653192405">Використання</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Керувати захищеним DNS-сервером у налаштуваннях ОС Chrome</translation>
+<translation id="5066160542186949327">Перемістити в іншу папку</translation>
 <translation id="5067399438976153555">Завжди ввімкнено</translation>
 <translation id="5067867186035333991">Запитувати, якщо хост <ph name="HOST" /> хоче отримати доступ до вашого мікрофона</translation>
 <translation id="5068553687099139861">показати паролі</translation>

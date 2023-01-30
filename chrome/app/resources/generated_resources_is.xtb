@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">Bæt&amp;a við orðabók</translation>
 <translation id="1018656279737460067">Hætt við</translation>
 <translation id="1022489261739821355">Sýnir aðgangsorð af <ph name="BEGIN_LINK" />Google reikningnum<ph name="END_LINK" /> þínum</translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> hefur umsjón með tækinu þínu. Kerfisstjórar hafa aðgang að gögnum allra prófíla í þessu tæki.</translation>
 <translation id="1026655690966755180">Bæta við tengi</translation>
 <translation id="1026822031284433028">Hlaða mynd</translation>
 <translation id="1028604629594230522">Chrome forhleður síðum sem er líklegt að þú munir skoða svo þær hlaðist fyrr þegar þú opnar þær.</translation>
@@ -1881,6 +1882,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2643064289437760082">Þú getur eytt auglýsingamæligögnum hvenær sem er með því að eyða vefskoðunargögnum</translation>
 <translation id="2643698698624765890">Stjórnaðu viðbótunum þínum með því að smella á Viðbætur í gluggavalmyndinni.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> hefur umsjón með tækinu þínu</translation>
+<translation id="2645388244376970260">Sendir þennan flipa út í <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-kóðað ASCII, vottorðakeðja</translation>
 <translation id="265156376773362237">Hefðbundin forhleðsla</translation>
@@ -2753,6 +2755,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3446274660183028131">Ræstu Parallels Desktop til að setja upp Windows.</translation>
 <translation id="344630545793878684">Lesa gögnin þín á fjölda vefsvæða</translation>
 <translation id="3447644283769633681">Útiloka öll fótspor þriðju aðila</translation>
+<translation id="3447797901512053632">Sendir <ph name="TAB_NAME" /> út í <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Uppfæra reikning</translation>
 <translation id="3449393517661170867">Nýr flipagluggi</translation>
 <translation id="3449839693241009168">Ýttu á <ph name="SEARCH_KEY" /> til að senda skipanir til <ph name="EXTENSION_NAME" /></translation>
@@ -2907,6 +2910,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3590295622232282437">Hefur stýrða lotu.</translation>
 <translation id="3591057288287063271">Halda <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">Frekari upp&amp;lýsingar</translation>
+<translation id="3592344177526089979">Sendir flipa út í <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Kveikja á stillingu fyrir óljóst pinyin</translation>
 <translation id="3593965109698325041">Takmarkanir vottorðsheitis</translation>
 <translation id="3596012367874587041">Forritastillingar</translation>
@@ -3182,6 +3186,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3823310065043511710">Mælt er með að minnsta kosti <ph name="INSTALL_SIZE" /> af lausu plássi til að nota Linux.</translation>
 <translation id="3824621460022590830">Skráningarlykill tækis er ógildur. Hafðu samband við eiganda tækisins eða kerfisstjóra. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muna valið mitt fyrir þessa skráargerð: <ph name="FILE_TYPES" />}one{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}other{Muna valið mitt fyrir þessar skráargerðir: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Sýna punkt á forritstákni fyrir forritstilkynningar</translation>
 <translation id="3826071569074535339">Mega nota hreyfiskynjara</translation>
 <translation id="3826440694796503677">Kerfisstjóri hefur lokað fyrir að bæta við fleiri Google reikningum</translation>
 <translation id="3827774300009121996">Allur skjárinn</translation>
@@ -4502,6 +4507,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5063480226653192405">Notkun</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Stjórna öruggu DNS í stillingum ChromeOS</translation>
+<translation id="5066160542186949327">Flytja yfir í aðra möppu</translation>
 <translation id="5067399438976153555">Alltaf á</translation>
 <translation id="5067867186035333991">Spyrja ef <ph name="HOST" /> vill fá aðgang að hljóðnemanum</translation>
 <translation id="5068553687099139861">sýna aðgangsorð</translation>

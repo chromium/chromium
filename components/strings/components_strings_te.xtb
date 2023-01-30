@@ -586,6 +586,7 @@
 <translation id="2359629602545592467">అనేకం</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2361263712565360498">275 x 395 మి.మీ.</translation>
+<translation id="2362083820973145409"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="236340516568226369">టోగుల్ మెనూ పరిమాణాన్ని మార్చండి</translation>
 <translation id="2367567093518048410">స్థాయి</translation>
 <translation id="2380886658946992094">చట్టపరం</translation>
@@ -1931,6 +1932,7 @@
 <translation id="5745980000221562234">{NUM_CARDS,plural, =1{ఈ కార్డ్‌కు ఒక వర్చువల్ నంబర్‌ను ఉపయోగించండి}other{ఒక కార్డ్‌ను ఎంచుకోండి}}</translation>
 <translation id="5752552348183096912">యాంటీపెర్స్పిరెంట్స్, డియోడరెంట్స్ &amp; బాడీ స్ప్రేలు</translation>
 <translation id="5754400531489347219">పెంపుడు జంతువులు &amp; ఇతర జంతువులు</translation>
+<translation id="5755162682436943950">సైన్ అవుట్ చేశారు. సైన్ ఇన్ చేసి, సింక్‌ను ఆన్ చేయడం కోసం డైలాగ్ తెరవబడుతుంది.</translation>
 <translation id="5759751709240058861">మీ కెమెరాను ఉపయోగించండి, తరలించండి</translation>
 <translation id="5763042198335101085">చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
 <translation id="5764725887548570807">చెల్లని ఆరిజిన్ ఫార్మాట్.</translation>
@@ -2338,6 +2340,7 @@
 <translation id="6826993739343257035">ARను అనుమతించాలా?</translation>
 <translation id="6828866289116430505">జన్యుశాస్త్రం</translation>
 <translation id="6831043979455480757">అనువదించు</translation>
+<translation id="683108308100148227">ఐటెమ్‌ను దాచండి</translation>
 <translation id="6832753933931306326">ఫారమ్ ఫిల్ చేయబడింది</translation>
 <translation id="6842196666980060516">184 x 260 మి.మీ.</translation>
 <translation id="6846340164947227603">వర్చువల్ కార్డ్ నంబర్‌ను ఉపయోగించండి...</translation>
@@ -2474,6 +2477,7 @@
 <translation id="7153618581592392745">లావెండర్ రంగు</translation>
 <translation id="7156870133441232244">సర్వర్‌ను TLS 1.2 లేదా ఆపై వెర్షన్‌లకు అప్‌గ్రేడ్ చేయాలి.</translation>
 <translation id="7163295244162773898">{0,plural, =1{గోప్యమైన ఫైల్‌ను కాపీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను కాపీ చేయాలా?}}</translation>
+<translation id="7168323970702333693"><ph name="USER_NAME" />గా సైన్ ఇన్ చేశారు. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
 <translation id="7174545416324379297">విలీనం చేయబడ్డాయి</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> మరియు మరో <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>

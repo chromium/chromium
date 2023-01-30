@@ -236,6 +236,7 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2321086116217818302">Đang chuẩn bị mật khẩu…</translation>
 <translation id="2323763861024343754">Bộ nhớ trang web</translation>
 <translation id="2328985652426384049">Không thể đăng nhập</translation>
+<translation id="2341410551640223969">Không cài đặt được <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Không thể mở máy ảnh. Đã xảy ra lỗi.</translation>
 <translation id="2349710944427398404">Tổng số dữ liệu mà Chrome sử dụng, bao gồm tài khoản, dấu trang và cài đặt đã lưu</translation>
 <translation id="235789365079050412">Chính sách quyền riêng tư của Google</translation>
@@ -344,6 +345,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912296070571964914">Quản lý các chủ đề mà bạn quan tâm</translation>
 <translation id="2912345083818861431">Dùng phương thức khóa màn hình để xem các thẻ Ẩn danh đang mở</translation>
+<translation id="2922568440285376746">Tìm trong ảnh bằng Google <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Tên không hợp lệ</translation>
 <translation id="2932150158123903946">Bộ nhớ Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Bàn phím của bạn sẽ không thay đổi</translation>
@@ -664,6 +666,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4684427112815847243">Đồng bộ hóa mọi thứ</translation>
 <translation id="4685741273709472646">Chọn từ danh sách thả xuống</translation>
 <translation id="4687718960473379118">Quảng cáo do trang web đề xuất</translation>
+<translation id="4689792375321623175">Tìm hình ảnh bằng Google <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> tùy chọn khác}}</translation>
 <translation id="4699172675775169585">Tệp và hình ảnh được lưu trong bộ nhớ đệm</translation>
 <translation id="4719927025381752090">Đề xuất dịch</translation>
@@ -810,6 +813,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5438292632479953702">Tải xuống lần nữa</translation>
 <translation id="5441466871879044658">Dịch sang ngôn ngữ này</translation>
 <translation id="5441522332038954058">Chuyển đến thanh địa chỉ</translation>
+<translation id="5444999712122199445">Quay lại trang web</translation>
 <translation id="544776284582297024">Để mở các thẻ và truy cập cùng lúc vào nhiều trang, hãy nhấn vào nút mở thẻ</translation>
 <translation id="5454166040603940656">với <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Tải trang xuống</translation>

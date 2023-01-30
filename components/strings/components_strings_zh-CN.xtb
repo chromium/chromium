@@ -602,6 +602,7 @@
 <translation id="2430968933669123598">“管理 Google 帐号”，按 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
+<translation id="2441854154602066476">付款方式列表已打开，轻触即可填充。键盘已隐藏。</translation>
 <translation id="2448295565072560657">登录时连接至该设备的外围设备</translation>
 <translation id="2450021089947420533">历程</translation>
 <translation id="2463739503403862330">填充</translation>
@@ -1574,6 +1575,7 @@
 <translation id="4880827082731008257">搜索历史记录</translation>
 <translation id="4881695831933465202">打开</translation>
 <translation id="4881808915112408168">24 x 31.5 英寸</translation>
+<translation id="4882314601499260499">未应用任何用户政策。若要添加用户政策，贵组织必须<ph name="LINK_BEGIN" />验证您的域名<ph name="LINK_END" />。</translation>
 <translation id="4885256590493466218">结帐时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
 <translation id="4888600795924685526">外语学习</translation>
@@ -2457,6 +2459,7 @@
 <translation id="7136009930065337683">详细了解无痕模式</translation>
 <translation id="7138472120740807366">递送方式</translation>
 <translation id="7139892792842608322">主要纸匣</translation>
+<translation id="7140087718106278457">付款方式列表已关闭。</translation>
 <translation id="714064300541049402">侧边 2，图片沿 X 轴位移</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}other{<ph name="PAYMENT_METHOD_PREVIEW" />以及另外 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 种付款方式}}</translation>
@@ -2980,6 +2983,7 @@
 <translation id="8381674639488873545">这些费用可能会一次性收取，也可能会周期性收取，而且可能不易察觉。<ph name="BEGIN_LINK" />仍然显示<ph name="END_LINK" /></translation>
 <translation id="8390725133630534698">管理员政策禁止将 <ph name="ORIGIN_NAME" /> 上的内容分享给 <ph name="VM_NAME" /></translation>
 <translation id="8396522675989118466">这是<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位数代码</translation>
+<translation id="8398335999901363925">付款方式列表已全屏显示，轻触即可填充。</translation>
 <translation id="8398790343843005537">查找您的手机</translation>
 <translation id="8405579342203358118">在 Chrome 设置中管理您要同步的信息</translation>
 <translation id="8406071103346257942">停止使用屏幕锁定功能填充密码</translation>
@@ -3141,6 +3145,7 @@
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8834380158646307944">“关闭无痕式窗口”按钮，按 Enter 键即可关闭当前打开的所有无痕式窗口</translation>
 <translation id="883848425547221593">其他书签</translation>
+<translation id="8842351563145134519">付款方式列表已半屏显示，轻触即可填充。</translation>
 <translation id="884264119367021077">送货地址</translation>
 <translation id="8849231003559822746">130 x 180 毫米</translation>
 <translation id="884923133447025588">未找到任何吊销机制。</translation>

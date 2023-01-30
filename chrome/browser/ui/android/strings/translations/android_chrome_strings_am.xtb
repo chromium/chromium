@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK1" />የግላዊነት መመሪያ<ph name="END_LINK1" /> ይመልከቱ።</translation>
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
 <translation id="200114059308480249">በGoogle ፍለጋዎች ውስጥ በዙሪያው ያለው ጽሁፍ ይካተት?</translation>
+<translation id="2009341475524975924">የማስታወቂያ አፈጻጸምን ለመለካት እንደ ማስታወቂያ ለእርስዎ የታየበት ቀን ያሉ የተገደቡ የውሂብ ዓይነቶች በገጾች መካከል ሊጋሩ ይችላሉ።</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ፋይል}one{# ፋይሎች}other{# ፋይሎች}}</translation>
 <translation id="2021896219286479412">የሙሉ ማያ ገጽ ጣቢያ መቆጣጠሪያዎች</translation>
 <translation id="2038563949887743358">የዴስክቶፕ ጣቢያን ጠይቅን አብራ</translation>
@@ -652,6 +653,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" />ን ይክፈቱ</translation>
 <translation id="4619564267100705184">እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="4634124774493850572">የይለፍ ቃል ይጠቀሙ</translation>
+<translation id="4637420359569396807">በማስታወቂያ ልኬት እንደ ማስታወቂያ ለእርስዎ የታየበት ቀን ያሉ የማስታወቂያዎቻቸውን አፈጻጸም ለመለካት የተገደቡ የውሂብ ዓይነቶች በጣቢያዎች እና መተግበሪያዎች መካከል ሊጋሩ ይችላሉ።</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 የተጠለፈ የይለፍ ቃል}one{# የተጠለፉ የይለፍ ቃላት}other{# የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="4650364565596261010">የሥርዓት ነባሪ</translation>
 <translation id="465657074423018424">ደህንነቱ የተጠበቀ አሰሳ ከአሳሳች ድር ጣቢያዎች እርስዎን ይጠብቃል። ካጠፉት፣ በማሰስ ጊዜ በተለይም የይለፍ ቃላትን ሲያስገቡ የበለጠ ጥንቃቄ ይውሰዱ።</translation>

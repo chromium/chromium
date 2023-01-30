@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Zum Wörterbuch hinzufügen</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
 <translation id="1022489261739821355">Passwörter aus deinem <ph name="BEGIN_LINK" />Google-Konto<ph name="END_LINK" /> werden angezeigt</translation>
+<translation id="1022669824195822609">Dein Gerät wird von <ph name="DOMAIN" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="1026655690966755180">Port hinzufügen</translation>
 <translation id="1026822031284433028">Bild laden</translation>
 <translation id="1028604629594230522">Chrome lädt Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen.</translation>
@@ -1862,6 +1863,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2643064289437760082">Du kannst jederzeit Daten zur Analyse von Werbung löschen, indem du deine Browserdaten löschst</translation>
 <translation id="2643698698624765890">Klicke zum Verwalten deiner Erweiterungen im Menü „Fenster“ auf „Erweiterungen“.</translation>
 <translation id="2645047101481282803">Das Gerät wird von <ph name="PROFILE_NAME" /> verwaltet</translation>
+<translation id="2645388244376970260">Dieser Tab wird auf „<ph name="DEVICE_NAME" />“ gestreamt</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64-codierter ASCII-Code, Zertifikatkette</translation>
 <translation id="265156376773362237">Standard-Vorabladen</translation>
@@ -2734,6 +2736,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3446274660183028131">Bitte Parallels Desktop starten, um Windows zu installieren.</translation>
 <translation id="344630545793878684">Deine Daten auf verschiedenen Websites lesen</translation>
 <translation id="3447644283769633681">Alle Drittanbieter-Cookies blockieren</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> wird auf „<ph name="DEVICE_NAME" />“ gestreamt</translation>
 <translation id="3448492834076427715">Konto aktualisieren</translation>
 <translation id="3449393517661170867">Neues Tab-Fenster</translation>
 <translation id="3449839693241009168">Drücke <ph name="SEARCH_KEY" />, um Befehle an <ph name="EXTENSION_NAME" /> zu senden.</translation>
@@ -2888,6 +2891,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3590295622232282437">Anmeldung in verwalteter Sitzung läuft.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> behalten</translation>
 <translation id="3592260987370335752">&amp;Weitere Informationen</translation>
+<translation id="3592344177526089979">Ein Tab wird auf „<ph name="DEVICE_NAME" />“ gestreamt</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin-Modus aktivieren</translation>
 <translation id="3593965109698325041">Beschränkungen für Zertifikatsnamen</translation>
 <translation id="3596012367874587041">App-Einstellungen</translation>
@@ -3163,6 +3167,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3823310065043511710">Für Linux sind mindestens <ph name="INSTALL_SIZE" /> freier Speicherplatz erforderlich.</translation>
 <translation id="3824621460022590830">Geräteregistrierungstoken ist ungültig. Bitte an den Eigentümer des Geräts oder an den Administrator wenden. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Meine Auswahl für diesen Dateityp merken: <ph name="FILE_TYPES" />}other{Meine Auswahl für diese Dateitypen merken: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Punkt für App-Benachrichtigungen auf App-Symbol anzeigen</translation>
 <translation id="3826071569074535339">Dürfen Bewegungssensoren verwenden</translation>
 <translation id="3826440694796503677">Dein Administrator hat die Option zum Hinzufügen weiterer Google-Konten deaktiviert</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
@@ -4482,6 +4487,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Sicheres DNS in den Chrome OS-Einstellungen verwalten</translation>
+<translation id="5066160542186949327">In einen anderen Ordner verschieben</translation>
 <translation id="5067399438976153555">Immer aktiviert</translation>
 <translation id="5067867186035333991">Nachfragen, wenn <ph name="HOST" /> auf dein Mikrofon zugreifen möchte</translation>
 <translation id="5068553687099139861">Passwörter anzeigen</translation>

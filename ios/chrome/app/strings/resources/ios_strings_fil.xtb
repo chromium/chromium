@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Pamahalaan ang Pag-sync</translation>
 <translation id="1076421457278169141">Na-scan na ang code</translation>
 <translation id="1076785341346483463">I-sync sa Pinapamahalaang Account</translation>
+<translation id="1080365971383768617">Mga password sa lahat ng iyong device</translation>
 <translation id="1084365883616172403">Kumpleto na ang pag-post sa Facebook.</translation>
 <translation id="1085696779717592361">Gamitin ang Chrome Bilang Default</translation>
 <translation id="1103523840287552314">Palaging i-translate ang <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5056446788882570708">Nakita ang mga isyu <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">I-install - Google Drive</translation>
+<translation id="50641035439563602">Naka-save na ngayon ang mga password sa iyong Google Account (<ph name="ACCOUNT" />). Puwede mong gamitin ang mga ito saan ka man naka-sign in. Para i-off ito, pumunta sa <ph name="BEGIN_LINK" />mga setting<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Hindi matukoy ang file size.</translation>
 <translation id="5090832849094901128">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Kumpleto na ang Tweet.</translation>
@@ -595,6 +597,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5520466080178053306">I-tap ang Passwords Manager at Pagkatapos ay I-tap ang Idagdag</translation>
 <translation id="5525095647255982834">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome doon.</translation>
 <translation id="5525269841082836315">Lumikha ng Passphrase</translation>
+<translation id="5530084793407600786">Maghanap sa loob ng larawan gamit ang Google</translation>
 <translation id="5542540507657872337">Nakita ang <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Nagbibigay-daan sa iyo ang handoff na magsimula sa pagba-browse sa isang website sa device na ito at pagkatapos ay magpatuloy kaagad sa iyong Mac. Lalabas ang kasalukuyang nakabukas na website sa Dock ng iyong Mac.
 

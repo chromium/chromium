@@ -3171,6 +3171,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3823310065043511710">Pentru Linux, se recomandă un spațiu de cel puțin <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Indicativul de înregistrare a dispozitivului nu este valid. Contactează proprietarul dispozitivului ori administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Reține alegerea mea pentru următorul tip de fișier: <ph name="FILE_TYPES" />}few{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}other{Reține alegerea mea pentru următoarele tipuri de fișiere: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Afișează punctul pe pictograma aplicației pentru alertele de la aplicație</translation>
 <translation id="3826071569074535339">Au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="3826440694796503677">Administratorul a dezactivat adăugarea mai multor Conturi Google</translation>
 <translation id="3827774300009121996">&amp;Ecran complet</translation>
@@ -4490,6 +4491,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5063480226653192405">Utilizare</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gestionează DNS-ul securizat în setările sistemului de operare Chrome</translation>
+<translation id="5066160542186949327">Mută în alt dosar</translation>
 <translation id="5067399438976153555">Activat permanent</translation>
 <translation id="5067867186035333991">Întreabă dacă <ph name="HOST" /> solicită acces la microfon</translation>
 <translation id="5068553687099139861">afișează parolele</translation>

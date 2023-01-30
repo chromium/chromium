@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Добавяне в речника</translation>
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1022489261739821355">Показват се паролите от <ph name="BEGIN_LINK" />профила ви в Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Устройството ви се управлява от <ph name="DOMAIN" />. Администраторите имат достъп до данните в потребителските профили на това устройство.</translation>
 <translation id="1026655690966755180">Добавяне на порт</translation>
 <translation id="1026822031284433028">Зареждане на изображението</translation>
 <translation id="1028604629594230522">Chrome зарежда предварително страниците, които е вероятно да посетите, така че да се заредят по-бързо, когато ги отворите.</translation>
@@ -1876,6 +1877,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2643064289437760082">Можете да изтриете данните от измерването на рекламите по всяко време, като изчистите данните за сърфирането си.</translation>
 <translation id="2643698698624765890">Управлявайте разширенията си, като кликнете върху „Разширения“ в менюто „Прозорец“.</translation>
 <translation id="2645047101481282803">Устройството ви се управлява от <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Този раздел се предава към <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">ASCII с кодиране Base64, верига сертификати</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
@@ -2748,6 +2750,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3446274660183028131">Моля, стартирайте Parallels Desktop, за да инсталирате Windows.</translation>
 <translation id="344630545793878684">Четене на данните ви от редица уебсайтове</translation>
 <translation id="3447644283769633681">Блокиране на всички „бисквитки“ на трети страни</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> се предава към <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Актуализиране на профила</translation>
 <translation id="3449393517661170867">Нов прозорец с раздели</translation>
 <translation id="3449839693241009168">Натиснете <ph name="SEARCH_KEY" /> за да изпратите командите до <ph name="EXTENSION_NAME" /></translation>
@@ -2902,6 +2905,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3590295622232282437">Влиза се в управлявана сесия.</translation>
 <translation id="3591057288287063271">Запазване на <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Научете повече</translation>
+<translation id="3592344177526089979">Към <ph name="DEVICE_NAME" /> се предава раздел</translation>
 <translation id="3593152357631900254">Активиране на режим „неточен пинин“</translation>
 <translation id="3593965109698325041">Ограничения за името на сертификата</translation>
 <translation id="3596012367874587041">Настройки за приложението</translation>

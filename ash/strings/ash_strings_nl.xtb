@@ -733,6 +733,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="492453977506755176">Toets voor opnamemodus</translation>
 <translation id="4925542575807923399">De beheerder van dit account vereist dat dit account het eerste ingelogde account is in een sessie met toegang tot meerdere accounts.</translation>
 <translation id="4929163402621253029">Ben je aan het praten? Je geluid staat uit. Meer informatie</translation>
+<translation id="4936329710968938986">Iedereen, uit</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
@@ -1384,6 +1385,7 @@ Nieuwe installatie</translation>
 <translation id="8477270416194247200">Druk op Alt+Zoeken of Shift om te annuleren.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="8496402167048257517">Instellingen voor Dichtbij delen tonen</translation>
+<translation id="8507563469658346379">Iedereen, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth staat uit op je Chromebook. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
 <translation id="8513108775083588393">Autom. draaien</translation>
 <translation id="851458219935658693">Vensters van het huidige bureau bekijken, keuzerondje geselecteerd</translation>

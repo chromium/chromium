@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Lisää sanakirjaan</translation>
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1022489261739821355">Näytetään salasanat <ph name="BEGIN_LINK" />Google-tililtäsi<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> ylläpitää laitettasi. Järjestelmänvalvojilla on pääsy kaikkien tämän laitteen profiilien dataan.</translation>
 <translation id="1026655690966755180">Lisää portti</translation>
 <translation id="1026822031284433028">Lataa kuva</translation>
 <translation id="1028604629594230522">Chrome esilataa sivut, joilla todennäköisesti käyt, jotta ne latautuisivat avatessa nopeammin.</translation>
@@ -1879,6 +1880,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2643064289437760082">Voit poistaa mainosten mittausdataa milloin tahansa poistamalla selausdatasi</translation>
 <translation id="2643698698624765890">Hallinnoi laajennuksiasi valitsemalla Ikkuna-valikosta Laajennukset.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> ylläpitää laitettasi</translation>
+<translation id="2645388244376970260">Välilehteä striimataan tänne: <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
 <translation id="2649045351178520408">Base64-koodattu ASCII, varmenneketju</translation>
 <translation id="265156376773362237">Vakioesilataus</translation>
@@ -2751,6 +2753,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3446274660183028131">Käynnistä Parallels Desktop Windowsin asentamista varten.</translation>
 <translation id="344630545793878684">Lukea tietojasi useissa sivustoissa</translation>
 <translation id="3447644283769633681">Estä kaikki kolmannen osapuolen evästeet</translation>
+<translation id="3447797901512053632">Välilehti <ph name="TAB_NAME" /> peilataan kohteeseen <ph name="DEVICE_NAME" />.</translation>
 <translation id="3448492834076427715">Päivitä tili</translation>
 <translation id="3449393517661170867">Uusi välilehdellinen ikkuna</translation>
 <translation id="3449839693241009168">Lähetä laajennukselle <ph name="EXTENSION_NAME" /> komentoja painamalla <ph name="SEARCH_KEY" /></translation>
@@ -2905,6 +2908,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3590295622232282437">Hallinnoitu istunto aloitetaan</translation>
 <translation id="3591057288287063271">Säilytä <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Lisätietoja</translation>
+<translation id="3592344177526089979">Välilehteä striimataan tänne: <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Ota Fuzzy-Pinyin-tila käyttöön</translation>
 <translation id="3593965109698325041">Varmenteen nimirajoitukset</translation>
 <translation id="3596012367874587041">Sovellusasetukset</translation>
@@ -3180,6 +3184,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3823310065043511710">Linuxin käyttöön suositellaan vähintään <ph name="INSTALL_SIZE" /> vapaata tilaa.</translation>
 <translation id="3824621460022590830">Laitteen rekisteröintitunnus on virheellinen. Ota yhteyttä laitteen omistajaan tai ylläpitäjään. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Muista valintani tälle tiedostotyypille: <ph name="FILE_TYPES" />}other{Muista valintani näille tiedostotyypeille: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Näytä sovelluksen kuvakkeessa piste ilmoituksille</translation>
 <translation id="3826071569074535339">Liiketunnistimien käyttö sallittu</translation>
 <translation id="3826440694796503677">Järjestelmänvalvoja on estänyt uusien Google-tilien lisäämisen</translation>
 <translation id="3827774300009121996">&amp;Koko näyttö</translation>
@@ -4497,6 +4502,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5063480226653192405">Käyttö</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Ylläpidä suojattua DNS:ää Chrome-käyttöjärjestelmän asetuksissa</translation>
+<translation id="5066160542186949327">Siirrä toiseen kansioon</translation>
 <translation id="5067399438976153555">Aina käytössä</translation>
 <translation id="5067867186035333991">Kysy, jos <ph name="HOST" /> haluaa käyttää mikrofoniasi</translation>
 <translation id="5068553687099139861">näytä salasanat</translation>

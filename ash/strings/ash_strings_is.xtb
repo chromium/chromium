@@ -733,6 +733,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="492453977506755176">myndatökulykill</translation>
 <translation id="4925542575807923399">Stjórnandi þessa reiknings krefst þess að reikningurinn sé fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="4929163402621253029">Ertu að tala? Þú ert með slökkt á hljóðinu. Nánar</translation>
+<translation id="4936329710968938986">Öll, slökkt</translation>
 <translation id="4938176435186993759">Fela allar tillögur</translation>
 <translation id="4945196315133970626">Slökkva á tilkynningum</translation>
 <translation id="4946376291507881335">Taka mynd</translation>
@@ -1387,6 +1388,7 @@ Ný uppsetning</translation>
 <translation id="8477270416194247200">Ýttu á Alt+leitarlykil eða Shift til að hætta við.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> styður ekki <ph name="SPECIFIED_RESOLUTION" />. Upplausninni var breytt í <ph name="FALLBACK_RESOLUTION" />. Veldu „Staðfesta“ til að halda breytingum. Fyrri stillingar verða valdar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Sýna stillingar nærdeilingar</translation>
+<translation id="8507563469658346379">Öll, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Slökkt er á Bluetooth í Chromebook. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
 <translation id="8513108775083588393">Snýst sjálft</translation>
 <translation id="851458219935658693">Sýna glugga á núverandi skrifborði, hringhnappur valinn</translation>

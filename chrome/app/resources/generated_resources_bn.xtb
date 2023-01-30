@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">অভিধানে &amp;যুক্ত করুন</translation>
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
 <translation id="1022489261739821355">আপনার <ph name="BEGIN_LINK" />Google অ্যাকাউন্টে<ph name="END_LINK" /> স্টোর করা পাসওয়ার্ড দেখানো হচ্ছে</translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> আপনার ডিভাইস ম্যানেজ করে। এই ডিভাইসের যেকোনও প্রোফাইলের ডেটা অ্যাডমিনিস্ট্রেটর অ্যাক্সেস করতে পারবেন।</translation>
 <translation id="1026655690966755180">পোর্ট যোগ করুন</translation>
 <translation id="1026822031284433028">ছবি লোড করুন</translation>
 <translation id="1028604629594230522">আপনি ভিজিট করতে পারেন এমন পৃষ্ঠাগুলি Chrome প্রিলোড করে যাতে আপনি ভিজিট করলে সেগুলি দ্রুত লোড হতে পারে।</translation>
@@ -1881,6 +1882,7 @@
 <translation id="2643064289437760082">আপনি সবসময় আপনার ব্রাউজিং ডেটা মুছে বিজ্ঞাপন-পরিমাপ ডেটা মুছে ফেলতে পারেন</translation>
 <translation id="2643698698624765890">উইন্ডো মেনুতে এক্সটেনশান ক্লিক করে আপনার এক্সটেনশানগুলি পরিচালনা করুন৷</translation>
 <translation id="2645047101481282803">আপনার ডিভাইস <ph name="PROFILE_NAME" /> ম্যানেজ করে</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" />-এ এই ট্যাব কাস্ট করা হচ্ছে</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-এনকোড হওয়া ASCII, সার্টিফিকেটের শৃঙ্খলা</translation>
 <translation id="265156376773362237">স্ট্যান্ডার্ড প্রিলোডিং</translation>
@@ -2753,6 +2755,7 @@
 <translation id="3446274660183028131">Windows ইনস্টল করতে Parallels Desktop চালু করুন।</translation>
 <translation id="344630545793878684">কতগুলি ওয়েবসাইটে আপনার ডেটা পড়ে</translation>
 <translation id="3447644283769633681">সমস্ত তৃতীয়-পক্ষ কুকি অবরোধ করুন</translation>
+<translation id="3447797901512053632"><ph name="DEVICE_NAME" />-এ <ph name="TAB_NAME" /> কাস্ট করা হচ্ছে</translation>
 <translation id="3448492834076427715">অ্যাকাউন্ট আপডেট করুন</translation>
 <translation id="3449393517661170867">ট্যাবযুক্ত মোডে নতুন উইন্ডো</translation>
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" />তে আদেশগুলি প্রেরণ করতে <ph name="EXTENSION_NAME" /> টি টিপুন</translation>
@@ -2907,6 +2910,7 @@
 <translation id="3590295622232282437">ম্যানেজ করা সেশনে জয়েন করা হচ্ছে।</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> রাখুন</translation>
 <translation id="3592260987370335752">এবং আরও জানুন</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" />-এ ট্যাব কাস্ট করা হচ্ছে</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin মোড সক্ষম করুন</translation>
 <translation id="3593965109698325041">সার্টিফিকেট নাম সীমাবদ্ধতাসমূহ</translation>
 <translation id="3596012367874587041">অ্যাপ সেটিংস</translation>
@@ -3182,6 +3186,7 @@
 <translation id="3823310065043511710">Linux-এর জন্য কমপক্ষে <ph name="INSTALL_SIZE" />  জায়গা খালি রাখার জন্য সাজেস্ট করা হচ্ছে।</translation>
 <translation id="3824621460022590830">ডিভাইস এনরোলমেন্ট টোকেনটি সঠিক নয়। আপনার ডিভাইসের মালিক বা অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" /></translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{এই ধরনের ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}one{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}other{এই ধরনের সমস্ত ফাইলের জন্য আমার পছন্দ মনে রাখুন: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">অ্যাপ সংক্রান্ত সতর্কতার জন্য অ্যাপ আইকনে ডট দেখান</translation>
 <translation id="3826071569074535339">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="3826440694796503677">আপনার অ্যাডমিনিস্ট্রেটর আরও Google অ্যাকাউন্ট যোগ করার বিকল্প বন্ধ করে দিয়েছে</translation>
 <translation id="3827774300009121996">&amp;পূর্ণ স্ক্রীণ</translation>
@@ -4503,6 +4508,7 @@
 <translation id="5063480226653192405">ব্যবহার</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS সেটিংসে নিরাপদ ডিএনএস ম্যানেজ করুন</translation>
+<translation id="5066160542186949327">অন্য ফোল্ডারে সরান</translation>
 <translation id="5067399438976153555">সর্বদা চালু</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> আপনার মাইক্রোফোন অ্যাক্সেস করতে চায় কিনা জিজ্ঞাসা করুন</translation>
 <translation id="5068553687099139861">পাসওয়ার্ড দেখুন</translation>

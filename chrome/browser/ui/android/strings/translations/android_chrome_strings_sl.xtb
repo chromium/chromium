@@ -182,6 +182,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="1995884366040846621">Če želite nadaljevati, bo ponudnik <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delil vaše ime, e-poštni naslov in profilno sliko s tem spletnim mestom. Oglejte si <ph name="BEGIN_LINK1" />pravilnik o zasebnosti<ph name="END_LINK1" /> tega spletnega mesta.</translation>
 <translation id="2000419248597011803">Pošilja nekatere piškotke in iskanja iz naslovne vrstice ter iskalnega polja privzetemu iskalniku</translation>
 <translation id="200114059308480249">Želite vključiti sobesedilo v iskanja v Googlu?</translation>
+<translation id="2009341475524975924">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti lahko delijo omejene vrste podatkov, kot je ura v dnevu, ko je bil oglas prikazan.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# datoteka}one{# datoteka}two{# datoteki}few{# datoteke}other{# datotek}}</translation>
 <translation id="2021896219286479412">Kontrol. za mesto v celo. načinu</translation>
 <translation id="2038563949887743358">Vklop možnosti »Zahteva za namizno spletno mesto«</translation>
@@ -236,6 +237,7 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="2321086116217818302">Pripravljanje gesel …</translation>
 <translation id="2323763861024343754">Shranjeni podatki splet. mesta</translation>
 <translation id="2328985652426384049">Ne morem se prijaviti</translation>
+<translation id="2341410551640223969">Aplikacije <ph name="WEBAPK_NAME" /> ni bilo mogoče namestiti.</translation>
 <translation id="234265804618409743">Kamere ni mogoče odpreti. Prišlo je do napake.</translation>
 <translation id="2349710944427398404">Skupna količina podatkov, ki jih uporablja Chrome, vključno z računi, zaznamki in shranjenimi nastavitvami.</translation>
 <translation id="235789365079050412">Googlov pravilnik o zasebnosti</translation>
@@ -344,6 +346,7 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="2909615210195135082">Googlovo okolje za obvestila</translation>
 <translation id="2912296070571964914">Upravljanje tem, ki vas zanimajo.</translation>
 <translation id="2912345083818861431">Uporabite zaklepanje zaslona za prikaz odprtih anonimnih zavihkov.</translation>
+<translation id="2922568440285376746">Išči po sliki z Googlom <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Ime je neveljavno</translation>
 <translation id="2932150158123903946">Shranjeni podatki aplikacije Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Tipkovnica se ne bo spremenila.</translation>
@@ -652,6 +655,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4616150815774728855">Odpri <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Potrditev identitete</translation>
 <translation id="4634124774493850572">Uporabi geslo</translation>
+<translation id="4637420359569396807">Pri merjenju oglasov se s spletnimi mesti in aplikacijami lahko delijo omejene vrste podatkov, na primer ura v dnevu, ko je bil oglas prikazan.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo}one{# ogroženo geslo}two{# ogroženi gesli}few{# ogrožena gesla}other{# ogroženih gesel}}</translation>
 <translation id="4650364565596261010">Sistemsko privzeto</translation>
 <translation id="465657074423018424">Varno brskanje vas ščiti pred zavajajočimi spletnimi mesti. Če ga izklopite, bodite zelo previdni pri brskanju, zlasti pred vnašanjem gesel.</translation>
@@ -664,6 +668,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4684427112815847243">Sinhroniziraj vse</translation>
 <translation id="4685741273709472646">Izberite na spustnem seznamu</translation>
 <translation id="4687718960473379118">Oglasi, ki jih predlaga spletno mesto</translation>
+<translation id="4689792375321623175">Išči po sliki z Googlom <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> \u2026 in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Predpomnjene slike in datoteke</translation>
 <translation id="4719927025381752090">Ponudi prevajanje</translation>
@@ -810,6 +815,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5438292632479953702">Znova prenesi</translation>
 <translation id="5441466871879044658">Prevedi v ta jezik</translation>
 <translation id="5441522332038954058">Premik na naslovno vrstico</translation>
+<translation id="5444999712122199445">Nazaj na spletno mesto</translation>
 <translation id="544776284582297024">Če želite hkrati odpreti zavihke in obiskati različne strani, se dotaknite gumba za odprte zavihke</translation>
 <translation id="5454166040603940656">pri ponudniku <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Prenos strani</translation>

@@ -18,6 +18,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="1066060668811609597">Upravljajte sinhronizacijom</translation>
 <translation id="1076421457278169141">Skenirali ste kôd</translation>
 <translation id="1076785341346483463">Sinhronizacija sa upravljanim nalogom</translation>
+<translation id="1080365971383768617">Lozinke na svim uređajima</translation>
 <translation id="1084365883616172403">Facebook post je dovršen.</translation>
 <translation id="1085696779717592361">Podrazumevano koristite Chrome</translation>
 <translation id="1103523840287552314">Uvek prevodi <ph name="LANGUAGE" /></translation>
@@ -545,6 +546,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5056446788882570708">Problemi su pronađeni <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Potvrdi</translation>
 <translation id="5062321486222145940">Instaliraj Google disk</translation>
+<translation id="50641035439563602">Lozinke se sada čuvaju na Google nalogu (<ph name="ACCOUNT" />). Možete da ih koristite svuda gde ste prijavljeni. Da biste to isključili, idite u <ph name="BEGIN_LINK" />podešavanja<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Nije moguće utvrditi veličinu datoteke.</translation>
 <translation id="5090832849094901128">Brisanjem ove lozinke nećete izbrisati nalog na <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tvit je dovršen.</translation>
@@ -595,6 +597,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5520466080178053306">Dodirnite Menadžer lozinki, pa Dodaj</translation>
 <translation id="5525095647255982834">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome tamo.</translation>
 <translation id="5525269841082836315">Pravljenje pristupne fraze</translation>
+<translation id="5530084793407600786">Pretražite u slici uz Google</translation>
 <translation id="5542540507657872337">Pronađeno je <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff vam omogućava da započnete pregledanje veb-sajta na ovom uređaju, pa da jednostavno nastavite na Mac-u. Veb-sajt koji je trenutno otvoren prikazaće se na doku na Mac-u.
 

@@ -3186,6 +3186,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3823310065043511710">Hindi bababa sa <ph name="INSTALL_SIZE" /> na espasyo ang inirerekomenda para sa Linux.</translation>
 <translation id="3824621460022590830">Invalid ang token sa pag-enroll ng device. Makipag-ugnayan sa may-ari o administrator ng iyong device. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Tandaan ang pinili ko para sa ganitong uri ng file: <ph name="FILE_TYPES" />}one{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}other{Tandaan ang pinili ko para sa mga ganitong uri ng file: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Ipakita ang dot sa icon ng app para sa mga alerto sa app</translation>
 <translation id="3826071569074535339">Pinapayagang gumamit ng mga sensor ng paggalaw</translation>
 <translation id="3826440694796503677">Na-disable ng iyong administrator ang pagdaragdag ng higit pang Google Account</translation>
 <translation id="3827774300009121996">&amp;Full Screen</translation>
@@ -4506,6 +4507,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5063480226653192405">Paggamit</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Pamahalaan ang secure na DNS sa mga setting ng ChromeOS</translation>
+<translation id="5066160542186949327">Ilipat sa ibang folder</translation>
 <translation id="5067399438976153555">Palaging naka-on</translation>
 <translation id="5067867186035333991">Itanong kung gustong i-access ng <ph name="HOST" /> ang iyong mikropono</translation>
 <translation id="5068553687099139861">ipakita ang mga password</translation>

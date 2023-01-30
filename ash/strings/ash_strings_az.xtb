@@ -733,6 +733,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="492453977506755176">Çəkim rejimi açarı</translation>
 <translation id="4925542575807923399">Bu hesabın administratoru istəyir ki, çoxsaylı hesab girişi sessiyalarında bu hesaba giriş birinci edilsin.</translation>
 <translation id="4929163402621253029">Danışırsınız? Səssiz rejimdəsiniz. Ətraflı məlumat</translation>
+<translation id="4936329710968938986">Hər kəs, deaktiv</translation>
 <translation id="4938176435186993759">Bütün təklifləri gizlədin</translation>
 <translation id="4945196315133970626">Bildirişləri deaktiv edin</translation>
 <translation id="4946376291507881335">Çəkin</translation>
@@ -1387,6 +1388,7 @@ Yeni quraşdırma</translation>
 <translation id="8477270416194247200">Ləğv etmək üçün Alt+Search və ya Shift düyməsini basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> əksetmə qabiliyyətini dəstəkləmir. Əksetmə qabiliyyəti <ph name="FALLBACK_RESOLUTION" /> olaraq dəyişildi. Dəyişiklikləri saxlamaq üçün "təsdiq edin" üzərinə klikləyin. Əvvəlki ayarlar <ph name="TIMEOUT_SECONDS" /> ərzində bərpa ediləcək.</translation>
 <translation id="8496402167048257517">Yaxındakılarla Paylaşma ayarlarını göstərin</translation>
+<translation id="8507563469658346379">Hər kəs, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Chromebook’un Bluetooth’u deaktivdir. Chromebook'u kiliddən çıxarmaq üçün parolu daxil edin.</translation>
 <translation id="8513108775083588393">Avtodönüş</translation>
 <translation id="851458219935658693">Mövcud masadan pəncərələri göstərin, radio düyməsi seçilib</translation>
