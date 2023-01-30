@@ -67,10 +67,11 @@ class FullscreenControllerTest : public AshTestBase,
 
   void SetKeepFullscreenWithoutNotificationAllowList(
       const std::string& pattern) {
-    base::Value list(base::Value::Type::LIST);
-    list.Append(base::Value(pattern));
-    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->Set(
-        chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList, list);
+    base::Value::List list;
+    list.Append(pattern);
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(
+        chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
+        std::move(list));
   }
 
   void SetUpShellDelegate(bool should_exit_fullscreen, GURL url = kActiveUrl) {
@@ -135,11 +136,12 @@ TEST_P(FullscreenControllerTest, KeepFullscreenIfMatchingPref) {
   SetUpShellDelegate(should_exit_fullscreen);
 
   // Set up the URL exempt list with one matching and one non-matching pattern.
-  base::Value list(base::Value::Type::LIST);
-  list.Append(base::Value(kNonMatchingPattern));
-  list.Append(base::Value(kMatchingPattern));
-  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->Set(
-      chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList, list);
+  base::Value::List list;
+  list.Append(kNonMatchingPattern);
+  list.Append(kMatchingPattern);
+  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(
+      chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
+      std::move(list));
 
   EXPECT_TRUE(window_state_->IsFullscreen());
 
