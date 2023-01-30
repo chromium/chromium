@@ -306,10 +306,15 @@ the code that handles existing policy settings, in particular:
 - Make sure the policy metadata is up-to-date, in particular `supported_on`, and
 the feature flags.
 - In general, don't change policy semantics in a way that is incompatible
-(as determined by user/admin-visible behavior) with previous semantics. **In
-particular, consider that existing policy deployments may affect both old and
-new browser versions, and both should behave according to the admin's
-intentions**.
+(as determined by user/admin-visible behavior) with previous semantics.
+    - **In particular, consider that existing policy deployments may affect**
+    **both old and new browser versions, and both should behave according to**
+    **the admin's intentions.**
+    - **Do not modify the behavior when the policy is not set**. To be more
+    specific: values `default`, `default_for_enterprise_users` and
+    `default_policy_level` must (likely) never change after the launch. Contact
+    cros-policy-muc-eng@google.com for guidance if you need to make such
+    changes.
 - **An important pitfall is that adding an additional allowed
 value to an enum policy may cause compatibility issues.** Specifically, an
 administrator may use the new policy value, which makes older Chrome versions
