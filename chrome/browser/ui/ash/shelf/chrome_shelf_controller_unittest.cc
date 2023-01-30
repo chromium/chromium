@@ -4861,7 +4861,13 @@ class ChromeShelfControllerPlayStoreAvailabilityTest
 
 }  // namespace
 
-TEST_F(ChromeShelfControllerArcDefaultAppsTest, DefaultApps) {
+// TODO(https://crbug.com/1411138) Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DefaultApps DISABLED_DefaultApps
+#else
+#define MAYBE_DefaultApps DefaultApps
+#endif
+TEST_F(ChromeShelfControllerArcDefaultAppsTest, MAYBE_DefaultApps) {
   arc_test_.SetUp(profile());
   InitShelfController();
 
