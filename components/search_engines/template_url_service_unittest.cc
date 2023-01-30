@@ -76,3 +76,22 @@ TEST_F(TemplateURLServiceUnitTest, GenerateSearchURL) {
       "https://www.example.com/?q=",
       template_url_service().GenerateSearchURLForDefaultSearchProvider(u""));
 }
+
+TEST_F(TemplateURLServiceUnitTest, ExtractSearchMetadata) {
+  TemplateURLData template_url_data;
+  template_url_data.SetURL("https://www.example.com/?q={searchTerms}");
+  template_url_data.search_intent_params = {"gs_ssp", "si"};
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  GURL input("https://www.example.com/?q=MyQuery&si=my_si&other_param=foobar");
+  auto result = template_url_service().ExtractSearchMetadata(input);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(result->normalized_url,
+            "https://www.example.com/?si=my_si&q=myquery")
+      << "q parameter and si parameter should have been preserved. other_param "
+         "should be discarded.";
+  EXPECT_EQ(result->search_terms, u"myquery");
+}

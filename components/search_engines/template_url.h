@@ -841,14 +841,15 @@ class TemplateURL {
   // optionally the search intent params and removes the other params. If
   // `normalize_search_terms` is true, the search terms in the final URL
   // will be converted to lowercase with extra whitespace characters collapsed.
-  // If `url` is not a search URL or replacement fails, leaves `result`
-  // untouched and returns false. Used to compare normalized (aka canonical)
-  // search URLs.
+  // If `url` is not a search URL or replacement fails, leaves `out_url` and
+  // `out_search_terms` untouched and returns false. Used to compare
+  // normalized (aka canonical) search URLs.
   bool KeepSearchTermsInURL(const GURL& url,
                             const SearchTermsData& search_terms_data,
                             const bool keep_search_intent_params,
                             const bool normalize_search_terms,
-                            GURL* result) const;
+                            GURL* out_url,
+                            std::u16string* out_search_terms = nullptr) const;
 
   // Given a |url| corresponding to this TemplateURL, identifies the search
   // terms and replaces them with the ones in |search_terms_args|, leaving the

@@ -1630,11 +1630,17 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
                                        const SearchTermsData& search_terms_data,
                                        const bool keep_search_intent_params,
                                        const bool normalize_search_terms,
-                                       GURL* result) const {
+                                       GURL* out_url,
+                                       std::u16string* out_search_terms) const {
   std::u16string search_terms;
   if (!ExtractSearchTermsFromURL(url, search_terms_data, &search_terms) ||
       search_terms.empty()) {
     return false;
+  }
+
+  if (normalize_search_terms) {
+    search_terms =
+        base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
   }
 
   if (!url_ref().SupportsReplacement(search_terms_data)) {
@@ -1651,14 +1657,14 @@ bool TemplateURL::KeepSearchTermsInURL(const GURL& url,
     }
   }
 
-  TemplateURLRef::SearchTermsArgs search_terms_args(
-      normalize_search_terms
-          ? base::i18n::ToLower(base::CollapseWhitespace(search_terms, false))
-          : search_terms);
+  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
   search_terms_args.additional_query_params =
       base::JoinString(query_params, "&");
-  *result =
+  *out_url =
       GURL(url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data));
+  if (out_search_terms) {
+    *out_search_terms = search_terms;
+  }
   return true;
 }
 

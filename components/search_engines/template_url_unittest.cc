@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/base64.h"
 #include "base/base_paths.h"
@@ -1907,8 +1908,8 @@ TEST_F(TemplateURLTest, ReplacePageClassification) {
   EXPECT_EQ("http://www.google.com/?pgcl=3&q=foo", result);
 }
 
-// Test the IsSearchResults function.
-TEST_F(TemplateURLTest, IsSearchResults) {
+// Test the IsSearchURL function.
+TEST_F(TemplateURLTest, IsSearchURL) {
   TemplateURLData data;
   data.SetURL("http://bar/search?q={searchTerms}");
   data.new_tab_url = "http://bar/newtab";
@@ -2184,6 +2185,30 @@ TEST_F(TemplateURLTest, KeepSearchTermsInURL) {
         /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
         &canonical_search_url));
     EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+  }
+  {
+    // Search terms extraction, normalized or not.
+    search_terms_args.additional_query_params = "gs_ssp=GS_SSP";
+    std::string original_search_url = turl.url_ref().ReplaceSearchTerms(
+        search_terms_args, search_terms_data_);
+    EXPECT_EQ("http://bar/search?gs_ssp=GS_SSP&q=FOO&psi=SESSIONTOKEN&xssi=t",
+              original_search_url);
+
+    GURL canonical_search_url;
+    std::u16string search_terms;
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/true,
+        &canonical_search_url, &search_terms));
+    EXPECT_EQ("http://bar/search?q=foo&xssi=t", canonical_search_url);
+    EXPECT_EQ(u"foo", search_terms);
+
+    EXPECT_TRUE(turl.KeepSearchTermsInURL(
+        GURL(original_search_url), search_terms_data_,
+        /*keep_search_intent_params=*/false, /*normalize_search_terms=*/false,
+        &canonical_search_url, &search_terms));
+    EXPECT_EQ("http://bar/search?q=FOO&xssi=t", canonical_search_url);
+    EXPECT_EQ(u"FOO", search_terms);
   }
 }
 

@@ -828,33 +828,25 @@ GURL TemplateURLService::GenerateSearchURLForDefaultSearchProvider(
 
 absl::optional<TemplateURLService::SearchMetadata>
 TemplateURLService::ExtractSearchMetadata(const GURL& url) const {
-  if (!loaded()) {
+  const TemplateURL* template_url = GetTemplateURLForHost(url.host());
+  if (!template_url) {
     return absl::nullopt;
   }
 
-  const TemplateURL* template_url = GetTemplateURLForHost(url.host());
+  GURL normalized_url;
+  std::u16string normalized_search_terms;
+  bool is_valid_search_url =
+      template_url && template_url->KeepSearchTermsInURL(
+                          url, search_terms_data(),
+                          /*keep_search_intent_params=*/true,
 
-  std::u16string search_terms;
-  bool is_valid_search_url = template_url &&
-                             template_url->ExtractSearchTermsFromURL(
-                                 url, search_terms_data(), &search_terms) &&
-                             !search_terms.empty();
+                          /*normalize_search_terms=*/true, &normalized_url,
+                          &normalized_search_terms);
   if (!is_valid_search_url) {
     return absl::nullopt;
   }
 
-  const std::u16string& normalized_search_query =
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
-  TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
-  const TemplateURLRef& search_url_ref = template_url->url_ref();
-  if (!search_url_ref.SupportsReplacement(search_terms_data())) {
-    return absl::nullopt;
-  }
-
-  return SearchMetadata{
-      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
-                                             search_terms_data())),
-      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false))};
+  return SearchMetadata{normalized_url, normalized_search_terms};
 }
 
 bool TemplateURLService::IsSideSearchSupportedForDefaultSearchProvider() const {
