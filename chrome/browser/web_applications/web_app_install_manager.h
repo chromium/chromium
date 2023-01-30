@@ -140,8 +140,8 @@ class WebAppInstallManager {
   void OnWriteErrorLog(Result result);
   void OnReadErrorLog(Result result, base::Value error_log);
 
-  void LogErrorObject(base::Value object);
-  void LogErrorObjectAtStage(const char* stage, base::Value object);
+  void LogErrorObject(base::Value::Dict object);
+  void LogErrorObjectAtStage(const char* stage, base::Value::Dict object);
   void LogUrlLoaderError(const char* stage,
                          const PendingTask& task,
                          WebAppUrlLoader::Result result);
