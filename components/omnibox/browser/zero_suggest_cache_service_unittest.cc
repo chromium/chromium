@@ -323,3 +323,52 @@ TEST_F(ZeroSuggestCacheServiceTest, CacheWorksGivenNullPrefService) {
   EXPECT_EQ(cache_svc.ReadZeroSuggestResponse(ntp_entry.url).response_json,
             ntp_entry.response);
 }
+
+TEST_F(ZeroSuggestCacheServiceTest, ClearCacheResultsInEmptyPersistencePrefs) {
+  PrefService* prefs = GetPrefs();
+
+  TestCacheEntry ntp_entry = {"", "foo"};
+  TestCacheEntry srp_entry = {"https://www.google.com/search?q=bar", "bar"};
+  TestCacheEntry web_entry = {"https://www.example.com", "eggs"};
+
+  // Store ZPS response on NTP in user prefs.
+  prefs->SetString(omnibox::kZeroSuggestCachedResults, ntp_entry.response);
+
+  base::Value::Dict prefs_dict;
+  prefs_dict.Set(srp_entry.url, srp_entry.response);
+  prefs_dict.Set(web_entry.url, web_entry.response);
+
+  // Store ZPS responses on SRP/Web in user prefs.
+  prefs->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                 std::move(prefs_dict));
+
+  EXPECT_FALSE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                   prefs, ntp_entry.url)
+                   .empty());
+  EXPECT_FALSE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                   prefs, srp_entry.url)
+                   .empty());
+  EXPECT_FALSE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                   prefs, web_entry.url)
+                   .empty());
+
+  {
+    ZeroSuggestCacheService cache_svc(GetPrefs(), 3);
+
+    cache_svc.StoreZeroSuggestResponse(ntp_entry.url, ntp_entry.response);
+    cache_svc.StoreZeroSuggestResponse(srp_entry.url, srp_entry.response);
+    cache_svc.StoreZeroSuggestResponse(web_entry.url, web_entry.response);
+
+    cache_svc.ClearCache();
+  }
+
+  EXPECT_TRUE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                  prefs, ntp_entry.url)
+                  .empty());
+  EXPECT_TRUE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                  prefs, srp_entry.url)
+                  .empty());
+  EXPECT_TRUE(omnibox::GetUserPreferenceForZeroSuggestCachedResponse(
+                  prefs, web_entry.url)
+                  .empty());
+}
