@@ -457,6 +457,16 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
     else if (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE))
       created_ = true;
     if (flags & FLAG_WIN_NO_EXECUTE) {
+      // These two DCHECKs make sure that no callers are trying to remove
+      // execute permission from a file that might need to be mapped executable
+      // later. If they hit in code then the file should not have
+      // FLAG_WIN_NO_EXECUTE flag, but this will mean that the file cannot be
+      // passed to renderers.
+      DCHECK(!base::FilePath::CompareEqualIgnoreCase(FILE_PATH_LITERAL(".exe"),
+                                                     path.Extension()));
+      DCHECK(!base::FilePath::CompareEqualIgnoreCase(FILE_PATH_LITERAL(".dll"),
+                                                     path.Extension()));
+
       // It is possible that the ACE could not be added if the file was created
       // in a path for which the caller does not have WRITE_DAC access. In this
       // case, ignore the error since if this is occurring then it's likely the

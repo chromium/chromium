@@ -13,7 +13,7 @@ namespace base::features {
 // backed by executable files.
 BASE_FEATURE(kEnforceNoExecutableFileHandles,
              "EnforceNoExecutableFileHandles",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 // Optimizes parsing and loading of data: URLs.
 BASE_FEATURE(kOptimizeDataUrls, "OptimizeDataUrls", FEATURE_ENABLED_BY_DEFAULT);
