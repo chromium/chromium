@@ -37,6 +37,27 @@ enum DataCollectorType {
   CHROMEOS_NETWORK_HEALTH = 23;
 }
 
+// PiiType represent the different known categories of PII that can exist in
+// logs. The types here are based on PII types listed in
+// components/feedback/pii_types.h.
+enum PiiType {
+  PII_TYPE_UNSPECIFIED = 0;
+  ANDROID_APP_STORAGE_PATH = 1;
+  EMAIL = 2;
+  GAIA_ID = 3;
+  IPP_ADDRESS = 4;
+  IP_ADDRESS = 5;
+  LOCATION_INFO = 6;
+  MAC_ADDRESS = 7;
+  UI_HIEARCHY_WINDOW_TITLE = 8;
+  URL = 9;
+  SERIAL = 10;
+  SSID = 11;
+  STABLE_IDENTIFIER = 12;
+  VOLUME_LABEL = 13;
+  EAP = 14;
+}
+
 // Used for storing the information about which data colllectors will be used
 // when Support Tool creates the support packet.
 message DataCollectionModule {
