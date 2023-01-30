@@ -35,13 +35,23 @@ BASE_FEATURE(kPartitionAllocDanglingPtr,
              FEATURE_DISABLED_BY_DEFAULT);
 constexpr FeatureParam<DanglingPtrMode>::Option kDanglingPtrModeOption[] = {
     {DanglingPtrMode::kCrash, "crash"},
-    {DanglingPtrMode::kLogSignature, "log_signature"},
+    {DanglingPtrMode::kLogOnly, "log_only"},
 };
 const base::FeatureParam<DanglingPtrMode> kDanglingPtrModeParam{
     &kPartitionAllocDanglingPtr,
     "mode",
     DanglingPtrMode::kCrash,
     &kDanglingPtrModeOption,
+};
+constexpr FeatureParam<DanglingPtrType>::Option kDanglingPtrTypeOption[] = {
+    {DanglingPtrType::kAll, "all"},
+    {DanglingPtrType::kCrossTask, "cross_task"},
+};
+const base::FeatureParam<DanglingPtrType> kDanglingPtrTypeParam{
+    &kPartitionAllocDanglingPtr,
+    "type",
+    DanglingPtrType::kAll,
+    &kDanglingPtrTypeOption,
 };
 
 #if PA_CONFIG(ALLOW_PCSCAN)

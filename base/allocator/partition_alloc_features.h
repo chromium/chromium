@@ -25,10 +25,6 @@ extern const BASE_EXPORT base::FeatureParam<UnretainedDanglingPtrMode>
     kUnretainedDanglingPtrModeParam;
 
 // See /docs/dangling_ptr.md
-//
-// Usage:
-// --enable-features=PartitionAllocDanglingPtr:mode/crash
-// --enable-features=PartitionAllocDanglingPtr:mode/log_signature
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDanglingPtr);
 enum class DanglingPtrMode {
   // Crash immediately after detecting a dangling raw_ptr.
@@ -36,15 +32,29 @@ enum class DanglingPtrMode {
 
   // Log the signature of every occurrences without crashing. It is used by
   // bots.
-  // Format "[DanglingSignature]\t<1>\t<2>"
-  // 1. The function who freed the memory while it was still referenced.
-  // 2. The function who released the raw_ptr reference.
-  kLogSignature,
+  // Format "[DanglingSignature]\t<1>\t<2>\t<3>\t<4>"
+  // 1. The function which freed the memory while it was still referenced.
+  // 2. The task in which the memory was freed.
+  // 3. The function which released the raw_ptr reference.
+  // 4. The task in which the raw_ptr was released.
+  kLogOnly,
 
   // Note: This will be extended with a single shot DumpWithoutCrashing.
 };
 extern const BASE_EXPORT base::FeatureParam<DanglingPtrMode>
     kDanglingPtrModeParam;
+enum class DanglingPtrType {
+  // Act on any dangling raw_ptr released after being freed.
+  kAll,  // (default)
+
+  // Detect when freeing memory and releasing the dangling raw_ptr happens in
+  // a different task. Those are more likely to cause use after free.
+  kCrossTask,
+
+  // Note: This will be extended with LongLived
+};
+extern const BASE_EXPORT base::FeatureParam<DanglingPtrType>
+    kDanglingPtrTypeParam;
 
 #if PA_CONFIG(ALLOW_PCSCAN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScan);
