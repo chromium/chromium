@@ -40,10 +40,11 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -56,7 +57,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link TouchToFillCreditCardView} */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "The methods of ChromeAccessibilityUtil don't seem to work with batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TouchToFillCreditCardViewTest {
     private static final CreditCard VISA =
@@ -198,6 +199,38 @@ public class TouchToFillCreditCardViewTest {
         onView(withId(R.id.touch_to_fill_button_title)).perform(click());
 
         verify(mDelegateMock).suggestionSelected(VISA.getGUID());
+    }
+
+    @Test
+    @MediumTest
+    public void testSheetStartsInFullHeightForAccessibility() {
+        // Enabling the accessibility settings.
+        runOnUiThreadBlocking(() -> {
+            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(true);
+        });
+
+        runOnUiThreadBlocking(() -> mCoordinator.showSheet(new CreditCard[] {VISA}, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The sheet should be expanded to full height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.FULL);
+
+        // Disabling the accessibility settings.
+        runOnUiThreadBlocking(() -> {
+            ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false);
+            ChromeAccessibilityUtil.get().setTouchExplorationEnabledForTesting(false);
+        });
+    }
+
+    @Test
+    @MediumTest
+    public void testSheetStartsInHalfHeightForAccessibilityDisabled() {
+        runOnUiThreadBlocking(() -> mCoordinator.showSheet(new CreditCard[] {VISA}, true));
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        // The sheet should be expanded to half height.
+        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HALF);
     }
 
     private RecyclerView getCreditCards() {

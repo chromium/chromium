@@ -97,8 +97,8 @@ class TouchToFillCreditCardMediator {
 
         sheetItems.add(0, buildHeader(hasOnlyLocalCards(cards)));
 
-        mModel.set(VISIBLE, true);
         mModel.set(SHOULD_SHOW_SCAN_CREDIT_CARD, shouldShowScanCreditCard);
+        mModel.set(VISIBLE, true);
 
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_NUMBER_OF_CARDS_SHOWN, cards.length);
     }

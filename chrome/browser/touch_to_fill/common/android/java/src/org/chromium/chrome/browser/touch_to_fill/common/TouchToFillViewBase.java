@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -122,7 +123,7 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
      *
      * @param isVisible A boolean describing whether to show or hide the sheet.
-     * @return True if the request was successful, false otherwise.
+     * @return True if the request was successful, false otherwise
      */
     public boolean setVisible(boolean isVisible) {
         if (isVisible) {
@@ -294,7 +295,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @Override
     public boolean skipHalfStateOnScrollingDown() {
-        return false;
+        // Skip the half state if TalkBack is enabled.
+        return ChromeAccessibilityUtil.get().isTouchExplorationEnabled();
     }
 
     @Override
@@ -311,6 +313,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
+        // Disable the half state when TalkBack is on.
+        if (ChromeAccessibilityUtil.get().isTouchExplorationEnabled()) return HeightMode.DISABLED;
         return Math.min(getDesiredSheetHeightPx(), mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
