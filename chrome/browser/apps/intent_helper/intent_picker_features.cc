@@ -3,13 +3,20 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
+
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace apps::features {
 
 BASE_FEATURE(kLinkCapturingUiUpdate,
              "LinkCapturingUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kLinkCapturingInfoBar,
              "LinkCapturingInfoBar",
@@ -21,7 +28,12 @@ BASE_FEATURE(kIntentChipSkipsPicker,
 
 BASE_FEATURE(kIntentChipAppIcon,
              "AppIconInIntentChip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kLinkCapturingAutoDisplayIntentPicker,
              "LinkCapturingAutoDisplayIntentPicker",
