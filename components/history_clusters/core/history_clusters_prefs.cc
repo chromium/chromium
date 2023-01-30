@@ -4,7 +4,7 @@
 
 #include "components/history_clusters/core/history_clusters_prefs.h"
 
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
 
 namespace history_clusters {
 
@@ -13,7 +13,7 @@ namespace prefs {
 // Whether History Clusters are visible to the user. True by default.
 const char kVisible[] = "history_clusters.visible";
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kVisible, true);
 }
 

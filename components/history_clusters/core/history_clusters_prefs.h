@@ -5,15 +5,13 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_PREFS_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_PREFS_H_
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
+class PrefRegistrySimple;
 
 namespace history_clusters::prefs {
 
 extern const char kVisible[];
 
-void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace history_clusters::prefs
 

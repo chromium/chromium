@@ -124,6 +124,7 @@ source_set("unit_tests") {
     "//components/image_service",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",
+    "//components/prefs:test_support",
     "//components/search_engines",
     "//components/site_engagement/core",
     "//services/network:test_support",

@@ -25,6 +25,7 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters_for_ui.h"
 #include "components/history_clusters/core/history_clusters_service_task_update_cluster_triggerability.h"
 #include "components/history_clusters/core/history_clusters_service_task_update_clusters.h"
@@ -33,6 +34,7 @@
 #include "components/history_clusters/core/on_device_clustering_backend.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
@@ -62,7 +64,8 @@ HistoryClustersService::HistoryClustersService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     site_engagement::SiteEngagementScoreProvider* engagement_score_provider,
     TemplateURLService* template_url_service,
-    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider)
+    optimization_guide::NewOptimizationGuideDecider* optimization_guide_decider,
+    PrefService* prefs)
     : is_journeys_enabled_(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
@@ -73,6 +76,13 @@ HistoryClustersService::HistoryClustersService(
                                   optimization_guide_decider,
                                   engagement_score_provider) {
   DCHECK(history_service_);
+
+  if (prefs && is_journeys_enabled_) {
+    // Log whether the user has Journeys enabled if they are eligible for it.
+    base::UmaHistogramBoolean(
+        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart",
+        prefs->GetBoolean(prefs::kVisible));
+  }
 
   visit_deletion_observer_.AttachToHistoryService(history_service);
 

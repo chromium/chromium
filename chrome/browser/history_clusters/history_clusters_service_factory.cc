@@ -66,5 +66,6 @@ KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       url_loader_factory, site_engagement::SiteEngagementService::Get(profile),
       TemplateURLServiceFactory::GetForProfile(profile),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }

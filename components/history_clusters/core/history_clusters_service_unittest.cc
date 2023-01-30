@@ -31,10 +31,12 @@
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -126,13 +128,25 @@ class HistoryClustersServiceTestBase : public testing::Test {
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    prefs::RegisterProfilePrefs(pref_service_->registry());
+
+    ResetHistoryClustersServiceWithLocale("en-US");
+  }
+
+  HistoryClustersServiceTestBase(const HistoryClustersServiceTestBase&) =
+      delete;
+  HistoryClustersServiceTestBase& operator=(
+      const HistoryClustersServiceTestBase&) = delete;
+
+  void ResetHistoryClustersServiceWithLocale(const std::string& locale) {
     history_clusters_service_ = std::make_unique<HistoryClustersService>(
-        "en-US", history_service_.get(),
+        locale, history_service_.get(),
         /*entity_metadata_provider=*/nullptr,
         /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
-        /*optimization_guide_decider=*/nullptr);
+        /*optimization_guide_decider=*/nullptr, pref_service_.get());
 
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
@@ -142,11 +156,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history_clusters_service_test_api_->SetClusteringBackendForTest(
         std::move(test_backend));
   }
-
-  HistoryClustersServiceTestBase(const HistoryClustersServiceTestBase&) =
-      delete;
-  HistoryClustersServiceTestBase& operator=(
-      const HistoryClustersServiceTestBase&) = delete;
 
   // Add hardcoded completed visits with context annotations to the history
   // database.
@@ -364,6 +373,10 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   }
 
+  void SetJourneysVisible(bool visible) {
+    pref_service_->SetBoolean(prefs::kVisible, visible);
+  }
+
  protected:
   // ScopedFeatureList needs to be declared before TaskEnvironment, so that it
   // is destroyed after the TaskEnvironment is destroyed, preventing other
@@ -374,6 +387,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
   // Used to construct a `HistoryClustersService`.
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   std::unique_ptr<HistoryClustersService> history_clusters_service_;
   std::unique_ptr<HistoryClustersServiceTestApi>
@@ -408,6 +422,32 @@ class HistoryClustersServiceTest : public HistoryClustersServiceTestBase,
 INSTANTIATE_TEST_SUITE_P(IncludeSyncedVisits,
                          HistoryClustersServiceTest,
                          ::testing::Bool());
+
+TEST_P(HistoryClustersServiceTest, EligibleAndEnabledHistogramRecorded) {
+  {
+    base::HistogramTester histogram_tester;
+    SetJourneysVisible(true);
+    ResetHistoryClustersServiceWithLocale("en-US");
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", true, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SetJourneysVisible(false);
+    ResetHistoryClustersServiceWithLocale("en-US");
+    histogram_tester.ExpectUniqueSample(
+        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", false, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+    SetJourneysVisible(true);
+    ResetHistoryClustersServiceWithLocale("garbagelocale");
+    histogram_tester.ExpectTotalCount(
+        "History.Clusters.JourneysEligibleAndEnabledAtSessionStart", 0);
+  }
+}
 
 TEST_P(HistoryClustersServiceTest, HardCapOnVisitsFetchedFromHistory) {
   Config config;
