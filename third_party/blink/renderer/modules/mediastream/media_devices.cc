@@ -435,18 +435,13 @@ ScriptPromise MediaDevices::SendUserMediaRequest(
                                callbacks, error_state, surface);
   if (!request) {
     DCHECK(error_state.HadException());
-    if (error_state.CanGenerateException()) {
-      // TODO(crbug.com/1373398): Change this to use
-      // ScriptPromiseResolverWithTracker.
-      error_state.RaiseException(exception_state);
-      return ScriptPromise();
-    }
+    resolver->RecordAndThrowTypeError(
+        exception_state, error_state.GetErrorMessage(),
+        UserMediaRequestResult::kInvalidConstraints);
     RecordIdentifiabilityMetric(
         surface, GetExecutionContext(),
         IdentifiabilityBenignStringToken(error_state.GetErrorMessage()));
-    resolver->Reject(error_state.CreateError(),
-                     UserMediaRequestResult::kInvalidConstraints);
-    return promise;
+    return ScriptPromise();
   }
 
   String error_message;

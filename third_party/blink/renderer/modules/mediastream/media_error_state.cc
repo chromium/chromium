@@ -30,33 +30,16 @@
 
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
-#include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
-MediaErrorState::MediaErrorState()
-    : error_type_(kNoError), code_(DOMExceptionCode::kNoError) {}
+MediaErrorState::MediaErrorState() = default;
 
-void MediaErrorState::ThrowTypeError(const String& message) {
+void MediaErrorState::MarkTypeError(const String& message) {
   error_type_ = kTypeError;
   message_ = message;
-}
-
-void MediaErrorState::ThrowDOMException(DOMExceptionCode code,
-                                        const String& message) {
-  error_type_ = kDOMException;
-  code_ = code;
-  message_ = message;
-}
-
-void MediaErrorState::ThrowConstraintError(const String& message,
-                                           const String& constraint) {
-  error_type_ = kConstraintError;
-  message_ = message;
-  constraint_ = constraint;
 }
 
 void MediaErrorState::Reset() {
@@ -67,61 +50,14 @@ bool MediaErrorState::HadException() {
   return error_type_ != kNoError;
 }
 
-bool MediaErrorState::CanGenerateException() {
-  return error_type_ == kTypeError || error_type_ == kDOMException;
-}
-
-void MediaErrorState::RaiseException(ExceptionState& target) {
-  switch (error_type_) {
-    case kNoError:
-      NOTREACHED();
-      break;
-    case kTypeError:
-      target.ThrowTypeError(message_);
-      break;
-    case kDOMException:
-      target.ThrowDOMException(code_, message_);
-      break;
-    case kConstraintError:
-      // This is for the cases where we can't pass back a
-      // NavigatorUserMediaError.
-      // So far, we have this in the constructor of RTCPeerConnection,
-      // which is due to be deprecated.
-      // TODO(hta): Remove this code. https://crbug.com/576581
-      target.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                               "Unsatisfiable constraint " + constraint_);
-      break;
-    default:
-      NOTREACHED();
-  }
+void MediaErrorState::Throw(ExceptionState& target) {
+  DCHECK_EQ(error_type_, kTypeError);
+  target.ThrowTypeError(message_);
 }
 
 String MediaErrorState::GetErrorMessage() {
-  switch (error_type_) {
-    case kNoError:
-      NOTREACHED();
-      break;
-    case kTypeError:
-    case kDOMException:
-      return message_;
-    case kConstraintError:
-      // This is for the cases where we can't pass back a
-      // NavigatorUserMediaError.
-      // So far, we have this in the constructor of RTCPeerConnection,
-      // which is due to be deprecated.
-      // TODO(hta): Remove this code. https://crbug.com/576581
-      return "Unsatisfiable constraint " + constraint_;
-    default:
-      NOTREACHED();
-  }
-
-  return String();
-}
-
-V8UnionDOMExceptionOrOverconstrainedError* MediaErrorState::CreateError() {
-  DCHECK_EQ(error_type_, kConstraintError);
-  return MakeGarbageCollected<V8UnionDOMExceptionOrOverconstrainedError>(
-      MakeGarbageCollected<OverconstrainedError>(constraint_, message_));
+  DCHECK_EQ(error_type_, kTypeError);
+  return message_;
 }
 
 }  // namespace blink

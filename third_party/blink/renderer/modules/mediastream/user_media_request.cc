@@ -427,14 +427,14 @@ UserMediaRequest* UserMediaRequest::Create(
 
   if (media_type == UserMediaRequestType::kUserMedia) {
     if (audio.IsNull() && video.IsNull()) {
-      error_state.ThrowTypeError(
+      error_state.MarkTypeError(
           "At least one of audio and video must be requested");
       return nullptr;
     } else if (!video.IsNull()) {
       if (video.Basic().pan.HasMandatory() ||
           video.Basic().tilt.HasMandatory() ||
           video.Basic().zoom.HasMandatory()) {
-        error_state.ThrowTypeError(
+        error_state.MarkTypeError(
             "Mandatory pan-tilt-zoom constraints are not supported");
         return nullptr;
       }
@@ -456,33 +456,33 @@ UserMediaRequest* UserMediaRequest::Create(
     // either a dictionary value or a value of true.
     if (media_type == UserMediaRequestType::kDisplayMediaSet) {
       if (!audio.IsNull()) {
-        error_state.ThrowTypeError("Audio requests are not supported");
+        error_state.MarkTypeError("Audio requests are not supported");
         return nullptr;
       } else if (options->preferCurrentTab()) {
-        error_state.ThrowTypeError("preferCurrentTab is not supported");
+        error_state.MarkTypeError("preferCurrentTab is not supported");
         return nullptr;
       }
     }
 
     if (video.IsNull()) {
-      error_state.ThrowTypeError("video must be requested");
+      error_state.MarkTypeError("video must be requested");
       return nullptr;
     }
 
     if ((!audio.IsNull() && !audio.Advanced().empty()) ||
         !video.Advanced().empty()) {
-      error_state.ThrowTypeError("Advanced constraints are not supported");
+      error_state.MarkTypeError("Advanced constraints are not supported");
       return nullptr;
     }
 
     if ((!audio.IsNull() && audio.Basic().HasMin()) || video.Basic().HasMin()) {
-      error_state.ThrowTypeError("min constraints are not supported");
+      error_state.MarkTypeError("min constraints are not supported");
       return nullptr;
     }
 
     if ((!audio.IsNull() && audio.Basic().HasExact()) ||
         video.Basic().HasExact()) {
-      error_state.ThrowTypeError("exact constraints are not supported");
+      error_state.MarkTypeError("exact constraints are not supported");
       return nullptr;
     }
 
@@ -524,7 +524,7 @@ UserMediaRequest* UserMediaRequest::Create(
       options->selfBrowserSurface().AsEnum() ==
           V8SelfCapturePreferenceEnum::Enum::kExclude;
   if (exclude_self_browser_surface && options->preferCurrentTab()) {
-    error_state.ThrowTypeError(
+    error_state.MarkTypeError(
         "Self-contradictory configuration (preferCurrentTab and "
         "selfBrowserSurface=exclude).");
     return nullptr;

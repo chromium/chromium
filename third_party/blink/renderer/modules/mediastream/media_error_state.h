@@ -32,15 +32,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_ERROR_STATE_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
-class OverconstrainedError;
-class V8UnionDOMExceptionOrOverconstrainedError;
 
 // A class that is able to be used like ExceptionState for carrying
 // information about an error up the stack, but it is up to the higher
@@ -50,24 +47,18 @@ class MODULES_EXPORT MediaErrorState {
 
  public:
   MediaErrorState();
-  void ThrowTypeError(const String& message);
-  void ThrowDOMException(DOMExceptionCode, const String& message);
-  void ThrowConstraintError(const String& message, const String& constraint);
+  void MarkTypeError(const String& message);
   void Reset();
 
   bool HadException();
-  bool CanGenerateException();
-  void RaiseException(ExceptionState&);
+  void Throw(ExceptionState&);
   String GetErrorMessage();
-  V8UnionDOMExceptionOrOverconstrainedError* CreateError();
 
  private:
-  enum ErrorType { kNoError, kTypeError, kDOMException, kConstraintError };
-  ErrorType error_type_;
+  enum ErrorType { kNoError, kTypeError };
+  ErrorType error_type_ = kNoError;
   String name_;
-  DOMExceptionCode code_;
   String message_;
-  String constraint_;
 };
 
 }  // namespace blink

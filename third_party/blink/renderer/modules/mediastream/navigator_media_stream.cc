@@ -113,12 +113,7 @@ void NavigatorMediaStream::getUserMedia(
       error_state, surface);
   if (!request) {
     DCHECK(error_state.HadException());
-    if (error_state.CanGenerateException()) {
-      error_state.RaiseException(exception_state);
-    } else {
-      error_callback->InvokeAndReportException(nullptr,
-                                               error_state.CreateError());
-    }
+    error_state.Throw(exception_state);
     RecordIdentifiabilityMetric(
         surface, navigator.GetExecutionContext(),
         IdentifiabilityBenignStringToken(error_state.GetErrorMessage()));

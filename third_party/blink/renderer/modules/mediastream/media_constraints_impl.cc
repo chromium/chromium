@@ -110,10 +110,6 @@ const char kDAEchoCancellation[] = "googDAEchoCancellation";
 // Google-specific constraint keys for a local video source (getUserMedia).
 const char kNoiseReduction[] = "googNoiseReduction";
 
-// Names used for testing.
-const char kTestConstraint1[] = "valid_and_supported_1";
-const char kTestConstraint2[] = "valid_and_supported_2";
-
 static bool ParseMandatoryConstraintsDictionary(
     const Dictionary& mandatory_constraints_dictionary,
     Vector<NameValueStringConstraint>& mandatory) {
@@ -179,8 +175,7 @@ static bool ToBoolean(const WebString& as_web_string) {
 static void ParseOldStyleNames(
     ExecutionContext* context,
     const Vector<NameValueStringConstraint>& old_names,
-    MediaTrackConstraintSetPlatform& result,
-    MediaErrorState& error_state) {
+    MediaTrackConstraintSetPlatform& result) {
   if (old_names.size() > 0) {
     UseCounter::Count(context, WebFeature::kOldConstraintsParsed);
   }
@@ -240,14 +235,6 @@ static void ParseOldStyleNames(
       result.goog_da_echo_cancellation.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_.Equals(kNoiseReduction)) {
       result.goog_noise_reduction.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_.Equals(kTestConstraint1) ||
-               constraint.name_.Equals(kTestConstraint2)) {
-      // These constraints are only for testing parsing.
-      // Values 0 and 1 are legal, all others are a ConstraintError.
-      if (!constraint.value_.Equals("0") && !constraint.value_.Equals("1")) {
-        error_state.ThrowConstraintError("Illegal value for constraint",
-                                         constraint.name_);
-      }
     }
     // else: Nothing. Unrecognized constraints are simply ignored.
   }
@@ -256,22 +243,17 @@ static void ParseOldStyleNames(
 static MediaConstraints CreateFromNamedConstraints(
     ExecutionContext* context,
     Vector<NameValueStringConstraint>& mandatory,
-    const Vector<NameValueStringConstraint>& optional,
-    MediaErrorState& error_state) {
+    const Vector<NameValueStringConstraint>& optional) {
   MediaTrackConstraintSetPlatform basic;
   MediaTrackConstraintSetPlatform advanced;
   MediaConstraints constraints;
-  ParseOldStyleNames(context, mandatory, basic, error_state);
-  if (error_state.HadException())
-    return constraints;
-  // We ignore unknow names and syntax errors in optional constraints.
-  MediaErrorState ignored_error_state;
+  ParseOldStyleNames(context, mandatory, basic);
+  // We ignore unknown names and syntax errors in optional constraints.
   Vector<MediaTrackConstraintSetPlatform> advanced_vector;
   for (const auto& optional_constraint : optional) {
     MediaTrackConstraintSetPlatform advanced_element;
     Vector<NameValueStringConstraint> element_as_list(1, optional_constraint);
-    ParseOldStyleNames(context, element_as_list, advanced_element,
-                       ignored_error_state);
+    ParseOldStyleNames(context, element_as_list, advanced_element);
     if (!advanced_element.IsUnconstrained())
       advanced_vector.push_back(advanced_element);
   }
@@ -367,7 +349,7 @@ bool ValidateString(const String& str, MediaErrorState& error_state) {
   DCHECK(!error_state.HadException());
 
   if (str.length() > kMaxConstraintStringLength) {
-    error_state.ThrowTypeError("Constraint string too long.");
+    error_state.MarkTypeError("Constraint string too long.");
     return false;
   }
   return true;
@@ -378,7 +360,7 @@ bool ValidateStringSeq(const Vector<String>& strs,
   DCHECK(!error_state.HadException());
 
   if (strs.size() > kMaxConstraintStringSeqLength) {
-    error_state.ThrowTypeError("Constraint string sequence too long.");
+    error_state.MarkTypeError("Constraint string sequence too long.");
     return false;
   }
 
@@ -699,7 +681,7 @@ MediaConstraints Create(ExecutionContext* context,
   if (constraints_in->hasOptional() || constraints_in->hasMandatory()) {
     if (!standard_form.IsUnconstrained()) {
       UseCounter::Count(context, WebFeature::kMediaStreamConstraintsOldAndNew);
-      error_state.ThrowTypeError(
+      error_state.MarkTypeError(
           "Malformed constraint: Cannot use both optional/mandatory and "
           "specific or advanced constraints.");
       return MediaConstraints();
@@ -707,12 +689,11 @@ MediaConstraints Create(ExecutionContext* context,
     Vector<NameValueStringConstraint> optional;
     Vector<NameValueStringConstraint> mandatory;
     if (!Parse(constraints_in, optional, mandatory)) {
-      error_state.ThrowTypeError("Malformed constraints object.");
+      error_state.MarkTypeError("Malformed constraints object.");
       return MediaConstraints();
     }
     UseCounter::Count(context, WebFeature::kMediaStreamConstraintsNameValue);
-    return CreateFromNamedConstraints(context, mandatory, optional,
-                                      error_state);
+    return CreateFromNamedConstraints(context, mandatory, optional);
   }
   UseCounter::Count(context, WebFeature::kMediaStreamConstraintsConformant);
   return standard_form;
