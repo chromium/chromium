@@ -31,6 +31,7 @@ constexpr SkColor kDragColor60Blue =
 constexpr SkColor kHoverColor = SkColorSetA(gfx::kGoogleBlue600, 0x66 /*40%*/);
 
 constexpr int kMenuEntrySize = 48;
+constexpr int kMenuEntryIconSize = 24;
 constexpr int kMenuEntryCornerRadius = 8;
 constexpr int kMenuEntryBorderThickness = 1;
 // About focus ring.
@@ -55,8 +56,9 @@ MenuEntryView::MenuEntryView(
     : views::ImageButton(std::move(pressed_callback)),
       on_position_changed_callback_(on_position_changed_callback) {
   auto game_icon =
-      gfx::CreateVectorIcon(vector_icons::kVideogameAssetIcon, SK_ColorBLACK);
-  SetImage(views::Button::STATE_NORMAL, game_icon);
+      ui::ImageModel::FromVectorIcon(vector_icons::kVideogameAssetOutlineIcon,
+                                     SK_ColorBLACK, kMenuEntryIconSize);
+  SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
   SetSize(allow_reposition_
