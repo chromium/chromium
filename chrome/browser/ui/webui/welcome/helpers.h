@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_HELPERS_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -17,12 +16,6 @@ class PolicyMap;
 class Profile;
 
 namespace welcome {
-
-// Onboarding groups are used for running field trials related to first run
-// experience. This will make a new profile join whatever group is currently
-// active. Any profile that is already part of an onboarding group will remain
-// in that group.
-void JoinOnboardingGroup(Profile* profile);
 
 bool IsEnabled(Profile* profile);
 

@@ -9,17 +9,14 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,13 +24,9 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
-#include "components/prefs/pref_service.h"
-#include "components/search/ntp_features.h"
 
 namespace welcome {
 
@@ -116,81 +109,6 @@ bool CanShowSigninModule(const policy::PolicyMap& policies) {
 // Welcome experiments depend on Google being the default search provider.
 static bool CanExperimentWithVariations(Profile* profile) {
   return search::DefaultSearchProviderIsGoogle(profile);
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
-// These feature flags are used to tie our experiment to specific studies.
-// go/navi-app-variation for details.
-// TODO(hcarmona): find a solution that scales better.
-BASE_FEATURE(kNaviControlEnabled,
-             "NaviControlEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kNaviAppVariationEnabled,
-             "NaviAppVariationEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kNaviNTPVariationEnabled,
-             "NaviNTPVariationEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kNaviShortcutVariationEnabled,
-             "NaviShortcutVariationEnabled",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Get the group for users who onboard in this experiment.
-// Groups are:
-//   - Specified by study
-//   - The same for all experiments in study
-//   - Incremented with each new version
-//   - Not reused
-// TODO(crbug.com/1330298): Remove once study ends. Targeting M110.
-static std::string GetOnboardingGroup(Profile* profile) {
-  if (!CanExperimentWithVariations(profile)) {
-    // If we cannot run any variations, we bucket the users into a separate
-    // synthetic group that we will ignore data for.
-    return "NaviNoVariationSynthetic";
-  }
-
-  // We need to use |base::GetFieldTrialParamValue| instead of
-  // |base::FeatureParam| because our control group needs a custom value for
-  // this param.
-  // "NaviOnboarding2" match study name in configs.
-  return base::GetFieldTrialParamValue("NaviOnboarding2", "onboarding-group");
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
-
-void JoinOnboardingGroup(Profile* profile) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
-  PrefService* prefs = profile->GetPrefs();
-
-  std::string group;
-  if (prefs->GetBoolean(prefs::kHasSeenWelcomePage)) {
-    // Get user's original group.
-    group = prefs->GetString(prefs::kNaviOnboardGroup);
-
-    // Users who onboarded before Navi won't have a group.
-    if (group.empty())
-      return;
-  } else {
-    // Join the latest group if onboarding for the first time!
-    group = GetOnboardingGroup(profile);
-    profile->GetPrefs()->SetString(prefs::kNaviOnboardGroup, group);
-  }
-
-  // User will be tied to their original group, even after experiment ends.
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "NaviOnboarding2Synthetic", group,
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
-
-  // Check for feature based on group.
-  // TODO(hcarmona): find a solution that scales better.
-  if (group.compare("ControlSynthetic-008") == 0)
-    base::FeatureList::IsEnabled(kNaviControlEnabled);
-  else if (group.compare("AppVariationSynthetic-008") == 0)
-    base::FeatureList::IsEnabled(kNaviAppVariationEnabled);
-  else if (group.compare("NTPVariationSynthetic-008") == 0)
-    base::FeatureList::IsEnabled(kNaviNTPVariationEnabled);
-  else if (group.compare("ShortcutVariationSynthetic-008") == 0)
-    base::FeatureList::IsEnabled(kNaviShortcutVariationEnabled);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
 }
 
 bool IsEnabled(Profile* profile) {

@@ -7434,25 +7434,6 @@
             ]
         }
     ],
-    "NaviOnboarding2": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NoBackground-ForYou3",
-                    "params": {
-                        "new-user-modules": "nux-google-apps,nux-set-as-default,signin-view",
-                        "onboarding-group": "NoBackgroundSynthetic-ForYou3"
-                    },
-                    "enable_features": [
-                        "NuxOnboarding"
-                    ]
-                }
-            ]
-        }
-    ],
     "NeuralPalmRejectionModelForRedrix": [
         {
             "platforms": [
