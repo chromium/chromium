@@ -121,4 +121,36 @@ INSTANTIATE_TEST_SUITE_P(,
                          CreateSaneScannerSlashTest,
                          testing::Values("/eSCL", "eSCL/", "/eSCL/"));
 
+// Test that CreateSaneScanner handles scanners which don't report an rs value.
+TEST(CreateSaneScanner, NoRsValue) {
+  absl::optional<Scanner> maybe_scanner =
+      CreateSaneScanner("name", ZeroconfScannerDetector::kEsclServiceType,
+                        "none", IpAddressFromString("101.102.103.104"), 8080);
+
+  ASSERT_TRUE(maybe_scanner.has_value());
+
+  auto device_names = maybe_scanner.value().device_names[ScanProtocol::kEscl];
+  ASSERT_TRUE(device_names.size() > 0);
+  EXPECT_EQ(device_names.begin()->device_name,
+            "airscan:escl:name:http://101.102.103.104:8080/eSCL/");
+}
+
+// Test that CreateSaneScanner fails when an invalid IP address is passed in.
+TEST(CreateSaneScanner, InvalidIpAddress) {
+  absl::optional<Scanner> maybe_scanner =
+      CreateSaneScanner("name", ZeroconfScannerDetector::kEsclServiceType,
+                        "eSCL", net::IPAddress(), 8080);
+
+  EXPECT_FALSE(maybe_scanner.has_value());
+}
+
+// Test that CreateSaneScanner fails for a generic, non-Epson scanner.
+TEST(CreateSaneScanner, GenericNonEpsonScanner) {
+  absl::optional<Scanner> maybe_scanner = CreateSaneScanner(
+      "name", ZeroconfScannerDetector::kGenericScannerServiceType, "none",
+      IpAddressFromString("101.102.103.104"), 8080);
+
+  EXPECT_FALSE(maybe_scanner.has_value());
+}
+
 }  // namespace ash
