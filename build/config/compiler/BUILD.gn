@@ -1302,9 +1302,9 @@ config("compiler_codegen") {
     configs += [ "//build/config/nacl:compiler_codegen" ]
   }
 
-  if (current_cpu == "arm64" && is_android) {
-    # On arm64 disable outlining for Android. See crbug.com/931297 for more
-    # information.
+  if (current_cpu == "arm64") {
+    # Disable outlining everywhere on arm64. For more information see
+    # crbug.com/931297 for Android and crbug.com/1410297 for iOS.
     cflags += [ "-mno-outline" ]
 
     # This can be removed once https://bugs.llvm.org/show_bug.cgi?id=40348
