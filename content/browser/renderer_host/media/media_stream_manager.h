@@ -738,7 +738,7 @@ class CONTENT_EXPORT MediaStreamManager
   void MaybeStartTrackingCaptureHandleConfig(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device,
-      GlobalRenderFrameHostId capturer);
+      DeviceRequest& request);
 
   // Stop tracking capture-handle changes for tab-capture.
   void MaybeStopTrackingCaptureHandleConfig(
@@ -749,7 +749,7 @@ class CONTENT_EXPORT MediaStreamManager
   void MaybeUpdateTrackedCaptureHandleConfigs(
       const std::string& label,
       const blink::mojom::StreamDevicesSet& new_stream_devices_set,
-      GlobalRenderFrameHostId capturer);
+      DeviceRequest& request);
 
   bool ShouldUseFakeUIProxy(blink::mojom::MediaStreamType stream_type) const;
 

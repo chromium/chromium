@@ -3094,10 +3094,8 @@ void MediaStreamManager::PanTiltZoomPermissionChecked(
   // while the current task was hopping between threads/queues, an event will
   // be fired by the CaptureHandleManager.
   if (video_device.has_value()) {
-    MaybeStartTrackingCaptureHandleConfig(
-        label, video_device.value(),
-        GlobalRenderFrameHostId(request->requesting_process_id,
-                                request->requesting_frame_id));
+    MaybeStartTrackingCaptureHandleConfig(label, video_device.value(),
+                                          *request);
   }
 }
 
@@ -3156,13 +3154,12 @@ void MediaStreamManager::FinalizeRequestFailed(
 void MediaStreamManager::FinalizeChangeDevice(const std::string& label,
                                               DeviceRequest* request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(request);
 
   request->FinalizeChangeDevice(label);
 
-  MaybeUpdateTrackedCaptureHandleConfigs(
-      label, request->stream_devices_set,
-      GlobalRenderFrameHostId(request->requesting_process_id,
-                              request->requesting_frame_id));
+  MaybeUpdateTrackedCaptureHandleConfigs(label, request->stream_devices_set,
+                                         *request);
 }
 
 void MediaStreamManager::FinalizeMediaAccessRequest(
@@ -4376,7 +4373,7 @@ void MediaStreamManager::PermissionChangedCallback(
 void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
     const std::string& label,
     const MediaStreamDevice& captured_device,
-    GlobalRenderFrameHostId capturer) {
+    DeviceRequest& request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!blink::IsVideoInputMediaType(captured_device.type) ||
@@ -4384,10 +4381,8 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
     return;
   }
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
-    return;
-  }
+  const GlobalRenderFrameHostId capturer(request.requesting_process_id,
+                                         request.requesting_frame_id);
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop.
@@ -4399,7 +4394,7 @@ void MediaStreamManager::MaybeStartTrackingCaptureHandleConfig(
                      base::Unretained(&capture_handle_manager_), label,
                      captured_device, capturer,
                      base::BindPostTask(GetIOThreadTaskRunner({}),
-                                        request->OnCaptureHandleChangeCb())));
+                                        request.OnCaptureHandleChangeCb())));
 }
 
 void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
@@ -4424,14 +4419,12 @@ void MediaStreamManager::MaybeStopTrackingCaptureHandleConfig(
 void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
     const std::string& label,
     const blink::mojom::StreamDevicesSet& new_devices_set,
-    GlobalRenderFrameHostId capturer) {
+    DeviceRequest& request) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK_EQ(1u, new_devices_set.stream_devices.size());
 
-  DeviceRequest* request = FindRequest(label);
-  if (!request) {
-    return;
-  }
+  const GlobalRenderFrameHostId capturer(request.requesting_process_id,
+                                         request.requesting_frame_id);
 
   const blink::mojom::StreamDevices& new_devices =
       *new_devices_set.stream_devices[0];
@@ -4455,7 +4448,7 @@ void MediaStreamManager::MaybeUpdateTrackedCaptureHandleConfigs(
                      base::Unretained(&capture_handle_manager_), label,
                      std::move(filtered_new_devices_set), capturer,
                      base::BindPostTask(GetIOThreadTaskRunner({}),
-                                        request->OnCaptureHandleChangeCb())));
+                                        request.OnCaptureHandleChangeCb())));
 }
 
 bool MediaStreamManager::ShouldUseFakeUIProxy(
