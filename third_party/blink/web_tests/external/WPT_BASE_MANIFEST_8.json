@@ -121933,7 +121933,7 @@
       ]
      ],
      "font-synthesis-style-first-letter.html": [
-      "32f037bdb721dc3315787d37dce5c66b7cf1e37c",
+      "1296baf05f9c430cda6c52e5a63e813c79862b9a",
       [
        null,
        [
@@ -121985,7 +121985,7 @@
       ]
      ],
      "font-synthesis-weight-first-letter.html": [
-      "52865540a791189e0adf89fb17f8b43fb830334b",
+      "3d60b2a22847e1b99f1ee53d27c231a41bbc60da",
       [
        null,
        [
@@ -263212,16 +263212,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "0049f3e5247e64b948c41f5edbd906d61b954feb",
-     []
-    ],
-    "mtime.json": [
-     "0c7d29e6a9cdda61de450dcb3990409922abc5b9",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -292001,7 +291991,7 @@
       []
      ],
      "font-synthesis-style-first-letter-ref.html": [
-      "f1abcb7bb3f4681ecfc2b135dc5ca6dd6b6b9896",
+      "c4f9b175de79052ad0f29df3be07a33c1072f245",
       []
      ],
      "font-synthesis-style-first-line-ref.html": [
@@ -292017,7 +292007,7 @@
       []
      ],
      "font-synthesis-weight-first-letter-ref.html": [
-      "7ec42f07b7c2bfbd329534bc8401acb5ee33d5f2",
+      "fd29f4134d67d22b6e344dcc7ec8315a32dac2e5",
       []
      ],
      "font-synthesis-weight-first-line-ref.html": [
@@ -347844,7 +347834,7 @@
          []
         ],
         "rc-helper.js": [
-         "ef0da2da1ed8f9684637d48991b2ea9abfb986c9",
+         "7b9e83a1f42afeadf1705607465b8c65aaaeb721",
          []
         ],
         "service-worker.js": [
@@ -370766,11 +370756,11 @@
        []
       ],
       "early-hints-helpers.sub.js": [
-       "3991e8fe9da479dd0f5b4cea537542ba948a8540",
+       "faf6119cf1edd5454aaabd643ffe40d33c589463",
        []
       ],
       "early-hints-test-loader.h2.py": [
-       "aa9188c6dbc3920055095421bc880ec5595b0bbb",
+       "bb987209c50f41f260cc7e5d43901c8777ee8779",
        []
       ],
       "empty-corp-absent.js": [
@@ -370786,6 +370776,14 @@
        []
       ],
       "empty.js.headers": [
+       "1738466bcb3225df2ec2dc7f58459784ce426a84",
+       []
+      ],
+      "empty.json": [
+       "0967ef424bce6791893e9a57bb952f80fd536e93",
+       []
+      ],
+      "empty.json.headers": [
        "1738466bcb3225df2ec2dc7f58459784ce426a84",
        []
       ],
@@ -370847,6 +370845,10 @@
       ],
       "preload-as-test.html": [
        "daea33160ae4e7b7bd074fb1849f1ba40ce8e715",
+       []
+      ],
+      "preload-fetch.html": [
+       "2e90f76af143fce7f05eb77bb71f00e0d880ff88",
        []
       ],
       "preload-finished-before-final-response.h2.py": [
@@ -402873,7 +402875,7 @@
      ]
     ],
     "back-forward-cache-open-connection.window.js": [
-     "397eadab8763fe884f877da63b75a06c8dcc023a",
+     "10c8482230938d4e4e917d43b924710bd913e574",
      [
       "IndexedDB/back-forward-cache-open-connection.window.html",
       {
@@ -562972,6 +562974,20 @@
           "script",
           "/common/utils.js"
          ],
+         [
+          "script",
+          "resources/early-hints-helpers.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "preload-fetch.h2.window.js": [
+      "121913ed3175d552acf83ba3cb4b19e54b51d75a",
+      [
+       "loading/early-hints/preload-fetch.h2.window.html",
+       {
+        "script_metadata": [
          [
           "script",
           "resources/early-hints-helpers.sub.js"
