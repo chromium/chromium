@@ -16,6 +16,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button_label.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/layout_provider.h"
@@ -272,7 +273,7 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   gfx::HorizontalAlignment horizontal_alignment_ = gfx::ALIGN_LEFT;
 
   // Corner radius of the focus ring.
-  float focus_ring_corner_radius_ = FocusableBorder::kCornerRadiusDp;
+  float focus_ring_corner_radius_ = FocusRing::kDefaultCornerRadiusDp;
 
   base::CallbackListSubscription paint_as_active_subscription_;
 

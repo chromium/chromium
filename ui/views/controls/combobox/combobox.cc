@@ -53,6 +53,10 @@ namespace views {
 
 namespace {
 
+// TODO(1399913): Replace this placeholder value when LayoutManager supports
+// correct corner radii values.
+constexpr float kChromeRefresh2023CornerRadiusDp = 30.0f;
+
 SkColor GetTextColorForEnableState(const Combobox& combobox, bool enabled) {
   const int style = enabled ? style::STYLE_PRIMARY : style::STYLE_DISABLED;
   return style::GetColor(combobox, style::CONTEXT_TEXTFIELD, style);
@@ -266,8 +270,8 @@ void Combobox::SetBorderColorId(ui::ColorId color_id) {
 void Combobox::SetBackgroundColorId(ui::ColorId color_id) {
   SetBackground(CreateThemedRoundedRectBackground(
       color_id, features::IsChromeRefresh2023()
-                    ? FocusableBorder::kChromeRefresh2023CornerRadiusDp
-                    : FocusableBorder::kCornerRadiusDp));
+                    ? kChromeRefresh2023CornerRadiusDp
+                    : FocusRing::kDefaultCornerRadiusDp));
 }
 
 void Combobox::SetForegroundColorId(ui::ColorId color_id) {

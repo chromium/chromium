@@ -15,6 +15,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace {
@@ -50,10 +51,7 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
 
   SkPath path;
   flags.setAntiAlias(true);
-  float corner_radius_px =
-      (features::IsChromeRefresh2023() ? kChromeRefresh2023CornerRadiusDp
-                                       : kCornerRadiusDp) *
-      dsf;
+  float corner_radius_px = FocusRing::kDefaultCornerRadiusDp * dsf;
   path.addRoundRect(gfx::RectFToSkRect(rect), corner_radius_px,
                     corner_radius_px);
 

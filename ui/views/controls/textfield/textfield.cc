@@ -100,6 +100,10 @@
 namespace views {
 namespace {
 
+// TODO(1399913): Replace this placeholder value when LayoutManager supports
+// correct corner radii values.
+constexpr float kChromeRefresh2023CornerRadiusDp = 30.0f;
+
 using ::ui::mojom::DragOperation;
 
 // An enum giving different model properties unique keys for the
@@ -2419,8 +2423,8 @@ void Textfield::UpdateBackgroundColor() {
   SetBackground(
       CreateBackgroundFromPainter(Painter::CreateSolidRoundRectPainter(
           color, ::features::IsChromeRefresh2023()
-                     ? FocusableBorder::kChromeRefresh2023CornerRadiusDp
-                     : FocusableBorder::kCornerRadiusDp)));
+                     ? kChromeRefresh2023CornerRadiusDp
+                     : FocusRing::kDefaultCornerRadiusDp)));
   // Disable subpixel rendering when the background color is not opaque because
   // it draws incorrect colors around the glyphs in that case.
   // See crbug.com/115198

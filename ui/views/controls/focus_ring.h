@@ -33,6 +33,8 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
  public:
   METADATA_HEADER(FocusRing);
 
+  static constexpr float kDefaultCornerRadiusDp = 2.0f;
+
   using ViewPredicate = std::function<bool(View* view)>;
 
   // The default thickness and inset amount of focus ring halos. If you need

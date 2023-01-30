@@ -60,10 +60,7 @@ SkColor GetPaintColor(FocusRing* focus_ring, bool valid) {
 
 double GetCornerRadius(float halo_thickness) {
   const double thickness = halo_thickness / 2.f;
-  return (features::IsChromeRefresh2023()
-              ? FocusableBorder::kChromeRefresh2023CornerRadiusDp
-              : FocusableBorder::kCornerRadiusDp) +
-         thickness;
+  return FocusRing::kDefaultCornerRadiusDp + thickness;
 }
 
 SkPath GetHighlightPathInternal(const View* view, float halo_thickness) {
