@@ -379,6 +379,14 @@ void SavedDeskLibraryView::DeleteEntries(const std::vector<base::GUID>& uuids,
 
 void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
                                              DeskMiniView* mini_view) {
+  SavedDeskItemView* grid_item = GetItemForUUID(uuid);
+  DCHECK(grid_item);
+
+  ui::Layer* mini_view_layer = mini_view->layer();
+  // Stop any ongoing animations for the mini view before we try to get the
+  // target screen bounds of it and start the new animation for it below.
+  mini_view_layer->CompleteAllAnimations();
+
   // If we can't the get bounds, then we just bail. The item will be deleted
   // automatically later through desk model observation.
   absl::optional<gfx::Rect> target_screen_bounds =
@@ -386,12 +394,8 @@ void SavedDeskLibraryView::AnimateDeskLaunch(const base::GUID& uuid,
   if (!target_screen_bounds)
     return;
 
-  SavedDeskItemView* grid_item = GetItemForUUID(uuid);
-  DCHECK(grid_item);
-
   // Immediately hide the desk mini view. It will later be revealed by the
   // animation below.
-  ui::Layer* mini_view_layer = mini_view->layer();
   mini_view_layer->SetOpacity(0.0);
 
   std::unique_ptr<ui::LayerTreeOwner> item_layer_tree =

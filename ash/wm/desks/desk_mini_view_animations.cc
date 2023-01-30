@@ -370,16 +370,24 @@ void PerformNewDeskMiniViewAnimation(
   mini_views_right_begin_transform.Translate(-shift_x, 0);
 
   for (auto* mini_view : new_mini_views) {
-    ui::Layer* layer = mini_view->layer();
-    layer->SetOpacity(0);
+    if (features::IsJellyrollEnabled()) {
+      if (!mini_view->desk()->is_desk_being_removed()) {
+        ScaleUpAndFadeInView(mini_view, mini_view->bounds().CenterPoint().x());
+      }
+    } else {
+      ui::Layer* layer = mini_view->layer();
+      layer->SetOpacity(0);
 
-    if (!mini_view->desk()->is_desk_being_removed())
-      layer->SetTransform(mini_views_left_begin_transform);
+      if (!mini_view->desk()->is_desk_being_removed()) {
+        layer->SetTransform(mini_views_left_begin_transform);
+      }
 
-    ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-    InitScopedAnimationSettings(&settings, kExistingMiniViewsAnimationDuration);
-    layer->SetOpacity(1);
-    layer->SetTransform(kEndTransform);
+      ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
+      InitScopedAnimationSettings(&settings,
+                                  kExistingMiniViewsAnimationDuration);
+      layer->SetOpacity(1);
+      layer->SetTransform(kEndTransform);
+    }
   }
 
   AnimateMiniViews(mini_views_left, mini_views_left_begin_transform);
