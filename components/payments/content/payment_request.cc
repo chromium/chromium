@@ -411,7 +411,7 @@ void PaymentRequest::UpdateWith(mojom::PaymentDetailsPtr details) {
   if (is_resolving_promise_passed_into_show_method) {
     DCHECK(spec_->details().total);
     if (is_requested_methods_supported_invoked_) {
-      if (SatisfiesSkipUIConstraints()) {
+      if (CheckSatisfiesSkipUIConstraintsAndRecordShownState()) {
         Pay();
       } else {
         // If not skipping UI, then make sure that the browser payment sheet is
@@ -649,7 +649,7 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
   }
 
   if (methods_supported) {
-    if (SatisfiesSkipUIConstraints()) {
+    if (CheckSatisfiesSkipUIConstraintsAndRecordShownState()) {
       Pay();
     } else if (!display_handle_->was_shown()) {
       // If not skipping UI, then make sure that the browser payment sheet is
@@ -739,7 +739,7 @@ bool PaymentRequest::OnlySingleAppCanProvideAllRequiredInformation() const {
   return an_app_can_provide_all_info;
 }
 
-bool PaymentRequest::SatisfiesSkipUIConstraints() {
+bool PaymentRequest::CheckSatisfiesSkipUIConstraintsAndRecordShownState() {
   // Only allowing URL based payment apps to skip the payment sheet.
   skipped_payment_request_ui_ =
       !spec()->IsSecurePaymentConfirmationRequested() &&

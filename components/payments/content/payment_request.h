@@ -189,10 +189,10 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // contact information whenever needed.
   bool OnlySingleAppCanProvideAllRequiredInformation() const;
 
-  // Returns true if this payment request supports skipping the Payment Sheet.
-  // Typically, this means that exactly one payment app can provide requested
-  // information.
-  bool SatisfiesSkipUIConstraints();
+  // Checks and records via JourneyLogger whether this payment request will skip
+  // showing the Payment Sheet, and returns the result. Typically, this means
+  // that exactly one payment app can provide requested information.
+  bool CheckSatisfiesSkipUIConstraintsAndRecordShownState();
 
   // Only records the abort reason if it's the first completion for this
   // Payment Request. This is necessary since the aborts cascade into one
