@@ -142,7 +142,7 @@ class SingleClientContactInfoPassphraseSyncTest
       public testing::WithParamInterface<bool> {
  public:
   SingleClientContactInfoPassphraseSyncTest() {
-    feature_.InitWithFeatureState(
+    passphrase_feature_.InitWithFeatureState(
         syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,
         EnabledForPassphraseUsersTestParam());
   }
@@ -150,7 +150,7 @@ class SingleClientContactInfoPassphraseSyncTest
   bool EnabledForPassphraseUsersTestParam() const { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList feature_;
+  base::test::ScopedFeatureList passphrase_feature_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -176,7 +176,7 @@ class SingleClientContactInfoTransportSyncTest
  public:
   SingleClientContactInfoTransportSyncTest() {
     transport_feature_.InitAndEnableFeature(
-        autofill::features::kAutofillAccountProfilesOnSignIn);
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
 
  private:

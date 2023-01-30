@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -30,7 +29,7 @@ ContactInfoModelTypeController::~ContactInfoModelTypeController() = default;
 
 bool ContactInfoModelTypeController::ShouldRunInTransportOnlyMode() const {
   return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAccountProfilesOnSignIn);
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
 }
 
 syncer::DataTypeController::PreconditionState

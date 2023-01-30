@@ -276,6 +276,7 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
     types.Remove(APP_LIST);
     types.Remove(AUTOFILL_WALLET_OFFER);
     types.Remove(AUTOFILL_WALLET_USAGE);
+    types.Remove(CONTACT_INFO);
     types.Remove(HISTORY);
     types.Remove(SECURITY_EVENTS);
     types.Remove(SEGMENTATION);
