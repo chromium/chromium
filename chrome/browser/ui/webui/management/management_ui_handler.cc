@@ -943,7 +943,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
      kManagementOnBulkDataEntryVisibleData},
     {enterprise_connectors::PRINT, kManagementOnPrintEvent,
      kManagementOnPrintVisibleData},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
      kManagementOnFileTransferVisibleData},
 #endif

@@ -1375,7 +1375,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
                           "[]", chrome_policies);
   SetConnectorPolicyValue(policy::key::kOnPrintEnterpriseConnector, "[]",
                           chrome_policies);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   SetConnectorPolicyValue(policy::key::kOnFileTransferEnterpriseConnector, "[]",
                           chrome_policies);
 #endif
@@ -1405,7 +1405,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::PRINT,
                                       "[{\"service_provider\":\"google\"}]");
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::FILE_TRANSFER,
                                       "[{\"service_provider\":\"google\"}]");
@@ -1430,7 +1430,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
       policy::DMToken::CreateValidTokenForTesting("fake-token"));
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const size_t expected_size = 7u;
 #else
   const size_t expected_size = 6u;
@@ -1465,7 +1465,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
     value.Set("permission", kManagementOnPrintVisibleData);
     expected_info.Append(std::move(value));
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     base::Value::Dict value;
     value.Set("title", kManagementOnFileTransferEvent);

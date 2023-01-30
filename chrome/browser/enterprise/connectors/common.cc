@@ -173,7 +173,7 @@ const char* ConnectorPref(AnalysisConnector connector) {
     case AnalysisConnector::PRINT:
       return kOnPrintPref;
     case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return kOnFileTransferPref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
@@ -200,7 +200,7 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
     case AnalysisConnector::PRINT:
       return kOnPrintScopePref;
     case AnalysisConnector::FILE_TRANSFER:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       return kOnFileTransferScopePref;
 #endif
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
