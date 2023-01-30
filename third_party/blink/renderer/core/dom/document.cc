@@ -6155,6 +6155,21 @@ ScriptPromise Document::requestStorageAccessForOrigin(
     return promise;
   }
 
+  if (!dom_window_->isSecureContext()) {
+    AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kSecurity,
+        mojom::blink::ConsoleMessageLevel::kError,
+        "requestStorageAccessForOrigin: May not be used in an insecure "
+        "context."));
+    FireRequestStorageAccessForOriginHistogram(
+        RequestStorageResult::REJECTED_INSECURE_CONTEXT);
+
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
+        "requestStorageAccessForOrigin not allowed"));
+    return promise;
+  }
+
   KURL origin_as_kurl{origin};
   scoped_refptr<SecurityOrigin> supplied_origin =
       SecurityOrigin::Create(origin_as_kurl);
