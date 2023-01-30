@@ -31,9 +31,9 @@ class ManagedBrowserUtilsBrowserTest
         }
       }
     })";
-    base::Value list(base::Value::Type::LIST);
+    base::Value::List list;
     list.Append(kAutoSelectCertificateValue);
-    return list;
+    return base::Value(std::move(list));
   }
 };
 
