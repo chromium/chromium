@@ -45,4 +45,9 @@
 
 #define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
 
+// Explicitly define  _LIBCPP_VERBOSE_ABORT(...) to call the termination
+// function because by default, this macro will does not call the verbose
+// termination function on Apple platforms.
+#define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
+
 #endif // _LIBCPP_CONFIG_SITE
