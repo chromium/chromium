@@ -102,13 +102,13 @@ class MockFastCheckoutController : public FastCheckoutController {
   MOCK_METHOD(gfx::NativeView, GetNativeView, (), (override));
 };
 
-class MockAutofillDriver : public autofill::TestAutofillDriver {
+class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
  public:
-  MockAutofillDriver() = default;
-  MockAutofillDriver(const MockAutofillDriver&) = delete;
-  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
+  MockBrowserAutofillManager(autofill::TestAutofillDriver* driver,
+                             autofill::TestAutofillClient* client)
+      : autofill::TestBrowserAutofillManager(driver, client) {}
+  ~MockBrowserAutofillManager() override = default;
 
-  // Mock methods to enable testability.
   MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), (override));
 };
 
@@ -145,7 +145,7 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
                const autofill::FormFieldData&,
                const FastCheckoutUIState,
                const bool,
-               const autofill::ContentAutofillDriver*),
+               const base::WeakPtr<autofill::AutofillManager>),
               (const));
   MOCK_METHOD(bool, HasValidPersonalData, (), (const));
 };
@@ -190,13 +190,14 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         std::move(fast_checkout_controller));
 
     // Prepare the AutofillDriver.
-    autofill_driver_ = std::make_unique<MockAutofillDriver>();
+    autofill_driver_ = std::make_unique<autofill::TestAutofillDriver>();
 
     // Set AutofillManager on AutofillDriver.
     autofill_client_ = std::make_unique<MockAutofillClient>();
     auto test_browser_autofill_manager =
-        std::make_unique<autofill::TestBrowserAutofillManager>(
-            autofill_driver_.get(), autofill_client_.get());
+        std::make_unique<MockBrowserAutofillManager>(autofill_driver_.get(),
+                                                     autofill_client_.get());
+    autofill_manager_ = test_browser_autofill_manager.get();
     autofill_driver_->set_autofill_manager(
         std::move(test_browser_autofill_manager));
 
@@ -220,11 +221,11 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
     return fast_checkout_controller_;
   }
 
-  MockAutofillDriver* autofill_driver() { return autofill_driver_.get(); }
-
   MockFastCheckoutTriggerValidator* validator() { return validator_.get(); }
 
   MockAutofillClient* autofill_client() { return autofill_client_.get(); }
+
+  MockBrowserAutofillManager* autofill_manager() { return autofill_manager_; }
 
   base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
@@ -232,9 +233,10 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
  private:
   std::unique_ptr<MockAutofillClient> autofill_client_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
-  std::unique_ptr<MockAutofillDriver> autofill_driver_;
+  std::unique_ptr<autofill::TestAutofillDriver> autofill_driver_;
   raw_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
+  raw_ptr<MockBrowserAutofillManager> autofill_manager_;
 };
 
 TEST_F(
@@ -247,14 +249,14 @@ TEST_F(
   EXPECT_EQ(client, fast_checkout_client());
 }
 
-TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillDriver_NoRun) {
+TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillManager_NoRun) {
   // `FastCheckoutClient` is not running initially.
   EXPECT_FALSE(fast_checkout_client()->IsRunning());
 
   // Do not expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
   // Do not expect keyboard to be suppressed.
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
+  EXPECT_CALL(*autofill_manager(), SetShouldSuppressKeyboard).Times(0);
   // Do not expect Autofill popups to be hidden.
   EXPECT_CALL(*autofill_client(), HideAutofillPopup).Times(0);
 
@@ -271,13 +273,13 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsFalse_NoRun) {
   // Do not expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
   // Do not expect keyboard to be suppressed.
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard).Times(0);
+  EXPECT_CALL(*autofill_manager(), SetShouldSuppressKeyboard).Times(0);
   // Do not expect Autofill popups to be hidden.
   EXPECT_CALL(*autofill_client(), HideAutofillPopup).Times(0);
 
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsTrue_Run) {
@@ -291,7 +293,7 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsTrue_Run) {
                                 Pointee(kIncompleteProfile)),
            UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
   // Expect keyboard suppression.
-  EXPECT_CALL(*autofill_driver(), SetShouldSuppressKeyboard(true));
+  EXPECT_CALL(*autofill_manager(), SetShouldSuppressKeyboard(true));
   // Expect call to `HideAutofillPopup`.
   EXPECT_CALL(
       *autofill_client(),
@@ -300,7 +302,7 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsTrue_Run) {
 
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
   EXPECT_TRUE(fast_checkout_client()->IsShowing());
@@ -319,7 +321,7 @@ TEST_F(FastCheckoutClientImplTest,
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -349,7 +351,7 @@ TEST_F(FastCheckoutClientImplTest,
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 
   // `FastCheckoutClient` is running.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -376,7 +378,7 @@ TEST_F(FastCheckoutClientImplTest, Stop_WhenIsRunning_CancelsTheRun) {
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 
   // Fast Checkout is running and showing the bottomsheet.
   EXPECT_TRUE(fast_checkout_client()->IsRunning());
@@ -397,7 +399,7 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver()));
+      autofill_manager()->GetWeakPtr()));
 
   fast_checkout_client()->OnDismiss();
 
@@ -406,15 +408,10 @@ TEST_F(FastCheckoutClientImplTest, OnDismiss_WhenIsRunning_CancelsTheRun) {
 }
 
 TEST_F(FastCheckoutClientImplTest,
-       DestroyingAutofillDriver_ResetsAutofillDriverPointer) {
+       DestroyingAutofillDriver_ResetsAutofillManagerPointer) {
   // Set up Autofill instances so that `FastCheckoutClient::Stop(..)` will be
   // called when `autofill_driver` is destroyed below. `Stop(..)` is supposed to
-  // reset `FastCheckoutClientImpl::autofill_driver_`.
-  // The expected stack trace is:
-  //   `FastCheckoutClientImpl::Stop(/*allow_further_runs=*/true)`
-  //   `ChromeAutofillClient::HideFastCheckout(/*allow_further_runs=*/true)`
-  //   `~BrowserAutofillManager()`
-  //   `autofill_driver.reset()`
+  // reset `FastCheckoutClientImpl::autofill_manager_`.
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
   auto autofill_router = std::make_unique<autofill::ContentAutofillRouter>();
   auto autofill_driver = std::make_unique<autofill::ContentAutofillDriver>(
@@ -424,25 +421,27 @@ TEST_F(FastCheckoutClientImplTest,
           autofill_driver.get(),
           autofill::ChromeAutofillClient::FromWebContents(web_contents()),
           "en-US", autofill::AutofillManager::EnableDownloadManager(false));
+  autofill::BrowserAutofillManager* autofill_manager =
+      browser_autofill_manager.get();
   autofill_driver->set_autofill_manager(std::move(browser_autofill_manager));
 
-  // `FastCheckoutClientImpl::autofill_driver_` is `nullptr` initially.
-  EXPECT_FALSE(fast_checkout_client()->get_autofill_driver_for_test());
+  // `FastCheckoutClientImpl::autofill_manager_` is `nullptr` initially.
+  EXPECT_FALSE(fast_checkout_client()->get_autofill_manager_for_test());
 
   // Starting the run successfully.
   EXPECT_TRUE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
-      autofill_driver.get()));
+      autofill_manager->GetWeakPtr()));
 
-  // `FastCheckoutClientImpl::autofill_driver_` is not `nullptr` anymore.
-  EXPECT_TRUE(fast_checkout_client()->get_autofill_driver_for_test());
+  // `FastCheckoutClientImpl::autofill_manager_` is not `nullptr` anymore.
+  EXPECT_TRUE(fast_checkout_client()->get_autofill_manager_for_test());
 
   // Destroy `ContentAutofillDriver` instance, invoking
   // `~BrowserAutofillManager()` and thus `FastCheckoutClient::Stop(..)`.
   autofill_driver.reset();
 
-  // `FastCheckoutClientImpl::autofill_driver_` is `nullptr` again.
-  EXPECT_FALSE(fast_checkout_client()->get_autofill_driver_for_test());
+  // `FastCheckoutClientImpl::autofill_manager_` is `nullptr` again.
+  EXPECT_FALSE(fast_checkout_client()->get_autofill_manager_for_test());
 
   // Expect this `Stop(..)` call to not crash the test.
   fast_checkout_client()->Stop(/*allow_further_runs=*/true);

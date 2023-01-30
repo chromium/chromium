@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_TRIGGER_VALIDATOR_H_
 
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 
 constexpr char kUmaKeyFastCheckoutTriggerOutcome[] =
     "Autofill.FastCheckout.TriggerOutcome";
@@ -22,12 +22,12 @@ class FastCheckoutTriggerValidator {
 
   // Returns `true` if a Fast Checkout run should be permitted, `false`
   // otherwise. Logs outcome to UMA and chrome://autofill-internals.
-  virtual bool ShouldRun(
-      const autofill::FormData& form,
-      const autofill::FormFieldData& field,
-      const FastCheckoutUIState ui_state,
-      const bool is_running,
-      const autofill::ContentAutofillDriver* autofill_driver) const = 0;
+  virtual bool ShouldRun(const autofill::FormData& form,
+                         const autofill::FormFieldData& field,
+                         const FastCheckoutUIState ui_state,
+                         const bool is_running,
+                         const base::WeakPtr<autofill::AutofillManager>
+                             autofill_manager) const = 0;
 
   // Returns `true` if the current profile has Autofill data enabled and at
   // least one valid Autofill profile and credit card stored, `false` otherwise.

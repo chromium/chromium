@@ -11,7 +11,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -36,10 +35,11 @@ class FastCheckoutClientImpl
   FastCheckoutClientImpl& operator=(const FastCheckoutClientImpl&) = delete;
 
   // FastCheckoutClient:
-  bool TryToStart(const GURL& url,
-                  const autofill::FormData& form,
-                  const autofill::FormFieldData& field,
-                  autofill::AutofillDriver* autofill_driver) override;
+  bool TryToStart(
+      const GURL& url,
+      const autofill::FormData& form,
+      const autofill::FormFieldData& field,
+      base::WeakPtr<autofill::AutofillManager> autofill_manager) override;
   void Stop(bool allow_further_runs) override;
   bool IsRunning() const override;
   bool IsShowing() const override;
@@ -60,8 +60,8 @@ class FastCheckoutClientImpl
     autofill_client_ = autofill_client;
   }
 
-  autofill::ContentAutofillDriver* get_autofill_driver_for_test() {
-    return autofill_driver_;
+  base::WeakPtr<autofill::AutofillManager> get_autofill_manager_for_test() {
+    return autofill_manager_;
   }
 #endif
 
@@ -101,12 +101,9 @@ class FastCheckoutClientImpl
   // The `ChromeAutofillClient` instanced attached to the same `WebContents`.
   raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
 
-  // The `ContentAutofillDriver` instance invoking the fast checkout run. This
-  // class generally outlives `autofill_driver_` so extra care needs to be taken
-  // with this pointer. It gets reset in `Stop(..)` which is (also) called from
-  // `~BrowserAutofillManager()` when the `ContentAutofillDriver` instance gets
-  // destroyed.
-  raw_ptr<autofill::ContentAutofillDriver> autofill_driver_ = nullptr;
+  // The `AutofillManager` instance invoking the fast checkout run. Note that
+  // `this` class generally outlives `AutofillManager`.
+  base::WeakPtr<autofill::AutofillManager> autofill_manager_ = nullptr;
 
   // Fast Checkout UI Controller. Responsible for showing the bottomsheet and
   // handling user selections.

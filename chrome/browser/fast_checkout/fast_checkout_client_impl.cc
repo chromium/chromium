@@ -10,7 +10,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -40,20 +40,17 @@ bool FastCheckoutClientImpl::TryToStart(
     const GURL& url,
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
-    autofill::AutofillDriver* autofill_driver) {
-  autofill::ContentAutofillDriver* content_autofill_driver =
-      static_cast<autofill::ContentAutofillDriver*>(autofill_driver);
-
-  if (!content_autofill_driver) {
+    base::WeakPtr<autofill::AutofillManager> autofill_manager) {
+  if (!autofill_manager) {
     return false;
   }
 
   if (!trigger_validator_->ShouldRun(form, field, fast_checkout_ui_state_,
-                                     is_running_, content_autofill_driver)) {
+                                     is_running_, autofill_manager)) {
     return false;
   }
 
-  autofill_driver_ = content_autofill_driver;
+  autofill_manager_ = autofill_manager;
   url_ = url;
   is_running_ = true;
   personal_data_manager_observation_.Observe(
@@ -78,8 +75,8 @@ void FastCheckoutClientImpl::ShowFastCheckoutUI() {
 }
 
 void FastCheckoutClientImpl::SetShouldSuppressKeyboard(bool suppress) {
-  if (autofill_driver_) {
-    autofill_driver_->SetShouldSuppressKeyboard(suppress);
+  if (autofill_manager_) {
+    autofill_manager_->SetShouldSuppressKeyboard(suppress);
   }
 }
 
@@ -104,12 +101,7 @@ void FastCheckoutClientImpl::Stop(bool allow_further_runs) {
   // stops.
   SetShouldSuppressKeyboard(false);
 
-  // There is one `ContentAutofillDriver` instance per frame but only one
-  // instance of this class per `WebContents`. Reset `autofill_driver_` here to
-  // avoid the issue of having a non-null, invalid pointer. This method is
-  // (also) called from `~BrowserAutofillManager()` which is owned by
-  // `ContentAutofillDriver`.
-  autofill_driver_ = nullptr;
+  autofill_manager_ = nullptr;
 }
 
 bool FastCheckoutClientImpl::IsShowing() const {

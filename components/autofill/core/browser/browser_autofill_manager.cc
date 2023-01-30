@@ -1162,7 +1162,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   auto ShouldShowSuggestion = [&] {
     if (client()->IsShowingFastCheckoutUI() ||
         (form_element_was_clicked &&
-         client()->TryToShowFastCheckout(form, field, driver()))) {
+         client()->TryToShowFastCheckout(form, field, GetWeakPtr()))) {
       // The Fast Checkout surface is shown, so abort showing regular Autofill
       // UI. Now the flow is controlled by the `FastCheckoutClient` instead of
       // `external_delegate_`.
@@ -3326,18 +3326,6 @@ void BrowserAutofillManager::SetAutofillSuggestionMethod(
     AutofillSuggestionMethod method) {
   autofill_suggestion_method_ = method;
   credit_card_form_event_logger_->set_autofill_suggestion_method(method);
-}
-
-void BrowserAutofillManager::SetShouldSuppressKeyboard(bool suppress) {
-  driver()->SetShouldSuppressKeyboard(suppress);
-}
-
-bool BrowserAutofillManager::CanShowAutofillUi() const {
-  return driver()->CanShowAutofillUi();
-}
-
-void BrowserAutofillManager::TriggerReparseInAllFrames() {
-  driver()->TriggerReparseInAllFrames();
 }
 
 void BrowserAutofillManager::ProcessFieldLogEventsInForm(

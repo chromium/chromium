@@ -65,6 +65,7 @@ class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillDriver;
 struct AutofillErrorDialogContext;
+class AutofillManager;
 class AutofillOfferData;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
@@ -638,9 +639,10 @@ class AutofillClient : public RiskDataLoader {
   // extensive than `IsFastCheckoutSupported()`.
   // If it is, shows the FastCheckout surface (for autofilling information
   // during the checkout flow) and returns `true` on success.
-  virtual bool TryToShowFastCheckout(const FormData& form,
-                                     const FormFieldData& field,
-                                     AutofillDriver* driver) = 0;
+  virtual bool TryToShowFastCheckout(
+      const FormData& form,
+      const FormFieldData& field,
+      base::WeakPtr<AutofillManager> autofill_manager) = 0;
 
   // Hides the Fast Checkout surface (for autofilling information during the
   // checkout flow) if one is currently shown.

@@ -11,6 +11,7 @@
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -31,11 +32,13 @@ class MockFastCheckoutClient : public FastCheckoutClientImpl {
       : FastCheckoutClientImpl(web_contents) {}
   ~MockFastCheckoutClient() override = default;
 
-  MOCK_METHOD(
-      bool,
-      TryToStart,
-      (const GURL&, const FormData&, const FormFieldData&, AutofillDriver*),
-      (override));
+  MOCK_METHOD(bool,
+              TryToStart,
+              (const GURL&,
+               const FormData&,
+               const FormFieldData&,
+               base::WeakPtr<AutofillManager>),
+              (override));
   MOCK_METHOD(void, Stop, (bool reset), (override));
   MOCK_METHOD(bool, IsRunning, (), (const override));
   MOCK_METHOD(bool, IsShowing, (), (const override));
@@ -87,6 +90,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
     personal_data_manager_->SetAutofillProfileEnabled(true);
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
+    personal_data_manager_->SetAutofillWalletImportEnabled(false);
 
     // Enable MSBB by default. If MSBB has been explicitly turned off, Fast
     // Checkout is not supported.
@@ -177,10 +181,19 @@ TEST_F(ChromeAutofillClientTest, IsShowingFastCheckoutUI) {
 }
 
 TEST_F(ChromeAutofillClientTest, TryToShowFastCheckout) {
+  auto router = std::make_unique<autofill::ContentAutofillRouter>();
+  auto driver = std::make_unique<autofill::ContentAutofillDriver>(
+      web_contents()->GetPrimaryMainFrame(), router.get());
+  auto manager = std::make_unique<BrowserAutofillManager>(
+      driver.get(), client(), "en-US",
+      AutofillManager::EnableDownloadManager(false));
+  BrowserAutofillManager* manager_ptr = manager.get();
+  driver->set_autofill_manager(std::move(manager));
+
   EXPECT_CALL(*fast_checkout_client(), TryToStart)
       .WillOnce(testing::Return(true));
   EXPECT_TRUE(client()->TryToShowFastCheckout(FormData(), FormFieldData(),
-                                              autofill_driver()));
+                                              manager_ptr->GetWeakPtr()));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

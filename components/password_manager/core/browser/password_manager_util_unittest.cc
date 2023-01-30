@@ -236,7 +236,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               TryToShowFastCheckout,
               (const autofill::FormData&,
                const autofill::FormFieldData&,
-               autofill::AutofillDriver*),
+               base::WeakPtr<autofill::AutofillManager>),
               (override));
   MOCK_METHOD(void, HideFastCheckout, (bool), (override));
   MOCK_METHOD(bool, IsShowingFastCheckoutUI, (), (override));

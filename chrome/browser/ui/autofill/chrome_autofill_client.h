@@ -182,9 +182,10 @@ class ChromeAutofillClient
       AddressProfileSavePromptCallback callback) override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool TryToShowFastCheckout(const FormData& form,
-                             const FormFieldData& field,
-                             AutofillDriver* driver) override;
+  bool TryToShowFastCheckout(
+      const FormData& form,
+      const FormFieldData& field,
+      base::WeakPtr<AutofillManager> autofill_manager) override;
   void HideFastCheckout(bool allow_further_runs) override;
   bool IsFastCheckoutSupported() override;
   bool IsShowingFastCheckoutUI() override;

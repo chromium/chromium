@@ -287,6 +287,15 @@ class AutofillManager
   // Returns the number of forms this Autofill handler is aware of.
   size_t NumFormsDetected() const { return form_structures_.size(); }
 
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual void SetShouldSuppressKeyboard(bool suppress);
+
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual bool CanShowAutofillUi() const;
+
+  // Forwards call to the same-named `AutofillDriver` function.
+  virtual void TriggerReparseInAllFrames();
+
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
   void RemoveObserver(Observer* observer) {

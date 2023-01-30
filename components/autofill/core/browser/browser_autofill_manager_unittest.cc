@@ -381,9 +381,6 @@ class MockAutofillDriver : public TestAutofillDriver {
               SendFieldsEligibleForManualFillingToRenderer,
               (const std::vector<FieldGlobalId>& fields),
               (override));
-  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), ());
-  MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
-  MOCK_METHOD(void, TriggerReparseInAllFrames, (), ());
 };
 
 }  // namespace
@@ -9815,21 +9812,6 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
   EXPECT_CALL(*touch_to_fill_delegate_, TryToShowTouchToFill(_, _)).Times(0);
   TryToShowTouchToFill(form, field, FormElementWasClicked(true));
   EXPECT_FALSE(external_delegate_->on_suggestions_returned_seen());
-}
-
-TEST_F(BrowserAutofillManagerTest, SetShouldSuppressKeyboard) {
-  EXPECT_CALL(*autofill_driver_, SetShouldSuppressKeyboard(true));
-  browser_autofill_manager_->SetShouldSuppressKeyboard(true);
-}
-
-TEST_F(BrowserAutofillManagerTest, CanShowAutofillUi) {
-  EXPECT_CALL(*autofill_driver_, CanShowAutofillUi).WillOnce(Return(true));
-  EXPECT_TRUE(browser_autofill_manager_->CanShowAutofillUi());
-}
-
-TEST_F(BrowserAutofillManagerTest, TriggerReparseInAllFrames) {
-  EXPECT_CALL(*autofill_driver_, TriggerReparseInAllFrames);
-  browser_autofill_manager_->TriggerReparseInAllFrames();
 }
 
 // Desktop only tests.

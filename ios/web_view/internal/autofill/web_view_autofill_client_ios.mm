@@ -271,9 +271,10 @@ bool WebViewAutofillClientIOS::IsFastCheckoutSupported() {
   return false;
 }
 
-bool WebViewAutofillClientIOS::TryToShowFastCheckout(const FormData& form,
-                                                     const FormFieldData& field,
-                                                     AutofillDriver* driver) {
+bool WebViewAutofillClientIOS::TryToShowFastCheckout(
+    const FormData& form,
+    const FormFieldData& field,
+    base::WeakPtr<AutofillManager> autofill_manager) {
   return false;
 }
 

@@ -711,13 +711,14 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-bool ChromeAutofillClient::TryToShowFastCheckout(const FormData& form,
-                                                 const FormFieldData& field,
-                                                 AutofillDriver* driver) {
+bool ChromeAutofillClient::TryToShowFastCheckout(
+    const FormData& form,
+    const FormFieldData& field,
+    base::WeakPtr<AutofillManager> autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
   const GURL& url = web_contents()->GetLastCommittedURL();
   return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->TryToStart(url, form, field, driver);
+      ->TryToStart(url, form, field, autofill_manager);
 #else
   return false;
 #endif

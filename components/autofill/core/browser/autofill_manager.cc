@@ -645,6 +645,18 @@ FormStructure* AutofillManager::FindCachedFormByRendererId(
   return it != form_structures_.end() ? it->second.get() : nullptr;
 }
 
+void AutofillManager::SetShouldSuppressKeyboard(bool suppress) {
+  driver_->SetShouldSuppressKeyboard(suppress);
+}
+
+bool AutofillManager::CanShowAutofillUi() const {
+  return driver_->CanShowAutofillUi();
+}
+
+void AutofillManager::TriggerReparseInAllFrames() {
+  driver_->TriggerReparseInAllFrames();
+}
+
 void AutofillManager::ParseFormsAsync(
     const std::vector<FormData>& forms,
     base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>

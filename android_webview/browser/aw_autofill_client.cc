@@ -213,7 +213,7 @@ bool AwAutofillClient::IsFastCheckoutSupported() {
 bool AwAutofillClient::TryToShowFastCheckout(
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
-    autofill::AutofillDriver* driver) {
+    base::WeakPtr<autofill::AutofillManager> autofill_manager) {
   return false;
 }
 

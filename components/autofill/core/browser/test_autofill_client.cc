@@ -302,9 +302,10 @@ bool TestAutofillClient::HasCreditCardScanFeature() {
 
 void TestAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
-bool TestAutofillClient::TryToShowFastCheckout(const FormData& form,
-                                               const FormFieldData& field,
-                                               AutofillDriver* driver) {
+bool TestAutofillClient::TryToShowFastCheckout(
+    const FormData& form,
+    const FormFieldData& field,
+    base::WeakPtr<AutofillManager> autofill_manager) {
   return false;
 }
 

@@ -391,9 +391,10 @@ bool ChromeAutofillClientIOS::IsFastCheckoutSupported() {
   return false;
 }
 
-bool ChromeAutofillClientIOS::TryToShowFastCheckout(const FormData& form,
-                                                    const FormFieldData& field,
-                                                    AutofillDriver* driver) {
+bool ChromeAutofillClientIOS::TryToShowFastCheckout(
+    const FormData& form,
+    const FormFieldData& field,
+    base::WeakPtr<AutofillManager> autofill_manager) {
   return false;
 }
 

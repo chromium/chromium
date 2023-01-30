@@ -47,6 +47,10 @@ class MockAutofillDriver : public TestAutofillDriver {
   MockAutofillDriver(const MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
   ~MockAutofillDriver() override = default;
+
+  MOCK_METHOD(void, SetShouldSuppressKeyboard, (bool), ());
+  MOCK_METHOD(bool, CanShowAutofillUi, (), (const));
+  MOCK_METHOD(void, TriggerReparseInAllFrames, (), ());
 };
 
 class MockAutofillManager : public AutofillManager {
@@ -357,6 +361,21 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   manager_->RemoveObserver(&observer);
   EXPECT_CALL(observer, OnTextFieldDidChange()).Times(0);
   manager_->OnTextFieldDidChange(form, field, bounds, time);
+}
+
+TEST_F(AutofillManagerTest, SetShouldSuppressKeyboard) {
+  EXPECT_CALL(*driver_, SetShouldSuppressKeyboard(true));
+  manager_->SetShouldSuppressKeyboard(true);
+}
+
+TEST_F(AutofillManagerTest, CanShowAutofillUi) {
+  EXPECT_CALL(*driver_, CanShowAutofillUi).WillOnce(Return(true));
+  EXPECT_TRUE(manager_->CanShowAutofillUi());
+}
+
+TEST_F(AutofillManagerTest, TriggerReparseInAllFrames) {
+  EXPECT_CALL(*driver_, TriggerReparseInAllFrames);
+  manager_->TriggerReparseInAllFrames();
 }
 
 }  // namespace autofill
