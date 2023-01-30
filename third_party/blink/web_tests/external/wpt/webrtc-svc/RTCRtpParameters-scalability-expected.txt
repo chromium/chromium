@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Setting and updating scalabilityMode to a legal value should be accepted
+PASS Sender capabilities should include at least some scalability modes
+PASS Not setting sendEncodings results in no mode info before negotiation
+PASS Not setting a scalability mode results in no mode set before negotiation
+FAIL Not setting a scalability mode results in some mode set after negotiation assert_true: expected true got false
+PASS Setting a scalability mode to nonsense throws an exception
+FAIL L3T3 on VP8 should return something other than L3T3 assert_not_equals: got disallowed value "L3T3"
+Harness: the test ran to completion.
+
