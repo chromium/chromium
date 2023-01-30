@@ -37,6 +37,8 @@ export {DummyModuleElement, dummyV2Descriptor} from './modules/dummy_v2/module.j
 // </if>
 export {FeedProxy} from './modules/feed/feed_module_proxy.js';
 export {feedDescriptor, FeedModuleElement, feedV2Descriptor} from './modules/feed/module.js';
+export {HistoryClustersProxy, HistoryClustersProxyImpl} from './modules/history_clusters/history_clusters_proxy.js';
+export {historyClustersDescriptor, HistoryClustersModuleElement} from './modules/history_clusters/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
 export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';

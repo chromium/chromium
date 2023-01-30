@@ -16,6 +16,7 @@
 #include "chrome/browser/new_tab_page/modules/feed/feed.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes.mojom.h"
+#include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
@@ -74,6 +75,9 @@ class DriveHandler;
 class PhotosHandler;
 namespace ntp {
 class FeedHandler;
+}
+namespace history_clusters {
+class HistoryClustersHandler;
 }
 class NewTabPageUI
     : public ui::MojoWebUIController,
@@ -172,6 +176,12 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<chrome_cart::mojom::CartHandler> pending_receiver);
 
+  // Instantiates the implementor of the history_clusters::mojom::PageHandler
+  // mojo interface passing to it the pending receiver that will be internally
+  // bound.
+  void BindInterface(mojo::PendingReceiver<history_clusters::mojom::PageHandler>
+                         pending_page_handler);
+
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
@@ -239,6 +249,8 @@ class NewTabPageUI
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
+  std::unique_ptr<history_clusters::HistoryClustersHandler>
+      history_clusters_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<ThemeService> theme_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;

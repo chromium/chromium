@@ -4,3 +4,7 @@
 
 # List of files that should be passed to html_to_wrapper().
 history_clusters_web_component_files = [ "modules/history_clusters/module.ts" ]
+
+# List of files that don't need to be passed to html_to_wrapper().
+history_clusters_non_web_component_files =
+    [ "modules/history_clusters/history_clusters_proxy.ts" ]
