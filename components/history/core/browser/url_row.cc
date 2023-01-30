@@ -12,11 +12,9 @@
 
 namespace history {
 
-URLRow::URLRow() {
-}
+URLRow::URLRow() = default;
 
-URLRow::URLRow(const GURL& url) : url_(url) {
-}
+URLRow::URLRow(const GURL& url) : url_(url) {}
 
 URLRow::URLRow(const GURL& url, URLID id) : id_(id), url_(url) {}
 
@@ -24,8 +22,7 @@ URLRow::URLRow(const URLRow& other) = default;
 
 URLRow::URLRow(URLRow&& other) noexcept = default;
 
-URLRow::~URLRow() {
-}
+URLRow::~URLRow() = default;
 
 URLRow& URLRow::operator=(const URLRow& other) = default;
 URLRow& URLRow::operator=(URLRow&& other) noexcept = default;
@@ -115,9 +112,10 @@ void VisitContentModelAnnotations::MergeFrom(
     const VisitContentModelAnnotations& other) {
   // To be conservative, we use the lesser of the two visibility scores, but
   // ignore sentinel values (which are negative).
-  if (other.visibility_score >= 0 &&
-      other.visibility_score < visibility_score) {
-    visibility_score = other.visibility_score;
+  if ((this->visibility_score < 0 && other.visibility_score >= 0) ||
+      (this->visibility_score >= 0 && other.visibility_score >= 0 &&
+       other.visibility_score < this->visibility_score)) {
+    this->visibility_score = other.visibility_score;
   }
 
   for (auto& other_category : other.categories) {
@@ -167,11 +165,9 @@ URLResult::URLResult(URLResult&& other) noexcept
       content_annotations_(other.content_annotations_),
       snippet_(std::move(other.snippet_)),
       title_match_positions_(std::move(other.title_match_positions_)),
-      blocked_visit_(other.blocked_visit_) {
-}
+      blocked_visit_(other.blocked_visit_) {}
 
-URLResult::~URLResult() {
-}
+URLResult::~URLResult() = default;
 
 URLResult& URLResult::operator=(const URLResult&) = default;
 
