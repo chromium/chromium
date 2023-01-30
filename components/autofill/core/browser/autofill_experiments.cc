@@ -35,7 +35,6 @@
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/variations/variations_associated_data.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
@@ -116,13 +115,11 @@ bool IsCreditCardUploadEnabled(const PrefService* pref_service,
     return false;
   }
 
-  // TODO(crbug.com/1156584): This should simply check SyncService::
-  // GetTransportState() is PAUSED.
-  if (sync_service->GetAuthError().IsPersistentError()) {
+  if (sync_service->GetTransportState() ==
+      syncer::SyncService::TransportState::PAUSED) {
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError,
-        sync_state);
-    LogCardUploadDisabled(log_manager, "SYNC_SERVICE_PERSISTENT_ERROR");
+        autofill_metrics::CardUploadEnabled::kSyncServicePaused, sync_state);
+    LogCardUploadDisabled(log_manager, "SYNC_SERVICE_PAUSED");
     return false;
   }
 

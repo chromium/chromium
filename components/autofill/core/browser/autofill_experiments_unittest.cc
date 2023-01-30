@@ -109,10 +109,10 @@ TEST_F(AutofillExperimentsTest, IsCardUploadEnabled_AuthError) {
   EXPECT_FALSE(IsCreditCardUploadEnabled(AutofillSyncSigninState::kSyncPaused));
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled",
-      autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError, 1);
+      autofill_metrics::CardUploadEnabled::kSyncServicePaused, 1);
   histogram_tester.ExpectUniqueSample(
       "Autofill.CardUploadEnabled.SyncPaused",
-      autofill_metrics::CardUploadEnabled::kSyncServicePersistentAuthError, 1);
+      autofill_metrics::CardUploadEnabled::kSyncServicePaused, 1);
 }
 
 TEST_F(AutofillExperimentsTest,
