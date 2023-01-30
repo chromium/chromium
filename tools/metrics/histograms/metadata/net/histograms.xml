@@ -2208,6 +2208,16 @@ chromium-metrics-reviews@google.com.
   <summary>Log success rate of processing trailing headers.</summary>
 </histogram>
 
+<histogram name="Net.QuicConnection.MultiPortPathCreationCancelled"
+    enum="PathValidationReason" expires_after="2023-07-16">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The reason for the existing path validation when a new multi-port path
+    creation is attempted but failed because of existing validation.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicConnection.WritePacketStatus" enum="QuicWriteStatus"
     expires_after="2023-07-16">
   <owner>wub@chromium.org</owner>

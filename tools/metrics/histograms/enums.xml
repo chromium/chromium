@@ -79721,6 +79721,15 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Very unguessable password"/>
 </enum>
 
+<enum name="PathValidationReason">
+  <int value="0" label="Reason unknown"/>
+  <int value="1" label="Multi port"/>
+  <int value="2" label="Reverse path validation"/>
+  <int value="3" label="Server preferred address migration"/>
+  <int value="4" label="Port migration"/>
+  <int value="5" label="Connection migration"/>
+</enum>
+
 <enum name="PaymentRequestAbortReason">
   <int value="0" label="DismissedByUser"/>
   <int value="1" label="AbortedByMerchant"/>
