@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<style>
+
+.p3d {
+  position: absolute;
+  z-index: 0;
+  left: 10px;
+  top: 10px;
+  width: 350px;
+  height: 250px;
+  padding: 10px;
+  background: #edc;
+  transform-style: preserve-3d;
+}
+#scroller {
+  width: 300px;
+  height: 200px;
+  overflow: auto;
+  border: 5px solid #48f;
+  position: relative;
+  background: white;
+  z-index: 0;
+}
+.space {
+  height: 2000px;
+}
+
+</style>
+<div class="p3d">
+  <div id="scroller">
+    <div class="space">
+      SCROLL
+    </div>
+  </div>
+</div>
+<script>
+
+scroller.onscroll = () => {
+  if (scroller.scrollTop > 0)
+    parent.postMessage("scrolled", "*");
+}
+
+</script>

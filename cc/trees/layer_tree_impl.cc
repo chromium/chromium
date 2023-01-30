@@ -2554,8 +2554,18 @@ LayerTreeImpl::FindAllLayersUpToAndIncludingFirstScrollable(
       continue;
 
     if (first_hit && layer->Is3dSorted() &&
-        layer->GetSortingContextId() != first_hit->GetSortingContextId())
+        layer->GetSortingContextId() != first_hit->GetSortingContextId()) {
+      // The intention here is to skip over any layers that belong to a
+      // different 3d sorting context than the first_hit layer.
+      //
+      // TODO(crbug.com/1407697): This code is kind of broken for the case of a
+      // scroller inside a preserve-3d: we assign a sorting_context_id to the
+      // scroller's main layer, which is marked as scrollable, but not its
+      // scrolling-contents layer, which is first_hit.  Currently we rely on
+      // InputHandler::IsInitialScrollHitTestReliable to discover this situation
+      // and send us into the main thread hit test.
       continue;
+    }
 
     float distance_to_intersection = 0.f;
     bool hit = false;
