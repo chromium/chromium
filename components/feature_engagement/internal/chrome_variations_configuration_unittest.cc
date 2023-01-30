@@ -1974,4 +1974,207 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingGroupConfigIsInvalid) {
   histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
 }
 
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsBlockedByGroupNameIntoFeatures) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
+                                       /*disabled_features=*/{});
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  bar_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  bar_params["groups"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
+  GroupVector groups = {&kChromeTestGroupOne};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by =
+      CreateBlockedByExplicit({kChromeTestFeatureBar.name});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 2);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsBlockedByEmptyGroupIntoEmptyList) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
+                                       /*disabled_features=*/{});
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo};
+  GroupVector groups = {&kChromeTestGroupOne};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by = CreateBlockedByExplicit({});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsBlockedByGroupAndFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
+                                       /*disabled_features=*/{});
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = "test_group_one,test_qux";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  bar_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  bar_params["groups"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  std::map<std::string, std::string> qux_params;
+  qux_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  qux_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureQux, qux_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar,
+                            &kChromeTestFeatureQux};
+  GroupVector groups = {&kChromeTestGroupOne};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by = CreateBlockedByExplicit(
+      {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 3);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseExpandsBlockedByMultipleGroups) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
+                                       /*disabled_features=*/{});
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = "test_group_one,test_group_two";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  bar_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  bar_params["groups"] = "test_group_one";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  std::map<std::string, std::string> qux_params;
+  qux_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  qux_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  qux_params["groups"] = "test_group_two";
+  SetFeatureParams(kChromeTestFeatureQux, qux_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar,
+                            &kChromeTestFeatureQux};
+  GroupVector groups = {&kChromeTestGroupOne, &kChromeTestGroupTwo};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by = CreateBlockedByExplicit(
+      {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 3);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseExpandsBlockedByFeatureAppearsMultipleTimes) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(/*enabled_features=*/{kIPHGroups},
+                                       /*disabled_features=*/{});
+
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = "test_bar,test_group_one,test_group_two";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  bar_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  bar_params["groups"] = "test_group_one,test_group_two";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  FeatureVector features = {&kChromeTestFeatureFoo, &kChromeTestFeatureBar};
+  GroupVector groups = {&kChromeTestGroupOne, &kChromeTestGroupTwo};
+  configuration_.ParseConfigs(features, groups);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+
+  EXPECT_EQ(true, foo.valid);
+  // Even though test_bar is in the original foo blocked_by and is in group one
+  // and group two, it should only show up in the flattened list once.
+  EXPECT_EQ(1u, foo.blocked_by.affected_features->size());
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by =
+      CreateBlockedByExplicit({kChromeTestFeatureBar.name});
+  EXPECT_EQ(expected_foo, foo);
+
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 2);
+}
+
 }  // namespace feature_engagement

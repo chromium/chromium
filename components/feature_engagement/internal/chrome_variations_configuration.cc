@@ -293,7 +293,8 @@ bool ParseSessionRateImpact(const base::StringPiece& definition,
 bool ParseBlockedBy(const base::StringPiece& definition,
                     BlockedBy* blocked_by,
                     const base::Feature* this_feature,
-                    const FeatureVector& all_features) {
+                    const FeatureVector& all_features,
+                    const GroupVector& all_groups) {
   base::StringPiece trimmed_def =
       base::TrimWhitespaceASCII(definition, base::TRIM_ALL);
 
@@ -331,7 +332,8 @@ bool ParseBlockedBy(const base::StringPiece& definition,
                << "for feature " << this_feature->name << ": " << feature_name;
       return false;
     }
-    if (!IsKnownFeature(feature_name, all_features)) {
+    if (!IsKnownFeature(feature_name, all_features) &&
+        !IsKnownGroup(feature_name, all_groups)) {
       DVLOG(1) << "Unknown feature name found when parsing blocked_by "
                << "for feature " << this_feature->name << ": " << feature_name;
       stats::RecordConfigParsingEvent(
@@ -466,6 +468,35 @@ bool ParseGroups(const base::StringPiece& definition,
   return true;
 }
 
+// Takes a list of |original_names| and expands any groups in the list into the
+// features that make up that group, using |group_mapping| and |all_groups|.
+std::vector<std::string> FlattenGroupsAndFeatures(
+    std::vector<std::string> original_names,
+    std::map<std::string, std::vector<std::string>> group_mapping,
+    const GroupVector& all_groups) {
+  // Use set to make sure feature names don't occur twice.
+  std::set<std::string> flattened_feature_names;
+  for (auto name : original_names) {
+    if (IsKnownGroup(name, all_groups)) {
+      auto it = group_mapping.find(name);
+      if (it == group_mapping.end()) {
+        continue;
+      }
+      // Group is known and can be replaced by the features in it.
+      for (auto feature_name : it->second) {
+        flattened_feature_names.insert(feature_name);
+      }
+    } else {
+      // Otherwise, the name is a feature name already.
+      flattened_feature_names.insert(name);
+    }
+  }
+
+  std::vector<std::string> result(flattened_feature_names.begin(),
+                                  flattened_feature_names.end());
+  return result;
+}
+
 // Holds all the possible fields that can be parsed. The parsing code will fill
 // the provided items with parsed data. If any field is null, then it won't be
 // parsed.
@@ -551,7 +582,7 @@ void ParseConfigFields(const base::Feature* feature,
     } else if (key == kBlockedByKey && output.blocked_by) {
       BlockedBy parsed_blocked_by;
       if (!ParseBlockedBy(param_value, &parsed_blocked_by, feature,
-                          all_features)) {
+                          all_features, all_groups)) {
         stats::RecordConfigParsingEvent(
             stats::ConfigParsingEvent::FAILURE_BLOCKED_BY_PARSE);
         ++output.parse_errors;
@@ -648,6 +679,8 @@ void ChromeVariationsConfiguration::ParseConfigs(const FeatureVector& features,
   if (!base::FeatureList::IsEnabled(kIPHGroups)) {
     return;
   }
+
+  ExpandGroupNamesInFeatures(groups);
 
   for (auto* group : groups) {
     ParseGroupConfig(group, features, groups);
@@ -811,6 +844,28 @@ void ChromeVariationsConfiguration::ParseGroupConfig(
   if (!has_trigger_event) {
     stats::RecordConfigParsingEvent(
         stats::ConfigParsingEvent::FAILURE_TRIGGER_EVENT_MISSING);
+  }
+}
+
+void ChromeVariationsConfiguration::ExpandGroupNamesInFeatures(
+    const GroupVector& all_groups) {
+  // Create mapping of groups to their constituent features.
+  std::map<std::string, std::vector<std::string>> group_to_feature_mapping;
+  for (const auto& [feature_name, feature] : configs_) {
+    for (auto group_name : feature.groups) {
+      group_to_feature_mapping[group_name].push_back(feature_name);
+    }
+  }
+
+  // Flatten any group names in each feature's blocked by list into the
+  // constituent features.
+  for (auto& [feature_name, feature] : configs_) {
+    if (feature.blocked_by.type == BlockedBy::Type::EXPLICIT) {
+      auto original_blocked_by_items =
+          feature.blocked_by.affected_features.value();
+      feature.blocked_by.affected_features = FlattenGroupsAndFeatures(
+          original_blocked_by_items, group_to_feature_mapping, all_groups);
+    }
   }
 }
 

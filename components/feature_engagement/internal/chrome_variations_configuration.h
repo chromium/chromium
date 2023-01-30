@@ -67,6 +67,10 @@ class ChromeVariationsConfiguration : public Configuration {
   // configuration.
   bool MaybeAddClientSideGroupConfig(const base::Feature* group);
 
+  // Expands any group names in the existing FeatureConfig fields into the
+  // feature names that are in the group.
+  void ExpandGroupNamesInFeatures(const GroupVector& all_groups);
+
   // The current configurations.
   ConfigMap configs_;
 
