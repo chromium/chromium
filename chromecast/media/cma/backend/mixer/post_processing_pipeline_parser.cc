@@ -30,11 +30,8 @@ const char kStreamsKey[] = "streams";
 const char kVolumeLimitsKey[] = "volume_limits";
 
 void SplitPipeline(const base::Value::List& processors_list,
-                   base::Value& prerender_pipeline,
-                   base::Value& postrender_pipeline) {
-  DCHECK(prerender_pipeline.is_list());
-  DCHECK(postrender_pipeline.is_list());
-
+                   base::Value::List& prerender_pipeline,
+                   base::Value::List& postrender_pipeline) {
   bool has_render = false;
   for (const base::Value& processor_description_dict : processors_list) {
     DCHECK(processor_description_dict.is_dict());
@@ -142,8 +139,8 @@ PostProcessingPipelineParser::GetStreamPipelines() {
         pipeline_description_dict.FindList(kProcessorsKey);
     CHECK(processors_list);
 
-    base::Value prerender_pipeline(base::Value::Type::LIST);
-    base::Value postrender_pipeline(base::Value::Type::LIST);
+    base::Value::List prerender_pipeline;
+    base::Value::List postrender_pipeline;
     SplitPipeline(*processors_list, prerender_pipeline, postrender_pipeline);
 
     const base::Value* streams_list =
@@ -157,9 +154,10 @@ PostProcessingPipelineParser::GetStreamPipelines() {
         pipeline_description_dict.Find(kVolumeLimitsKey);
     CHECK(!volume_limits || volume_limits->is_list());
 
-    descriptors.emplace_back(std::move(prerender_pipeline),
-                             std::move(postrender_pipeline), streams_list,
-                             std::move(num_input_channels), volume_limits);
+    descriptors.emplace_back(base::Value(std::move(prerender_pipeline)),
+                             base::Value(std::move(postrender_pipeline)),
+                             streams_list, std::move(num_input_channels),
+                             volume_limits);
   }
   return descriptors;
 }
@@ -188,8 +186,8 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
       stream_dict->GetDict().FindList(kProcessorsKey);
   CHECK(processors_list);
 
-  base::Value prerender_pipeline(base::Value::Type::LIST);
-  base::Value postrender_pipeline(base::Value::Type::LIST);
+  base::Value::List prerender_pipeline;
+  base::Value::List postrender_pipeline;
   SplitPipeline(*processors_list, prerender_pipeline, postrender_pipeline);
 
   const base::Value* streams_list =
@@ -198,10 +196,10 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
   const base::Value* volume_limits =
       stream_dict->FindKeyOfType(kVolumeLimitsKey, base::Value::Type::DICT);
 
-  return StreamPipelineDescriptor(std::move(prerender_pipeline),
-                                  std::move(postrender_pipeline), streams_list,
-                                  stream_dict->FindIntKey(kNumInputChannelsKey),
-                                  volume_limits);
+  return StreamPipelineDescriptor(
+      base::Value(std::move(prerender_pipeline)),
+      base::Value(std::move(postrender_pipeline)), streams_list,
+      stream_dict->FindIntKey(kNumInputChannelsKey), volume_limits);
 }
 
 base::FilePath PostProcessingPipelineParser::GetFilePath() const {
