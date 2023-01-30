@@ -154,6 +154,7 @@
     "object",
     "onabort",
     "onafterprint",
+    "onaftertoggle",
     "onanimationstart",
     "onanimationiteration",
     "onanimationend",

@@ -91,24 +91,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     anchor_observer_ = observer;
   }
 
-  bool hasPendingToggleEventTask() const {
-    return pending_toggle_event_task_.IsActive();
-  }
-  void cancelPendingToggleEventTask() { pending_toggle_event_task_.Cancel(); }
-  void setPendingToggleEventTask(TaskHandle&& task) {
-    DCHECK(!pending_toggle_event_task_.IsActive());
-    pending_toggle_event_task_ = std::move(task);
-  }
-
-  bool pendingToggleEventStartedClosed() const {
-    DCHECK(hasPendingToggleEventTask());
-    return pending_toggle_event_started_closed_;
-  }
-  void setPendingToggleEventStartedClosed(bool was_closed) {
-    DCHECK(!hasPendingToggleEventTask());
-    pending_toggle_event_started_closed_ = was_closed;
-  }
-
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -138,11 +120,6 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   // Target of the 'anchor' attribute.
   Member<Element> anchor_element_;
   Member<PopoverAnchorObserver> anchor_observer_;
-
-  // Any pending 'toggle' event waiting to be fired. Used for coalescing
-  // behavior so that only one such event is fired.
-  TaskHandle pending_toggle_event_task_;
-  bool pending_toggle_event_started_closed_;
 
   WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
 };

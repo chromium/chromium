@@ -5,8 +5,8 @@
 [
     Exposed=Window,
     RuntimeEnabled=HTMLPopoverAttribute
-] interface ToggleEvent : Event {
-    constructor(DOMString type, optional ToggleEventInit eventInitDict = {});
-    readonly attribute DOMString oldState;
+] interface PopoverToggleEvent : Event {
+    constructor(DOMString type, optional PopoverToggleEventInit eventInitDict = {});
+    readonly attribute DOMString currentState;
     readonly attribute DOMString newState;
 };

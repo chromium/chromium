@@ -46,6 +46,7 @@ PASS childWindow.navigator.vendorSub is ''
 PASS childWindow.navigator.webdriver is false
 PASS childWindow.onabort is null
 PASS childWindow.onafterprint is null
+PASS childWindow.onaftertoggle is null
 PASS childWindow.onanimationend is null
 PASS childWindow.onanimationiteration is null
 PASS childWindow.onanimationstart is null

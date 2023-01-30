@@ -33,6 +33,7 @@
     LegacyTreatAsPartialInterface
 ] interface mixin GlobalEventHandlers {
     attribute EventHandler onabort;
+    [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onaftertoggle;
     attribute EventHandler onbeforeinput;
     [RuntimeEnabled=BeforeMatchEvent] attribute EventHandler onbeforematch;
     [RuntimeEnabled=HTMLPopoverAttribute] attribute EventHandler onbeforetoggle;

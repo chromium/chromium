@@ -1849,6 +1849,7 @@ interface Document : Node
     getter linkColor
     getter links
     getter onabort
+    getter onaftertoggle
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
@@ -2066,6 +2067,7 @@ interface Document : Node
     setter fullscreenEnabled
     setter linkColor
     setter onabort
+    setter onaftertoggle
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
@@ -3300,6 +3302,7 @@ interface HTMLElement : Element
     getter offsetTop
     getter offsetWidth
     getter onabort
+    getter onaftertoggle
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
@@ -3436,6 +3439,7 @@ interface HTMLElement : Element
     setter lang
     setter nonce
     setter onabort
+    setter onaftertoggle
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
@@ -5285,6 +5289,7 @@ interface MathMLElement : Element
     getter focusgroup
     getter nonce
     getter onabort
+    getter onaftertoggle
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
@@ -5398,6 +5403,7 @@ interface MathMLElement : Element
     setter focusgroup
     setter nonce
     setter onabort
+    setter onaftertoggle
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
@@ -6800,6 +6806,11 @@ interface PopStateEvent : Event
     attribute @@toStringTag
     getter state
     method constructor
+interface PopoverToggleEvent : Event
+    attribute @@toStringTag
+    getter currentState
+    getter newState
+    method constructor
 interface Presentation
     attribute @@toStringTag
     getter defaultRequest
@@ -7548,6 +7559,7 @@ interface SVGElement : Element
     getter focusgroup
     getter nonce
     getter onabort
+    getter onaftertoggle
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
@@ -7663,6 +7675,7 @@ interface SVGElement : Element
     setter focusgroup
     setter nonce
     setter onabort
+    setter onaftertoggle
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
@@ -9169,11 +9182,6 @@ interface TimeRanges
 interface TimestampTrigger
     attribute @@toStringTag
     getter timestamp
-    method constructor
-interface ToggleEvent : Event
-    attribute @@toStringTag
-    getter newState
-    getter oldState
     method constructor
 interface Touch
     attribute @@toStringTag
@@ -11930,6 +11938,7 @@ namespace console
     getter offscreenBuffering
     getter onabort
     getter onafterprint
+    getter onaftertoggle
     getter onanimationend
     getter onanimationiteration
     getter onanimationstart
@@ -12153,6 +12162,7 @@ namespace console
     setter offscreenBuffering
     setter onabort
     setter onafterprint
+    setter onaftertoggle
     setter onanimationend
     setter onanimationiteration
     setter onanimationstart
