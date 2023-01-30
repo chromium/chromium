@@ -1087,6 +1087,7 @@ const uint32_t kFixedBugIds[] = {
     1358908,
     1400226,
     1402158,
+    1405471,
 };
 
 // Implements aura shell interface and monitors workspace state needed

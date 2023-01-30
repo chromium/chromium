@@ -43,8 +43,11 @@ bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
   // conflict with logic that sets the 'focused window' when a
   // `wl_drag_source.enter` event is received. For this reason, ignore those
   // events.
-  //
-  // TODO(https://crbug.com/XXX): Remove this when Exo is properly fixed.
+  if (connection->zaura_shell() &&
+      connection->zaura_shell()->HasBugFix(1405471)) {
+    return false;
+  }
+
   auto is_window_dragging =
       connection->window_drag_controller()
           ? connection->window_drag_controller()->state() !=
