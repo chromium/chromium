@@ -77,7 +77,7 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
 // static
 bool AccessibilityState::HasSpokenFeedbackServicePresent() {
   JNIEnv* env = AttachCurrentThread();
-  return ui::Java_AccessibilityState_hasSpokenFeedbackServicePresent(env);
+  return ui::Java_AccessibilityState_isSpokenFeedbackServicePresent(env);
 }
 
 // static

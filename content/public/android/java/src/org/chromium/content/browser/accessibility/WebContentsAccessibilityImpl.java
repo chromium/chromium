@@ -631,7 +631,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
             // Update the AXMode based on screen reader status.
             WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
-                    AccessibilityState.screenReaderMode(),
+                    AccessibilityState.isScreenReaderEnabled(),
                     /* isAccessibilityEnabled= */ true);
 
             // Update the state of how passwords are exposed based on user settings.
@@ -642,7 +642,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // Update the state of enabling/disabling the image descriptions feature. To enable the
             // feature, this instance must be a candidate and a screen reader must be enabled.
             WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(mNativeObj,
-                    mIsImageDescriptionsCandidate && AccessibilityState.screenReaderMode());
+                    mIsImageDescriptionsCandidate && AccessibilityState.isScreenReaderEnabled());
         }
     }
 
@@ -679,7 +679,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             onNativeInit();
         }
         if (!isEnabled()) {
-            boolean screenReaderMode = AccessibilityState.screenReaderMode();
+            boolean screenReaderMode = AccessibilityState.isScreenReaderEnabled();
             WebContentsAccessibilityImplJni.get().enable(mNativeObj, screenReaderMode);
             return null;
         }
@@ -1144,7 +1144,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isNativeInitialized()) return;
         // Update the AXMode based on screen reader status.
         WebContentsAccessibilityImplJni.get().setAXMode(
-                mNativeObj, AccessibilityState.screenReaderMode(), isAccessibilityEnabled());
+                mNativeObj, AccessibilityState.isScreenReaderEnabled(), isAccessibilityEnabled());
     }
 
     // Returns true if the hover event is to be consumed by accessibility feature.

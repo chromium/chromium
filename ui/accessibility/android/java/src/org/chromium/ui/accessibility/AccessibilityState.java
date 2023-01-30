@@ -41,14 +41,29 @@ import java.util.WeakHashMap;
  */
 @JNINamespace("ui")
 public class AccessibilityState {
+    private static final String TAG = "A11yState";
+
     /**
-     * An interface for classes that want to be notified whenever the accessibility
-     * state has changed, which can happen when accessibility services start or stop.
+     * Interface for the observers of the system's accessibility state.
      */
     public interface Listener {
         /**
-         * Called when any aspect of accessibility state changes.
-         * @see State
+         * Called when any aspect of the system's accessibility state changes. This can happen for
+         * example when a user:
+         *     - enables/disables an accessibility service (e.g. TalkBack, VoiceAccess, etc.)
+         *     - enables/disables a pseudo-accessibility service (e.g. password manager, etc.)
+         *     - changes an accessibility-related system setting (e.g. animation duration, password
+         *       obscuring, touch exploration, etc.)
+         *
+         * For a full list of triggers, see: {AccessibilityState#registerObservers}
+         * For a full list of tracked settings, see: {AccessibilityState.State}
+         *
+         * This method passes both the previous and new (old current vs. now current) accessibility
+         * state. Clients that are only interested in a subset of the state should compare the
+         * oldAccessibilityState to newAccessibilityState to see if a relevant setting changed.
+         *
+         * @param oldAccessibilityState The previous accessibility state
+         * @param newAccessibilityState The new accessibility state
          */
         void onAccessibilityStateChanged(State oldAccessibilityState, State newAccessibilityState);
     }
@@ -58,36 +73,38 @@ public class AccessibilityState {
         // True when we determine that genuine assistive technology such as a screen reader
         // is running, based on the information from running accessibility services. False
         // otherwise.
-        public final boolean screenReaderEnabledState;
+        public final boolean isScreenReaderEnabled;
+
         // True when the user has touch exploration enabled. False otherwise.
-        public final boolean touchExplorationEnabledState;
+        public final boolean isTouchExplorationEnabled;
+
         // True when at least one accessibility service is enabled. False otherwise.
-        public final boolean hasAnyAccessibilityServiceEnabledState;
+        public final boolean isAnyAccessibilityServiceEnabled;
+
         // True when android version is less than 31 or at least one enabled accessibility service
         // returns true for isAccessibilityTool(). False otherwise.
-        public final boolean accessibilityToolPresentState;
+        public final boolean isAccessibilityToolPresent;
+
         // True when the user is running at least one service that requests the FEEDBACK_SPOKEN
         // feedback type in AccessibilityServiceInfo. False otherwise.
-        public final boolean spokenFeedbackEnabledState;
+        public final boolean isSpokenFeedbackServicePresent;
+
         // True when the user has enabled the Android-OS privacy setting for showing passwords,
         // found in: Settings > Privacy > Show passwords. (Settings.System.TEXT_SHOW_PASSWORD).
         // False otherwise.
-        public final boolean textShowPasswordEnabledState;
+        public final boolean isTextShowPasswordEnabled;
 
-        public State(boolean screenReaderEnabledState, boolean touchExplorationEnabledState,
-                boolean hasAnyAccessibilityServiceEnabledState,
-                boolean accessibilityToolPresentState, boolean spokenFeedbackEnabledState,
-                boolean textShowPasswordEnabledState) {
-            this.screenReaderEnabledState = screenReaderEnabledState;
-            this.touchExplorationEnabledState = touchExplorationEnabledState;
-            this.hasAnyAccessibilityServiceEnabledState = hasAnyAccessibilityServiceEnabledState;
-            this.accessibilityToolPresentState = accessibilityToolPresentState;
-            this.spokenFeedbackEnabledState = spokenFeedbackEnabledState;
-            this.textShowPasswordEnabledState = textShowPasswordEnabledState;
+        public State(boolean isScreenReaderEnabled, boolean isTouchExplorationEnabled,
+                boolean isAnyAccessibilityServiceEnabled, boolean isAccessibilityToolPresent,
+                boolean isSpokenFeedbackServicePresent, boolean isTextShowPasswordEnabled) {
+            this.isScreenReaderEnabled = isScreenReaderEnabled;
+            this.isTouchExplorationEnabled = isTouchExplorationEnabled;
+            this.isAnyAccessibilityServiceEnabled = isAnyAccessibilityServiceEnabled;
+            this.isAccessibilityToolPresent = isAccessibilityToolPresent;
+            this.isSpokenFeedbackServicePresent = isSpokenFeedbackServicePresent;
+            this.isTextShowPasswordEnabled = isTextShowPasswordEnabled;
         }
     }
-
-    private static final String TAG = "A11yState";
 
     // Analysis of the most popular accessibility services on Android suggests
     // that any service that requests any of these three events is a screen reader
@@ -96,8 +113,6 @@ public class AccessibilityState {
     private static final int SCREEN_READER_EVENT_TYPE_MASK = AccessibilityEvent.TYPE_VIEW_SELECTED
             | AccessibilityEvent.TYPE_VIEW_SCROLLED | AccessibilityEvent.TYPE_ANNOUNCEMENT;
 
-    private static boolean sInitialized;
-
     // A bitmask containing the union of all event types, feedback types, flags,
     // and capabilities of running accessibility services.
     private static int sEventTypeMask;
@@ -105,8 +120,8 @@ public class AccessibilityState {
     private static int sFlagsMask;
     private static int sCapabilitiesMask;
 
-    // Contains the current accessibility state.
     private static State sState;
+    private static boolean sInitialized;
 
     /**
      * Whether the user has enabled the Android-OS speak password when in accessibility mode,
@@ -141,47 +156,41 @@ public class AccessibilityState {
         sListeners.add(listener);
     }
 
-    public static boolean hasAnyAccessibilityServiceEnabled() {
+    public static boolean isScreenReaderEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-
-        return sState.hasAnyAccessibilityServiceEnabledState;
+        return sState.isScreenReaderEnabled;
     }
 
-    public static boolean hasAccessibilityToolPresent() {
+    public static boolean isTouchExplorationEnabled() {
         if (!sInitialized) updateAccessibilityServices();
+        return sState.isTouchExplorationEnabled;
+    }
 
-        return sState.accessibilityToolPresentState;
+    public static boolean isAnyAccessibilityServiceEnabled() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sState.isAnyAccessibilityServiceEnabled;
+    }
+
+    public static boolean isAccessibilityToolPresent() {
+        if (!sInitialized) updateAccessibilityServices();
+        return sState.isAccessibilityToolPresent;
     }
 
     @CalledByNative
-    public static boolean hasSpokenFeedbackServicePresent() {
+    public static boolean isSpokenFeedbackServicePresent() {
         if (!sInitialized) updateAccessibilityServices();
-
-        return sState.spokenFeedbackEnabledState;
+        return sState.isSpokenFeedbackServicePresent;
     }
 
-    public static boolean screenReaderMode() {
+    public static boolean isTextShowPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-
-        return sState.screenReaderEnabledState;
+        return sState.isTextShowPasswordEnabled;
     }
 
-    public static boolean hasEnabledTextShowPassword() {
+    @Deprecated
+    public static boolean isAccessibilitySpeakPasswordEnabled() {
         if (!sInitialized) updateAccessibilityServices();
-
-        return sState.textShowPasswordEnabledState;
-    }
-
-    public static boolean hasEnabledAccessibilitySpeakPassword() {
-        if (!sInitialized) updateAccessibilityServices();
-
         return sAccessibilitySpeakPasswordEnabled;
-    }
-
-    public static boolean hasTouchExplorationEnabled() {
-        if (!sInitialized) updateAccessibilityServices();
-
-        return sState.touchExplorationEnabledState;
     }
 
     @VisibleForTesting
@@ -201,9 +210,9 @@ public class AccessibilityState {
         // Explicitly set mask so all events are relevant to currently enabled service.
         sEventTypeMask = ~0;
         // Explicitly set accessibility enabled
-        State newState = new State(sState.screenReaderEnabledState,
-                sState.touchExplorationEnabledState, true, sState.accessibilityToolPresentState,
-                sState.spokenFeedbackEnabledState, sState.textShowPasswordEnabledState);
+        State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
+                true, sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
+                sState.isTextShowPasswordEnabled);
 
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
@@ -226,9 +235,9 @@ public class AccessibilityState {
 
         // Explicitly set screen reader mode since a real screen reader isn't run during tests.
         // Explicitly set accessibility enabled
-        State newState = new State(enabled, sState.touchExplorationEnabledState, true,
-                sState.accessibilityToolPresentState, sState.spokenFeedbackEnabledState,
-                sState.textShowPasswordEnabledState);
+        State newState = new State(enabled, sState.isTouchExplorationEnabled, true,
+                sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
+                sState.isTextShowPasswordEnabled);
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }
@@ -237,9 +246,9 @@ public class AccessibilityState {
     public static void setHasSpokenFeedbackServiceForTesting(boolean present) {
         if (!sInitialized) updateAccessibilityServices();
 
-        State newState = new State(sState.screenReaderEnabledState,
-                sState.touchExplorationEnabledState, sState.hasAnyAccessibilityServiceEnabledState,
-                sState.accessibilityToolPresentState, present, sState.textShowPasswordEnabledState);
+        State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
+                sState.isAnyAccessibilityServiceEnabled, sState.isAccessibilityToolPresent, present,
+                sState.isTextShowPasswordEnabled);
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }
@@ -253,8 +262,8 @@ public class AccessibilityState {
         sFeedbackTypeMask = 0;
         sFlagsMask = 0;
         sCapabilitiesMask = 0;
-        boolean hasAnyAccessibilityServiceEnabled = false;
-        boolean accessibilityToolPresent = false;
+        boolean isAnyAccessibilityServiceEnabled = false;
+        boolean isAccessibilityToolPresent = false;
 
         // Get the list of currently running accessibility services.
         Context context = ContextUtils.getApplicationContext();
@@ -272,9 +281,9 @@ public class AccessibilityState {
             sFeedbackTypeMask |= service.feedbackType;
             sFlagsMask |= service.flags;
             sCapabilitiesMask |= service.getCapabilities();
-            accessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+            isAccessibilityToolPresent |= (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
                     || service.isAccessibilityTool());
-            hasAnyAccessibilityServiceEnabled = true;
+            isAnyAccessibilityServiceEnabled = true;
 
             String serviceId = service.getId();
             sServiceIds[i++] = serviceId;
@@ -291,7 +300,7 @@ public class AccessibilityState {
         // Update the user password show/speak preferences.
         int textShowPasswordSetting = Settings.System.getInt(
                 context.getContentResolver(), Settings.System.TEXT_SHOW_PASSWORD, 1);
-        boolean textShowPasswordEnabled = textShowPasswordSetting == 1;
+        boolean isTextShowPasswordEnabled = textShowPasswordSetting == 1;
 
         int accessibilitySpeakPasswordSetting = Settings.Secure.getInt(
                 context.getContentResolver(), Settings.Secure.ACCESSIBILITY_SPEAK_PASSWORD, 0);
@@ -346,12 +355,13 @@ public class AccessibilityState {
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
         Log.v(TAG, "Informing listeners of changes.");
-        boolean screenReader = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
-        boolean hasSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
-        boolean touchExplorationEnabled = (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
-        updateAndNotifyStateChange(new State(screenReader, touchExplorationEnabled,
-                hasAnyAccessibilityServiceEnabled, accessibilityToolPresent,
-                hasSpokenFeedbackServicePresent, textShowPasswordEnabled));
+        boolean isScreenReaderEnabled = (0 != (sEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
+        boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
+        boolean isTouchExplorationEnabled =
+                (0 != (sFlagsMask & FLAG_REQUEST_TOUCH_EXPLORATION_MODE));
+        updateAndNotifyStateChange(new State(isScreenReaderEnabled, isTouchExplorationEnabled,
+                isAnyAccessibilityServiceEnabled, isAccessibilityToolPresent,
+                isSpokenFeedbackServicePresent, isTextShowPasswordEnabled));
     }
 
     private static void updateAndNotifyStateChange(State newState) {

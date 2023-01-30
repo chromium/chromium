@@ -135,7 +135,7 @@ public class PlayerFrameView extends FrameLayout {
 
     @Override
     public boolean onHoverEvent(MotionEvent event) {
-        if (mWebContentsAccessibility != null && AccessibilityState.hasTouchExplorationEnabled()) {
+        if (mWebContentsAccessibility != null && AccessibilityState.isTouchExplorationEnabled()) {
             return mWebContentsAccessibility.onHoverEventNoRenderer(event);
         }
         return super.onHoverEvent(event);

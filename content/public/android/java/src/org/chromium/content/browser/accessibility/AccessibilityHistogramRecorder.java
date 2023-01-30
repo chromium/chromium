@@ -124,7 +124,7 @@ public class AccessibilityHistogramRecorder {
         boolean isComputeAXModeEnabled =
                 ContentFeatureList.isEnabled(ContentFeatureList.COMPUTE_AX_MODE);
         // There are only 2 AXModes, kAXModeComplete is used when a screenreader is active.
-        boolean isAXModeComplete = AccessibilityState.screenReaderMode();
+        boolean isAXModeComplete = AccessibilityState.isScreenReaderEnabled();
 
         // If we did not enqueue any events, we can ignore the data as a trivial case.
         if (mTotalEnqueuedEvents > 0) {
