@@ -62097,7 +62097,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:TextfieldTest*:TooltipControllerTest*:"
+          "--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:TextfieldTest*:"
         ],
         "merge": {
           "args": [],

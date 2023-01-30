@@ -3685,8 +3685,6 @@
           'EditableComboboxTest*:'
           'MenuRunnerTest*:'
           'TextfieldTest*:'
-          'TooltipControllerTest*:'
-          'TooltipStateManagerTest*'
         ],
       },
       # https://crbug.com/1111979,
@@ -3698,15 +3696,12 @@
           'EditableComboboxTest*:'
           'MenuRunnerTest*:'
           'TextfieldTest*:'
-          'TooltipControllerTest*:'
-          'TooltipStateManagerTest*'
         ],
       },
       'linux-lacros-dbg-tests-fyi': {
         'args': [
           '--gtest_filter=-DesktopWidgetFocusManagerTest.AnchoredDialogInDesktopNativeWidgetAura:'
           'TextfieldTest*:'
-          'TooltipControllerTest*:'
         ],
       },
       'linux-lacros-tester-rel': {
@@ -3717,8 +3712,6 @@
           'EditableComboboxTest*:'
           'MenuRunnerTest*:'
           'TextfieldTest*:'
-          'TooltipControllerTest*:'
-          'TooltipStateManagerTest*'
         ],
       },
     },
