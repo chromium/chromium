@@ -6173,7 +6173,7 @@ TEST_F(InputMethodResultAuraTest, ClearCompositionText) {
 }
 
 // This test is for ui::TextInputClient::InsertText with empty text.
-TEST_F(InputMethodResultAuraTest, FinishComposingText) {
+TEST_F(InputMethodResultAuraTest, InsertEmptyText) {
   base::RepeatingClosure ime_call = base::BindRepeating(
       &ui::TextInputClient::InsertText, base::Unretained(text_input_client()),
       std::u16string(),
@@ -6183,7 +6183,7 @@ TEST_F(InputMethodResultAuraTest, FinishComposingText) {
     SetHasCompositionTextToTrue();
     ime_call.Run();
     base::RunLoop().RunUntilIdle();
-    EXPECT_EQ("SetComposition FinishComposingText",
+    EXPECT_EQ("SetComposition CommitText",
               GetMessageNames(widget_hosts_[index]
                                   ->input_handler()
                                   ->GetAndResetDispatchedMessages()));

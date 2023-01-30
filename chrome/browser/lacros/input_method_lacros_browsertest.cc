@@ -245,6 +245,31 @@ IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
+                       CommitEmptyTextDeletesCompositionText) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kSetCompositionMinVersion,
+           InputMethodTestInterface::MethodMinVersions::kCommitTextMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+  input_method_async_waiter.SetComposition("hello", 5);
+  ASSERT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "hello", gfx::Range(5)));
+
+  input_method_async_waiter.CommitText("");
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "", gfx::Range(0)));
+}
+
+IN_PROC_BROWSER_TEST_F(InputMethodLacrosBrowserTest,
                        CommitTextReplacesSelection) {
   mojo::Remote<InputMethodTestInterface> input_method =
       BindInputMethodTestInterface(
