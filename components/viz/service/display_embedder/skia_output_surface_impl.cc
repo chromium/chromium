@@ -1271,8 +1271,14 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
   } else if (dependency_->IsUsingDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     // TODO(hitawala): Add multiplanar support for Skia-Dawn.
-    wgpu::TextureFormat format = gpu::ToDawnFormat(si_format);
-    return GrBackendFormat::MakeDawn(format);
+    wgpu::TextureFormat wgpu_format = gpu::ToDawnFormat(si_format);
+    // Return an invalid backend format if we can't find an appropriate Dawn
+    // format, otherwise Skia will end up calling Dawn CreateTexture with the
+    // wgou::TextureFormat::Undefined which can cause security issues.
+    if (wgpu_format == wgpu::TextureFormat::Undefined) {
+      return GrBackendFormat();
+    }
+    return GrBackendFormat::MakeDawn(wgpu_format);
 #endif
   } else if (dependency_->IsUsingMetal()) {
 #if BUILDFLAG(IS_APPLE)
