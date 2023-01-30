@@ -12,6 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
@@ -33,6 +34,7 @@
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service_task_get_most_recent_clusters.h"
+#include "components/history_clusters/core/history_clusters_service_task_update_clusters.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -41,8 +43,6 @@
 #include "url/gurl.h"
 
 namespace history_clusters {
-
-namespace {
 
 base::Time DaysAgo(int days) {
   return base::Time::Now() - base::Days(days);
@@ -57,7 +57,9 @@ class TestClusteringBackend : public ClusteringBackend {
                    bool unused_requires_ui_and_triggerability) override {
     callback_ = std::move(callback);
     last_clustered_visits_ = visits;
-
+    ASSERT_TRUE(wait_for_get_clusters_closure_)
+        << "Unexpected `GetClusters()` called without "
+           "`WaitForGetClustersCall()`.";
     std::move(wait_for_get_clusters_closure_).Run();
   }
 
@@ -73,7 +75,7 @@ class TestClusteringBackend : public ClusteringBackend {
       ClustersCallback callback,
       std::vector<history::Cluster> clusters) override {
     // TODO(b/259466296): Implement this when we incorporate the new method into
-    // `UpdateClusters()`.
+    //   `UpdateClusters()`.
   }
 
   void FulfillCallback(const std::vector<history::Cluster>& clusters) {
@@ -104,9 +106,20 @@ class TestClusteringBackend : public ClusteringBackend {
 
   // Should be invoked before `GetClusters()` is invoked.
   void WaitForGetClustersCall() {
-    base::RunLoop loop;
-    wait_for_get_clusters_closure_ = loop.QuitClosure();
-    loop.Run();
+    base::RunLoop run_loop;
+    wait_for_get_clusters_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  // Calls `WaitForGetClustersCall()`, verifies the clustered visits, and then
+  // calls `FulfillCallback()`.
+  void WaitExpectAndFulfillClustersCall(
+      const std::vector<history::VisitID>& expected_clustered_visit_ids,
+      const std::vector<history::Cluster>& fulfill_clusters) {
+    WaitForGetClustersCall();
+    EXPECT_THAT(GetVisitIds(LastClusteredVisits()),
+                testing::ElementsAreArray(expected_clustered_visit_ids));
+    FulfillCallback({fulfill_clusters});
   }
 
  private:
@@ -121,8 +134,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
  public:
   HistoryClustersServiceTestBase()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
-        run_loop_quit_(run_loop_.QuitClosure()) {}
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
@@ -147,6 +159,11 @@ class HistoryClustersServiceTestBase : public testing::Test {
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
         /*optimization_guide_decider=*/nullptr, pref_service_.get());
+    // These timers schedule `UpdateCluster()` requests. Disable them so tests
+    // can instead invoke `UpdateClusters()` in a controlled manner.
+    history_clusters_service_->update_clusters_after_startup_delay_timer_
+        .Stop();
+    history_clusters_service_->update_clusters_period_timer_.Stop();
 
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
@@ -373,6 +390,18 @@ class HistoryClustersServiceTestBase : public testing::Test {
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
   }
 
+  // A replacement for `HistoryClustersService::UpdateClusters()` that accepts a
+  // callback.
+  void UpdateClusters(base::OnceClosure callback) {
+    DCHECK(!history_clusters_service_->update_clusters_task_ ||
+           history_clusters_service_->update_clusters_task_->Done());
+    history_clusters_service_->update_clusters_task_ =
+        std::make_unique<HistoryClustersServiceTaskUpdateClusters>(
+            history_clusters_service_->weak_ptr_factory_.GetWeakPtr(),
+            IncompleteVisitMap{}, test_clustering_backend_,
+            history_service_.get(), std::move(callback));
+  }
+
   void SetJourneysVisible(bool visible) {
     pref_service_->SetBoolean(prefs::kVisible, visible);
   }
@@ -395,10 +424,6 @@ class HistoryClustersServiceTestBase : public testing::Test {
 
   // Non-owning pointer. The actual owner is `history_clusters_service_`.
   TestClusteringBackend* test_clustering_backend_;
-
-  // Used to verify the async callback is invoked.
-  base::RunLoop run_loop_;
-  base::RepeatingClosure run_loop_quit_;
 
   // Tracks the next available navigation ID to be associated with visits.
   int64_t next_navigation_id_ = 0;
@@ -943,7 +968,6 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
   AddHardcodedTestDataToHistoryService();
 
   base::RunLoop run_loop;
-  auto run_loop_quit = run_loop.QuitClosure();
 
   const auto task = history_clusters_service_->QueryClusters(
       ClusteringRequestSource::kJourneysPage,
@@ -1000,7 +1024,7 @@ TEST_P(HistoryClustersServiceTest, EndToEndWithBackend) {
                   u"Code Storage Title");
         EXPECT_TRUE(cluster.keyword_to_data_map.empty());
 
-        run_loop_quit.Run();
+        run_loop.Quit();
       }),
       HistoryClustersServiceTaskGetMostRecentClusters::Source::kWebUi);
 
@@ -1625,6 +1649,362 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
       "History.Clusters.Backend.KeywordCache.ShortKeywordsCount", 0);
 }
 
-}  // namespace
+TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Sparse) {
+  // Test the case where visits day distribution is wider than
+  // `persist_clusters_recluster_window_days`; i.e. no reclustering occurs.
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.max_persisted_clusters_to_fetch = 10;
+  config.max_persisted_cluster_visits_to_fetch_soft_cap = 5;
+  config.persist_clusters_recluster_window_days = 2;
+  SetConfigForTesting(config);
+
+  // Create unclustered visits.
+  AddCompleteVisit(1, DaysAgo(15));
+  AddCompleteVisit(2, DaysAgo(12));
+  AddCompleteVisit(3, DaysAgo(9));
+  AddCompleteVisit(4, DaysAgo(6));
+
+  {
+    // The 1st call should cluster the 4 visits in 4 batches.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+
+    // Expect 4 clustering calls, each for 1 visit.
+    for (int id = 1; id <= 4; ++id) {
+      test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+          {id}, {history::CreateCluster({id})});
+    }
+    run_loop.Run();
+
+    // Expect the visits to be clustered into 4 clusters.
+    QueryClustersContinuationParams continuation_params = {};
+    const auto clusters = NextQueryClusters(continuation_params, false).first;
+    EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(4, 3, 2, 1));
+    for (const auto& cluster : clusters) {
+      EXPECT_THAT(GetVisitIds(cluster.visits),
+                  testing::ElementsAre(cluster.cluster_id));
+    }
+  }
+
+  {
+    // A 2nd call shouldn't cluster anything.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    // New visits should be clustered.
+    base::RunLoop run_loop;
+    AddCompleteVisit(5, DaysAgo(3));
+    UpdateClusters(run_loop.QuitClosure());
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {5}, {history::CreateCluster({5})});
+    run_loop.Run();
+  }
+
+  {
+    // An update call without new visits shouldn't cluster anything. Omitting
+    // the backend wait ensures the test would crash if a clustering request
+    // were made.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The run loops ensure the update task is complete. We need 1 more history
+  // block to ensure the update task is flushed out of the history service
+  // queue.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
+
+TEST_F(HistoryClustersServiceTestBase, UpdateClusters_Reclustering) {
+  // Test the case where visits day distribution is denser than
+  // `persist_clusters_recluster_window_days`; i.e. reclustering occurs.
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.max_persisted_clusters_to_fetch = 10;
+  config.max_persisted_cluster_visits_to_fetch_soft_cap = 5;
+  config.persist_clusters_recluster_window_days = 1;
+  SetConfigForTesting(config);
+
+  // Create unclustered visits.
+  AddCompleteVisit(1, DaysAgo(16));
+  AddCompleteVisit(2, DaysAgo(15));
+  AddCompleteVisit(3, DaysAgo(14));
+  AddCompleteVisit(4, DaysAgo(13));
+  AddCompleteVisit(5, DaysAgo(12));
+  AddCompleteVisit(6, DaysAgo(11));
+  AddCompleteVisit(7, DaysAgo(10));
+  AddCompleteVisit(8, DaysAgo(9));
+  AddCompleteVisit(9, DaysAgo(8));
+
+  {
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+
+    // The 1st 3 requests return 1-visit clusters. So the visits clustered
+    // should be just the current and last visit. This creates cluster 1.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {1}, {history::CreateCluster({1})});
+    // This recreates cluster 1, and creates cluster 2.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {2, 1}, {history::CreateCluster({1}), history::CreateCluster({2})});
+    // This recreates cluster 2, and creates cluster 3.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {3, 2}, {history::CreateCluster({2}), history::CreateCluster({3})});
+
+    // When older than 1 day visits are clustered with 1 day old visits, they
+    // too should be reclustered. This recreates cluster 3.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {4, 3}, {history::CreateCluster({3, 4})});
+    // This recreates cluster 3.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {5, 4, 3}, {history::CreateCluster({3, 4, 5})});
+    // This recreates cluster 3.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {6, 5, 4, 3}, {history::CreateCluster({3, 4, 5, 6})});
+
+    // When clusters no longer contain visits 1 day old, they should not be
+    // reclustered.
+    // This recreates cluster 3, and creates cluster 4.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {7, 6, 5, 4, 3},
+        {history::CreateCluster({3, 7}), history::CreateCluster({4, 5, 6})});
+    // This deletes cluster 3, and creates clusters 5 & 6.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {8, 7, 3},
+        {history::CreateCluster({3, 8}), history::CreateCluster({7})});
+    // This deletes cluster 5 and creates cluster 7.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {9, 8, 3}, {history::CreateCluster({3, 8, 9})});
+    run_loop.Run();
+  }
+
+  // There're now 5 clusters:
+  // ID: 1, visits: 1
+  // ID: 2, visits: 2
+  // ID: 4, visits: 4, 5, 6
+  // ID: 6, visits: 7
+  // ID: 7, visits: 3, 8, 9
+
+  // Check the final clusters. 1st request should get the last 3 clusters due to
+  // `max_persisted_cluster_visits_to_fetch_soft_cap`.
+  QueryClustersContinuationParams continuation_params = {};
+  auto clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(13, 12, 10));
+  EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(9, 8, 3));
+  EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(7));
+  EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(6, 5, 4));
+
+  clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(4, 2));
+  EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(2));
+  EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(1));
+
+  clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+
+  // Test `max_persisted_clusters_to_fetch`.
+  config.max_persisted_clusters_to_fetch = 2;
+  SetConfigForTesting(config);
+  continuation_params = {};
+  clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(13, 12));
+
+  {
+    // A 2nd call shouldn't cluster anything.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    // New visits older than the clustered visits should not be clustered.
+    base::RunLoop run_loop;
+    AddCompleteVisit(10, DaysAgo(8) - base::Minutes(1));
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    // New visits newer than the clustered visits should be clustered. Visit 10
+    // is lost as it's unclustered yet older than the clustering boundary.
+    // Changing this behavior wouldn't be wrong, but unnecessary currently.
+    base::RunLoop run_loop;
+    AddCompleteVisit(11, DaysAgo(8) + base::Minutes(1));
+    UpdateClusters(run_loop.QuitClosure());
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {11, 9, 8, 3}, {history::CreateCluster({3, 8, 9, 11})});
+    run_loop.Run();
+  }
+
+  {
+    // Likewise for new visits on new days.
+    base::RunLoop run_loop;
+    AddCompleteVisit(12, DaysAgo(7));
+    UpdateClusters(run_loop.QuitClosure());
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {12, 11, 9, 8, 3}, {history::CreateCluster({12, 11, 9, 8, 3})});
+    run_loop.Run();
+  }
+
+  {
+    // An update call without new visits shouldn't cluster anything. Omitting
+    // the backend wait ensures the test would crash if a clustering request
+    // were made.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The run loops ensure the update task is complete. We need 1 more history
+  // block to ensure the update task is flushed out of the history service
+  // queue.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
+
+TEST_F(HistoryClustersServiceTestBase,
+       UpdateClusters_ReclusterMultipleClusters) {
+  // Test the case where there are multiple clusters reconsulted in the same
+  // batch.
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.max_visits_to_cluster = 5;
+  config.max_persisted_clusters_to_fetch = 100;
+  config.max_persisted_cluster_visits_to_fetch_soft_cap = 100;
+  config.persist_clusters_recluster_window_days = 1;
+  SetConfigForTesting(config);
+
+  // Create unclustered visits.
+  AddCompleteVisit(1, DaysAgo(10));
+  AddCompleteVisit(2, DaysAgo(10));
+  AddCompleteVisit(3, DaysAgo(10));
+  AddCompleteVisit(4, DaysAgo(10));
+  AddCompleteVisit(5, DaysAgo(10));
+  AddCompleteVisit(6, DaysAgo(10));
+  AddCompleteVisit(7, DaysAgo(9));
+  AddCompleteVisit(8, DaysAgo(9));
+  AddCompleteVisit(9, DaysAgo(9));
+  AddCompleteVisit(10, DaysAgo(8));
+
+  {
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {6, 5, 4, 3, 2},
+        {history::CreateCluster({2}), history::CreateCluster({3, 4}),
+         history::CreateCluster({5, 6})});
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {9, 8, 7, 2},
+        {history::CreateCluster({2, 7}), history::CreateCluster({8, 9})});
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {10, 7, 2, 9, 8}, {history::CreateCluster({2, 7, 8, 9, 10})});
+    run_loop.Run();
+  }
+
+  // Check the final clusters.
+  QueryClustersContinuationParams continuation_params = {};
+  auto clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(6, 2, 3));
+  EXPECT_THAT(GetVisitIds(clusters[0].visits),
+              testing::ElementsAre(10, 9, 8, 7, 2));
+  EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(4, 3));
+  EXPECT_THAT(GetVisitIds(clusters[2].visits), testing::ElementsAre(6, 5));
+
+  clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+
+  {
+    // An update call without new visits shouldn't cluster anything. Omitting
+    // the backend wait ensures the test would crash if a clustering request
+    // were made.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The run loops ensure the update task is complete. We need 1 more history
+  // block to ensure the update task is flushed out of the history service
+  // queue.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
+
+TEST_F(HistoryClustersServiceTestBase, UpdateClusters_PopularDay) {
+  // Test the case there are more visits than `max_visits_to_cluster` in a day.
+  Config config;
+  config.persist_clusters_in_history_db = true;
+  config.max_visits_to_cluster = 3;
+  config.persist_clusters_recluster_window_days = 1;
+  SetConfigForTesting(config);
+
+  // Create unclustered visits 4 days old.
+  AddCompleteVisit(1, DaysAgo(4));
+  AddCompleteVisit(2, DaysAgo(4));
+  AddCompleteVisit(3, DaysAgo(4));
+  AddCompleteVisit(4, DaysAgo(4));
+  AddCompleteVisit(5, DaysAgo(4));
+  // Create unclustered visits 3 days old.
+  AddCompleteVisit(6, DaysAgo(3));
+  AddCompleteVisit(7, DaysAgo(3));
+  AddCompleteVisit(8, DaysAgo(3));
+  AddCompleteVisit(9, DaysAgo(3));
+
+  {
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {5, 4, 3}, {history::CreateCluster({3, 4, 5})});
+    // Should not include visits from the previous day when the current day
+    // already has more than `max_visits_to_cluster` visits.
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {9, 8, 7}, {history::CreateCluster({7, 8, 9})});
+    run_loop.Run();
+  }
+
+  QueryClustersContinuationParams continuation_params = {};
+  auto clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre(2, 1));
+  EXPECT_THAT(GetVisitIds(clusters[0].visits), testing::ElementsAre(9, 8, 7));
+  EXPECT_THAT(GetVisitIds(clusters[1].visits), testing::ElementsAre(5, 4, 3));
+
+  clusters = NextQueryClusters(continuation_params, false).first;
+  EXPECT_THAT(GetClusterIds(clusters), testing::ElementsAre());
+
+  {
+    // A 2nd call shouldn't cluster anything.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    // A new visit on the day with more than `max_visits_to_cluster` visits
+    // should be clustered without reclustering the existing visit.
+    base::RunLoop run_loop;
+    AddCompleteVisit(10, DaysAgo(3) + base::Minutes(1));
+    UpdateClusters(run_loop.QuitClosure());
+    test_clustering_backend_->WaitExpectAndFulfillClustersCall(
+        {10}, {history::CreateCluster({10})});
+    run_loop.Run();
+  }
+
+  {
+    // An update call without new visits shouldn't cluster anything. Omitting
+    // the backend wait ensures the test would crash if a clustering request
+    // were made.
+    base::RunLoop run_loop;
+    UpdateClusters(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // The run loops ensure the update task is complete. We need 1 more history
+  // block to ensure the update task is flushed out of the history service
+  // queue.
+  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
+}
 
 }  // namespace history_clusters

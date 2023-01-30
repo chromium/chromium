@@ -209,6 +209,7 @@ class HistoryClustersService : public base::SupportsUserData,
 
  private:
   friend class HistoryClustersServiceTestApi;
+  friend class HistoryClustersServiceTestBase;
 
   // Starts a keyword cache refresh, if necessary.
   // TODO(manukh): `StartKeywordCacheRefresh()` and
