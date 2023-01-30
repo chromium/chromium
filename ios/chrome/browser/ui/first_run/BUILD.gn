@@ -219,7 +219,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "enterprise_loading_screen_egtest.mm",
-    "first_run_two_steps_egtest.mm",
+    "first_run_egtest.mm",
   ]
   deps = [
     ":constants",
