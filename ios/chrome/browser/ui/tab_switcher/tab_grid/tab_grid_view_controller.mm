@@ -169,8 +169,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, strong) UIControl* scrimView;
 @property(nonatomic, weak) TabGridTopToolbar* topToolbar;
 @property(nonatomic, weak) TabGridBottomToolbar* bottomToolbar;
-// Bool informing if the confirmation action sheet is displayed.
-@property(nonatomic, assign) BOOL closeAllConfirmationDisplayed;
 @property(nonatomic, assign) TabGridConfiguration configuration;
 // Setting the current page doesn't scroll the scroll view; use
 // -scrollToPage:animated: for that.
@@ -226,7 +224,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _pageConfiguration = tabGridPageConfiguration;
-    _closeAllConfirmationDisplayed = NO;
     _dragSeesionInProgress = NO;
 
     switch (_pageConfiguration) {
@@ -1645,17 +1642,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
   const BOOL tabsPresent = [self tabsPresentForPage:page];
 
-  if (!self.closeAllConfirmationDisplayed)
-    self.topToolbar.pageControl.userInteractionEnabled = YES;
+  self.topToolbar.pageControl.userInteractionEnabled = YES;
 
   // The Done button should have the same behavior as the other buttons on the
   // top Toolbar.
   BOOL incognitoTabsNeedsAuth =
       (self.currentPage == TabGridPageIncognitoTabs &&
        self.incognitoTabsViewController.contentNeedsAuthentication);
-  BOOL doneEnabled = tabsPresent &&
-                     self.topToolbar.pageControl.userInteractionEnabled &&
-                     !incognitoTabsNeedsAuth;
+  BOOL doneEnabled = tabsPresent && !incognitoTabsNeedsAuth;
   [self.topToolbar setDoneButtonEnabled:doneEnabled];
   [self.bottomToolbar setDoneButtonEnabled:doneEnabled];
 }
@@ -1675,8 +1669,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Disables the done button on bottom toolbar if a disabled tab view is
 // presented.
 - (void)configureDoneButtonOnDisabledPage {
-  if (!self.closeAllConfirmationDisplayed)
-    self.topToolbar.pageControl.userInteractionEnabled = YES;
+  self.topToolbar.pageControl.userInteractionEnabled = YES;
   [self.bottomToolbar setDoneButtonEnabled:NO];
   [self.topToolbar setDoneButtonEnabled:NO];
 }
