@@ -19,6 +19,7 @@
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL ignoreIconColorWithTint;
 @property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
 @end
 

@@ -84,6 +84,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 @property(nonatomic, copy) NSString* subtitleText;
 @property(nonatomic, copy) NSMutableArray<StyledRange*>* subtitleStyledRanges;
 @property(nonatomic, assign) BOOL useIconBackgroundTint;
+@property(nonatomic, assign) BOOL ignoreIconColorWithTint;
 @property(nonatomic, strong) UIColor* iconImageTintColor;
 @property(nonatomic, strong) UIColor* iconBackgroundColor;
 @property(nonatomic, assign) BOOL restrictSubtitleTextToSingleLine;
@@ -132,6 +133,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
         [[InfobarMetricsRecorder alloc] initWithType:infobarType];
     _presentsModal = presentsModal;
     _useIconBackgroundTint = YES;
+    _ignoreIconColorWithTint = YES;
     _restrictSubtitleTextToSingleLine = NO;
     _subtitleStyledRanges = [[NSMutableArray alloc] init];
   }
@@ -165,7 +167,7 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
   if (self.iconImage) {
     // If the icon image requires a background tint, ignore the original color
     // information and draw the image as a template image.
-    if (self.useIconBackgroundTint) {
+    if (self.useIconBackgroundTint && self.ignoreIconColorWithTint) {
       self.iconImage = [self.iconImage
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
@@ -444,6 +446,10 @@ constexpr base::TimeDelta kLongPressTimeDuration = base::Milliseconds(400);
 
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint {
   _useIconBackgroundTint = useIconBackgroundTint;
+}
+
+- (void)setIgnoreIconColorWithTint:(BOOL)ignoreIconColorWithTint {
+  _ignoreIconColorWithTint = ignoreIconColorWithTint;
 }
 
 - (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor {

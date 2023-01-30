@@ -25,6 +25,10 @@
 // YES if the icon image should have a default tint applied to its background.
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint;
 
+// NO if the icon image colors should not be ignored when a background tint is
+// applied. Default is YES.
+- (void)setIgnoreIconColorWithTint:(BOOL)ignoreIconColorWithTint;
+
 // The background color of the icon, only applied when
 // [setUseIconBackgroundTint:YES] is called.
 - (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor;
