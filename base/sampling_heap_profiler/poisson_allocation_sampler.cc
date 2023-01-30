@@ -226,12 +226,14 @@ size_t PoissonAllocationSampler::GetNextSampleInterval(size_t interval) {
   // interval. This follows the exponential probability distribution with
   // parameter λ = 1/interval where |interval| is the average number of bytes
   // between samples.
-  // Let u be a uniformly distributed random number between 0 and 1, then
+  // Let u be a uniformly distributed random number (0,1], then
   // next_sample = -ln(u) / λ
+  // RandDouble returns numbers [0,1). We use 1-RandDouble to correct it to
+  // avoid a possible floating point exception from taking the log of 0.
   // The allocator shim uses the PoissonAllocationSampler, hence avoid
   // allocation to avoid infinite recursion.
   double uniform = internal::RandDoubleAvoidAllocation();
-  double value = -log(uniform) * interval;
+  double value = -log(1 - uniform) * interval;
   size_t min_value = sizeof(intptr_t);
   // We limit the upper bound of a sample interval to make sure we don't have
   // huge gaps in the sampling stream. Probability of the upper bound gets hit
