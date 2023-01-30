@@ -2177,6 +2177,9 @@ extern const char kPageInfoStoreInfoDescription[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetName[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[];
 
+extern const char kPolicyLogsPageAndroidName[];
+extern const char kPolicyLogsPageAndroidDescription[];
+
 extern const char kQueryTilesName[];
 extern const char kQueryTilesDescription[];
 extern const char kQueryTilesNTPName[];

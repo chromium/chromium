@@ -3797,6 +3797,11 @@ const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[] =
     "Enable an improved 'About this site' bottomsheet, which includes a "
     "less cluttered toolbar view and opening navigations in a new tab.";
 
+const char kPolicyLogsPageAndroidName[] = "Policy Logs Page on Android";
+const char kPolicyLogsPageAndroidDescription[] =
+    "Enable the new chrome://policy-logs page containing logs for debugging "
+    "policy related issues on Android.";
+
 const char kQueryTilesName[] = "Show query tiles";
 const char kQueryTilesDescription[] = "Shows query tiles in Chrome";
 const char kQueryTilesNTPName[] = "Show query tiles in NTP";

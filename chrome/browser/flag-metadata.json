@@ -5689,7 +5689,12 @@
     ],
     "expiry_milestone": 120
   },
-    {
+  {
+    "name": "policy-logs-page-android",
+    "owners": [ "esalma", "ftirelo" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "popout-omnibox-ipad",
     "owners": [ "stkhapugin", "christianxu", "bling-flags@google.com" ],
     "expiry_milestone": 120
