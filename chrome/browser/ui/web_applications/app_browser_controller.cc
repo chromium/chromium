@@ -455,6 +455,12 @@ void AppBrowserController::OnTabStripModelChanged(
     // WebContents should be null when the last tab is closed.
     DCHECK_EQ(web_contents() == nullptr, tab_strip_model->empty());
   }
+
+  // Do not update the UI during window shutdown.
+  if (!selection.new_contents) {
+    return;
+  }
+
   UpdateCustomTabBarVisibility(/*animate=*/false);
 }
 

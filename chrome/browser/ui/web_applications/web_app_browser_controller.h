@@ -157,6 +157,13 @@ class WebAppBrowserController : public AppBrowserController,
   absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
   const raw_ref<WebAppProvider> provider_;
+
+  // Save the display mode at time of launch. The web app display mode may
+  // change with manifest updates but the app window should continue using
+  // whatever it was launched with.
+  DisplayMode manifest_display_mode_ = DisplayMode::kUndefined;
+  DisplayMode effective_display_mode_ = DisplayMode::kUndefined;
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   raw_ptr<const ash::SystemWebAppDelegate> system_app_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

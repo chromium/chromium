@@ -40,6 +40,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
@@ -123,6 +124,10 @@ WebAppBrowserController::WebAppBrowserController(
       system_app_(system_app)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 {
+  manifest_display_mode_ =
+      registrar().GetEffectiveDisplayModeFromManifest(this->app_id());
+  effective_display_mode_ =
+      registrar().GetAppEffectiveDisplayMode(this->app_id());
   install_manager_observation_.Observe(&provider.install_manager());
   PerformDigitalAssetLinkVerification(browser);
 }
@@ -132,10 +137,8 @@ WebAppBrowserController::~WebAppBrowserController() = default;
 bool WebAppBrowserController::HasMinimalUiButtons() const {
   if (has_tab_strip())
     return false;
-  DisplayMode app_display_mode =
-      registrar().GetEffectiveDisplayModeFromManifest(app_id());
-  return app_display_mode == DisplayMode::kBrowser ||
-         app_display_mode == DisplayMode::kMinimalUi;
+  return manifest_display_mode_ == DisplayMode::kBrowser ||
+         manifest_display_mode_ == DisplayMode::kMinimalUi;
 }
 
 bool WebAppBrowserController::IsHostedApp() const {
@@ -153,8 +156,7 @@ WebAppBrowserController::GetTabMenuModelFactory() const {
 }
 
 bool WebAppBrowserController::AppUsesWindowControlsOverlay() const {
-  DisplayMode display = registrar().GetAppEffectiveDisplayMode(app_id());
-  return display == DisplayMode::kWindowControlsOverlay;
+  return effective_display_mode_ == DisplayMode::kWindowControlsOverlay;
 }
 
 bool WebAppBrowserController::IsWindowControlsOverlayEnabled() const {
@@ -181,12 +183,14 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
 }
 
 bool WebAppBrowserController::AppUsesBorderlessMode() const {
-  DisplayMode display = registrar().GetAppEffectiveDisplayMode(app_id());
-  return display == DisplayMode::kBorderless;
+  return effective_display_mode_ == DisplayMode::kBorderless;
 }
 
 bool WebAppBrowserController::AppUsesTabbed() const {
-  return registrar().IsTabbedWindowModeEnabled(app_id());
+  if (!base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)) {
+    return false;
+  }
+  return effective_display_mode_ == DisplayMode::kTabbed;
 }
 
 bool WebAppBrowserController::IsIsolatedWebApp() const {
@@ -538,9 +542,8 @@ void WebAppBrowserController::OnTabInserted(content::WebContents* contents) {
   // considered "appy".
   WebAppTabHelper::FromWebContents(contents)->set_acting_as_app(true);
 
-  if (registrar().IsTabbedWindowModeEnabled(app_id()) &&
-      IsPinnedHomeTabUrl(registrar(), app_id(),
-                         contents->GetLastCommittedURL())) {
+  if (AppUsesTabbed() && IsPinnedHomeTabUrl(registrar(), app_id(),
+                                            contents->GetLastCommittedURL())) {
     WebAppTabHelper::FromWebContents(contents)->set_is_pinned_home_tab(true);
   }
 }
