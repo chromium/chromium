@@ -743,6 +743,14 @@ absl::optional<Value> Value::Dict::ExtractByDottedPath(StringPiece path) {
   return extracted;
 }
 
+size_t Value::Dict::EstimateMemoryUsage() const {
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+  return base::trace_event::EstimateMemoryUsage(storage_);
+#else   // BUILDFLAG(ENABLE_BASE_TRACING)
+  return 0;
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+}
+
 std::string Value::Dict::DebugString() const {
   return DebugStringImpl(*this);
 }
@@ -1301,10 +1309,11 @@ Value* Value::SetPath(span<const StringPiece> path, Value&& value) {
 
     // Use lower_bound to avoid doing the search twice for missing keys.
     const StringPiece path_component = *cur_path;
-    auto found = cur->dict().lower_bound(path_component);
-    if (found == cur->dict().end() || found->first != path_component) {
+    auto found = cur->GetDict().storage_.lower_bound(path_component);
+    if (found == cur->GetDict().storage_.end() ||
+        found->first != path_component) {
       // No key found, insert one.
-      auto inserted = cur->dict().try_emplace(
+      auto inserted = cur->GetDict().storage_.try_emplace(
           found, path_component, std::make_unique<Value>(Type::DICT));
       cur = inserted->second.get();
     } else {
@@ -1319,11 +1328,11 @@ Value* Value::SetPath(span<const StringPiece> path, Value&& value) {
 }
 
 Value::dict_iterator_proxy Value::DictItems() {
-  return dict_iterator_proxy(&dict());
+  return dict_iterator_proxy(&GetDict().storage_);
 }
 
 Value::const_dict_iterator_proxy Value::DictItems() const {
-  return const_dict_iterator_proxy(&dict());
+  return const_dict_iterator_proxy(&GetDict().storage_);
 }
 
 size_t Value::DictSize() const {
@@ -1394,7 +1403,7 @@ size_t Value::EstimateMemoryUsage() const {
     case Type::BINARY:
       return base::trace_event::EstimateMemoryUsage(GetBlob());
     case Type::DICT:
-      return base::trace_event::EstimateMemoryUsage(dict());
+      return GetDict().EstimateMemoryUsage();
     case Type::LIST:
       return GetList().EstimateMemoryUsage();
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
