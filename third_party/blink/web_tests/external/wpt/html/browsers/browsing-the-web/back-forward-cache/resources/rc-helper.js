@@ -20,7 +20,7 @@ async function getBeforeBFCache(remoteContextHelper) {
 // If the value in window is set to true, this means that the page was reloaded,
 // i.e., the page was restored from BFCache.
 // Call `prepareForBFCache()` before navigating away to call this function.
-async function assert_implements_bfcache(remoteContextHelper) {
+async function assertImplementsBFCacheOptional(remoteContextHelper) {
   var beforeBFCache = await getBeforeBFCache(remoteContextHelper);
   assert_implements_optional(beforeBFCache == true, 'BFCache not supported.');
 }
@@ -37,7 +37,7 @@ async function assert_implements_bfcache(remoteContextHelper) {
 // If the API is not available, the function will terminate instead of marking
 // the assertion failed.
 // Call `prepareForBFCache()` before navigating away to call this function.
-async function assert_not_bfcached(
+async function assertNotRestoredFromBFCache(
     remoteContextHelper, notRestoredReasons) {
   var beforeBFCache = await getBeforeBFCache(remoteContextHelper);
   assert_equals(beforeBFCache, undefined);
@@ -86,15 +86,18 @@ async function assert_not_bfcached(
 // A helper function that combines the steps of setting window property,
 // navigating away and back, and making assertion on whether BFCache is
 // supported.
-async function assertBFCache(remoteContextHelper, shouldRestoreFromBFCache) {
+// This function can be used to check if the current page is eligible for
+// BFCache.
+async function assertBFCacheEligibility(
+    remoteContextHelper, shouldRestoreFromBFCache) {
   await prepareForBFCache(remoteContextHelper);
   // Navigate away and back.
   const newRemoteContextHelper = await remoteContextHelper.navigateToNew();
   await newRemoteContextHelper.historyBack();
 
   if (shouldRestoreFromBFCache) {
-    await assert_implements_bfcache(remoteContextHelper);
+    await assertImplementsBFCacheOptional(remoteContextHelper);
   } else {
-    await assert_not_bfcached(remoteContextHelper);
+    await assertNotRestoredFromBFCache(remoteContextHelper);
   }
 }

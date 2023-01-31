@@ -15,7 +15,7 @@ promise_test(async t => {
       /*config=*/ null, /*options=*/ {features: 'noopener'});
 
   await createIndexedDBForTesting(rc1, 'test_idb', 1);
-  await assertBFCache(rc1, /*shouldRestoreFromBFCache=*/ true);
+  await assertBFCacheEligibility(rc1, /*shouldRestoreFromBFCache=*/ true);
 
   // The page is ensured to be eligible for BFCache even with open connection,
   // otherwise the previous assertion will fail with PRECONDITION_FAILED.
@@ -30,5 +30,5 @@ promise_test(async t => {
   // correct reason.
   // `kIgnoreEventAndEvict` will be reported as "Internal error".
   // See `NotRestoredReasonToReportString()`.
-  await assert_not_bfcached(rc1, ['Internal error']);
+  await assertNotRestoredFromBFCache(rc1, ['Internal error']);
 });
