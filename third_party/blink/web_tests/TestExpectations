@@ -4417,7 +4417,6 @@ crbug.com/1006759 http/tests/devtools/profiler/heap-snapshot-loader.js [ Failure
 
 # DevTools roll
 crbug.com/1006759 http/tests/devtools/elements/styles-1/edit-value-url-with-color.js [ Crash Failure Pass Timeout ]
-crbug.com/1400243 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
 
 #Mixed content autoupgrades make these tests not applicable, since they check for mixed content audio/video
 crbug.com/1025274 external/wpt/mixed-content/gen/top.meta/unset/audio-tag.https.html [ Failure ]
