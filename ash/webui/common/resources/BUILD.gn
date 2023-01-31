@@ -374,7 +374,11 @@ ts_definitions("generate_definitions") {
   root_dir = "$target_gen_dir/$preprocessed_dir"
   out_dir = "$target_gen_dir/$preprocessed_dir"
   js_files = generate_definitions_js_files
-  deps = [ "//ui/webui/resources:library" ]
+  deps = [
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
   extra_deps = [
     ":copy_checked_in_dts_files",
     ":copy_generated_dts_files",

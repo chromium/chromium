@@ -17,7 +17,10 @@ build_webui("build") {
   mojo_files_deps = [ "../mojom:mojom_webui_js" ]
   mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/guest_os_installer/mojom/guest_os_installer.mojom-webui.js" ]
 
-  ts_deps = [ "//ui/webui/resources:library" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:library",
+  ]
 
   grit_output_dir = "$root_gen_dir/ash/webui"
 }
