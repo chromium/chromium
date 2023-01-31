@@ -740,6 +740,10 @@ LoggerImpl* MediaRouterMojoImpl::GetLogger() {
   return &logger_;
 }
 
+MediaRouterDebugger& MediaRouterMojoImpl::GetDebugger() {
+  return media_router_debugger_;
+}
+
 void MediaRouterMojoImpl::GetLogsAsString(GetLogsAsStringCallback callback) {
   std::move(callback).Run(logger_.GetLogsAsJson());
 }

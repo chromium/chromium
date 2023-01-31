@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_base.h"
+#include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
@@ -122,6 +123,7 @@ class MockMediaRouter : public MediaRouterBase {
   MOCK_CONST_METHOD0(GetLogs, base::Value());
   MOCK_CONST_METHOD0(GetState, base::Value::Dict());
   MOCK_METHOD0(GetLogger, LoggerImpl*());
+  MOCK_METHOD0(GetDebugger, MediaRouterDebugger&());
 #endif  // !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(OnAddPresentationConnectionStateChangedCallbackInvoked,
                void(const content::PresentationConnectionStateChangedCallback&

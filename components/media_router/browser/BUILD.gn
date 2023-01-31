@@ -7,6 +7,8 @@ source_set("browser") {
     "media_router.h",
     "media_router_base.cc",
     "media_router_base.h",
+    "media_router_debugger.cc",
+    "media_router_debugger.h",
     "media_router_dialog_controller.cc",
     "media_router_dialog_controller.h",
     "media_router_factory.cc",
@@ -115,6 +117,7 @@ source_set("unit_tests") {
 
   sources = [
     "media_router_base_unittest.cc",
+    "media_router_debugger_unittest.cc",
     "media_router_dialog_controller_unittest.cc",
     "media_router_factory_unittest.cc",
     "media_router_metrics_unittest.cc",

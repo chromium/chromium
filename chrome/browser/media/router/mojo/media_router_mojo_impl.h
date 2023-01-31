@@ -22,6 +22,7 @@
 #include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_base.h"
+#include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/mojom/logger.mojom.h"
@@ -142,6 +143,8 @@ class MediaRouterMojoImpl : public MediaRouterBase,
                        const std::vector<url::Origin>& origins) override;
 
   LoggerImpl* GetLogger() override;
+
+  MediaRouterDebugger& GetDebugger() override;
 
   // Mojo remotes to media route providers. Providers are added via
   // RegisterMediaRouteProvider().
@@ -447,6 +450,8 @@ class MediaRouterMojoImpl : public MediaRouterBase,
   // Collects logs from the Media Router and the native Media Route Providers.
   // TODO(crbug.com/1077138): Limit logging before Media Router usage.
   LoggerImpl logger_;
+
+  MediaRouterDebugger media_router_debugger_;
 };
 
 }  // namespace media_router
