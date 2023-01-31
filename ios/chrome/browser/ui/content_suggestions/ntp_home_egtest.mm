@@ -531,24 +531,22 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the position of the collection view is restored when navigating
 // back to the NTP.
-// TODO(crbug.com/1364725): Re-enable test after fixing the test failure.
-- (void)DISABLED_testPositionRestored {
-  [self addMostVisitedTile];
-
+- (void)testPositionRestored {
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Save the position before navigating.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
   CGFloat previousPosition = collectionView.contentOffset.y;
 
   // Navigate and come back.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
-                                base::SysUTF8ToNSString(kPageTitle)),
-                            grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+
+  [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
   [ChromeEarlGrey goBack];
 
@@ -560,8 +558,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when navigating back to the NTP while having the omnibox focused
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
-// TODO(crbug.com/1364725): Re-enable test after fixing test failures.
-- (void)DISABLED_testPositionRestoredWithShiftingOffset {
+- (void)testPositionRestoredWithShiftingOffset {
   [self addMostVisitedTile];
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
@@ -592,15 +589,16 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 }
 
 // Tests that when navigating back to the NTP while having the omnibox focused
-// does not consider the shifting offset, since the omnibox was already pinned
-// before focusing.
-// TODO(crbug.com/1364725): Fix small jump when focusing pinned omnibox.
-- (void)DISABLED_testPositionRestoredWithoutShiftingOffset {
-  [self addMostVisitedTile];
-
+// does not consider the shifting offset in the instance the omnibox was already
+// pinned to the top of the page before focusing.
+- (void)testPositionRestoredWithoutShiftingOffset {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Pinning Fake Omnibox to top of surface is only on iphone");
+  }
   // Scroll enough to naturally pin the omnibox to the top.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
 
   // Save the position before navigating.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -614,10 +612,12 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                   @"Focusing the omnibox changed the scroll position.");
 
   // Navigate and come back.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(
-                     base::SysUTF8ToNSString(kPageTitle))]
-      performAction:grey_tap()];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(kPageURL);
+
+  [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
   [ChromeEarlGrey goBack];
 
