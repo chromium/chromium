@@ -167,8 +167,8 @@ export class CustomizeDialogElement extends PolymerElement {
     if (!this.selectedCollection_) {
       return false;
     }
-    return !!this.theme &&
-        this.selectedCollection_.id === this.theme.dailyRefreshCollectionId;
+    return !!this.theme && this.theme.dailyRefreshEnabled &&
+        this.selectedCollection_!.id === this.theme.backgroundImageCollectionId;
   }
 
   private computeShowTitleNavigation_(): boolean {

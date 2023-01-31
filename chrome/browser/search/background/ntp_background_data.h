@@ -135,11 +135,14 @@ struct CustomBackground {
   // Url to learn more info about the custom background.
   GURL custom_background_attribution_action_url;
 
-  // Id of the collection being used for "daily refresh".
+  // Id of the collection being used.
   std::string collection_id;
 
   // Main color of the image.
   absl::optional<SkColor> custom_background_main_color;
+
+  // Whether daily refresh is enabled.
+  bool daily_refresh_enabled;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_

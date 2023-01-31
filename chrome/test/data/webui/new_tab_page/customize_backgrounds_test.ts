@@ -113,6 +113,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://a.com/p.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     handler.setResultFor('getBackgroundImages', Promise.resolve({
       images: [image],
@@ -144,6 +145,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://example.com/image.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
@@ -168,6 +170,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://example.com/image.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
@@ -195,6 +198,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://example.com/image.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
@@ -219,6 +223,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://example.com/image.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     customizeBackgrounds.theme.backgroundImage =
@@ -240,6 +245,7 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
       previewImageUrl: {url: 'https://example.com/image.png'},
       attributionUrl: {url: ''},
       attribution2: '',
+      collectionId: '',
     };
     const customizeBackgrounds = await createCustomizeBackgrounds();
     handler.setResultFor('getBackgroundImages', Promise.resolve({
@@ -292,7 +298,8 @@ suite('NewTabPageCustomizeBackgroundsTest', () => {
 
     test('not selected when refresh collection set', () => {
       const theme = createTheme();
-      theme.dailyRefreshCollectionId = 'landscape';
+      theme.dailyRefreshEnabled = true;
+      theme.backgroundImageCollectionId = 'landscape';
       customizeBackgrounds.theme = theme;
       assertSetNoBackgroundImageNotCalled();
     });

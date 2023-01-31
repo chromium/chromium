@@ -29,6 +29,8 @@ struct CollectionImage {
   url.mojom.Url image_url;
   // URL to a preview of the image. Can point to untrusted content.
   url.mojom.Url preview_image_url;
+  // Collection id of the image;
+  string collection_id;
 };
 
 // The background image URL and styling.
@@ -55,14 +57,16 @@ struct Theme {
   skia.mojom.SkColor background_color;
   // True if the background is custom.
   bool is_custom_background;
+  // True if daily refresh is enabled.
+  bool daily_refresh_enabled;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
   // True if the realbox icons should be themed based on the background color.
   bool theme_realbox_icons;
   // Color of Google logo. If not set show the logo multi-colored.
   skia.mojom.SkColor? logo_color;
-  // Selected collection for daily refresh.
-  string? daily_refresh_collection_id;
+  // Collection id of the background image.
+  string? background_image_collection_id;
   // The background image.
   BackgroundImage? background_image;
   // Human readable attributions of the background image.
@@ -234,7 +238,7 @@ interface PageHandler {
   // Sets the background image and notifies all NTPs of the change.
   SetBackgroundImage(string attribution_1, string attribution_2,
       url.mojom.Url attribution_url, url.mojom.Url image_url,
-      url.mojom.Url thumbnail_url);
+      url.mojom.Url thumbnail_url, string collection_id);
   // Sets collection id for daily refresh. When |collection_id| is empty, the
   // daily refresh is turned off.
   SetDailyRefreshCollectionId(string collection_id);

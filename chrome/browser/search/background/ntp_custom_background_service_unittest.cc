@@ -101,7 +101,8 @@ TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundURL) {
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kUrl, custom_background->custom_background_url);
-  EXPECT_EQ(false, custom_background->is_uploaded_image);
+  EXPECT_FALSE(custom_background->is_uploaded_image);
+  EXPECT_FALSE(custom_background->daily_refresh_enabled);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
@@ -393,6 +394,7 @@ TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundCollectionId) {
 
   auto custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kValidId, custom_background->collection_id);
+  EXPECT_TRUE(custom_background->daily_refresh_enabled);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 
   // An invalid id should clear the pref/background.
@@ -405,30 +407,6 @@ TEST_F(NtpCustomBackgroundServiceTest, SetCustomBackgroundCollectionId) {
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_FALSE(custom_background.has_value());
   EXPECT_FALSE(custom_background_service_->IsCustomBackgroundSet());
-}
-
-TEST_F(NtpCustomBackgroundServiceTest,
-       CollectionIdTakePriorityOverBackgroundURL) {
-  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(1);
-  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
-  const std::string kValidId("art");
-  const GURL kUrl("https://www.foo.com/");
-
-  CollectionImage image;
-  image.collection_id = kValidId;
-  image.image_url = GURL("https://www.test.com/");
-  custom_background_service_->SetNextCollectionImageForTesting(image);
-  custom_background_service_->AddValidBackdropUrlForTesting(kUrl);
-  custom_background_service_->AddValidBackdropCollectionForTesting(kValidId);
-
-  custom_background_service_->SetCustomBackgroundInfo(kUrl, GURL(), "", "",
-                                                      GURL(), kValidId);
-  task_environment_.RunUntilIdle();
-
-  auto custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_EQ(kValidId, custom_background->collection_id);
-  EXPECT_EQ("https://www.test.com/", custom_background->custom_background_url);
-  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
 TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
@@ -477,6 +455,7 @@ TEST_F(NtpCustomBackgroundServiceTest, RefreshesBackgroundAfter24Hours) {
   custom_background = custom_background_service_->GetCustomBackground();
   EXPECT_EQ(kValidId, custom_background->collection_id);
   EXPECT_EQ(kImageUrl2, custom_background->custom_background_url);
+  EXPECT_TRUE(custom_background->daily_refresh_enabled);
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
 }
 
