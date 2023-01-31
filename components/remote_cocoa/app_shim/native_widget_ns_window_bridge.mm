@@ -663,11 +663,14 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   // In headless mode the platform window is always hidden, so instead of
   // changing its visibility state just maintain a local flag to track the
   // expected visibility state and lie to the upper layer pretending the
-  // window did change its visibility state.
+  // window did change its visibility and activation state.
   if (headless_mode_window_) {
     headless_mode_window_->visibility_state =
         new_state != WindowVisibilityState::kHideWindow;
     host_->OnVisibilityChanged(headless_mode_window_->visibility_state);
+    if (new_state == WindowVisibilityState::kShowAndActivateWindow) {
+      OnWindowKeyStatusChangedTo(/*is_key*/ true);
+    }
     return;
   }
 
