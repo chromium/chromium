@@ -75,9 +75,10 @@ class EventLogsUploadManager {
   // Makes the upload HTTP request using the provided |access_token| for
   // the upload chunk with id |chunk_id| and the log entries specified
   // as a list in |log_entries|.
-  HRESULT MakeUploadLogChunkRequest(const std::string& access_token,
-                                    uint64_t chunk_id,
-                                    std::unique_ptr<base::Value> log_entries);
+  HRESULT MakeUploadLogChunkRequest(
+      const std::string& access_token,
+      uint64_t chunk_id,
+      std::unique_ptr<base::Value::List> log_entries);
 };
 
 }  // namespace credential_provider

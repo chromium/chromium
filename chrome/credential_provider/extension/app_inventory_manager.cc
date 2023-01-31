@@ -220,9 +220,9 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
                                 .append(a));
   }
 
-  base::Value app_info_value_list(base::Value::Type::LIST);
+  base::Value::List app_info_value_list;
   for (std::wstring regPath : app_path_list) {
-    auto request_dict = std::make_unique<base::Value>(base::Value::Type::DICT);
+    base::Value::Dict request_dict;
 
     wchar_t display_name[256];
     ULONG display_length = std::size(display_name);
@@ -230,8 +230,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
         GetMachineRegString(regPath, std::wstring(kAppDisplayNameRegistryKey),
                             display_name, &display_length);
     if (hr == S_OK) {
-      request_dict->SetStringKey(kAppDisplayName,
-                                 base::WideToUTF8(display_name));
+      request_dict.Set(kAppDisplayName, base::WideToUTF8(display_name));
 
       wchar_t display_version[256];
       ULONG version_length = std::size(display_version);
@@ -239,8 +238,7 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
                                std::wstring(kAppDisplayVersionRegistryKey),
                                display_version, &version_length);
       if (hr == S_OK) {
-        request_dict->SetStringKey(kAppDisplayVersion,
-                                   base::WideToUTF8(display_version));
+        request_dict.Set(kAppDisplayVersion, base::WideToUTF8(display_version));
       }
 
       wchar_t publisher[256];
@@ -248,18 +246,17 @@ base::Value AppInventoryManager::GetInstalledWin32Apps() {
       hr = GetMachineRegString(regPath, std::wstring(kAppPublisherRegistryKey),
                                publisher, &publisher_length);
       if (hr == S_OK) {
-        request_dict->SetStringKey(kAppPublisher, base::WideToUTF8(publisher));
+        request_dict.Set(kAppPublisher, base::WideToUTF8(publisher));
       }
 
       // App_type value 1 refers to WIN_32 applications.
-      request_dict->SetIntKey(kAppType, 1);
+      request_dict.Set(kAppType, 1);
 
-      app_info_value_list.Append(
-          base::Value::FromUniquePtrValue(std::move(request_dict)));
+      app_info_value_list.Append(std::move(request_dict));
     }
   }
 
-  return app_info_value_list;
+  return base::Value(std::move(app_info_value_list));
 }
 
 void AppInventoryManager::SetUploadAppInventoryFromEsaFeatureEnabledForTesting(

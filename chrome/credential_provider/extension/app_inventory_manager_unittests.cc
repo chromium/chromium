@@ -182,40 +182,33 @@ TEST_P(AppInventoryManagerTest, uploadAppInventory) {
     absl::optional<base::Value> body_value =
         base::JSONReader::Read(request_data.body);
 
-    base::Value request(base::Value::Type::DICT);
+    base::Value::Dict request;
 
-    request.SetStringKey("device_resource_id", "valid-device-resource-id");
-    request.SetStringKey("dm_token", "valid-dm-token");
-    request.SetStringKey("obfuscated_gaia_id", "test-gaia-id");
-    request.SetStringKey("user_sid", "S-1-4-2");
-    base::Value app_info_value_list(base::Value::Type::LIST);
+    request.Set("device_resource_id", "valid-device-resource-id");
+    request.Set("dm_token", "valid-dm-token");
+    request.Set("obfuscated_gaia_id", "test-gaia-id");
+    request.Set("user_sid", "S-1-4-2");
+    base::Value::List app_info_value_list;
 
     if (has_app_data) {
-      std::unique_ptr<base::Value> request_dict_1;
-      request_dict_1 = std::make_unique<base::Value>(base::Value::Type::DICT);
-      request_dict_1->SetStringKey(kAppDisplayName,
-                                   base::WideToUTF8(kAppDisplayName1));
-      request_dict_1->SetStringKey(kAppDisplayVersion,
-                                   base::WideToUTF8(kAppDisplayVersion1));
-      request_dict_1->SetStringKey(kAppPublisher,
-                                   base::WideToUTF8(kAppPublisher1));
+      base::Value::Dict request_dict_1;
+      request_dict_1.Set(kAppDisplayName, base::WideToUTF8(kAppDisplayName1));
+      request_dict_1.Set(kAppDisplayVersion,
+                         base::WideToUTF8(kAppDisplayVersion1));
+      request_dict_1.Set(kAppPublisher, base::WideToUTF8(kAppPublisher1));
       // WIN_32
-      request_dict_1->SetIntKey(kAppType, 1);
-      app_info_value_list.Append(
-          base::Value::FromUniquePtrValue(std::move(request_dict_1)));
+      request_dict_1.Set(kAppType, 1);
+      app_info_value_list.Append(std::move(request_dict_1));
 
-      std::unique_ptr<base::Value> request_dict_2;
-      request_dict_2 = std::make_unique<base::Value>(base::Value::Type::DICT);
-      request_dict_2->SetStringKey(kAppDisplayName,
-                                   base::WideToUTF8(kAppDisplayName2));
-      request_dict_2->SetStringKey(kAppDisplayVersion,
-                                   base::WideToUTF8(kAppDisplayVersion2));
-      request_dict_2->SetIntKey(kAppType, 1);
-      app_info_value_list.Append(
-          base::Value::FromUniquePtrValue(std::move(request_dict_2)));
+      base::Value::Dict request_dict_2;
+      request_dict_2.Set(kAppDisplayName, base::WideToUTF8(kAppDisplayName2));
+      request_dict_2.Set(kAppDisplayVersion,
+                         base::WideToUTF8(kAppDisplayVersion2));
+      request_dict_2.Set(kAppType, 1);
+      app_info_value_list.Append(std::move(request_dict_2));
     }
 
-    request.SetKey("windows_gpcw_app_info", std::move(app_info_value_list));
+    request.Set("windows_gpcw_app_info", std::move(app_info_value_list));
     ASSERT_EQ(body_value.value(), request);
   }
 }
