@@ -36,11 +36,6 @@
 namespace gpu {
 namespace {
 
-// TODO(crbug.com/1293509): Remove after M110 branch.
-BASE_FEATURE(kSkipReadbackToSharedMemory,
-             "SkipReadbackToSharedMemory",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
 
 // Unique GUIDs for child backings.
@@ -485,9 +480,7 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
 
   auto& shm_element = GetElement(SharedImageAccessStream::kMemory);
 
-  // If shared memory already contains the latest content skip readback.
-  if (HasLatestContent(shm_element) &&
-      base::FeatureList::IsEnabled(kSkipReadbackToSharedMemory)) {
+  if (HasLatestContent(shm_element)) {
     return true;
   }
 
