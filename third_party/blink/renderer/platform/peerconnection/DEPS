@@ -45,6 +45,7 @@ include_rules = [
 specific_include_rules = {
     ".*_test\.cc": [
         "+base/threading/thread.h",
+        "+components/webrtc/thread_wrapper.h",
         "+gpu/command_buffer/common/mailbox.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",
         "+media/video/mock_video_encode_accelerator.h",

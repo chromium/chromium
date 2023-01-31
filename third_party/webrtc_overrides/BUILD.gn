@@ -114,6 +114,8 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:rtc_task_queue",
   "//third_party/webrtc/rtc_base:socket",
   "//third_party/webrtc/rtc_base:socket_address",
+  "//third_party/webrtc/rtc_base:socket_factory",
+  "//third_party/webrtc/rtc_base:socket_server",
   "//third_party/webrtc/rtc_base:ssl",
   "//third_party/webrtc/rtc_base:threading",
   "//third_party/webrtc/rtc_base:timestamp_aligner",
@@ -301,5 +303,20 @@ source_set("bridge_ice_controller") {
     "//third_party/webrtc/p2p:rtc_p2p",
     "//third_party/webrtc/rtc_base:logging",
     "//third_party/webrtc/rtc_base/system:rtc_export",
+  ]
+}
+
+source_set("ice_controller_test_utils") {
+  testonly = true
+
+  sources = [
+    "p2p/base/fake_connection_factory.cc",
+    "p2p/base/fake_connection_factory.h",
+    "rtc_base/fake_socket_factory.cc",
+    "rtc_base/fake_socket_factory.h",
+  ]
+  deps = [
+    ":webrtc_component",
+    "//base",
   ]
 }
