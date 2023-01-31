@@ -4,7 +4,15 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 
+#include <vector>
+
 #include "ash/clipboard/clipboard_history_util.h"
+#include "base/notreached.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 
@@ -37,6 +45,58 @@ ClipboardHistoryItem::DisplayFormat CalculateDisplayFormat(
   }
 }
 
+// Returns the text to display for the file system data contained within `data`.
+std::u16string DetermineDisplayTextForFileSystemData(
+    const ui::ClipboardData& data) {
+  // This code should not be reached if `data` doesn't contain file system data.
+  std::u16string sources;
+  std::vector<base::StringPiece16> source_list;
+  clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
+  if (sources.empty()) {
+    NOTREACHED();
+    return std::u16string();
+  }
+
+  // Strip path information, so all that's left are file names.
+  for (auto& source : source_list) {
+    source = source.substr(source.find_last_of(u"/") + 1);
+  }
+
+  // Join file names, unescaping encoded character sequences for display. This
+  // ensures that "My%20File.txt" will display as "My File.txt".
+  return base::UTF8ToUTF16(base::UnescapeURLComponent(
+      base::UTF16ToUTF8(base::JoinString(source_list, u", ")),
+      base::UnescapeRule::SPACES));
+}
+
+std::u16string DetermineDisplayText(const ui::ClipboardData& data) {
+  switch (clipboard_history_util::CalculateMainFormat(data).value()) {
+    case ui::ClipboardInternalFormat::kPng:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_IMAGE);
+    case ui::ClipboardInternalFormat::kText:
+      return base::UTF8ToUTF16(data.text());
+    case ui::ClipboardInternalFormat::kHtml:
+      // Show plain text if it exists. Otherwise, show the placeholder.
+      if (!data.text().empty()) {
+        return base::UTF8ToUTF16(data.text());
+      }
+
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_HTML);
+    case ui::ClipboardInternalFormat::kSvg:
+      return base::UTF8ToUTF16(data.svg_data());
+    case ui::ClipboardInternalFormat::kRtf:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_RTF_CONTENT);
+    case ui::ClipboardInternalFormat::kBookmark:
+      return base::UTF8ToUTF16(data.bookmark_title());
+    case ui::ClipboardInternalFormat::kWeb:
+      return l10n_util::GetStringUTF16(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
+    case ui::ClipboardInternalFormat::kFilenames:
+    case ui::ClipboardInternalFormat::kCustom:
+      // Currently, the only supported type of custom data is file system data.
+      return DetermineDisplayTextForFileSystemData(data);
+  }
+}
+
 }  // namespace
 
 ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
@@ -44,7 +104,8 @@ ClipboardHistoryItem::ClipboardHistoryItem(ui::ClipboardData data)
       data_(std::move(data)),
       main_format_(clipboard_history_util::CalculateMainFormat(data_).value()),
       display_format_(CalculateDisplayFormat(main_format_, data_)),
-      time_copied_(base::Time::Now()) {}
+      time_copied_(base::Time::Now()),
+      display_text_(DetermineDisplayText(data_)) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem&) =
     default;

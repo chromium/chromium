@@ -15,23 +15,17 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
-#include "base/strings/escape.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace ash {
 
@@ -78,36 +72,6 @@ class UnrenderedHTMLPlaceholderImage : public gfx::CanvasImageSource {
   }
 };
 
-// Helpers ---------------------------------------------------------------------
-
-// Returns the localized string for the specified |resource_id|.
-std::u16string GetLocalizedString(int resource_id) {
-  return ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
-      resource_id);
-}
-
-// Returns label to display for the file system data contained within |data|.
-std::u16string GetLabelForFileSystemData(const ui::ClipboardData& data) {
-  // This code should not be reached if `data` doesn't contain file system data.
-  std::u16string sources;
-  std::vector<base::StringPiece16> source_list;
-  clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
-  if (sources.empty()) {
-    NOTREACHED();
-    return std::u16string();
-  }
-
-  // Strip path information, so all that's left are file names.
-  for (auto it = source_list.begin(); it != source_list.end(); ++it)
-    *it = it->substr(it->find_last_of(u"/") + 1);
-
-  // Join file names, unescaping encoded character sequences for display. This
-  // ensures that "My%20File.txt" will display as "My File.txt".
-  return base::UTF8ToUTF16(base::UnescapeURLComponent(
-      base::UTF16ToUTF8(base::JoinString(source_list, u", ")),
-      base::UnescapeRule::SPACES));
-}
-
 }  // namespace
 
 // ClipboardHistoryResourceManager ---------------------------------------------
@@ -136,34 +100,6 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
     return placeholder_image_model_;
   }
   return cached_image_model->image_model;
-}
-
-std::u16string ClipboardHistoryResourceManager::GetLabel(
-    const ClipboardHistoryItem& item) const {
-  const ui::ClipboardData& data = item.data();
-  switch (clipboard_history_util::CalculateMainFormat(data).value()) {
-    case ui::ClipboardInternalFormat::kPng:
-      return GetLocalizedString(IDS_CLIPBOARD_MENU_IMAGE);
-    case ui::ClipboardInternalFormat::kText:
-      return base::UTF8ToUTF16(data.text());
-    case ui::ClipboardInternalFormat::kHtml:
-      // Show plain-text if it exists, otherwise show the placeholder.
-      if (!data.text().empty())
-        return base::UTF8ToUTF16(data.text());
-      return GetLocalizedString(IDS_CLIPBOARD_MENU_HTML);
-    case ui::ClipboardInternalFormat::kSvg:
-      return base::UTF8ToUTF16(data.svg_data());
-    case ui::ClipboardInternalFormat::kRtf:
-      return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
-    case ui::ClipboardInternalFormat::kBookmark:
-      return base::UTF8ToUTF16(data.bookmark_title());
-    case ui::ClipboardInternalFormat::kWeb:
-      return GetLocalizedString(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
-    case ui::ClipboardInternalFormat::kFilenames:
-    case ui::ClipboardInternalFormat::kCustom:
-      // Currently the only supported type of custom data is file system data.
-      return GetLabelForFileSystemData(data);
-  }
 }
 
 void ClipboardHistoryResourceManager::AddObserver(Observer* observer) const {

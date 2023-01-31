@@ -48,6 +48,7 @@ class ASH_EXPORT ClipboardHistoryItem {
   ui::ClipboardInternalFormat main_format() const { return main_format_; }
   DisplayFormat display_format() const { return display_format_; }
   const base::Time time_copied() const { return time_copied_; }
+  const std::u16string& display_text() const { return display_text_; }
 
  private:
   // Unique identifier.
@@ -66,6 +67,9 @@ class ASH_EXPORT ClipboardHistoryItem {
 
   // Time when the item's current data was set.
   base::Time time_copied_;
+
+  // The text that should be displayed on this item's menu entry.
+  const std::u16string display_text_;
 };
 
 }  // namespace ash

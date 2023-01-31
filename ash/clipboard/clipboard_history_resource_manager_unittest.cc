@@ -10,21 +10,16 @@
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/icu_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 
@@ -115,74 +110,6 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   const ClipboardHistoryResourceManager* resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
 };
-
-TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
-  base::test::ScopedRestoreICUDefaultLocale locale("en_US");
-
-  // Populate a builder with all the data formats that we expect to handle.
-  ClipboardHistoryItemBuilder builder;
-  builder.SetText("Text")
-      .SetMarkup("HTML with no image or table tags")
-      .SetRtf("Rtf")
-      .SetFilenames({ui::FileInfo(base::FilePath("/path/to/File.txt"),
-                                  base::FilePath("File.txt")),
-                     ui::FileInfo(base::FilePath("/path/to/Other%20File.txt"),
-                                  base::FilePath("Other%20File.txt"))})
-      .SetBookmarkTitle("Bookmark Title")
-      .SetPng(gfx::test::CreatePNGBytes(10))
-      .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
-      .SetWebSmartPaste(true);
-
-  // PNG data always take precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Image");
-
-  builder.ClearPng();
-
-  // In the absence of PNG data, HTML data takes precedence, but we use
-  // plain-text format for the label.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Text");
-
-  builder.ClearText();
-
-  // If plan-text does not exist, we show a placeholder label.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"HTML Content");
-
-  builder.SetText("Text");
-
-  builder.ClearMarkup();
-
-  // In the absence of markup data, text data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Text");
-
-  builder.ClearText();
-
-  // In the absence of HTML data, RTF data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"RTF Content");
-
-  builder.ClearRtf();
-
-  // In the absence of RTF data, Filenames data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            u"File.txt, Other File.txt");
-
-  builder.ClearFilenames();
-
-  // In the absence of RTF data, bookmark data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Bookmark Title");
-
-  builder.ClearBookmarkTitle();
-
-  // In the absence of bookmark data, web smart paste data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            u"Web Smart Paste Content");
-
-  builder.ClearWebSmartPaste();
-
-  // In the absence of web smart paste data, file system data takes precedence.
-  // NOTE: File system data is the only kind of custom data currently supported.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
-            u"File.txt, Other File.txt");
-}
 
 // Tests that Render is called once when an eligible <img> is added
 // to ClipboardHistory.

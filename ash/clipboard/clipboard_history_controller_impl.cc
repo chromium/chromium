@@ -548,12 +548,11 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
         break;
       }
       case ClipboardHistoryItem::DisplayFormat::kText:
-        item_dict.Set(kTextDataKey, item.data().text());
+        item_dict.Set(kTextDataKey, item.display_text());
         item_dict.Set(kFormatDataKey, kTextFormat);
         break;
       case ClipboardHistoryItem::DisplayFormat::kFile: {
-        std::string file_name =
-            base::UTF16ToUTF8(resource_manager_->GetLabel(item));
+        std::string file_name = base::UTF16ToUTF8(item.display_text());
         item_dict.Set(kTextDataKey, file_name);
         ui::ImageModel image_model =
             clipboard_history_util::GetIconForFileClipboardItem(item,
