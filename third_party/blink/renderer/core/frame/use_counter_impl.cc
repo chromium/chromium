@@ -305,20 +305,9 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;
-    case mojom::blink::UseCounterFeatureType::kUserAgentOverride:
-      return;
   }
   DCHECK(trace_name);
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"), trace_name,
                "feature", feature.value());
 }
-
-void UseCounterImpl::CountUserAgentOverride(
-    blink::UserAgentOverride::UserAgentOverrideHistogram ua_override,
-    const LocalFrame* source_frame) {
-  Count({mojom::blink::UseCounterFeatureType::kUserAgentOverride,
-         static_cast<uint32_t>(ua_override)},
-        source_frame);
-}
-
 }  // namespace blink

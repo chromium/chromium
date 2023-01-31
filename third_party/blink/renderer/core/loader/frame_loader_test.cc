@@ -22,18 +22,6 @@
 
 namespace blink {
 
-namespace {
-
-class UserAgentOverrideWebFrameClient
-    : public frame_test_helpers::TestWebFrameClient {
- public:
-  UserAgentOverrideWebFrameClient() = default;
-
-  WebString UserAgentOverride() override { return WebString("foo"); }
-};
-
-}  // namespace
-
 class FrameLoaderSimTest : public SimTest {
  public:
   FrameLoaderSimTest() = default;
@@ -172,36 +160,6 @@ TEST_F(FrameLoaderTest, PolicyContainerIsStoredOnCommitNavigation) {
                 network::mojom::blink::IPAddressSpace::kUnknown,
                 /*can_navigate_top_without_user_gesture=*/true),
             local_frame->DomWindow()->GetPolicyContainer()->GetPolicies());
-}
-
-class UserAgentOverrideFrameLoaderTest : public FrameLoaderTest {
- public:
-  void SetUp() override {
-    FrameLoaderTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kUserAgentOverrideExperiment);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(UserAgentOverrideFrameLoaderTest, UserAgentOverrideIframeNavigation) {
-  frame_test_helpers::WebViewHelper web_view_helper;
-  UserAgentOverrideWebFrameClient client;
-  WebViewImpl* web_view = web_view_helper.Initialize(&client);
-
-  frame_test_helpers::LoadHTMLString(
-      web_view->MainFrameImpl(),
-      R"HTML(
-      <!DOCTYPE html>
-      <iframe src="foo.html"></iframe>
-  )HTML",
-      url_test_helpers::ToKURL("https://example.com/"));
-
-  // Manually reset ro avoid UAF
-  web_view_helper.Reset();
-  // Test passes if there's no crash.
 }
 
 }  // namespace blink

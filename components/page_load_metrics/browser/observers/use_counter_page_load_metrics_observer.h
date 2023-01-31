@@ -77,9 +77,6 @@ class UseCounterMetricsRecorder {
 
   AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>
       uma_permissions_policy_header2_;
-  AtMostOnceEnumUmaDeferrer<
-      blink::UserAgentOverride::UserAgentOverrideHistogram>
-      uma_user_agent_override_;
 
   // To keep tracks of which features have been measured.
   std::bitset<static_cast<size_t>(blink::mojom::WebFeature::kNumberOfFeatures)>

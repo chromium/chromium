@@ -85,18 +85,6 @@ struct BLINK_COMMON_EXPORT UserAgentOverride {
   // should be used. If this is null, and |ua_string_override| is non-empty,
   // no UA client hints will be sent.
   absl::optional<UserAgentMetadata> ua_metadata_override;
-
-  static constexpr char kUserAgentOverrideHistogram[] =
-      "Blink.UseCounter.UserAgentOverride";
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum UserAgentOverrideHistogram {
-    UserAgentOverriden = 0,
-    UserAgentOverrideSubstring = 1,
-    UserAgentOverrideSuffix = 2,
-    kMaxValue = UserAgentOverrideSuffix,
-  };
 };
 
 bool BLINK_COMMON_EXPORT operator==(const UserAgentMetadata& a,

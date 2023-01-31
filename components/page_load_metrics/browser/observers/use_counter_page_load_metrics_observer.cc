@@ -17,8 +17,6 @@ using UkmFeatureList = UseCounterMetricsRecorder::UkmFeatureList;
 using WebFeature = blink::mojom::WebFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
 using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
-using UserAgentOverrideHistogram =
-    blink::UserAgentOverride::UserAgentOverrideHistogram;
 
 #define FEATURE_HISTOGRAM_NAME(name, is_in_fenced_frames)     \
   is_in_fenced_frames ? "Blink.UseCounter.FencedFrames." name \
@@ -89,11 +87,6 @@ UseCounterMetricsRecorder::UseCounterMetricsRecorder(bool is_in_fenced_frame)
       uma_permissions_policy_header2_(
           AtMostOnceEnumUmaDeferrer<blink::mojom::PermissionsPolicyFeature>(
               FEATURE_HISTOGRAM_NAME("PermissionsPolicy.Header2",
-                                     is_in_fenced_frame))),
-      uma_user_agent_override_(
-          AtMostOnceEnumUmaDeferrer<
-              blink::UserAgentOverride::UserAgentOverrideHistogram>(
-              FEATURE_HISTOGRAM_NAME("UserAgentOverride",
                                      is_in_fenced_frame))) {}
 
 UseCounterMetricsRecorder::~UseCounterMetricsRecorder() = default;
@@ -135,7 +128,6 @@ void UseCounterMetricsRecorder::DisableDeferAndFlush() {
   uma_permissions_policy_violation_enforce_.DisableDeferAndFlush();
   uma_permissions_policy_allow2_.DisableDeferAndFlush();
   uma_permissions_policy_header2_.DisableDeferAndFlush();
-  uma_user_agent_override_.DisableDeferAndFlush();
 }
 
 void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
@@ -178,10 +170,6 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
     case FeatureType::kPermissionsPolicyIframeAttribute:
       uma_permissions_policy_allow2_.RecordOrDefer(
           static_cast<PermissionsPolicyFeature>(feature.value()));
-      break;
-    case FeatureType::kUserAgentOverride:
-      uma_user_agent_override_.RecordOrDefer(
-          static_cast<UserAgentOverrideHistogram>(feature.value()));
       break;
   }
 }

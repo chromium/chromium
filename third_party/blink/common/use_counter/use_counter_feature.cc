@@ -40,11 +40,6 @@ bool UseCounterFeature::IsValid() const {
       return value_ < static_cast<UseCounterFeature::EnumValue>(
                           mojom::PermissionsPolicyFeature::kMaxValue) +
                           1;
-    case mojom::UseCounterFeatureType::kUserAgentOverride:
-      return value_ < static_cast<UseCounterFeature::EnumValue>(
-                          blink::UserAgentOverride::UserAgentOverrideHistogram::
-                              kMaxValue) +
-                          1;
   }
 }
 

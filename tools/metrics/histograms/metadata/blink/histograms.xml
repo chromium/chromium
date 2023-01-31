@@ -3221,25 +3221,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.UseCounter.FencedFrames.UserAgentOverride"
-    enum="UserAgentOverride" expires_after="2023-06-01">
-  <owner>lbrady@google.com</owner>
-  <owner>shivanisha@chromium.org</owner>
-  <owner>dom@chromium.org</owner>
-  <summary>
-    Similar to Blink.UseCounter.UserAgentOverride, this measures how often a
-    User-Agent string is overridden, how often that override contains the
-    original User-Agent string, and how often that override is the original
-    User-Agent string with a suffix concatinated to the end. Measured once per
-    navigation request and at most once per page load, either when a resource
-    fetch request is prepared or when navigator.userAgent is accessed, if the UA
-    string has been overridden. But the page is limited only to FencedFrames
-    pages.
-
-    Not recorded if the page is prerendered and cancelled.
-  </summary>
-</histogram>
-
 <histogram name="Blink.UseCounter.File.Features" enum="FeatureObserver"
     expires_after="2024-01-01">
   <owner>yhirano@chromium.org</owner>
@@ -3313,22 +3294,6 @@ chromium-metrics-reviews@google.com.
     triggered when ExecutionContext::IsFeatureEnabled with
     ReportOptions::ReportOnFailure as param returns false, at most once per page
     visit.
-
-    Not recorded if the page is prerendered and cancelled.
-  </summary>
-</histogram>
-
-<histogram name="Blink.UseCounter.UserAgentOverride" enum="UserAgentOverride"
-    expires_after="2023-01-22">
-  <owner>aarontag@chromium.org</owner>
-  <owner>miketaylr@chromium.org</owner>
-  <summary>
-    Measures how often a User-Agent string is overridden, how often that
-    override contains the original User-Agent string, and how often that
-    override is the original User-Agent string with a suffix concatinated to the
-    end. Measured once per navigation request and at most once per page load,
-    either when a resource fetch request is prepared or when navigator.userAgent
-    is accessed, if the UA string has been overridden.
 
     Not recorded if the page is prerendered and cancelled.
   </summary>

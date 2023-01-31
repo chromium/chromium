@@ -294,7 +294,7 @@ class CORE_EXPORT FrameLoader final {
 
   LocalFrameClient* Client() const;
 
-  String ApplyUserAgentOverrideAndLog(const String& user_agent) const;
+  String ApplyUserAgentOverride(const String& user_agent) const;
 
   // This struct holds information about a navigation, which is being
   // initiated by the client through the browser process, until the navigation

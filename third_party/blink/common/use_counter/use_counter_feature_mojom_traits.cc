@@ -30,8 +30,6 @@ bool IsReservedFeature(const blink::UseCounterFeature& feature) {
       return feature.value() ==
              static_cast<blink::UseCounterFeature::EnumValue>(
                  blink::mojom::PermissionsPolicyFeature::kNotFound);
-    case blink::mojom::UseCounterFeatureType::kUserAgentOverride:
-      return false;
   }
 }
 }  // namespace

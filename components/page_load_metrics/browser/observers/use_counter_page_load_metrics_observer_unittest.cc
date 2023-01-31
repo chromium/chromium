@@ -50,8 +50,6 @@ const char* GetUseCounterHistogramName(
         return "Blink.UseCounter.FencedFrames.PermissionsPolicy.Header2";
       case FeatureType::kPermissionsPolicyIframeAttribute:
         return "Blink.UseCounter.FencedFrames.PermissionsPolicy.Allow2";
-      case FeatureType::kUserAgentOverride:
-        return "Blink.UseCounter.FencedFrames.UserAgentOverride";
     }
   } else {
     if (is_in_main_frame) {
@@ -71,8 +69,6 @@ const char* GetUseCounterHistogramName(
         return "Blink.UseCounter.PermissionsPolicy.Header2";
       case FeatureType::kPermissionsPolicyIframeAttribute:
         return "Blink.UseCounter.PermissionsPolicy.Allow2";
-      case FeatureType::kUserAgentOverride:
-        return "Blink.UseCounter.UserAgentOverride";
     }
   }
 }

@@ -67,8 +67,6 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/content_test_helper.h"
-#include "components/sessions/core/serialized_navigation_entry.h"
-#include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
@@ -102,7 +100,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -187,8 +184,7 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
   PageLoadMetricsBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {ukm::kUkmFeature, blink::features::kPortals,
-         blink::features::kPortalsCrossOrigin,
-         blink::features::kUserAgentOverrideExperiment},
+         blink::features::kPortalsCrossOrigin},
         {});
   }
 
@@ -2291,107 +2287,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, LoadingMetrics) {
       browser(), embedded_test_server()->GetURL("/title1.html")));
   // Waits until nonzero loading metrics are seen.
   waiter->Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
-                       UseCounterUserAgentOverride) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  std::string original_ua = embedder_support::GetUserAgent();
-  std::string ua_no_substring = "foo";
-  std::string ua_prefix = "foo" + original_ua;
-  std::string ua_suffix = original_ua + "foo";
-
-  {
-    base::HistogramTester histogram;
-    web_contents->SetUserAgentOverride(
-        blink::UserAgentOverride::UserAgentOnly(ua_no_substring), false);
-    web_contents->GetController()
-        .GetLastCommittedEntry()
-        ->SetIsOverridingUserAgent(true);
-    auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-    waiter->AddUseCounterFeatureExpectation({
-        blink::mojom::UseCounterFeatureType::kUserAgentOverride,
-        blink::UserAgentOverride::UserAgentOverriden,
-    });
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/empty.html")));
-    content::EvalJsResult result = EvalJs(web_contents, "navigator.userAgent;");
-    waiter->Wait();
-    NavigateToUntrackedUrl();
-    content::FetchHistogramsFromChildProcesses();
-    // Expect 2; one in the navigation stack and one in the renderer
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverriden, 2);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSubstring, 0);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSuffix, 0);
-  }
-
-  {
-    base::HistogramTester histogram;
-    web_contents->SetUserAgentOverride(
-        blink::UserAgentOverride::UserAgentOnly(ua_prefix), false);
-    web_contents->GetController()
-        .GetLastCommittedEntry()
-        ->SetIsOverridingUserAgent(true);
-    auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-    waiter->AddUseCounterFeatureExpectation({
-        blink::mojom::UseCounterFeatureType::kUserAgentOverride,
-        blink::UserAgentOverride::UserAgentOverrideSubstring,
-    });
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/empty.html")));
-    content::EvalJsResult result = EvalJs(web_contents, "navigator.userAgent;");
-    waiter->Wait();
-    NavigateToUntrackedUrl();
-    content::FetchHistogramsFromChildProcesses();
-    // Expect 2; one in the navigation stack and one in the renderer
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverriden, 0);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSubstring, 2);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSuffix, 0);
-  }
-  {
-    base::HistogramTester histogram;
-    web_contents->SetUserAgentOverride(
-        blink::UserAgentOverride::UserAgentOnly(ua_suffix), false);
-    web_contents->GetController()
-        .GetLastCommittedEntry()
-        ->SetIsOverridingUserAgent(true);
-    auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
-    waiter->AddUseCounterFeatureExpectation({
-        blink::mojom::UseCounterFeatureType::kUserAgentOverride,
-        blink::UserAgentOverride::UserAgentOverrideSuffix,
-    });
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/empty.html")));
-    content::EvalJsResult result = EvalJs(web_contents, "navigator.userAgent;");
-    waiter->Wait();
-    NavigateToUntrackedUrl();
-    content::FetchHistogramsFromChildProcesses();
-    // Expect 2; one in the navigation stack and one in the renderer
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverriden, 0);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSubstring, 0);
-    histogram.ExpectBucketCount(
-        blink::UserAgentOverride::kUserAgentOverrideHistogram,
-        blink::UserAgentOverride::UserAgentOverrideSuffix, 2);
-  }
 }
 
 class SessionRestorePageLoadMetricsBrowserTest

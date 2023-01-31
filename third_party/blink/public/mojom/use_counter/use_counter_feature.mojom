@@ -19,8 +19,6 @@ enum UseCounterFeatureType {
   kPermissionsPolicyIframeAttribute,
   // Blink.UseCounter.PermissionsPolicy.Header
   kPermissionsPolicyHeader,
-  // Blink.UseCounter.UserAgentOverride
-  kUserAgentOverride,
 };
 
 // This struct corresponds to `blink::UseCounterFeature`.

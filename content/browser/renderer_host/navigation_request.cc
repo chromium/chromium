@@ -345,31 +345,6 @@ bool DoesHeaderContainClientHint(
   return headers.GetHeader(header, &value) && value == "?1";
 }
 
-void LogUserAgentOverrideHistogram(const std::string& user_agent) {
-  std::string ua_original = GetContentClient()->browser()->GetUserAgent();
-  base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
-                                UserAgentStringType::kOverriden);
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kUserAgentOverrideExperiment)) {
-    return;
-  }
-
-  auto it = user_agent.find(ua_original);
-  blink::UserAgentOverride::UserAgentOverrideHistogram histogram =
-      blink::UserAgentOverride::UserAgentOverrideHistogram::UserAgentOverriden;
-  if (it == 0) {
-    histogram = blink::UserAgentOverride::UserAgentOverrideHistogram::
-        UserAgentOverrideSuffix;
-  } else if (it != std::string::npos) {
-    histogram = blink::UserAgentOverride::UserAgentOverrideHistogram::
-        UserAgentOverrideSubstring;
-  }
-
-  base::UmaHistogramEnumeration(
-      blink::UserAgentOverride::kUserAgentOverrideHistogram, histogram);
-}
-
 // Computes the value that should be set for the User-Agent header, based on the
 // values of relevant headers like Sec-CH-UA-Reduced or Sec-CH-UA-Full.  If
 // `user_agent_override` is non-empty, `user_agent_override` is returned as the
@@ -378,7 +353,8 @@ std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
                                   const std::string& user_agent_override,
                                   content::BrowserContext* context) {
   if (!user_agent_override.empty()) {
-    LogUserAgentOverrideHistogram(user_agent_override);
+    base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
+                                  UserAgentStringType::kOverriden);
     return user_agent_override;
   }
 
