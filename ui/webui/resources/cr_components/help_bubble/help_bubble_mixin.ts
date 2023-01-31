@@ -242,6 +242,20 @@ export const HelpBubbleMixin = dedupingMixin(
         }
 
         /**
+         * Testing method to validate that anchors will be properly
+         * located at runtime
+         *
+         * Call this method in your browser_tests after your help
+         * bubbles have been registered. Results are sorted to be
+         * deterministic.
+         */
+        getSortedAnchorStatusesForTesting(): Array<[string, boolean]> {
+          return this.controllers
+              .sort((a, b) => a.getNativeId().localeCompare(b.getNativeId()))
+              .map(ctrl => ([ctrl.getNativeId(), ctrl.hasAnchor()]));
+        }
+
+        /**
          * Returns whether a help bubble can be shown
          * This requires:
          * - the mixin is tracking this controller
@@ -503,6 +517,7 @@ export interface HelpBubbleMixinInterface {
   isHelpBubbleShowing(): boolean;
   isHelpBubbleShowingForTesting(id: string): boolean;
   getHelpBubbleForTesting(id: string): HelpBubbleElement|null;
+  getSortedAnchorStatusesForTesting(): Array<[string, boolean]>;
   canShowHelpBubble(controller: HelpBubbleController): boolean;
   showHelpBubble(controller: HelpBubbleController, params: HelpBubbleParams):
       void;
