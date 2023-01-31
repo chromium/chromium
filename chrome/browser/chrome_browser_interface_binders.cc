@@ -336,15 +336,15 @@
 #endif
 
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
-#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
-#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"  // nogncheck
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/accessibility/live_caption_surface.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_surface.h"
 #include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)

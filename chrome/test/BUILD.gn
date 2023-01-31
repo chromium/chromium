@@ -2429,8 +2429,8 @@ if (!is_android) {
 
         # Lacros shouldn't be rendering captions at all; this should be
         # delegated to Ash.
-        "../browser/accessibility/live_caption_controller_browsertest.cc",
-        "../browser/accessibility/live_caption_speech_recognition_host_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_controller_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_speech_recognition_host_browsertest.cc",
 
         # These tests also run on Lacros, as part of
         # lacros_chrome_browsertests_run_in_series below.
@@ -2451,7 +2451,7 @@ if (!is_android) {
 
     if (is_win) {
       sources += [
-        "../browser/accessibility/live_caption_unavailability_notifier_browsertest.cc",
+        "../browser/accessibility/live_caption/live_caption_unavailability_notifier_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
     }
@@ -3661,6 +3661,7 @@ if (!is_android) {
         "../browser/ash/accessibility/dictation_browsertest.cc",
         "../browser/ash/accessibility/dictation_bubble_test_helper.cc",
         "../browser/ash/accessibility/dictation_bubble_test_helper.h",
+        "../browser/ash/accessibility/live_caption/system_live_caption_service_browsertest.cc",
         "../browser/ash/accessibility/magnification_controller_browsertest.cc",
         "../browser/ash/accessibility/magnification_manager_browsertest.cc",
         "../browser/ash/accessibility/magnifier_animation_waiter.cc",
@@ -3672,7 +3673,6 @@ if (!is_android) {
         "../browser/ash/accessibility/spoken_feedback_browsertest.h",
         "../browser/ash/accessibility/sticky_keys_browsertest.cc",
         "../browser/ash/accessibility/switch_access_browsertest.cc",
-        "../browser/ash/accessibility/system_live_caption_service_browsertest.cc",
         "../browser/ash/accessibility/touch_exploration_controller_browsertest.cc",
         "../browser/ash/account_manager/account_manager_policy_controller_browsertest.cc",
         "../browser/ash/app_list/app_list_client_impl_browsertest.cc",
@@ -4779,7 +4779,7 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      "../browser/accessibility/live_caption_surface_browsertest.cc",
+      "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
 
       # dlp_content_manager_lacros_browsertest.cc should become a unit test.
@@ -6173,7 +6173,7 @@ test("unit_tests") {
   if (is_win) {
     assert(toolkit_views)
     sources += [
-      "../browser/accessibility/live_caption_unavailability_notifier_unittest.cc",
+      "../browser/accessibility/live_caption/live_caption_unavailability_notifier_unittest.cc",
       "../browser/chrome_browser_main_win_unittest.cc",
       "../browser/chrome_process_singleton_win_unittest.cc",
       "../browser/component_updater/sw_reporter_installer_win_unittest.cc",
@@ -9839,7 +9839,7 @@ if (!is_android) {
         "//ui/display/manager",
       ]
       sources += [
-        "../browser/ash/accessibility/live_caption_ui_remote_driver_browsertest.cc",
+        "../browser/ash/accessibility/live_caption/live_caption_ui_remote_driver_browsertest.cc",
         "../browser/ash/app_list/app_list_client_interactive_uitest.cc",
         "../browser/ash/login/login_manager_test.cc",
         "../browser/ash/login/login_manager_test.h",

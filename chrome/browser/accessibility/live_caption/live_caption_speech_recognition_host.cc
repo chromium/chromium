@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption_speech_recognition_host.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_speech_recognition_host.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/views/caption_bubble_model.h"

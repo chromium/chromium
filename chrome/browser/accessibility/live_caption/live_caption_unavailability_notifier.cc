@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "components/live_caption/live_caption_controller.h"

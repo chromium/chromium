@@ -7,8 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 source_set("test_support") {
   testonly = true
   sources = [
-    "live_caption_test_util.cc",
-    "live_caption_test_util.h",
+    "live_caption/live_caption_test_util.cc",
+    "live_caption/live_caption_test_util.h",
   ]
 
   deps = [

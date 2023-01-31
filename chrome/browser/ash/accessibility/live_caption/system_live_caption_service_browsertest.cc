@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/system_live_caption_service.h"
+#include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 
 #include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
-#include "chrome/browser/ash/accessibility/system_live_caption_service_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service_factory.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

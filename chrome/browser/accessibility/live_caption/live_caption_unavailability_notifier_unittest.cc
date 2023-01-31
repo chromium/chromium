@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"

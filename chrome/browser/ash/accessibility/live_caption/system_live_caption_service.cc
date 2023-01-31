@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/system_live_caption_service.h"
+#include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 
 #include "ash/accessibility/caption_bubble_context_ash.h"
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_client_browser_interface.h"

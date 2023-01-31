@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption_surface.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_surface.h"
 
 #include "base/path_service.h"
 #include "base/test/bind.h"

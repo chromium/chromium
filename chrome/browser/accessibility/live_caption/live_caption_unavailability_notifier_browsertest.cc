@@ -1,13 +1,13 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/live_caption_unavailability_notifier.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_unavailability_notifier.h"
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility/live_caption_controller_factory.h"
-#include "chrome/browser/accessibility/live_caption_test_util.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
+#include "chrome/browser/accessibility/live_caption/live_caption_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"

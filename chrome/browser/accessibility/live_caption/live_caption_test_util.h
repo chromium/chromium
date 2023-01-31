@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_TEST_UTIL_H_
-#define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_TEST_UTIL_H_
+#ifndef CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_TEST_UTIL_H_
+#define CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_TEST_UTIL_H_
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
@@ -37,4 +37,4 @@ class LiveCaptionBrowserTest : public InProcessBrowserTest {
 
 }  // namespace captions
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_TEST_UTIL_H_
+#endif  // CHROME_BROWSER_ACCESSIBILITY_LIVE_CAPTION_LIVE_CAPTION_TEST_UTIL_H_

@@ -1,0 +1,5 @@
+monorail { component: "Internals>Media>LiveCaption" }
+buganizer {
+  # ChromeOS>Software>Fundamentals>Machine Intelligence>SODA & Live Caption
+  component_id: 1116342
+}
