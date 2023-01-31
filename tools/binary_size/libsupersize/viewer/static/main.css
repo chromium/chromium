@@ -148,16 +148,16 @@ ul {
   position: relative;
 }
 .node {
+  align-items: center;
   display: flex;
   padding-right: 8px;
   margin-right: -8px;
-  align-items: center;
   text-decoration: none;
   color: inherit;
   border-radius: 4px;
 }
 .node:hover {
-  background: #f1f3f4;
+  background: rgba(0,36,55,0.055);
 }
 .node::before {
   content: "";

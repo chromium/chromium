@@ -19,19 +19,18 @@ class TreeUi {
     /** @type {RegExp} Capture one of: "::", "../", "./", "/", "#". */
     this._SPECIAL_CHAR_REGEX = /(::|(?:\.*\/)+|#)/g;
 
-    /** @type {string} Insert zero-width space after capture group */
+    /** @type {string} Insert zero-width space after capture group. */
     this._ZERO_WIDTH_SPACE = '$&\u200b';
 
-    // Templates for tree nodes in the UI.
-    /** @type {HTMLTemplateElement} Template for leaves in the tree */
-    this._leafTemplate = /** @type {HTMLTemplateElement} */ (
-        document.getElementById('treenode-symbol'));
+    /** @type {HTMLTemplateElement} Template for groups in the tree. */
+    this._templateGroup = /** @type {HTMLTemplateElement} */ (
+        document.getElementById('template-symboltree-group'));
 
-    /** @type {HTMLTemplateElement} Template for trees */
-    this._treeTemplate = /** @type {HTMLTemplateElement} */ (
-        document.getElementById('treenode-template'));
+    /** @type {HTMLTemplateElement} Template for leaves in the tree. */
+    this.templateLeaf = /** @type {HTMLTemplateElement} */ (
+        document.getElementById('template-symboltree-leaf'));
 
-    /** @type {HTMLUListElement} Symbol tree element */
+    /** @type {HTMLUListElement} Symbol tree element. */
     this._symbolTree =
         /** @type {HTMLUListElement} */ (document.getElementById('symboltree'));
 
@@ -41,7 +40,7 @@ class TreeUi {
      */
     this._liveNodeList =
         /** @type {HTMLCollectionOf<HTMLAnchorElement | HTMLSpanElement>} */ (
-            document.getElementsByClassName('node'));
+            this._symbolTree.getElementsByClassName('node'));
 
     /**
      * @type {WeakMap<HTMLElement, Readonly<TreeNode>>}
@@ -99,14 +98,19 @@ class TreeUi {
   async _toggleTreeElement(event) {
     event.preventDefault();
 
-    // See `#treenode-template` for the relation of these elements.
+    // See `#template-symboltree-group` for the relation of these elements.
     const link = /** @type {HTMLAnchorElement} */ (event.currentTarget);
     const treeitem = /** @type {HTMLLIElement} */ (link.parentElement);
     const group = /** @type {HTMLUListElement} */ (link.nextElementSibling);
 
     const isExpanded = treeitem.getAttribute('aria-expanded') === 'true';
     if (isExpanded) {
-      // Update DOM
+      // Take keyboard focus from descendent node.
+      const lastFocused = /** @type {HTMLElement} */ (document.activeElement);
+      if (lastFocused && group.contains(lastFocused)) {
+        this._focusTreeElement(link);
+      }
+      // Update DOM.
       treeitem.setAttribute('aria-expanded', 'false');
       dom.replace(group, null);
     } else {
@@ -164,7 +168,7 @@ class TreeUi {
     /**
      * @type {HTMLAnchorElement | HTMLSpanElement} Tree node element, either a
      * tree or leaf. Trees use `<a>` tags, leaves use `<span>` tags.
-     * See `#treenode-template` and `#treenode-symbol`.
+     * See `#template-symboltree-group` and `#template-symboltree-leaf`.
      */
     const link = /** @type {HTMLAnchorElement | HTMLSpanElement} */ (
         event.target);
@@ -221,8 +225,8 @@ class TreeUi {
       // If closed tree, open tree. Otherwise, move to first child.
       case 'ArrowRight': {
         const expanded = link.parentElement.getAttribute('aria-expanded');
+        // Handle groups only (leaves do not have aria-expanded property).
         if (expanded !== null) {
-          // Leafs do not have the aria-expanded property.
           if (expanded === 'true') {
             _focusNext();
           } else {
@@ -384,7 +388,7 @@ class TreeUi {
    */
   makeTreeElement(node) {
     const isLeaf = node.children && node.children.length === 0;
-    const template = isLeaf ? this._leafTemplate : this._treeTemplate;
+    const template = isLeaf ? this.templateLeaf : this._templateGroup;
     const element = document.importNode(template.content, true);
     const listItemEl = element.firstElementChild;
     const link = /** @type {HTMLElement} */ (listItemEl.firstElementChild);
