@@ -171,8 +171,6 @@
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -228,7 +226,6 @@ enum class ToolbarKind {
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
                                   WebContentCommands,
-                                  WebStateListObserving,
                                   WebNavigationNTPDelegate>
 
 // Whether the coordinator is started.
@@ -406,10 +403,6 @@ enum class ToolbarKind {
 @end
 
 @implementation BrowserCoordinator {
-  // Observers for WebStateList.
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
-  std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
-      _scopedWebStateListObservation;
   BrowserViewControllerDependencies _viewControllerDependencies;
   KeyCommandsProvider* _keyCommandsProvider;
   PrerenderService* _prerenderService;
@@ -442,7 +435,6 @@ enum class ToolbarKind {
 
   DCHECK(!self.viewController);
 
-  [self addWebStateListObserver];
   [self createViewControllerDependencies];
 
   // TabLifeCycleMediator should start before createViewController because it
@@ -483,7 +475,6 @@ enum class ToolbarKind {
   [self stopChildCoordinators];
   [self destroyViewController];
   [self destroyViewControllerDependencies];
-  [self removeWebStateListObserver];
   self.started = NO;
 }
 
@@ -525,7 +516,7 @@ enum class ToolbarKind {
   // TODO(crbug.com/906199): Move this to the NewTabPageTabHelper when
   // WebStateObserver has a webUsage callback.
   if (!active) {
-    [self stopNTP];
+    [self.NTPCoordinator stop];
   }
 }
 
@@ -1208,8 +1199,9 @@ enum class ToolbarKind {
   TabInsertionBrowserAgent* insertion_agent =
       TabInsertionBrowserAgent::FromBrowser(self.browser);
   lifecycleMediator.tabInsertionBrowserAgent = insertion_agent;
-  lifecycleMediator.myNewTabPageTabHelperDelegate = self;
+  lifecycleMediator.NTPTabHelperDelegate = self;
   lifecycleMediator.snapshotGeneratorDelegate = self;
+  lifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   [lifecycleMediator startWithWebStateList:self.browser->GetWebStateList()];
 }
@@ -1902,35 +1894,7 @@ enum class ToolbarKind {
                                    completion:completion];
 }
 
-// TODO(crbug.com/1403956) : Move WebStateListObserving out of
-// BrowserCoordinator.
-#pragma mark - WebStateListObserving
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)index {
-  [self stopNTPIfNeeded];
-}
-
-// TODO(crbug.com/1403956) : Move out of BrowserCoordinator along with
-// WebStateListObserving.
 #pragma mark - Private WebState management methods
-
-// Adds observer for WebStateList.
-- (void)addWebStateListObserver {
-  _webStateListObserverBridge =
-      std::make_unique<WebStateListObserverBridge>(self);
-  _scopedWebStateListObservation = std::make_unique<
-      base::ScopedObservation<WebStateList, WebStateListObserver>>(
-      _webStateListObserverBridge.get());
-  _scopedWebStateListObservation->Observe(self.browser->GetWebStateList());
-}
-
-// Removes observer for WebStateList.
-- (void)removeWebStateListObserver {
-  _scopedWebStateListObservation.reset();
-  _webStateListObserverBridge.reset();
-}
 
 // Installs delegates for self.browser.
 - (void)installDelegatesForBrowser {
@@ -2494,33 +2458,10 @@ enum class ToolbarKind {
     [NTPCoordinator didNavigateToNTP];
   } else {
     [NTPCoordinator didNavigateAwayFromNTP];
-    [self stopNTPIfNeeded];
   }
   if (self.isActive) {
     [self.viewController displayCurrentTab];
   }
-}
-
-#pragma mark - Private methods to support NewTabPageTabHelperDelegate
-
-// Checks if there are any WebStates showing an NTP at this time. If not, then
-// stops the NTP.
-- (void)stopNTPIfNeeded {
-  WebStateList* webStateList = self.browser->GetWebStateList();
-  for (int i = 0; i < webStateList->count(); i++) {
-    NewTabPageTabHelper* iterNtpHelper =
-        NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
-    if (iterNtpHelper->IsActive()) {
-      return;
-    }
-  }
-
-  // No active NTPs were found.
-  [self stopNTP];
-}
-
-- (void)stopNTP {
-  [self.NTPCoordinator stop];
 }
 
 @end

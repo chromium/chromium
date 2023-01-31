@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
@@ -378,6 +379,20 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 
 #pragma mark - Public
 
+- (void)stopIfNeeded {
+  WebStateList* webStateList = self.browser->GetWebStateList();
+  for (int i = 0; i < webStateList->count(); i++) {
+    NewTabPageTabHelper* iterNtpHelper =
+        NewTabPageTabHelper::FromWebState(webStateList->GetWebStateAt(i));
+    if (iterNtpHelper->IsActive()) {
+      return;
+    }
+  }
+
+  // No active NTPs were found.
+  [self stop];
+}
+
 - (void)stopScrolling {
   if (!self.contentSuggestionsCoordinator) {
     return;
@@ -458,6 +473,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
 - (void)didNavigateAwayFromNTP {
   [self ntpDidChangeVisibility:NO];
   self.webState = nullptr;
+  [self stopIfNeeded];
 }
 
 #pragma mark - Setters

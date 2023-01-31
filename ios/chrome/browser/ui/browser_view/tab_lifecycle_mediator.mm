@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/web_content_commands.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/web/annotations/annotations_tab_helper.h"
@@ -124,7 +125,7 @@
       _tabInsertionBrowserAgent);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(
-      _myNewTabPageTabHelperDelegate);
+      _NTPTabHelperDelegate);
 
   if (AnnotationsTabHelper::FromWebState(webState)) {
     DCHECK(_baseViewController);
@@ -188,6 +189,7 @@
   if (priceNotificationsTabHelper) {
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
   }
+  [self.NTPCoordinator stopIfNeeded];
 }
 
 @end

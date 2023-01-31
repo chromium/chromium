@@ -11,6 +11,7 @@
 
 @protocol CommonTabHelperDelegate;
 @class DownloadManagerCoordinator;
+@class NewTabPageCoordinator;
 @protocol FollowIPHPresenter;
 class PrerenderService;
 @class PrintController;
@@ -38,9 +39,9 @@ class WebStateList;
 @property(nonatomic, assign) PrerenderService* prerenderService;
 @property(nonatomic, weak) UIViewController* baseViewController;
 @property(nonatomic, weak) CommandDispatcher* commandDispatcher;
+@property(nonatomic, weak) NewTabPageCoordinator* NTPCoordinator;
 @property(nonatomic, weak) id<NetExportTabHelperDelegate> tabHelperDelegate;
-@property(nonatomic, weak) id<NewTabPageTabHelperDelegate>
-    myNewTabPageTabHelperDelegate;
+@property(nonatomic, weak) id<NewTabPageTabHelperDelegate> NTPTabHelperDelegate;
 @property(nonatomic, weak) id<PriceNotificationsIPHPresenter>
     priceNotificationsIPHPresenter;
 @property(nonatomic, weak) PrintController* printController;

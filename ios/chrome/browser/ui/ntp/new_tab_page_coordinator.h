@@ -95,6 +95,10 @@
 // Called when the given `feedType` has completed updates.
 - (void)handleFeedModelDidEndUpdates:(FeedType)feedType;
 
+// Checks if there are any WebStates showing an NTP at this time. If not, then
+// stops the NTP.
+- (void)stopIfNeeded;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COORDINATOR_H_

@@ -317,7 +317,6 @@ TEST_F(BrowserCoordinatorTest, NewTabPageTabHelperDelegate) {
 
   // Open a non-NTP page and expect a call to the NTP coordinator.
   [[mockNTPCoordinator expect] didNavigateAwayFromNTP];
-  [[mockNTPCoordinator expect] stop];
   OpenURL(GURL("chrome://version/"));
   EXPECT_OCMOCK_VERIFY(mockNTPCoordinator);
 
