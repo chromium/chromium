@@ -180,6 +180,12 @@ void TooltipAura::RemoveObserver(wm::TooltipObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+// static
+void TooltipAura::AdjustToCursor(gfx::Rect* anchor_point) {
+  // TODO(crbug.com/1410707): Should adjust with actual cursor size.
+  anchor_point->Offset(kCursorOffsetX, kCursorOffsetY);
+}
+
 class TooltipAura::TooltipWidget : public Widget {
  public:
   TooltipWidget() = default;

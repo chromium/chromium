@@ -36,7 +36,7 @@ class TooltipAuraTestApi;
 class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
  public:
   static const char kWidgetName[];
-  // FIXME: get cursor offset from actual cursor size.
+  // TODO(crbug.com/1410707): get cursor offset from actual cursor size.
   static constexpr int kCursorOffsetX = 10;
   static constexpr int kCursorOffsetY = 15;
 
@@ -49,6 +49,9 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
 
   void AddObserver(wm::TooltipObserver* observer) override;
   void RemoveObserver(wm::TooltipObserver* observer) override;
+
+  // Adjusts `anchor_point` to the bottom left of the cursor.
+  static void AdjustToCursor(gfx::Rect* anchor_point);
 
  private:
   class TooltipWidget;

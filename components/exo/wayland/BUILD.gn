@@ -315,6 +315,7 @@ source_set("unit_tests") {
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/display",
+    "//ui/events:test_support",
     "//ui/gfx",
     "//ui/wm/public",
   ]

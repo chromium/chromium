@@ -764,6 +764,7 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
 TEST_F(TooltipControllerTest, MAYBE_Capture) {
   const std::u16string tooltip_text(u"1");
   const std::u16string tooltip_text2(u"2");
+  const std::u16string tooltip_text_child(u"child");
 
   widget_->SetBounds(gfx::Rect(0, 0, 200, 200));
   view_->set_tooltip_text(tooltip_text);
@@ -800,6 +801,25 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
                                    reinterpret_cast<void*>(grouping_key));
   generator_->MoveMouseBy(1, 10);
   EXPECT_EQ(tooltip_text2, helper_->GetTooltipText());
+
+  // Make child widget under widget2 and let the mouse be over the child widget.
+  // Even though the child widget does not have grouping property key, it should
+  // refer to its parent property. In this scenario, `widget_child`'s parent is
+  // `widget2` and it has the same kGroupingPropertyKey as `widget_`'s key, so
+  // `widget_child` should show tooltip when `widget_` has a capture.
+  std::unique_ptr<views::Widget> widget_child(CreateWidget(GetContext()));
+  widget_child->SetContentsView(std::make_unique<View>());
+  TooltipTestView* view_child = new TooltipTestView;
+  widget_child->GetContentsView()->AddChildView(view_child);
+  view_child->set_tooltip_text(tooltip_text_child);
+  widget_child->SetBounds(gfx::Rect(0, 0, 200, 200));
+  view_child->SetBoundsRect(widget_child->GetContentsView()->GetLocalBounds());
+  Widget::ReparentNativeView(widget_child->GetNativeView(),
+                             widget2->GetNativeView());
+  widget_child->Show();
+
+  generator_->MoveMouseBy(1, 10);
+  EXPECT_EQ(tooltip_text_child, helper_->GetTooltipText());
 
   widget2.reset();
 }
