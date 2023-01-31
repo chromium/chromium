@@ -182,9 +182,8 @@ TEST_F(CrowdStrikeClientTest, Identifiers_NotJwt) {
   ValidateHistogram(SignalsParsingError::kJsonParsingFailed);
 }
 
-// TODO(crbug.com/1411504): failing on ASan builds.
-TEST_F(CrowdStrikeClientTest, DISABLED_Identifiers_MaxDataSize) {
-  std::string content("a", 33 * 1024);
+TEST_F(CrowdStrikeClientTest, Identifiers_MaxDataSize) {
+  std::string content(33 * 1024, 'a');
   CreateFakeFileWithContent(content);
   EXPECT_FALSE(GetSignals());
   ValidateHistogram(SignalsParsingError::kHitMaxDataSize);
