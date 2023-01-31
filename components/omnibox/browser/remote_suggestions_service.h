@@ -42,34 +42,22 @@ class RemoteSuggestionsService : public KeyedService {
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               std::unique_ptr<std::string> response_body)>;
 
-  // Returns the suggest endpoint URL for `template_url` where the zero suggest
-  // request is being sent. Does not take into account whether sending this
-  // request is prohibited (e.g. in an incognito window).
-  // Returns an invalid URL (i.e.: GURL::is_valid() == false) in case of an
-  // error.
+  // Returns the suggest endpoint URL for `template_url`.
   //
-  // `search_terms_args` encapsulates the arguments sent to the suggest service.
-  // Various parts of it (including the current page URL and classification) are
-  // used to build the final endpoint URL. Note that the current page URL can
-  // be empty.
-  //
-  // Note that this method is public and is also used by ZeroSuggestProvider for
-  // suggestions that do not take the current page URL into consideration.
+  // `template_url` must not be nullptr.
+  // `search_terms_args` is used to build the endpoint URL.
+  // `search_terms_data` is used to build the endpoint URL.
   static GURL EndpointUrl(const TemplateURL* template_url,
                           TemplateURLRef::SearchTermsArgs search_terms_args,
                           const SearchTermsData& search_terms_data);
 
-  // Creates and returns a loader for remote suggestions for `template_url` and
-  // passes the loader to `start_callback`. It uses a number of signals to
-  // create the loader, including field trial / experimental parameters.
-  //
-  // `search_terms_args` encapsulates the arguments sent to the remote service.
-  // If `search_terms_args.current_page_url` is empty, the system will never use
-  // the experimental suggestions service. It's possible the non-experimental
-  // service may decide to offer general-purpose suggestions.
+  // Creates and returns a loader for remote suggestions for `template_url`.
+  // It uses a number of signals to create the loader, including field trial
+  // parameters.
   //
   // `template_url` must not be nullptr.
-  //
+  // `search_terms_args` is used to build the endpoint URL.
+  // `search_terms_data` is used to build the endpoint URL.
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartSuggestionsRequest(
       const TemplateURL* template_url,
@@ -77,8 +65,24 @@ class RemoteSuggestionsService : public KeyedService {
       const SearchTermsData& search_terms_data,
       CompletionCallback completion_callback);
 
+  // Creates and returns a loader for remote zero-prefix suggestions for
+  // `template_url`. It uses a number of signals to create the loader, including
+  // field trial parameters.
+  //
+  // `template_url` must not be nullptr.
+  // `search_terms_args` is used to build the endpoint URL.
+  // `search_terms_data` is used to build the endpoint URL.
+  // `completion_callback` will be invoked when the transfer is done.
+  std::unique_ptr<network::SimpleURLLoader> StartZeroPrefixSuggestionsRequest(
+      const TemplateURL* template_url,
+      TemplateURLRef::SearchTermsArgs search_terms_args,
+      const SearchTermsData& search_terms_data,
+      CompletionCallback completion_callback);
+
   // Creates and returns a loader to delete personalized suggestions.
+  //
   // `deletion_url` must be a valid URL.
+  // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartDeletionRequest(
       const std::string& deletion_url,
       CompletionCallback completion_callback);

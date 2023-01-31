@@ -56,7 +56,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
   TemplateURLService template_url_service(nullptr, 0);
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
-  service.StartSuggestionsRequest(
+  service.StartZeroPrefixSuggestionsRequest(
       template_url_service.GetDefaultSearchProvider(), search_terms_args,
       template_url_service.search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
@@ -83,7 +83,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
-  service.StartSuggestionsRequest(
+  service.StartZeroPrefixSuggestionsRequest(
       template_url_service.GetDefaultSearchProvider(), search_terms_args,
       template_url_service.search_terms_data(),
       base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,

@@ -464,7 +464,7 @@ void ZeroSuggestProvider::StartPrefetch(const AutocompleteInput& input) {
   prefetch_loader_ =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-          ->StartSuggestionsRequest(
+          ->StartZeroPrefixSuggestionsRequest(
               template_url, search_terms_args,
               template_url_service->search_terms_data(),
               base::BindOnce(&ZeroSuggestProvider::OnPrefetchURLLoadComplete,
@@ -522,7 +522,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
   // Create a loader for the request and take ownership of it.
   loader_ = client()
                 ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
-                ->StartSuggestionsRequest(
+                ->StartZeroPrefixSuggestionsRequest(
                     template_url, search_terms_args,
                     template_url_service->search_terms_data(),
                     base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,

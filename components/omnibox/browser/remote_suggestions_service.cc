@@ -68,6 +68,63 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   }
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("omnibox_suggest", R"(
+        semantics {
+          sender: "Omnibox"
+          description:
+            "Chrome can provide search and navigation suggestions from the "
+            "currently-selected search provider in the omnibox dropdown, based "
+            "on user input."
+          trigger: "User typing in the omnibox."
+          data:
+            "The text typed into the address bar. Potentially other metadata, "
+            "such as the current cursor position or URL of the current page."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "Users can control this feature via the 'Use a prediction service "
+            "to help complete searches and URLs typed in the address bar' "
+            "setting under 'Privacy'. The feature is enabled by default."
+          chrome_policy {
+            SearchSuggestEnabled {
+                policy_options {mode: MANDATORY}
+                SearchSuggestEnabled: false
+            }
+          }
+        })");
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = suggest_url;
+  request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
+  // Add Chrome experiment state to the request headers.
+  AddVariationHeaders(request.get());
+
+  // Make loader and start download.
+  std::unique_ptr<network::SimpleURLLoader> loader =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(std::move(completion_callback), loader.get()));
+  return loader;
+}
+
+std::unique_ptr<network::SimpleURLLoader>
+RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
+    const TemplateURL* template_url,
+    TemplateURLRef::SearchTermsArgs search_terms_args,
+    const SearchTermsData& search_terms_data,
+    CompletionCallback completion_callback) {
+  DCHECK(template_url);
+
+  const GURL suggest_url =
+      EndpointUrl(template_url, search_terms_args, search_terms_data);
+  if (!suggest_url.is_valid()) {
+    return nullptr;
+  }
+
+  net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("omnibox_zerosuggest", R"(
         semantics {
           sender: "Omnibox"

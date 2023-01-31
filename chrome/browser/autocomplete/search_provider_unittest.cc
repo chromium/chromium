@@ -141,8 +141,7 @@ std::unique_ptr<KeyedService> BuildRemoteSuggestionsServiceWithURLLoader(
     network::TestURLLoaderFactory* test_url_loader_factory,
     content::BrowserContext* context) {
   return std::make_unique<RemoteSuggestionsService>(
-      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          test_url_loader_factory));
+      test_url_loader_factory->GetSafeWeakWrapper());
 }
 
 }  // namespace

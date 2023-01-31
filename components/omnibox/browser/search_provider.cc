@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/suggestion_answer.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -927,85 +928,31 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
         base::NumberToString(prefetch_data_.query_type);
   }
 
-  // Append a specific suggest client if it is in ChromeOS app_list launcher
-  // contexts.
   const SearchTermsData& search_terms_data =
       client()->GetTemplateURLService()->search_terms_data();
-  BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
-      template_url, search_terms_data, input.current_page_classification(),
-      &search_term_args);
 
-  // If the request is from omnibox focus, send empty search term args. The
-  // purpose of such a request is to signal the server to warm up; no info
-  // is required.
-  TemplateURLRef::SearchTermsArgs empty_search_term_args;
-  BaseSearchProvider::AppendSuggestClientToAdditionalQueryParams(
-      template_url, search_terms_data, input.current_page_classification(),
-      &empty_search_term_args);
-  GURL suggest_url(template_url->suggestions_url_ref().ReplaceSearchTerms(
-      input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
-          ? empty_search_term_args
-          : search_term_args,
-      search_terms_data));
-  if (!suggest_url.is_valid())
-    return nullptr;
-
+  // Make sure the current page URL is sent in the request, if it is allowed.
   if (CanSendCurrentPageURLInRequest(input.current_url(), template_url,
                                      input.current_page_classification(),
                                      search_terms_data, client())) {
     search_term_args.current_page_url = input.current_url().spec();
-    // Create the suggest URL again with the current page URL.
-    suggest_url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(
-        search_term_args, search_terms_data));
   }
 
   LogOmniboxSuggestRequest(REQUEST_SENT);
 
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("omnibox_suggest", R"(
-        semantics {
-          sender: "Omnibox"
-          description:
-            "Chrome can provide search and navigation suggestions from the "
-            "currently-selected search provider in the omnibox dropdown, based "
-            "on user input."
-          trigger: "User typing in the omnibox."
-          data:
-            "The text typed into the address bar. Potentially other metadata, "
-            "such as the current cursor position or URL of the current page."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: YES
-          cookies_store: "user"
-          setting:
-            "Users can control this feature via the 'Use a prediction service "
-            "to help complete searches and URLs typed in the address bar' "
-            "setting under 'Privacy'. The feature is enabled by default."
-          chrome_policy {
-            SearchSuggestEnabled {
-                policy_options {mode: MANDATORY}
-                SearchSuggestEnabled: false
-            }
-          }
-        })");
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = suggest_url;
-  request->load_flags = net::LOAD_DO_NOT_SAVE_COOKIES;
-  // Add Chrome experiment state to the request headers.
-  variations::AppendVariationsHeaderUnknownSignedIn(
-      request->url,
-      client()->IsOffTheRecord() ? variations::InIncognito::kYes
-                                 : variations::InIncognito::kNo,
-      request.get());
-
-  std::unique_ptr<network::SimpleURLLoader> loader =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      client()->GetURLLoaderFactory().get(),
-      base::BindOnce(&SearchProvider::OnURLLoadComplete, base::Unretained(this),
-                     loader.get()));
-  return loader;
+  // If the request is from omnibox focus, send empty search term args. The
+  // purpose of such a request is to signal the server to warm up; no info
+  // is required.
+  return client()
+      ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
+      ->StartSuggestionsRequest(
+          template_url,
+          input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
+              ? TemplateURLRef::SearchTermsArgs()
+              : search_term_args,
+          search_terms_data,
+          base::BindOnce(&SearchProvider::OnURLLoadComplete,
+                         base::Unretained(this)));
 }
 
 void SearchProvider::ConvertResultsToAutocompleteMatches() {
