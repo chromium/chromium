@@ -33,6 +33,8 @@
 }
 
 .header {
+  margin-inline-end: 90px;
+  margin-inline-start: 90px;
   margin-top: 48px;
   padding-bottom: 10px;
   text-align: center;
