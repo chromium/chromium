@@ -14,7 +14,9 @@ import subprocess
 import sys
 from enum import Enum
 
-from mojo.public.tools.mojom.mojom_parser import RebaseAbsolutePath
+_THIS_DIR = os.path.realpath(os.path.dirname(__file__))
+_SRC_DIR = os.path.dirname(os.path.dirname(_THIS_DIR))
+_MOJOM_DIR = os.path.join(_SRC_DIR, 'mojo', 'public', 'tools', 'mojom')
 
 
 class CustomProcessor(Enum):
@@ -27,6 +29,11 @@ class CustomProcessor(Enum):
 def _process_build_metadata_json(bm_file, input_roots, output_root, re_outputs,
                                  processed_inputs):
   """Recursively find mojom_parser inputs from a build_metadata file."""
+  # Import Mojo-specific dep here so non-Mojo remote actions don't need it.
+  if _MOJOM_DIR not in sys.path:
+    sys.path.insert(0, _MOJOM_DIR)
+  from mojom_parser import RebaseAbsolutePath
+
   if bm_file in processed_inputs:
     return
 
