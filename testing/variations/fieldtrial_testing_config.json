@@ -6777,6 +6777,21 @@
             ]
         }
     ],
+    "LanguagePacksTts": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ExperimentalAccessibilityGoogleTtsLanguagePacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "LauncherGameSearchStudy": [
         {
             "platforms": [
