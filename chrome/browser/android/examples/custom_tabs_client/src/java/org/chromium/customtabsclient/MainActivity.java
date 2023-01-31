@@ -485,6 +485,7 @@ public class MainActivity
 
     @Override
     protected void onDestroy() {
+        mMediaPlayer.release();
         unbindCustomTabsService();
         super.onDestroy();
     }

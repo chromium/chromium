@@ -74,7 +74,7 @@ public class BottomBarManager extends BroadcastReceiver {
      */
     public static PendingIntent getOnClickPendingIntent(Context context) {
         Intent broadcastIntent = new Intent(context, BottomBarManager.class);
-        return PendingIntent.getBroadcast(context, 0, broadcastIntent, 0);
+        return PendingIntent.getBroadcast(context, 0, broadcastIntent, PendingIntent.FLAG_MUTABLE);
     }
 
     /**
