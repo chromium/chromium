@@ -68,8 +68,9 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
 class KeyboardBacklightColorControllerTest : public AshTestBase {
  public:
-  KeyboardBacklightColorControllerTest()
-      : scoped_feature_list_(features::kRgbKeyboard) {
+  KeyboardBacklightColorControllerTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kRgbKeyboard, features::kMultiZoneRgbKeyboard}, {});
     set_start_session(false);
   }
 
@@ -105,6 +106,12 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
 
   void clear_displayed_color() {
     controller_->displayed_color_for_testing_ = SK_ColorTRANSPARENT;
+  }
+
+  void set_rgb_capability(rgbkbd::RgbKeyboardCapabilities capability) {
+    RgbKeyboardManager* rgb_keyboard_manager =
+        Shell::Get()->rgb_keyboard_manager();
+    rgb_keyboard_manager->OnCapabilityUpdatedForTesting(capability);
   }
 
   std::unique_ptr<KeyboardBacklightColorController> controller_;
@@ -300,6 +307,57 @@ TEST_F(KeyboardBacklightColorControllerTest,
   EXPECT_EQ(personalization_app::mojom::BacklightColor::kBlue,
             controller_->GetBacklightColor(account_id_1));
   EXPECT_EQ(client->keyboard_brightness_percent(), kStartingBrightness);
+}
+
+TEST_F(KeyboardBacklightColorControllerTest, GetBacklightZoneColors) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
+  SimulateUserLogin(account_id_1);
+
+  RgbKeyboardManager* rgb_keyboard_manager =
+      Shell::Get()->rgb_keyboard_manager();
+  set_rgb_capability(rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+  const auto color_to_be_set =
+      personalization_app::mojom::BacklightColor::kBlue;
+  controller_->SetBacklightColor(color_to_be_set, account_id_1);
+  base::RunLoop().RunUntilIdle();
+  // Expects all the zone colors are set to blue.
+  std::vector<personalization_app::mojom::BacklightColor> zone_colors =
+      controller_->GetBacklightZoneColors(account_id_1);
+  EXPECT_EQ(rgb_keyboard_manager->GetZoneCount(),
+            static_cast<int>(zone_colors.size()));
+  for (auto color : zone_colors) {
+    EXPECT_EQ(color, color_to_be_set);
+  }
+}
+
+TEST_F(KeyboardBacklightColorControllerTest, SetBacklightZoneColor) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
+  RgbKeyboardManager* rgb_keyboard_manager =
+      Shell::Get()->rgb_keyboard_manager();
+  set_rgb_capability(rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+  SimulateUserLogin(account_id_1);
+  const auto default_color =
+      personalization_app::mojom::BacklightColor::kWallpaper;
+  EXPECT_EQ(default_color, controller_->GetBacklightColor(account_id_1));
+  // Expects all the zone colors are set to the wallpaper color.
+  std::vector<personalization_app::mojom::BacklightColor> zone_colors =
+      controller_->GetBacklightZoneColors(account_id_1);
+  EXPECT_EQ(rgb_keyboard_manager->GetZoneCount(),
+            static_cast<int>(zone_colors.size()));
+  for (auto color : zone_colors) {
+    EXPECT_EQ(color, default_color);
+  }
+
+  // Updates one of the zone to a different color.
+  const int zone = 3;
+  const auto color_to_be_set = personalization_app::mojom::BacklightColor::kRed;
+  controller_->SetBacklightZoneColor(zone, color_to_be_set, account_id_1);
+  // Expects the backligh color pref to be set to kMultiZone.
+  EXPECT_EQ(personalization_app::mojom::BacklightColor::kMultiZone,
+            controller_->GetBacklightColor(account_id_1));
+  // Expects zone color to be updated.
+  zone_colors = controller_->GetBacklightZoneColors(account_id_1);
+  EXPECT_EQ(color_to_be_set, zone_colors.at(zone));
 }
 
 }  // namespace ash

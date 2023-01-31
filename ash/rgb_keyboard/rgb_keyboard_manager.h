@@ -51,6 +51,8 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   void RemoveObserver(RgbKeyboardManagerObserver* observer);
 
  private:
+  friend class KeyboardBacklightColorControllerTest;
+
   // Enum to track the background mode sent to rgbkbd
   enum class BackgroundType {
     kNone,
@@ -64,6 +66,7 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
 
   // RgbkbdClient::Observer:
+  // Also used in tests to override the keyboard capability.
   void OnCapabilityUpdatedForTesting(
       rgbkbd::RgbKeyboardCapabilities capability) override;
 

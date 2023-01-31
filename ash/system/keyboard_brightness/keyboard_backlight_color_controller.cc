@@ -21,6 +21,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -96,8 +97,13 @@ void KeyboardBacklightColorController::RegisterPrefs(
 void KeyboardBacklightColorController::SetBacklightColor(
     personalization_app::mojom::BacklightColor backlight_color,
     const AccountId& account_id) {
+  DCHECK_NE(personalization_app::mojom::BacklightColor::kMultiZone,
+            backlight_color);
   DisplayBacklightColor(backlight_color);
   SetBacklightColorPref(backlight_color, account_id);
+  if (features::IsMultiZoneRgbKeyboardEnabled()) {
+    UpdateAllBacklightZoneColors(backlight_color, account_id);
+  }
   MaybeToggleOnKeyboardBrightness();
 }
 
@@ -112,6 +118,46 @@ KeyboardBacklightColorController::GetBacklightColor(
   DCHECK(pref_service);
   return static_cast<personalization_app::mojom::BacklightColor>(
       pref_service->GetInteger(prefs::kPersonalizationKeyboardBacklightColor));
+}
+
+void KeyboardBacklightColorController::SetBacklightZoneColor(
+    int zone,
+    personalization_app::mojom::BacklightColor backlight_color,
+    const AccountId& account_id) {
+  DCHECK_LT(zone, Shell::Get()->rgb_keyboard_manager()->GetZoneCount());
+  // TODO(b/266588717): Handle displaying multi-zone colors.
+  SetBacklightColorPref(personalization_app::mojom::BacklightColor::kMultiZone,
+                        account_id);
+  UpdateBacklightZoneColorPref(zone, backlight_color, account_id);
+  MaybeToggleOnKeyboardBrightness();
+}
+
+std::vector<personalization_app::mojom::BacklightColor>
+KeyboardBacklightColorController::GetBacklightZoneColors(
+    const AccountId& account_id) {
+  auto* pref_service = GetUserPrefService(account_id);
+  DCHECK(pref_service);
+  auto* rgb_keyboard_manager = Shell::Get()->rgb_keyboard_manager();
+  DCHECK(rgb_keyboard_manager);
+
+  const base::Value::Dict& color_dict =
+      pref_service->GetDict(prefs::kPersonalizationKeyboardBacklightZoneColors);
+  const int zone_count = rgb_keyboard_manager->GetZoneCount();
+  std::vector<personalization_app::mojom::BacklightColor> colors;
+  colors.reserve(zone_count);
+  const auto backlight_color = GetBacklightColor(account_id);
+  for (int i = 0; i < zone_count; ++i) {
+    // Defaults the zone color to be the currently set backlight color.
+    auto zone_color = backlight_color;
+    auto* color_value = color_dict.Find(base::StringPrintf("zone-%d", i));
+    if (color_value) {
+      // Overrides the currently set backlight color with the actual zone color.
+      zone_color = static_cast<personalization_app::mojom::BacklightColor>(
+          color_value->GetInt());
+    }
+    colors.push_back(zone_color);
+  }
+  return colors;
 }
 
 void KeyboardBacklightColorController::OnRgbKeyboardSupportedChanged(
@@ -242,6 +288,28 @@ void KeyboardBacklightColorController::SetBacklightColorPref(
   GetUserPrefService(account_id)
       ->SetInteger(prefs::kPersonalizationKeyboardBacklightColor,
                    static_cast<int>(backlight_color));
+}
+
+void KeyboardBacklightColorController::UpdateAllBacklightZoneColors(
+    personalization_app::mojom::BacklightColor backlight_color,
+    const AccountId& account_id) {
+  auto* rgb_keyboard_manager = Shell::Get()->rgb_keyboard_manager();
+  DCHECK(rgb_keyboard_manager);
+  const int zone_count = rgb_keyboard_manager->GetZoneCount();
+  for (int zone = 0; zone < zone_count; ++zone) {
+    UpdateBacklightZoneColorPref(zone, backlight_color, account_id);
+  }
+}
+
+void KeyboardBacklightColorController::UpdateBacklightZoneColorPref(
+    int zone,
+    personalization_app::mojom::BacklightColor backlight_color,
+    const AccountId& account_id) {
+  ScopedDictPrefUpdate color_dict(
+      GetUserPrefService(account_id),
+      prefs::kPersonalizationKeyboardBacklightZoneColors);
+  color_dict->Set(base::StringPrintf("zone-%d", zone),
+                  static_cast<int>(backlight_color));
 }
 
 void KeyboardBacklightColorController::MaybeToggleOnKeyboardBrightness() {

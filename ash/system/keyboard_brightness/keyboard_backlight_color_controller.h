@@ -48,7 +48,10 @@ class ASH_EXPORT KeyboardBacklightColorController
   // Register the pref to store keyboard color in the given registry.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Sets the keyboard backlight color for the user with |account_id|.
+  // Sets the keyboard backlight color for the user with |account_id|. This call
+  // also invokes |UpdateAllBacklightZoneColors| to populate the color for all
+  // the zones so that when a zone is customized, we still have the info of what
+  // the correct colors for other zones should be.
   void SetBacklightColor(
       personalization_app::mojom::BacklightColor backlight_color,
       const AccountId& account_id);
@@ -56,6 +59,18 @@ class ASH_EXPORT KeyboardBacklightColorController
   // Returns the currently set backlight color for user with |account_id|.
   personalization_app::mojom::BacklightColor GetBacklightColor(
       const AccountId& account_id);
+
+  // Sets the color of the |zone| for the user with |account_id|.
+  void SetBacklightZoneColor(
+      int zone,
+      personalization_app::mojom::BacklightColor backlight_color,
+      const AccountId& account_id);
+
+  // Returns all the zone colors. The order of the colors corresponds to the
+  // order of the zones. The size of the vector is guaranteed to be the same as
+  // |RgbKeyboardManager::GetZoneCount()|.
+  std::vector<personalization_app::mojom::BacklightColor>
+  GetBacklightZoneColors(const AccountId& account_id);
 
   // RgbKeyboardManagerObserver:
   void OnRgbKeyboardSupportedChanged(bool supported) override;
@@ -86,6 +101,19 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   // Sets the keyboard backlight color pref for user with |account_id|.
   void SetBacklightColorPref(
+      personalization_app::mojom::BacklightColor backlight_color,
+      const AccountId& account_id);
+
+  // Updates all the zone colors to be |backlight_color| in pref for the user
+  // with |account_id|.
+  void UpdateAllBacklightZoneColors(
+      personalization_app::mojom::BacklightColor backlight_color,
+      const AccountId& account_id);
+
+  // Updates the keyboard backlight color zone pref at given |zone| for the user
+  // with |account_id|.
+  void UpdateBacklightZoneColorPref(
+      int zone,
       personalization_app::mojom::BacklightColor backlight_color,
       const AccountId& account_id);
 
