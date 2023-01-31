@@ -524,12 +524,6 @@ public abstract class ToolbarLayout
     void updateBookmarkButton(boolean isBookmarked, boolean editingAllowed) {}
 
     /**
-     * Gives inheriting classes the chance to respond to accessibility state changes.
-     * @param enabled Whether or not accessibility is enabled.
-     */
-    void onAccessibilityStatusChanged(boolean enabled) {}
-
-    /**
      * Gives inheriting classes the chance to do the necessary UI operations after Chrome is
      * restored to a previously saved state.
      */
