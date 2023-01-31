@@ -97,8 +97,7 @@ FeatureTilesContainerView::FeatureTilesContainerView(
   DCHECK(controller_);
   pagination_model_->AddObserver(this);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetDefault(views::kMarginsKey, kRowContainerMargins);
+      ->SetOrientation(views::LayoutOrientation::kHorizontal);
 }
 
 FeatureTilesContainerView::~FeatureTilesContainerView() {
@@ -170,6 +169,7 @@ void FeatureTilesContainerView::RelayoutTiles() {
   // Re-add tiles to container.
   AddTiles(std::move(tiles));
 
+  // Update bubble height in case number of rows changed.
   controller_->UpdateBubble();
 }
 

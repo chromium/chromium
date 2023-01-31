@@ -75,6 +75,7 @@ class ASH_EXPORT FeatureTilesContainerView : public views::View,
   class RowContainer;
 
   friend class FeatureTilesContainerViewTest;
+  friend class QuickSettingsViewTest;
 
   // Calculates the number of rows based on the available `height`.
   int CalculateRowsFromHeight(int height);

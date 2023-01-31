@@ -28,7 +28,7 @@ constexpr float kTrayItemCornerRadius = kTrayItemSize / 2.f;
 constexpr int kTrayMenuWidth = 360;
 
 // The width of the revamped tray menu.
-constexpr int kRevampedTrayMenuWidth = 440;
+constexpr int kRevampedTrayMenuWidth = 400;
 
 // TODO(b/258072559): Update this height once we have finalized UX specs for
 // tray height.

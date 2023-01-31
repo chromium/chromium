@@ -31,13 +31,13 @@ constexpr int kButtonRadius = 16;
 
 // Primary tile constants
 constexpr int kPrimarySubtitleLineHeight = 18;
-constexpr gfx::Size kDefaultSize(200, kFeatureTileHeight);
+constexpr gfx::Size kDefaultSize(180, kFeatureTileHeight);
 constexpr gfx::Size kIconContainerSize(48, kFeatureTileHeight);
-constexpr gfx::Size kTitlesContainerSize(112, kFeatureTileHeight);
+constexpr gfx::Size kTitlesContainerSize(92, kFeatureTileHeight);
 constexpr gfx::Size kDrillContainerSize(40, kFeatureTileHeight);
 
 // Compact tile constants
-constexpr int kCompactWidth = 96;
+constexpr int kCompactWidth = 86;
 constexpr int kCompactTitleLineHeight = 14;
 constexpr gfx::Size kCompactSize(kCompactWidth, kFeatureTileHeight);
 constexpr gfx::Size kCompactIconContainerSize(kCompactWidth, 30);
