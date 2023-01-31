@@ -217,18 +217,14 @@ void WilcoDtcSupportdWebRequestService::MaybeStartNextRequest() {
           }
           policy {
             cookies_allowed: NO
-            policy_exception_justification:
-            "Controlled by DeviceWilcoDtcAllowed. "
-            "chrome_device_policy not supported by auditor yet."
-            # TODO(b/210911671): remove comments once the bug is fixed
-            #chrome_policy {
-            #DeviceWilcoDtcAllowed {
-            #    DeviceWilcoDtcAllowed: false
-            #  }
-            #} 
+            chrome_device_policy {
+              # DeviceWilcoDtcAllowed
+              device_wilco_dtc_allowed {
+                device_wilco_dtc_allowed: false
+              }
             }
+          }
       )");
-
 
   // Start new web request.
   active_request_ = std::move(request_queue_.front());

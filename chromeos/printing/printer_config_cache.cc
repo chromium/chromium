@@ -198,12 +198,12 @@ class PrinterConfigCacheImpl : public PrinterConfigCache {
                 PrintersBulkConfiguration: ""
               }
             }
-            # TODO(b/210911671): chrome_device_policy not supported by auditor
-            # chrome_device_policy {
-            #   DevicePrinters: {
-            #     external_policy: ""
-            #   }
-            # }
+            chrome_device_policy {
+              # DevicePrinters
+              device_printers: {
+                external_policy: ""
+              }
+            }
           })");
     fetcher_ = network::SimpleURLLoader::Create(std::move(request),
                                                 traffic_annotation);

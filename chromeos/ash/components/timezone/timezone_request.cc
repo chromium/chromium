@@ -119,27 +119,25 @@ constexpr net::NetworkTrafficAnnotationTag kTimezoneRequestNetworkTag =
             "not specify a fixed timezone, you can select whether just the ip "
             "address or also Wi-Fi and mobile networks are used to determine "
             "your geolocation."
-          policy_exception_justification:
-            "Controlled by SystemTimeZone and SystemTimezonAutomaticDetection. "
-            "chrome_device_policy not supported by auditor yet."
-          # TODO(b/210911671): Add the following policies once they are
-          # supported:
-          # chrome_policy {
-          #   SystemTimezone {
-          #     # cmfcmf: HasSystemTimezonePolicy
-          #     timezone: 'not empty, e.g. Europe/Berlin'
-          #   }
-          # }
-          # chrome_policy {
-          #   SystemTimezone {
-          #     AutomaticTimezoneDetectionType: DISABLED
-          #   }
-          # }
-          # chrome_policy {
-          #   SystemTimezone {
-          #     AutomaticTimezoneDetectionType: IP_ONLY
-          #   }
-          # }
+          chrome_device_policy {
+            # SystemTimezone
+            system_timezone {
+              # cmfcmf: HasSystemTimezonePolicy
+              timezone: 'not empty, e.g. Europe/Berlin'
+            }
+          }
+          chrome_device_policy {
+            # SystemTimezone
+            system_timezone {
+              timezone_detection_type: DISABLED
+            }
+          }
+          chrome_device_policy {
+            # SystemTimezone
+            system_timezone {
+              timezone_detection_type: IP_ONLY
+            }
+          }
         })");
 
 // Too many requests (more than 1) mean there is a problem in implementation.
