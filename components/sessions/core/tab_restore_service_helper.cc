@@ -447,6 +447,13 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
   switch (entry.type) {
     case TabRestoreService::TAB: {
       auto& tab = static_cast<const Tab&>(entry);
+
+      if (tab.timestamp != base::Time() &&
+          !tab.timestamp.ToDeltaSinceWindowsEpoch().is_zero()) {
+        UMA_HISTOGRAM_LONG_TIMES("TabRestore.Tab.TimeBetweenClosedAndRestored",
+                                 TimeNow() - tab.timestamp);
+      }
+
       LiveTab* restored_tab = nullptr;
       context = RestoreTab(tab, context, disposition, &restored_tab);
       live_tabs.push_back(restored_tab);
@@ -456,6 +463,13 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
     case TabRestoreService::WINDOW: {
       LiveTabContext* current_context = context;
       auto& window = static_cast<Window&>(entry);
+
+      if (window.timestamp != base::Time() &&
+          !window.timestamp.ToDeltaSinceWindowsEpoch().is_zero()) {
+        UMA_HISTOGRAM_LONG_TIMES(
+            "TabRestore.Window.TimeBetweenClosedAndRestored",
+            TimeNow() - window.timestamp);
+      }
 
       // When restoring a window, either the entire window can be restored, or a
       // single tab within it. If the entry's ID matches the one to restore, or
@@ -578,6 +592,13 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
     }
     case TabRestoreService::GROUP: {
       auto& group = static_cast<Group&>(entry);
+
+      if (group.timestamp != base::Time() &&
+          !group.timestamp.ToDeltaSinceWindowsEpoch().is_zero()) {
+        UMA_HISTOGRAM_LONG_TIMES(
+            "TabRestore.Group.TimeBetweenClosedAndRestored",
+            TimeNow() - group.timestamp);
+      }
 
       // When restoring a group, either the entire group can be restored, or a
       // single tab within it. If the entry's ID matches the one to restore,
