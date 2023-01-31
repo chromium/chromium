@@ -182,8 +182,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Check the snack bar notifying the user that an element has been removed is
   // displayed.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)]
+      selectElementWithMatcher:
+          grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on undo.
