@@ -7,8 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 
-namespace ash {
-namespace phone_hub_metrics {
+namespace ash::phone_hub_metrics {
 
 namespace {
 
@@ -204,5 +203,10 @@ void LogCameraRollContentPresent() {
   base::UmaHistogramBoolean("PhoneHub.CameraRoll.Content.Present", true);
 }
 
-}  // namespace phone_hub_metrics
-}  // namespace ash
+void LogMoreAppsButtonAnimationOnShow(
+    MoreAppsButtonLoadingState loading_state) {
+  base::UmaHistogramEnumeration("PhoneHub.MoreAppsButton.LoadingState",
+                                loading_state);
+}
+
+}  // namespace ash::phone_hub_metrics

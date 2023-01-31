@@ -69102,6 +69102,16 @@ Called by update_use_counter_css.py.-->
   <int value="12" label="December"/>
 </enum>
 
+<enum name="MoreAppsButtonLoadingState">
+  <summary>
+    When the Phone Hub bubble is opened, this enum denotes when either the
+    glimmer animation is shown on the More Apps button or if the apps are loaded
+    immediately and no animation is shown.
+  </summary>
+  <int value="0" label="Glimmer animation was shown."/>
+  <int value="1" label="More apps button was loaded immediately."/>
+</enum>
+
 <enum name="MostVisitedTileIndex">
   <summary>
     Index of a tile on the new tab page. This is only an enum so that the

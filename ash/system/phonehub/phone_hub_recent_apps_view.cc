@@ -157,6 +157,7 @@ gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize()
   int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
   int height = kRecentAppButtonSize + kRecentAppButtonFocusPadding.height() +
                kRecentAppButtonsViewTopPadding;
+
   return gfx::Size(width, height);
 }
 
@@ -257,6 +258,7 @@ void PhoneHubRecentAppsView::SwitchToFullAppsList() {
   if (!features::IsEcheLauncherEnabled()) {
     return;
   }
+
   phone_hub_manager_->GetAppStreamLauncherDataModel()
       ->SetShouldShowMiniLauncher(true);
 }

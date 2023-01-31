@@ -284,6 +284,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="PhoneHub.MoreAppsButton.LoadingState"
+    enum="MoreAppsButtonLoadingState" expires_after="2023-06-11">
+  <owner>crisrael@google.com</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records whether the more apps button in the recent apps list view in Phone
+    Hub is showing the glimmer animation (still waiting for an apps list update)
+    or if it immediately shows the loaded state. Emitted when the Phone Hub
+    connected view opens and shows the more apps button.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
     enum="MultiDevice_FeatureState" expires_after="2023-06-11">
   <owner>jonmann@chromium.org</owner>

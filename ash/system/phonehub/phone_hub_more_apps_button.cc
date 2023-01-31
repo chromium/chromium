@@ -7,6 +7,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/phone_hub_app_count_icon.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/phone_hub_small_app_icon.h"
 #include "ash/system/phonehub/phone_hub_small_app_loading_icon.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
@@ -63,9 +64,13 @@ void PhoneHubMoreAppsButton::InitLayout() {
   if (app_stream_launcher_data_model_->GetAppsListSortedByName()->empty()) {
     InitGlimmer();
     SetEnabled(false);
+    phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
+        phone_hub_metrics::MoreAppsButtonLoadingState::kAnimationShown);
   } else {
     LoadAppList();
     SetEnabled(true);
+    phone_hub_metrics::LogMoreAppsButtonAnimationOnShow(
+        phone_hub_metrics::MoreAppsButtonLoadingState::kMoreAppsButtonLoaded);
   }
 
   SetBackground(views::CreateRoundedRectBackground(

@@ -38,6 +38,7 @@ class VIEWS_EXPORT PhoneHubMoreAppsButton
   views::TableLayout* table_layout_ = nullptr;
   phonehub::AppStreamLauncherDataModel* app_stream_launcher_data_model_;
 };
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_PHONEHUB_PHONE_HUB_MORE_APPS_BUTTON_H_

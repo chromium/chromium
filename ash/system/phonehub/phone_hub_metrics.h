@@ -5,8 +5,7 @@
 #ifndef ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
 #define ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
 
-namespace ash {
-namespace phone_hub_metrics {
+namespace ash::phone_hub_metrics {
 
 // Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
 enum class InterstitialScreenEvent {
@@ -86,6 +85,13 @@ enum class CameraRollContextMenuDownload {
   kMaxValue = kDownloadGTE5
 };
 
+// Keep in sync with corresponding enum in tools/metrics/histograms/enums.xml.
+enum class MoreAppsButtonLoadingState {
+  kAnimationShown = 0,
+  kMoreAppsButtonLoaded = 1,
+  kMaxValue = kMoreAppsButtonLoaded
+};
+
 enum class CameraRollMediaType { kPhoto = 0, kVideo = 1, kMaxValue = kVideo };
 
 // Logs an |event| occurring for the given |interstitial_screen|.
@@ -127,7 +133,10 @@ void LogCameraRollContextMenuDownload(int index, CameraRollMediaType mediaType);
 // Logs the display of any Camera Roll item. Emits once per opening of bubble.
 void LogCameraRollContentPresent();
 
-}  // namespace phone_hub_metrics
-}  // namespace ash
+// Logs if the glimmer animation was shown or not (more apps button was shown
+// instead) when Phone Hub is opened
+void LogMoreAppsButtonAnimationOnShow(MoreAppsButtonLoadingState loading_state);
+
+}  // namespace ash::phone_hub_metrics
 
 #endif  // ASH_SYSTEM_PHONEHUB_PHONE_HUB_METRICS_H_
