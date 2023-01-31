@@ -47,7 +47,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       media::ChannelLayout layout,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
-      media::AudioRendererSink::RenderCallback* callback);
+      media::AudioRendererSink::RenderCallback* webaudio_callback);
 
   // blink::WebAudioDevice implementation.
   void Start() override;
@@ -91,7 +91,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
       media::ChannelLayout layout,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
-      media::AudioRendererSink::RenderCallback* callback,
+      media::AudioRendererSink::RenderCallback* webaudio_callback,
       OutputDeviceParamsCallback device_params_cb,
       CreateSilentSinkCallback create_silent_sink_cb);
 
@@ -107,8 +107,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   const blink::WebAudioLatencyHint latency_hint_;
 
-  // Weak reference to the callback into WebKit code.
-  media::AudioRendererSink::RenderCallback* const client_callback_;
+  // The WebAudio renderer's callback; directs to `AudioDestination::Render()`.
+  media::AudioRendererSink::RenderCallback* const webaudio_callback_;
 
   // To avoid the need for locking, ensure the control methods of the
   // blink::WebAudioDevice implementation are called on the same thread.

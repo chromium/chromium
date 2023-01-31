@@ -128,10 +128,10 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     CreateSilentSinkCallback create_silent_sink_cb)
     : sink_descriptor_(sink_descriptor),
       latency_hint_(latency_hint),
-      client_callback_(callback),
+      webaudio_callback_(callback),
       frame_token_(sink_descriptor.Token()),
       create_silent_sink_cb_(std::move(create_silent_sink_cb)) {
-  DCHECK(client_callback_);
+  DCHECK(webaudio_callback_);
   SendLogMessage(base::StringPrintf("%s", __func__));
 
   std::string device_id;
@@ -269,11 +269,13 @@ int RendererWebAudioDeviceImpl::Render(
     is_rendering_ = true;
   }
 
-  return client_callback_->Render(delay, delay_timestamp, glitch_info, dest);
+  return webaudio_callback_->Render(delay, delay_timestamp, glitch_info, dest);
 }
 
 void RendererWebAudioDeviceImpl::OnRenderError() {
-  // TODO(crogers): implement error handling.
+  DCHECK(webaudio_callback_);
+
+  webaudio_callback_->OnRenderError();
 }
 
 void RendererWebAudioDeviceImpl::SetSilentSinkTaskRunnerForTesting(
