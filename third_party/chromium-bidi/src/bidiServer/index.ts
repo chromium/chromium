@@ -16,7 +16,7 @@
  */
 
 import argparse from 'argparse';
-import puppeteer, {PuppeteerNode} from 'puppeteer';
+import puppeteer from 'puppeteer';
 
 import mapperReader from './mapperReader.js';
 import {MapperServer} from './mapperServer.js';
@@ -98,9 +98,7 @@ async function _onNewBidiConnectionOpen(
   // 1. Launch Chromium (using Puppeteer for now).
   // Puppeteer should have downloaded Chromium during the installation.
   // Use Puppeteer's logic of launching browser as well.
-  const browser = await (puppeteer as any as PuppeteerNode).launch(
-    browserLaunchOptions
-  );
+  const browser = await puppeteer.launch(browserLaunchOptions);
 
   // No need in Puppeteer being connected to browser.
   browser.disconnect();

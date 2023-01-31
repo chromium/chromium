@@ -397,7 +397,7 @@ export namespace CommonDataTypes {
     namespaceURI?: string;
     childNodeCount: number;
     children?: [NodeRemoteValue];
-    attributes?: any;
+    attributes?: unknown;
     shadowRoot?: NodeRemoteValue | null;
   };
 

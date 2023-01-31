@@ -175,7 +175,7 @@ export class BidiServerRunner {
   }
 
   #sendClientMessage(
-    messageObj: any,
+    messageObj: unknown,
     connection: websocket.connection
   ): Promise<void> {
     const messageStr = JSON.stringify(messageObj);
@@ -184,7 +184,7 @@ export class BidiServerRunner {
 
   #respondWithError(
     connection: websocket.connection,
-    plainCommandData: any,
+    plainCommandData: unknown,
     errorCode: string,
     errorMessage: string
   ) {
@@ -200,7 +200,7 @@ export class BidiServerRunner {
     plainCommandData: any,
     errorCode: string,
     errorMessage: string
-  ): any {
+  ) {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let commandId;
@@ -221,18 +221,18 @@ export class BidiServerRunner {
 }
 
 class BidiServer implements ITransport {
-  #handlers: ((messageStr: string) => void)[] = [];
-  #sendBidiMessage: ((messageStr: string) => Promise<void>) | null = null;
+  #handlers: ((message: string) => void)[] = [];
+  #sendBidiMessage: ((message: string) => Promise<void>) | null = null;
 
   setOnMessage(handler: (messageStr: string) => Promise<void>): void {
     this.#handlers.push(handler);
   }
 
-  sendMessage(messageStr: any): Promise<void> {
+  sendMessage(message: string): Promise<void> {
     if (!this.#sendBidiMessage)
       throw new Error('Bidi connection is not initialised yet');
 
-    return this.#sendBidiMessage(messageStr);
+    return this.#sendBidiMessage(message);
   }
 
   close() {}

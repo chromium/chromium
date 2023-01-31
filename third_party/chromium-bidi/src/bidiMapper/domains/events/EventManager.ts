@@ -76,7 +76,7 @@ export interface IEventManager {
 /**
  * Maps event name to a desired buffer length.
  */
-const eventBufferLength: Readonly<Map<string, number>> = new Map([
+const eventBufferLength: ReadonlyMap<string, number> = new Map([
   ['log.entryAdded', 100],
 ]);
 

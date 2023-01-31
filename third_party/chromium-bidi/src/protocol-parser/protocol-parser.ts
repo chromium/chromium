@@ -183,7 +183,7 @@ export namespace CommonDataTypes {
   //   type: "array",
   //   value: ListLocalValue,
   // }
-  const ArrayLocalValueSchema: any = zod.lazy(() =>
+  const ArrayLocalValueSchema: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('array'),
       value: ListLocalValueSchema,
@@ -202,7 +202,7 @@ export namespace CommonDataTypes {
   export type DateLocalValue = zod.infer<typeof DateLocalValueSchema>;
 
   // MappingLocalValue = [*[(LocalValue / text), LocalValue]];
-  const MappingLocalValueSchema: any = zod.lazy(() =>
+  const MappingLocalValueSchema: zod.ZodType = zod.lazy(() =>
     zod.tuple([
       zod.union([zod.string(), LocalOrRemoteValueSchema]),
       LocalOrRemoteValueSchema,
@@ -234,7 +234,7 @@ export namespace CommonDataTypes {
   //   type: "regexp",
   //   value: RegExpValue,
   // }
-  const RegExpLocalValueSchema: any = zod.lazy(() =>
+  const RegExpLocalValueSchema: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('regexp'),
       value: zod.object({
@@ -249,7 +249,7 @@ export namespace CommonDataTypes {
   //   type: "set",
   //   value: ListLocalValue,
   // }
-  const SetLocalValueSchema: any = zod.lazy(() =>
+  const SetLocalValueSchema: zod.ZodType = zod.lazy(() =>
     zod.object({
       type: zod.literal('set'),
       value: ListLocalValueSchema,
@@ -364,7 +364,7 @@ export namespace CommonDataTypes {
     namespaceURI?: string;
     childNodeCount: number;
     children?: [NodeRemoteValue];
-    attributes?: any;
+    attributes?: unknown;
     shadowRoot?: NodeRemoteValue | null;
   };
 
@@ -839,7 +839,7 @@ export namespace CDP {
     return parseObject(params, SendCommandParamsSchema);
   }
 
-  export type SendCommandResult = {result: any};
+  export type SendCommandResult = {result: unknown};
 
   export type GetSessionCommand = {
     method: 'cdp.getSession';

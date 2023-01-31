@@ -24,7 +24,7 @@ export enum LogType {
 }
 
 export function log(logType: LogType): (...message: unknown[]) => void {
-  return (...messages: any[]) => {
+  return (...messages: unknown[]) => {
     console.log(logType, ...messages);
     // Add messages to the Mapper Tab Page, if exists.
     // Dynamic lookup to avoid circlular dependency.

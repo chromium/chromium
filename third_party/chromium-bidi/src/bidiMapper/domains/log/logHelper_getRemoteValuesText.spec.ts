@@ -42,7 +42,7 @@ describe('test getRemoteValuesText', () => {
   });
 
   it('no input test', () => {
-    const inputArgs = [] as any[];
+    const inputArgs: unknown[] = [];
     const outputString = '';
     expect(
       getRemoteValuesText(inputArgs as CommonDataTypes.RemoteValue[], false)

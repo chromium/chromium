@@ -280,7 +280,7 @@ const STRING_FORMAT_TEST_CASES = [
 
 function testPattern(
   formatString: string,
-  argument: any,
+  argument: unknown,
   expectedResult: string
 ) {
   const inputArgs = [

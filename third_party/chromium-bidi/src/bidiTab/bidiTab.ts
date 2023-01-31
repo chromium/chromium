@@ -174,7 +174,7 @@ async function _createBidiServer(selfTargetId: string) {
       }
     }
 
-    static #getJsonType(value: any) {
+    static #getJsonType(value: unknown) {
       if (value === null) {
         return 'null';
       }
