@@ -368,7 +368,6 @@ void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(
   web_options.width = options->width();
   web_options.height = options->height();
   web_options.initial_aspect_ratio = options->initialAspectRatio();
-  web_options.lock_aspect_ratio = options->lockAspectRatio();
 
   // If either width or height is specified, then both must be specified.
   if (web_options.width > 0 && web_options.height == 0) {
