@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/repeating_test_future.h"
 #include "base/values.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/lacros/crosapi_pref_observer.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 
 using CrosapiPrefObserverLacrosBrowserTest = InProcessBrowserTest;
 
@@ -16,31 +17,28 @@ using CrosapiPrefObserverLacrosBrowserTest = InProcessBrowserTest;
 // the pref is false and does not change during test.
 IN_PROC_BROWSER_TEST_F(CrosapiPrefObserverLacrosBrowserTest, Basics) {
   // Register an observer.
-  bool value1 = true;
-  base::RunLoop run_loop1;
+  base::test::RepeatingTestFuture<base::Value> pref_observer1_future;
   CrosapiPrefObserver observer1(
       crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      base::BindLambdaForTesting([&](base::Value value) {
-        value1 = value.GetBool();
-        run_loop1.Quit();
-      }));
-  run_loop1.Run();
-  EXPECT_FALSE(value1);
+      pref_observer1_future.GetCallback());
+  EXPECT_FALSE(pref_observer1_future.Take().GetBool());
 
   // Additional observers are OK.
-  bool value2 = true;
-  base::RunLoop run_loop2;
+  static base::test::RepeatingTestFuture<base::Value> pref_observer2_future;
   CrosapiPrefObserver observer2(
       crosapi::mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-      base::BindLambdaForTesting([&](base::Value value) {
-        value2 = value.GetBool();
-        run_loop2.Quit();
-      }));
-  run_loop2.Run();
-  EXPECT_FALSE(value2);
+      pref_observer2_future.GetCallback());
+  EXPECT_FALSE(pref_observer2_future.Take().GetBool());
 
   // OnPrefChanged should fire callback.
   observer1.OnPrefChanged(base::Value(true));
-  EXPECT_TRUE(value1);
-  EXPECT_FALSE(value2);
+  EXPECT_TRUE(pref_observer1_future.Take().GetBool());
+
+  // Browser tests use a `ScopedRunLoopTimeout` to automatically fail a test
+  // when a timeout happens, so we use EXPECT_FATAL_FAILURE to handle it.
+  // EXPECT_FATAL_FAILURE only works on static objects.
+  static bool success = false;
+  EXPECT_FATAL_FAILURE({ success = pref_observer2_future.Wait(); },
+                       "timed out");
+  EXPECT_FALSE(success);
 }
