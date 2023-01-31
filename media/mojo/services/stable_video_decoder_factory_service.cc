@@ -90,7 +90,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
 #endif
   }
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,

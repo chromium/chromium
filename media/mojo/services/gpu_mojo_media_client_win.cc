@@ -83,7 +83,7 @@ GetPlatformSupportedVideoDecoderConfigs(
 }
 
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   return MediaFoundationAudioDecoder::Create(std::move(task_runner));
 #else   // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)

@@ -65,7 +65,7 @@ class VdaVideoDecoder : public VideoDecoder,
   //
   // See VdaVideoDecoder() for other arguments.
   static std::unique_ptr<VideoDecoder> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       std::unique_ptr<MediaLog> media_log,
       const gfx::ColorSpace& target_color_space,
@@ -120,16 +120,15 @@ class VdaVideoDecoder : public VideoDecoder,
   //     imported into the VDA by calling ImportBufferForPicture(). In this
   //     case, the VdaVideoDecoder will output GpuMemoryBuffer-backed
   //     VideoFrames.
-  VdaVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
-      std::unique_ptr<MediaLog> media_log,
-      const gfx::ColorSpace& target_color_space,
-      CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
-      CreateCommandBufferHelperCB create_command_buffer_helper_cb,
-      CreateAndInitializeVdaCB create_and_initialize_vda_cb,
-      const VideoDecodeAccelerator::Capabilities& vda_capabilities,
-      VideoDecodeAccelerator::Config::OutputMode output_mode);
+  VdaVideoDecoder(scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+                  scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+                  std::unique_ptr<MediaLog> media_log,
+                  const gfx::ColorSpace& target_color_space,
+                  CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
+                  CreateCommandBufferHelperCB create_command_buffer_helper_cb,
+                  CreateAndInitializeVdaCB create_and_initialize_vda_cb,
+                  const VideoDecodeAccelerator::Capabilities& vda_capabilities,
+                  VideoDecodeAccelerator::Config::OutputMode output_mode);
 
   // media::VideoDecodeAccelerator::Client implementation.
   void NotifyInitializationComplete(DecoderStatus status) override;
@@ -180,7 +179,7 @@ class VdaVideoDecoder : public VideoDecoder,
   //
   // Construction parameters.
   //
-  scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
   std::unique_ptr<MediaLog> media_log_;
   gfx::ColorSpace target_color_space_;

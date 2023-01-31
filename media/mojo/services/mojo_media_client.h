@@ -55,7 +55,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
   virtual void Initialize();
 
   virtual std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   virtual std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -83,7 +83,7 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
   virtual std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,

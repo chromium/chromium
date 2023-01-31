@@ -10,7 +10,6 @@
 #include "base/mac/mac_logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/sys_byteorder.h"
-#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_discard_helper.h"
 #include "media/base/bind_to_current_loop.h"

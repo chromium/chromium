@@ -69,7 +69,7 @@
 // [Ready]       [Error]
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -80,7 +80,7 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
                                             public MediaCodecLoop::Client {
  public:
   explicit MediaCodecAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   MediaCodecAudioDecoder(const MediaCodecAudioDecoder&) = delete;
   MediaCodecAudioDecoder& operator=(const MediaCodecAudioDecoder&) = delete;
@@ -159,9 +159,8 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
   // A helper function for logging.
   static const char* AsString(State state);
 
-  // Used to post tasks. This class is single threaded and every method should
-  // run on this task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // Used to post tasks.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   State state_;
 

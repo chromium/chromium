@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/mojo/services/mojo_media_client.h"
 
 namespace media {
@@ -23,7 +23,7 @@ class AndroidMojoMediaClient final : public MojoMediaClient {
 
   // MojoMediaClient implementation.
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
 
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* frame_interfaces) override;

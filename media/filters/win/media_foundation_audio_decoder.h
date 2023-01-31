@@ -20,7 +20,7 @@
 #include "media/base/media_log.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -34,10 +34,10 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
   // Creates a MediaFoundationAudioDecoder if MediaFoundation is supported,
   // returns nullptr if not.
   static std::unique_ptr<MediaFoundationAudioDecoder> Create(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   MediaFoundationAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   MediaFoundationAudioDecoder(const MediaFoundationAudioDecoder&) = delete;
   MediaFoundationAudioDecoder& operator=(const MediaFoundationAudioDecoder&) =
@@ -86,9 +86,8 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
 
   OutputStatus PumpOutput(PumpState pump_state);
 
-  // Used to post tasks. This class is single threaded and every method should
-  // run on this task runner.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  // Used to post tasks.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Cached decoder config.
   AudioDecoderConfig config_;

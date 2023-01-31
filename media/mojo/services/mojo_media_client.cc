@@ -23,7 +23,7 @@ MojoMediaClient::~MojoMediaClient() = default;
 void MojoMediaClient::Initialize() {}
 
 std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return nullptr;
 }
 
@@ -51,7 +51,7 @@ void MojoMediaClient::NotifyDecoderSupportKnown(
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
 std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,

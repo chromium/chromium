@@ -225,7 +225,7 @@ class FakeMojoMediaClient : public media::MojoMediaClient {
 
   // MojoMediaClient implementation.
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       media::MediaLog* media_log,
       media::mojom::CommandBufferIdPtr command_buffer_id,
       media::RequestOverlayInfoCB request_overlay_info_cb,

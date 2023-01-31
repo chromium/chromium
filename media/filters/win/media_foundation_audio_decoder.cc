@@ -10,7 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "media/base/audio_buffer.h"
@@ -62,7 +62,7 @@ bool PopulateInputSample(IMFSample* sample, const DecoderBuffer& input) {
 // static
 std::unique_ptr<MediaFoundationAudioDecoder>
 MediaFoundationAudioDecoder::Create(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return InitializeMediaFoundation()
              ? std::make_unique<MediaFoundationAudioDecoder>(
                    std::move(task_runner))
@@ -70,7 +70,7 @@ MediaFoundationAudioDecoder::Create(
 }
 
 MediaFoundationAudioDecoder::MediaFoundationAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   task_runner_ = task_runner;
 }
 

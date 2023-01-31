@@ -30,7 +30,7 @@ AndroidMojoMediaClient::~AndroidMojoMediaClient() {}
 // MojoMediaClient overrides.
 
 std::unique_ptr<AudioDecoder> AndroidMojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return std::make_unique<MediaCodecAudioDecoder>(task_runner);
 }
 

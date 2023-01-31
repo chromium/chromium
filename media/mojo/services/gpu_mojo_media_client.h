@@ -40,7 +40,7 @@ using GetCommandBufferStubCB =
 
 // Encapsulate parameters to pass to platform-specific helpers.
 struct VideoDecoderTraits {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  scoped_refptr<base::SequencedTaskRunner> task_runner;
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner;
   std::unique_ptr<MediaLog> media_log;
   RequestOverlayInfoCB request_overlay_info_cb;
@@ -62,7 +62,7 @@ struct VideoDecoderTraits {
   mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder;
 
   VideoDecoderTraits(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       std::unique_ptr<MediaLog> media_log,
       RequestOverlayInfoCB request_overlay_info_cb,
@@ -118,7 +118,7 @@ GetPlatformSupportedVideoDecoderConfigs(
 // Creates a platform-specific media::AudioDecoder. Most platforms don't do
 // anything here, but android, for example, does.
 std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
 // Creates a platform-specific media::AudioEncoder. Most platforms don't do
 // anything here.
@@ -160,7 +160,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
   SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigs() final;
   VideoDecoderType GetDecoderImplementationType() final;
   std::unique_ptr<AudioDecoder> CreateAudioDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) final;
+      scoped_refptr<base::SequencedTaskRunner> task_runner) final;
   std::unique_ptr<AudioEncoder> CreateAudioEncoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner) final;
 
@@ -171,7 +171,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
           mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) final;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,

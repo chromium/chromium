@@ -55,7 +55,7 @@ void GpuServiceFactory::RunMediaService(
   // This service will host audio/video decoders, and if these decoding
   // operations are blocked, user may hear audio glitch or see video freezing,
   // hence "user blocking".
-  auto task_runner = task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
   if (base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
     // TODO(crbug.com/786169): Check whether this needs to be single threaded.
     task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(

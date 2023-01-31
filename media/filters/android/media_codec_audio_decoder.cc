@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/media_codec_util.h"
@@ -26,7 +27,7 @@
 namespace media {
 
 MediaCodecAudioDecoder::MediaCodecAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : task_runner_(task_runner),
       state_(STATE_UNINITIALIZED),
       is_passthrough_(false),

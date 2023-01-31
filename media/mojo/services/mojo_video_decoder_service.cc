@@ -177,8 +177,8 @@ void MojoVideoDecoderService::Construct(
 
   client_.Bind(std::move(client));
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
 
   media_log_ =
       std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);

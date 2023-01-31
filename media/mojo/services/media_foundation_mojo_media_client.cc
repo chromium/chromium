@@ -25,7 +25,7 @@ MediaFoundationMojoMediaClient::~MediaFoundationMojoMediaClient() {
 
 std::unique_ptr<AudioDecoder>
 MediaFoundationMojoMediaClient::CreateAudioDecoder(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
   return std::make_unique<MediaFoundationAudioDecoder>(task_runner);
 #else   // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
