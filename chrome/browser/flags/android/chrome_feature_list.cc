@@ -169,7 +169,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAssistantIntentTranslateInfo,
     &kAssistantNonPersonalizedVoiceSearch,
     &kAppMenuMobileSiteOption,
-    &kAppToWebAttribution,
     &kBackgroundThreadPool,
     &kBaselineGM3SurfaceColors,
     &kCastDeviceFilter,
@@ -468,10 +467,6 @@ BASE_FEATURE(kAssistantNonPersonalizedVoiceSearch,
 
 BASE_FEATURE(kAppMenuMobileSiteOption,
              "AppMenuMobileSiteOption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAppToWebAttribution,
-             "AppToWebAttribution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackgroundThreadPool,
