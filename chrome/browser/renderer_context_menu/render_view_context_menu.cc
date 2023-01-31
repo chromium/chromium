@@ -2564,7 +2564,8 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     {
       auto* service = chromeos::LacrosService::Get();
       return service &&
-             service->IsAvailable<crosapi::mojom::ClipboardHistory>();
+             service->IsAvailable<crosapi::mojom::ClipboardHistory>() &&
+             IsPasteEnabled();
     }
 #else
       NOTREACHED() << "Unhandled id: " << id;

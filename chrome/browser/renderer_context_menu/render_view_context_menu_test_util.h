@@ -69,6 +69,10 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   // menu.
   bool IsItemChecked(int command_id) const;
 
+  // Returns true if the command specified by |command_id| is enabled in the
+  // menu.
+  bool IsItemEnabled(int command_id) const;
+
   // Returns true if a command specified by any command id between
   // |command_id_first| and |command_id_last| (inclusive) is present in the
   // menu.
