@@ -1143,12 +1143,14 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     // window of one week between impressions.
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
-    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 7);
+    config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(LESS_THAN, 1);
     config->trigger = EventConfig("price_notifications_trigger",
-                                  Comparator(LESS_THAN, 3), 365, 365);
+                                  Comparator(LESS_THAN, 3), 730, 730);
     config->used =
-        EventConfig("price_notifications_used", Comparator(EQUAL, 0), 365, 365);
+        EventConfig("price_notifications_used", Comparator(EQUAL, 0), 730, 730);
+    config->event_configs.insert(EventConfig("price_notifications_trigger",
+                                             Comparator(EQUAL, 0), 7, 730));
     return config;
   }
 
