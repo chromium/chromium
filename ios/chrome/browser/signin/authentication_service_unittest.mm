@@ -232,10 +232,10 @@ class AuthenticationServiceTest : public PlatformTest {
 
   // Sets a restricted pattern.
   void SetPattern(const std::string pattern) {
-    base::Value allowed_patterns(base::Value::Type::LIST);
+    base::Value::List allowed_patterns;
     allowed_patterns.Append(pattern);
-    GetApplicationContext()->GetLocalState()->Set(
-        prefs::kRestrictAccountsToPatterns, allowed_patterns);
+    GetApplicationContext()->GetLocalState()->SetList(
+        prefs::kRestrictAccountsToPatterns, std::move(allowed_patterns));
   }
 
   IOSChromeScopedTestingLocalState local_state_;

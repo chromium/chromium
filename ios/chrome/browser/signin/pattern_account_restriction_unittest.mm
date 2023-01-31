@@ -93,10 +93,10 @@ TEST_F(PatternAccountRestrictionTest, PatternMatchChunck) {
 // Tests that valid patterns are correctly identified.
 TEST_F(PatternAccountRestrictionTest, ValidPattern) {
   base::Value value{base::Value::Type::LIST};
-  value.Append("*gmail.com");
-  value.Append("myemail@gmail.com");
-  value.Append("myemail\\*@gmail.com");
-  value.Append("\\\\google.com");
+  value.GetList().Append("*gmail.com");
+  value.GetList().Append("myemail@gmail.com");
+  value.GetList().Append("myemail\\*@gmail.com");
+  value.GetList().Append("\\\\google.com");
 
   EXPECT_TRUE(ArePatternsValid(&value));
 }
@@ -104,8 +104,8 @@ TEST_F(PatternAccountRestrictionTest, ValidPattern) {
 // Tests that invalid patterns are correctly identified.
 TEST_F(PatternAccountRestrictionTest, InvalidPattern) {
   base::Value value{base::Value::Type::LIST};
-  value.Append("*gmail.com\\");
-  value.Append("*google.com");
+  value.GetList().Append("*gmail.com\\");
+  value.GetList().Append("*google.com");
 
   EXPECT_FALSE(ArePatternsValid(&value));
 }
