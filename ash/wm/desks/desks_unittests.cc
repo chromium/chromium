@@ -3460,14 +3460,12 @@ TEST_P(DesksTest, MiniViewsTouchGestures) {
 
   LongGestureTap(desk_1_preview_center, event_generator);
 
-  // If the `kDesksCloseAll` feature is enabled, the context menu appears on the
-  // first long press and after the user taps away the buttons will show. So in
-  // that case we need to tap away and wait for the context menu to disappear
-  // before checking whether the desk action interfaces are visible.
-  if (features::IsDesksCloseAllEnabled()) {
-    event_generator->GestureTapDownAndUp(desk_1_preview_center);
-    base::RunLoop().RunUntilIdle();
-  }
+  // The context menu appears on the first long press and after the user taps
+  // away the buttons will show. So we need to tap away and wait for the context
+  // menu to disappear before checking whether the desk action interfaces are
+  // visible.
+  event_generator->GestureTapDownAndUp(desk_1_preview_center);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
@@ -3475,10 +3473,8 @@ TEST_P(DesksTest, MiniViewsTouchGestures) {
 
   LongGestureTap(desk_2_preview_center, event_generator);
 
-  if (features::IsDesksCloseAllEnabled()) {
-    event_generator->GestureTapDownAndUp(desk_2_preview_center);
-    base::RunLoop().RunUntilIdle();
-  }
+  event_generator->GestureTapDownAndUp(desk_2_preview_center);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
@@ -6159,15 +6155,12 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
 
   event_generator->ReleaseTouch();
 
-  // If the `kDesksCloseAll` feature is enabled, the context menu appears on a
-  // long press on the desk preview. In order to drag the desk again, we first
-  // need to get rid of the context menu by tapping and waiting for the menu to
-  // disappear.
-  if (features::IsDesksCloseAllEnabled()) {
-    event_generator->GestureTapDownAndUp(
-        mini_view_1->desk_preview()->GetBoundsInScreen().CenterPoint());
-    base::RunLoop().RunUntilIdle();
-  }
+  // The context menu appears on a long press on the desk preview. In order to
+  // drag the desk again, we first need to get rid of the context menu by
+  // tapping and waiting for the menu to disappear.
+  event_generator->GestureTapDownAndUp(
+      mini_view_1->desk_preview()->GetBoundsInScreen().CenterPoint());
+  base::RunLoop().RunUntilIdle();
 
   // Reorder the second desk
   LongTapOnDeskPreview(mini_view_1, event_generator);
@@ -6177,11 +6170,9 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   gfx::Point desk_center_2 =
       mini_view_2->GetPreviewBoundsInScreen().CenterPoint();
 
-  // If `kDesksCloseAll` is enabled, we need to drag the mouse a bit after
-  // long-tapping the desk preview to start the closing of the context menu
-  // before rearranging the desk.
-  if (features::IsDesksCloseAllEnabled())
-    event_generator->MoveTouchBy(10, 0);
+  // We need to drag the mouse a bit after long-tapping the desk preview to
+  // start the closing of the context menu before rearranging the desk.
+  event_generator->MoveTouchBy(10, 0);
 
   event_generator->MoveTouch(desk_center_2);
 
@@ -6350,11 +6341,9 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
   gfx::Point desk_center_0 =
       mini_view_0->GetPreviewBoundsInScreen().CenterPoint();
 
-  // If `kDesksCloseAll` is enabled, we need to drag the mouse a bit after
-  // long-tapping the desk preview to start the closing of the context menu
-  // before rearranging the desk.
-  if (features::IsDesksCloseAllEnabled())
-    event_generator->MoveTouchBy(-10, 0);
+  // We need to drag the mouse a bit after long-tapping the desk preview to
+  // start the closing of the context menu before rearranging the desk.
+  event_generator->MoveTouchBy(-10, 0);
 
   event_generator->MoveTouch(desk_center_0);
 

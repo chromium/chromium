@@ -287,9 +287,8 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   void OnLibraryButtonPressed();
 
-  // If the `DesksCloseAll` flag is enabled, this function cycles through
-  // `mini_views_` and updates the tooltip for each mini view's combine desks
-  // button.
+  // This function cycles through `mini_views_` and updates the tooltip for each
+  // mini view's combine desks button.
   void MaybeUpdateCombineDesksTooltips();
 
   // Scrollview callbacks.

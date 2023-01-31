@@ -763,8 +763,7 @@ void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
   InitDragDesk(mini_view, location);
   StartDragDesk(mini_view, location, event.IsMouseEvent());
 
-  if (features::IsDesksCloseAllEnabled())
-    mini_view->OpenContextMenu(ui::MENU_SOURCE_LONG_PRESS);
+  mini_view->OpenContextMenu(ui::MENU_SOURCE_LONG_PRESS);
 }
 
 void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
@@ -774,8 +773,7 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
   if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return;
 
-  if (features::IsDesksCloseAllEnabled())
-    mini_view->MaybeCloseContextMenu();
+  mini_view->MaybeCloseContextMenu();
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
 
@@ -1551,9 +1549,6 @@ void DesksBarView::OnLibraryButtonPressed() {
 }
 
 void DesksBarView::MaybeUpdateCombineDesksTooltips() {
-  if (!features::IsDesksCloseAllEnabled())
-    return;
-
   for (auto* mini_view : mini_views_) {
     // If desk is being removed, do not update the tooltip.
     if (mini_view->desk()->is_desk_being_removed()) {

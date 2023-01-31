@@ -2407,12 +2407,6 @@ bool IsCryptauthAttestationSyncingEnabled() {
   return base::FeatureList::IsEnabled(kCryptauthAttestationSyncing);
 }
 
-bool IsDesksCloseAllEnabled() {
-  // TODO(b/263166880): Remove this function and all code paths where this is
-  // false.
-  return true;
-}
-
 bool IsDnsOverHttpsWithIdentifiersReuseOldPolicyEnabled() {
   return base::FeatureList::IsEnabled(
       kDnsOverHttpsWithIdentifiersReuseOldPolicy);

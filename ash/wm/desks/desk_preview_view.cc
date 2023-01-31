@@ -349,15 +349,13 @@ DeskPreviewView::DeskPreviewView(PressedCallback callback,
   contents_view_layer->SetIsFastRoundedCorner(true);
   AddChildView(desk_mirrored_contents_view_);
 
-  if (features::IsDesksCloseAllEnabled()) {
-    highlight_overlay_ = AddChildView(std::make_unique<views::View>());
-    highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    highlight_overlay_->SetVisible(false);
-    ui::Layer* highlight_overlay_layer = highlight_overlay_->layer();
-    highlight_overlay_layer->SetName("DeskPreviewView highlight overlay");
-    highlight_overlay_layer->SetRoundedCornerRadius(GetRoundedCorner());
-    highlight_overlay_layer->SetIsFastRoundedCorner(true);
-  }
+  highlight_overlay_ = AddChildView(std::make_unique<views::View>());
+  highlight_overlay_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  highlight_overlay_->SetVisible(false);
+  ui::Layer* highlight_overlay_layer = highlight_overlay_->layer();
+  highlight_overlay_layer->SetName("DeskPreviewView highlight overlay");
+  highlight_overlay_layer->SetRoundedCornerRadius(GetRoundedCorner());
+  highlight_overlay_layer->SetIsFastRoundedCorner(true);
 
   RecreateDeskContentsMirrorLayers();
 }
@@ -459,8 +457,7 @@ void DeskPreviewView::Layout() {
   wallpaper_preview_->SetBoundsRect(bounds);
   desk_mirrored_contents_view_->SetBoundsRect(bounds);
 
-  if (features::IsDesksCloseAllEnabled())
-    highlight_overlay_->SetBoundsRect(bounds);
+  highlight_overlay_->SetBoundsRect(bounds);
 
   // The desk's contents mirrored layer needs to be scaled down so that it fits
   // exactly in the center of the view.
@@ -480,9 +477,8 @@ void DeskPreviewView::Layout() {
 }
 
 bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
-  // If we have a right click and the `kDesksCloseAll` feature is enabled, we
-  // should open the context menu.
-  if (features::IsDesksCloseAllEnabled() && event.IsRightMouseButton()) {
+  // If we have a right click we should open the context menu.
+  if (event.IsRightMouseButton()) {
     DeskNameView::CommitChanges(GetWidget());
     mini_view_->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
   } else {
@@ -533,12 +529,10 @@ void DeskPreviewView::OnGestureEvent(ui::GestureEvent* event) {
 void DeskPreviewView::OnThemeChanged() {
   views::Button::OnThemeChanged();
 
-  if (features::IsDesksCloseAllEnabled()) {
-    highlight_overlay_->layer()->SetColor(
-        SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
-                        AshColorProvider::ControlsLayerType::kHighlightColor1),
-                    kHighlightTransparency));
-  }
+  highlight_overlay_->layer()->SetColor(
+      SkColorSetA(AshColorProvider::Get()->GetControlsLayerColor(
+                      AshColorProvider::ControlsLayerType::kHighlightColor1),
+                  kHighlightTransparency));
 }
 
 void DeskPreviewView::OnFocus() {

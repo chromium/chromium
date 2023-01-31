@@ -140,40 +140,28 @@ DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
 
   desk_name_view_ = AddChildView(std::move(desk_name_view));
 
-  if (features::IsDesksCloseAllEnabled()) {
-    const std::u16string initial_combine_desks_target_name =
-        desks_controller->GetCombineDesksTargetName(desk_);
+  const std::u16string initial_combine_desks_target_name =
+      desks_controller->GetCombineDesksTargetName(desk_);
 
-    desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
-        initial_combine_desks_target_name,
-        /*combine_desks_callback=*/
-        base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this),
-                            DeskCloseType::kCombineDesks),
-        /*close_all_callback=*/
-        base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this),
-                            DeskCloseType::kCloseAllWindowsAndWait)));
+  desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
+      initial_combine_desks_target_name,
+      /*combine_desks_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCombineDesks),
+      /*close_all_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCloseAllWindowsAndWait)));
 
-    context_menu_ = std::make_unique<DeskActionContextMenu>(
-        initial_combine_desks_target_name,
-        /*combine_desks_callback=*/
-        base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this),
-                            DeskCloseType::kCombineDesks),
-        /*close_all_callback=*/
-        base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this),
-                            DeskCloseType::kCloseAllWindowsAndWait),
-        base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
-                            base::Unretained(this)));
-  } else {
-    close_desk_button_ = AddChildView(std::make_unique<CloseButton>(
-        base::BindRepeating(&DeskMiniView::OnRemovingDesk,
-                            base::Unretained(this),
-                            DeskCloseType::kCombineDesks),
-        CloseButton::Type::kSmall));
-  }
+  context_menu_ = std::make_unique<DeskActionContextMenu>(
+      initial_combine_desks_target_name,
+      /*combine_desks_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCombineDesks),
+      /*close_all_callback=*/
+      base::BindRepeating(&DeskMiniView::OnRemovingDesk, base::Unretained(this),
+                          DeskCloseType::kCloseAllWindowsAndWait),
+      base::BindRepeating(&DeskMiniView::OnContextMenuClosed,
+                          base::Unretained(this)));
   UpdateDeskButtonVisibility();
 }
 
@@ -212,37 +200,26 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       (IsMouseHovered() || force_show_desk_buttons_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning());
 
-  if (features::IsDesksCloseAllEnabled()) {
-    // Only show the combine desks button if there are app windows in the desk,
-    // or if the desk is active and there are windows that should be visible on
-    // all desks.
-    desk_action_view_->SetCombineDesksButtonVisibility(
-        ContainsAppWindows(desk_));
-    desk_action_view_->SetVisible(visible && !is_context_menu_open_);
-  } else {
-    close_desk_button_->SetVisible(visible);
-  }
+  // Only show the combine desks button if there are app windows in the desk,
+  // or if the desk is active and there are windows that should be visible on
+  // all desks.
+  desk_action_view_->SetCombineDesksButtonVisibility(ContainsAppWindows(desk_));
+  desk_action_view_->SetVisible(visible && !is_context_menu_open_);
 }
 
 void DeskMiniView::OnWidgetGestureTap(const gfx::Rect& screen_rect,
                                       bool is_long_gesture) {
-  views::View* view_to_update =
-      features::IsDesksCloseAllEnabled()
-          ? static_cast<views::View*>(desk_action_view_)
-          : static_cast<views::View*>(close_desk_button_);
-
   // Note that we don't want to hide the desk buttons if it's a single tap
   // within the bounds of an already visible button, which will later be
   // handled as a press event on that desk buttons that will result in closing
   // the desk.
   const bool old_force_show_desk_buttons = force_show_desk_buttons_;
   force_show_desk_buttons_ =
-      !(features::IsDesksCloseAllEnabled() &&
-        Shell::Get()->tablet_mode_controller()->InTabletMode()) &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       ((is_long_gesture && IsPointOnMiniView(screen_rect.CenterPoint())) ||
-       (!is_long_gesture && view_to_update->GetVisible() &&
-        view_to_update->HitTestRect(
-            ConvertScreenRect(view_to_update, screen_rect))));
+       (!is_long_gesture && desk_action_view_->GetVisible() &&
+        desk_action_view_->HitTestRect(
+            ConvertScreenRect(desk_action_view_, screen_rect))));
 
   if (old_force_show_desk_buttons != force_show_desk_buttons_)
     UpdateDeskButtonVisibility();
@@ -326,10 +303,7 @@ void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
   // longer processing events.
   SetCanProcessEventsWithinSubtree(false);
 
-  if (features::IsDesksCloseAllEnabled())
-    desk_action_view_->SetVisible(false);
-  else
-    close_desk_button_->SetVisible(false);
+  desk_action_view_->SetVisible(false);
 
   controller->RemoveDesk(desk_, DesksCreationRemovalSource::kButton,
                          close_type);
@@ -344,22 +318,12 @@ void DeskMiniView::Layout() {
   desk_preview_->SetBoundsRect(preview_bounds);
 
   LayoutDeskNameView(preview_bounds);
-  if (features::IsDesksCloseAllEnabled()) {
-    const gfx::Size desk_action_view_size =
-        desk_action_view_->GetPreferredSize();
-    desk_action_view_->SetBounds(
-        preview_bounds.right() - desk_action_view_size.width() -
-            kCloseButtonMargin,
-        kCloseButtonMargin, desk_action_view_size.width(),
-        desk_action_view_size.height());
-  } else {
-    DCHECK(close_desk_button_);
-    const int close_button_size =
-        close_desk_button_->GetPreferredSize().width();
-    close_desk_button_->SetBounds(
-        preview_bounds.right() - close_button_size - kCloseButtonMargin,
-        kCloseButtonMargin, close_button_size, close_button_size);
-  }
+  const gfx::Size desk_action_view_size = desk_action_view_->GetPreferredSize();
+  desk_action_view_->SetBounds(
+      preview_bounds.right() - desk_action_view_size.width() -
+          kCloseButtonMargin,
+      kCloseButtonMargin, desk_action_view_size.width(),
+      desk_action_view_size.height());
 }
 
 gfx::Size DeskMiniView::CalculatePreferredSize() const {
@@ -398,17 +362,10 @@ void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!DesksController::Get()->CanRemoveDesks())
     return;
 
-  std::string extra_tip;
-  if (features::IsDesksCloseAllEnabled()) {
-    const std::u16string target_desk_name =
-        DesksController::Get()->GetCombineDesksTargetName(desk_);
-    extra_tip = l10n_util::GetStringFUTF8(
-        IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP,
-        target_desk_name);
-  } else {
-    extra_tip = l10n_util::GetStringUTF8(
-        IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP);
-  }
+  const std::u16string target_desk_name =
+      DesksController::Get()->GetCombineDesksTargetName(desk_);
+  const std::string extra_tip = l10n_util::GetStringFUTF8(
+      IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP, target_desk_name);
 
   node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                                 extra_tip);

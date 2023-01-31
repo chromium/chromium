@@ -17,7 +17,6 @@
 
 namespace ash {
 
-class CloseButton;
 class DeskActionContextMenu;
 class DeskActionView;
 class DeskNameView;
@@ -54,8 +53,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   Desk* desk() { return desk_; }
 
   DeskNameView* desk_name_view() { return desk_name_view_; }
-
-  const CloseButton* close_desk_button() const { return close_desk_button_; }
 
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
@@ -112,11 +109,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // Closes context menu on this mini view if one exists.
   void MaybeCloseContextMenu();
 
-  // Sets either the `desk_action_view_` or the `close_desk_button_` visibility
-  // to false depending on whether the `kDesksCloseAll` feature is active, and
-  // then removes the desk. If `close_type` is `kCloseAllWindows*`, this
-  // function tells the `DesksController` to remove `desk_`'s windows as well,
-  // and wait for the user to confirm.
+  // Invoked when the user has clicked a desk close button.
   void OnRemovingDesk(DeskCloseType close_type);
 
   // views::View:
@@ -170,11 +163,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
   // The editable desk name.
   DeskNameView* desk_name_view_ = nullptr;
 
-  // The close button that shows on hover.
-  CloseButton* close_desk_button_ = nullptr;
-
-  // When the Close-All flag is enabled, we store the hover interface for desk
-  // actions here.
+  // Stores the hover interface for desk actions.
   DeskActionView* desk_action_view_ = nullptr;
 
   // The context menu that appears when `desk_preview_` is right-clicked or
