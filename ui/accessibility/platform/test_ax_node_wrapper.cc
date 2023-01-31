@@ -135,7 +135,7 @@ void TestAXNodeWrapper::ResetGlobalState() {
 }
 
 TestAXNodeWrapper::~TestAXNodeWrapper() {
-  platform_node_->Destroy();
+  platform_node_.ExtractAsDangling()->Destroy();
 }
 
 const AXNodeData& TestAXNodeWrapper::GetData() const {
