@@ -175,6 +175,9 @@ config("compiler") {
   if (use_large_pdbs) {
     # This allows PDBs up to 8 GiB in size. This requires lld-link.exe or
     # link.exe from VS 2022 or later.
+    if (!defined(configs)) {
+      configs = []
+    }
     configs += [ ":pdb_larger_than_4gb" ]
   }
 
