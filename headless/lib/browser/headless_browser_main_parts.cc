@@ -26,7 +26,7 @@
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
-#include "components/headless/policy/headless_mode_policy.h"
+#include "components/headless/policy/headless_mode_policy.h"  // nogncheck
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "headless/lib/browser/policy/headless_policies.h"
 #endif

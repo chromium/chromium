@@ -39,7 +39,7 @@
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
-#include "components/headless/policy/headless_mode_policy.h"
+#include "components/headless/policy/headless_mode_policy.h"  // nogncheck
 #endif
 
 #if defined(HEADLESS_ENABLE_COMMANDS)
