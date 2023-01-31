@@ -7,9 +7,9 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 
 class PrefRegistrySimple;
+class Profile;
 
 namespace base {
 class TimeDelta;

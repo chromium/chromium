@@ -14,13 +14,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 
 class Browser;
 class GURL;
 class OldLaunchModeRecorder;
 class PrefRegistrySimple;
+class Profile;
 
 namespace base {
 class CommandLine;

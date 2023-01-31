@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_H_
 #define CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_H_
 
-#include "chrome/browser/profiles/profile.h"
 #include "ui/gfx/image/image_skia.h"
+
+class Profile;
 
 class HidSystemTrayIcon {
  public:
