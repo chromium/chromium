@@ -151,12 +151,6 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
       return LoadUserImageFrameForScaleFactor(IDR_LOGIN_DEFAULT_USER, frame,
                                               scale_factor);
     }
-    // After the avatar cloud migration, remove this if case.
-    if (user->HasDefaultImage()) {
-      return LoadUserImageFrameForScaleFactor(
-          default_user_image::GetDefaultImageResourceId(user->image_index()),
-          frame, scale_factor);
-    }
     NOTREACHED() << "User with custom image missing data bytes";
   } else {
     LOG(ERROR) << "User not found: " << account_id.GetUserEmail();
