@@ -1095,6 +1095,45 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, HitTestOverlayScrollbars) {
   EXPECT_EQ(hit_result.GetScrollbar(), scrollable_area->HorizontalScrollbar());
 }
 
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       ShowNonCompositedScrollbarOnCompositorScroll) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    html, body {
+      margin: 0;
+    }
+    #scroller {
+      overflow: scroll;
+      height: 100px;
+      width: 100px;
+    }
+    #scrolled {
+      width: 1000px;
+      height: 1000px;
+    }
+    </style>
+    <div id='scroller'><div id='scrolled'></div></div>
+  )HTML");
+
+  auto* scroller = GetLayoutObjectByElementId("scroller");
+  auto* scrollable_area =
+      To<LayoutBoxModelObject>(scroller)->GetScrollableArea();
+
+  scrollable_area->SetScrollbarsHiddenIfOverlay(true);
+
+  EXPECT_TRUE(scrollable_area->ScrollbarsHiddenIfOverlay());
+
+  // This will be false because
+  // cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText. See
+  // PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal.
+  EXPECT_FALSE(scrollable_area->NeedsCompositedScrolling());
+
+  scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
+                                   mojom::blink::ScrollType::kCompositor);
+
+  EXPECT_FALSE(scrollable_area->ScrollbarsHiddenIfOverlay());
+}
+
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, CompositedStickyDescendant) {
   SetBodyInnerHTML(R"HTML(
     <div id=scroller style="overflow: scroll; width: 500px; height: 300px;
