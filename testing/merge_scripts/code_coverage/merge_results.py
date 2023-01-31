@@ -54,9 +54,6 @@ def _MergeAPIArgumentParser(*args, **kwargs):
       '--javascript-coverage-dir',
       help='directory for JavaScript coverage data')
   parser.add_argument(
-      '--merged-js-cov-filename', help='filename to uniquely identify merged '
-                                       'json coverage data')
-  parser.add_argument(
       '--per-cl-coverage',
       action='store_true',
       help='set to indicate that this is a per-CL coverage build')
@@ -107,8 +104,6 @@ def main():
       params.task_output_dir,
       '--javascript-coverage-dir',
       params.javascript_coverage_dir,
-      '--merged-js-cov-filename',
-      params.merged_js_cov_filename,
     ]
 
     rc = subprocess.call(args)

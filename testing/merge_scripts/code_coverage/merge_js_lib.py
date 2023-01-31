@@ -500,12 +500,14 @@ def generate_coverage_reports(coverage_file_dir, source_dir, output_dir):
     return node.RunNode([
         coverage_modules.PathToNyc(),
         'report',
-        '--reporter',
-        'lcov',
         '--temp-dir',
         coverage_file_dir,
-        '--cwd',
-        source_dir,
+        '--reporter',
+        'lcov',
         '--report-dir',
         output_dir,
+        '--cwd',
+        source_dir,
+        '--exclude-after-remap',
+        'false',
     ])
