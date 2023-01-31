@@ -31,11 +31,3 @@ imageset("read_more_arrow") {
     "read_more_arrow.imageset/read_more_arrow@3x.png",
   ]
 }
-
-imageset("welcome_metrics_checkmark") {
-  sources = [
-    "welcome_metrics_checkmark.imageset/Contents.json",
-    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@2x.png",
-    "welcome_metrics_checkmark.imageset/welcome_metrics_checkmark@3x.png",
-  ]
-}

@@ -35,10 +35,6 @@ source_set("welcome") {
 source_set("welcome_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    # TODO(crbug.com/1407658): Move checkbox_button.* to
-    # //ios/showcase/first_run/ as this no longer used by the //ios//chrome.
-    "checkbox_button.h",
-    "checkbox_button.mm",
     "tos_view_controller.h",
     "tos_view_controller.mm",
   ]
@@ -54,7 +50,6 @@ source_set("welcome_ui") {
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/first_run:utils",
-    "//ios/chrome/browser/ui/first_run/resources:welcome_metrics_checkmark",
     "//ios/chrome/browser/ui/first_run/uma",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common:string_util",
