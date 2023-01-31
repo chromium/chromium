@@ -16,15 +16,15 @@
 
 #include "base/command_line.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/chrome_process_singleton.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/process_singleton.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -58,8 +58,17 @@ HeadlessModeBrowserTest::HeadlessModeBrowserTest() {
 
 void HeadlessModeBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpCommandLine(command_line);
+  AppendHeadlessCommandLineSwitches(command_line);
+}
 
+void HeadlessModeBrowserTest::SetUpOnMainThread() {
+  InProcessBrowserTest::SetUpOnMainThread();
+
+  ASSERT_TRUE(headless::IsHeadlessMode() || headful_mode());
+}
+
+void HeadlessModeBrowserTest::AppendHeadlessCommandLineSwitches(
+    base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kHeadfulMode)) {
     headful_mode_ = true;
   } else {
@@ -69,10 +78,13 @@ void HeadlessModeBrowserTest::SetUpCommandLine(
   }
 }
 
-void HeadlessModeBrowserTest::SetUpOnMainThread() {
-  InProcessBrowserTest::SetUpOnMainThread();
+void HeadlessModeBrowserTestWithUserDataDir::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
+  ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
+  command_line->AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
 
-  ASSERT_TRUE(headless::IsHeadlessMode() || headful_mode_);
+  AppendHeadlessCommandLineSwitches(command_line);
 }
 
 void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
@@ -99,37 +111,11 @@ void ToggleFullscreenModeSync(Browser* browser) {
 
 namespace {
 
+// Miscellaneous tests -------------------------------------------------------
+
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest, BrowserWindowIsActive) {
   EXPECT_TRUE(browser()->window()->IsActive());
 }
-
-class HeadlessModeBrowserTestWithUserDataDir : public HeadlessModeBrowserTest {
- public:
-  HeadlessModeBrowserTestWithUserDataDir() = default;
-
-  HeadlessModeBrowserTestWithUserDataDir(
-      const HeadlessModeBrowserTestWithUserDataDir&) = delete;
-  HeadlessModeBrowserTestWithUserDataDir& operator=(
-      const HeadlessModeBrowserTestWithUserDataDir&) = delete;
-
-  ~HeadlessModeBrowserTestWithUserDataDir() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    HeadlessModeBrowserTest::SetUpCommandLine(command_line);
-
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-    ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
-
-    command_line->AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
-  }
-
-  const base::FilePath& user_data_dir() const {
-    return user_data_dir_.GetPath();
-  }
-
- private:
-  base::ScopedTempDir user_data_dir_;
-};
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
                        ChromeProcessSingletonExists) {
@@ -166,6 +152,65 @@ MULTIPROCESS_TEST_MAIN(ChromeProcessSingletonChildProcessMain) {
       chrome_process_singleton.NotifyOtherProcessOrCreate();
 
   return static_cast<int>(notify_result);
+}
+
+// Incognito mode tests ------------------------------------------------------
+
+class HeadlessModeBrowserTestWithNoUserDataDir
+    : public HeadlessModeBrowserTest {
+ public:
+  HeadlessModeBrowserTestWithNoUserDataDir() = default;
+  ~HeadlessModeBrowserTestWithNoUserDataDir() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Postpone headless switch handling until after --user-data-dir switch is
+    // removed in SetUpUserDataDirectory() so that headless switch processing
+    // logic will not see it.
+  }
+
+  bool SetUpUserDataDirectory() override {
+    // Chrome test suite adds --user-data-dir in (at least) two places: in
+    // InProcessBrowserTest::SetUp() and in content::LaunchTests(), so there is
+    // no good way to prevent its addition.
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->RemoveSwitch(::switches::kUserDataDir);
+
+    // Setup headless mode switches after we removed user data directory switch
+    // so that incognito switches logic will be able to detect it.
+    AppendHeadlessCommandLineSwitches(command_line);
+
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithNoUserDataDir,
+                       StartWithNoUserDataDir) {
+  // By default expect to start in incognito mode.
+  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
+                       StartWithUserDataDir) {
+  // With user data dir expect to start in non incognito mode.
+  EXPECT_FALSE(browser()->profile()->IsOffTheRecord());
+}
+
+class HeadlessModeBrowserTestWithUserDataDirAndIncognito
+    : public HeadlessModeBrowserTestWithUserDataDir {
+ public:
+  HeadlessModeBrowserTestWithUserDataDirAndIncognito() = default;
+  ~HeadlessModeBrowserTestWithUserDataDirAndIncognito() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HeadlessModeBrowserTestWithUserDataDir::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(::switches::kIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDirAndIncognito,
+                       StartWithUserDataDirAndIncognito) {
+  // With user data dir and incognito expect to start in incognito mode.
+  EXPECT_TRUE(browser()->profile()->IsOffTheRecord());
 }
 
 }  // namespace
