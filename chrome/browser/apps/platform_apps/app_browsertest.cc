@@ -1219,13 +1219,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   }
 }
 
-// Fails on Win7. http://crbug.com/171450
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_Messaging DISABLED_Messaging
-#else
-#define MAYBE_Messaging Messaging
-#endif
-IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Messaging) {
+IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Messaging) {
   ResultCatcher result_catcher;
   LoadAndLaunchPlatformApp("messaging/app2", "Ready");
   LoadAndLaunchPlatformApp("messaging/app1", "Launched");
