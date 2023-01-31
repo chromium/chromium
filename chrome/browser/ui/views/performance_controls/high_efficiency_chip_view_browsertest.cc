@@ -26,9 +26,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
-#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -37,7 +35,6 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/text/bytes_formatting.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/controls/styled_label.h"
@@ -49,22 +46,6 @@
 namespace {
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
-
-class QuitRunLoopOnMemoryMetricsRefreshObserver
-    : public performance_manager::user_tuning::UserPerformanceTuningManager::
-          Observer {
- public:
-  explicit QuitRunLoopOnMemoryMetricsRefreshObserver(
-      base::OnceClosure quit_closure)
-      : quit_closure_(std::move(quit_closure)) {}
-
-  ~QuitRunLoopOnMemoryMetricsRefreshObserver() override = default;
-
-  void OnMemoryMetricsRefreshed() override { std::move(quit_closure_).Run(); }
-
- private:
-  base::OnceClosure quit_closure_;
-};
 }  // namespace
 
 class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
@@ -184,30 +165,6 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
         ->GetTargetInkDropState();
   }
 
-  void ForceRefreshMemoryMetricsForTesting() {
-    performance_manager::user_tuning::UserPerformanceTuningManager* manager =
-        performance_manager::user_tuning::UserPerformanceTuningManager::
-            GetInstance();
-
-    base::RunLoop run_loop;
-    QuitRunLoopOnMemoryMetricsRefreshObserver observer(run_loop.QuitClosure());
-    base::ScopedObservation<
-        performance_manager::user_tuning::UserPerformanceTuningManager,
-        QuitRunLoopOnMemoryMetricsRefreshObserver>
-        memory_metrics_observer(&observer);
-    memory_metrics_observer.Observe(manager);
-
-    performance_manager::PerformanceManager::CallOnGraph(
-        FROM_HERE,
-        base::BindLambdaForTesting([](performance_manager::Graph* graph) {
-          auto* metrics_decorator = graph->GetRegisteredObjectAs<
-              performance_manager::ProcessMetricsDecorator>();
-          metrics_decorator->RefreshMetricsForTesting();
-        }));
-
-    run_loop.Run();
-  }
-
  private:
   feature_engagement::test::ScopedIphFeatureList iph_features_;
   base::SimpleTestTickClock test_clock_;
@@ -277,26 +234,4 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
   // The deactivated state is HIDDEN on Mac but DEACTIVATED on Linux.
   EXPECT_TRUE(current_state == views::InkDropState::HIDDEN ||
               current_state == views::InkDropState::DEACTIVATED);
-}
-
-IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
-                       BubbleCorrectlyReportingMemorySaved) {
-  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
-  ForceRefreshMemoryMetricsForTesting();
-  DiscardTabAt(0);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  auto* pre_discard_resource_usage =
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          PreDiscardResourceUsage::FromWebContents(web_contents);
-  int memory_footprint_estimate =
-      pre_discard_resource_usage->memory_footprint_estimate_kb();
-  chrome::SelectNumberedTab(browser(), 0);
-  WaitForIPHToShow();
-  ClickHighEfficiencyChip();
-  views::StyledLabel* label = GetHighEfficiencyBubbleLabel();
-
-  EXPECT_NE(
-      label->GetText().find(ui::FormatBytes(memory_footprint_estimate * 1024)),
-      std::string::npos);
 }

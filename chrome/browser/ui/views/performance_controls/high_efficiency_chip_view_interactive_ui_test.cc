@@ -21,7 +21,9 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
+#include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/features.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/user_education/test/feature_promo_test_util.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -29,6 +31,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/gurl.h"
@@ -40,6 +43,22 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPerformanceSettingsTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsInteractionTestUtilTestId);
 
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
+
+class QuitRunLoopOnMemoryMetricsRefreshObserver
+    : public performance_manager::user_tuning::UserPerformanceTuningManager::
+          Observer {
+ public:
+  explicit QuitRunLoopOnMemoryMetricsRefreshObserver(
+      base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  ~QuitRunLoopOnMemoryMetricsRefreshObserver() override = default;
+
+  void OnMemoryMetricsRefreshed() override { std::move(quit_closure_).Run(); }
+
+ private:
+  base::OnceClosure quit_closure_;
+};
 
 }  // namespace
 
@@ -55,7 +74,7 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "30s"}}}},
+          {{"default_state", "true"}, {"time_before_discard", "1h"}}}},
         {});
 
     InteractiveBrowserTest::SetUp();
@@ -101,10 +120,10 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([=]() {
       EXPECT_NE(discard_tab_index, tab_strip_model_->active_index());
       EXPECT_FALSE(IsTabDiscarded(discard_tab_index));
-      resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-          GetWebContentsAt(discard_tab_index))
-          ->DiscardTab(LifecycleUnitDiscardReason::EXTERNAL);
-      EXPECT_TRUE(IsTabDiscarded(discard_tab_index));
+      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              GetInstance();
+      manager->DiscardPageForTesting(GetWebContentsAt(discard_tab_index));
     }));
   }
 
@@ -162,6 +181,33 @@ class HighEfficiencyChipInteractiveTest : public InteractiveBrowserTest {
         base::BindOnce([](size_t index, TabStrip* tab_strip)
                            -> views::View* { return tab_strip->tab_at(index); },
                        index));
+  }
+
+  auto ForceRefreshMemoryMetrics() {
+    return Do(base::BindLambdaForTesting([]() {
+      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              GetInstance();
+
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      QuitRunLoopOnMemoryMetricsRefreshObserver observer(
+          run_loop.QuitClosure());
+      base::ScopedObservation<
+          performance_manager::user_tuning::UserPerformanceTuningManager,
+          QuitRunLoopOnMemoryMetricsRefreshObserver>
+          memory_metrics_observer(&observer);
+      memory_metrics_observer.Observe(manager);
+
+      performance_manager::PerformanceManager::CallOnGraph(
+          FROM_HERE,
+          base::BindLambdaForTesting([](performance_manager::Graph* graph) {
+            auto* metrics_decorator = graph->GetRegisteredObjectAs<
+                performance_manager::ProcessMetricsDecorator>();
+            metrics_decorator->RefreshMetricsForTesting();
+          }));
+
+      run_loop.Run();
+    }));
   }
 
   base::SimpleTestTickClock test_clock_;
@@ -341,6 +387,34 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId));
 }
 
+IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
+                       BubbleCorrectlyReportingMemorySaved) {
+  RunTestSequence(
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateTab(test_url_, kFirstTabContents),
+      AddInstrumentedTab(kSecondTabContents, test_url_, 1),
+      SelectTab(kTabStripElementId, 1), ForceRefreshMemoryMetrics(),
+      DiscardAndSelectTab(0, kFirstTabContents),
+      WaitForShow(kHighEfficiencyChipElementId),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      CheckView(
+          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
+          base::BindOnce(
+              [](Browser* browser, views::StyledLabel* label) {
+                content::WebContents* web_contents =
+                    browser->tab_strip_model()->GetWebContentsAt(0);
+                auto* pre_discard_resource_usage = performance_manager::
+                    user_tuning::UserPerformanceTuningManager::
+                        PreDiscardResourceUsage::FromWebContents(web_contents);
+                int memory_estimate =
+                    pre_discard_resource_usage->memory_footprint_estimate_kb();
+                return label->GetText().find(ui::FormatBytes(
+                           memory_estimate * 1024)) != std::string::npos;
+              },
+              browser())));
+}
+
 class HighEfficiencyInfoIPHInteractiveTest
     : public HighEfficiencyChipInteractiveTest {
  public:
@@ -351,7 +425,7 @@ class HighEfficiencyInfoIPHInteractiveTest
     iph_features_.InitAndEnableFeaturesWithParameters(
         {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
          {performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "30s"}}}});
+          {{"default_state", "true"}, {"time_before_discard", "1h"}}}});
     InteractiveBrowserTest::SetUp();
   }
 

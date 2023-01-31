@@ -436,7 +436,7 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
 
 void UserPerformanceTuningManager::DiscardPageForTesting(
     content::WebContents* web_contents) {
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   performance_manager::PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(
