@@ -149,7 +149,7 @@ AXNode* AXTreeManager::GetRoot() const {
 
 void AXTreeManager::WillBeRemovedFromMap() {
   if (HasValidTreeID()) {
-    ax_tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+    ax_tree_->NotifyTreeManagerWillBeRemoved();
   }
 }
 

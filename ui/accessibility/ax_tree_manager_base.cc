@@ -57,7 +57,7 @@ AXTreeManagerBase::~AXTreeManagerBase() {
     return;
 
   DCHECK_NE(GetTreeID().type(), ax::mojom::AXTreeIDType::kUnknown);
-  tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+  tree_->NotifyTreeManagerWillBeRemoved();
   GetTreeManagerMapInstance().erase(GetTreeID());
 }
 
@@ -67,7 +67,7 @@ AXTreeManagerBase::AXTreeManagerBase(AXTreeManagerBase&& manager) {
     return;
   }
 
-  manager.tree_->NotifyTreeManagerWillBeRemoved(manager.GetTreeID());
+  manager.tree_->NotifyTreeManagerWillBeRemoved();
   GetTreeManagerMapInstance().erase(manager.GetTreeID());
   SetTree(std::move(manager.tree_));
 }
@@ -77,7 +77,7 @@ AXTreeManagerBase& AXTreeManagerBase::operator=(AXTreeManagerBase&& manager) {
     return *this;
 
   if (manager.tree_) {
-    manager.tree_->NotifyTreeManagerWillBeRemoved(manager.GetTreeID());
+    manager.tree_->NotifyTreeManagerWillBeRemoved();
     GetTreeManagerMapInstance().erase(manager.GetTreeID());
     SetTree(std::move(manager.tree_));
   } else {
@@ -105,7 +105,7 @@ std::unique_ptr<AXTree> AXTreeManagerBase::SetTree(
   }
 
   if (tree_) {
-    tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+    tree_->NotifyTreeManagerWillBeRemoved();
     GetTreeManagerMapInstance().erase(GetTreeID());
   }
 
@@ -123,7 +123,7 @@ std::unique_ptr<AXTree> AXTreeManagerBase::ReleaseTree() {
   if (!tree_)
     return {};
 
-  tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+  tree_->NotifyTreeManagerWillBeRemoved();
   GetTreeManagerMapInstance().erase(GetTreeID());
   return std::move(tree_);
 }

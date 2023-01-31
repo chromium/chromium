@@ -250,12 +250,9 @@ class AX_EXPORT AXTree {
   // Event metadata while applying a tree update during unserialization.
   AXEvent* event_data() const { return event_data_.get(); }
 
-  // Notify the delegate that the tree manager for |previous_tree_id| will be
-  // removed from the AXTreeManagerMap. Because we sometimes remove the tree
-  // manager after the tree's id has been modified, we need to pass the (old)
-  // tree id associated with the manager we are removing even though it is the
-  // same tree.
-  void NotifyTreeManagerWillBeRemoved(AXTreeID previous_tree_id);
+  // Notify the delegate that the tree manager for this AXTree will be removed
+  // from the AXTreeManagerMap.
+  void NotifyTreeManagerWillBeRemoved();
 
  private:
   friend class ScopedTreeUpdateInProgressStateSetter;
