@@ -14,10 +14,6 @@ _CWD = os.getcwd()
 # ts_library.py or replacing the regex if only "tslib" is ever rewritten.
 def main(argv):
     parser = argparse.ArgumentParser()
-    # List of imports and what they should be rewritten to. Specified as an
-    # array of "src|dest" strings. Note that the src will be treated as regex
-    # matched against the entire import path. I.e. "foo|bar" will translate to
-    # re.replace("^foo$", "bar", line).
     parser.add_argument('--import_mappings', nargs='*')
     # The directory to output the rewritten files to.
     parser.add_argument('--out_dir', required=True)
@@ -40,23 +36,22 @@ def main(argv):
         (src, dst) = mapping.split('|')
         import_mappings[src] = dst
 
-    def _map_import(import_path):
-        for regex in import_mappings.keys():
-            if re.match(f"^{regex}$", import_path):
-                return import_mappings[regex]
-        generated_import_match = re.match(r'^generated:(.*)', import_path)
-        if generated_import_match:
-            return generated_import_match.group(1)
-        return None
-
     for f in args.in_files:
         output = []
         for line in open(os.path.join(args.base_dir, f), 'r').readlines():
             # Investigate JS parsing if this is insufficient.
             match = re.match(r'^(import .*["\'])(.*)(["\'];)$', line)
-            if match and _map_import(match.group(2)):
-                new_import = _map_import(match.group(2))
-                line = f"{match.group(1)}{new_import}{match.group(3)};\n"
+            if match:
+                import_src = match.group(2)
+                generated_import_match = re.match(r'^generated:(.*)',
+                                                  import_src)
+                if import_src in import_mappings:
+                    line = (match.group(1) + import_mappings[import_src] +
+                            match.group(3) + '\n')
+                elif generated_import_match:
+                    line = (match.group(1) + generated_import_match.group(1) +
+                            match.group(3) + '\n')
+
             output.append(line)
         with open(os.path.join(args.out_dir, f), 'w') as out_file:
             out_file.write(''.join(output))
