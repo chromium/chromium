@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/x/x11_keyboard_hook.h"
+#include "ui/ozone/platform/x11/x11_keyboard_hook.h"
 
 #include <memory>
 #include <utility>
@@ -18,7 +18,7 @@ namespace ui {
 
 namespace {
 
-static XKeyboardHook* g_instance = nullptr;
+static X11KeyboardHook* g_instance = nullptr;
 
 // GrabKey essentially requires the modifier mask to explicitly be specified.
 // One can specify 'x11::ModMask::Any' however doing so means the call to
@@ -45,11 +45,17 @@ const DomCode kDomCodesForLockAllKeys[] = {
 
 }  // namespace
 
-XKeyboardHook::XKeyboardHook(gfx::AcceleratedWidget accelerated_widget)
-    : connection_(x11::Connection::Get()),
-      x_window_(static_cast<x11::Window>(accelerated_widget)) {}
+X11KeyboardHook::X11KeyboardHook(
+    absl::optional<base::flat_set<DomCode>> dom_codes,
+    BaseKeyboardHook::KeyEventCallback callback,
+    gfx::AcceleratedWidget accelerated_widget)
+    : BaseKeyboardHook(std::move(dom_codes), std::move(callback)),
+      connection_(x11::Connection::Get()),
+      window_(static_cast<x11::Window>(accelerated_widget)) {
+  RegisterHook(this->dom_codes());
+}
 
-XKeyboardHook::~XKeyboardHook() {
+X11KeyboardHook::~X11KeyboardHook() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   DCHECK_EQ(g_instance, this);
@@ -61,12 +67,12 @@ XKeyboardHook::~XKeyboardHook() {
   for (int native_key_code : grabbed_keys_) {
     for (auto modifier : kModifierMasks) {
       connection_->UngrabKey(
-          {static_cast<x11::KeyCode>(native_key_code), x_window_, modifier});
+          {static_cast<x11::KeyCode>(native_key_code), window_, modifier});
     }
   }
 }
 
-bool XKeyboardHook::RegisterHook(
+void X11KeyboardHook::RegisterHook(
     const absl::optional<base::flat_set<DomCode>>& dom_codes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -74,40 +80,42 @@ bool XKeyboardHook::RegisterHook(
   DCHECK(!g_instance);
   g_instance = this;
 
-  if (dom_codes.has_value())
+  if (dom_codes.has_value()) {
     CaptureSpecificKeys(dom_codes);
-  else
+  } else {
     CaptureAllKeys();
-
-  return true;
+  }
 }
 
-void XKeyboardHook::CaptureAllKeys() {
+void X11KeyboardHook::CaptureAllKeys() {
   // We could have used the XGrabKeyboard API here instead of calling XGrabKeys
   // on a hard-coded set of shortcut keys.  Calling XGrabKeyboard would make
   // this work much simpler, however it has side-effects which prevents its use.
   // An example side-effect is that it prevents the lock screen from starting as
   // the screensaver process also calls XGrabKeyboard but will receive an error
   // since it was already grabbed by the window with KeyboardLock.
-  for (auto kDomCodesForLockAllKey : kDomCodesForLockAllKeys)
+  for (auto kDomCodesForLockAllKey : kDomCodesForLockAllKeys) {
     CaptureKeyForDomCode(kDomCodesForLockAllKey);
+  }
 }
 
-void XKeyboardHook::CaptureSpecificKeys(
+void X11KeyboardHook::CaptureSpecificKeys(
     const absl::optional<base::flat_set<DomCode>>& dom_codes) {
-  for (DomCode dom_code : dom_codes.value())
+  for (DomCode dom_code : dom_codes.value()) {
     CaptureKeyForDomCode(dom_code);
+  }
 }
 
-void XKeyboardHook::CaptureKeyForDomCode(DomCode dom_code) {
+void X11KeyboardHook::CaptureKeyForDomCode(DomCode dom_code) {
   int native_key_code = KeycodeConverter::DomCodeToNativeKeycode(dom_code);
-  if (native_key_code == KeycodeConverter::InvalidNativeKeycode())
+  if (native_key_code == KeycodeConverter::InvalidNativeKeycode()) {
     return;
+  }
 
   for (auto modifier : kModifierMasks) {
     connection_->GrabKey({
         .owner_events = false,
-        .grab_window = x_window_,
+        .grab_window = window_,
         .modifiers = modifier,
         .key = static_cast<x11::KeyCode>(native_key_code),
         .pointer_mode = x11::GrabMode::Async,

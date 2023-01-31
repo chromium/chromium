@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_X_X11_KEYBOARD_HOOK_H_
-#define UI_BASE_X_X11_KEYBOARD_HOOK_H_
+#ifndef UI_OZONE_PLATFORM_X11_X11_KEYBOARD_HOOK_H_
+#define UI_OZONE_PLATFORM_X11_X11_KEYBOARD_HOOK_H_
 
 #include <vector>
 
@@ -13,27 +13,22 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/x/connection.h"
+#include "ui/ozone/common/base_keyboard_hook.h"
 
 namespace ui {
 
-enum class DomCode;
-class KeyEvent;
-
-// X11-specific implementation of the class that intercepts keyboard input.
-class COMPONENT_EXPORT(UI_BASE_X) XKeyboardHook {
+class X11KeyboardHook final : public BaseKeyboardHook {
  public:
-  using KeyEventCallback = base::RepeatingCallback<void(KeyEvent* event)>;
-
-  explicit XKeyboardHook(gfx::AcceleratedWidget accelerated_widget);
-  XKeyboardHook(const XKeyboardHook&) = delete;
-  XKeyboardHook& operator=(const XKeyboardHook&) = delete;
-  virtual ~XKeyboardHook();
-
- protected:
-  bool RegisterHook(const absl::optional<base::flat_set<DomCode>>& dom_codes);
+  X11KeyboardHook(absl::optional<base::flat_set<DomCode>> dom_codes,
+                  BaseKeyboardHook::KeyEventCallback callback,
+                  gfx::AcceleratedWidget accelerated_widget);
+  X11KeyboardHook(const X11KeyboardHook&) = delete;
+  X11KeyboardHook& operator=(const X11KeyboardHook&) = delete;
+  ~X11KeyboardHook() final;
 
  private:
   // Helper methods for setting up key event capture.
+  void RegisterHook(const absl::optional<base::flat_set<DomCode>>& dom_codes);
   void CaptureAllKeys();
   void CaptureSpecificKeys(
       const absl::optional<base::flat_set<DomCode>>& dom_codes);
@@ -46,9 +41,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XKeyboardHook {
 
   // The x11 default connection and the owner's native window.
   const raw_ptr<x11::Connection> connection_ = nullptr;
-  const x11::Window x_window_ = x11::Window::None;
+  const x11::Window window_ = x11::Window::None;
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_X_X11_KEYBOARD_HOOK_H_
+#endif  // UI_OZONE_PLATFORM_X11_X11_KEYBOARD_HOOK_H_

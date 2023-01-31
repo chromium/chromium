@@ -37,8 +37,6 @@ component("x") {
     "x11_global_shortcut_listener.h",
     "x11_idle_query.cc",
     "x11_idle_query.h",
-    "x11_keyboard_hook.cc",
-    "x11_keyboard_hook.h",
     "x11_move_loop.h",
     "x11_move_loop_delegate.h",
     "x11_pointer_grab.cc",

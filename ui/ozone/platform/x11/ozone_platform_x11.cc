@@ -37,7 +37,7 @@
 #include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
 #include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
-#include "ui/ozone/platform/x11/x11_keyboard_hook_ozone.h"
+#include "ui/ozone/platform/x11/x11_keyboard_hook.h"
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
@@ -162,7 +162,7 @@ class OzonePlatformX11 : public OzonePlatform,
       gfx::AcceleratedWidget accelerated_widget) override {
     switch (type) {
       case PlatformKeyboardHookTypes::kModifier:
-        return std::make_unique<X11KeyboardHookOzone>(
+        return std::make_unique<X11KeyboardHook>(
             std::move(dom_codes), std::move(callback), accelerated_widget);
       case PlatformKeyboardHookTypes::kMedia:
         return nullptr;
