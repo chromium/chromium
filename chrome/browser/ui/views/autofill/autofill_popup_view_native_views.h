@@ -99,7 +99,6 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnThemeChanged() override;
 
   // AutofillPopupView:
   void Show() override;
@@ -138,7 +137,6 @@ class AutofillPopupViewNativeViews : public AutofillPopupBaseView,
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_ = nullptr;
   raw_ptr<views::ScrollView, DanglingUntriaged> scroll_view_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> body_container_ = nullptr;
-  raw_ptr<views::View, DanglingUntriaged> footer_container_ = nullptr;
 };
 
 }  // namespace autofill

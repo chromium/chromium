@@ -65,6 +65,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/table_layout_view.h"
 #include "ui/views/style/typography.h"
@@ -1368,21 +1369,6 @@ void AutofillPopupViewNativeViews::GetAccessibleNodeData(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_ACCESSIBLE_NODE_DATA));
 }
 
-void AutofillPopupViewNativeViews::OnThemeChanged() {
-  AutofillPopupBaseView::OnThemeChanged();
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
-  // `scroll_view_` and `footer_container_` will be null if there is no body
-  // or footer content, respectively.
-  if (scroll_view_) {
-    scroll_view_->SetBackgroundThemeColorId(ui::kColorDropdownBackground);
-  }
-  if (footer_container_) {
-    footer_container_->SetBackground(
-        views::CreateSolidBackground(GetFooterBackgroundColor()));
-  }
-}
-
 void AutofillPopupViewNativeViews::Show() {
   NotifyAccessibilityEvent(ax::mojom::Event::kExpandedChanged, true);
   DoShow();
@@ -1445,7 +1431,6 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   rows_.clear();
   scroll_view_ = nullptr;
   body_container_ = nullptr;
-  footer_container_ = nullptr;
 
   int line_count = controller_->GetLineCount();
 
@@ -1539,6 +1524,9 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     }
   }
 
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+
   // If kAutofillVisualImprovementsForSuggestionUi is enabled, introduce an
   // additional view with a vertical padding that wraps the full content of the
   // popup. This is similar to the padding_wrapper used in the scroll area, but
@@ -1575,14 +1563,15 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
       body_container->AddChildView(row);
     }
 
-    scroll_view_ = new views::ScrollView();
-    scroll_view_->SetHorizontalScrollBarMode(
+    auto scroll_view = std::make_unique<views::ScrollView>();
+    scroll_view->SetBackgroundThemeColorId(ui::kColorDropdownBackground);
+    scroll_view->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
-    body_container_ = scroll_view_->SetContents(std::move(body_container));
-    scroll_view_->SetDrawOverflowIndicator(false);
-    scroll_view_->ClipHeightTo(0, body_container_->GetPreferredSize().height());
+    body_container_ = scroll_view->SetContents(std::move(body_container));
+    scroll_view->SetDrawOverflowIndicator(false);
+    scroll_view->ClipHeightTo(0, body_container_->GetPreferredSize().height());
 
-    content_view->AddChildView(scroll_view_.get());
+    scroll_view_ = content_view->AddChildView(std::move(scroll_view));
     content_layout->SetFlexForView(scroll_view_.get(), 1);
   }
 
@@ -1593,13 +1582,13 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
   // Footer items need to be in their own container because they should not be
   // affected by scrolling behavior (they are "sticky" at the bottom) and
   // because they have a special background color
-  auto* footer_container = new views::View();
-
-  views::BoxLayout* footer_layout =
-      footer_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  footer_layout->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kStart);
+  std::unique_ptr<views::BoxLayoutView> footer_container =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kStart)
+          .SetBackground(views::CreateThemedSolidBackground(
+              ui::kColorBubbleFooterBackground))
+          .Build();
 
   for (int line_number : footer_item_line_numbers) {
     // The footer can contain either footer views or separator lines.
@@ -1612,8 +1601,8 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     footer_container->AddChildView(rows_.back());
   }
 
-  footer_container_ = content_view->AddChildView(footer_container);
-  content_layout->SetFlexForView(footer_container_, 0);
+  content_layout->SetFlexForView(
+      content_view->AddChildView(std::move(footer_container)), 0);
 }
 
 int AutofillPopupViewNativeViews::AdjustWidth(int width) const {
