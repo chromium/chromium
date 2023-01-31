@@ -313,7 +313,7 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
 - (TableViewTextEditItem*)federationItemForPasswordDetails:
     (PasswordDetails*)passwordDetails {
   TableViewTextEditItem* item =
-      [[TableViewTextEditItem alloc] initWithType:ItemTypeFederation];
+      [[TableViewTextEditItem alloc]   initWithType:ItemTypeFederation];
   item.textFieldBackgroundColor = [UIColor clearColor];
   item.textFieldName =
       l10n_util::GetNSString(IDS_IOS_SHOW_PASSWORD_VIEW_FEDERATION);
@@ -398,10 +398,11 @@ const CGFloat kCompromisedPasswordSymbolSize = 22;
     }
     case ItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
+        int passwordIndex = IsPasswordGroupingEnabled() ? indexPath.section : 0;
         DCHECK(self.applicationCommandsHandler);
-        DCHECK(self.passwords[indexPath.section].changePasswordURL.is_valid());
+        DCHECK(self.passwords[passwordIndex].changePasswordURL.is_valid());
         OpenNewTabCommand* command = [OpenNewTabCommand
-            commandWithURLFromChrome:self.passwords[indexPath.section]
+            commandWithURLFromChrome:self.passwords[passwordIndex]
                                          .changePasswordURL];
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                                 PasswordCheckInteraction::kChangePassword);
