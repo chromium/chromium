@@ -243,6 +243,8 @@ TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
 }
 
 TEST(TitledUrlMatchUtilsTest, EmptyInlineAutocompletion) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature({omnibox::kBookmarkPaths});
   // The search term matches the title but not the URL. Since there is no URL
   // match, the inline autocompletion string will be empty.
   std::u16string input_text(u"goo");
@@ -344,6 +346,8 @@ TEST(TitledUrlMatchUtilsTest, PathsInContentsAndDescription) {
       };
 
   {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature({omnibox::kBookmarkPaths});
     SCOPED_TRACE("Feature disabled");
     test_with_and_without_url_and_ancestor_matches("title", "https://url.com",
                                                    "url.com", "title");

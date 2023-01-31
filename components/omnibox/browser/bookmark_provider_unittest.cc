@@ -12,7 +12,6 @@
 
 #include "base/guid.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,7 +19,6 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
@@ -32,7 +30,6 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
@@ -100,8 +97,11 @@ struct BookmarksTestInfo {
 // unit test.
 
 struct TestBookmarkPosition {
-  TestBookmarkPosition(size_t begin, size_t end)
-      : begin(begin), end(end) {}
+  TestBookmarkPosition(size_t begin, size_t end) : begin(begin), end(end) {}
+
+  bool operator==(const TestBookmarkPosition& other) const {
+    return begin == other.begin && end == other.end;
+  }
 
   size_t begin;
   size_t end;
@@ -134,13 +134,7 @@ std::u16string MatchesAsString16(const ACMatches& matches) {
   return matches_string;
 }
 
-// Comparison function for sorting search terms by descending length.
-bool TestBookmarkPositionsEqual(const TestBookmarkPosition& pos_a,
-                                const TestBookmarkPosition& pos_b) {
-  return pos_a.begin == pos_b.begin && pos_a.end == pos_b.end;
-}
-
-// Convience function to make comparing ACMatchClassifications against the
+// Convenience function to make comparing ACMatchClassifications against the
 // test expectations structure easier.
 TestBookmarkPositions PositionsFromAutocompleteMatch(
     const AutocompleteMatch& match) {
@@ -168,21 +162,6 @@ TestBookmarkPositions PositionsFromAutocompleteMatch(
   return positions;
 }
 
-// Convenience function to make comparing test expectations structure against
-// the actual ACMatchClassifications easier.
-TestBookmarkPositions PositionsFromExpectations(
-    const size_t expectations[9][2]) {
-  TestBookmarkPositions positions;
-  size_t i = 0;
-  // The array is zero-terminated in the [1]th element.
-  while (expectations[i][1]) {
-    positions.push_back(
-        TestBookmarkPosition(expectations[i][0], expectations[i][1]));
-    ++i;
-  }
-  return positions;
-}
-
 }  // namespace
 
 class BookmarkProviderTest : public testing::Test {
@@ -200,8 +179,8 @@ class BookmarkProviderTest : public testing::Test {
   void TestNumMatchesAndTriggeredFeature(
       std::string input_text,
       size_t expected_matches_count,
-      bool expect_short_bookmarks_feature_triggered = false,
-      bool expect_bookmark_paths_feature_triggered = false);
+      std::vector<OmniboxTriggeredFeatureService::Feature>
+          expected_triggered_features = {});
 
   std::unique_ptr<MockAutocompleteProviderClient> provider_client_;
   std::unique_ptr<BookmarkModel> model_;
@@ -236,8 +215,8 @@ void BookmarkProviderTest::SetUp() {
 void BookmarkProviderTest::TestNumMatchesAndTriggeredFeature(
     std::string input_text,
     size_t expected_matches_count,
-    bool expect_short_bookmarks_feature_triggered,
-    bool expect_bookmark_paths_feature_triggered) {
+    std::vector<OmniboxTriggeredFeatureService::Feature>
+        expected_triggered_features) {
   SCOPED_TRACE("[" + input_text + "]");  // Wrap |input_text| in `[]` to make
                                          // trailing whitespace apparent.
 
@@ -250,16 +229,21 @@ void BookmarkProviderTest::TestNumMatchesAndTriggeredFeature(
   provider_->Start(input, false);
   EXPECT_EQ(provider_->matches().size(), expected_matches_count);
 
-  EXPECT_EQ(triggered_feature_service->GetFeatureTriggeredInSession(
-                OmniboxTriggeredFeatureService::Feature::
-                    kShortBookmarkSuggestionsByTotalInputLength),
-            expect_short_bookmarks_feature_triggered);
-  EXPECT_EQ(triggered_feature_service->GetFeatureTriggeredInSession(
-                OmniboxTriggeredFeatureService::Feature::kBookmarkPaths),
-            expect_bookmark_paths_feature_triggered);
+  OmniboxTriggeredFeatureService::Features features_triggered;
+  OmniboxTriggeredFeatureService::Features features_triggered_in_session;
+  triggered_feature_service->RecordToLogs(&features_triggered,
+                                          &features_triggered_in_session);
+  triggered_feature_service->ResetSession();
+  EXPECT_THAT(features_triggered,
+              testing::UnorderedElementsAreArray(expected_triggered_features));
+  EXPECT_THAT(features_triggered_in_session,
+              testing::UnorderedElementsAreArray(expected_triggered_features));
 }
 
 TEST_F(BookmarkProviderTest, Positions) {
+  base::test::ScopedFeatureList feature_list{
+      omnibox::kShortBookmarkSuggestionsByTotalInputLength};
+
   // Simulate searches.
   // Description of |positions|:
   //   The first index represents the collection of positions for each expected
@@ -286,72 +270,65 @@ TEST_F(BookmarkProviderTest, Positions) {
   //     {"def", 2, {{{4, 7}, {999, 0}}, {{2, 5}, {11, 14}, {999, 0}}}},
   //
   struct QueryData {
-    const std::string query;
-    const size_t match_count;  // This count must match the number of major
-                               // elements in the following |positions| array.
-    const size_t positions[99][9][2];
-  } query_data[] = {
+    std::string query;
+    std::vector<TestBookmarkPositions> positions_per_match;
+  };
+  std::vector<QueryData> queries = {
       // This first set is primarily for position detection validation.
-      {"abc", 3, {{{0, 3}, {0, 0}}, {{0, 3}, {0, 0}}, {{0, 3}, {0, 0}}}},
-      {"abcde", 2, {{{0, 5}, {0, 0}}, {{0, 5}, {0, 0}}}},
-      {"foo bar", 0, {{{0, 0}}}},
-      {"fooey bark", 0, {{{0, 0}}}},
-      {"def", 2, {{{2, 5}, {0, 0}}, {{4, 7}, {0, 0}}}},
-      {"ghi jkl", 2, {{{0, 7}, {0, 0}}, {{0, 3}, {4, 7}, {0, 0}}}},
+      {"abc", {{{0, 3}}, {{0, 3}}, {{0, 3}}}},
+      {"abcde", {{{0, 5}}, {{0, 5}}}},
+      {"foo bar", {}},
+      {"fooey bark", {}},
+      {"def", {{{2, 5}}, {{4, 7}}}},
+      {"ghi jkl", {{{0, 7}}, {{0, 3}, {4, 7}}}},
       // NB: GetBookmarksMatching(...) uses exact match for "a" in title or URL.
-      {"a", 2, {{{0, 1}, {0, 0}}, {{0, 1}, {0, 0}}}},
-      {"a d", 0, {{{0, 0}}}},
-      {"carry carbon", 1, {{{0, 12}, {0, 0}}}},
+      {"a", {{{0, 1}}, {{0, 1}}}},
+      {"a d", {{{0, 1}, {4, 5}}, {{0, 3}}}},
+      {"carry carbon", {{{0, 12}}}},
       // NB: GetBookmarksMatching(...) sorts the match positions.
-      {"carbon carry", 1, {{{0, 5}, {6, 12}, {0, 0}}}},
-      {"arbon", 0, {{{0, 0}}}},
-      {"ar", 0, {{{0, 0}}}},
-      {"arry", 0, {{{0, 0}}}},
+      {"carbon carry", {{{0, 5}, {6, 12}}}},
+      {"arbon", {}},
+      {"ar", {}},
+      {"arry", {}},
       // Quoted terms are single terms.
-      {"\"carry carbon\"", 1, {{{0, 5}, {6, 12}, {0, 0}}}},
-      {"\"carry carbon\" care", 1, {{{0, 5}, {6, 12}, {13, 17}, {0, 0}}}},
+      {"\"carry carbon\"", {{{0, 5}, {6, 12}}}},
+      {"\"carry carbon\" care", {{{0, 5}, {6, 12}, {13, 17}}}},
       // Quoted terms require complete word matches.
-      {"\"carry carbo\"", 0, {{{0, 0}}}},
+      {"\"carry carbo\"", {}},
       // This set uses duplicated and/or overlaps search terms in the title.
-      {"frank", 1, {{{0, 5}, {0, 0}}}},
-      {"frankly", 1, {{{0, 7}, {0, 0}}}},
-      {"frankly frankly", 1, {{{0, 15}, {0, 0}}}},
-      {"foobar foo", 1, {{{0, 10}, {0, 0}}}},
-      {"foo foobar", 1, {{{0, 6}, {7, 13}, {0, 0}}}},
+      {"frank", {{{0, 5}}}},
+      {"frankly", {{{0, 7}}}},
+      {"frankly frankly", {{{0, 15}}}},
+      {"foobar foo", {{{0, 10}}}},
+      {"foo foobar", {{{0, 6}, {7, 13}}}},
       // This ensures that leading whitespace in the title is correctly offset.
-      {"hello", 1, {{{0, 5}, {0, 0}}}},
+      {"hello", {{{0, 5}}}},
       // This ensures that empty titles yield empty classifications.
-      {"emptytitle", 1, {}},
+      {"emptytitle", {{}}},
   };
 
-  for (size_t i = 0; i < std::size(query_data); ++i) {
-    AutocompleteInput input(base::ASCIIToUTF16(query_data[i].query),
+  for (const auto& query : queries) {
+    AutocompleteInput input(base::ASCIIToUTF16(query.query),
                             metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     provider_->Start(input, false);
     const ACMatches& matches(provider_->matches());
     // Validate number of results is as expected.
-    EXPECT_LE(matches.size(), query_data[i].match_count)
+    EXPECT_LE(matches.size(), query.positions_per_match.size())
         << "One or more of the following matches were unexpected:\n"
-        << MatchesAsString16(matches) << "For query '" << query_data[i].query
-        << "'.";
-    EXPECT_GE(matches.size(), query_data[i].match_count)
+        << MatchesAsString16(matches) << "For query '" << query.query << "'.";
+    EXPECT_GE(matches.size(), query.positions_per_match.size())
         << "One or more expected matches are missing. Matches found:\n"
-        << MatchesAsString16(matches) << "for query '" << query_data[i].query
-        << "'.";
+        << MatchesAsString16(matches) << "for query '" << query.query << "'.";
     // Validate positions within each match is as expected.
-    for (size_t j = 0; j < matches.size(); ++j) {
-      // Collect the expected positions as a vector, collect the match's
-      // classifications for match positions as a vector, then compare.
-      TestBookmarkPositions expected_positions(
-          PositionsFromExpectations(query_data[i].positions[j]));
+    for (size_t i = 0; i < matches.size(); ++i) {
       TestBookmarkPositions actual_positions(
-          PositionsFromAutocompleteMatch(matches[j]));
-      EXPECT_TRUE(base::ranges::equal(expected_positions, actual_positions,
-                                      TestBookmarkPositionsEqual))
+          PositionsFromAutocompleteMatch(matches[i]));
+      TestBookmarkPositions expected_positions = query.positions_per_match[i];
+      EXPECT_EQ(actual_positions, expected_positions)
           << "EXPECTED: " << TestBookmarkPositionsAsString(expected_positions)
           << "ACTUAL:   " << TestBookmarkPositionsAsString(actual_positions)
-          << "    for query: '" << query_data[i].query << "'.";
+          << "    for query: '" << query.query << "'.";
     }
   }
 }
@@ -367,38 +344,49 @@ TEST_F(BookmarkProviderTest, Rankings) {
     // by the |query|
     const std::string matches[3];
   } query_data[] = {
-    // Basic ranking test.
-    {"abc",       3, {"abcde",      // Most complete match.
-                      "abcdef",
-                      "abc def"}},  // Least complete match.
-    {"ghi",       2, {"ghi jkl",    // Matched earlier.
-                      "jkl ghi",    // Matched later.
-                      ""}},
-    // Rankings of exact-word matches with different URLs.
-    {"achlorhydric",
-                  3, {"achlorhydric mockingbirds resuscitates featherhead",
-                      "achlorhydric featherheads resuscitates mockingbirds",
-                      "featherhead resuscitates achlorhydric mockingbirds"}},
-    {"achlorhydric featherheads",
-                  2, {"achlorhydric featherheads resuscitates mockingbirds",
-                      "mockingbirds resuscitates featherheads achlorhydric",
-                      ""}},
-    {"mockingbirds resuscitates",
-                  3, {"mockingbirds resuscitates featherheads achlorhydric",
-                      "achlorhydric mockingbirds resuscitates featherhead",
-                      "featherhead resuscitates achlorhydric mockingbirds"}},
-    // Ranking of exact-word matches with URL boosts.
-    {"worms",     2, {"burning worms #1",    // boosted
-                      "burning worms #2",    // not boosted
-                      ""}},
-    // Ranking of prefix matches with URL boost.
-    {"burn worm", 3, {"burning worms #1",    // boosted
-                      "worming burns #10",   // boosted but longer title
-                      "burning worms #2"}},  // not boosted
-    // A query of "worm burn" will have the same results.
-    {"worm burn", 3, {"burning worms #1",    // boosted
-                      "worming burns #10",   // boosted but longer title
-                      "burning worms #2"}},  // not boosted
+      // Basic ranking test.
+      {"abc",
+       3,
+       {"abcde",                // Most complete match.
+        "abcdef", "abc def"}},  // Least complete match.
+      {"ghi",
+       2,
+       {"ghi jkl",  // Matched earlier.
+        "jkl ghi",  // Matched later.
+        ""}},
+      // Rankings of exact-word matches with different URLs.
+      {"achlorhydric",
+       3,
+       {"achlorhydric mockingbirds resuscitates featherhead",
+        "achlorhydric featherheads resuscitates mockingbirds",
+        "featherhead resuscitates achlorhydric mockingbirds"}},
+      {"achlorhydric featherheads",
+       2,
+       {"achlorhydric featherheads resuscitates mockingbirds",
+        "mockingbirds resuscitates featherheads achlorhydric", ""}},
+      {"mockingbirds resuscitates",
+       3,
+       {"mockingbirds resuscitates featherheads achlorhydric",
+        "achlorhydric mockingbirds resuscitates featherhead",
+        "featherhead resuscitates achlorhydric mockingbirds"}},
+      // Ranking of exact-word matches with URL boosts.
+      {"worms",
+       2,
+       {"burning worms #1",  // boosted
+        "burning worms #2",  // not boosted
+        ""}},
+      // Ranking of prefix matches with URL boost.
+      {"burn worm",
+       3,
+       {"burning worms #1",    // boosted
+        "worming burns #10",   // boosted but longer title
+        "burning worms #2"}},  // not boosted
+      // A query of "worm burn" will have the same results.
+      {"worm burn",
+       3,
+       {"burning worms #1",    // boosted
+        "worming burns #10",   // boosted but longer title
+        "burning worms #2"}},  // not boosted
   };
 
   for (size_t i = 0; i < std::size(query_data); ++i) {
@@ -524,12 +512,12 @@ TEST_F(BookmarkProviderTest, StripHttpAndAdjustOffsets) {
     }
 
     EXPECT_EQ(base::ASCIIToUTF16(query_data[i].expected_contents),
-              match.contents) << description;
-    std::vector<std::string> class_strings = base::SplitString(
-        query_data[i].expected_contents_class, ",",
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    ASSERT_EQ(class_strings.size(), match.contents_class.size())
+              match.contents)
         << description;
+    std::vector<std::string> class_strings =
+        base::SplitString(query_data[i].expected_contents_class, ",",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    ASSERT_EQ(class_strings.size(), match.contents_class.size()) << description;
     for (size_t j = 0; j < class_strings.size(); ++j) {
       std::vector<std::string> chunks = base::SplitString(
           class_strings[j], ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -556,8 +544,15 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
   // Test the 2 short bookmark features that determine when short inputs should
   // be allowed to prefix match. These tests are trying to match the mock
   // bookmark "testing short bookmarks".
+
+  auto short_feature = OmniboxTriggeredFeatureService::Feature::
+      kShortBookmarkSuggestionsByTotalInputLength;
+
   {
     SCOPED_TRACE("Default.");
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        omnibox::kShortBookmarkSuggestionsByTotalInputLength);
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
     TestNumMatchesAndTriggeredFeature("tes", 1);
@@ -580,9 +575,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
     feature_list.InitAndEnableFeature(
         omnibox::kShortBookmarkSuggestionsByTotalInputLength);
     TestNumMatchesAndTriggeredFeature("te", 0);
-    TestNumMatchesAndTriggeredFeature("te ", 1, true);
-    TestNumMatchesAndTriggeredFeature("tes", 1, true);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
+    TestNumMatchesAndTriggeredFeature("te ", 1, {short_feature});
+    TestNumMatchesAndTriggeredFeature("tes", 1, {short_feature});
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, {short_feature});
   }
 
   {
@@ -595,9 +590,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "5"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 1, true);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, {short_feature});
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, {short_feature});
   }
 
   {
@@ -609,9 +604,9 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
               kShortBookmarkSuggestionsByTotalInputLengthCounterfactual.name,
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
-    TestNumMatchesAndTriggeredFeature("te ", 0, true);
-    TestNumMatchesAndTriggeredFeature("tes", 1, true);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 0, true);
+    TestNumMatchesAndTriggeredFeature("te ", 0, {short_feature});
+    TestNumMatchesAndTriggeredFeature("tes", 1, {short_feature});
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, {short_feature});
   }
 
   {
@@ -628,24 +623,26 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
           "true"}});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 0, true);
+    TestNumMatchesAndTriggeredFeature("te   ", 0, {short_feature});
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 0, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 0, {short_feature});
   }
 
   {
     SCOPED_TRACE("Shortcut non-prefix rich autocompletion enabled.");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
-          "4"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .name,
-          "5"},
-         {OmniboxFieldTrial::
-              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.name,
-          "true"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kRichAutocompletion,
+          {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar
+                .name,
+            "4"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+                .name,
+            "5"},
+           {OmniboxFieldTrial::
+                kRichAutocompletionAutocompleteNonPrefixShortcutProvider.name,
+            "true"}}}},
+        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
     TestNumMatchesAndTriggeredFeature("te   ", 0);
@@ -656,39 +653,43 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
   {
     SCOPED_TRACE("Non-prefix rich autocompletion enabled with limit 5.");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
-          "4"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .name,
-          "5"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.name,
-          "true"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kRichAutocompletion,
+          {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar
+                .name,
+            "4"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+                .name,
+            "5"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.name,
+            "true"}}}},
+        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te   ", 1, true);
+    TestNumMatchesAndTriggeredFeature("te   ", 1, {short_feature});
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, {short_feature});
   }
 
   {
     SCOPED_TRACE("Title rich autocompletion enabled with limit 4.");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
-          "4"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .name,
-          "5"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
-          "true"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kRichAutocompletion,
+          {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar
+                .name,
+            "4"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+                .name,
+            "5"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
+            "true"}}}},
+        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te  ", 1, true);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, {short_feature});
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, {short_feature});
   }
 
   {
@@ -696,34 +697,43 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
         "Title and non-prefix rich autocompletion enabled with limits 4 and "
         "5.");
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kRichAutocompletion,
-        {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar.name,
-          "4"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .name,
-          "5"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
-              .name,
-          "true"},
-         {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
-          "true"}});
+    feature_list.InitWithFeaturesAndParameters(
+        {{omnibox::kRichAutocompletion,
+          {{OmniboxFieldTrial::kRichAutocompletionAutocompleteTitlesMinChar
+                .name,
+            "4"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+                .name,
+            "5"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixMinChar
+                .name,
+            "true"},
+           {OmniboxFieldTrial::kRichAutocompletionAutocompleteTitles.name,
+            "true"}}}},
+        {omnibox::kShortBookmarkSuggestionsByTotalInputLength});
     TestNumMatchesAndTriggeredFeature("te", 0);
     TestNumMatchesAndTriggeredFeature("te ", 0);
-    TestNumMatchesAndTriggeredFeature("te  ", 1, true);
+    TestNumMatchesAndTriggeredFeature("te  ", 1, {short_feature});
     TestNumMatchesAndTriggeredFeature("tes", 1);
-    TestNumMatchesAndTriggeredFeature("te sh bo", 1, true);
+    TestNumMatchesAndTriggeredFeature("te sh bo", 1, {short_feature});
   }
 }
 
 TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
+  base::test::ScopedFeatureList enable_short_bookmarks(
+      omnibox::kShortBookmarkSuggestionsByTotalInputLength);
+
+  auto short_feature = OmniboxTriggeredFeatureService::Feature::
+      kShortBookmarkSuggestionsByTotalInputLength;
+  auto paths_feature = OmniboxTriggeredFeatureService::Feature::kBookmarkPaths;
+
   {
     // When the feature is off, should not return path matched bookmarks nor
     // trigger counterfactual logging.
     SCOPED_TRACE("feature disabled");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(omnibox::kBookmarkPaths);
-    TestNumMatchesAndTriggeredFeature("carefully other", 0);
+    TestNumMatchesAndTriggeredFeature("carefully other", 0, {short_feature});
   }
 
   {
@@ -732,7 +742,7 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     SCOPED_TRACE("feature enabled without counterfactual");
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(omnibox::kBookmarkPaths);
-    TestNumMatchesAndTriggeredFeature("carefully other", 1);
+    TestNumMatchesAndTriggeredFeature("carefully other", 1, {short_feature});
   }
 
   {
@@ -744,8 +754,9 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
         {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "control"}});
-    TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 0, false, true);
+    TestNumMatchesAndTriggeredFeature("carefully", 1, {short_feature});
+    TestNumMatchesAndTriggeredFeature("carefully other", 0,
+                                      {short_feature, paths_feature});
   }
 
   {
@@ -757,8 +768,9 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
     feature_list.InitAndEnableFeatureWithParameters(
         omnibox::kBookmarkPaths,
         {{OmniboxFieldTrial::kBookmarkPathsCounterfactual.name, "enabled"}});
-    TestNumMatchesAndTriggeredFeature("carefully", 1);
-    TestNumMatchesAndTriggeredFeature("carefully other", 1, false, true);
+    TestNumMatchesAndTriggeredFeature("carefully", 1, {short_feature});
+    TestNumMatchesAndTriggeredFeature("carefully other", 1,
+                                      {short_feature, paths_feature});
   }
 }
 

@@ -734,6 +734,10 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAllTerms) {
 }
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kIndexPaths);
+  ResetNodes();
+
   AddNode("term1 term2 other xyz ab", GURL("http://foo.com"));
 
   // Should return matches if any input terms match, even if not all node
@@ -761,6 +765,10 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms) {
 }
 
 TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_MaxNodes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kIndexPaths);
+  ResetNodes();
+
   AddNode("common11", GURL("http://foo.com"));
   AddNode("common12", GURL("http://foo.com"));
   AddNode("common13 uncommon", GURL("http://foo.com"));
@@ -818,6 +826,10 @@ TEST_F(TitledUrlIndexTest, RetrieveNodesMatchingAnyTerms_PathIndex) {
 }
 
 TEST_F(TitledUrlIndexTest, GetResultsMatchingAncestors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(bookmarks::kIndexPaths);
+  ResetNodes();
+
   TitledUrlNode* node =
       AddNode("leaf pare", GURL("http://foo.com"), "parent").first;
 
