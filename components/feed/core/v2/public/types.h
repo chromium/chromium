@@ -220,6 +220,21 @@ enum class WebFeedSubscriptionRequestStatus {
 std::ostream& operator<<(std::ostream& out,
                          WebFeedSubscriptionRequestStatus value);
 
+// This must be kept in sync with WebFeedQueryRequestStatus in
+// enums.xml. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.webfeed
+enum class WebFeedQueryRequestStatus {
+  kUnknown = 0,
+  kSuccess = 1,
+  kFailedOffline = 2,
+  kFailedUnknownError = 3,
+  kAbortWebFeedQueryPendingClearAll = 4,
+  kFailedInvalidUrl = 5,
+  kMaxValue = kFailedInvalidUrl,
+};
+std::ostream& operator<<(std::ostream& out, WebFeedQueryRequestStatus value);
+
 using NetworkRequestId = base::IdTypeU32<class NetworkRequestIdClass>;
 
 // Values for the UMA

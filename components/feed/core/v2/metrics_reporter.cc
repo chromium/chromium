@@ -233,6 +233,8 @@ base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
       return "QueryBackgroundFeed";
     case NetworkRequestType::kQueryNextPage:
       return "QueryNextPage";
+    case NetworkRequestType::kQueryWebFeed:
+      return "QueryWebFeed";
   }
 }
 
@@ -1191,6 +1193,13 @@ void MetricsReporter::OnUnfollowAttempt(
         "ContentSuggestions.Feed.WebFeed.FollowCount.AfterUnfollow",
         result.subscription_count);
   }
+}
+
+void MetricsReporter::OnQueryAttempt(
+    const WebFeedSubscriptions::QueryWebFeedResult& result) {
+  VVLOG << "OnQueryAttempt status=" << result.request_status;
+  base::UmaHistogramEnumeration("ContentSuggestions.Feed.WebFeed.QueryResult",
+                                result.request_status);
 }
 
 void MetricsReporter::RefreshRecommendedWebFeedsAttempted(

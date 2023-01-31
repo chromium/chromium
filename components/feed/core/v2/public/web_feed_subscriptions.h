@@ -27,6 +27,12 @@ class WebFeedSubscriptions {
     // The change reason from the request.
     feedwire::webfeed::WebFeedChangeReason change_reason;
   };
+  struct QueryWebFeedResult {
+    WebFeedQueryRequestStatus request_status =
+        WebFeedQueryRequestStatus::kUnknown;
+    // The id of the queried web feed.
+    std::string web_feed_id;
+  };
   // Follow a web feed given information about a web page. Calls `callback` when
   // complete. The callback parameter reports whether the url is now considered
   // followed. This always creates a non-durable request.
@@ -106,6 +112,11 @@ class WebFeedSubscriptions {
   // fails, returns the last-known state.
   virtual void SubscribedWebFeedCount(
       base::OnceCallback<void(int)> callback) = 0;
+
+  // return the WebFeed Id based on the Uri provided.
+  virtual void QueryWebFeed(
+      const GURL& url,
+      base::OnceCallback<void(QueryWebFeedResult)> callback) = 0;
 
   // Output debugging information for snippets-internals.
   virtual void DumpStateForDebugging(std::ostream& ss) {}

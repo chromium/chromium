@@ -16,6 +16,7 @@
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"
+#include "components/feed/core/v2/web_feed_subscriptions/query_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscription_datastore_provider.h"
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
@@ -80,6 +81,9 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void DumpStateForDebugging(std::ostream& ss) override;
   void RefreshRecommendedFeeds(
       base::OnceCallback<void(RefreshResult)> callback) override;
+  void QueryWebFeed(
+      const GURL& url,
+      base::OnceCallback<void(QueryWebFeedResult)> callback) override;
 
   // Types / functions exposed for task implementations.
 
@@ -180,6 +184,10 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void UnfollowWebFeedComplete(
       base::OnceCallback<void(UnfollowWebFeedResult)> callback,
       UnsubscribeFromWebFeedTask::Result result);
+
+  void QueryWebFeedComplete(
+      base::OnceCallback<void(QueryWebFeedResult)> callback,
+      QueryWebFeedResult result);
 
   void EnqueueInFlightChange(
       bool subscribing,

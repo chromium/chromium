@@ -404,6 +404,13 @@ feedwire::webfeed::UnfollowWebFeedResponse SuccessfulUnfollowResponse() {
   SetConsistencyToken(response, "unfollow-ct");
   return response;
 }
+feedwire::webfeed::QueryWebFeedResponse SuccessfulQueryResponse(
+    const std::string& query_name) {
+  feedwire::webfeed::QueryWebFeedResponse response;
+  *response.mutable_web_feed() = MakeWireWebFeed(query_name);
+  SetConsistencyToken(response, "query-ct");
+  return response;
+}
 
 WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
   WebFeedPageInformation info;

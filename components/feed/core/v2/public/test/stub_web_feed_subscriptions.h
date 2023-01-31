@@ -42,6 +42,9 @@ class StubWebFeedSubscriptions : public WebFeedSubscriptions {
   void IsWebFeedSubscriber(base::OnceCallback<void(bool)> callback) override {}
   void SubscribedWebFeedCount(base::OnceCallback<void(int)> callback) override {
   }
+  void QueryWebFeed(
+      const GURL& gurl,
+      base::OnceCallback<void(QueryWebFeedResult)> callback) override {}
 };
 
 }  // namespace feed
