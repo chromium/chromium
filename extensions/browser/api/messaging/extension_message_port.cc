@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/types/optional_util.h"
+#include "base/types/pass_key.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -511,9 +512,9 @@ void ExtensionMessagePort::SendToPort(IPCBuilderCallback ipc_builder) {
               back_forward_cache::DisabledReasonId::
                   kExtensionSentMessageToCachedFrame,
               /*context=*/extension_id_),
-          ukm::UkmRecorder::GetSourceIdFromScopeImpl(
-              Extension::GetBaseURLFromExtensionId(extension_id_),
-              ukm::SourceIdType::EXTENSION_ID));
+          ukm::UkmRecorder::GetSourceIdForExtensionUrl(
+              base::PassKey<ExtensionMessagePort>(),
+              Extension::GetBaseURLFromExtensionId(extension_id_)));
 
       continue;
     }

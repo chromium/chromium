@@ -80,6 +80,14 @@ ukm::SourceId UkmRecorder::GetSourceIdForChromeOSWebsiteURL(
       redirect_url, SourceIdType::CHROMEOS_WEBSITE_ID);
 }
 
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
+    base::PassKey<extensions::ExtensionMessagePort>,
+    const GURL& extension_url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(extension_url,
+                                               SourceIdType::EXTENSION_ID);
+}
+
 void UkmRecorder::RecordOtherURL(ukm::SourceIdObj source_id, const GURL& url) {
   UpdateSourceURL(source_id.ToInt64(), url);
 }
