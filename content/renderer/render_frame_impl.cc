@@ -6274,6 +6274,8 @@ WebView* RenderFrameImpl::CreateNewWindow(
   if (pip_options) {
     CHECK_EQ(policy, blink::kWebNavigationPolicyPictureInPicture);
     auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
+    pip_mojom_opts->width = pip_options->width;
+    pip_mojom_opts->height = pip_options->height;
     pip_mojom_opts->initial_aspect_ratio = pip_options->initial_aspect_ratio;
     pip_mojom_opts->lock_aspect_ratio = pip_options->lock_aspect_ratio;
     params->pip_options = std::move(pip_mojom_opts);

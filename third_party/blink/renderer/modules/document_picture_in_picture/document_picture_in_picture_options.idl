@@ -5,7 +5,9 @@
 // https://wicg.github.io/document-picture-in-picture/#dictdef-documentpictureinpictureoptions
 
 dictionary DocumentPictureInPictureOptions {
-  float initialAspectRatio = 0.0;
+  [EnforceRange] unsigned long long width = 0;
+  [EnforceRange] unsigned long long height = 0;
+  double initialAspectRatio = 0.0;
   boolean lockAspectRatio = false;
   boolean copyStyleSheets = false;
 };

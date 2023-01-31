@@ -42,6 +42,7 @@
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
+#include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_mode.h"
@@ -269,8 +270,8 @@ class WebContents : public PageNavigator,
     bool enable_wake_locks = true;
 
     // Options specific to WebContents created for picture-in-picture windows.
-    float initial_picture_in_picture_aspect_ratio = 0;
-    bool lock_picture_in_picture_aspect_ratio = false;
+    absl::optional<blink::mojom::PictureInPictureWindowOptions>
+        picture_in_picture_options;
   };
 
   // Creates a new WebContents.
@@ -1350,11 +1351,9 @@ class WebContents : public PageNavigator,
   // Returns the value from CreateParams::creator_location.
   virtual const base::Location& GetCreatorLocation() = 0;
 
-  // Returns the initial_aspect_ratio value from CreateParams.
-  virtual float GetPictureInPictureInitialAspectRatio() = 0;
-
-  // Returns the lock_aspect_ratio value from CreateParams.
-  virtual bool GetPictureInPictureLockAspectRatio() = 0;
+  // Returns the parameters associated with PictureInPicture WebContents
+  virtual const absl::optional<blink::mojom::PictureInPictureWindowOptions>&
+  GetPictureInPictureOptions() const = 0;
 
   // Hide or show the browser controls for the given WebContents, based on
   // allowed states, desired state and whether the transition should be animated

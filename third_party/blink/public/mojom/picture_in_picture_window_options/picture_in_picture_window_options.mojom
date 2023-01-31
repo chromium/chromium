@@ -5,9 +5,19 @@
 module blink.mojom;
 
 struct PictureInPictureWindowOptions {
+  // The requested width for the picture-in-picture window to be initially sized
+  // to.
+  uint64 width;
+
+  // The requested height for the picture-in-picture window to be initially
+  // sized to.
+  uint64 height;
+
   // The requested aspect ratio for the picture-in-picture window to be
-  // initially sized to.
-  float initial_aspect_ratio;
+  // initially sized to. This won't be used when |width| and |height| are
+  // specified as those are higher priority. It also will not be used when
+  // it is less than or equal to 0.
+  double initial_aspect_ratio;
 
   // True if the picture-in-picture window should be locked to the initial
   // aspect ratio.

@@ -68,9 +68,6 @@ constexpr int kFrameBorderThickness = 4;
 constexpr int kResizeBorder = 10;
 constexpr int kResizeAreaCornerSize = 16;
 
-// The window has a smaller minimum size than normal Chrome windows.
-constexpr gfx::Size kMinWindowSize(300, 300);
-
 // The time duration that the top bar animation will take in total.
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
 
@@ -441,7 +438,7 @@ void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
-  return kMinWindowSize;
+  return PictureInPictureWindowManager::GetMinimumWindowSize();
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
@@ -450,7 +447,7 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
 
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       GetWidget()->GetNativeWindow());
-  return gfx::ScaleToRoundedSize(display.size(), 0.8);
+  return PictureInPictureWindowManager::GetMaximumWindowSize(display);
 }
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
