@@ -35,6 +35,8 @@ TEST(DeviceSyncMojomTraitsTest, GroupPrivateKeyStatus) {
       kTestGroupPrivateKeyStatuses[] = {
           ash::device_sync::GroupPrivateKeyStatus::
               kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+          ash::device_sync::GroupPrivateKeyStatus::
+              kStatusUnavailableBecauseNoDeviceSyncerSet,
           ash::device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
           ash::device_sync::GroupPrivateKeyStatus::
               kNoEncryptedGroupPrivateKeyReceived,
@@ -67,6 +69,8 @@ TEST(DeviceSyncMojomTraitsTest, BetterTogetherMetadataStatus) {
       kTestBetterTogetherMetadataStatuses[] = {
           ash::device_sync::BetterTogetherMetadataStatus::
               kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+          ash::device_sync::BetterTogetherMetadataStatus::
+              kStatusUnavailableBecauseNoDeviceSyncerSet,
           ash::device_sync::BetterTogetherMetadataStatus::
               kWaitingToProcessDeviceMetadata,
           ash::device_sync::BetterTogetherMetadataStatus::

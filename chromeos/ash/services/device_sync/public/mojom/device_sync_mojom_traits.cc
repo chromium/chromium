@@ -55,6 +55,10 @@ EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
         kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
       return ash::device_sync::mojom::GroupPrivateKeyStatus::
           kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+    case ash::device_sync::GroupPrivateKeyStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet:
+      return ash::device_sync::mojom::GroupPrivateKeyStatus::
+          kStatusUnavailableBecauseNoDeviceSyncerSet;
     case ash::device_sync::GroupPrivateKeyStatus::kWaitingForGroupPrivateKey:
       return ash::device_sync::mojom::GroupPrivateKeyStatus::
           kWaitingForGroupPrivateKey;
@@ -94,6 +98,11 @@ bool EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
         kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
       *out = ash::device_sync::GroupPrivateKeyStatus::
           kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+      return true;
+    case ash::device_sync::mojom::GroupPrivateKeyStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet:
+      *out = ash::device_sync::GroupPrivateKeyStatus::
+          kStatusUnavailableBecauseNoDeviceSyncerSet;
       return true;
     case ash::device_sync::mojom::GroupPrivateKeyStatus::
         kWaitingForGroupPrivateKey:
@@ -141,6 +150,10 @@ EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
       return ash::device_sync::mojom::BetterTogetherMetadataStatus::
           kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
     case ash::device_sync::BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet:
+      return ash::device_sync::mojom::BetterTogetherMetadataStatus::
+          kStatusUnavailableBecauseNoDeviceSyncerSet;
+    case ash::device_sync::BetterTogetherMetadataStatus::
         kWaitingToProcessDeviceMetadata:
       return ash::device_sync::mojom::BetterTogetherMetadataStatus::
           kWaitingToProcessDeviceMetadata;
@@ -171,6 +184,11 @@ bool EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
         kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
       *out = ash::device_sync::BetterTogetherMetadataStatus::
           kStatusUnavailableBecauseDeviceSyncIsNotInitialized;
+      return true;
+    case ash::device_sync::mojom::BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet:
+      *out = ash::device_sync::BetterTogetherMetadataStatus::
+          kStatusUnavailableBecauseNoDeviceSyncerSet;
       return true;
     case ash::device_sync::mojom::BetterTogetherMetadataStatus::
         kWaitingToProcessDeviceMetadata:

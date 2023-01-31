@@ -17,6 +17,10 @@ enum class GroupPrivateKeyStatus {
   // status and will return this value.
   kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
 
+  // When the CryptAuthV2 device manager hasn't initialized a device syncer, it
+  // cannot access the group private key status and will return this value.
+  kStatusUnavailableBecauseNoDeviceSyncerSet,
+
   // The CryptAuth SyncMetadata response that includes the encrypted group
   // private key hasn't been received yet.
   kWaitingForGroupPrivateKey,
@@ -46,6 +50,11 @@ enum class BetterTogetherMetadataStatus {
   // When Device Sync is not initialized, it cannot access the better together
   // metadata status and will return this value.
   kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
+
+  // When the CryptAuthV2 device manager hasn't initialized a device syncer, it
+  // cannot access the better together metadata status and will return this
+  // value.
+  kStatusUnavailableBecauseNoDeviceSyncerSet,
 
   // The attempt to process the encrypted device metadata hasn't started yet.
   // If the device sync attempt finishes and this is still the metadata

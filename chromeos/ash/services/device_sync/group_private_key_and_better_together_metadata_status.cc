@@ -23,6 +23,10 @@ std::ostream& operator<<(std::ostream& stream,
       stream << private_key_status_prefix
              << "Status unavailable because device sync is not initialized]";
       break;
+    case GroupPrivateKeyStatus::kStatusUnavailableBecauseNoDeviceSyncerSet:
+      stream << private_key_status_prefix
+             << "Status unavailable because no device syncer is set]";
+      break;
     case GroupPrivateKeyStatus::kWaitingForGroupPrivateKey:
       stream << private_key_status_prefix
              << "Waiting to receive group private key]";
@@ -59,6 +63,11 @@ std::ostream& operator<<(std::ostream& stream,
         kStatusUnavailableBecauseDeviceSyncIsNotInitialized:
       stream << better_together_metadata_status_prefix
              << "Status unavailable because device sync is not initialized]";
+      break;
+    case BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet:
+      stream << better_together_metadata_status_prefix
+             << "Status unavailable because no device syncer is set]";
       break;
     case BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata:
       stream << better_together_metadata_status_prefix

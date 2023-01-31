@@ -126,11 +126,20 @@ void CryptAuthV2DeviceManagerImpl::ForceDeviceSyncNow(
 BetterTogetherMetadataStatus
 CryptAuthV2DeviceManagerImpl::GetDeviceSyncerBetterTogetherMetadataStatus()
     const {
+  if (!device_syncer_) {
+    return BetterTogetherMetadataStatus::
+        kStatusUnavailableBecauseNoDeviceSyncerSet;
+  }
+
   return device_syncer_->better_together_metadata_status();
 }
 
 GroupPrivateKeyStatus
 CryptAuthV2DeviceManagerImpl::GetDeviceSyncerGroupPrivateKeyStatus() const {
+  if (!device_syncer_) {
+    return GroupPrivateKeyStatus::kStatusUnavailableBecauseNoDeviceSyncerSet;
+  }
+
   return device_syncer_->group_private_key_status();
 }
 
