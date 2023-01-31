@@ -238,7 +238,7 @@ SettingsManager.EVENT_STREAM_FILTERS = [
   // 'mediaStartedPlaying',
   // 'mediaStoppedPlaying',
   // 'menuEnd',
-  // 'menuListItemSelected',
+  // 'menuItemSelected',
   // 'menuListValueChanged',
   // 'menuPopupEnd',
   // 'menuPopupStart',

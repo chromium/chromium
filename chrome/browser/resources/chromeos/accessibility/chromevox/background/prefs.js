@@ -200,7 +200,7 @@ ChromeVoxPrefs.DEFAULT_PREFS = {
   'mediaStartedPlaying': true,
   'mediaStoppedPlaying': true,
   'menuEnd': true,
-  'menuListItemSelected': true,
+  'menuItemSelected': true,
   'menuListValueChanged': true,
   'menuPopupEnd': true,
   'menuPopupStart': true,
