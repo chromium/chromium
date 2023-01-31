@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
@@ -53,14 +54,18 @@ void GpuServiceFactory::RunMediaService(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
   // This service will host audio/video decoders, and if these decoding
-  // operations are blocked, user may hear audio glitch or see video freezing,
-  // hence "user blocking".
+  // operations are blocked, user may hear audio glitch or see video
+  // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
   if (base::FeatureList::IsEnabled(media::kDedicatedMediaServiceThread)) {
-    // TODO(crbug.com/786169): Check whether this needs to be single threaded.
-    task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_BLOCKING});
-
+    if (base::FeatureList::IsEnabled(
+            media::kUseSequencedTaskRunnerForMediaService)) {
+      task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+    } else {
+      task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+    }
 #if BUILDFLAG(IS_WIN)
     // Since the D3D11Device used for decoding is shared with ANGLE, we need
     // multithread protection turned on to use it from another thread.

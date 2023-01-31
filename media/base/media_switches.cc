@@ -1210,6 +1210,11 @@ const base::Feature MEDIA_EXPORT kUseOutOfProcessVideoEncoding{
 const base::Feature MEDIA_EXPORT kUseMojoVideoDecoderForPepper{
     "UseMojoVideoDecoderForPepper", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Use SequencedTaskRunner for MediaService.
+BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,
+             "UseSequencedTaskRunnerForMediaService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))
