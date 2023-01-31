@@ -5,6 +5,7 @@
 import './colors.js';
 import './theme_snapshot.js';
 import './hover_button.js';
+import './strings.m.js'; // Required by <managed-dialog>.
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -64,6 +65,8 @@ export class AppearanceElement extends PolymerElement {
         value: false,
         computed: 'computeShowClassicChromeButton_(theme_)',
       },
+
+      showManagedDialog_: Boolean,
     };
   }
 
@@ -72,6 +75,7 @@ export class AppearanceElement extends PolymerElement {
   private thirdPartyThemeName_: string|null = null;
   private showClassicChromeButton_: boolean;
   private showFirstPartyThemeView_: boolean;
+  private showManagedDialog_: boolean;
 
   private setThemeListenerId_: number|null = null;
 
@@ -127,6 +131,9 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private onEditThemeClicked_() {
+    if (this.handleClickForManagedThemes_()) {
+      return;
+    }
     this.dispatchEvent(new Event('edit-theme-click'));
   }
 
@@ -137,8 +144,23 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private onSetClassicChromeClicked_() {
+    if (this.handleClickForManagedThemes_()) {
+      return;
+    }
     this.pageHandler_.removeBackgroundImage();
     this.pageHandler_.setDefaultColor();
+  }
+
+  private onManagedDialogClosed_() {
+    this.showManagedDialog_ = false;
+  }
+
+  private handleClickForManagedThemes_(): boolean {
+    if (!this.theme_ || !this.theme_.backgroundManagedByPolicy) {
+      return false;
+    }
+    this.showManagedDialog_ = true;
+    return true;
   }
 }
 

@@ -178,6 +178,7 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
                     const std::string&,
                     const GURL&,
                     const std::string&));
+  MOCK_METHOD0(IsCustomBackgroundDisabledByPolicy, bool());
 };
 
 class MockNtpBackgroundService : public NtpBackgroundService {
@@ -463,6 +464,9 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
       .WillByDefault(testing::Return(false));
   ON_CALL(mock_theme_service(), UsingPolicyTheme())
       .WillByDefault(testing::Return(true));
+  ON_CALL(mock_ntp_custom_background_service_,
+          IsCustomBackgroundDisabledByPolicy())
+      .WillByDefault(testing::Return(true));
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
 
   UpdateTheme();
@@ -485,6 +489,7 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetTheme) {
   EXPECT_EQ(web_contents().GetColorProvider().GetColor(kColorNewTabPageText),
             theme->color_picker_icon_color);
   EXPECT_TRUE(theme->colors_managed_by_policy);
+  EXPECT_TRUE(theme->background_managed_by_policy);
   EXPECT_EQ("test_collection", theme->daily_refresh_collection_id);
 }
 
