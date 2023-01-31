@@ -99,6 +99,11 @@ class ASH_EXPORT KeyboardBacklightColorController
   void DisplayBacklightColor(
       personalization_app::mojom::BacklightColor backlight_color);
 
+  // Displays the |backlight_color| at the specific |zone| on the keyboard.
+  void DisplayBacklightZoneColor(
+      int zone,
+      personalization_app::mojom::BacklightColor backlight_color);
+
   // Sets the keyboard backlight color pref for user with |account_id|.
   void SetBacklightColorPref(
       personalization_app::mojom::BacklightColor backlight_color,

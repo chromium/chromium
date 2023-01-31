@@ -330,6 +330,23 @@ TEST_F(KeyboardBacklightColorControllerTest, GetBacklightZoneColors) {
   }
 }
 
+TEST_F(KeyboardBacklightColorControllerTest,
+       PopulatesBacklightZoneColorsPrefAfterSigningIn) {
+  controller_->OnRgbKeyboardSupportedChanged(true);
+  RgbKeyboardManager* rgb_keyboard_manager =
+      Shell::Get()->rgb_keyboard_manager();
+  set_rgb_capability(rgbkbd::RgbKeyboardCapabilities::kIndividualKey);
+  SimulateUserLogin(account_id_1);
+  // Expects all the zone colors are set to kWallpaper.
+  std::vector<personalization_app::mojom::BacklightColor> zone_colors =
+      controller_->GetBacklightZoneColors(account_id_1);
+  EXPECT_EQ(rgb_keyboard_manager->GetZoneCount(),
+            static_cast<int>(zone_colors.size()));
+  for (auto color : zone_colors) {
+    EXPECT_EQ(color, personalization_app::mojom::BacklightColor::kWallpaper);
+  }
+}
+
 TEST_F(KeyboardBacklightColorControllerTest, SetBacklightZoneColor) {
   controller_->OnRgbKeyboardSupportedChanged(true);
   RgbKeyboardManager* rgb_keyboard_manager =
