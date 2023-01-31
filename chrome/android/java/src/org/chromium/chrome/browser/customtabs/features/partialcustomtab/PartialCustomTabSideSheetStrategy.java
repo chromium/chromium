@@ -11,6 +11,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import androidx.annotation.Px;
 
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * CustomTabHeightStrategy for Partial Custom Tab Side-Sheet implementation. An instance of this
@@ -100,7 +103,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     protected void updatePosition() {
-        if (mActivity.findViewById(android.R.id.content) == null) return;
+        if (isFullscreen() || mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeSize();
         updateShadowOffset();
@@ -176,5 +179,29 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         attrs.x = mVersionCompat.getDisplayWidth();
         attrs.gravity = Gravity.TOP;
         mActivity.getWindow().setAttributes(attrs);
+    }
+
+    // FullscreenManager.Observer implementation
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
+        attrs.height = MATCH_PARENT;
+        attrs.width = MATCH_PARENT;
+        attrs.y = 0;
+        attrs.x = 0;
+        mActivity.getWindow().setAttributes(attrs);
+        mOnResizedCallback.onResized(
+                mVersionCompat.getDisplayHeight(), mVersionCompat.getDisplayWidth());
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
+        // |mNavbarHeight| is zero now. Post the task instead.
+        new Handler().post(() -> {
+            initializeSize();
+            var attrs = mActivity.getWindow().getAttributes();
+            mOnResizedCallback.onResized(attrs.height, attrs.width);
+        });
     }
 }

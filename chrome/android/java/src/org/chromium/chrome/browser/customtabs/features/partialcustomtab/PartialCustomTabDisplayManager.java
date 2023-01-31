@@ -37,6 +37,11 @@ public class PartialCustomTabDisplayManager
     private final boolean mInteractWithBackground;
     private final PartialCustomTabVersionCompat mVersionCompat;
 
+    // Simple factory interface creating a new SizeStrategy. Facilitates testing.
+    interface SizeStrategyCreator {
+        PartialCustomTabBaseStrategy createForType(@PartialCustomTabType int type);
+    }
+
     private PartialCustomTabBaseStrategy mStrategy;
     private @PartialCustomTabType int mCurrentPartialCustomTabType;
 
@@ -44,6 +49,7 @@ public class PartialCustomTabDisplayManager
     private CustomTabToolbar mCustomTabToolbar;
     private int mToolbarCornerRadius;
     private PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
+    private SizeStrategyCreator mSizeStrategyCreator = this::createSizeStrategy;
 
     public PartialCustomTabDisplayManager(Activity activity, @Px int initialHeight,
             boolean isFixedHeight, OnResizedCallback onResizedCallback,
@@ -63,7 +69,7 @@ public class PartialCustomTabDisplayManager
         mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
         mHandleStrategyFactory = new PartialCustomTabHandleStrategyFactory();
         mCurrentPartialCustomTabType = calculatePartialCustomTabType();
-        mStrategy = createSizeStrategy(mCurrentPartialCustomTabType);
+        mStrategy = mSizeStrategyCreator.createForType(mCurrentPartialCustomTabType);
     }
 
     @PartialCustomTabType
@@ -80,7 +86,8 @@ public class PartialCustomTabDisplayManager
         int type = calculatePartialCustomTabType();
         if (type != mCurrentPartialCustomTabType) {
             new Handler().postDelayed(() -> {
-                mStrategy = createSizeStrategy(type);
+                if (mStrategy != null) mStrategy.destroy();
+                mStrategy = mSizeStrategyCreator.createForType(type);
                 mCurrentPartialCustomTabType = type;
                 mStrategy.onToolbarInitialized(
                         mToolbarCoordinatorView, mCustomTabToolbar, mToolbarCornerRadius);
@@ -204,12 +211,23 @@ public class PartialCustomTabDisplayManager
     private void updatePosition() {}
 
     @VisibleForTesting
-    void setMockViewForTesting(View toolbar, CustomTabToolbar customTabToolbar,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
+    SizeStrategyCreator getSizeStrategyCreatorForTesting() {
+        return mSizeStrategyCreator;
+    }
+
+    @VisibleForTesting
+    PartialCustomTabBaseStrategy getSizeStrategyForTesting() {
+        return mStrategy;
+    }
+
+    @VisibleForTesting
+    void setMocksForTesting(View toolbar, CustomTabToolbar customTabToolbar,
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory,
+            SizeStrategyCreator sizeStrategyCreator) {
         mToolbarCoordinatorView = toolbar;
         mCustomTabToolbar = customTabToolbar;
         mHandleStrategyFactory = handleStrategyFactory;
-
+        mSizeStrategyCreator = sizeStrategyCreator;
         mStrategy.setMockViewForTesting(toolbar, customTabToolbar);
     }
 }

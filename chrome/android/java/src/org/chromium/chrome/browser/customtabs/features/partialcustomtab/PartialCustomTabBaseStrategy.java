@@ -29,6 +29,7 @@ import org.chromium.ui.base.ViewUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.BooleanSupplier;
 
 /**
  * Base class for PCCT size strategies implementations.
@@ -80,6 +81,8 @@ public abstract class PartialCustomTabBaseStrategy
     protected boolean mIsInMultiWindowMode;
     protected int mOrientation;
 
+    private BooleanSupplier mIsFullscreen;
+
     @IntDef({PartialCustomTabType.NONE, PartialCustomTabType.BOTTOM_SHEET,
             PartialCustomTabType.SIDE_SHEET, PartialCustomTabType.FULL_SIZE})
     @Retention(RetentionPolicy.SOURCE)
@@ -116,6 +119,7 @@ public abstract class PartialCustomTabBaseStrategy
         mIsInMultiWindowMode = MultiWindowUtils.getInstance().isInMultiWindowMode(mActivity);
 
         mHandleStrategyFactory = handleStrategyFactory;
+        mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
     }
 
     @Override
@@ -278,6 +282,10 @@ public abstract class PartialCustomTabBaseStrategy
         mActivity.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
     }
 
+    protected boolean isFullscreen() {
+        return mIsFullscreen.getAsBoolean();
+    }
+
     @VisibleForTesting
     void setMockViewForTesting(View toolbar, View toolbarCoordinator) {
         mPositionUpdater = this::updatePosition;
@@ -285,5 +293,16 @@ public abstract class PartialCustomTabBaseStrategy
         mToolbarCoordinator = toolbarCoordinator;
 
         onPostInflationStartup();
+    }
+
+    @VisibleForTesting
+    void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
+        mIsFullscreen = fullscreen;
+    }
+
+    @VisibleForTesting
+    int getTopMarginForTesting() {
+        var mlp = (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
+        return mlp.topMargin;
     }
 }

@@ -244,6 +244,10 @@ public class PartialCustomTabTestRule implements TestRule {
         verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
     }
 
+    public WindowManager.LayoutParams getWindowAttributes() {
+        return mAttributeResults.get(mAttributeResults.size() - 1);
+    }
+
     @Override
     public Statement apply(Statement statement, Description description) {
         return new Statement() {

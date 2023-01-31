@@ -5,15 +5,21 @@
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
 
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.annotation.Px;
 
@@ -37,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
+    private boolean mFullscreen;
+
     @Rule
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
@@ -154,9 +162,37 @@ public class PartialCustomTabSideSheetStrategyTest {
                 mPCCTTestRule.mLayoutParams.leftMargin);
     }
 
+    @Test
+    public void enterAndExitHtmlFullscreen() {
+        var strategy = createPcctSideSheetStrategy(2000);
+        assertFalse(getWindowAttributes().isFullscreen());
+        int height = getWindowAttributes().height;
+        int width = getWindowAttributes().width;
+
+        strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+
+        mFullscreen = true;
+        strategy.onEnterFullscreen(null, null);
+        assertTrue(getWindowAttributes().isFullscreen());
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(DEVICE_HEIGHT), eq(DEVICE_WIDTH));
+        clearInvocations(mPCCTTestRule.mOnResizedCallback);
+
+        mFullscreen = false;
+        strategy.onExitFullscreen(null);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertFalse(getWindowAttributes().isFullscreen());
+        assertEquals(height, getWindowAttributes().height);
+        assertEquals(width, getWindowAttributes().width);
+        verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(height), eq(width));
+    }
+
     private void assertTabIsAtFullLandscapeHeight() {
         assertEquals(
                 "Should only have one attribute result", 1, mPCCTTestRule.mAttributeResults.size());
         assertEquals(DEVICE_HEIGHT_LANDSCAPE, mPCCTTestRule.mAttributeResults.get(0).height);
+    }
+
+    private WindowManager.LayoutParams getWindowAttributes() {
+        return mPCCTTestRule.getWindowAttributes();
     }
 }

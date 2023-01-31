@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features.partialcustomtab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import android.content.res.Configuration;
 
@@ -20,6 +21,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBaseStrategy.PartialCustomTabType;
+import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager.SizeStrategyCreator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
 
@@ -34,13 +36,22 @@ public class PartialCustomTabDisplayManagerTest {
     @Rule
     public final PartialCustomTabTestRule mPCCTTestRule = new PartialCustomTabTestRule();
 
+    private boolean mFullscreen;
+
     private PartialCustomTabDisplayManager createPcctDisplayManager(@Px int heightPx) {
         PartialCustomTabDisplayManager displayManager = new PartialCustomTabDisplayManager(
                 mPCCTTestRule.mActivity, heightPx, false, mPCCTTestRule.mOnResizedCallback,
                 mPCCTTestRule.mActivityLifecycleDispatcher, mPCCTTestRule.mFullscreenManager, false,
                 true);
-        displayManager.setMockViewForTesting(mPCCTTestRule.mToolbarView,
-                mPCCTTestRule.mCustomTabToolbar, mPCCTTestRule.mHandleStrategyFactory);
+        var sizeStrategyCreator = displayManager.getSizeStrategyCreatorForTesting();
+        SizeStrategyCreator testSizeStrategyCreator = (type) -> {
+            var strategy = sizeStrategyCreator.createForType(type);
+            strategy.setFullscreenSupplierForTesting(() -> mFullscreen);
+            return strategy;
+        };
+        displayManager.setMocksForTesting(mPCCTTestRule.mToolbarView,
+                mPCCTTestRule.mCustomTabToolbar, mPCCTTestRule.mHandleStrategyFactory,
+                testSizeStrategyCreator);
         return displayManager;
     }
 
@@ -107,5 +118,36 @@ public class PartialCustomTabDisplayManagerTest {
         displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
         assertEquals("Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void rotateInFullscreenMode() {
+        mPCCTTestRule.configLandscapeMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(2000);
+
+        mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        var attrs = mPCCTTestRule.getWindowAttributes();
+        int height = attrs.height;
+        int width = attrs.width;
+
+        mFullscreen = true;
+        displayManager.getSizeStrategyForTesting().onEnterFullscreen(null, null);
+
+        mPCCTTestRule.mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        // Bottom-sheet strategy is now in action. Verify its top margin is removed
+        // for the correct fullscreen UI.
+        assertEquals("Top margin should be zero in fullscreen", 0,
+                displayManager.getSizeStrategyForTesting().getTopMarginForTesting());
+
+        mFullscreen = false;
+        displayManager.getSizeStrategyForTesting().onExitFullscreen(null);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+
+        attrs = mPCCTTestRule.getWindowAttributes();
+        assertFalse("Should not be in fulllscreen.", attrs.isFullscreen());
+        assertEquals("Height should be restored.", height, attrs.height);
+        assertEquals("Width should be restored.", width, attrs.width);
     }
 }

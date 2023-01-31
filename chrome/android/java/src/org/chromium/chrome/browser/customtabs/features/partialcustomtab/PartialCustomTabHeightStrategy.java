@@ -47,7 +47,6 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.function.BooleanSupplier;
 
 /**
  * CustomTabHeightStrategy for Partial Custom Tab. An instance of this class should be
@@ -89,7 +88,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     private @Px int mFullyExpandedAdjustmentHeight;
     private TabAnimator mTabAnimator;
-    private BooleanSupplier mIsFullscreen;
 
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
 
@@ -151,8 +149,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
         };
 
         mPositionUpdater = mVersionCompat::updatePosition;
-
-        mIsFullscreen = fullscreenManager::getPersistentFullscreenMode;
 
         mHeight = MATCH_PARENT;
         mWidth = MATCH_PARENT;
@@ -224,8 +220,16 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     }
 
     @Override
+    public void onPostInflationStartup() {
+        super.onPostInflationStartup();
+
+        // Bottom-sheet can start in fullscreen mode. Remove the top margin.
+        if (isFullscreen()) setTopMargins(0, 0);
+    }
+
+    @Override
     protected void updatePosition() {
-        if (mActivity.findViewById(android.R.id.content) == null) return;
+        if (isFullscreen() || mActivity.findViewById(android.R.id.content) == null) return;
 
         initializeHeight();
         if (ChromeFeatureList.sCctResizableSideSheet.isEnabled()) {
@@ -448,10 +452,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
 
     private boolean isFixedHeight() {
         return mIsFixedHeight;
-    }
-
-    private boolean isFullscreen() {
-        return mIsFullscreen.getAsBoolean();
     }
 
     private void updateWindowPos(@Px int y, boolean userGesture) {
@@ -814,11 +814,6 @@ public class PartialCustomTabHeightStrategy extends PartialCustomTabBaseStrategy
     @VisibleForTesting
     void setToolbarColorForTesting(int toolbarColor) {
         mToolbarColor = toolbarColor;
-    }
-
-    @VisibleForTesting
-    void setFullscreenSupplierForTesting(BooleanSupplier fullscreen) {
-        mIsFullscreen = fullscreen;
     }
 
     // Wrapper around Animator class, also holding the information to use after the animation ends.
