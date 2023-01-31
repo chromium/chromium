@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -56,6 +57,10 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/user_manager.h"
+#endif
 
 namespace {
 
@@ -81,6 +86,18 @@ void LogIsolatedWebAppInstallResult(
   }
 }
 #endif
+
+// Policy installed apps are only allowed on:
+// 1. ChromeOS guest sessions (current only on Ash).
+// 2. All Chrome profiles apart from incognito/guest profiles.
+bool AreForceInstalledAppsAllowed(Profile* profile) {
+  bool allowed = web_app::AreWebAppsUserInstallable(profile);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  allowed = allowed || user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+            user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+#endif
+  return allowed;
+}
 
 }  // namespace
 
@@ -274,6 +291,11 @@ bool WebAppPolicyManager::IsDisabledAppsModeHidden() const {
 }
 
 void WebAppPolicyManager::RefreshPolicyInstalledApps() {
+  if (!AreForceInstalledAppsAllowed(profile_)) {
+    OnWebAppForceInstallPolicyParsed();
+    return;
+  }
+
   // If this is called again while in progress, we will run it again once the
   // |SynchronizeInstalledApps| call is finished.
   if (is_refreshing_) {
@@ -643,13 +665,7 @@ void WebAppPolicyManager::OnAppsSynchronized(
                                   url_and_result.second.code);
   }
 
-  if (on_apps_synchronized_for_testing_) {
-    std::move(on_apps_synchronized_for_testing_).Run();
-  }
-
-  if (initialization_complete_) {
-    std::move(initialization_complete_).Run();
-  }
+  OnWebAppForceInstallPolicyParsed();
 }
 
 WebAppPolicyManager::WebAppSetting::WebAppSetting() {
@@ -791,6 +807,16 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+void WebAppPolicyManager::OnWebAppForceInstallPolicyParsed() {
+  if (on_apps_synchronized_for_testing_) {
+    std::move(on_apps_synchronized_for_testing_).Run();
+  }
+
+  if (initialization_complete_) {
+    std::move(initialization_complete_).Run();
+  }
 }
 
 }  // namespace web_app

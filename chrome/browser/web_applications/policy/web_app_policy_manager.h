@@ -166,6 +166,7 @@ class WebAppPolicyManager {
   // Populates ids lists of web apps disabled by SystemFeaturesDisableList
   // policy.
   void PopulateDisabledWebAppsIdsLists();
+  void OnWebAppForceInstallPolicyParsed();
 
   raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;

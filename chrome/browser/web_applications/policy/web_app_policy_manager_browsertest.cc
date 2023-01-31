@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 
+#include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +34,13 @@
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_switches.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"
+#endif
 
 namespace web_app {
 
@@ -303,5 +312,64 @@ INSTANTIATE_TEST_SUITE_P(
         test::ExternalPrefMigrationTestCases::kEnableMigrationReadPref,
         test::ExternalPrefMigrationTestCases::kEnableMigrationReadDB),
     test::GetExternalPrefMigrationTestName);
+
+class WebAppPolicyManagerGuestModeTest : public InProcessBrowserTest {
+ public:
+  WebAppPolicyManagerGuestModeTest() = default;
+  WebAppPolicyManagerGuestModeTest(const WebAppPolicyManagerGuestModeTest&) =
+      delete;
+  WebAppPolicyManagerGuestModeTest& operator=(
+      const WebAppPolicyManagerGuestModeTest&) = delete;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+    command_line->AppendSwitch(switches::kIncognito);
+#endif
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerGuestModeTest,
+                       DoNotCreateAppsOnGuestMode) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  test::ScopedSkipMainProfileCheck skip_main_profile_check;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  base::Value::List app_list;
+  app_list.Append(GetForceInstalledAppItem());
+
+  Profile* test_profile = browser()->profile();
+  WebAppProvider* test_provider = WebAppProvider::GetForTest(test_profile);
+
+  base::test::TestFuture<void> future;
+  test_provider->policy_manager()
+      .SetOnAppsSynchronizedCompletedCallbackForTesting(future.GetCallback());
+  test_profile->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
+                                    std::move(app_list));
+  EXPECT_TRUE(future.Wait());
+
+  const AppId& app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GURL(kInstallUrl));
+
+  // This test should pass on all platforms, including on a ChromeOS
+  // guest session.
+  EXPECT_TRUE(test_provider->registrar_unsafe().IsInstalled(app_id));
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // This waits until ExternallyManagedAppManager::SynchronizeInstalledApps()
+  // has finished running, hence we know that for guest mode, the app was not
+  // installed.
+  Profile* guest_profile = CreateGuestBrowser()->profile();
+  WebAppProvider* guest_provider = WebAppProvider::GetForTest(guest_profile);
+  DCHECK(guest_provider);
+  test::WaitUntilWebAppProviderAndSubsystemsReady(guest_provider);
+  EXPECT_FALSE(guest_provider->registrar_unsafe().IsInstalled(app_id));
+#endif
+}
 
 }  // namespace web_app
