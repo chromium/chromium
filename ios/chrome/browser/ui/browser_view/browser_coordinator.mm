@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
 #import "ios/chrome/browser/ui/commands/password_suggestion_commands.h"
+#import "ios/chrome/browser/ui/commands/passwords_account_storage_notice_commands.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
@@ -116,6 +117,7 @@
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
 #import "ios/chrome/browser/ui/overlays/overlay_container_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
@@ -216,6 +218,7 @@ enum class ToolbarKind {
                                   PasswordSettingsCoordinatorDelegate,
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
+                                  PasswordsAccountStorageNoticeCommands,
                                   PriceNotificationsCommands,
                                   PromosManagerCommands,
                                   PolicyChangeCommands,
@@ -334,6 +337,10 @@ enum class ToolbarKind {
 // Coordinator for the password suggestion UI presentation.
 @property(nonatomic, strong)
     PasswordSuggestionCoordinator* passwordSuggestionCoordinator;
+
+// Coordinator for the passwords account storage notice.
+@property(nonatomic, strong) PasswordsAccountStorageNoticeCoordinator*
+    passwordsAccountStorageNoticeCoordinator;
 
 // Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
@@ -543,6 +550,9 @@ enum class ToolbarKind {
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
+  [self.passwordsAccountStorageNoticeCoordinator stop];
+  self.passwordsAccountStorageNoticeCoordinator = nil;
+
   [self.pageInfoCoordinator stop];
 
   [_sendTabToSelfCoordinator stop];
@@ -648,6 +658,7 @@ enum class ToolbarKind {
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
+    @protocol(PasswordsAccountStorageNoticeCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
     @protocol(TextZoomCommands),
@@ -1069,6 +1080,9 @@ enum class ToolbarKind {
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
+
+  [self.passwordsAccountStorageNoticeCoordinator stop];
+  self.passwordsAccountStorageNoticeCoordinator = nil;
 
   self.printController = nil;
 
@@ -1998,6 +2012,25 @@ enum class ToolbarKind {
                  decisionHandler:decisionHandler];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
+}
+
+#pragma mark - PasswordsAccountStorageNoticeCommands
+
+- (void)showPasswordsAccountStorageNoticeWithDismissalHandler:
+    (void (^)())dismissalHandler {
+  DCHECK(dismissalHandler);
+  DCHECK(!self.passwordsAccountStorageNoticeCoordinator);
+  self.passwordsAccountStorageNoticeCoordinator =
+      [[PasswordsAccountStorageNoticeCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                    dismissalHandler:dismissalHandler];
+  [self.passwordsAccountStorageNoticeCoordinator start];
+}
+
+- (void)hidePasswordsAccountStorageNotice {
+  [self.passwordsAccountStorageNoticeCoordinator stop];
+  self.passwordsAccountStorageNoticeCoordinator = nil;
 }
 
 #pragma mark - PriceNotificationsCommands

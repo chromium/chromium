@@ -5,13 +5,21 @@
 source_set("account_storage_notice") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "passwords_account_storage_notice_coordinator.h",
+    "passwords_account_storage_notice_coordinator.mm",
     "passwords_account_storage_notice_view_controller.h",
     "passwords_account_storage_notice_view_controller.mm",
   ]
   deps = [
     "resources:illustration",
     "//base",
+    "//components/signin/public/identity_manager",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings/password/password_settings",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ui/base",

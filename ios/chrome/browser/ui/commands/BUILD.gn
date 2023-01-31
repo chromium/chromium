@@ -32,6 +32,7 @@ source_set("commands") {
     "password_breach_commands.h",
     "password_protection_commands.h",
     "password_suggestion_commands.h",
+    "passwords_account_storage_notice_commands.h",
     "policy_change_commands.h",
     "popup_menu_commands.h",
     "price_notifications_commands.h",
