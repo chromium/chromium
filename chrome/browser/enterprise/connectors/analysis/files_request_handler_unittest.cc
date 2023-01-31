@@ -205,10 +205,7 @@ class FilesRequestHandlerTest : public BaseTest {
             settings.cloud_or_local_settings.is_cloud_analysis()),
         /*upload_service=*/nullptr, profile_, settings, GURL(kTestUrl), "", "",
         kUserActionId, safe_browsing::DeepScanAccessPoint::UPLOAD, paths,
-        base::BindLambdaForTesting(
-            [&future](std::vector<RequestHandlerResult> result) {
-              future.SetValue(std::move(result));
-            }));
+        future.GetCallback());
 
     fake_files_request_handler_->UploadData();
 

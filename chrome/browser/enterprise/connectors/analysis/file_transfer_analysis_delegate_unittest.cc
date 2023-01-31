@@ -11,21 +11,16 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/file_manager/volume_manager_factory.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/fake_files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
@@ -43,7 +38,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -257,8 +251,6 @@ class BaseTest : public testing::Test {
 
   Profile* profile() { return profile_; }
 
-  void RunUntilDone() { run_loop_.Run(); }
-
   void ValidateIsEnabled(const storage::FileSystemURL& src_url,
                          const storage::FileSystemURL& dest_url,
                          bool expect_dlp,
@@ -294,7 +286,6 @@ class BaseTest : public testing::Test {
   std::unique_ptr<SourceDestinationTestingHelper>
       source_destination_testing_helper_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
-  base::RunLoop run_loop_;
 };
 
 enum PrefState {
@@ -779,8 +770,9 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
         safe_browsing::DeepScanAccessPoint::FILE_TRANSFER, source_url,
         destination_url, profile_, file_system_context_.get(), GetSettings());
 
-    file_transfer_analysis_delegate_->UploadData(run_loop_.QuitClosure());
-    RunUntilDone();
+    base::test::TestFuture<void> future;
+    file_transfer_analysis_delegate_->UploadData(future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   enterprise_connectors::AnalysisSettings GetSettings() {
@@ -839,8 +831,9 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
             ? it->second
             : FakeContentAnalysisDelegate::SuccessfulResponse([this]() {
                 std::set<std::string> tags;
-                if (!dlp_response_.has_value())
+                if (!dlp_response_.has_value()) {
                   tags.insert("dlp");
+                }
                 tags.insert("malware");
                 return tags;
               }());
