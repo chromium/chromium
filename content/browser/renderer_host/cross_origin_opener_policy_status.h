@@ -29,7 +29,18 @@ class NavigationRequest;
 class StoragePartition;
 struct ChildProcessTerminationInfo;
 
-enum class CoopSwapResult { kNoSwap, kSwapWithReference, kSwap };
+enum class CoopSwapResult {
+  // Indicates that no BrowsingContext group swap is required, based on COOP
+  // values.
+  kNoSwap,
+  // Indicates that a BrowsingContext group swap is required, but that we should
+  // use a BrowsingContext group that is "related", preserving restricted
+  // openers.
+  kSwapRelated,
+  // Indicates that a BrowsingContext group swap is required, and that should
+  // sever all links between the two BrowsingContext groups, opener, names, etc.
+  kSwap
+};
 
 // Helper function that returns whether the BrowsingInstance should change
 // following COOP rules defined in:
@@ -68,19 +79,11 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   // This is used by _unfencedTop in fenced frames to ensure that navigations
   // leaving the fenced context create a new browsing instance.
   void ForceBrowsingInstanceSwap() {
-    require_browsing_instance_swap_ = CoopSwapResult::kSwap;
+    browsing_instance_swap_result_ = CoopSwapResult::kSwap;
   }
 
-  // Set to true whenever the Cross-Origin-Opener-Policy spec requires a
-  // "BrowsingContext group" swap:
-  // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-  // This forces the new RenderFrameHost to use a different BrowsingInstance
-  // than the current one. If other pages had JavaScript references to the
-  // Window object for the frame (via window.opener, window.open(), et cetera),
-  // those references will be broken; window.name will also be reset to an empty
-  // string.
-  bool require_browsing_instance_swap() const {
-    return require_browsing_instance_swap_ > CoopSwapResult::kNoSwap;
+  CoopSwapResult browsing_instance_swap_result() const {
+    return browsing_instance_swap_result_;
   }
 
   // The virtual browsing context group of the document to commit. Initially,
@@ -150,7 +153,10 @@ class CrossOriginOpenerPolicyStatus : public RenderProcessHostObserver {
   base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
       previous_document_rph_observation_{this};
 
-  CoopSwapResult require_browsing_instance_swap_ = CoopSwapResult::kNoSwap;
+  // Tracks whether the new document created by the navigation needs to be
+  // created in a different BrowsingContext group. This is updated after every
+  // redirect, and after receiving the final response.
+  CoopSwapResult browsing_instance_swap_result_ = CoopSwapResult::kNoSwap;
 
   int virtual_browsing_context_group_;
 

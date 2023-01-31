@@ -614,8 +614,10 @@ const SiteInfo& SiteInstanceImpl::GetSiteInfo() {
   return site_info_;
 }
 
-SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
-                                          bool is_related) {
+SiteInfo SiteInstanceImpl::DeriveSiteInfo(
+    const UrlInfo& url_info,
+    bool is_related,
+    bool disregard_web_exposed_isolation_info) {
   if (IsGuest() && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
     // Guests without site isolation support currently must stay in the same
     // SiteInstance no matter what the information in |url_info| so we return
@@ -628,17 +630,20 @@ SiteInfo SiteInstanceImpl::DeriveSiteInfo(const UrlInfo& url_info,
         url_info, /* allow_default_instance */ true);
   }
 
-  // Verify that the passed in WebExposedIsolationInfo is compatible with the
-  // internal state. If they don't, the semantics of the function wouldn't make
-  // sense.
-  DCHECK(WebExposedIsolationInfo::AreCompatible(
-      url_info.web_exposed_isolation_info, GetWebExposedIsolationInfo()));
+  // If we care about WebExposedIsolationInfo, verify that the passed in
+  // WebExposedIsolationInfo is compatible with the internal state. If they
+  // don't, the semantics of the function would be unclear.
+  if (!disregard_web_exposed_isolation_info) {
+    DCHECK(WebExposedIsolationInfo::AreCompatible(
+        url_info.web_exposed_isolation_info, GetWebExposedIsolationInfo()));
+  }
 
-  // If the WebExposedIsolationInfo matched, we can safely override url_info
-  // with SiteInstance's value. This covers the case where UrlInfo has an empty
-  // WebExposedIsolationInfo and is matchable with any isolation state.
-  // Reusing the SiteInstance's value is what callers would most likely expect
-  // since they're deriving a SiteInfo from this SiteInstance.
+  // At this stage, we either have two values of WebExposedIsolationInfo that
+  // can be resolved into one, for example when UrlInfo has an empty
+  // WebExposedIsolationInfo and it is matchable with any isolation state. Or we
+  // are trying to compute other state, regardless of what the passed in
+  // WebExposedIsolationInfos are. In both cases, we simply use the
+  // SiteInstance's value.
   UrlInfo overridden_url_info = url_info;
   overridden_url_info.web_exposed_isolation_info = GetWebExposedIsolationInfo();
 

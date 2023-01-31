@@ -6087,15 +6087,6 @@ crbug.com/1343674 editing/deleting/460938.html [ Failure Pass ]
 # and once landed, this line can be removed.
 crbug.com/878133 external/wpt/media-source/idlharness.window.html [ Failure Pass ]
 
-# Tests that are exercising the tentative feature COOP: restrict-properties.
-# These are tests which are implemented before the feature is complete and
-# flakily crash.
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?1-2 [ Crash Failure ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?3-4 [ Crash Failure ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?5-6 [ Crash Failure ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?7-8 [ Crash Failure ]
-crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-to-un.https.html?9-last [ Crash Failure ]
-
 # Sheriff 2022-07-13
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 

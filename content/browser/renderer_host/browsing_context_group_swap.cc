@@ -23,6 +23,11 @@ BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateCoopSwap() {
           ShouldSwapBrowsingInstance::kYes_ForceSwap};
 }
 
+BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateRelatedCoopSwap() {
+  return {BrowsingContextGroupSwapType::kRelatedCoopSwap,
+          ShouldSwapBrowsingInstance::kYes_ForceSwap};
+}
+
 BrowsingContextGroupSwap BrowsingContextGroupSwap::CreateSecuritySwap() {
   return {BrowsingContextGroupSwapType::kSecuritySwap,
           ShouldSwapBrowsingInstance::kYes_ForceSwap};
@@ -39,6 +44,7 @@ bool BrowsingContextGroupSwap::ShouldSwap() const {
       return false;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
+    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
     case BrowsingContextGroupSwapType::kSecuritySwap:
     case BrowsingContextGroupSwapType::kProactiveSwap:
       return true;
@@ -53,6 +59,12 @@ bool BrowsingContextGroupSwap::ShouldClearProxiesOnCommit() const {
     case BrowsingContextGroupSwapType::kSecuritySwap:
     case BrowsingContextGroupSwapType::kProactiveSwap:
       return false;
+
+    // TODO(https://crbug.com/1221127): Once we have the COOP group to support
+    // creating proxies across BrowsingInstances, we should also prevent their
+    // deletion, by changing this to false.
+    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
+      return true;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
       return true;
@@ -69,6 +81,7 @@ bool BrowsingContextGroupSwap::ShouldClearWindowName() const {
       return false;
 
     case BrowsingContextGroupSwapType::kCoopSwap:
+    case BrowsingContextGroupSwapType::kRelatedCoopSwap:
       return true;
   }
   NOTREACHED();

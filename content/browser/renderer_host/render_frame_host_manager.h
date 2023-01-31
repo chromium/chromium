@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/browsing_context_group_swap.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
+#include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
@@ -709,7 +710,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool is_reload,
       bool is_same_document,
       IsSameSiteGetter& is_same_site,
-      bool cross_origin_opener_policy_mismatch,
+      CoopSwapResult coop_swap_result,
       bool was_server_redirect,
       bool should_replace_current_entry);
 
@@ -735,7 +736,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool dest_is_restore,
       bool dest_is_view_source_mode,
       bool was_server_redirect,
-      bool cross_origin_opener_policy_mismatch,
+      CoopSwapResult coop_swap_result,
       bool should_replace_current_entry,
       bool force_new_browsing_instance,
       BrowsingContextGroupSwap* browsing_context_group_swap,
@@ -765,7 +766,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       IsSameSiteGetter& is_same_site,
       bool dest_is_restore,
       bool dest_is_view_source_mode,
-      bool force_browsing_instance_swap,
+      BrowsingContextGroupSwap browsing_context_group_swap,
       bool was_server_redirect,
       std::string* reason);
 

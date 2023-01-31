@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS COOP: restrict-properties to popup COOP: same-origin via an iframe, with same origin iframe, cross origin popup with window_open
+PASS COOP: restrict-properties to popup COOP: same-origin via an iframe, with same origin iframe, cross origin popup with anchor
+PASS COOP: restrict-properties to popup COOP: same-origin via an iframe, with same origin iframe, cross origin popup with form
+FAIL COOP: restrict-properties to popup COOP: same-origin via an iframe, with same site iframe, cross origin popup with window_open assert_equals: Popup handle is non-null in iframe? expected "true" but got "false"
+PASS COOP: restrict-properties to popup COOP: same-origin via an iframe, with same site iframe, cross origin popup with anchor
+PASS COOP: restrict-properties to popup COOP: same-origin via an iframe, with same site iframe, cross origin popup with form
+Harness: the test ran to completion.
+

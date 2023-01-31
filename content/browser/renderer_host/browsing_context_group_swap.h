@@ -18,6 +18,13 @@ enum class BrowsingContextGroupSwapType {
   kNoSwap,
   // Used for swaps forced by a non matching COOP policy.
   kCoopSwap,
+  // Used for some swaps forced by a non matching COOP: restrict-properties
+  // policy. It puts the new document into a related BrowsingContext group.
+  //
+  // Contrary to unrelated BrowsingContext groups, the communication in between
+  // two related BrowsingContext groups is possible, but limited to using
+  // Window.postMessage() and Window.closed only.
+  kRelatedCoopSwap,
   // Used for swaps forced by a non-COOP security reason. This could be a
   // navigation from a WebUI page to a normal page for example.
   kSecuritySwap,
@@ -36,6 +43,7 @@ class CONTENT_EXPORT BrowsingContextGroupSwap {
   static BrowsingContextGroupSwap CreateNoSwap(
       ShouldSwapBrowsingInstance reason);
   static BrowsingContextGroupSwap CreateCoopSwap();
+  static BrowsingContextGroupSwap CreateRelatedCoopSwap();
   static BrowsingContextGroupSwap CreateSecuritySwap();
   static BrowsingContextGroupSwap CreateProactiveSwap(
       ShouldSwapBrowsingInstance reason);

@@ -1133,10 +1133,17 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   switch (opener->GetMainFrame()->cross_origin_opener_policy().value) {
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+      return false;
+
+    // TODO(https://crbug.com/1385827): Ideally, we'd like to have support
+    // for cross-origin iframes in COOP: restrict-properties pages opening
+    // popups. This is somewhat complex, because it would break some COOP
+    // invariants and other changes need to happen first. See the bug for
+    // details. For now, set no-opener.
     case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
     case network::mojom::CrossOriginOpenerPolicyValue::
         kRestrictPropertiesPlusCoep:
-      return false;
+
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return !PopupInheritCOOP(opener);
