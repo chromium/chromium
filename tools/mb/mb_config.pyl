@@ -638,8 +638,8 @@
       'Linux ASan LSan Builder': 'asan_lsan_release_trybot_reclient',
       'Linux CFI': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Chromium OS ASan LSan Builder': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
-      'Linux ChromiumOS MSan Builder': 'chromeos_msan_focal_release_bot_reclient',
-      'Linux MSan Builder': 'msan_focal_release_bot_reclient',
+      'Linux ChromiumOS MSan Builder': 'chromeos_msan_release_bot_reclient',
+      'Linux MSan Builder': 'msan_release_bot_reclient',
       'Linux TSan Builder': 'tsan_disable_nacl_release_bot_reclient',
       'Mac ASan 64 Builder': 'asan_minimal_symbols_disable_nacl_release_bot_dcheck_always_on_reclient',
       'WebKit Linux ASAN': 'asan_lsan_release_bot_blink_reclient',
@@ -1210,7 +1210,7 @@
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
       'linux-viz-rel': 'release_trybot',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
-      'linux-webkit-msan-rel': 'msan_focal_release_bot_reclient',
+      'linux-webkit-msan-rel': 'msan_release_bot_reclient',
       'linux-wpt-content-shell-fyi-rel': 'release_trybot',
       'linux-wpt-content-shell-leak-detection': 'release_trybot',
       'linux-wpt-fyi-rel': 'release_trybot_reclient',
@@ -1223,7 +1223,7 @@
       'linux_chromium_asan_rel_ng': 'asan_lsan_release_trybot_reclient',
       'linux_chromium_cfi_rel_ng': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'linux_chromium_chromeos_asan_rel_ng': 'asan_lsan_chromeos_release_bot_dcheck_always_on_reclient',
-      'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_focal_release_bot_reclient',
+      'linux_chromium_chromeos_msan_rel_ng': 'chromeos_msan_release_bot_reclient',
       'linux_chromium_clobber_deterministic': 'release_trybot',
       'linux_chromium_clobber_rel_ng': 'release_trybot',
       'linux_chromium_compile_dbg_ng': 'debug_bot_reclient',
@@ -1233,7 +1233,7 @@
       # This is intentionally a release_bot and not a release_trybot;
       # enabling DCHECKs seems to cause flaky failures that don't show up
       # on the continuous builder.
-      'linux_chromium_msan_rel_ng': 'msan_focal_release_bot_reclient',
+      'linux_chromium_msan_rel_ng': 'msan_release_bot_reclient',
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
 
@@ -2251,8 +2251,8 @@
       'chromeos_kevin_reclient', 'include_unwind_tables', 'official',
     ],
 
-    'chromeos_msan_focal_release_bot_reclient': [
-      'chromeos', 'msan_focal', 'release_bot_reclient',
+    'chromeos_msan_release_bot_reclient': [
+      'chromeos', 'msan', 'release_bot_reclient',
     ],
 
     'chromeos_octopus_dchecks': [
@@ -2372,7 +2372,7 @@
     ],
 
     'clang_tot_msan_release': [
-      'clang_tot', 'msan_focal', 'release',
+      'clang_tot', 'msan', 'release',
     ],
 
     'clang_tot_official': [
@@ -3117,11 +3117,11 @@
     ],
 
     'libfuzzer_msan_release_bot': [
-      'libfuzzer', 'msan_focal', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+      'libfuzzer', 'msan', 'shared_release_bot', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
     'libfuzzer_msan_release_bot_reclient': [
-      'libfuzzer', 'msan_focal', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
+      'libfuzzer', 'msan', 'shared_release_bot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'disable_seed_corpus',
     ],
 
     'libfuzzer_ubsan_release_bot': [
@@ -3200,16 +3200,12 @@
       'clang_tot', 'official', 'no_widevine_cdm_host_verification',
     ],
 
-    'msan_focal_release_bot_reclient': [
-      'msan_focal', 'release_bot_reclient',
-    ],
-
     'msan_no_origins_release_bot_reclient': [
       'msan_no_origins', 'release_bot_reclient',
     ],
 
     'msan_release_bot_blink_reclient': [
-      'msan_focal', 'release_bot_blink_reclient',
+      'msan', 'release_bot_blink_reclient',
     ],
 
     'msan_release_bot_reclient': [
@@ -4423,10 +4419,6 @@
     },
 
     'msan': {
-      'gn_args': 'is_msan=true msan_track_origins=2 instrumented_libraries_release = "xenial"',
-    },
-
-    'msan_focal': {
       'gn_args': 'is_msan=true msan_track_origins=2 instrumented_libraries_release = "focal"',
     },
 
