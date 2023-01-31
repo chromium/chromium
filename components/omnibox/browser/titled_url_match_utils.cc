@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/url_prefix.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/query_parser/snippet.h"
 #include "components/url_formatter/url_formatter.h"
 
 namespace bookmarks {
@@ -33,15 +34,6 @@ std::u16string ConcatAncestorsTitles(
                    [](const std::u16string& a, const base::StringPiece16& b) {
                      return a + u"/" + std::u16string(b);
                    });
-}
-
-// Computes the total length of matched strings in the bookmark title.
-int GetTotalTitleMatchLength(const TitledUrlMatch& titled_url_match) {
-  int len = 0;
-  for (const auto& title_match : titled_url_match.title_match_positions) {
-    len += title_match.second - title_match.first;
-  }
-  return len;
 }
 
 }  // namespace
@@ -161,7 +153,7 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
       match.scoring_signals.set_first_bookmark_title_match_position(
           titled_url_match.title_match_positions[0].first);
     match.scoring_signals.set_total_bookmark_title_match_length(
-        GetTotalTitleMatchLength(titled_url_match));
+        GetTotalTitleMatchLength(titled_url_match.title_match_positions));
     match.scoring_signals.set_allowed_to_be_default_match(
         match.allowed_to_be_default_match);
     match.scoring_signals.set_length_of_url(url.spec().length());
@@ -169,6 +161,16 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
   }
 
   return match;
+}
+
+// Computes the total length of matched strings in the bookmark title.
+int GetTotalTitleMatchLength(
+    const query_parser::Snippet::MatchPositions& title_match_positions) {
+  int len = 0;
+  for (const auto& title_match : title_match_positions) {
+    len += title_match.second - title_match.first;
+  }
+  return len;
 }
 
 }  // namespace bookmarks

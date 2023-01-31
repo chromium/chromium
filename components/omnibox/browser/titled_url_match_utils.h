@@ -9,6 +9,7 @@
 
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/query_parser/snippet.h"
 
 class AutocompleteInput;
 class AutocompleteProvider;
@@ -31,6 +32,10 @@ AutocompleteMatch TitledUrlMatchToAutocompleteMatch(
     const AutocompleteSchemeClassifier& scheme_classifier,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text);
+
+// Computes the total length of matched strings in the bookmark title.
+int GetTotalTitleMatchLength(
+    const query_parser::Snippet::MatchPositions& title_match_positions);
 
 }  // namespace bookmarks
 

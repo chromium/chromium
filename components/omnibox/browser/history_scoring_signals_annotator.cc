@@ -85,6 +85,7 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
   }
 }
 
+// static
 bool HistoryScoringSignalsAnnotator::IsEligibleMatch(
     const AutocompleteMatch& match) {
   return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||

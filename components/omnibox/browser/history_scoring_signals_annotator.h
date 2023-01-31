@@ -40,11 +40,11 @@ class HistoryScoringSignalsAnnotator
   void AnnotateResult(const AutocompleteInput& input,
                       AutocompleteResult* result) override;
 
- private:
   // Whether the autocomplete match is eligible to be annotated.
   // Currently, includes only history and bookmark URLs.
-  bool IsEligibleMatch(const AutocompleteMatch& match);
+  static bool IsEligibleMatch(const AutocompleteMatch& match);
 
+ private:
   // Populates signals based on the matching strings between the input text and
   // page title.
   void PopulateTitleMatchingSignals(

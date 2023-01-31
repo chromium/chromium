@@ -74,6 +74,10 @@ class TitledUrlIndex {
       query_parser::MatchingAlgorithm matching_algorithm,
       bool match_ancestor_titles);
 
+  // Returns a normalized version of the UTF16 string `text`.  If it fails to
+  // normalize the string, returns `text` itself as a best-effort.
+  static std::u16string Normalize(const std::u16string& text);
+
  private:
   friend class TitledUrlIndexFake;
 

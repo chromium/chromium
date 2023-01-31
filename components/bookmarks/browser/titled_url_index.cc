@@ -34,28 +34,6 @@ namespace bookmarks {
 
 namespace {
 
-// Returns a normalized version of the UTF16 string |text|.  If it fails to
-// normalize the string, returns |text| itself as a best-effort.
-std::u16string Normalize(const std::u16string& text) {
-  UErrorCode status = U_ZERO_ERROR;
-  const icu::Normalizer2* normalizer2 =
-      icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
-  if (U_FAILURE(status)) {
-    // Log and crash right away to capture the error code in the crash report.
-    LOG(FATAL) << "failed to create a normalizer: " << u_errorName(status);
-  }
-  icu::UnicodeString unicode_text(text.data(),
-                                  static_cast<int32_t>(text.length()));
-  icu::UnicodeString unicode_normalized_text;
-  normalizer2->normalize(unicode_text, unicode_normalized_text, status);
-  if (U_FAILURE(status)) {
-    // This should not happen. Log the error and fall back.
-    LOG(ERROR) << "normalization failed: " << u_errorName(status);
-    return text;
-  }
-  return base::i18n::UnicodeStringToString16(unicode_normalized_text);
-}
-
 // Return true if `prefix` is a prefix of `string`.
 bool IsPrefix(const std::u16string& prefix, const std::u16string& string) {
   return prefix.size() <= string.size() &&
@@ -196,6 +174,27 @@ std::vector<TitledUrlMatch> TitledUrlIndex::GetResultsMatching(
   base::UmaHistogramExactLinear(
       "Bookmarks.GetResultsMatching.Matches.ReturnedCount", results.size(), 51);
   return results;
+}
+
+// static
+std::u16string TitledUrlIndex::Normalize(const std::u16string& text) {
+  UErrorCode status = U_ZERO_ERROR;
+  const icu::Normalizer2* normalizer2 =
+      icu::Normalizer2::getInstance(nullptr, "nfkc", UNORM2_COMPOSE, status);
+  if (U_FAILURE(status)) {
+    // Log and crash right away to capture the error code in the crash report.
+    LOG(FATAL) << "failed to create a normalizer: " << u_errorName(status);
+  }
+  icu::UnicodeString unicode_text(text.data(),
+                                  static_cast<int32_t>(text.length()));
+  icu::UnicodeString unicode_normalized_text;
+  normalizer2->normalize(unicode_text, unicode_normalized_text, status);
+  if (U_FAILURE(status)) {
+    // This should not happen. Log the error and fall back.
+    LOG(ERROR) << "normalization failed: " << u_errorName(status);
+    return text;
+  }
+  return base::i18n::UnicodeStringToString16(unicode_normalized_text);
 }
 
 void TitledUrlIndex::SortMatches(const TitledUrlNodeSet& matches,

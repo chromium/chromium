@@ -37,6 +37,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/bookmark_provider.h"
+#include "components/omnibox/browser/bookmark_scoring_signals_annotator.h"
 #include "components/omnibox/browser/builtin_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -517,6 +518,9 @@ AutocompleteController::AutocompleteController(
           /*default_value=*/false)) {
     url_scoring_signals_annotators_.push_back(
         std::make_unique<HistoryScoringSignalsAnnotator>(
+            provider_client_.get()));
+    url_scoring_signals_annotators_.push_back(
+        std::make_unique<BookmarkScoringSignalsAnnotator>(
             provider_client_.get()));
   }
 
