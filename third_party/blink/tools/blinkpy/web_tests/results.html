@@ -2350,7 +2350,7 @@ class ImageResultsViewer {
       let imgTile = document.createElement("div");
       imgTile.classList.add("image-viewer-tile");
       imgTile.classList.add("hidden");
-      imgTile.innerHTML = `<img src="${info.src}" title="${info.title}">`;
+      imgTile.innerHTML = `<img src="${info.src}" crossorigin="anonymous" title="${info.title}">`;
       imgTile.addEventListener("scroll", this.boundTileScrollHandler, {passive: true});
       imgTile.addEventListener("wheel", this.boundWheelHandler);
       this.viewer.appendChild(imgTile);
