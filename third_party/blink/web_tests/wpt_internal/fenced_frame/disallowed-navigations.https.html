@@ -31,26 +31,13 @@
 // URLs, we'll set them up to only communicate back to the outer page via
 // resources obtained in the public address space.
 const kPublicUtils = resolveUrl("resources/utils.js", Server.HTTPS_PUBLIC);
-const kPublicOrigin = kPublicUtils.origin;
-function createLocalSource(key) {
-  return `
-    <head>
-      <script src="${kPublicUtils}"><\/script>
-    </head>
-    <body>
-      <script>
-        writeValueToServer("${key}", "LOADED", /*origin=*/"${kPublicOrigin}");
-      <\/script>
-    </body>
-  `;
-}
 
 // These are just baseline tests asserting that this test's machinery to load
 // blob:, data:, and javascript: URLs work properly in contexts where they are
 // expected to.
 promise_test(async () => {
   const key = token();
-  attachIFrame(`data:text/html,${createLocalSource(key)}`);
+  attachIFrame(`data:text/html, ${createLocalSource(key, kPublicUtils)}`);
   const result = await nextValueFromServer(key);
   assert_equals(result, "LOADED");
 }, "iframe data: URL");
@@ -58,7 +45,8 @@ promise_test(async () => {
 promise_test(async () => {
   const key = token();
   const blobURL = URL.createObjectURL(
-      new Blob([`${createLocalSource(key)}`], {type: 'text/html'}));
+      new Blob([`${createLocalSource(key, kPublicUtils)}`],
+               {type: 'text/html'}));
   attachIFrame(blobURL);
   const result = await nextValueFromServer(key);
   assert_equals(result, "LOADED");
@@ -87,7 +75,8 @@ for (const mode of ['opaque-ads', 'default']) {
 
   promise_test(async t => {
     const key = token();
-    attachFencedFrame(`data:text/html,${createLocalSource(key)}`, /*mode=*/mode);
+    attachFencedFrame(`data:text/html, ${createLocalSource(key, kPublicUtils)}`,
+                      /*mode=*/mode);
     const loaded_promise = nextValueFromServer(key);
     const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
     assert_equals(result, "NOT LOADED");
@@ -96,7 +85,8 @@ for (const mode of ['opaque-ads', 'default']) {
   promise_test(async t => {
     const key = token();
     const blobURL = URL.createObjectURL(
-        new Blob([`${createLocalSource(key)}`], {type: 'text/html'}));
+        new Blob([`${createLocalSource(key, kPublicUtils)}`],
+                 {type: 'text/html'}));
     attachFencedFrame(blobURL, /*mode=*/mode);
     const loaded_promise = nextValueFromServer(key);
     const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
@@ -127,31 +117,6 @@ for (const mode of ['opaque-ads', 'default']) {
   }, `fenced frame mode=${mode} http: URL`);
 
 } // end for.
-
-// The following tests ensure that an embedder cannot navigate a
-// `mode=opaque-ads` fenced frame to an opaque URN that represents a:
-//   - data: URL
-//   - blob: URL
-//   - javascript: URL
-promise_test(async t => {
-  const key = token();
-  const urn = await generateURN(`data:text/html,${createLocalSource(key)}`);
-  attachFencedFrame(urn, /*mode=*/'opaque-ads');
-  const loaded_promise = nextValueFromServer(key);
-  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-  assert_equals(result, "NOT LOADED");
-}, "fenced frame opaque URN => data: URL");
-
-promise_test(async t => {
-  const key = token();
-  const blobURL = URL.createObjectURL(
-      new Blob([`${createLocalSource(key)}`], {type: 'text/html'}));
-  const urn = await generateURN(blobURL);
-  attachFencedFrame(urn, /*mode=*/'opaque-ads');
-  const loaded_promise = nextValueFromServer(key);
-  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-  assert_equals(result, "NOT LOADED");
-}, "fenced frame opaque URN => blob: URL");
 </script>
 
 </body>

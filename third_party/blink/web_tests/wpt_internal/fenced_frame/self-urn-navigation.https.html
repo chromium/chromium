@@ -16,7 +16,7 @@ function getTimeoutPromise(t) {
 // A fenced frame root should not be able to navigate itself to a urn:uuid.
 promise_test(async t => {
   const frame = attachFencedFrameContext({attributes: [["mode", "opaque-ads"]]});
-  urn = await generateURN(frame.src);
+  urn = await runSelectURL(frame.src);
 
   // Send the urn:uuid to the fenced frame over the network, and attempt to
   // self-"refresh" to that urn.

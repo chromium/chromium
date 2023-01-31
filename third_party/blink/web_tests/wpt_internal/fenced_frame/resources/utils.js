@@ -20,17 +20,29 @@ function getRemoteContextURL(origin) {
   return new URL(REMOTE_EXECUTOR_URL, origin);
 }
 
-// Similar to generateURL, but creates a urn:uuid that a fenced frame can
-// navigate to. This relies on a mock Shared Storage auction, since it is the
-// simplest WP-exposed way to turn a url into a urn:uuid.
+// Similar to generateURL, but creates
+// 1. An urn:uuid if `resolve_to_config` is false.
+// 2. A fenced frame config object if `resolve_to_config` is true.
+// This relies on a mock Shared Storage auction, since it is the simplest
+// WP-exposed way to turn a url into an urn:uuid or a fenced frame config.
 // Note: this function, unlike generateURL, is asynchronous and needs to be
 // called with an await operator.
 // @param {string} href - The base url of the page being navigated to
 // @param {string list} keylist - The list of key UUIDs to be used. Note that
 //                                order matters when extracting the keys
-// Note: There is a limit of 3 calls per origin per pageload for
-// `sharedStorage.selectURL()`, so `generateURN()` must also respect this limit.
-async function generateURN(href, keylist = []) {
+// @param {boolean} [resolve_to_config = false] - Determines whether the result
+//                                                of `sharedStorage.selectURL()`
+//                                                is an urn:uuid or a fenced
+//                                                frame config.
+// Note:
+// 1. There is a limit of 3 calls per origin per pageload for
+// `sharedStorage.selectURL()`, so `runSelectURL()` must also respect this
+// limit.
+// 2. If `resolve_to_config` is true, blink feature `FencedFramesAPIChanges`
+// needs to be enabled for `selectURL()` to return a fenced frame config.
+// Otherwise `selectURL()` will fall back to the old behavior that returns an
+// urn:uuid.
+async function runSelectURL(href, keylist = [], resolve_to_config = false) {
   try {
     await sharedStorage.worklet.addModule(
       "/wpt_internal/shared_storage/resources/simple-module.js");
@@ -45,11 +57,11 @@ async function generateURN(href, keylist = []) {
   const full_url = generateURL(href, keylist);
   return await sharedStorage.selectURL(
       "test-url-selection-operation", [{url: full_url}],
-      {data: {'mockResult': 0}}
+      {data: {'mockResult': 0}, resolveToConfig: resolve_to_config}
   );
 }
 
-// Similar to generateURN, but uses FLEDGE instead of Shared Storage as the
+// Similar to runSelectURL, but uses FLEDGE instead of Shared Storage as the
 // auctioning tool.
 // Note: this function, unlike generateURL, is asynchronous and needs to be
 // called with an await operator. @param {string} href - The base url of the
@@ -188,9 +200,15 @@ function attachContext(object_constructor, html, headers, origin) {
   return buildRemoteContextForObject(object, uuid, html);
 }
 
+// TODO(crbug.com/1347953): Update this function to also test
+// `sharedStorage.selectURL()` that returns a fenced frame config object.
+// This should be done after fixing the following flaky tests that use this
+// function.
+// 1. crbug.com/1372536: resize-lock-input.https.html
+// 2. crbug.com/1394559: unfenced-top.https.html
 async function attachOpaqueContext(generator_api, object_constructor, html, headers, origin) {
   const [uuid, url] = generateRemoteContextURL(headers, origin);
-  const urn = await (generator_api == 'fledge' ? generateURNFromFledge(url, []) : generateURN(url));
+  const urn = await (generator_api == 'fledge' ? generateURNFromFledge(url, []) : runSelectURL(url));
   const object = object_constructor(urn);
   return buildRemoteContextForObject(object, uuid, html);
 }
@@ -277,7 +295,9 @@ async function stringToStashKey(string) {
   return digest_slices.join('-');
 }
 
-function attachFencedFrame(url, mode='') {
+// Create a fenced frame. Then navigate it using the given `target`, which can
+// be either an urn:uuid or a fenced frame config object.
+function attachFencedFrame(target, mode='') {
   assert_implements(
       window.HTMLFencedFrameElement,
       'The HTMLFencedFrameElement should be exposed on the window object');
@@ -287,7 +307,13 @@ function attachFencedFrame(url, mode='') {
   if (mode) {
     fenced_frame.mode = mode;
   }
-  fenced_frame.src = url;
+
+  if (target instanceof FencedFrameConfig) {
+    fenced_frame.config = target;
+  } else {
+    fenced_frame.src = target;
+  }
+
   document.body.append(fenced_frame);
   return fenced_frame;
 }
@@ -352,4 +378,37 @@ async function simulateGesture() {
     await new Promise(resolve => requestAnimationFrame(resolve));
   }
   await test_driver.bless('simulate gesture');
+}
+
+// Fenced frames are always put in the public IP address space which is the
+// least privileged. In case a navigation to a local data: URL or blob: URL
+// resource is allowed, they would only be able to fetch things that are *also*
+// in the public IP address space. So for the document described by these local
+// URLs, we'll set them up to only communicate back to the outer page via
+// resources obtained in the public address space.
+function createLocalSource(key, url) {
+  return `
+    <head>
+      <script src="${url}"><\/script>
+    </head>
+    <body>
+      <script>
+        writeValueToServer("${key}", "LOADED", /*origin=*/"${url.origin}");
+      <\/script>
+    </body>
+  `;
+}
+
+function setupCSP(csp, second_csp=null) {
+  let meta = document.createElement('meta');
+  meta.httpEquiv = "Content-Security-Policy";
+  meta.content = "fenced-frame-src " + csp;
+  document.head.appendChild(meta);
+
+  if (second_csp != null) {
+    let second_meta = document.createElement('meta');
+    second_meta.httpEquiv = "Content-Security-Policy";
+    second_meta.content = "frame-src " + second_csp;
+    document.head.appendChild(second_meta);
+  }
 }

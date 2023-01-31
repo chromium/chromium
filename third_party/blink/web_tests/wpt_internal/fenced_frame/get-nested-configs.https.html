@@ -21,17 +21,22 @@ promise_test(async (t) => {
   assert_equals(first_url, 'opaque', 'The first config should be opaque.');
 }, 'getNestedConfigs() created by FLEDGE should return configurations');
 
-promise_test(async (t) => {
-  const key = token();
-  const urn = await generateURN(
-      generateURL("resources/get-nested-configs-inner.html", [key]));
-  attachFencedFrame(urn, mode='opaque-ads');
+for (const resolve_to_config of [true, false]) {
+  promise_test(async (t) => {
+    const key = token();
+    const select_url_result = await runSelectURL(
+        generateURL("resources/get-nested-configs-inner.html", [key]),
+        [], resolve_to_config);
+    attachFencedFrame(select_url_result, mode='opaque-ads');
 
-  const response = await nextValueFromServer(key);
-  const [length, first_url] = response.split(",");
+    const response = await nextValueFromServer(key);
+    const [length, first_url] = response.split(",");
 
-  assert_equals(length, '0', 'There should be 0 nested configurations.');
-}, 'getNestedConfigs() from a non-FLEDGE URN frame should be empty');
+    assert_equals(length, '0', 'There should be 0 nested configurations.');
+  }, 'getNestedConfigs() from a fenced frame with the ' +
+     (resolve_to_config ? 'config' : 'urn:uuid') +
+     ' from sharedStroage.selectURL() should be empty');
+}
 
 promise_test(async (t) => {
   const key = token();

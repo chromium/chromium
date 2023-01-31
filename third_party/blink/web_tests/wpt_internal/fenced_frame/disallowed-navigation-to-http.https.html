@@ -7,10 +7,8 @@
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
 <script src="resources/utils.js"></script>
-<script src="/fetch/private-network-access/resources/support.sub.js"></script>
 
 <body>
-
 <script>
 function getTimeoutPromise(t) {
   return new Promise(resolve =>
@@ -23,16 +21,20 @@ function getTimeoutPromise(t) {
 // We split this into a separate test file because `sharedStorage.selectURL()`,
 // which is used to generate the URN in the test, has a limit of 3 calls per
 // origin per pageload. We are unabled to generate this URN from FLEDGE.
-promise_test(async t => {
-  const key = token();
-  const http_url = new URL("resources/embeddee.html",
+for (const resolve_to_config of [true, false]) {
+  promise_test(async t => {
+    const key = token();
+    const http_url = new URL("resources/embeddee.html",
       get_host_info().HTTP_ORIGIN + location.pathname);
-  const urn = await generateURN(http_url, [key]);
-  const fencedframe = attachFencedFrame(urn, /*mode=*/'opaque-ads');
-  const loaded_promise = nextValueFromServer(key);
-  const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
-  assert_equals(result, "NOT LOADED");
-}, "fenced frame opaque URN => http: URL");
+    const select_url_result = await runSelectURL(http_url, [key],
+                                                 resolve_to_config);
+    const fencedframe = attachFencedFrame(select_url_result,
+                                          /*mode=*/'opaque-ads');
+    const loaded_promise = nextValueFromServer(key);
+    const result = await Promise.any([loaded_promise, getTimeoutPromise(t)]);
+    assert_equals(result, "NOT LOADED");
+  }, "fenced frame " + (resolve_to_config ? "config" : "urn:uuid") +
+     " => http: URL");
+}
 </script>
-
 </body>
