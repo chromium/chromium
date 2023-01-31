@@ -7,10 +7,13 @@
 
 #include <vector>
 
+#include "chrome/browser/ash/app_list/search/common/keyword_util.h"
 #include "chrome/browser/ash/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 
 namespace app_list {
+
+using ProviderToScoreMap = std::map<ProviderType, double>;
 
 // A ranker that boost the scores of results that contains
 // certain keywords.
@@ -30,7 +33,11 @@ class KeywordRanker : public Ranker {
 
  private:
   std::u16string last_query_;
-  std::vector<ProviderType> matched_providers_;
+  ProviderToScoreMap matched_provider_score_;
+
+  // Extract each provider and its corresponding best scores into
+  // a map from KeywordExtractedInfoList.
+  void SetProviderMap(KeywordExtractedInfoList extracted_keywords_to_providers);
 };
 
 }  // namespace app_list

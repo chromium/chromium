@@ -27,9 +27,7 @@ void KeywordRanker::Start(const std::u16string& query,
       ExtractKeywords(last_query_);
 
   if (!extracted_keywords_to_providers.empty()) {
-    // TODO(b/262623111): To iterate through the extracted keywords to providers
-    // to place the Search Providers into the vector matched_providers_
-    matched_providers_ = extracted_keywords_to_providers[0].search_providers;
+    SetProviderMap(extracted_keywords_to_providers);
   }
 }
 
@@ -37,8 +35,7 @@ void KeywordRanker::UpdateResultRanks(ResultsMap& results,
                                       ProviderType provider) {
   // Return if the given provider does not matched a keyword in the query
   // as this does not require modification of results.
-  if (std::find(matched_providers_.begin(), matched_providers_.end(),
-                provider) == matched_providers_.end()) {
+  if (matched_provider_score_.find(provider) == matched_provider_score_.end()) {
     return;
   }
 
@@ -47,8 +44,26 @@ void KeywordRanker::UpdateResultRanks(ResultsMap& results,
     return;
   }
 
+  // The relevance score of how accurate the input query token matched the
+  // provider's keyword is ranged from 0.75 to 1, hence the provider_boost_score
+  // will be ranged from 1.375 to 1.5.
+  double provider_boost_score = matched_provider_score_[provider] * 0.5 + 1;
+
   for (auto& result : it->second) {
-    result->scoring().set_keyword_multiplier(1.2);
+    result->scoring().set_keyword_multiplier(provider_boost_score);
+  }
+}
+
+void KeywordRanker::SetProviderMap(
+    KeywordExtractedInfoList extracted_keywords_to_providers) {
+  for (KeywordInfo& keyword_info : extracted_keywords_to_providers) {
+    for (ProviderType provider : keyword_info.search_providers) {
+      if (matched_provider_score_.find(provider) ==
+              matched_provider_score_.end() ||
+          keyword_info.relevance_score > matched_provider_score_[provider]) {
+        matched_provider_score_[provider] = keyword_info.relevance_score;
+      }
+    }
   }
 }
 
