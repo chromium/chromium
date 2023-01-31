@@ -175,6 +175,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   void OnFilesChanged(const std::vector<mojom::FileChange>& changes) override;
   void OnError(const mojom::DriveError& error) override;
 
+  void OnFileCreated(const mojom::FileChange& event);
+  void OnFileDeleted(const mojom::FileChange& event);
+  void OnFileModified(const mojom::FileChange& event);
+
   // Stable ID provided by DriveFS.
   enum class Id : int64_t { kNone = 0 };
 

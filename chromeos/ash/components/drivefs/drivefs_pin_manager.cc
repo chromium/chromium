@@ -668,6 +668,10 @@ void PinManager::StartPinning() {
 void PinManager::PinSomeFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (progress_.stage != Stage::kSyncing) {
+    return;
+  }
+
   if (files_to_track_.empty() && files_to_pin_.empty()) {
     VLOG(1) << "Nothing left to pin or track";
     return Complete(Stage::kSuccess);
@@ -706,7 +710,7 @@ void PinManager::PinSomeFiles() {
           << Percentage(progress_.pinned_bytes, progress_.bytes_to_pin)
           << "%: synced " << HumanReadableSize(progress_.pinned_bytes)
           << " and " << progress_.pinned_files << " files, syncing "
-          << files_to_track_.size() << " files";
+          << progress_.syncing_files << " files";
 }
 
 void PinManager::OnFilePinned(const Id id,
@@ -729,11 +733,6 @@ void PinManager::OnFilePinned(const Id id,
 
 void PinManager::OnSyncingStatusUpdate(const mojom::SyncingStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (progress_.stage != Stage::kSyncing) {
-    VLOG(2) << "Ignored syncing status update";
-    return;
-  }
 
   for (const mojom::ItemEventPtr& event : status.item_events) {
     DCHECK(event);
@@ -804,54 +803,89 @@ void PinManager::OnUnmounted() {
 }
 
 void PinManager::OnFilesChanged(const std::vector<mojom::FileChange>& changes) {
+  for (const mojom::FileChange& event : changes) {
+    switch (event.type) {
+      using Type = mojom::FileChange::Type;
+
+      case Type::kCreate:
+        OnFileCreated(event);
+        continue;
+
+      case Type::kDelete:
+        OnFileDeleted(event);
+        continue;
+
+      case Type::kModify:
+        OnFileModified(event);
+        continue;
+    }
+
+    VLOG(1) << "Unexpected FileChange type " << Quote(event);
+  }
+}
+
+void PinManager::OnFileCreated(const mojom::FileChange& event) {
+  VLOG(1) << "Ignored FileChange " << Quote(event);
+}
+
+void PinManager::OnFileDeleted(const mojom::FileChange& event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.stage != Stage::kSyncing) {
-    for (const mojom::FileChange& change : changes) {
-      switch (change.type) {
-        case mojom::FileChange::Type::kDelete:
-          VLOG(1) << "Got FileChange " << Quote(change);
-          drivefs_->SetPinnedByStableId(
-              change.stable_id, /*pinned=*/false,
-              base::BindOnce([](drive::FileError status) {
-                LOG_IF(ERROR, status != drive::FILE_ERROR_OK)
-                    << "Failed to unpin file: "
-                    << drive::FileErrorToString(status);
-              }));
-          break;
-        default:
-          VLOG(1) << "Ignored FileChange " << Quote(change);
-          break;
-      }
-    }
+  VLOG(1) << "Got FileChange " << Quote(event);
+  const Id id = Id(event.stable_id);
+  const std::string& path = event.path.value();
+
+  drivefs_->SetPinnedByStableId(
+      event.stable_id, /*pinned=*/false,
+      base::BindOnce(
+          [](const Id id, const std::string& path,
+             const drive::FileError status) {
+            if (status != drive::FILE_ERROR_OK) {
+              LOG(ERROR) << "Cannot unpin " << id << " " << Quote(path) << ": "
+                         << status;
+            } else {
+              VLOG(1) << "Unpinned " << id << " " << Quote(path);
+            }
+          },
+          id, path));
+
+  if (!Remove(id, path, 0)) {
+    VLOG(1) << "Not tracked: " << id << " " << Quote(path);
     return;
   }
 
-  for (const mojom::FileChange& change : changes) {
-    const Id id = Id(change.stable_id);
-    const Files::iterator it = files_to_track_.find(id);
-    if (it == files_to_track_.end()) {
-      VLOG(1) << "Ignored FileChange " << Quote(change);
-      continue;
-    }
+  VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
+  progress_.failed_files++;
+  NotifyProgress();
+  PinSomeFiles();
+}
 
-    VLOG(1) << "Got FileChange " << Quote(change);
-    DCHECK_EQ(it->first, id);
-    File& file = it->second;
+void PinManager::OnFileModified(const mojom::FileChange& event) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    const std::string& path = change.path.value();
-    if (file.path != path) {
-      LOG(ERROR) << "Changed path of " << id << " " << Quote(file.path)
-                 << " to " << Quote(path);
-      file.path = path;
-    }
+  const Id id = Id(event.stable_id);
+  const std::string& path = event.path.value();
 
-    VLOG(2) << "Checking changed " << id << " " << Quote(path);
-    drivefs_->GetMetadataByStableId(
-        static_cast<int64_t>(id),
-        base::BindOnce(&PinManager::OnMetadataRetrieved, GetWeakPtr(), id,
-                       path));
+  const Files::iterator it = files_to_track_.find(id);
+  if (it == files_to_track_.end()) {
+    VLOG(1) << "Ignored FileChange " << Quote(event);
+    return;
   }
+
+  VLOG(1) << "Got FileChange " << Quote(event);
+  DCHECK_EQ(it->first, id);
+  File& file = it->second;
+
+  if (file.path != path) {
+    LOG(ERROR) << "Changed path of " << id << " " << Quote(file.path) << " to "
+               << Quote(path);
+    file.path = path;
+  }
+
+  VLOG(2) << "Checking changed " << id << " " << Quote(path);
+  drivefs_->GetMetadataByStableId(
+      static_cast<int64_t>(id),
+      base::BindOnce(&PinManager::OnMetadataRetrieved, GetWeakPtr(), id, path));
 }
 
 void PinManager::OnError(const mojom::DriveError& error) {
@@ -895,11 +929,6 @@ void PinManager::OnMetadataRetrieved(const Id id,
                                      const drive::FileError error,
                                      const mojom::FileMetadataPtr metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (progress_.stage != Stage::kSyncing) {
-    VLOG(1) << "Ignored metadata of " << id << " " << Quote(path);
-    return;
-  }
 
   if (error != drive::FILE_ERROR_OK) {
     LOG(ERROR) << "Cannot get metadata of " << id << " " << Quote(path) << ": "
