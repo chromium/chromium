@@ -3192,6 +3192,24 @@ void ConvertYUVAMailboxesToRGBINTERNALImmediate(GLenum planes_yuv_color_space,
   }
 }
 
+void CopySharedImageINTERNALImmediate(GLint xoffset,
+                                      GLint yoffset,
+                                      GLint x,
+                                      GLint y,
+                                      GLsizei width,
+                                      GLsizei height,
+                                      GLboolean unpack_flip_y,
+                                      const GLbyte* mailboxes) {
+  const uint32_t size =
+      gles2::cmds::CopySharedImageINTERNALImmediate::ComputeSize();
+  gles2::cmds::CopySharedImageINTERNALImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          gles2::cmds::CopySharedImageINTERNALImmediate>(size);
+  if (c) {
+    c->Init(xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+  }
+}
+
 void EnableiOES(GLenum target, GLuint index) {
   gles2::cmds::EnableiOES* c = GetCmdSpace<gles2::cmds::EnableiOES>();
   if (c) {

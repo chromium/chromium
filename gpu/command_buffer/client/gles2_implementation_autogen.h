@@ -1171,6 +1171,15 @@ void ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
                                        GLenum subsampling,
                                        const GLbyte* mailboxes) override;
 
+void CopySharedImageINTERNAL(GLint xoffset,
+                             GLint yoffset,
+                             GLint x,
+                             GLint y,
+                             GLsizei width,
+                             GLsizei height,
+                             GLboolean unpack_flip_y,
+                             const GLbyte* mailboxes) override;
+
 void EnableiOES(GLenum target, GLuint index) override;
 
 void DisableiOES(GLenum target, GLuint index) override;

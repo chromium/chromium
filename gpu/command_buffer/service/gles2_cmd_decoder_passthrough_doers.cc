@@ -4998,6 +4998,19 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   return error::kNoError;
 }
 
+error::Error GLES2DecoderPassthroughImpl::DoCopySharedImageINTERNAL(
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean unpack_flip_y,
+    const volatile GLbyte* mailboxes) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::DoEnableiOES(GLenum target,
                                                        GLuint index) {
   api()->glEnableiOESFn(target, index);

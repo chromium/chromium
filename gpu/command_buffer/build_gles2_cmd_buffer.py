@@ -4053,6 +4053,16 @@ _FUNCTION_INFO = {
     'impl_func': True,
     'unit_test': False,
     'trace_level': 2,
+  },
+  'CopySharedImageINTERNAL': {
+    'decoder_func': 'DoCopySharedImageINTERNAL',
+    'extension': 'CHROMIUM_shared_image',
+    'internal': False,
+    'type': 'PUT',
+    'count': 32, #GL_MAILBOX_SIZE_CHROMIUM x2
+    'impl_func': True,
+    'unit_test': False,
+    'trace_level': 2,
   }
 
 }

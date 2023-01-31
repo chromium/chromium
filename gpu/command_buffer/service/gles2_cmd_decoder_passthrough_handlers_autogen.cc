@@ -4643,6 +4643,41 @@ GLES2DecoderPassthroughImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   return error::kNoError;
 }
 
+error::Error
+GLES2DecoderPassthroughImpl::HandleCopySharedImageINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::CopySharedImageINTERNALImmediate& c =
+      *static_cast<
+          const volatile gles2::cmds::CopySharedImageINTERNALImmediate*>(
+          cmd_data);
+  GLint xoffset = static_cast<GLint>(c.xoffset);
+  GLint yoffset = static_cast<GLint>(c.yoffset);
+  GLint x = static_cast<GLint>(c.x);
+  GLint y = static_cast<GLint>(c.y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
+  GLboolean unpack_flip_y = static_cast<GLboolean>(c.unpack_flip_y);
+  uint32_t mailboxes_size;
+  if (!GLES2Util::ComputeDataSize<GLbyte, 32>(1, &mailboxes_size)) {
+    return error::kOutOfBounds;
+  }
+  if (mailboxes_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
+      c, mailboxes_size, immediate_data_size);
+  if (mailboxes == nullptr) {
+    return error::kOutOfBounds;
+  }
+  error::Error error = DoCopySharedImageINTERNAL(
+      xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+  if (error != error::kNoError) {
+    return error;
+  }
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleEnableiOES(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

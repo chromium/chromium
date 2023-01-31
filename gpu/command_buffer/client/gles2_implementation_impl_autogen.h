@@ -3533,6 +3533,36 @@ void GLES2Implementation::ConvertYUVAMailboxesToRGBINTERNAL(
   CheckGLError();
 }
 
+void GLES2Implementation::CopySharedImageINTERNAL(GLint xoffset,
+                                                  GLint yoffset,
+                                                  GLint x,
+                                                  GLint y,
+                                                  GLsizei width,
+                                                  GLsizei height,
+                                                  GLboolean unpack_flip_y,
+                                                  const GLbyte* mailboxes) {
+  GPU_CLIENT_SINGLE_THREAD_CHECK();
+  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCopySharedImageINTERNAL("
+                     << xoffset << ", " << yoffset << ", " << x << ", " << y
+                     << ", " << width << ", " << height << ", "
+                     << GLES2Util::GetStringBool(unpack_flip_y) << ", "
+                     << static_cast<const void*>(mailboxes) << ")");
+  uint32_t count = 32;
+  for (uint32_t ii = 0; ii < count; ++ii)
+    GPU_CLIENT_LOG("value[" << ii << "]: " << mailboxes[ii]);
+  if (width < 0) {
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImageINTERNAL", "width < 0");
+    return;
+  }
+  if (height < 0) {
+    SetGLError(GL_INVALID_VALUE, "glCopySharedImageINTERNAL", "height < 0");
+    return;
+  }
+  helper_->CopySharedImageINTERNALImmediate(xoffset, yoffset, x, y, width,
+                                            height, unpack_flip_y, mailboxes);
+  CheckGLError();
+}
+
 void GLES2Implementation::BlendEquationiOES(GLuint buf, GLenum mode) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glBlendEquationiOES(" << buf

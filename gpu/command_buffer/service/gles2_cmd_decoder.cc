@@ -1251,6 +1251,14 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                            GLenum plane_config,
                                            GLenum subsampling,
                                            const volatile GLbyte* mailboxes_in);
+  void DoCopySharedImageINTERNAL(GLint xoffset,
+                                 GLint yoffset,
+                                 GLint x,
+                                 GLint y,
+                                 GLsizei width,
+                                 GLsizei height,
+                                 GLboolean unpack_flip_y,
+                                 const volatile GLbyte* mailboxes);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   void AttachImageToTextureWithDecoderBinding(uint32_t client_texture_id,
@@ -18514,6 +18522,18 @@ void GLES2DecoderImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void GLES2DecoderImpl::DoCopySharedImageINTERNAL(
+    GLint xoffset,
+    GLint yoffset,
+    GLint x,
+    GLint y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean unpack_flip_y,
+    const volatile GLbyte* mailboxes) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

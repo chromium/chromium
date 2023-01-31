@@ -5437,6 +5437,64 @@ TEST_F(GLES2FormatTest, ConvertYUVAMailboxesToRGBINTERNALImmediate) {
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }
 
+TEST_F(GLES2FormatTest, CopySharedImageINTERNALImmediate) {
+  const int kSomeBaseValueToTestWith = 51;
+  static GLbyte data[] = {
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 1),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 2),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 3),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 4),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 5),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 6),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 7),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 8),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 9),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 10),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 11),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 12),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 13),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 14),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 15),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 16),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 17),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 18),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 19),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 20),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 21),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 22),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 23),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 24),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 25),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 26),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 27),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 28),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 29),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 30),
+      static_cast<GLbyte>(kSomeBaseValueToTestWith + 31),
+  };
+  cmds::CopySharedImageINTERNALImmediate& cmd =
+      *GetBufferAs<cmds::CopySharedImageINTERNALImmediate>();
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
+                           static_cast<GLint>(13), static_cast<GLint>(14),
+                           static_cast<GLsizei>(15), static_cast<GLsizei>(16),
+                           static_cast<GLboolean>(17), data);
+  EXPECT_EQ(
+      static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
+      cmd.header.command);
+  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
+            cmd.header.size * 4u);
+  EXPECT_EQ(static_cast<GLint>(11), cmd.xoffset);
+  EXPECT_EQ(static_cast<GLint>(12), cmd.yoffset);
+  EXPECT_EQ(static_cast<GLint>(13), cmd.x);
+  EXPECT_EQ(static_cast<GLint>(14), cmd.y);
+  EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
+  EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
+  EXPECT_EQ(static_cast<GLboolean>(17), cmd.unpack_flip_y);
+  CheckBytesWrittenMatchesExpectedSize(
+      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
+}
+
 TEST_F(GLES2FormatTest, EnableiOES) {
   cmds::EnableiOES& cmd = *GetBufferAs<cmds::EnableiOES>();
   void* next_cmd =

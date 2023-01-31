@@ -380,6 +380,7 @@ GL_APICALL void         GL_APIENTRY glBeginSharedImageAccessDirectCHROMIUM (GLui
 GL_APICALL void         GL_APIENTRY glEndSharedImageAccessDirectCHROMIUM (GLuint texture);
 GL_APICALL void         GL_APIENTRY glConvertRGBAToYUVAMailboxesINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
 GL_APICALL void         GL_APIENTRY glConvertYUVAMailboxesToRGBINTERNAL (GLenum planes_yuv_color_space, GLenum plane_config, GLenum subsampling, const GLbyte* mailboxes);
+GL_APICALL void         GL_APIENTRY glCopySharedImageINTERNAL (GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height, GLboolean unpack_flip_y, const GLbyte* mailboxes);
 
 // Extension OES_draw_buffers_indexed
 GL_APICALL void         GL_APIENTRY glEnableiOES (GLenum target, GLuint index);

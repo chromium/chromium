@@ -1037,6 +1037,14 @@ error::Error DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in);
+error::Error DoCopySharedImageINTERNAL(GLint xoffset,
+                                       GLint yoffset,
+                                       GLint x,
+                                       GLint y,
+                                       GLsizei width,
+                                       GLsizei height,
+                                       GLboolean unpack_flip_y,
+                                       const volatile GLbyte* mailboxes);
 error::Error DoEnableiOES(GLenum target, GLuint index);
 error::Error DoDisableiOES(GLenum target, GLuint index);
 error::Error DoBlendEquationiOES(GLuint buf, GLenum mode);

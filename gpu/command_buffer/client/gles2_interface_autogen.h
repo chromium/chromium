@@ -868,6 +868,14 @@ virtual void ConvertYUVAMailboxesToRGBINTERNAL(GLenum planes_yuv_color_space,
                                                GLenum plane_config,
                                                GLenum subsampling,
                                                const GLbyte* mailboxes) = 0;
+virtual void CopySharedImageINTERNAL(GLint xoffset,
+                                     GLint yoffset,
+                                     GLint x,
+                                     GLint y,
+                                     GLsizei width,
+                                     GLsizei height,
+                                     GLboolean unpack_flip_y,
+                                     const GLbyte* mailboxes) = 0;
 virtual void EnableiOES(GLenum target, GLuint index) = 0;
 virtual void DisableiOES(GLenum target, GLuint index) = 0;
 virtual void BlendEquationiOES(GLuint buf, GLenum mode) = 0;

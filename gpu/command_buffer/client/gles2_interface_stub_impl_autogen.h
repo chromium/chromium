@@ -1140,6 +1140,15 @@ void GLES2InterfaceStub::ConvertYUVAMailboxesToRGBINTERNAL(
     GLenum /* plane_config */,
     GLenum /* subsampling */,
     const GLbyte* /* mailboxes */) {}
+void GLES2InterfaceStub::CopySharedImageINTERNAL(
+    GLint /* xoffset */,
+    GLint /* yoffset */,
+    GLint /* x */,
+    GLint /* y */,
+    GLsizei /* width */,
+    GLsizei /* height */,
+    GLboolean /* unpack_flip_y */,
+    const GLbyte* /* mailboxes */) {}
 void GLES2InterfaceStub::EnableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::DisableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::BlendEquationiOES(GLuint /* buf */,

@@ -329,15 +329,16 @@
   OP(EndSharedImageAccessDirectCHROMIUM)                       /* 570 */ \
   OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate)              /* 571 */ \
   OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)               /* 572 */ \
-  OP(EnableiOES)                                               /* 573 */ \
-  OP(DisableiOES)                                              /* 574 */ \
-  OP(BlendEquationiOES)                                        /* 575 */ \
-  OP(BlendEquationSeparateiOES)                                /* 576 */ \
-  OP(BlendFunciOES)                                            /* 577 */ \
-  OP(BlendFuncSeparateiOES)                                    /* 578 */ \
-  OP(ColorMaskiOES)                                            /* 579 */ \
-  OP(IsEnablediOES)                                            /* 580 */ \
-  OP(ProvokingVertexANGLE)                                     /* 581 */
+  OP(CopySharedImageINTERNALImmediate)                         /* 573 */ \
+  OP(EnableiOES)                                               /* 574 */ \
+  OP(DisableiOES)                                              /* 575 */ \
+  OP(BlendEquationiOES)                                        /* 576 */ \
+  OP(BlendEquationSeparateiOES)                                /* 577 */ \
+  OP(BlendFunciOES)                                            /* 578 */ \
+  OP(BlendFuncSeparateiOES)                                    /* 579 */ \
+  OP(ColorMaskiOES)                                            /* 580 */ \
+  OP(IsEnablediOES)                                            /* 581 */ \
+  OP(ProvokingVertexANGLE)                                     /* 582 */
 
 enum CommandId {
   kOneBeforeStartPoint =

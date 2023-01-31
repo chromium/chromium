@@ -15702,6 +15702,86 @@ static_assert(offsetof(ConvertYUVAMailboxesToRGBINTERNALImmediate,
               "offset of ConvertYUVAMailboxesToRGBINTERNALImmediate "
               "subsampling should be 12");
 
+struct CopySharedImageINTERNALImmediate {
+  typedef CopySharedImageINTERNALImmediate ValueType;
+  static const CommandId kCmdId = kCopySharedImageINTERNALImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLbyte) * 32);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLint _xoffset,
+            GLint _yoffset,
+            GLint _x,
+            GLint _y,
+            GLsizei _width,
+            GLsizei _height,
+            GLboolean _unpack_flip_y,
+            const GLbyte* _mailboxes) {
+    SetHeader();
+    xoffset = _xoffset;
+    yoffset = _yoffset;
+    x = _x;
+    y = _y;
+    width = _width;
+    height = _height;
+    unpack_flip_y = _unpack_flip_y;
+    memcpy(ImmediateDataAddress(this), _mailboxes, ComputeDataSize());
+  }
+
+  void* Set(void* cmd,
+            GLint _xoffset,
+            GLint _yoffset,
+            GLint _x,
+            GLint _y,
+            GLsizei _width,
+            GLsizei _height,
+            GLboolean _unpack_flip_y,
+            const GLbyte* _mailboxes) {
+    static_cast<ValueType*>(cmd)->Init(_xoffset, _yoffset, _x, _y, _width,
+                                       _height, _unpack_flip_y, _mailboxes);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  int32_t xoffset;
+  int32_t yoffset;
+  int32_t x;
+  int32_t y;
+  int32_t width;
+  int32_t height;
+  uint32_t unpack_flip_y;
+};
+
+static_assert(sizeof(CopySharedImageINTERNALImmediate) == 32,
+              "size of CopySharedImageINTERNALImmediate should be 32");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, header) == 0,
+              "offset of CopySharedImageINTERNALImmediate header should be 0");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, xoffset) == 4,
+              "offset of CopySharedImageINTERNALImmediate xoffset should be 4");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, yoffset) == 8,
+              "offset of CopySharedImageINTERNALImmediate yoffset should be 8");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, x) == 12,
+              "offset of CopySharedImageINTERNALImmediate x should be 12");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, y) == 16,
+              "offset of CopySharedImageINTERNALImmediate y should be 16");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, width) == 20,
+              "offset of CopySharedImageINTERNALImmediate width should be 20");
+static_assert(offsetof(CopySharedImageINTERNALImmediate, height) == 24,
+              "offset of CopySharedImageINTERNALImmediate height should be 24");
+static_assert(
+    offsetof(CopySharedImageINTERNALImmediate, unpack_flip_y) == 28,
+    "offset of CopySharedImageINTERNALImmediate unpack_flip_y should be 28");
+
 struct EnableiOES {
   typedef EnableiOES ValueType;
   static const CommandId kCmdId = kEnableiOES;
