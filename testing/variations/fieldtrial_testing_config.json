@@ -9142,7 +9142,7 @@
             ],
             "experiments": [
                 {
-                    "name": "FixLinkPrefetchDNSAndPreconnectInNetworkService_20230130",
+                    "name": "FixLinkDNSPrefetchAndDisableHttpFrameAnchorPrefetchAndUseNetworkService_20230131",
                     "params": {
                         "prefetch_dns_all_anchor_elements": "false"
                     },
