@@ -6923,6 +6923,11 @@ http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failu
 skbug.com/13752 svg/transforms/text-with-pattern-inside-transformed-html.xhtml [ Failure Pass ]
 skbug.com/13752 svg/transforms/text-with-pattern-with-svg-transform.svg [ Failure Pass ]
 
+# TODO(domfarolino): Remove these entries when https://crrev.com/c/4193308 lands.
+fast/dom/Window/window-lookup-precedence.html [ Skip Failure ]
+external/wpt/console/console-namespace-object-class-string.any.html [ Skip Failure ]
+external/wpt/console/console-namespace-object-class-string.any.worker.html [ Skip Failure ]
+
 # Sheriff 2023-01-20
 crbug.com/1408967 [ Fuchsia ] fast/block/float/float-in-float-painting.html [ Failure Pass ]
 crbug.com/1408967 [ Fuchsia ] fast/layers/opacity-transforms.html [ Failure Pass ]
