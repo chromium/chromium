@@ -50,8 +50,8 @@ class ImeRulesConfigTest : public testing::Test {
 };
 
 TEST_F(ImeRulesConfigTest, LoadRulesFromFieldTrial) {
-  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndEnableFeatureWithParameters(
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kImeRuleConfig,
       {{"json_rules", kNormalAutocorrectRulesParams}});
 
@@ -60,19 +60,16 @@ TEST_F(ImeRulesConfigTest, LoadRulesFromFieldTrial) {
       UnorderedElementsAre("docs.google", "chromium", "example", "test"));
 }
 
-class ImeRulesConfigEnabledTest : public testing::TestWithParam<std::string> {
+class ImeRulesConfigAutoCorrectDisabledTest
+    : public testing::TestWithParam<std::string> {
  public:
-  ImeRulesConfigEnabledTest() = default;
-  ~ImeRulesConfigEnabledTest() override = default;
-
-  std::vector<std::string> GetAutocorrectDomainDenylistForTest() {
-    return ImeRulesConfig::GetInstance()->rule_auto_correct_domain_denylist_;
-  }
+  ImeRulesConfigAutoCorrectDisabledTest() = default;
+  ~ImeRulesConfigAutoCorrectDisabledTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ImeRulesConfigEnabledTest,
+    ImeRulesConfigAutoCorrectDisabledTest,
     testing::Values(
         "https://amazon.com",
         "https://b.corp.google.com",
@@ -98,9 +95,9 @@ INSTANTIATE_TEST_SUITE_P(
         "http://smile.amazon.com",
         "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text"));
 
-TEST_P(ImeRulesConfigEnabledTest, IsAutoCorrectEnabled) {
-  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndEnableFeatureWithParameters(
+TEST_P(ImeRulesConfigAutoCorrectDisabledTest, IsAutoCorrectDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kImeRuleConfig,
       {{"json_rules", kNormalAutocorrectRulesParams}});
 
@@ -109,19 +106,16 @@ TEST_P(ImeRulesConfigEnabledTest, IsAutoCorrectEnabled) {
       FakeTextFieldContextualInfo(GURL(GetParam()))));
 }
 
-class ImeRulesConfigDisabledTest : public testing::TestWithParam<std::string> {
+class ImeRulesConfigAutoCorrectEnabledTest
+    : public testing::TestWithParam<std::string> {
  public:
-  ImeRulesConfigDisabledTest() = default;
-  ~ImeRulesConfigDisabledTest() override = default;
-
-  std::vector<std::string> GetAutocorrectDomainDenylistForTest() {
-    return ImeRulesConfig::GetInstance()->rule_auto_correct_domain_denylist_;
-  }
+  ImeRulesConfigAutoCorrectEnabledTest() = default;
+  ~ImeRulesConfigAutoCorrectEnabledTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ImeRulesConfigDisabledTest,
+    ImeRulesConfigAutoCorrectEnabledTest,
     testing::Values("",
                     "http://",
                     "http://abc.com",
@@ -136,15 +130,83 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://not-amazon.com/test",
                     "http://.com/test"));
 
-TEST_P(ImeRulesConfigDisabledTest, IsAutoCorrectDisabled) {
-  auto feature_list = std::make_unique<base::test::ScopedFeatureList>();
-  feature_list->InitAndEnableFeatureWithParameters(
+TEST_P(ImeRulesConfigAutoCorrectEnabledTest, IsAutoCorrectEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
       ash::features::kImeRuleConfig,
       {{"json_rules", kNormalAutocorrectRulesParams}});
 
   auto* rules = ImeRulesConfig::GetInstance();
   EXPECT_FALSE(rules->IsAutoCorrectDisabled(
       FakeTextFieldContextualInfo(GURL(GetParam()))));
+}
+
+class ImeRulesConfigMultiWordSuggestDisabledTest
+    : public testing::TestWithParam<std::string> {
+ public:
+  ImeRulesConfigMultiWordSuggestDisabledTest() = default;
+  ~ImeRulesConfigMultiWordSuggestDisabledTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ImeRulesConfigMultiWordSuggestDisabledTest,
+    testing::Values("https://amazon.com",
+                    "https://b.corp.google.com",
+                    "https://buganizer.corp.google.com",
+                    "https://cider.corp.google.com",
+                    "https://classroom.google.com",
+                    "https://desmos.com",
+                    "https://docs.google.com",
+                    "https://facebook.com",
+                    "https://instagram.com",
+                    "https://mail.google.com/mail",
+                    "https://outlook.live.com",
+                    "https://outlook.office.com",
+                    "https://quizlet.com",
+                    "https://whatsapp.com"));
+
+TEST_P(ImeRulesConfigMultiWordSuggestDisabledTest, IsMultiWordSuggestDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ash::features::kImeRuleConfig,
+      {{"json_rules", kNormalAutocorrectRulesParams}});
+  auto* rules = ImeRulesConfig::GetInstance();
+  EXPECT_TRUE(rules->IsMultiWordSuggestDisabled(GURL(GetParam())));
+}
+
+class ImeRulesConfigMultiWordSuggestEnabledTest
+    : public testing::TestWithParam<std::string> {
+ public:
+  ImeRulesConfigMultiWordSuggestEnabledTest() = default;
+  ~ImeRulesConfigMultiWordSuggestEnabledTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ImeRulesConfigMultiWordSuggestEnabledTest,
+    testing::Values("",
+                    "http://",
+                    "http://abc.com",
+                    "http://abc.com/amazon+com",
+                    "http://amazon",
+                    "http://amazon/com/test",
+                    "http://amazon/test",
+                    "http://amazon.domain.com",
+                    "https://mail.google.com/chat",
+                    "http://my.own.quizlet.uniquie.co.uk/testing",
+                    "http://not-amazon.com/test",
+                    "http://sites.google.com/view/e14s-test",
+                    "http://smile.amazon.foo.com",
+                    "http://.com/test"));
+
+TEST_P(ImeRulesConfigMultiWordSuggestEnabledTest, IsMultiWordSuggestEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ash::features::kImeRuleConfig,
+      {{"json_rules", kNormalAutocorrectRulesParams}});
+  auto* rules = ImeRulesConfig::GetInstance();
+  EXPECT_FALSE(rules->IsMultiWordSuggestDisabled(GURL(GetParam())));
 }
 
 }  // namespace input_method

@@ -35,6 +35,24 @@ const char kConfigRuleItemsKey[] = "items";
 // globally denylisted domains for auto correct..
 const char kAutocorrectDomainDenylistKey[] = "ac-domain-denylist";
 
+const char* kDefaultMultiwordSuggestDomainAndPathDenylist[][2] = {
+    {"amazon", ""},
+    {"b.corp.google", ""},
+    {"buganizer.corp.google", ""},
+    {"cider.corp.google", ""},
+    {"classroom.google", ""},
+    {"desmos", ""},
+    {"docs.google", ""},
+    {"facebook", ""},
+    {"instagram", ""},
+    {"mail.google", "/mail"},
+    {"outlook.live", ""},
+    {"outlook.office", ""},
+    {"quizlet", ""},
+    {"whatsapp", ""},
+    {"youtube", ""},
+};
+
 }  // namespace
 
 ImeRulesConfig::ImeRulesConfig() {
@@ -105,7 +123,20 @@ bool ImeRulesConfig::IsAutoCorrectDisabled(
   return false;
 }
 
-bool ImeRulesConfig::IsSubDomain(const GURL& url, const std::string& domain) {
+bool ImeRulesConfig::IsMultiWordSuggestDisabled(const GURL& url) {
+  // Check the default domain denylist rules
+  for (auto& domainAndPath : kDefaultMultiwordSuggestDomainAndPathDenylist) {
+    const base::StringPiece domain = domainAndPath[0];
+    const base::StringPiece path = domainAndPath[1];
+    if (IsSubDomainWithPathPrefix(url, domain, path)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool ImeRulesConfig::IsSubDomain(const GURL& url,
+                                 const base::StringPiece& domain) {
   const size_t registryLength =
       net::registry_controlled_domains::GetRegistryLength(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
@@ -118,6 +149,14 @@ bool ImeRulesConfig::IsSubDomain(const GURL& url, const std::string& domain) {
       urlContent.substr(0, urlContent.length() - registryLength - 1);
 
   return url::DomainIs(urlDomain, domain);
+}
+
+bool ImeRulesConfig::IsSubDomainWithPathPrefix(
+    const GURL& url,
+    const base::StringPiece& domain,
+    const base::StringPiece& path_prefix) {
+  return IsSubDomain(url, domain) && url.has_path() &&
+         base::StartsWith(url.path(), path_prefix);
 }
 
 // static

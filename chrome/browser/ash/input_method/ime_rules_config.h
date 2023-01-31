@@ -32,9 +32,17 @@ class ImeRulesConfig {
   // Runs the rule check against contextual info.
   bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
 
+  // Runs the rule check against url
+  bool IsMultiWordSuggestDisabled(const GURL& url);
+
   // Checks if domain is a sub-domain of url
  private:
-  bool IsSubDomain(const GURL& url, const std::string& domain);
+  bool IsSubDomain(const GURL& url, const base::StringPiece& domain);
+
+  // Checks if url belongs to domain and has the path_prefix.
+  bool IsSubDomainWithPathPrefix(const GURL& url,
+                                 const base::StringPiece& domain,
+                                 const base::StringPiece& path_prefix);
 
  private:
   ImeRulesConfig();
@@ -43,8 +51,6 @@ class ImeRulesConfig {
   friend struct base::DefaultSingletonTraits<ImeRulesConfig>;
 
   friend class ImeRulesConfigTest;
-  friend class ImeRulesConfigEnabledTest;
-  friend class ImeRulesConfigDisabledTest;
 
   // Initializes the config from IME rules trial parameters. If there is
   // no trial or parsing fails, the rules will be empty and as such always
