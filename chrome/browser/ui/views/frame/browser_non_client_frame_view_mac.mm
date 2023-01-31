@@ -85,17 +85,15 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
   }
 
   if (browser_view->GetIsWebAppType()) {
-    if (browser_view->browser()->app_controller()) {
-      if (!base::FeatureList::IsEnabled(
-              features::kWebAppFrameToolbarInBrowserView)) {
-        set_web_app_frame_toolbar(AddChildView(
-            std::make_unique<WebAppFrameToolbarView>(browser_view)));
-      }
+    if (!base::FeatureList::IsEnabled(
+            features::kWebAppFrameToolbarInBrowserView)) {
+      set_web_app_frame_toolbar(
+          AddChildView(std::make_unique<WebAppFrameToolbarView>(browser_view)));
+    }
 
-      if (browser_view->IsWindowControlsOverlayEnabled()) {
-        caption_button_placeholder_container_ =
-            AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
-      }
+    if (browser_view->IsWindowControlsOverlayEnabled()) {
+      caption_button_placeholder_container_ =
+          AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     }
 
     // The window title appears above the web app frame toolbar (if present),
