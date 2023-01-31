@@ -2185,6 +2185,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
       const char* function_name, GLuint max_vertex_accessed, bool* simulated);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // If the texture has an image but that image is not bound to the texture,
   // this will attempt to bind it. texture_unit is the texture unit it should
   // be bound to, or 0 if it doesn't matter - setting it to 0 will cause the
@@ -2194,6 +2195,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
   bool DoBindTexImageIfNeeded(Texture* texture,
                               GLenum textarget,
                               GLuint texture_unit);
+#endif
 
   void DoWindowRectanglesEXT(GLenum mode, GLsizei n, const volatile GLint* box);
 
@@ -8564,8 +8566,10 @@ void GLES2DecoderImpl::DoFramebufferTexture2DCommon(
     return;
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (texture_ref)
     DoBindTexImageIfNeeded(texture_ref->texture(), textarget, 0);
+#endif
 
   std::vector<GLenum> attachments;
   if (attachment == GL_DEPTH_STENCIL_ATTACHMENT) {
@@ -10489,12 +10493,10 @@ void GLES2DecoderImpl::PerformanceWarning(
                      std::string("PERFORMANCE WARNING: ") + msg);
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
                                               GLenum textarget,
                                               GLuint texture_unit) {
-  // TODO(crbug.com/1323341): Have this whole method exist only on Win/Mac and
-  // push ifdef's out to callsites.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Image is already in use if texture is attached to a framebuffer.
   if (texture && !texture->IsAttachedToFramebuffer()) {
     if (texture->HasUnboundLevelImage(textarget, 0)) {
@@ -10526,10 +10528,10 @@ bool GLES2DecoderImpl::DoBindTexImageIfNeeded(Texture* texture,
     UMA_HISTOGRAM_BOOLEAN(
         "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", false);
   }
-#endif
 
   return false;
 }
+#endif
 
 void GLES2DecoderImpl::DoCopyBufferSubData(GLenum readtarget,
                                            GLenum writetarget,
@@ -10631,6 +10633,7 @@ bool GLES2DecoderImpl::PrepareTexturesForRender(bool* textures_set,
           }
         }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
         if (textarget != GL_TEXTURE_CUBE_MAP) {
           Texture* texture = texture_ref->texture();
           if (DoBindTexImageIfNeeded(texture, textarget,
@@ -10639,6 +10642,7 @@ bool GLES2DecoderImpl::PrepareTexturesForRender(bool* textures_set,
             continue;
           }
         }
+#endif
       }
       // else: should this be an error?
     }
@@ -17847,7 +17851,9 @@ void GLES2DecoderImpl::DoCopyTextureCHROMIUM(
     api()->glBindTextureFn(dest_binding_target, dest_texture->service_id());
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
+#endif
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,
@@ -18039,7 +18045,9 @@ void GLES2DecoderImpl::CopySubTextureHelper(const char* function_name,
                                        dest_level, true);
   }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   DoBindTexImageIfNeeded(source_texture, source_target, 0);
+#endif
 
   CopyTextureMethod method = GetCopyTextureCHROMIUMMethod(
       GetFeatureInfo(), source_target, source_level, source_internal_format,
