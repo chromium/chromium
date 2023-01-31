@@ -71,7 +71,7 @@ public class UmaUtils {
     @IntDef({StandbyBucketStatus.ACTIVE, StandbyBucketStatus.WORKING_SET,
             StandbyBucketStatus.FREQUENT, StandbyBucketStatus.RARE, StandbyBucketStatus.RESTRICTED,
             StandbyBucketStatus.UNSUPPORTED, StandbyBucketStatus.EXEMPTED,
-            StandbyBucketStatus.COUNT})
+            StandbyBucketStatus.NEVER, StandbyBucketStatus.OTHER, StandbyBucketStatus.COUNT})
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;
@@ -80,7 +80,9 @@ public class UmaUtils {
         int RESTRICTED = 4;
         int UNSUPPORTED = 5;
         int EXEMPTED = 6;
-        int COUNT = 7;
+        int NEVER = 7;
+        int OTHER = 8;
+        int COUNT = 9;
     }
 
     /**
@@ -203,6 +205,10 @@ public class UmaUtils {
                 return "Unsupported";
             case StandbyBucketStatus.EXEMPTED:
                 return "Exempted";
+            case StandbyBucketStatus.NEVER:
+                return "Never";
+            case StandbyBucketStatus.OTHER:
+                return "Other";
             default:
                 assert false : "Unexpected standby bucket " + standbyBucket;
                 return "Unknown";
@@ -216,7 +222,7 @@ public class UmaUtils {
         UsageStatsManager usageStatsManager =
                 (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         int standbyBucket = usageStatsManager.getAppStandbyBucket();
-        int standbyBucketUma = StandbyBucketStatus.UNSUPPORTED;
+        int standbyBucketUma;
         switch (standbyBucket) {
             case UsageStatsManager.STANDBY_BUCKET_ACTIVE:
                 standbyBucketUma = StandbyBucketStatus.ACTIVE;
@@ -236,8 +242,12 @@ public class UmaUtils {
             case 5: // STANDBY_BUCKET_EXEMPTED
                 standbyBucketUma = StandbyBucketStatus.EXEMPTED;
                 break;
+            case 50: // STANDBY_BUCKET_NEVER
+                standbyBucketUma = StandbyBucketStatus.NEVER;
+                break;
             default:
-                assert false : "Unexpected standby bucket " + standbyBucket;
+                standbyBucketUma = StandbyBucketStatus.OTHER;
+                break;
         }
         return standbyBucketUma;
     }
