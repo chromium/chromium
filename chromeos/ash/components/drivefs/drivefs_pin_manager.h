@@ -156,10 +156,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   };
 
   void AddObserver(Observer* const observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     observers_.AddObserver(observer);
   }
 
   void RemoveObserver(Observer* const observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(observers_.HasObserver(observer));
     observers_.RemoveObserver(observer);
   }
@@ -177,6 +179,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   enum class Id : int64_t { kNone = 0 };
 
   base::WeakPtr<PinManager> GetWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -184,23 +187,33 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   using SpaceResult = base::OnceCallback<void(int64_t)>;
   using SpaceGetter =
       base::RepeatingCallback<void(const base::FilePath&, SpaceResult)>;
-  void SetSpaceGetter(SpaceGetter f) { space_getter_ = std::move(f); }
+
+  void SetSpaceGetter(SpaceGetter f) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    space_getter_ = std::move(f);
+  }
 
   // Sets the completion callback, which will be called once the initial pinning
   // has completed.
   using CompletionCallback = base::OnceCallback<void(Stage)>;
+
   void SetCompletionCallback(CompletionCallback f) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     completion_callback_ = std::move(f);
   }
 
   // Sets the flag controlling whether the feature should actually pin files
   // (default), or whether it should stop after checking the space requirements.
-  void ShouldPin(const bool b) { should_pin_ = b; }
+  void ShouldPin(const bool b) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    should_pin_ = b;
+  }
 
   // Sets the flag controlling whether the feature should regularly check the
   // status of files that have been pinned but that haven't seen any progress
   // yet.
   void ShouldCheckStalledFiles(const bool b) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     should_check_stalled_files_ = b;
   }
 
@@ -313,24 +326,27 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const base::FilePath profile_path_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<mojom::DriveFs> drivefs_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Should the feature actually pin files, or should it stop after checking the
   // space requirements?
-  bool should_pin_ = true;
+  bool should_pin_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
   // Should the feature regularly check the status of files that have been
   // pinned but that haven't seen any progress yet?
-  bool should_check_stalled_files_ = false;
+  bool should_check_stalled_files_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
 
-  SpaceGetter space_getter_;
-  CompletionCallback completion_callback_;
+  SpaceGetter space_getter_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CompletionCallback completion_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   Progress progress_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  const base::FilePath profile_path_;
-  const raw_ptr<mojom::DriveFs> drivefs_;
-  mojo::Remote<mojom::SearchQuery> search_query_;
-  base::ElapsedTimer timer_;
+  mojo::Remote<mojom::SearchQuery> search_query_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
   std::vector<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -340,7 +356,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // cached yet.
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::WeakPtrFactory<PinManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PinManager> weak_ptr_factory_
+      GUARDED_BY_CONTEXT(sequence_checker_){this};
 
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Add);
   FRIEND_TEST_ALL_PREFIXES(DriveFsPinManagerTest, Update);

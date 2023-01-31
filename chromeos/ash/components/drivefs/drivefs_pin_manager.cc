@@ -439,9 +439,9 @@ bool PinManager::Update(Files::value_type& entry,
 
 PinManager::PinManager(base::FilePath profile_path,
                        mojom::DriveFs* const drivefs)
-    : space_getter_(base::BindRepeating(&GetFreeSpace)),
-      profile_path_(std::move(profile_path)),
-      drivefs_(drivefs) {
+    : profile_path_(std::move(profile_path)),
+      drivefs_(drivefs),
+      space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
 }
 
