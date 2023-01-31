@@ -2460,6 +2460,13 @@ if (!is_android) {
       sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux.cc" ]
     }
 
+    if (is_win || is_linux || is_chromeos_ash) {
+      sources += [
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
@@ -4110,7 +4117,6 @@ if (!is_android) {
         "../browser/ui/views/plugin_vm/plugin_vm_installer_view_browsertest.cc",
         "../browser/ui/views/tabs/tab_scrubber_chromeos_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_ash_interactive_ui_test.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder_browsertest.cc",
         "../browser/ui/webui/ash/add_supervision/add_supervision_ui_browsertest.cc",
         "../browser/ui/webui/ash/bluetooth_pairing_dialog_browsertest-inl.h",
@@ -4898,6 +4904,7 @@ if (is_chromeos_lacros) {
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
       "../browser/ui/views/web_apps/web_app_integration_browsertest_cros.cc",
+      "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc",
       "../browser/web_applications/app_service/lacros_web_apps_controller_lacros_browsertest.cc",
     ]
 

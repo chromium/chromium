@@ -245,6 +245,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void AwaitManifestUpdate(Site site_mode);
   void CloseCustomToolbar();
   void ClosePwa();
+  void MaybeClosePwa();
   void DisableRunOnOsLogin(Site site);
   void EnableRunOnOsLogin(Site site);
   void DisableFileHandling(Site site);

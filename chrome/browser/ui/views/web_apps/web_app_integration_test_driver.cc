@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -951,10 +952,17 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
   if (!previous_manifest_updates_.contains(app_id)) {
     waiting_for_update_id_ = app_id;
     waiting_for_update_run_loop_ = std::make_unique<base::RunLoop>();
-    Browser* browser = GetBrowserForAppId(profile(), app_id);
-    while (browser != nullptr) {
-      delegate_->CloseBrowserSynchronously(browser);
-      browser = GetBrowserForAppId(profile(), app_id);
+    // Only close windows if immediate updating is not enabled.
+    if (!base::FeatureList::IsEnabled(
+            features::kWebAppManifestImmediateUpdating)) {
+      Browser* browser = GetBrowserForAppId(profile(), app_id);
+      while (browser != nullptr) {
+        if (browser == app_browser_) {
+          app_browser_ = nullptr;
+        }
+        delegate_->CloseBrowserSynchronously(browser);
+        browser = GetBrowserForAppId(profile(), app_id);
+      }
     }
     waiting_for_update_run_loop_->Run();
     waiting_for_update_run_loop_.reset();
@@ -987,11 +995,28 @@ void WebAppIntegrationTestDriver::CloseCustomToolbar() {
 }
 
 void WebAppIntegrationTestDriver::ClosePwa() {
-  if (!BeforeStateChangeAction(__FUNCTION__))
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
+  }
   ASSERT_TRUE(app_browser()) << "No current app browser";
+
+  ui_test_utils::BrowserChangeObserver close_observer(
+      app_browser(),
+      ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
   app_browser()->window()->Close();
-  ui_test_utils::WaitForBrowserToClose(app_browser());
+  close_observer.Wait();
+  app_browser_ = nullptr;
+
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::MaybeClosePwa() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  if (app_browser()) {
+    ClosePwa();
+  }
   AfterStateChangeAction();
 }
 

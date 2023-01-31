@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 143) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 144) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -116,6 +116,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_window_display_standalone |  |  | 26 | Implemented | Check that the window is a PWA window, and has no browser controls. |  |
 | close_custom_toolbar |  |  | 27 | Implemented | Press the 'x' button on the custom toolbar that is towards the top of the WebApp window. |  |
 | close_pwa |  |  | 28 | Implemented | Close the WebApp window. |  |
+| maybe_close_pwa |  |  | 143 | Implemented | Close the current app window if there is one open. |  |
 | open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
 | open_app_settings_from_chrome_apps | Site |  | 96 | Implemented |  | phillis@ |
