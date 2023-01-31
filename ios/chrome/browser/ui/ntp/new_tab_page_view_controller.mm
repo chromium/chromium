@@ -203,8 +203,6 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   [super viewWillLayoutSubviews];
 
   [self updateNTPLayout];
-  [self updateAdditionalOffset];
-  [self updateScrolledToMinimumHeight];
   [self.headerController updateConstraints];
 }
 
@@ -1072,6 +1070,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   self.collectionView.contentInset = UIEdgeInsetsMake(
       [self heightAboveFeed], 0, self.collectionView.contentInset.bottom, 0);
   [self updateAdditionalOffset];
+  [self updateScrolledToMinimumHeight];
 }
 
 // Updates additionalOffset using the content above the feed.

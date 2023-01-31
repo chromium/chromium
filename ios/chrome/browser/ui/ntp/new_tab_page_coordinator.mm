@@ -966,11 +966,6 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   [self updateFeedLayout];
 }
 
-- (void)returnToRecentTabWasAdded {
-  [self updateFeedLayout];
-  [self setContentOffsetToTop];
-}
-
 #pragma mark - FeedManagementNavigationDelegate
 
 - (void)handleNavigateToActivity {

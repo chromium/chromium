@@ -12,9 +12,6 @@
 // updated.
 - (void)contentSuggestionsWasUpdated;
 
-// Informs the delegate that the Return to Recent Tab tile has been added.
-- (void)returnToRecentTabWasAdded;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_DELEGATE_H_
