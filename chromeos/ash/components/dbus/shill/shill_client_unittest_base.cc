@@ -296,7 +296,8 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
         NOTREACHED();
     }
     ASSERT_TRUE(value.get());
-    const base::Value* expected_value = expected_dictionary->FindKey(key);
+    const base::Value* expected_value =
+        expected_dictionary->GetDict().Find(key);
     ASSERT_TRUE(expected_value);
     EXPECT_EQ(*value, *expected_value);
   }
@@ -304,17 +305,17 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
 
 // static
 base::Value ShillClientUnittestBase::CreateExampleServiceProperties() {
-  base::Value properties(base::Value::Type::DICT);
-  properties.SetKey(shill::kGuidProperty,
-                    base::Value("00000000-0000-0000-0000-000000000000"));
-  properties.SetKey(shill::kModeProperty, base::Value(shill::kModeManaged));
-  properties.SetKey(shill::kTypeProperty, base::Value(shill::kTypeWifi));
+  base::Value::Dict properties;
+  properties.Set(shill::kGuidProperty,
+                 base::Value("00000000-0000-0000-0000-000000000000"));
+  properties.Set(shill::kModeProperty, base::Value(shill::kModeManaged));
+  properties.Set(shill::kTypeProperty, base::Value(shill::kTypeWifi));
   const std::string ssid = "testssid";
-  properties.SetKey(shill::kWifiHexSsid,
-                    base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
-  properties.SetKey(shill::kSecurityClassProperty,
-                    base::Value(shill::kSecurityClassPsk));
-  return properties;
+  properties.Set(shill::kWifiHexSsid,
+                 base::Value(base::HexEncode(ssid.c_str(), ssid.size())));
+  properties.Set(shill::kSecurityClassProperty,
+                 base::Value(shill::kSecurityClassPsk));
+  return base::Value(std::move(properties));
 }
 
 // static
