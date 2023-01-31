@@ -124,6 +124,10 @@ class ASH_EXPORT OverviewWindowDragController {
     return current_drag_behavior_;
   }
 
+  base::OneShotTimer* new_desk_button_scale_up_timer_for_test() {
+    return &new_desk_button_scale_up_timer_;
+  }
+
  private:
   class ScopedFloatDragHelper;
 
