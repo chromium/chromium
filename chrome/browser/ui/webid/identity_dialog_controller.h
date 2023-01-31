@@ -50,6 +50,7 @@ class IdentityDialogController
                          const std::string& rp_for_display,
                          const std::string& idp_for_display,
                          DismissCallback dismiss_callback) override;
+  void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override;
 
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const GURL& idp_config_url,

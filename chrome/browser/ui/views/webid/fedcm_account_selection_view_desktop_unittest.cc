@@ -89,11 +89,19 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
                                 TestBubbleView* bubble_view)
       : FedCmAccountSelectionView(delegate),
         widget_(widget),
-        bubble_view_(bubble_view) {}
+        bubble_view_(bubble_view) {
+    auto input_protector =
+        std::make_unique<views::MockInputEventActivationProtector>();
+    ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+        .WillByDefault(testing::Return(false));
+    SetInputEventActivationProtectorForTesting(std::move(input_protector));
+  }
 
   TestFedCmAccountSelectionView(const TestFedCmAccountSelectionView&) = delete;
   TestFedCmAccountSelectionView& operator=(
       const TestFedCmAccountSelectionView&) = delete;
+
+  size_t num_bubbles_{0u};
 
  protected:
   views::Widget* CreateBubbleWithAccessibleTitle(
@@ -101,6 +109,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
       const absl::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
       bool show_auto_signin_checkbox) override {
+    ++num_bubbles_;
     return widget_;
   }
 
@@ -171,23 +180,20 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       bool show_auto_signin_checkbox = false) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
+    Show(*controller, accounts, mode);
+    return controller;
+  }
 
-    controller->Show(
+  void Show(TestFedCmAccountSelectionView& controller,
+            const std::vector<content::IdentityRequestAccount>& accounts,
+            SignInMode mode,
+            bool show_auto_signin_checkbox = false) {
+    controller.Show(
         kRpEtldPlusOne,
         {{kIdpEtldPlusOne, accounts, content::IdentityProviderMetadata(),
           content::ClientMetadata(GURL(), GURL()),
           blink::mojom::RpContext::kSignIn}},
         mode, show_auto_signin_checkbox);
-
-    // In tests, use a MockInputEventActivationProtector that will not block any
-    // input. This can be overridden by a specific test.
-    auto input_protector =
-        std::make_unique<views::MockInputEventActivationProtector>();
-    ON_CALL(*input_protector, IsPossiblyUnintendedInteraction)
-        .WillByDefault(testing::Return(false));
-    controller->SetInputEventActivationProtectorForTesting(
-        std::move(input_protector));
-    return controller;
   }
 
   ui::MouseEvent CreateMouseEvent() {
@@ -290,6 +296,72 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBack) {
   observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
   EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId2));
+}
+
+// Test transitioning from IdP sign-in status mismatch failure dialog to regular
+// sign-in dialog.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpSigninStatusMismatchDialogToSigninFlow) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), widget_.get(), bubble_view_.get());
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+
+  controller->ShowFailureDialog(kRpEtldPlusOne, kIdpEtldPlusOne);
+  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
+
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId, LoginState::kSignUp},
+  });
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
+            bubble_view_->sheet_type_);
+  observer->OnAccountSelected(idp_data.accounts[0], idp_data,
+                              CreateMouseEvent());
+  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
+
+  // Failure bubble should have been re-used for sign-in dialog.
+  EXPECT_EQ(1u, controller->num_bubbles_);
+}
+
+// Test transitioning from IdP sign-in status mismatch failure dialog to regular
+// sign-in dialog while the dialog is hidden. This emulates a user signing
+// into the IdP in a different tab.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       IdpSigninStatusMismatchDialogToSigninFlowHidden) {
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), widget_.get(), bubble_view_.get());
+  AccountSelectionBubbleView::Observer* observer =
+      static_cast<AccountSelectionBubbleView::Observer*>(controller.get());
+
+  controller->ShowFailureDialog(kRpEtldPlusOne, kIdpEtldPlusOne);
+  EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
+
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId, LoginState::kSignUp},
+  });
+
+  // If the user switched tabs to sign-into the IdP, Show() may be called while
+  // the associated FedCM tab is inactive. Show() should not show the
+  // views::Widget in this case.
+  controller->OnVisibilityChanged(content::Visibility::HIDDEN);
+  Show(*controller, idp_data.accounts, SignInMode::kExplicit);
+  EXPECT_FALSE(widget_->IsVisible());
+
+  controller->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(widget_->IsVisible());
+
+  EXPECT_EQ(TestBubbleView::SheetType::kConfirmAccount,
+            bubble_view_->sheet_type_);
+  observer->OnAccountSelected(idp_data.accounts[0], idp_data,
+                              CreateMouseEvent());
+  EXPECT_EQ(TestBubbleView::SheetType::kVerifying, bubble_view_->sheet_type_);
+
+  // Failure bubble should have been re-used for sign-in dialog.
+  EXPECT_EQ(1u, controller->num_bubbles_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, AutoSigninSingleAccountFlow) {

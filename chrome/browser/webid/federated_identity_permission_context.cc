@@ -32,6 +32,16 @@ FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
 FederatedIdentityPermissionContext::~FederatedIdentityPermissionContext() =
     default;
 
+void FederatedIdentityPermissionContext::AddIdpSigninStatusObserver(
+    IdpSigninStatusObserver* observer) {
+  idp_signin_status_observer_list_.AddObserver(observer);
+}
+
+void FederatedIdentityPermissionContext::RemoveIdpSigninStatusObserver(
+    IdpSigninStatusObserver* observer) {
+  idp_signin_status_observer_list_.RemoveObserver(observer);
+}
+
 bool FederatedIdentityPermissionContext::HasActiveSession(
     const url::Origin& relying_party_requester,
     const url::Origin& identity_provider,
@@ -87,7 +97,15 @@ absl::optional<bool> FederatedIdentityPermissionContext::GetIdpSigninStatus(
 void FederatedIdentityPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
+  absl::optional<bool> old_idp_signin_status = GetIdpSigninStatus(idp_origin);
+  if (idp_signin_status == old_idp_signin_status) {
+    return;
+  }
+
   idp_signin_context_->SetSigninStatus(idp_origin, idp_signin_status);
+  for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
+    observer.OnIdpSigninStatusChanged(idp_origin, idp_signin_status);
+  }
 }
 
 void FederatedIdentityPermissionContext::FlushScheduledSaveSettingsCalls() {

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 
@@ -34,6 +35,9 @@ class FederatedIdentityPermissionContext
       const FederatedIdentityPermissionContext&) = delete;
 
   // content::FederatedIdentityPermissionContextDelegate:
+  void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
+  void RemoveIdpSigninStatusObserver(
+      IdpSigninStatusObserver* observer) override;
   bool HasActiveSession(const url::Origin& relying_party_requester,
                         const url::Origin& identity_provider,
                         const std::string& account_identifier) override;
@@ -65,6 +69,8 @@ class FederatedIdentityPermissionContext
       sharing_context_;
   std::unique_ptr<FederatedIdentityIdentityProviderSigninStatusContext>
       idp_signin_context_;
+
+  base::ObserverList<IdpSigninStatusObserver> idp_signin_status_observer_list_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_PERMISSION_CONTEXT_H_

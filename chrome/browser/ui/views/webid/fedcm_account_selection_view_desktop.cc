@@ -55,12 +55,7 @@ void FedCmAccountSelectionView::Show(
         identity_provider_data_list,
     Account::SignInMode sign_in_mode,
     bool show_auto_signin_checkbox) {
-  // Either Show or ShowFailureDialog has already been called for other IDPs
-  // from the same token request. This could happen when accounts fetch fails
-  // for some IDPs. We have yet to support the multi IDP case where not all IDPs
-  // are successful. The early return causes follow up Show calls to be ignored.
-  if (bubble_widget_)
-    return;
+  idp_display_data_list_.clear();
 
   size_t accounts_size = 0u;
   blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn;
@@ -82,10 +77,21 @@ void FedCmAccountSelectionView::Show(
           : absl::nullopt;
   rp_for_display_ = base::UTF8ToUTF16(rp_etld_plus_one);
 
-  bubble_widget_ =
-      CreateBubbleWithAccessibleTitle(rp_for_display_, idp_title, rp_context,
-                                      show_auto_signin_checkbox)
-          ->GetWeakPtr();
+  bool create_bubble = !bubble_widget_;
+  if (create_bubble) {
+    bubble_widget_ =
+        CreateBubbleWithAccessibleTitle(rp_for_display_, idp_title, rp_context,
+                                        show_auto_signin_checkbox)
+            ->GetWeakPtr();
+
+    // Initialize InputEventActivationProtector to handle potentially unintended
+    // input events. Do not override `input_protector_` set by
+    // SetInputEventActivationProtectorForTesting().
+    if (!input_protector_) {
+      input_protector_ =
+          std::make_unique<views::InputEventActivationProtector>();
+    }
+  }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
     state_ = State::VERIFYING;
@@ -108,43 +114,48 @@ void FedCmAccountSelectionView::Show(
     GetBubbleView()->ShowMultiAccountPicker(idp_display_data_list_);
   }
 
-  // Initialize InputEventActivationProtector to handle potentially unintended
-  // input events.
-  input_protector_ = std::make_unique<views::InputEventActivationProtector>();
-  input_protector_->VisibilityChanged(true);
-  bubble_widget_->Show();
+  if (create_bubble) {
+    input_protector_->VisibilityChanged(true);
+    bubble_widget_->Show();
+  }
+  // Else:
+  // Do not force show the bubble. The bubble may be purposefully hidden if the
+  // WebContents are hidden.
 }
 
 void FedCmAccountSelectionView::ShowFailureDialog(
     const std::string& rp_etld_plus_one,
     const std::string& idp_etld_plus_one) {
-  // Either Show or ShowFailureDialog has already been called for other IDPs
-  // from the same token request. This could happen when accounts fetch fails
-  // for some IDPs. We have yet to support the multi IDP case where not all IDPs
-  // are successful. The early return causes follow up ShowFailureDialog calls
-  // to be ignored.
-  if (bubble_widget_)
-    return;
-
   state_ = State::IDP_SIGNIN_STATUS_MISMATCH;
 
-  // TODO(crbug.com/1406016): Refactor ShowFailureDialog to avoid calling
-  // CreateBubble with parameters we don't care about (e.g. the relying party
-  // context).
-  bubble_widget_ =
-      CreateBubbleWithAccessibleTitle(base::UTF8ToUTF16(rp_etld_plus_one),
-                                      base::UTF8ToUTF16(idp_etld_plus_one),
-                                      blink::mojom::RpContext::kSignIn,
-                                      /*show_auto_signin_checkbox=*/false)
-          ->GetWeakPtr();
+  bool create_bubble = !bubble_widget_;
+  if (create_bubble) {
+    bubble_widget_ =
+        CreateBubbleWithAccessibleTitle(base::UTF8ToUTF16(rp_etld_plus_one),
+                                        base::UTF8ToUTF16(idp_etld_plus_one),
+                                        blink::mojom::RpContext::kSignIn,
+                                        /*show_auto_signin_checkbox=*/false)
+            ->GetWeakPtr();
+
+    // Initialize InputEventActivationProtector to handle potentially unintended
+    // input events. Do not override `input_protector_` set by
+    // SetInputEventActivationProtectorForTesting().
+    if (!input_protector_) {
+      input_protector_ =
+          std::make_unique<views::InputEventActivationProtector>();
+    }
+  }
 
   GetBubbleView()->ShowFailureDialog(base::UTF8ToUTF16(rp_etld_plus_one),
                                      base::UTF8ToUTF16(idp_etld_plus_one));
-  // Initialize InputEventActivationProtector to handle potentially unintended
-  // input events.
-  input_protector_ = std::make_unique<views::InputEventActivationProtector>();
-  input_protector_->VisibilityChanged(true);
-  bubble_widget_->Show();
+
+  if (create_bubble) {
+    bubble_widget_->Show();
+    input_protector_->VisibilityChanged(true);
+  }
+  // Else:
+  // The bubble is not guaranteed to be shown. The bubble will be hidden if the
+  // associated web contents are hidden.
 }
 
 void FedCmAccountSelectionView::OnVisibilityChanged(

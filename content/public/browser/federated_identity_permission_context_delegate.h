@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 #define CONTENT_PUBLIC_BROWSER_FEDERATED_IDENTITY_PERMISSION_CONTEXT_DELEGATE_H_
 
+#include "base/observer_list.h"
 #include "url/origin.h"
 
 namespace content {
@@ -14,8 +15,25 @@ namespace content {
 // information from a given provider to a given relying party.
 class FederatedIdentityPermissionContextDelegate {
  public:
+  // Observes IdP sign-in status changes.
+  class IdpSigninStatusObserver : public base::CheckedObserver {
+   public:
+    virtual void OnIdpSigninStatusChanged(const url::Origin& idp_origin,
+                                          bool idp_signin_status) = 0;
+
+   protected:
+    IdpSigninStatusObserver() = default;
+    ~IdpSigninStatusObserver() override = default;
+  };
+
   FederatedIdentityPermissionContextDelegate() = default;
   virtual ~FederatedIdentityPermissionContextDelegate() = default;
+
+  // Adds/removes observer for IdP sign-in status.
+  virtual void AddIdpSigninStatusObserver(
+      IdpSigninStatusObserver* observer) = 0;
+  virtual void RemoveIdpSigninStatusObserver(
+      IdpSigninStatusObserver* observer) = 0;
 
   // Determine whether the `relying_party_requester` has an existing active
   // session for the specified `account_identifier` with the

@@ -18,6 +18,7 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -41,7 +42,9 @@ class RenderFrameHost;
 // Create() creates a self-managed instance of FederatedAuthRequestImpl and
 // binds it to the receiver.
 class CONTENT_EXPORT FederatedAuthRequestImpl
-    : public DocumentService<blink::mojom::FederatedAuthRequest> {
+    : public DocumentService<blink::mojom::FederatedAuthRequest>,
+      public FederatedIdentityPermissionContextDelegate::
+          IdpSigninStatusObserver {
  public:
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
@@ -69,6 +72,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void SetIdpSigninStatus(const url::Origin& origin,
                           blink::mojom::IdpSigninStatus status) override;
 
+  // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
+  void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
+                                bool idp_signin_status) override;
+
   void SetTokenRequestDelayForTests(base::TimeDelta delay);
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> manager);
@@ -92,7 +99,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   };
 
   struct IdentityProviderInfo {
-    IdentityProviderInfo(blink::mojom::IdentityProviderConfigPtr,
+    IdentityProviderInfo(const blink::mojom::IdentityProviderConfigPtr&,
                          IdpNetworkRequestManager::Endpoints,
                          IdentityProviderMetadata,
                          bool prefer_auto_signin,
@@ -112,6 +119,20 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
  private:
   friend class FederatedAuthRequestImplTest;
 
+  struct FetchData {
+    FetchData();
+    ~FetchData();
+
+    // Set of config URLs of IDPs that have yet to be processed.
+    std::set<GURL> pending_idps;
+
+    // Whether accounts endpoint fetch succeeded for at least one IdP.
+    bool did_succeed_for_at_least_one_idp{false};
+
+    // Whether the fetch was triggered by an IdP sign-in status update.
+    bool for_idp_signin{false};
+  };
+
   FederatedAuthRequestImpl(
       RenderFrameHost&,
       FederatedIdentityApiPermissionContextDelegate*,
@@ -121,8 +142,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool HasPendingRequest() const;
 
+  // Fetch well-known, config, accounts and client metadata endpoints for
+  // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
+  // `for_idp_signin` indicates whether the fetch is as a result of an IdP
+  // sign-in status update.
+  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls,
+                             bool for_idp_signin);
+
   void OnAllConfigAndWellKnownFetched(
-      base::flat_map<GURL, IdentityProviderGetInfo> get_infos,
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
   void OnClientMetadataResponseReceived(
       std::unique_ptr<IdentityProviderInfo> idp_info,
@@ -182,6 +209,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
       bool should_delay_callback);
+
+  // Completes request. Displays a dialog if there is an error and the error is
+  // during a fetch triggered by an IdP sign-in status change.
   void CompleteRequest(
       blink::mojom::FederatedAuthRequestResult result,
       absl::optional<content::FedCmRequestIdTokenStatus> token_status,
@@ -297,8 +327,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // TODO(crbug.com/1361649): Refactor these member variables introduced through
   // the multi IDP prototype implementation to make them less confusing.
 
-  // Set of config URLs of IDPs that have yet to be processed.
-  std::set<GURL> pending_idps_;
+  // Parameters passed to RequestToken().
+  base::flat_map<GURL, IdentityProviderGetInfo> token_request_get_infos_;
+
+  // Data related to in-progress FetchEndpointsForIdps() fetch.
+  FetchData fetch_data_;
+
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;

@@ -49,7 +49,16 @@ void IdentityDialogController::ShowFailureDialog(
   on_dismiss_ = std::move(dismiss_callback);
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
+  // Else:
+  //   TODO: If the failure dialog is already being shown, notify user that
+  //   sign-in attempt failed.
+
   account_view_->ShowFailureDialog(rp_for_display, idp_for_display);
+}
+
+void IdentityDialogController::ShowIdpSigninFailureDialog(
+    base::OnceClosure user_notified_callback) {
+  NOTIMPLEMENTED();
 }
 
 void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
@@ -76,5 +85,4 @@ gfx::NativeView IdentityDialogController::GetNativeView() {
 
 content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
-  ;
 }

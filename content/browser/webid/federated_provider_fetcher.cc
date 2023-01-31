@@ -44,7 +44,7 @@ FederatedProviderFetcher::FederatedProviderFetcher(
 FederatedProviderFetcher::~FederatedProviderFetcher() = default;
 
 void FederatedProviderFetcher::Start(
-    const std::vector<GURL>& identity_provider_config_urls,
+    const std::set<GURL>& identity_provider_config_urls,
     int icon_ideal_size,
     int icon_minimum_size,
     RequesterCallback callback) {

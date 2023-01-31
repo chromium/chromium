@@ -119,6 +119,9 @@ class CONTENT_EXPORT IdentityRequestDialogController {
                                  const std::string& rp_for_display,
                                  const std::string& idp_for_display,
                                  DismissCallback dismiss_callback);
+
+  // Show dialog notifying user that IdP sign-in failed.
+  virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
 };
 
 }  // namespace content

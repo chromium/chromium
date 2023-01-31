@@ -20,6 +20,8 @@ class MockPermissionDelegate
   MockPermissionDelegate(const MockPermissionDelegate&) = delete;
   MockPermissionDelegate& operator=(const MockPermissionDelegate&) = delete;
 
+  MOCK_METHOD1(AddIdpSigninStatusObserver, void(IdpSigninStatusObserver*));
+  MOCK_METHOD1(RemoveIdpSigninStatusObserver, void(IdpSigninStatusObserver*));
   MOCK_METHOD3(HasActiveSession,
                bool(const url::Origin&,
                     const url::Origin&,

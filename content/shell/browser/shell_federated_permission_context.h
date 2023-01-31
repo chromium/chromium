@@ -41,6 +41,9 @@ class ShellFederatedPermissionContext
   bool HasAutoSigninPermission() override;
 
   // FederatedIdentityPermissionContextDelegate
+  void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
+  void RemoveIdpSigninStatusObserver(
+      IdpSigninStatusObserver* observer) override;
   bool HasActiveSession(const url::Origin& relying_party_requester,
                         const url::Origin& identity_provider,
                         const std::string& account_identifier) override;

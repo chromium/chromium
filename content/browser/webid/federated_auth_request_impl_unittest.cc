@@ -483,7 +483,9 @@ class TestDialogController
     absl::optional<IdentityRequestAccount::SignInMode> sign_in_mode;
     blink::mojom::RpContext rp_context;
     // State related to ShowFailureDialog().
-    bool did_show_idp_signin_status_mismatch_dialog{false};
+    size_t num_show_idp_signin_status_mismatch_dialog_requests{0u};
+    // State related to ShowIdpSigninFailureDialog().
+    bool did_show_idp_signin_failure_dialog{false};
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -546,7 +548,7 @@ class TestDialogController
       return;
     }
 
-    state_->did_show_idp_signin_status_mismatch_dialog = true;
+    ++state_->num_show_idp_signin_status_mismatch_dialog_requests;
     switch (idp_signin_status_mismatch_dialog_action_) {
       case IdpSigninStatusMismatchDialogAction::kClose:
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -556,6 +558,16 @@ class TestDialogController
       case IdpSigninStatusMismatchDialogAction::kNone:
         break;
     }
+  }
+
+  void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback) override {
+    if (!state_) {
+      return;
+    }
+
+    state_->did_show_idp_signin_failure_dialog = true;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(dismiss_callback));
   }
 
  private:
@@ -820,7 +832,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     return !displayed_accounts().empty();
   }
   bool did_show_idp_signin_status_mismatch_dialog() const {
-    return dialog_controller_state_.did_show_idp_signin_status_mismatch_dialog;
+    return dialog_controller_state_
+        .num_show_idp_signin_status_mismatch_dialog_requests;
   }
 
   int CountNumLoginStateIsSignin() {
@@ -2343,6 +2356,385 @@ TEST_F(FederatedAuthRequestImplTest,
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
   EXPECT_FALSE(DidFetchAnyEndpoint());
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+namespace {
+
+// TestIdpNetworkRequestManager which enables specifying the ParseStatus for
+// config and accounts endpoint fetch.
+class ParseStatusOverrideIdpNetworkRequestManager
+    : public TestIdpNetworkRequestManager {
+ public:
+  ParseStatus config_parse_status_{ParseStatus::kSuccess};
+  ParseStatus accounts_parse_status_{ParseStatus::kSuccess};
+
+  ParseStatusOverrideIdpNetworkRequestManager() = default;
+  ~ParseStatusOverrideIdpNetworkRequestManager() override = default;
+
+  ParseStatusOverrideIdpNetworkRequestManager(
+      const ParseStatusOverrideIdpNetworkRequestManager&) = delete;
+  ParseStatusOverrideIdpNetworkRequestManager& operator=(
+      const ParseStatusOverrideIdpNetworkRequestManager&) = delete;
+
+  void FetchConfig(const GURL& provider,
+                   int idp_brand_icon_ideal_size,
+                   int idp_brand_icon_minimum_size,
+                   FetchConfigCallback callback) override {
+    if (config_parse_status_ != ParseStatus::kSuccess) {
+      ++num_fetched_[FetchedEndpoint::CONFIG];
+
+      FetchStatus fetch_status{config_parse_status_, net::HTTP_OK};
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), fetch_status,
+                                    IdpNetworkRequestManager::Endpoints(),
+                                    IdentityProviderMetadata()));
+      return;
+    }
+    TestIdpNetworkRequestManager::FetchConfig(
+        provider, idp_brand_icon_ideal_size, idp_brand_icon_minimum_size,
+        std::move(callback));
+  }
+
+  void SendAccountsRequest(const GURL& accounts_url,
+                           const std::string& client_id,
+                           AccountsRequestCallback callback) override {
+    if (accounts_parse_status_ != ParseStatus::kSuccess) {
+      ++num_fetched_[FetchedEndpoint::ACCOUNTS];
+
+      FetchStatus fetch_status{accounts_parse_status_, net::HTTP_OK};
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), fetch_status, AccountList()));
+      return;
+    }
+
+    TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
+                                                      std::move(callback));
+  }
+};
+
+}  // namespace
+
+// Test behavior for the following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) User signs-in
+// 3) User selects "Continue" in account chooser dialog.
+TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSignin) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  // Simulate user signing into IdP by updating the IdP sign-in status and
+  // calling the observer.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kIdpOrigin, /*idp_signin_status=*/true);
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
+
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  // After the IdP sign-in status was updated, the endpoints should have been
+  // fetched a 2nd time.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+}
+
+// Test behavior for the following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) User switches tabs
+// 3) User signs into IdP in different tab
+TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSigninButHidden) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  // Simulate the user switching to a different tab.
+  test_rvh()->SimulateWasHidden();
+
+  // Simulate user signing into IdP by updating the IdP signin status and
+  // calling observer.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kIdpOrigin, /*idp_signin_status=*/true);
+
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
+
+  // The FedCM dialog should switch to the account picker. The user should
+  // see a new dialog when they switch back to the FedCM tab.
+  EXPECT_TRUE(did_show_accounts_dialog());
+}
+
+// Test behavior for the following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) In a different tab, user signs into different IdP
+TEST_F(FederatedAuthRequestImplTest, FailureUiSigninFromDifferentIdp) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+  url::Origin kOtherOrigin = OriginFromString("https://idp.other");
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  size_t num_well_known_fetches = NumFetched(FetchedEndpoint::WELL_KNOWN);
+
+  // Simulate user signing into different IdP by updating the IdP signin status
+  // and calling observer.
+  test_permission_delegate_->idp_signin_statuses_[kOtherOrigin] = true;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kOtherOrigin, /*idp_signin_status=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // No fetches should have been triggered.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), num_well_known_fetches);
+}
+
+// Test that for the following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) IdP sign-in status is updated
+// 3) Accounts endpoint still returns an empty list
+// That ShowFailureDialog() is called a 2nd time after the IdP sign-in status
+// update.
+TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  MockConfiguration configuration = kConfigurationValid;
+
+  // Setup IdP sign-in status mismatch.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, configuration);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  // Update IdP sign-in status. Keep accounts endpoint returning empty list.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kIdpOrigin, /*idp_signin_status=*/true);
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, dialog_controller_state_
+                    .num_show_idp_signin_status_mismatch_dialog_requests);
+  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
+
+  // After the IdP sign-in status was updated, the endpoints should have been
+  // fetched a 2nd time.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+}
+
+// Test that for the following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) IdP sign-in status is updated
+// 3) A different endpoint fails during the fetch initiated by the IdP sign-in
+// status update.
+// That user is shown IdP-sign-in-failure dialog.
+TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+
+  // Make the fetch triggered by the IdP sign-in status changing fail for a
+  // different endpoint.
+  network_manager->config_parse_status_ = ParseStatus::kInvalidResponseError;
+
+  // Simulate user signing into IdP by updating the IdP signin status and
+  // calling the observer.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kIdpOrigin, /*idp_signin_status=*/true);
+
+  WaitForCurrentAuthRequest();
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kErrorFetchingConfigInvalidResponse},
+      /*selected_idp_config_url=*/absl::nullopt};
+  CheckAuthExpectations(kConfigurationValid, expectations);
+
+  // The user should be shown IdP-sign-in-failure dialog.
+  EXPECT_FALSE(did_show_accounts_dialog());
+  EXPECT_EQ(1u, dialog_controller_state_
+                    .num_show_idp_signin_status_mismatch_dialog_requests);
+  EXPECT_TRUE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
+
+  // After the IdP sign-in status was updated, the endpoints should have been
+  // fetched a 2nd time.
+  EXPECT_EQ(NumFetched(FetchedEndpoint::WELL_KNOWN), 2u);
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 1u);
+}
+
+// Test that the IdP-sign-in-failure-dialog is not shown if there is an error
+// after the user has selected an account.
+TEST_F(FederatedAuthRequestImplTest,
+       FailAfterAccountSelectionHideDialogDoesNotShowIdpSigninFailureDialog) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  // Setup dialog controller to fail FedCM request after the user has selected
+  // an account.
+  url::Origin rp_origin_to_disable = main_test_rfh()->GetLastCommittedOrigin();
+  SetDialogController(
+      std::make_unique<DisableApiWhenDialogShownDialogController>(
+          kConfigurationValid, test_api_permission_delegate_.get(),
+          rp_origin_to_disable));
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  // Simulate user signing into IdP by updating the IdP signin status and
+  // calling the observer.
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+  network_manager->accounts_parse_status_ = ParseStatus::kSuccess;
+  federated_auth_request_impl_->OnIdpSigninStatusChanged(
+      kIdpOrigin, /*idp_signin_status=*/true);
+  WaitForCurrentAuthRequest();
+
+  // Check that the FedCM request failed after the account picker was shown.
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_statuses=*/{},
+      /*selected_idp_config_url=*/absl::nullopt};
+  CheckAuthExpectations(kConfigurationValid, expectations);
+  EXPECT_TRUE(did_show_accounts_dialog());
+
+  // Check that the IdP-sign-in-failure dialog is not shown.
+  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
+}
+
+// Test that the IdP-sign-in-failure dialog is not shown in the
+// following sequence of events:
+// 1) Failure dialog is shown due to IdP sign-in status mismatch
+// 2) FedCM call is aborted.
+TEST_F(FederatedAuthRequestImplTest,
+       FailureUiAbortDoesNotShowIdpSigninFailureDialog) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      features::kFedCm,
+      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+
+  SetNetworkRequestManager(
+      std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
+  auto* network_manager =
+      static_cast<ParseStatusOverrideIdpNetworkRequestManager*>(
+          test_network_request_manager_.get());
+
+  url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
+
+  // Setup IdP sign-in status mismatch.
+  network_manager->accounts_parse_status_ = ParseStatus::kInvalidResponseError;
+  test_permission_delegate_->idp_signin_statuses_[kIdpOrigin] = true;
+
+  RunAuthDontWaitForCallback(kDefaultRequestParameters, kConfigurationValid);
+  EXPECT_TRUE(did_show_idp_signin_status_mismatch_dialog());
+  EXPECT_FALSE(did_show_accounts_dialog());
+
+  // Abort the request before DelayTimer kicks in.
+  federated_auth_request_impl_->CancelTokenRequest();
+
+  RequestExpectations expectations{RequestTokenStatus::kErrorCanceled,
+                                   {FederatedAuthRequestResult::kErrorCanceled},
+                                   /*selected_idp_config_url=*/absl::nullopt};
+  WaitForCurrentAuthRequest();
+  CheckAuthExpectations(kConfigurationValid, expectations);
+
+  // Abort should not trigger IdP-sign-in-failure dialog.
+  EXPECT_FALSE(dialog_controller_state_.did_show_idp_signin_failure_dialog);
 }
 
 // Test that when IdpSigninStatus API is in the metrics-only mode, that an IDP

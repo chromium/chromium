@@ -65,4 +65,9 @@ void IdentityRequestDialogController::ShowFailureDialog(
   std::move(dismiss_callback).Run(DismissReason::OTHER);
 }
 
+void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
+    base::OnceClosure dismiss_callback) {
+  std::move(dismiss_callback).Run();
+}
+
 }  // namespace content

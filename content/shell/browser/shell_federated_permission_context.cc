@@ -38,6 +38,11 @@ bool ShellFederatedPermissionContext::HasAutoSigninPermission() {
   return auto_signin_permission_;
 }
 
+void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
+    IdpSigninStatusObserver* observer) {}
+void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
+    IdpSigninStatusObserver* observer) {}
+
 // FederatedIdentityActiveSessionPermissionContextDelegate
 bool ShellFederatedPermissionContext::HasActiveSession(
     const url::Origin& relying_party_requester,
