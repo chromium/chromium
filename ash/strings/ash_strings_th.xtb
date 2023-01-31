@@ -420,6 +420,7 @@
 <translation id="3289674678944039601">กำลังชาร์จผ่านอะแดปเตอร์</translation>
 <translation id="3290356915286466215">ไม่ปลอดภัย</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
+<translation id="3298690094479023523">ยังคงยืนยัน PIN หรือรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
@@ -560,6 +561,7 @@
 <translation id="4017989525502048489">ตัวชี้เลเซอร์</translation>
 <translation id="401993194061514265">ตัวทำเครื่องหมายไม่พร้อมใช้งาน เปิด Screencast อีกครั้ง</translation>
 <translation id="4021716437419160885">เลื่อนลง</translation>
+<translation id="4024840464866786680">หากคุณลืม PIN และรหัสผ่าน หรือเปลี่ยนรหัสผ่านของบัญชี Google เมื่อเร็วๆ นี้ ให้ลองกู้คืนผู้ใช้รายนี้</translation>
 <translation id="4028481283645788203">ต้องป้อนรหัสผ่านเพื่อให้มีความปลอดภัยมากขึ้น</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">คุณกำลังแชร์หน้าจอ</translation>
@@ -705,6 +707,7 @@
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4762573482154983647">ซ่อนแอป</translation>
 <translation id="4774338217796918551">ใช้ได้อีกครั้งพรุ่งนี้ เวลา <ph name="COME_BACK_TIME" /></translation>
+<translation id="4776584068981882959">ยังคงยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="4776917500594043016">รหัสผ่านของ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google Assistant ไม่พร้อมใช้งานในเซสชันสาธิต</translation>
@@ -844,6 +847,7 @@
 <translation id="5536723544185013515">แอปล่าสุด ใช้แป้นลูกศรซ้ายหรือขวาเพื่อเข้าถึงแอปล่าสุดทั้งหมด</translation>
 <translation id="553675580533261935">กำลังออกจากเซสชัน</translation>
 <translation id="5537725057119320332">แคสต์</translation>
+<translation id="5546397813406633847">กู้คืนผู้ใช้</translation>
 <translation id="554893713779400387">สลับการเขียนตามคำบอก</translation>
 <translation id="5558091555391176027">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>
 <translation id="5560420195677022218">ดูแอปของโทรศัพท์ใน <ph name="DEVICE_TYPE" /></translation>
@@ -860,6 +864,7 @@
 <translation id="5618148318840095371">เราสลับไปใช้เครือข่ายที่ดีกว่า</translation>
 <translation id="5619862035903135339">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอ</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">ยืนยันรหัสผ่านของคุณไม่ได้ โปรดลองอีกครั้ง</translation>
 <translation id="5648021990716966815">ช่องเสียบไมโครโฟน</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ส่งคำขอให้คุณดำเนินการ</translation>
 <translation id="5662075790140998213">เดสก์ที่ 10</translation>
@@ -878,6 +883,7 @@
 <translation id="5707775774148071965">อุปกรณ์รองรับอัตราข้อมูลที่สูงกว่าสายสัญญาณ และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="5710450975648804523">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="571295407079589142">อินเทอร์เน็ตมือถือปิดอยู่</translation>
+<translation id="5727460725221669831">หากคุณลืมรหัสผ่านหรือเปลี่ยนรหัสผ่านของบัญชี Google เมื่อเร็วๆ นี้ ให้ลองกู้คืนผู้ใช้รายนี้</translation>
 <translation id="573413375004481890">อุปกรณ์นี้รองรับจอแสดงผลทั้งหมดไม่ได้ ระบบจึงยกเลิกการเชื่อมต่อจอแสดงผลจอหนึ่ง</translation>
 <translation id="5740328398383587084">การแชร์ใกล้เคียง</translation>
 <translation id="574392208103952083">ปานกลาง</translation>

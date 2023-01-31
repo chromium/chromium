@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Kata hujungan</translation>
 <translation id="1197088940767939838">Oren</translation>
 <translation id="1198865190323699001">Gerak Isyarat Sentuh</translation>
-<translation id="1201402288615127009">Seterusnya</translation>
 <translation id="1202112913213080585">batal</translation>
 <translation id="1206619573307042055">marki</translation>
 <translation id="1207086294218137981">Tiada tajuk tahap 4 seterusnya</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">salin</translation>
-<translation id="135978014023467274">Anda telah dikemas kini kepada ChromeVox 63!</translation>
 <translation id="1360699455582016846">Klik item di bawah kekunci penghalaan <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">beralih ke aksara seterusnya</translation>
 <translation id="1377925789329510816">Ini ialah tajuk terakhir. Tekan Carian+H untuk pergi ke tajuk pertama atau Carian+Shift+H untuk pergi ke tajuk kedua pada halaman ini.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">dinyahtandai</translation>
 <translation id="3286372614333682499">potret</translation>
 <translation id="3286390186030710347">Peluncur</translation>
-<translation id="3300348286427369683">Sokongan teks beraneka. Kini, ChromeVox menyokong medan teks beraneka termasuk perintah melangkau, penghalaan kursor braille, pemilihan dan pelbagai lagi.</translation>
 <translation id="3300733168898541351">buat asal</translation>
 <translation id="3307886118343381874">Pergi ke hujung jadual</translation>
 <translation id="3312997241656799641">Pautan yang dilawati seterusnya</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Mod lekit pintar dimatikan</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack tidak menyediakan penyesuaian untuk Chromebook lagi. Anda masih boleh menggunakan ciri ini tetapi gunakan pintasan papan kekunci lalai TalkBack. Tekan Search+A, kemudian K untuk melihat pintasan yang tersedia. Jika anda masih mahu menggunakan TalkBack, tekan perintah itu lagi.</translation>
-<translation id="463135993322337640">Tekan o, n ChromeVox untuk mengetahui perkara baharu</translation>
 <translation id="4649220074413114917">Tindakan mengetik skrin dengan dua jari boleh digunakan untuk menghentikan sebarang pertuturan semasa. Gerak isyarat ini berguna jika anda tidak mahu ChromeVox membaca sesuatu. Untuk meneruskan, ketik skrin dengan dua jari.</translation>
-<translation id="4660783501463101648">Klasik dialih keluar. Togol papan kekunci untuk menukar kembali kepada ChromeVox Klasik telah dialih keluar.</translation>
 <translation id="4661075872484491155">pohon</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Pergi ke lajur seterusnya</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">kembali</translation>
 <translation id="5102981729317424850">Bar alat</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Kami ada beberapa perubahan menarik dalam keluaran baharu ini; berikut ialah perkara baharu:</translation>
 <translation id="5111640677200759579">Pengepala lajur</translation>
 <translation id="5115892389597951922">Log ChromeVox</translation>
 <translation id="5119330972669454698">Pasir Perang</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Navigasi Asas</translation>
 <translation id="609281021724813947">Tiada peluncur sebelumnya</translation>
 <translation id="6100239002225743044">Beralih satu baris ke atas</translation>
-<translation id="6118126368611144850">Apl Android untuk Chrome. Jika Gedung Play dipasang pada peranti anda, tinjau ChromeVox dengan apl Android. Cuba sokongan percubaan dengan memuat turun Google Chrome Canary daripada Gedung Play.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktifkan</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Kotak kombo sebelumnya</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{tanda seru}other{# tanda seru}}</translation>
 <translation id="670717715607710284">Matikan skrin</translation>
-<translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6714813999819678458">Tajuk tahap 2 sebelumnya</translation>
 <translation id="6730312624811567147">Gunakan Cari Kiri atau Kanan untuk Home atau End, Cari Control Kiri atau Kanan untuk Control Home atau End, Cari Atas atau Bawah untuk Page Up atau Down</translation>
 <translation id="6736510033526053669">tab dibuat</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Putih Antik</translation>
 <translation id="9220679313820249046">Merah Jingga</translation>
 <translation id="9223032053830369045">Merah Gelap</translation>
-<translation id="923331726185079994">ChromeVox Dikemas Kini</translation>
 <translation id="93384979447910801">Hijau Laut Gelap</translation>
 <translation id="937605981140327129">TalkBack tidak dipasang pada masa ini. Sila pasang Android Accessibility Suite melalui Play Store dan cuba lagi.</translation>
 <translation id="948171205378458592">Kurangkan kadar pertuturan</translation>

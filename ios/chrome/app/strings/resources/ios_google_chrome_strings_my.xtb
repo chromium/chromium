@@ -3,6 +3,7 @@
 <translationbundle lang="my">
 <translation id="1143896152279775643"><ph name="EMAIL" /> အတွက် သင့်စကားဝှက်ကို ‘Google စကားဝှက်မန်နေဂျာ’ သို့ သိမ်းပါမည်။</translation>
 <translation id="1282031177488366470">Chrome ၏ ဝန်ဆောင်မှုများနှင့် စွမ်းဆောင်ရည် ပိုမိုကောင်းမွန်လာအောင် ကူညီခြင်း</translation>
+<translation id="1352919863522755794">Google Password Manager က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="1462727070346936664">Chrome ကို အကောင်းဆုံးသုံးနိုင်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="1479202195792305274">သင်၏ Google Account နှင့် လက်မှတ်ထိုးဝင်သည့်အခါ Chrome က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="1493827051843127077">သင့်စက်အားလုံးတွင် သင်၏တဘ်များ၊ စကားဝှက်များနှင့် ငွေပေးချေမှုအချက်အလက်များကို စင့်ခ်လုပ်ရန် Chrome ကို မူရင်းအဖြစ် သတ်မှတ်နိုင်သည်</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">သင်၏ Chrome ဒေတာ စင့်ခ်လုပ်ရန်</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">ဤအကောင့်နှင့် သိမ်းမထားသော ဒေတာမှန်သမျှကို Chrome နှင့် ဤစက်ပေါ်ရှိ အခြား Google app များမှ ဖယ်ရှားပါမည်။</translation>
-<translation id="1968388653333775699">Chrome ဖြင့် အလုပ်ပိုပြီးအောင် လုပ်လိုက်ပါ</translation>
 <translation id="2009224836393115614">Chrome က သင့်စကားဝှက်များကို စစ်ဆေး၍မရပါ။ သင့်အင်တာနက် ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="2056123005618757196">ရိုးရှင်း လုံခြုံပြီး ယခင်ထက်ပိုမြန်သော Google Chrome ဖြင့် ပိုမိုလုပ်ဆောင်နိုင်သည်။</translation>
 <translation id="2147651015520127414">ဤဝဘ်ဆိုက်အတွက် လက်မှတ်ကို <ph name="ISSUER" /> မှ ထုတ်ပေးခဲ့ကြောင်း Chrome က စိစစ်တွေ့ခဲ့သည်။</translation>
 <translation id="2199719347983604670">Chrome စင့်ခ်မှ ဒေတာ</translation>
-<translation id="2313070403598893276">Google Chrome သည် ရိုးရှင်း လုံခြုံပြီး ယခင်ထက်ပိုမြန်သည်</translation>
 <translation id="2339201583852607431">စကားဝှက်ကို သင့် Google Account (<ph name="EMAIL" />) တွင် သိမ်းပါမည်။</translation>
 <translation id="2342919707875585281">Chrome သည် သင်၏တည်နေရာကို သင်ခွင့်ပြုသော ဝဘ်ဆိုက်များအား မျှဝေသည်။</translation>
 <translation id="2347208864470321755">ဤလုပ်ဆောင်ချက်ကို ဖွင့်ထားလျှင်၊ အခြား ဘာသာစကားများဖြင့် ရေးထားသည့် စာမျက်နှာများကို Chrome က Google ဘာသာပြန်အား သုံးပြီး ဘာသာပြန်ပေးရန် ကမ်းလှမ်းလိမ့်မည်။ <ph name="BEGIN_LINK" /> လေ့လာရန် <ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">ဝဘ်ဆိုက်အားလုံးမှ သင့် Google Account ထွက်ရန် <ph name="BEGIN_LINK" />Chrome မှ ထွက်ပါ<ph name="END_LINK" />။</translation>
 <translation id="2695886661449553974">Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရခဲ့ပါ။ နောက်မှ ထပ်စမ်းပါ။</translation>
 <translation id="2732745070297234559">Chrome က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ။</translation>
+<translation id="2767464022270041271">သိမ်းထားသော စကားဝှက် မရှိပါ။ သင်စကားဝှက်များကို သိမ်းသည့်အခါ Google Password Manager က ၎င်းတို့ကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="2869959624320573933">Chrome တွင် လက်မှတ်ထိုးဝင်ရန်</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> ကို ရွေးပါ</translation>
 <translation id="3030414234702425231">သင်သည် <ph name="SIGNOUT_MANAGED_DOMAIN" /> က ကြီးကြပ်သည့် အကောင့်မှ ထွက်သွားသောကြောင့် သင်၏ Chrome ဒေတာများကို ဤစက်မှ ဖျက်လိုက်ပါမည်။ သင်၏ ဒေတာများသည် သင့် Google အကောင့်အတွင်းတွင် ရှိနေပါဦးမည်။</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ သို့မဟုတ် <ph name="BEGIN_LINK" />သင်၏ Google Account ရှိ စကားဝှက်များကို စစ်ဆေးပါ။<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">အက်ပ်ပိုကောင်းမွန်စေရန် Chrome သည်အသုံးပြုမှုနှင့် ရပ်တန့်မှုဒေတာများကို Google သို့ ပို့သည်။ <ph name="BEGIN_LINK" />စီမံခန့်ခွဲရန်<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome စမ်းသပ်ဆော့ဖ်ဝဲတွင် ပံ့ပိုးမထားပါ</translation>
+<translation id="4840404732697892756">သင်၏ Google Account ဖြင့် လက်မှတ်ထိုးဝင်သည့်အခါ Google Password Manager က သင့်စကားဝှက်များကို စစ်ဆေးနိုင်သည်။</translation>
 <translation id="5030102366287574140">ဒေတာပေါက်ကြားမှု၊ မလုံခြုံသော ဝဘ်ဆိုက်များနှင့် အခြားအန္တရာယ်များမှ သင့်ကို ကာကွယ်ရန် Chrome က ကူညီပေးနိုင်သည်။</translation>
 <translation id="5108659628347594808">Chrome ပိုကောင်းအောင်လုပ်ခြင်း</translation>
 <translation id="5119391094379141756">Chrome ကိုရွေးပါ</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">သင်၏စကားဝှက်များကို အွန်လိုင်းတွင်ထုတ်ဝေထားသော စာရင်းများနှင့်တိုက်၍ Chrome က အခါအားလျော်စွာ စစ်ဆေးပါသည်။ ဤသို့စစ်ဆေးသည့်အခါ သင်၏စကားဝှက်နှင့် အသုံးပြုသူအမည်များကို အသွင်ဝှက်ထားသောကြောင့် Google အပါအဝင် မည်သူမျှ ၎င်းတို့ကို ဖတ်၍မရပါ။</translation>
 <translation id="5639704535586432836">ဆက်တင်များ &gt; ပုဂ္ဂိုလ်ရေးဆိုင်ရာ &gt; ကင်မရာ &gt; Google Chrome သို့သွားပြီး ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="5642200033778930880">Google Chrome သည် မျက်နှာပြင် ခွဲခြမ်းပြသသည့်မုဒ်တွင် ကင်မရာကို အသုံးပြု၍မရပါ</translation>
+<translation id="5661521615548540542">Google Password Manager က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ နောက်မှထပ်စမ်းပါ။</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">အော့ဖ်လိုင်းဖြစ်နေသည်၊ Chrome က အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ</translation>
 <translation id="5716154293141027663">အခြားအက်ပ်များတွင် လင့်ခ်များကိုတို့ပြီး Chrome ကို အချိန်မရွေး ဖွင့်နိုင်သည်</translation>
@@ -120,9 +122,11 @@
   ၂။ 'မူရင်း ဘရောင်ဇာအက်ပ်' ကို တို့ပါ
   ၃။ Chrome ကိုရွေးပါ။</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ (သို့) <ph name="BEGIN_LINK" />သင်၏ Google Account ရှိ စကားဝှက်များကို စစ်ဆေးပါ။<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome ဖြင့် ဘေးကင်းအောင်နေခြင်း</translation>
 <translation id="8772179140489533211">Chrome သို့ လက်မှတ်ထိုးဝင်ရန် အတည်ပြုခြင်းစနစ်များ ပြသည်။</translation>
 <translation id="8788269841521769222">ဤစကားဝှက်ကို မှတ်ထားစရာ မလိုပါ။ ၎င်းကို <ph name="EMAIL" /> အတွက် ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းပါမည်</translation>
+<translation id="8857676124663337448">Google Password Manager က စကားဝှက်အားလုံးကို စစ်ဆေး၍မရပါ။ မနက်ဖြန် ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="8897749957032330183">စကားဝှက်များကို ဤစက်ရှိ ‘Google စကားဝှက်မန်နေဂျာ’ တွင် သိမ်းသည်။</translation>
 <translation id="8969290730818637510">ဖွင့်ထားပါက-
 <ph name="BEGIN_INDENT" />  • သင့်နည်းတူ Chrome သုံးသူများအတွက် ၎င်းပိုကောင်းလာအောင် ကူညီနိုင်သည်။<ph name="END_INDENT" />

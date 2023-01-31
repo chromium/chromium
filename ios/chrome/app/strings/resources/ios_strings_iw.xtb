@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">ניהול הסנכרון</translation>
 <translation id="1076421457278169141">הקוד נסרק</translation>
 <translation id="1076785341346483463">סנכרון עם חשבון מנוהל</translation>
+<translation id="1080365971383768617">סיסמאות בכל המכשירים</translation>
 <translation id="1084365883616172403">‏הפרסום ב-‏Facebook בוצע.</translation>
 <translation id="1085696779717592361">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">הצגת ההיסטוריה</translation>
 <translation id="2800683595868705743">‏יציאה מ-Tab Switcher</translation>
 <translation id="2815198996063984598">2. מקישים על אפליקציית הדפדפן שמוגדרת כברירת מחדל</translation>
-<translation id="2820289420301699633">‏למנהל המערכת שלך יש שליטה על Chrome וגישה לנתונים שלו</translation>
 <translation id="2830972654601096923">ניהול כתובות...</translation>
 <translation id="2834399722155632105">3‏. מקישים על 'אפשרויות של סיסמאות'</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708">נמצאו בעיות <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">אישור</translation>
 <translation id="5062321486222145940">‏התקנת Google Drive</translation>
+<translation id="50641035439563602">‏הסיסמאות נשמרות עכשיו בחשבון Google שלך (<ph name="ACCOUNT" />). אפשר להשתמש בהן בכל מקום לאחר התחברות לחשבון. כדי להשבית את ההגדרה הזו, עוברים אל <ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">גודל הקובץ אינו ידוע.</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">הציוץ בוצע.</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">מקישים על 'מנהל הסיסמאות' ואז על 'הוספה'</translation>
 <translation id="5525095647255982834">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome במכשיר האחר.</translation>
 <translation id="5525269841082836315">יצירת ביטוי סיסמה</translation>
+<translation id="5530084793407600786">‏חיפוש בתמונה עם Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> נמצאו</translation>
 <translation id="5548760955356983418">‏Handoff מאפשר לך להתחיל לגלוש באתר מסוים במכשיר הזה ולאחר מכן להמשיך בקלות ב-Mac. האתר הפתוח הנוכחי יופיע ב-Dock של ה-Mac שלך.
 
@@ -677,7 +679,6 @@
 <translation id="6064824697233747382">לפי דרישת הארגון שלך, עליך להשבית את הסנכרון.</translation>
 <translation id="6066301408025741299">יש להקיש כדי לבטל.</translation>
 <translation id="6071409777669089905">ביטול הצמדת הכרטיסייה</translation>
-<translation id="60829778314739003">אישור והמשך</translation>
 <translation id="6084848228346514841">בחירת כרטיסיות</translation>
 <translation id="6103540626693881831">הצפנה במכשיר</translation>
 <translation id="6119050551270742952">דף האינטרנט הנוכחי מוצג במצב אנונימי</translation>

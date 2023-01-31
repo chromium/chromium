@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Ajouter au dictionnaire</translation>
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1022489261739821355">Affichage des mots de passe de votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Votre appareil est géré par <ph name="DOMAIN" />. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="1026655690966755180">Ajouter un port</translation>
 <translation id="1026822031284433028">Charger l'image</translation>
 <translation id="1028604629594230522">Chrome précharge les pages que vous êtes susceptible de visiter, afin qu'elles se chargent plus rapidement lorsque vous les visitez.</translation>
@@ -1868,6 +1869,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2643064289437760082">Vous pouvez toujours supprimer les données de la mesure des annonces en supprimant vos données de navigation</translation>
 <translation id="2643698698624765890">Pour gérer vos extensions, cliquez sur « Extensions » dans le menu « Fenêtre ».</translation>
 <translation id="2645047101481282803">Votre appareil est géré par <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Diffusion de cet onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
@@ -2740,6 +2742,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3446274660183028131">Veuillez lancer Parallels Desktop pour installer Windows.</translation>
 <translation id="344630545793878684">Lire vos données sur un nombre défini de sites Web</translation>
 <translation id="3447644283769633681">Bloquez tous les témoins tiers</translation>
+<translation id="3447797901512053632">Diffusion de <ph name="TAB_NAME" /> sur <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Mettre à jour le compte</translation>
 <translation id="3449393517661170867">Nouvelle fenêtre à onglets</translation>
 <translation id="3449839693241009168">Appuyez sur <ph name="SEARCH_KEY" /> pour envoyer des commandes à <ph name="EXTENSION_NAME" /></translation>
@@ -2894,6 +2897,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3590295622232282437">Ouverture de la session gérée.</translation>
 <translation id="3591057288287063271">Conserver <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;En savoir plus</translation>
+<translation id="3592344177526089979">Diffusion d'un onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Activer le mode pinyin flou</translation>
 <translation id="3593965109698325041">Contraintes de nom de certificat</translation>
 <translation id="3596012367874587041">Paramètres de l'application</translation>
@@ -3169,6 +3173,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3823310065043511710">Un minimum de <ph name="INSTALL_SIZE" /> d'espace est recommandé pour utiliser Linux.</translation>
 <translation id="3824621460022590830">Le jeton d'inscription d'appareil n'est pas valide. Veuillez communiquer avec l'administrateur ou le propriétaire de votre appareil. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}one{Mémoriser mon choix pour ce type de fichier : <ph name="FILE_TYPES" />}other{Mémoriser mon choix pour ces types de fichiers : <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Afficher un point sur l'icône de l'application pour les alertes d'application</translation>
 <translation id="3826071569074535339">Autorisés à utiliser les capteurs de mouvement</translation>
 <translation id="3826440694796503677">Votre administrateur a désactivé l'ajout d'autres comptes Google</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
@@ -4488,6 +4493,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gérer la fonctionnalité DNS sécurisé dans les paramètres de Chrome OS</translation>
+<translation id="5066160542186949327">Déplacer vers un autre dossier</translation>
 <translation id="5067399438976153555">Toujours activé</translation>
 <translation id="5067867186035333991">Demander mon autorisation si <ph name="HOST" /> veut accéder au microphone</translation>
 <translation id="5068553687099139861">afficher les mots de passe</translation>
@@ -6657,7 +6663,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7044211973375150246">Une application est configurée pour ouvrir les mêmes liens que ceux de l'application <ph name="APP_NAME" />. Cette option désactivera l'ouverture des liens compatibles par l'application <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Synchroniser les données</translation>
 <translation id="7047059339731138197">Choisir un fond d'écran</translation>
-<translation id="7048457618657122233">Partager le lien dans <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Conserver le fichier?</translation>
 <translation id="7050037487872780845">Configuration incorrecte du point d’accès</translation>
 <translation id="7052237160939977163">Envoyer des données de suivi des performances</translation>

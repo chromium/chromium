@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Añadir al diccionario</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022489261739821355">Se muestran las contraseñas de tu <ph name="BEGIN_LINK" />Cuenta de Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> administra tu dispositivo. Los administradores pueden acceder a los datos de cualquier perfil en este dispositivo.</translation>
 <translation id="1026655690966755180">Agregar puerto</translation>
 <translation id="1026822031284433028">Cargar imagen</translation>
 <translation id="1028604629594230522">Chrome precarga páginas que es probable que visites, para que se carguen más rápido cuando lo hagas.</translation>
@@ -1863,6 +1864,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2643064289437760082">Para borrar los datos de medición de anuncios, borra tus datos de navegación en cualquier momento.</translation>
 <translation id="2643698698624765890">Para administrar tus extensiones, haz clic en la opción Extensiones del menú Ventana.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> administra tu dispositivo.</translation>
+<translation id="2645388244376970260">Transmitiendo esta pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Cadena de certificados ASCII con codificación Base64</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
@@ -2735,6 +2737,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3446274660183028131">Inicia Parallels Desktop para instalar Windows.</translation>
 <translation id="344630545793878684">Leer los datos en un número de sitios web</translation>
 <translation id="3447644283769633681">Bloquear todas las cookies de terceros</translation>
+<translation id="3447797901512053632">Transmitiendo <ph name="TAB_NAME" /> a <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Actualizar cuenta</translation>
 <translation id="3449393517661170867">Nueva ventana con pestañas</translation>
 <translation id="3449839693241009168">Presiona <ph name="SEARCH_KEY" /> para enviar comandos a<ph name="EXTENSION_NAME" /></translation>
@@ -2889,6 +2892,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3590295622232282437">Ingresando a la sesión administrada</translation>
 <translation id="3591057288287063271">Conservar <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Más información</translation>
+<translation id="3592344177526089979">Transmitiendo una pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Habilitar modo Pinyin aproximado</translation>
 <translation id="3593965109698325041">Restricciones para el nombre del certificado</translation>
 <translation id="3596012367874587041">Configuración de la app</translation>
@@ -3164,6 +3168,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3823310065043511710">Se recomienda tener al menos <ph name="INSTALL_SIZE" /> de espacio para Linux.</translation>
 <translation id="3824621460022590830">El token de inscripción del dispositivo no es válido. Comunícate con el administrador o el propietario de tu dispositivo. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recordar mi selección para este tipo de archivo: <ph name="FILE_TYPES" />}other{Recordar mi selección para estos tipos de archivo: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Mostrar un punto en el ícono de la app para las alertas de la app</translation>
 <translation id="3826071569074535339">Puede usar sensores de movimiento</translation>
 <translation id="3826440694796503677">Tu administrador inhabilitó la opción para agregar más Cuentas de Google</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
@@ -4483,6 +4488,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Administra la función DNS seguro en la configuración de Chrome OS</translation>
+<translation id="5066160542186949327">Mover a otra carpeta</translation>
 <translation id="5067399438976153555">Siempre activado</translation>
 <translation id="5067867186035333991">Preguntar si <ph name="HOST" /> quiere acceder al micrófono</translation>
 <translation id="5068553687099139861">mostrar contraseñas</translation>
@@ -6650,7 +6656,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7044211973375150246">Se configuró una app para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" /> abra los vínculos compatibles.</translation>
 <translation id="7044606776288350625">Sincronización de datos</translation>
 <translation id="7047059339731138197">Elige un fondo de pantalla</translation>
-<translation id="7048457618657122233">Compartir vínculo con <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">¿Deseas conservar el archivo?</translation>
 <translation id="7050037487872780845">La configuración del hotspot no es válida</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>

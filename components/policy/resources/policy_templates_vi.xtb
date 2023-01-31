@@ -3649,6 +3649,11 @@ Khi bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> chỉ cho phé
 <translation id="445505634382262792">Khi bạn đặt chính sách này thành 3, các trang web có thể yêu cầu quyền ghi các tệp và thư mục trong hệ thống tệp của hệ điều hành máy chủ. Khi bạn đặt chính sách này thành 2, quyền truy cập sẽ bị từ chối.
 
       Khi bạn không đặt chính sách này, các trang web có thể yêu cầu quyền truy cập, nhưng người dùng có thể thay đổi tùy chọn cài đặt này.</translation>
+<translation id="4457113781439375078">Chính sách này không được dùng nữa.
+
+      Nếu bạn đặt chính sách này thành Bật, thì thiết bị đã đăng ký sẽ báo cáo định kỳ vị trí của mình.
+
+      Nếu bạn đặt chính sách này thành Tắt hoặc không đặt, thì thiết bị đã đăng ký sẽ không báo cáo vị trí của mình.</translation>
 <translation id="4463675333222095358">Bật tính năng Chuyển đổi đơn vị của Thông tin nhanh</translation>
 <translation id="4464365009416584564">Tắt <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Chặn cookie của bên thứ ba</translation>
@@ -5257,9 +5262,6 @@ Bạn có thể điều chỉnh thời gian chờ ở trạng thái không hoạ
       Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng thư mục bộ nhớ đệm mặc định. Tuy nhiên, người dùng có thể thay đổi tùy chọn cài đặt đó bằng cờ dòng lệnh --disk-cache-dir.
 
       <ph name="PRODUCT_NAME" /> sẽ quản lý nội dung của thư mục gốc trên ổ đĩa. Vì vậy, để tránh mất dữ liệu hoặc các lỗi khác, không đặt chính sách này thành thư mục gốc hoặc bất kỳ thư mục nào được dùng cho các mục đích khác. Hãy xem các biến bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
-<translation id="6083356110032622782">WebSQL trong ngữ cảnh không an toàn sẽ bị loại bỏ kể từ M110. Chính sách này sẽ bật lại API này.
-          Nếu bạn đặt chính sách này thành true, thì WebSQL trong bối cảnh không an toàn sẽ hoạt động.
-          Nếu bạn đặt là false hoặc không đặt chính sách này, thì WebSQL trong ngữ cảnh không an toàn sẽ vẫn hoạt động cho đến M109, sau đó sẽ ngừng hoạt động kể từ M110.</translation>
 <translation id="6083631234867522991">Windows (ứng dụng Windows):</translation>
 <translation id="608788685013546076">Đặt ngưỡng pin cho chế độ chuyển đổi điện năng cao điểm theo phần trăm</translation>
 <translation id="6089679180657323464">Kiểm soát các tùy chọn cài đặt của bộ điều khiển đo từ xa và chẩn đoán wilco.</translation>
@@ -5436,6 +5438,17 @@ Bạn có thể điều chỉnh thời gian chờ ở trạng thái không hoạ
 <translation id="6261643884958898336">Báo cáo thông tin nhận dạng máy</translation>
 <translation id="6265892395051519509">Cho phép sử dụng cảm biến trên các trang web này</translation>
 <translation id="6266043141694454734">Xác định xem Chrome Root Store và trình xác minh chứng chỉ tích hợp có dùng để xác minh chứng chỉ máy chủ hay không</translation>
+<translation id="6267130578410325007">Theo mặc định, chính sách này cho phép phân nhóm tác nhân theo khoá nguồn gốc.
+
+Tiêu đề HTTP Origin-Agent-Cluster kiểm soát việc một tài liệu sẽ được tách riêng trong cụm tác nhân theo khoá nguồn gốc hay trong cụm tác nhân theo khoá trang web. Việc này sẽ gây ra những vấn đề phức tạp về bảo mật vì cụm tác nhân theo khoá nguồn gốc cho phép tách riêng tài liệu theo nguồn gốc. Hệ quả mà nhà phát triển thấy được từ việc này là họ không thể thiết lập trình truy cập document.domain được nữa.
+
+Khi không có tiêu đề Origin-Agent-Cluster nào được thiết lập, hành vi mặc định trong M111 sẽ thay đổi từ theo khoá trang web sang theo khoá nguồn gốc.
+
+Nếu chính sách này đang bật hoặc không được thiết lập, thì trình duyệt sẽ tuân theo chế độ mặc định mới này kể từ phiên bản đó trở đi.
+
+Nếu chính sách này đang tắt thì thay đổi này sẽ đảo ngược lại và những tài liệu không có tiêu đề Origin-Agent-Cluster sẽ được gán vào các cụm tác nhân theo khoá trang web. Do đó, trình truy cập document.domain sẽ vẫn thiết lập được theo mặc định. Hành vi này giống với hành vi cũ.
+
+Xem thêm thông tin chi tiết tại https://developer.chrome.com/blog/immutable-document-domain/.</translation>
 <translation id="6270615143812355589">Bật đầu vào âm thanh</translation>
 <translation id="6270791075656665237">Không cho phép QUIC</translation>
 <translation id="6273015149273504999">
@@ -6370,6 +6383,16 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
       Nếu bạn đặt chính sách này thành bắt buộc, thì người dùng sẽ không thể thay đổi hoặc ghi đè chính sách này.
 
       Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
+<translation id="7037853989942016900">Chính sách này kiểm soát hoạt động tái cấu trúc gần đây của các API Graphics3D trong trình bổ trợ PPAPI.
+
+Quá trình di chuyển chỉ ảnh hưởng đến thông tin triển khai nội bộ và không thay đổi hành vi nào. Tuy nhiên, chính sách này có thể được sử dụng trong trường hợp bất kỳ ứng dụng PPAPI nào không hoạt động như dự kiến.
+
+Khi bạn không đặt chính sách này hoặc đặt thành Bật, trình duyệt sẽ quyết định phương thức triển khai nào được sử dụng.
+Khi bạn đặt chính sách này thành Tắt, trình duyệt sẽ sử dụng phương thức triển khai cũ cho đến khi chính sách này hết hạn.
+
+Nếu bạn phải sử dụng chính sách này, vui lòng báo cáo lỗi trên crbug.com kèm thông tin giải thích trường hợp sử dụng của bạn. Theo lịch, chính sách này sẽ được cung cấp thông qua phiên bản 114 của <ph name="PRODUCT_NAME" />, sau đó phương thức triển khai cũ sẽ bị loại bỏ.
+
+LƯU Ý: Chỉ các quy trình kết xuất đồ hoạ mới bắt đầu mới phản ánh các thay đổi đối với chính sách này trong khi trình duyệt đang chạy.</translation>
 <translation id="7039815268521168329">Hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>

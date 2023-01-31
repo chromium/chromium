@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Son söz</translation>
 <translation id="1197088940767939838">Narıncı</translation>
 <translation id="1198865190323699001">Toxunma Jestləri</translation>
-<translation id="1201402288615127009">Növbəti</translation>
 <translation id="1202112913213080585">ləğv edin</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Sonrakı 4-cü səviyyə başlığı yoxdur</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">məqalə</translation>
 <translation id="1346059596910821859">İpucu</translation>
 <translation id="1354356357730355833">kopyalayın</translation>
-<translation id="135978014023467274">ChromeVox 63-ü güncəllədiniz!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> yönləndirmə açarının altındakı elementə klikləyin</translation>
 <translation id="1376703628032300005">növbəti simvola keçin</translation>
 <translation id="1377925789329510816">Bu sonuncu başlıqdır. Bu səhifədəki ilk başlığa qayıtmaq üçün Search+H və ya ikinci başlığa keçmək üçün Search+Shift+H basın.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">seçim ləğv olundu</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Slayder</translation>
-<translation id="3300348286427369683">Zəngin mətn dəstəyi. ChromeVox artıq keçid əmrləri, brayl kursor yönləndirməsi, seçim və daha çoxu daxil olmaqla zəngin mətn sahələrini dəstəkləyir.</translation>
 <translation id="3300733168898541351">ləğv edin</translation>
 <translation id="3307886118343381874">Cədvəlin sonuna gedin</translation>
 <translation id="3312997241656799641">Növbəti daxil olunan link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Ağıllı yapışqan rejim deaktivdir</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack artıq Chromebook'lar üçün fərdiləşdirmə təmin etmir. Hələ də ondan istifadə edə bilərsiniz, lakin TalkBack defolt klaviatura qısayollarından istifadə edin. Əlçatan qısayolları görmək üçün Search+A, sonra K düymələrini basın. Hələ də TalkBack-dən istifadə etmək istəyirsinizsə, əmri yenidən basın.</translation>
-<translation id="463135993322337640">Yeniliklərə baxmaq üçün ChromeVox o, n düymələrinə basın</translation>
 <translation id="4649220074413114917">İki barmağınızla ekrana toxunaraq cari danışıqları dayandıra bilərsiniz. ChromeVox-un nəsə oxumasını istəmədiyiniz hallarda bu, faydalıdır. Davam etmək üçün iki barmağınızla ekrana toxunun.</translation>
-<translation id="4660783501463101648">Klassik silindi. ChromeVox Klassikə qayıtmaq üçün klaviatura keçidi silindi.</translation>
 <translation id="4661075872484491155">ağac</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Növbəti sütuna keçin</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">geri</translation>
 <translation id="5102981729317424850">Alətlər paneli</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Yeni versiyada bəzi maraqlı dəyişikliklər etmişik; yeniliklər bunlardır:</translation>
 <translation id="5111640677200759579">Sütun başlığı</translation>
 <translation id="5115892389597951922">ChromeVox Log</translation>
 <translation id="5119330972669454698">Yanmış Taxta Rəngi</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Əsas Naviqasiya</translation>
 <translation id="609281021724813947">Öncəki slayder yoxdur</translation>
 <translation id="6100239002225743044">Bir sətir yuxarı köçürün</translation>
-<translation id="6118126368611144850">Chrome üçün Android tətbiqləri. Cihazda Play Mağaza varsa, Android tətbiqləri ilə ChromeVox'da yeniliklərdən xəbərdar olun. Play Mağazadan Google Chrome Canary endirməklə eksperimental dəstək əldə edin.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktivləşdirin</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Öncəki kombo xanası</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{nida}other{# nida}}</translation>
 <translation id="670717715607710284">Ekran deaktivdir</translation>
-<translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6714813999819678458">Öncəki səviyyə 2 başlığı</translation>
 <translation id="6730312624811567147">Home və ya End üçün Search Left və ya Right, Control Home və ya End üçün Search Control Left və ya Right, Yuxarı Səhifə və ya Aşağı üçün Search Up və ya Down düymələrindən istifadə edin</translation>
 <translation id="6736510033526053669">tab yaradılmışdır</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Antik Ağ</translation>
 <translation id="9220679313820249046">Narıncı Qırmızı</translation>
 <translation id="9223032053830369045">Tünd-qırmızı</translation>
-<translation id="923331726185079994">ChromeVox Güncəlləndi</translation>
 <translation id="93384979447910801">Tünd Dəniz Yaşılı</translation>
 <translation id="937605981140327129">TalkBack hazırda quraşdırılmayıb. Play Market vasitəsilə Android AccessibilitySuite'i quraşdırın və yenidən cəhd edin.</translation>
 <translation id="948171205378458592">Nitq tempini azaldın</translation>

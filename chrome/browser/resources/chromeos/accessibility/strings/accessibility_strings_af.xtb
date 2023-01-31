@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Nawoord</translation>
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="1198865190323699001">Aanraakgebare</translation>
-<translation id="1201402288615127009">Volgende</translation>
 <translation id="1202112913213080585">kanselleer</translation>
 <translation id="1206619573307042055">markies</translation>
 <translation id="1207086294218137981">Geen volgende vlak 4-opskrif nie</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Wenk</translation>
 <translation id="1354356357730355833">kopieer</translation>
-<translation id="135978014023467274">Jy is opgedateer na ChromeVox 63!</translation>
 <translation id="1360699455582016846">Klik die item onder roeteersleutel <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">gaan na die volgende karakter</translation>
 <translation id="1377925789329510816">Dit is die laaste opskrif. Druk Soek+H om na die eertse opskrif te spring, of Soek+Shift+H om na die tweede opskrif op hierdie bladsy te gaan.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">ontmerk</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Glyer</translation>
-<translation id="3300348286427369683">Ryktekssteun. ChromeVox steun nou rykteksvelde, insluitend springbevele, braille-merkerroetering en meer.</translation>
 <translation id="3300733168898541351">ontdoen</translation>
 <translation id="3307886118343381874">Gaan na die einde van die tabel</translation>
 <translation id="3312997241656799641">Volgende besoekte skakel</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Slimvasdrukmodus is af</translation>
 <translation id="4623097797855662355">Eindtitel</translation>
 <translation id="4624970070706497034">TalkBack verskaf nie meer pasmaking vir Chromebooks nie. Jy kan dit steeds gebruik, maar gebruik Talkback se verstekkortpadsleutels. Druk Search+A en dan K om beskikbare kortpaaie te sien. Druk die opdrag weer as jy Talkback steeds wil gebruik.</translation>
-<translation id="463135993322337640">Druk ChromeVox o, n om uit te vind wat nuut is</translation>
 <translation id="4649220074413114917">Jy kan met twee vingers op die skerm tik om enige huidige spraakproses te stop. Dit is nuttig as jy nie wil hê ChromeVox moet iets lees nie. Tik met twee vingers op die skerm om voort te gaan.</translation>
-<translation id="4660783501463101648">Klassiek is verwyder. Die sleutelbord se wipsleutel om na ChromeVox Classic terug te skakel, is verwyder.</translation>
 <translation id="4661075872484491155">boom</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Gaan na die volgende kolom</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">terug</translation>
 <translation id="5102981729317424850">Nutsbalk</translation>
 <translation id="5105050547967751155">vereis</translation>
-<translation id="5106547198195128110">Ons het 'n paar opwindende veranderings in hierdie nuwe vrystelling; dit is wat nuut is:</translation>
 <translation id="5111640677200759579">Kolomopskrif</translation>
 <translation id="5115892389597951922">ChromeVox-loglêer</translation>
 <translation id="5119330972669454698">Sanderige houtkleur</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Basiese navigasie</translation>
 <translation id="609281021724813947">Geen vorige glyer nie</translation>
 <translation id="6100239002225743044">Skuif een reël op</translation>
-<translation id="6118126368611144850">Android-programme vir Chrome. Kry 'n steelkykie na ChromeVox met Android-programme as jy Play Winkel op jou toestel het. Probeer eksperimentele steun deur Google Chrome Canary van die Play Winkel af te laai.</translation>
 <translation id="611827076493383239">besoek</translation>
 <translation id="6119846243427417423">aktiveer</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Vorige kombinasiekassie</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uitroep}other{# uitroepe}}</translation>
 <translation id="670717715607710284">Skerm af</translation>
-<translation id="6710213216561001401">Vorige</translation>
 <translation id="6714813999819678458">Vorige vlak 2-opskrif</translation>
 <translation id="6730312624811567147">Gebruik Search Links of Regs vir Home of End, Search Control Links of Regs vir Control Home of End, Search Op of Af vir Page Up of Down</translation>
 <translation id="6736510033526053669">oortjie geskep</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Antiekwit</translation>
 <translation id="9220679313820249046">Oranjerooi</translation>
 <translation id="9223032053830369045">Donkerrooi</translation>
-<translation id="923331726185079994">ChromeVox is opgedateer</translation>
 <translation id="93384979447910801">Donker seegroen</translation>
 <translation id="937605981140327129">TalkBack is nie tans geïnstalleer nie. Installeer asseblief Android AccessibilitySuite deur Play Winkel en probeer weer.</translation>
 <translation id="948171205378458592">Verminder tempo van spraak</translation>

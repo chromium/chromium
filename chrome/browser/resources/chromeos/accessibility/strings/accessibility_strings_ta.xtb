@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">பின்னுரை</translation>
 <translation id="1197088940767939838">ஆரஞ்சு</translation>
 <translation id="1198865190323699001">தொடுதல் சைகைகள்</translation>
-<translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1202112913213080585">ரத்துசெய்</translation>
 <translation id="1206619573307042055">மார்கியூ</translation>
 <translation id="1207086294218137981">அடுத்த 4ம் நிலை தலைப்பு எதுவும் இல்லை</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">உதவிக்குறிப்பு</translation>
 <translation id="1354356357730355833">நகலெடுக்கும்</translation>
-<translation id="135978014023467274">ChromeVox 63க்குப் புதுப்பிக்கப்பட்டது!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> ரூட்டிங் விசைக்குக் கீழுள்ள உருப்படியைக் கிளிக் செய்யவும்</translation>
 <translation id="1376703628032300005">அடுத்த எழுத்துக்குச் செல்</translation>
 <translation id="1377925789329510816">இது கடைசி தலைப்பாகும். முதல் தலைப்பிற்குச் செல்ல, தேடல்+Hஐ ஒன்றாக அழுத்தவும் அல்லது இந்தப் பக்கத்தில் உள்ள இரண்டாவது தலைப்பிற்குச் செல்ல, தேடல்+Shift+Hஐ ஒன்றாக அழுத்தவும்.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">தேர்வுசெய்யப்படவில்லை</translation>
 <translation id="3286372614333682499">போர்ட்ரெயிட்</translation>
 <translation id="3286390186030710347">ஸ்லைடர்</translation>
-<translation id="3300348286427369683">உயர் உரை ஆதரவு. இப்போது உரையில் தாவுவதற்கான கட்டளைகள், பிரெய்ல் கர்சர் ரூட்டிங், தேர்ந்தெடுத்தல் மற்றும் பல அம்சங்கள் உட்பட உயர் உரைப் புலங்களை ChromeVox ஆதரிக்கிறது.</translation>
 <translation id="3300733168898541351">செயல்தவிர்க்கும்</translation>
 <translation id="3307886118343381874">அட்டவணையின்  இறுதிக்குச் செல்</translation>
 <translation id="3312997241656799641">அடுத்ததாக பார்வையிட்ட இணைப்பு</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">ஸ்மார்ட் ஒற்றை விசைப் பயன்முறையை முடக்கும்</translation>
 <translation id="4623097797855662355">முத்திரை</translation>
 <translation id="4624970070706497034">Chromebookகளுக்கான பிரத்தியேகமாக்கலுக்கு TalkBack அம்சத்தை இனி பயன்படுத்த முடியாது. இருப்பினும் TalkBack அம்சத்தின் இயல்பு கீபோர்டு ஷார்ட்கட்களைப் பயன்படுத்தலாம். பயன்படுத்தக்கூடிய ஷார்ட்கட்களைப் பார்க்க, Search+A அழுத்திவிட்டு K அழுத்தவும். இன்னமும் TalkBack அம்சத்தைப் பயன்படுத்த விரும்பினால் கட்டளையை மீண்டும் அழுத்தவும்.</translation>
-<translation id="463135993322337640">புதிய அம்சங்களைப் பார்க்க, ChromeVox o, n ஆகியவற்றை அழுத்தவும்</translation>
 <translation id="4649220074413114917">இரண்டு விரல்களால் திரையைத் தட்டுவதன் மூலம் தற்போது வாசித்துக் காட்டப்படுவதை நிறுத்தலாம். ChromeVox வாசித்துக்கொண்டிருப்பதை நிறுத்த இது உதவியாக இருக்கும். தொடர, இரண்டு விரல்களால் திரையைத் தட்டவும்.</translation>
-<translation id="4660783501463101648">கிளாசிக் அகற்றப்பட்டது. ChromeVox கிளாசிக்கிற்கு மீண்டும் மாறுவதற்கான கீபோர்டு நிலைமாற்றி அகற்றப்பட்டது.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">அடுத்த நெடுவரிசைக்குச் செல்லும்</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">முந்தைய</translation>
 <translation id="5102981729317424850">கருவிப் பட்டி</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">இந்தப் புதிய வெளியீட்டில் சில அற்புதமான மாற்றங்களைச் செய்துள்ளோம்; அந்தப் புதிய அம்சங்களை இங்கே பார்க்கவும்:</translation>
 <translation id="5111640677200759579">நெடுவரிசை மேற்தலைப்பு</translation>
 <translation id="5115892389597951922">ChromeVox பதிவு</translation>
 <translation id="5119330972669454698">பர்லி வுட்</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">அடிப்படை வழிசெலுத்துதல்</translation>
 <translation id="609281021724813947">முந்தைய ஸ்லைடர் எதுவும் இல்லை</translation>
 <translation id="6100239002225743044">முந்தைய வரிக்குச் செல்</translation>
-<translation id="6118126368611144850">Chromeக்கான Android ஆப்ஸ். உங்கள் சாதனத்தில் Play Store இருந்தால், Android பயன்பாடுகளுடன்கூடிய ChromeVox இல் புத்தம்புதிய அம்சங்களைப் பெறுங்கள் (பொதுவில் வெளியாவதற்கு முன்பே). Play Storeரிலிருந்து Google Chrome Canaryஐப் பதிவிறக்கி, பரிசோதனைக்குரிய ஆதரவைப் பயன்படுத்திப் பார்க்கவும்.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">செயல்படுத்து</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">முந்தைய சேர்க்கைப் பெட்டி</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ஆச்சரியக்குறி}other{# ஆச்சரியக்குறிகள்}}</translation>
 <translation id="670717715607710284">திரையை ஆஃப் செய்யும்</translation>
-<translation id="6710213216561001401">முந்தையது</translation>
 <translation id="6714813999819678458">முந்தைய, 2 ஆம் படிநிலை தலைப்பு</translation>
 <translation id="6730312624811567147">Home அல்லது Endக்கு Search Left அல்லது Rightடையும், Control Home அல்லது Endக்கு Search Control Left அல்லது Rightடையும், Page Up அல்லது Downனுக்கு Search Up அல்லது Downனையும் பயன்படுத்தவும்</translation>
 <translation id="6736510033526053669">தாவல் உருவாக்கப்பட்டது</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">ஆன்ட்டிக் ஒயிட்</translation>
 <translation id="9220679313820249046">ஆரஞ்ச் ரெட்</translation>
 <translation id="9223032053830369045">டார்க் ரெட்</translation>
-<translation id="923331726185079994">ChromeVox புதுப்பிக்கப்பட்டது</translation>
 <translation id="93384979447910801">டார்க் ஸீ க்ரீன்</translation>
 <translation id="937605981140327129">TalkBack இன்னும் நிறுவப்படவில்லை. Play Storeரில் இருந்து Android AccessibilitySuite ஆப்ஸை நிறுவிய பிறகு மீண்டும் முயலவும்.</translation>
 <translation id="948171205378458592">பேச்சின் விகிதத்தைக் குறை</translation>

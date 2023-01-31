@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Послесловие</translation>
 <translation id="1197088940767939838">Оранжевый</translation>
 <translation id="1198865190323699001">Жесты</translation>
-<translation id="1201402288615127009">Далее</translation>
 <translation id="1202112913213080585">отменить</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Следующего заголовка четвертого уровня нет</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Совет</translation>
 <translation id="1354356357730355833">копировать</translation>
-<translation id="135978014023467274">Теперь вы используете ChromeVox 63</translation>
 <translation id="1360699455582016846">Нажать на объект под клавишей перемещения <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">Перейти к следующему символу</translation>
 <translation id="1377925789329510816">Это последний заголовок. Чтобы вернуться к первому заголовку, нажмите SEARCH + Р. Чтобы перейти ко второму заголовку на этой странице, нажмите SEARCH + SHIFT + Р.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">флажок не установлен</translation>
 <translation id="3286372614333682499">вертикальная ориентация</translation>
 <translation id="3286390186030710347">Ползунок</translation>
-<translation id="3300348286427369683">В ChromeVox появилось больше возможностей для редактирования текста, например команды для ускоренной навигации, перемещение курсора с помощью дисплея Брайля, выбор и не только.</translation>
 <translation id="3300733168898541351">отменить</translation>
 <translation id="3307886118343381874">Перейти к концу таблицы</translation>
 <translation id="3312997241656799641">Перейти к следующей открытой ссылке</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Умный режим залипания клавиш отключен</translation>
 <translation id="4623097797855662355">Выпускные данные</translation>
 <translation id="4624970070706497034">TalkBack больше не поддерживает персонализацию на устройствах Chromebook. Программой все еще можно пользоваться, но в ней теперь доступны только сочетания клавиш по умолчанию. Чтобы открыть список со всеми сочетаниями, нажмите Поиск + A, затем K. Если вы по-прежнему хотите использовать TalkBack, нажмите эти сочетания клавиш ещё раз.</translation>
-<translation id="463135993322337640">Чтобы узнать об изменениях в новой версии, нажмите клавишу ChromeVox, а затем Щ и Т.</translation>
 <translation id="4649220074413114917">Нажав на экран двумя пальцами, можно остановить чтение текста. Это удобно, если вы не хотите, чтобы программа ChromeVox что-то озвучивала. Чтобы продолжить, нажмите на экран двумя пальцами.</translation>
-<translation id="4660783501463101648">Мы отказались от ChromeVox Classic. Теперь на эту версию нельзя переключиться с помощью клавиатуры.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Перейти к следующему столбцу</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5102981729317424850">Панель инструментов</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">В новой версии вас ждут интересные изменения:</translation>
 <translation id="5111640677200759579">Заголовок столбца</translation>
 <translation id="5115892389597951922">Журнал ChromeVox</translation>
 <translation id="5119330972669454698">Плотная древесина</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Навигация</translation>
 <translation id="609281021724813947">Предыдущего ползунка нет</translation>
 <translation id="6100239002225743044">Перейти на строку вверх</translation>
-<translation id="6118126368611144850">Теперь ChromeVox поддерживается в приложениях Android. Если на вашем устройстве установлен Play Маркет, скачайте Google Chrome Canary и убедитесь сами.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">активировать</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Перейти к предыдущему полю со списком</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{восклицательный знак}one{# восклицательный знак}few{# восклицательных знака}many{# восклицательных знаков}other{# восклицательного знака}}</translation>
 <translation id="670717715607710284">Отключить экран</translation>
-<translation id="6710213216561001401">Назад</translation>
 <translation id="6714813999819678458">Перейти к предыдущему заголовку второго уровня</translation>
 <translation id="6730312624811567147">Используйте клавишу поиска и стрелку влево или вправо, чтобы перейти в начало или конец страницы; клавишу поиска, Ctrl и стрелку влево или вправо – чтобы перейти в начало или конец строки; клавишу поиска и стрелку вверх или вниз – для прокрутки страницы</translation>
 <translation id="6736510033526053669">Открыта новая вкладка.</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Античный белый</translation>
 <translation id="9220679313820249046">Оранжево-красный</translation>
 <translation id="9223032053830369045">Темно-красный</translation>
-<translation id="923331726185079994">Расширение ChromeVox обновлено</translation>
 <translation id="93384979447910801">Темный цвет морской волны</translation>
 <translation id="937605981140327129">TalkBack не поддерживается. Установите Android Accessibility Suite из Google Play и повторите попытку.</translation>
 <translation id="948171205378458592">Замедлить речь</translation>

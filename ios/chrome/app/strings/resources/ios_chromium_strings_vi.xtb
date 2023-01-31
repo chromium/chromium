@@ -6,12 +6,12 @@
 <translation id="1185134272377778587">Giới thiệu về Chromium</translation>
 <translation id="1257458525759135959">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chromium thêm vào ảnh của bạn</translation>
 <translation id="1289216811211435351">Chuyển sang Chromium</translation>
+<translation id="1352919863522755794">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="1361748954329991663">Chromium đã lỗi thời. Nếu không có bản cập nhật nào trong <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, thì có khả năng thiết bị của bạn không hỗ trợ các phiên bản Chromium mới nữa.</translation>
 <translation id="1431818719585918472">Để Chromium khóa các thẻ Ẩn danh của bạn.</translation>
 <translation id="1472013873724362412">Tài khoản của bạn không hoạt động trên Chromium. Vui lòng liên hệ với quản trị viên miền của bạn hoặc sử dụng Tài khoản Google thông thường để đăng nhập.</translation>
 <translation id="1507010443238049608">Giúp cải thiện hiệu suất và các tính năng của Chromium</translation>
 <translation id="1531155317299575425">Hiển thị lời nhắc đăng nhập vào Chromium.</translation>
-<translation id="1584569488888892906">Chromium giờ đây đơn giản, an toàn và nhanh hơn bao giờ hết</translation>
 <translation id="1617663976202781617">Dữ liệu từ tính năng đồng bộ hóa của Chromium</translation>
 <translation id="1722370509450468186">Mật khẩu của bạn sẽ được lưu trong Tài khoản (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Đã xóa dữ liệu Chromium</translation>
@@ -36,6 +36,7 @@
 <translation id="2650312721222849884">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="2684230048001240293">Hãy đặt Chromium làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="2730884209570016437">Chromium không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh.</translation>
+<translation id="2767464022270041271">Bạn chưa lưu mật khẩu nào. Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="2915596697727466327">Chromium sử dụng Face ID để đảm bảo rằng chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
 <translation id="2918709798697875261">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chromium.</translation>
 <translation id="2942241131342758843">Hãy dùng Chromium theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
@@ -58,6 +59,7 @@
 <translation id="4681781466797808448">Bật trình quét của Chromium</translation>
 <translation id="4736424910885271643">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="4828317641996116749">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
+<translation id="4840404732697892756">Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn đăng nhập bằng Tài khoản Google.</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="4996471330284142407">Với phiên bản Chromium đơn giản, an toàn và nhanh nhất từ trước đến nay, bạn sẽ làm được nhiều việc hơn.</translation>
 <translation id="4999538639245140991">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chromium của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
@@ -68,6 +70,7 @@
 <translation id="5521125884468363740">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập và bật tính năng đồng bộ hóa</translation>
 <translation id="5522297504975449419">Một số tính năng của Chromium sẽ không hoạt động nữa.</translation>
 <translation id="5573014823074921752">Mẹo sử dụng Chromium. Để xem thêm các tùy chọn về thẻ, hãy chạm và giữ nút Hiển thị thẻ trên thanh công cụ ở đầu hoặc cuối màn hình.</translation>
+<translation id="5661521615548540542">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại sau.</translation>
 <translation id="5700709190537129682">Chromium không thể kiểm tra mật khẩu của bạn</translation>
 <translation id="5777187867430702742">Trang Chromium</translation>
 <translation id="5945387852661427312">Bạn đang đăng nhập bằng tài khoản do <ph name="DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chromium của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Đăng xuất khỏi Chromium sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>
@@ -88,7 +91,6 @@
 <translation id="7018284295775193585">Chromium không thể cập nhật</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7099326575020694068">Chromium không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
-<translation id="7108914401277488191">Hoàn thành thêm nhiều việc nhờ Chromium</translation>
 <translation id="7118091470949186573">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="7175400662502680481">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Trình quản lý mật khẩu khuyên bạn nên đổi mật khẩu này ngay.</translation>
 <translation id="7208566199746267865">Chromium giúp bạn tiết kiệm thời gian bằng cách đưa tài khoản của bạn lên web. Bạn có thể thêm hoặc xóa tài khoản trong Cài đặt.</translation>
@@ -115,6 +117,7 @@
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="858114650497379505">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPhone.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
+<translation id="8603022514504485810">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Giữ cho bạn an toàn trên Chromium và có thể dùng để cải thiện mức độ bảo mật trên các ứng dụng khác của Google khi bạn đăng nhập.</translation>
 <translation id="8663480472502753423">Giữ cho Chromium luôn cập nhật</translation>
 <translation id="8685813584220679697">Đăng nhập vào trang web này và Chromium.</translation>
@@ -125,6 +128,7 @@ Những yếu tố cần xem xét:
   • Nếu Chromium gặp sự cố, thông tin chi tiết về sự cố có thể sẽ bao gồm một số thông tin cá nhân.
   • Nếu bạn bật chế độ đồng bộ hoá, các chỉ số có thể sẽ còn bao gồm cả thông tin về các URL bạn từng truy cập.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chromium.</translation>
+<translation id="8857676124663337448">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai.</translation>
 <translation id="894437814105052438">Khi bạn đăng xuất, Chromium sẽ không đồng bộ hóa bất cứ dữ liệu mới nào với Tài khoản Google của bạn. Dữ liệu đã đồng bộ hóa trước đó sẽ vẫn có trong tài khoản này.</translation>
 <translation id="9022552996538154597">Đăng nhập vào Chromium</translation>
 <translation id="9059693977935746710">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu cho <ph name="EMAIL" /></translation>

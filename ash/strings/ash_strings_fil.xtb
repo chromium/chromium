@@ -420,9 +420,11 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3289674678944039601">Nagcha-charge sa pamamagitan ng adapter</translation>
 <translation id="3290356915286466215">Hindi secure</translation>
 <translation id="3294437725009624529">Bisita</translation>
+<translation id="3298690094479023523">Hindi pa rin ma-verify ang iyong PIN o password. Subukan ulit.</translation>
 <translation id="3307642347673023554">Lumipat sa laptop mode</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
+<translation id="332827762492701193">Nakatago ang mga notification</translation>
 <translation id="3339826665088060472">Screen capture, mga tool sa pagkuha ng mga screenshot at recording ng screen</translation>
 <translation id="3340978935015468852">mga setting</translation>
 <translation id="3341303451326249809">Na-capture na ang screenshot</translation>
@@ -559,6 +561,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4017989525502048489">Laser pointer</translation>
 <translation id="401993194061514265">Hindi available ang marker. Buksan ulit ang Screencast.</translation>
 <translation id="4021716437419160885">Mag-scroll pababa</translation>
+<translation id="4024840464866786680">Kung nakalimutan mo ang iyong PIN at password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="4028481283645788203">Kinakailangan ang password para sa higit pang seguridad</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Ibinabahagi mo ang iyong screen</translation>
@@ -699,10 +702,12 @@ Isaksak ang iyong device.</translation>
 <translation id="4735944890391795473">Desk 12</translation>
 <translation id="473775607612524610">I-update</translation>
 <translation id="4740516757091333363">I-delete ang naka-save na desk?</translation>
+<translation id="4747410141429390146">Paki-unlock para tingnan ang mga notification</translation>
 <translation id="4752784485658729358">6 na naka-save na desk lang ang pinapayagan. Mag-alis ng desk para mag-save ng bago.</translation>
 <translation id="4759238208242260848">Mga Download </translation>
 <translation id="4762573482154983647">Itago ang mga app</translation>
 <translation id="4774338217796918551">Bumalik nang <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Hindi pa rin ma-verify ang iyong password. Subukan ulit.</translation>
 <translation id="4776917500594043016">Password para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Hindi available ang Google Assistant sa demo session.</translation>
@@ -842,6 +847,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5536723544185013515">Mga Kamakailang App, mag-navigate gamit ang pakaliwa o pakanang arrow key para ma-access ang lahat ng kamakailang app</translation>
 <translation id="553675580533261935">Lumalabas sa session</translation>
 <translation id="5537725057119320332">I-cast</translation>
+<translation id="5546397813406633847">I-recover ang user</translation>
 <translation id="554893713779400387">I-toggle ang pagdidikta</translation>
 <translation id="5558091555391176027">I-toggle ang mataas na visibility ng Nearby Share</translation>
 <translation id="5560420195677022218">Tingnan ang mga app ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
@@ -858,6 +864,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5618148318840095371">Inilipat ka namin sa mas mahusay na network</translation>
 <translation id="5619862035903135339">Dini-disable ng patakaran ng administrator ang screen capture</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Hindi ma-verify ang iyong password. Subukan ulit.</translation>
 <translation id="5648021990716966815">Jack ng mikropono</translation>
 <translation id="5652575806481723716">Hinihiling ng <ph name="FOCUSED_APP_NAME" /> ang iyong atensyon.</translation>
 <translation id="5662075790140998213">Desk 10</translation>
@@ -876,6 +883,7 @@ Isaksak ang iyong device.</translation>
 <translation id="5707775774148071965">Sinusuportahan ng iyong device ang mas mataas na rate ng data kaysa sa iyong cable. Posibleng maging limitado ang performance ng device.</translation>
 <translation id="5710450975648804523">Naka-on ang Huwag Istorbohin</translation>
 <translation id="571295407079589142">Naka-off ang mobile data</translation>
+<translation id="5727460725221669831">Kung nakalimutan mo ang iyong password o pinalitan mo ang iyong password ng Google Account kamakailan, subukang i-recover ang user na ito.</translation>
 <translation id="573413375004481890">Hindi masuportahan ng device na ito ang lahat ng iyong display kaya may isang nadiskonekta</translation>
 <translation id="5740328398383587084">Nearby Share</translation>
 <translation id="574392208103952083">Katamtaman</translation>

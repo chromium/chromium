@@ -18,6 +18,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1066060668811609597">Kelola Sinkronisasi</translation>
 <translation id="1076421457278169141">Kode telah dipindai</translation>
 <translation id="1076785341346483463">Sinkronkan dengan Akun Terkelola</translation>
+<translation id="1080365971383768617">Sandi di semua perangkat Anda</translation>
 <translation id="1084365883616172403">Kirim Facebook selesai.</translation>
 <translation id="1085696779717592361">Gunakan Chrome secara Default</translation>
 <translation id="1103523840287552314">Selalu terjemahkan <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="2797029671965852011">Tampilkan Histori</translation>
 <translation id="2800683595868705743">Tutup Pengalih Tab</translation>
 <translation id="2815198996063984598">2. Ketuk Aplikasi Browser Default</translation>
-<translation id="2820289420301699633">Administrator dapat mengontrol Chrome dan dapat mengakses datanya</translation>
 <translation id="2830972654601096923">Kelola Alamat...</translation>
 <translation id="2834399722155632105">3. Ketuk Opsi Sandi</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5056446788882570708">Masalah ditemukan <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">Oke</translation>
 <translation id="5062321486222145940">Instal Google Drive</translation>
+<translation id="50641035439563602">Sandi kini disimpan ke Akun Google Anda (<ph name="ACCOUNT" />). Anda dapat menggunakannya di perangkat mana pun yang Anda gunakan untuk login. Untuk menonaktifkannya, buka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan ukuran file.</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet selesai.</translation>
@@ -595,6 +596,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5520466080178053306">Ketuk Pengelola Sandi, lalu Ketuk Tambahkan</translation>
 <translation id="5525095647255982834">Untuk mengirim tab ini ke perangkat lain, login ke Chrome di perangkat tersebut.</translation>
 <translation id="5525269841082836315">Buat Frasa Sandi</translation>
+<translation id="5530084793407600786">Telusuri isi gambar dengan Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> Ditemukan</translation>
 <translation id="5548760955356983418">Handoff memungkinkan Anda memulai penjelajahan situs web pada perangkat ini dan melanjutkan di Mac dengan mudah. Situs web yang saat ini terbuka akan muncul di Dock pada Mac Anda.
 
@@ -677,7 +679,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6064824697233747382">Organisasi mengharuskan Anda menonaktifkan sinkronisasi.</translation>
 <translation id="6066301408025741299">Ketuk untuk membatalkan.</translation>
 <translation id="6071409777669089905">Lepaskan Tab</translation>
-<translation id="60829778314739003">Setujui dan Lanjutkan</translation>
 <translation id="6084848228346514841">Pilih Tab</translation>
 <translation id="6103540626693881831">Enkripsi di Perangkat</translation>
 <translation id="6119050551270742952">Halaman Web saat ini sedang dalam Mode Samaran</translation>
@@ -876,7 +877,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7425346204213733349">Perubahan pada bookmark, histori, sandi, dan setelan lainnya tidak akan disinkronkan lagi dengan Akun Google. Namun, data yang sudah ada akan tetap disimpan di Akun Google Anda.</translation>
 <translation id="7431991332293347422">Kontrol cara histori browsing digunakan untuk mempersonalisasi Penelusuran dan lainnya</translation>
 <translation id="7435356471928173109">Dinonaktifkan oleh administrator Anda</translation>
-<translation id="7438481509621345350">Anda sekarang akan melihat cerita dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
+<translation id="7438481509621345350">Anda sekarang akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
 <translation id="7454057999980797137">Prov./County</translation>
 <translation id="7459628154744868585">Perlindungan yang Ditingkatkan Aktif</translation>
 <translation id="746684838091935575">3 Pilih Chrome</translation>

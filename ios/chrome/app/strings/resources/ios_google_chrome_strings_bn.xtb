@@ -3,6 +3,7 @@
 <translationbundle lang="bn">
 <translation id="1143896152279775643"><ph name="EMAIL" />-এর জন্য Google পাসওয়ার্ড ম্যানেজারে আপনার পাসওয়ার্ড সেভ হয়ে যাবে।</translation>
 <translation id="1282031177488366470">Chrome-এর ফিচার এবং পারফর্ম্যান্স উন্নত করতে সাহায্য করুন</translation>
+<translation id="1352919863522755794">Google Password Manager আপনার পাসওয়ার্ড চেক করতে পারছে না। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="1462727070346936664">Chrome থেকে সবচেয়ে বেশি সুবিধা পেতে সাইন-ইন করুন।</translation>
 <translation id="1479202195792305274">Google অ্যাকাউন্ট ব্যবহার করে আপনি সাইন-ইন করলে Chrome পাসওয়ার্ড চেক করে দেখতে পারবে।</translation>
 <translation id="1493827051843127077">আপনার সব ডিভাইসে ট্যাব, পাসওয়ার্ড এবং পেমেন্টের তথ্য সিঙ্ক করতে Chrome ডিফল্ট হিসেবে সেট করুন</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">আপনার Chrome ডেটা সিঙ্ক করুন</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">এই ডিভাইসের Chrome এবং অন্যান্য Google অ্যাপ থেকে এই অ্যাকাউন্টটি এবং কোনও সেভ না করা ডেটা থাকলে তা সরানো হবে।</translation>
-<translation id="1968388653333775699">Chrome ব্যবহার করে আরও অনেক কিছু করুন</translation>
 <translation id="2009224836393115614">Chrome আপনার পাসওয়ার্ড চেক করতে পারেনি। ডিভাইসের ইন্টারনেট কানেকশন চেক করে দেখুন।</translation>
 <translation id="2056123005618757196">সহজ, সুরক্ষিত ও এখনও পর্যন্ত উপলভ্য সবচেয়ে দ্রুত ভার্সনের Google Chrome-এর সাহায্যে আরও কাজ করুন।</translation>
 <translation id="2147651015520127414"><ph name="ISSUER" /> যে এই ওয়েবসাইটের সার্টিফিকেট প্রকাশ করেছে Chrome তা যাচাই করেছে।</translation>
 <translation id="2199719347983604670">Chrome সিঙ্ক থেকে ডেটা</translation>
-<translation id="2313070403598893276">Google Chrome হল সহজ, নিরাপদ এবং এখনও পর্যন্ত উপলভ্য অন্য সব ব্রাউজারের চেয়ে দ্রুততর</translation>
 <translation id="2339201583852607431">পাসওয়ার্ড আপনার Google অ্যাকাউন্টে (<ph name="EMAIL" />) সেভ করা হবে।</translation>
 <translation id="2342919707875585281">Chrome আপনার অনুমোদিত সাইটের সাথে লোকেশন শেয়ার করে।</translation>
 <translation id="2347208864470321755">যখন এই বৈশিষ্ট্যটি চালু করা হয় তখন Chrome, Google অনুবাদ ব্যবহার করে অন্যান্য ভাষায় লিখিত পৃষ্ঠাগুলি অনুবাদ করার অফার করবে৷ <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">সব ওয়েবসাইটে আপনার Google অ্যাকাউন্ট থেকে সাইন-আউট করতে, <ph name="BEGIN_LINK" />Chrome থেকে সাইন-আউট করুন<ph name="END_LINK" />।</translation>
 <translation id="2695886661449553974">Chrome-এ আপডেট চেক করা যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="2732745070297234559">Chrome সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
+<translation id="2767464022270041271">কোনও সেভ করা পাসওয়ার্ড নেই। আপনি পাসওয়ার্ড সেভ করলে Google Password Manager সেটি চেক করতে পারবে।</translation>
 <translation id="2869959624320573933">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> বেছে নিন</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> দ্বারা ম্যানেজ করা একটি অ্যাকাউন্ট থেকে আপনি সাইন-আউট করছেন বলে, এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে যাবে। আপনার Google অ্যাকাউন্টে এই ডেটা থেকে যাবে।</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করুন।<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">অ্যাপ উন্নত করতে সাহায্য করার জন্য, Chrome ব্যবহার সম্পর্কিত ও ক্র্যাশ ডেটা Google-এ পাঠায়। <ph name="BEGIN_LINK" />ম্যানেজ করুন<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">এই সুবিধা Chrome-এর বিটা ভার্সনে কাজ করে না</translation>
+<translation id="4840404732697892756">আপনি যখন নিজের Google অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করবেন, Google Password Manager তখন আপনার পাসওয়ার্ড চেক করে দেখতে পারে।</translation>
 <translation id="5030102366287574140">Chrome আপনাকে ডেটার নিরাপত্তা লঙ্ঘন, ক্ষতিকর ওয়েবসাইট ও আরও অনেক কিছু থেকে সুরক্ষিত থাকতে সাহায্য করে।</translation>
 <translation id="5108659628347594808">Chrome আরও উন্নত করতে সাহায্য করুন</translation>
 <translation id="5119391094379141756">Chrome বেছে নিন</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome মাঝে মাঝে অনলাইনে প্রকাশ করা তালিকা অনুযায়ী আপনার পাসওয়ার্ড চেক করে। এটি করার সময় আপনার পাসওয়ার্ড ও ইউজারনেম এনক্রিপ্ট করা থাকে, তাই সেগুলি কেউ দেখতে পাবে না, এমনকি Google-ও না।</translation>
 <translation id="5639704535586432836">সেটিংস &gt; গোপনীয়তা &gt; ক্যামেরা &gt; Google Chrome খুলুন এবং ক্যামেরা চালু করুন।</translation>
 <translation id="5642200033778930880">Google Chrome আপনার ক্যামেরা বিভক্ত দৃশ্য মোডে ব্যবহার করতে পারবে না</translation>
+<translation id="5661521615548540542">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">আপনি অফলাইন থাকায়, Chrome-এ আপনার আপডেট দেখা যাচ্ছে না</translation>
 <translation id="5716154293141027663">অন্যান্য অ্যাপ থেকে লিঙ্কে ট্যাপ করে আপনি যেকোনও সময় Chrome খুলতে পারবেন</translation>
@@ -120,9 +122,11 @@
   ২. 'ডিফল্ট ব্রাউজার অ্যাপ' বিকল্পে ট্যাপ করুন
   ৩. Chrome বেছে নিন।</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করুন বা <ph name="BEGIN_LINK" />আপনার Google অ্যাকাউন্টের পাসওয়ার্ড চেক করুন।<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Google Chrome-এর সাহায্যে নিরাপদে থাকুন</translation>
 <translation id="8772179140489533211">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে।</translation>
 <translation id="8788269841521769222">আপনার এই পাসওয়ার্ড মনে রাখার দরকার নেই। <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজারে এটি সেভ করা হবে</translation>
+<translation id="8857676124663337448">Google Password Manager সব পাসওয়ার্ড চেক করতে পারেনি। আগামীকাল আবার চেষ্টা করে দেখুন।</translation>
 <translation id="8897749957032330183">পাসওয়ার্ড এই ডিভাইসের Google Password Manager বিকল্পে সেভ করা হয়।</translation>
 <translation id="8969290730818637510">চালু থাকলে, ব্যবহারকারী:
 <ph name="BEGIN_INDENT" />  • যারা আপনার মতো করে Chrome ব্যবহার করেন তাদের জন্য Chrome ব্যবহারের অভিজ্ঞতা আরও ভাল করতে সাহায্য করতে পারেন।<ph name="END_INDENT" />

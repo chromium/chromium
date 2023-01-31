@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">പിൻ കുറിപ്പ്</translation>
 <translation id="1197088940767939838">ഓറഞ്ച്</translation>
 <translation id="1198865190323699001">ടച്ച് ജെസ്ച്ചറുകൾ</translation>
-<translation id="1201402288615127009">അടുത്തത്</translation>
 <translation id="1202112913213080585">റദ്ദാക്കുക</translation>
 <translation id="1206619573307042055">മാർക്യൂ</translation>
 <translation id="1207086294218137981">അടുത്ത നില 4 ശീർഷകം ഒന്നുമില്ല</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">ലേഖനം</translation>
 <translation id="1346059596910821859">നുറുങ്ങ്</translation>
 <translation id="1354356357730355833">പകർത്തുക</translation>
-<translation id="135978014023467274">നിങ്ങൾ ChromeVox 63-ലേക്ക് അപ്‌ഡേറ്റ് ചെയ്‌തിരിക്കുന്നു!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> റൂട്ടിംഗ് കീയ്ക്ക് ചുവടെയുള്ള ഇനം ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="1376703628032300005">അടുത്ത പ്രതീകത്തിലേക്ക് നീക്കുക</translation>
 <translation id="1377925789329510816">ഇത് അവസാനത്തെ തലക്കെട്ടാണ്. ഈ പേജിലെ ആദ്യ തലക്കെട്ട് റാപ്പ് ചെയ്യാൻ തിരയൽ+H അമർത്തുക അല്ലെങ്കിൽ രണ്ടാമത്തെ തലക്കെട്ടിലേക്ക് പോകാൻ തിരയൽ+Shift+H അമർത്തുക.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">അണ്‍‌ചെക്ക് ചെയ്‌തു</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
 <translation id="3286390186030710347">സ്ലൈഡർ</translation>
-<translation id="3300348286427369683">റിച്ച് ടെക്‌സ്റ്റ് പിന്തുണ. ജംബ് കമാൻഡുകളും ബ്രെയിലി കഴ്‌സർ റൂട്ടിംഗും തിരഞ്ഞെടുപ്പും മറ്റും ഉൾപ്പെടെ, റിച്ച് ടെക്‌സ്റ്റ് ഫീൽഡുകളെ ChromeVox ഇപ്പോൾ പിന്തുണയ്ക്കുന്നു.</translation>
 <translation id="3300733168898541351">പഴയപടിയാക്കുക</translation>
 <translation id="3307886118343381874">പട്ടികയുടെ അവസാനത്തിലേക്ക് പോകുക</translation>
 <translation id="3312997241656799641">സന്ദർശിച്ച അടുത്ത ലിങ്ക്</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">സ്‌മാർട്ട് സ്‌റ്റിക്കി മോഡ് ഓഫാണ്</translation>
 <translation id="4623097797855662355">അച്ചടിമുദ്ര</translation>
 <translation id="4624970070706497034">Chromebook-കൾക്കായി TalkBack ഇനി ഇഷ്ടാനുസൃതമാക്കൽ ലഭ്യമാക്കില്ല. നിങ്ങൾക്ക് ഇത് ഇപ്പോഴും ഉപയോഗിക്കാം, എന്നാൽ TalkBack ഡിഫോൾട്ട് കീബോഡ് കുറുക്കുവഴികൾ ഉപയോഗിക്കുക. ലഭ്യമായ കുറുക്കുവഴികൾ കാണാൻ Search+A അമർത്തിയ ശേഷം K അമർത്തുക. നിങ്ങൾക്ക് ഇപ്പോഴും TalkBack ഉപയോഗിക്കണമെന്നുണ്ടെങ്കിൽ, കമാൻഡ് വീണ്ടും അമർത്തുക.</translation>
-<translation id="463135993322337640">പുതിയതെന്തെന്ന് അറിയാൻ ChromeVox o, n എന്നിവ അമർത്തുക</translation>
 <translation id="4649220074413114917">നിലവിലെ ഏത് സംഭാഷണവും നിർത്താൻ രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് സ്ക്രീൻ ടാപ്പ് ചെയ്യുന്നത് ഉപയോഗിക്കാം. ChromeVox എന്തെങ്കിലും വായിക്കുന്നതിൽ നിങ്ങൾക്ക് താൽപ്പര്യമില്ലെങ്കിൽ ഇത് ഉപയോഗപ്രദമാകും. തുടരാൻ, രണ്ട് വിരലുകൾ ഉപയോഗിച്ച് സ്ക്രീനിൽ ടാപ്പ് ചെയ്യുക.</translation>
-<translation id="4660783501463101648">ക്ലാസ്സിക്ക് നീക്കം ചെയ്‌തു. ChromeVox ക്ലാസ്സിക്കിലേക്ക് തിരികെ മാറുന്നതിനുള്ള കീബോർഡ് ടോഗിൾ നീക്കം ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="4661075872484491155">ട്രീ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">അടുത്ത കോളത്തിലേക്ക് പോവുക</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">തിരികെ</translation>
 <translation id="5102981729317424850">ടൂൾ ബാർ</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">ഈ പുതിയ റിലീസിൽ ആവേശകരമായ ചില മാറ്റങ്ങൾ ഞങ്ങൾ ഉൾപ്പെടുത്തിയിരിക്കുന്നു; പുതിയത് എന്തൊക്കെയെന്ന് കാണുക:</translation>
 <translation id="5111640677200759579">നിര ശീർഷകം</translation>
 <translation id="5115892389597951922">ChromeVox ലോഗ്</translation>
 <translation id="5119330972669454698">ബേർളി വുഡ്</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">അടിസ്ഥാന നാവിഗേഷൻ</translation>
 <translation id="609281021724813947">മുൻ സ്ലൈഡർ ഒന്നുമില്ല</translation>
 <translation id="6100239002225743044">ഒരു വരി മുകളിലോട്ട് നീക്കുക</translation>
-<translation id="6118126368611144850">Chrome-നായുള്ള Android ആപ്പുകൾ. ഉപകരണത്തിൽ Play Store ഉണ്ടെങ്കിൽ, Android ആപ്പുകൾ ഉപയോഗിച്ച് ChromeVox-ന്‍റെ ആദ്യ അനുഭവം അറിയൂ. Play Store-ൽ നിന്ന് Google Chrome Canary ഡൗൺലോഡ് ചെയ്‌ത്, പരീക്ഷണാത്മക പിന്തുണ പരീക്ഷിച്ച് നോക്കുക.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ആക്റ്റിവേറ്റ് ചെയ്യുക</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">മുൻ കോംബോ ബോക്സ്</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ആശ്ചര്യചിഹ്നം}other{# ആശ്ചര്യചിഹ്നങ്ങൾ}}</translation>
 <translation id="670717715607710284">സ്ക്രീൻ ഓഫാക്കുക</translation>
-<translation id="6710213216561001401">മുമ്പത്തേത്</translation>
 <translation id="6714813999819678458">മുൻ നില 2 ശീർഷകം</translation>
 <translation id="6730312624811567147">ഹോമിനോ അവസാനിപ്പിക്കുന്നതിനോ ഇടത്തോട്ടോ വലത്തോട്ടോ ഉളള തിരയൽ ഉപയോഗിക്കുക, ഹോം നിയന്ത്രിക്കുന്നതിനോ അവസാനിപ്പിക്കുന്നതിനോ ഇടത്തോട്ടോ വലത്തോട്ടോ ഉള്ള തിരയൽ നിയന്ത്രണം ഉപയോഗിക്കുക, പേജ് മുകളിലേക്കോ താഴേക്കോ നീക്കാൻ മുകളിലോട്ടോ താഴോട്ടോ ഉള്ള തിരയൽ ഉപയോഗിക്കാം</translation>
 <translation id="6736510033526053669">ടാബ് സൃഷ്‌ടിച്ചു</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">ആൻ്റിക് വൈറ്റ്</translation>
 <translation id="9220679313820249046">ഓറഞ്ച് ചുവപ്പ്</translation>
 <translation id="9223032053830369045">കടും ചുവപ്പ്</translation>
-<translation id="923331726185079994">ChromeVox അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="93384979447910801">കടും കടൽ പച്ച</translation>
 <translation id="937605981140327129">TalkBack നിലവിൽ ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല. Play Store-ൽ നിന്ന് Android AccessibilitySuite ഇൻസ്റ്റാൾ ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="948171205378458592">സംഭാഷണ റേറ്റ് കുറയ്ക്കുക</translation>

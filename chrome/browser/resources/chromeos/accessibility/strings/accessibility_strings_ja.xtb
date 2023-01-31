@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">後書き</translation>
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="1198865190323699001">タップ操作</translation>
-<translation id="1201402288615127009">次へ</translation>
 <translation id="1202112913213080585">キャンセル</translation>
 <translation id="1206619573307042055">マーキー</translation>
 <translation id="1207086294218137981">次のレベル 4 の見出しはありません</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">記事</translation>
 <translation id="1346059596910821859">ヒント</translation>
 <translation id="1354356357730355833">コピー</translation>
-<translation id="135978014023467274">ChromeVox 63 にアップデートしました。</translation>
 <translation id="1360699455582016846">ルーティング キー <ph name="ROUTING_KEY_NUMBER" /> の下のアイテムをクリックします</translation>
 <translation id="1376703628032300005">次の文字に移動</translation>
 <translation id="1377925789329510816">これは最後の見出しです。このページの最初の見出しに移動するには検索+H キーを押します。2 番目の見出しに移動するには検索+Shift+H キーを押します。</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">オフ</translation>
 <translation id="3286372614333682499">縦向き</translation>
 <translation id="3286390186030710347">スライダ</translation>
-<translation id="3300348286427369683">リッチテキストのサポート。リッチテキスト フィールド（ジャンプ コマンド、点字ディスプレイでのカーソル移動、選択など）が ChromeVox でサポートされるようになりました。</translation>
 <translation id="3300733168898541351">元に戻す</translation>
 <translation id="3307886118343381874">表の末尾に移動</translation>
 <translation id="3312997241656799641">次にアクセスしたリンク</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">スマート キー固定モードはオフです</translation>
 <translation id="4623097797855662355">奥付</translation>
 <translation id="4624970070706497034">Chromebook では TalkBack のカスタマイズがサポートされなくなりました。TalkBack は引き続きご利用いただけますが、デフォルトのキーボード ショートカットをご使用ください。使用できるショートカットは、検索+A キーに続けて K キーを押して確認できます。確認した後に TalkBack に戻るには、もう一度コマンドを押します。</translation>
-<translation id="463135993322337640">ChromeVox+o+n キーを押すと新機能を確認できます</translation>
 <translation id="4649220074413114917">2 本の指で画面をタップすると、現在の読み上げを停止できます。ChromeVox に読み上げてほしくないことがある場合に便利です。次に進むには、2 本の指で画面をタップしてください。</translation>
-<translation id="4660783501463101648">クラシックの削除。ChromeVox クラシックに戻るキーボード切り替えは削除されました。</translation>
 <translation id="4661075872484491155">ツリー</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">次の列に移動します</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">戻る</translation>
 <translation id="5102981729317424850">ツールバー</translation>
 <translation id="5105050547967751155">必須</translation>
-<translation id="5106547198195128110">この新しいリリースでの変更内容は以下のとおりです。</translation>
 <translation id="5111640677200759579">列見出し</translation>
 <translation id="5115892389597951922">ChromeVox ログ</translation>
 <translation id="5119330972669454698">バーリーウッド</translation>
@@ -767,7 +761,6 @@
 <translation id="6082768461603900813">基本的な操作</translation>
 <translation id="609281021724813947">前のスライダーはありません。</translation>
 <translation id="6100239002225743044">1 行上へ移動</translation>
-<translation id="6118126368611144850">Chrome 用 Android アプリ。お使いのデバイスに Play ストアがインストールされている場合は、Android アプリで ChromeVox をお試しいただけます。Play ストアから Google Chrome Canary をダウンロードして、試験的にサポートされている機能をご利用ください。</translation>
 <translation id="611827076493383239">アクセス済み</translation>
 <translation id="6119846243427417423">アクティブにする</translation>
 <translation id="6122013438240733403">ボタン</translation>
@@ -841,7 +834,6 @@
 <translation id="6697092096875747123">前のコンボ ボックス</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{感嘆符}other{# 個の感嘆符}}</translation>
 <translation id="670717715607710284">画面オフ</translation>
-<translation id="6710213216561001401">前へ</translation>
 <translation id="6714813999819678458">前のレベル 2 見出し</translation>
 <translation id="6730312624811567147">検索、左または右矢印でホームまたはエンドになります。検索、コントロール、左または右矢印で、コントロール ホームまたはコントロール エンドになります。検索、上または下矢印でページアップまたはページダウンになります</translation>
 <translation id="6736510033526053669">タブが作成されました</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">アンティーク ホワイト</translation>
 <translation id="9220679313820249046">オレンジレッド</translation>
 <translation id="9223032053830369045">ダークレッド</translation>
-<translation id="923331726185079994">ChromeVox が更新されました</translation>
 <translation id="93384979447910801">ダーク シーグリーン</translation>
 <translation id="937605981140327129">TalkBack は現在インストールされていません。Play ストアで Android ユーザー補助設定ツールをインストールしてから、もう一度お試しください。</translation>
 <translation id="948171205378458592">読み上げの速度を下げる</translation>

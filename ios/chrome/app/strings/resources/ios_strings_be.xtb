@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Кіраванне сінхранізацыяй</translation>
 <translation id="1076421457278169141">Код сканіраваны</translation>
 <translation id="1076785341346483463">Сінхранізацыя з уліковым запісам пад кіраваннем</translation>
+<translation id="1080365971383768617">Паролі на ўсіх вашых прыладах</translation>
 <translation id="1084365883616172403">Публікацыя ў Facebook выканана.</translation>
 <translation id="1085696779717592361">Выкарыстоўвайце Chrome стандартна</translation>
 <translation id="1103523840287552314">Заўсёды перакладаць з мовы: <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">Паказаць гісторыю</translation>
 <translation id="2800683595868705743">Выйсці з пераключальніка ўкладак</translation>
 <translation id="2815198996063984598">2. Націсніце "Стандартны браўзер".</translation>
-<translation id="2820289420301699633">Ваш адміністратар можа кіраваць браўзерам Chrome і мае доступ да даных у ім</translation>
 <translation id="2830972654601096923">Кіраваць адрасамі...</translation>
 <translation id="2834399722155632105">3. Націсніце Password Options ("Налады пароляў").</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708">Праблемы знойдзены <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Усталяваць Google Дыск</translation>
+<translation id="50641035439563602">Цяпер паролі захоўваюцца ў вашым Уліковым запісе Google (<ph name="ACCOUNT" />). Іх можна выкарыстоўваць на любой прыладзе, з якой у яго быў выкананы ўваход. Каб адключыць гэту функцыю, перайдзіце ў <ph name="BEGIN_LINK" />налады<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Не ўдалося вызначыць памер файла.</translation>
 <translation id="5090832849094901128">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="WEBSITE" /> не выдаліцца.</translation>
 <translation id="5094827893301452931">Твіт апублікаваны.</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">Націсніце "Менеджар пароляў", а затым "Дадаць"</translation>
 <translation id="5525095647255982834">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце з гэтай прылады ў Chrome.</translation>
 <translation id="5525269841082836315">Стварэнне фразы-пароля</translation>
+<translation id="5530084793407600786">Пошук на відарысе праз Google</translation>
 <translation id="5542540507657872337">Знойдзена: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Функцыя перадачы вэб-сайта дазваляе пачаць прагляд вэб-старонкі на адной прыладзе, а затым працягнуць, перайшоўшы на Mac. Адкрыты вэб-сайт з'явіцца ў док-панэлі камп'ютара Mac.
 
@@ -677,7 +679,6 @@
 <translation id="6064824697233747382">Палітыка вашай арганізацыі патрабуе, каб вы выключылі сінхранізацыю.</translation>
 <translation id="6066301408025741299">Каб скасаваць, націсніце тут.</translation>
 <translation id="6071409777669089905">Адмацаваць укладку</translation>
-<translation id="60829778314739003">Прыняць і працягнуць</translation>
 <translation id="6084848228346514841">Выбраць укладкі</translation>
 <translation id="6103540626693881831">Шыфраванне на прыладзе</translation>
 <translation id="6119050551270742952">Вэб-старонка адкрыта ў рэжыме інкогніта</translation>

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Nawoord</translation>
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="1198865190323699001">Tikgebaren</translation>
-<translation id="1201402288615127009">Volgende</translation>
 <translation id="1202112913213080585">annuleer</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Geen volgende kop van niveau 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Fooi</translation>
 <translation id="1354356357730355833">kopiëren</translation>
-<translation id="135978014023467274">Er is een update uitgevoerd naar ChromeVox 63.</translation>
 <translation id="1360699455582016846">Klik op het item onder de routeringstoets <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">naar het volgende teken gaan</translation>
 <translation id="1377925789329510816">Dit is de laatste kop. Druk op Zoeken + H om terug te keren naar de eerste kop of druk op Zoeken + Shift + H om naar de tweede kop op deze pagina te gaan.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">niet aangevinkt</translation>
 <translation id="3286372614333682499">staand</translation>
 <translation id="3286390186030710347">Schuifregelaar</translation>
-<translation id="3300348286427369683">Uitgebreide tekstondersteuning. ChromeVox ondersteunt nu uitgebreide tekstvelden waarmee je gebruik kunt maken van navigatieopdrachten, cursorrouting van een brailleleesregel, selectie en meer.</translation>
 <translation id="3300733168898541351">ongedaan maken</translation>
 <translation id="3307886118343381874">Naar het einde van de tabel gaan</translation>
 <translation id="3312997241656799641">Volgende bezochte link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Slimme sticky modus uit</translation>
 <translation id="4623097797855662355">Colofon</translation>
 <translation id="4624970070706497034">TalkBack biedt geen aanpassingen meer voor Chromebooks. Je kunt TalkBack nog steeds gebruiken, maar dan met de standaard TalkBack-sneltoetsen. Druk op Zoeken + A en dan K om beschikbare sneltoetsen te bekijken. Als je TalkBack nog steeds wilt gebruiken, druk je opnieuw op de opdracht.</translation>
-<translation id="463135993322337640">Druk in ChromeVox op o en dan n voor meer informatie over wat er nieuw is</translation>
 <translation id="4649220074413114917">Door met 2 vingers op het scherm te tikken, kun je de huidige spraak stoppen. Dit is handig als je wilt dat ChromeVox iets niet voorleest. Tik met 2 vingers op het scherm om verder te gaan.</translation>
-<translation id="4660783501463101648">De klassieke versie is verwijderd. Het is niet meer mogelijk om via het toetsenbord terug te schakelen naar de klassieke versie van ChromeVox.</translation>
 <translation id="4661075872484491155">structuur</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Naar volgende kolom</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">terug</translation>
 <translation id="5102981729317424850">Werkbalk</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Er zijn enkele interessante wijzigingen in deze nieuwe release. Dit is wat er nieuw is:</translation>
 <translation id="5111640677200759579">Kolomkop</translation>
 <translation id="5115892389597951922">ChromeVox-logboek</translation>
 <translation id="5119330972669454698">Knoestig hout</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Basisnavigatie</translation>
 <translation id="609281021724813947">Geen vorige schuifregelaar</translation>
 <translation id="6100239002225743044">Eén regel omhoog gaan</translation>
-<translation id="6118126368611144850">Android-apps voor Chrome. Als de Play Store op je apparaat staat, kun je een voorproefje van ChromeVox met Android-apps krijgen. Probeer de experimentele ondersteuning door Google Chrome Canary te downloaden vanuit de Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">Activeren</translation>
 <translation id="6122013438240733403">knop</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Vorige keuzelijst met invoervak</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uitroepteken}other{# uitroeptekens}}</translation>
 <translation id="670717715607710284">Scherm uit</translation>
-<translation id="6710213216561001401">Vorige</translation>
 <translation id="6714813999819678458">Vorige kop voor niveau 2</translation>
 <translation id="6730312624811567147">Gebruik Zoeken + pijl-links of -rechts voor Home of End, Zoeken + Ctrl + pijl-links of -rechts voor Ctrl + Home of End, Zoeken + pijl-omhoog of -omlaag voor Page Up of Down</translation>
 <translation id="6736510033526053669">tabblad gemaakt</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Antiek wit</translation>
 <translation id="9220679313820249046">Oranjerood</translation>
 <translation id="9223032053830369045">Donkerrood</translation>
-<translation id="923331726185079994">ChromeVox geüpdatet</translation>
 <translation id="93384979447910801">Donker zeegroen</translation>
 <translation id="937605981140327129">TalkBack is momenteel niet geïnstalleerd. Installeer Android Toegankelijkheidstools via de Play Store en probeer het opnieuw.</translation>
 <translation id="948171205378458592">Spreeksnelheid verlagen</translation>

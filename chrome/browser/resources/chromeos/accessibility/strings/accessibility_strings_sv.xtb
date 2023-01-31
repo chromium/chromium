@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Efterord</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Tryckrörelser</translation>
-<translation id="1201402288615127009">Nästa</translation>
 <translation id="1202112913213080585">avbryt</translation>
 <translation id="1206619573307042055">markör</translation>
 <translation id="1207086294218137981">Det finns inga fler rubriker på nivå 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Tips</translation>
 <translation id="1354356357730355833">kopiera</translation>
-<translation id="135978014023467274">Du har uppdaterat till ChromeVox 63.</translation>
 <translation id="1360699455582016846">Klicka på objektet under markörhämtaren <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">flytta till nästa tecken</translation>
 <translation id="1377925789329510816">Det här är den sista rubriken. Tryck på söktangenten + H för fortsätta runt tillbaka till den första rubriken eller på söktangenten + Skift + H för att fortsätta till den andra rubriken på den här sidan.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">inte markerad</translation>
 <translation id="3286372614333682499">stående</translation>
 <translation id="3286390186030710347">Skjutreglage</translation>
-<translation id="3300348286427369683">Stöd för Rich Text. ChromeVox har nu stöd för fält med Rich Text, till exempel hoppkommandon, dirigering av punktskriftsmarkören, urval med mera.</translation>
 <translation id="3300733168898541351">ångra</translation>
 <translation id="3307886118343381874">Flytta till slutet av tabellen</translation>
 <translation id="3312997241656799641">Nästa länk som har besökts</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Smart låstangentsläge är av</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack har inte längre stöd för anpassning på Chromebook. Du kan fortfarande använda TalkBack med standardkortkommandon. Tryck på Sök + A och sedan K för att se tillgängliga kortkommandon. Om du fortfarande vill använda TalkBack trycker du kommandot igen.</translation>
-<translation id="463135993322337640">Tryck på ChromeVox O + N om du vill veta mer om nyheterna.</translation>
 <translation id="4649220074413114917">Du kan avbryta det som läses upp genom att trycka på skärmen med två fingrar. Det kan vara bra om du inte vill att ChromeVox ska läsa upp något. Fortsätt genom att trycka på skärmen med två fingrar.</translation>
-<translation id="4660783501463101648">Klassisk Chromevox har tagits bort. Det går inte längre att aktivera och inaktivera klassisk Chromevox med tangentbordet.</translation>
 <translation id="4661075872484491155">träd</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Fortsätt till nästa kolumn</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">tillbaka</translation>
 <translation id="5102981729317424850">Verktygsfält</translation>
 <translation id="5105050547967751155">obligatoriskt</translation>
-<translation id="5106547198195128110">Den nya versionen innehåller spännande ändringar. Detta är nytt:</translation>
 <translation id="5111640677200759579">Kolumnrubrik</translation>
 <translation id="5115892389597951922">Logg för ChromeVox</translation>
 <translation id="5119330972669454698">Burlywoodbrun</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Grundläggande navigering</translation>
 <translation id="609281021724813947">Det finns inget föregående skjutreglage</translation>
 <translation id="6100239002225743044">Flytta uppåt en rad</translation>
-<translation id="6118126368611144850">Android-appar till Chrome. Du kan få en förhandstitt på hur ChromeVox fungerar med Android-appar om Play Butik är installerat på enheten. Ladda ned Google Chrome Canary från Play Butik och testa det experimentella stödet för Android-appar.</translation>
 <translation id="611827076493383239">besökt</translation>
 <translation id="6119846243427417423">aktivera</translation>
 <translation id="6122013438240733403">knapp</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Föregående kombinationsruta</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{utropstecken}other{# utropstecken}}</translation>
 <translation id="670717715607710284">Skärm av</translation>
-<translation id="6710213216561001401">Föregående</translation>
 <translation id="6714813999819678458">Föregående rubrik på nivå 2</translation>
 <translation id="6730312624811567147">Söktangenten plus vänsterpil eller högerpil motsvarar Home-tangenten respektive End-tangenten. Tangenterna Sök och Ctrl plus vänsterpil eller högerpil motsvarar Ctrl Home respektive Ctrl End. Söktangenten plus uppåtpil eller nedåtpil motsvarar tangenterna PageUp respektive PageDown</translation>
 <translation id="6736510033526053669">ny flik har öppnats</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Antikvit</translation>
 <translation id="9220679313820249046">Orangeröd</translation>
 <translation id="9223032053830369045">Mörkröd</translation>
-<translation id="923331726185079994">ChromeVox har uppdaterats</translation>
 <translation id="93384979447910801">Mörkt havsgrön</translation>
 <translation id="937605981140327129">TalkBack är inte installerat. Installera Android Tillgänglighet via Play Butik och försök igen.</translation>
 <translation id="948171205378458592">Sänk talhastigheten</translation>

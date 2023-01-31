@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Sözlüğe ekle</translation>
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google Hesabınızdaki<ph name="END_LINK" /> şifreler gösteriliyor</translation>
+<translation id="1022669824195822609">Cihazınız <ph name="DOMAIN" /> tarafından yönetiliyor. Yöneticiler bu cihazda tüm profillerdeki verilere erişebilir.</translation>
 <translation id="1026655690966755180">Bağlantı Noktası Ekle</translation>
 <translation id="1026822031284433028">Resim Yükle</translation>
 <translation id="1028604629594230522">Chrome, ziyaret etme olasılığınızın yüksek olduğu sayfaları önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
@@ -1864,6 +1865,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2643064289437760082">Tarama verilerini silerek reklam ölçümü verilerini istediğiniz zaman silebilirsiniz</translation>
 <translation id="2643698698624765890">Pencere menüsünden Uzantılar'ı tıklayarak uzantılarınızı yönetin.</translation>
 <translation id="2645047101481282803">Cihazınız <ph name="PROFILE_NAME" /> tarafından yönetiliyor</translation>
+<translation id="2645388244376970260">Bu sekme <ph name="DEVICE_NAME" /> adlı cihazda yayınlanıyor</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64 kodlu ASCII, sertifika zinciri</translation>
 <translation id="265156376773362237">Standart önceden yükleme</translation>
@@ -2736,6 +2738,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3446274660183028131">Windows'u yüklemek için Parallels Desktop'u başlatın.</translation>
 <translation id="344630545793878684">Birden fazla web sitesindeki verilerinize erişme</translation>
 <translation id="3447644283769633681">Tüm üçüncü taraf çerezlerini engelle</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" />, <ph name="DEVICE_NAME" /> cihazına gönderiliyor</translation>
 <translation id="3448492834076427715">Hesabı güncelle</translation>
 <translation id="3449393517661170867">Sekmeli yeni pencere</translation>
 <translation id="3449839693241009168">Komutları <ph name="EXTENSION_NAME" /> uygulamasına göndermek için <ph name="SEARCH_KEY" /> tuşuna basın</translation>
@@ -2890,6 +2893,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3590295622232282437">Yönetilen oturuma giriliyor.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> dosyasını sakla</translation>
 <translation id="3592260987370335752">&amp;Daha fazla bilgi edinin</translation>
+<translation id="3592344177526089979">Bir sekme <ph name="DEVICE_NAME" /> adlı cihazda yayınlanıyor</translation>
 <translation id="3593152357631900254">Benzer Pinyin modunu etkinleştir</translation>
 <translation id="3593965109698325041">Sertifika Adı Kısıtlamaları</translation>
 <translation id="3596012367874587041">Uygulama ayarları</translation>
@@ -3165,6 +3169,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3823310065043511710">Linux için en az <ph name="INSTALL_SIZE" /> alan olması önerilir.</translation>
 <translation id="3824621460022590830">Cihaz kaydı jetonu geçersiz. Lütfen cihaz sahibiyle ya da yöneticisiyle iletişime geçin. Hata kodu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Bu dosya türü için seçimimi hatırla: <ph name="FILE_TYPES" />}other{Bu dosya türleri için seçimimi hatırla: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Uygulama simgesinde, uygulama uyarıları için nokta göster</translation>
 <translation id="3826071569074535339">Hareket sensörlerini kullanmasına izin verilen siteler</translation>
 <translation id="3826440694796503677">Yöneticiniz başka Google Hesaplarının eklenmesini devre dışı bıraktı</translation>
 <translation id="3827774300009121996">&amp;Tam Ekran</translation>
@@ -4484,6 +4489,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5063480226653192405">Kullanım</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ayarlarında güvenli DNS'yi yönetin</translation>
+<translation id="5066160542186949327">Başka bir klasöre taşı</translation>
 <translation id="5067399438976153555">Her zaman açık</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> sitesi mikrofonuma erişmek isterse sor</translation>
 <translation id="5068553687099139861">Şifreleri göstermek</translation>
@@ -6652,7 +6658,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7044211973375150246">Bir uygulama <ph name="APP_NAME" /> ile aynı bağlantıları açacak şekilde ayarlandı. Bu işlemden sonra <ph name="APP_NAME_2" /> uygulaması desteklenen bağlantıları açamayacak.</translation>
 <translation id="7044606776288350625">Verileri senkronize et</translation>
 <translation id="7047059339731138197">Bir arka plan seçin</translation>
-<translation id="7048457618657122233">Bağlantıyı <ph name="SHARE_TARGET" /> ile paylaş</translation>
 <translation id="7049293980323620022">Dosya tutulsun mu?</translation>
 <translation id="7050037487872780845">Geçersiz hotspot yapılandırması</translation>
 <translation id="7052237160939977163">Performans izleme verilerini gönder</translation>

@@ -733,6 +733,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="492453977506755176">Ekran görüntüsü alma modu tuşu</translation>
 <translation id="4925542575807923399">Bu hesabın yöneticisi hesabın bir çoklu oturumda ilk oturum açan hesap olmasını gerektiriyor.</translation>
 <translation id="4929163402621253029">Şu anda konuşuyor musunuz? Sesiniz kapalı. Daha fazla bilgi</translation>
+<translation id="4936329710968938986">Herkes, kapalı</translation>
 <translation id="4938176435186993759">Tüm önerileri gizle</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
@@ -1387,6 +1388,7 @@ Yeni yüklenmiş</translation>
 <translation id="8477270416194247200">İptal etmek için Alt+Ara veya Üst Karakter tuşuna basın.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" />, <ph name="SPECIFIED_RESOLUTION" /> çözünürlüğü desteklemiyor. Çözünürlük <ph name="FALLBACK_RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="8496402167048257517">Yakındakilerle Paylaşım ayarlarını göster</translation>
+<translation id="8507563469658346379">Herkes, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Chromebook’unuzun Bluetooth'u kapalı. Chromebook'unuzun kilidini açmak için şifreyi girin.</translation>
 <translation id="8513108775083588393">Oto. döndür</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>

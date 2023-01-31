@@ -2907,6 +2907,7 @@ Pretende pará-lo?</translation>
 <translation id="3602290021589620013">Pré-visualizar</translation>
 <translation id="3602870520245633055">Impressão e digitalização</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta está a usar a mesma palavra-passe}other{{COUNT} contas estão a usar a mesma palavra-passe}}</translation>
 <translation id="3605780360466892872">Empresário</translation>
 <translation id="3609277884604412258">Pesquisa rápida</translation>
 <translation id="3610241585790874201">Sem autorização para guardar dados no seu dispositivo</translation>
@@ -6662,7 +6663,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7044211973375150246">Uma app está definida para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que a app <ph name="APP_NAME_2" /> abra links suportados.</translation>
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um fundo</translation>
-<translation id="7048457618657122233">Partilhar link com <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Pretende manter este ficheiro?</translation>
 <translation id="7050037487872780845">Configuração da zona Wi-Fi inválida</translation>
 <translation id="7052237160939977163">Enviar dados de rastreio do desempenho</translation>
@@ -6808,7 +6808,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7203150201908454328">Expandido</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
-<translation id="7207631048330366454">Pesquisar aplicações</translation>
+<translation id="7207631048330366454">Pesquisar apps</translation>
 <translation id="7210471695184432500">Para importar palavras-passe para o Gestor de Palavras-passe da Google neste dispositivo, selecione um ficheiro CSV</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>

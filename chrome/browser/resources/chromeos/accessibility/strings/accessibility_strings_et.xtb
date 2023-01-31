@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Järelsõna</translation>
 <translation id="1197088940767939838">Oranž</translation>
 <translation id="1198865190323699001">Puuteliigutused</translation>
-<translation id="1201402288615127009">Järgmine</translation>
 <translation id="1202112913213080585">tühista</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Järgmist 4. taseme pealkirja ei ole</translation>
@@ -71,7 +70,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1342835525016946179">artikkel</translation>
 <translation id="1346059596910821859">Jootraha</translation>
 <translation id="1354356357730355833">kopeeri</translation>
-<translation id="135978014023467274">Läksite üle versioonile ChromeVox 63!</translation>
 <translation id="1360699455582016846">Klõpsake marsruutimisklahvi <ph name="ROUTING_KEY_NUMBER" /> all oleval üksusel</translation>
 <translation id="1376703628032300005">liigu järgmise tähemärgi juurde</translation>
 <translation id="1377925789329510816">See on viimane pealkiri. Vajutage klahvikombinatsiooni Otsing + H, et liikuda esimese pealkirja juurde, või klahvikombinatsiooni Otsing + Tõstuklahv + H, et liikuda sellel lehel teise pealkirja juurde.</translation>
@@ -363,7 +361,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="3283583562490372694">märkimata</translation>
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
 <translation id="3286390186030710347">Liugur</translation>
-<translation id="3300348286427369683">Rikasteksti tugi. ChromeVox toetab nüüd rikastekstivälju, sealhulgas hüppamiskäske, Braille'i kursori marsruuti, valimist ja muid funktsioone.</translation>
 <translation id="3300733168898541351">võta tagasi</translation>
 <translation id="3307886118343381874">Mine tabeli lõppu</translation>
 <translation id="3312997241656799641">Järgmine külastatud link</translation>
@@ -550,9 +547,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="4617384941327705512">Nutikas nakkerežiim on väljas</translation>
 <translation id="4623097797855662355">Kolofoon</translation>
 <translation id="4624970070706497034">TalkBack ei paku enam Chromebookide jaoks kohandamist. Võite Talkbacki ikka kasutada, kuid kasutage selle klaviatuuri vaikeotseteid. Saadaval otseteede vaatamiseks vajutage klahve Otsing + A, seejärel klahvi K. Kui soovite ikka Talkbacki kasutada, vajutage klahve uuesti.</translation>
-<translation id="463135993322337640">Vajutage ChromeVoxi nuppe O ja N, et tutvuda uute funktsioonidega</translation>
 <translation id="4649220074413114917">Kahe sõrmega ekraani puudutades saate peatada mis tahes aktiivse kõne. See on kasulik olukorras, kus te ei soovi, et ChromeVox midagi ette loeks. Jätkamiseks puudutage ekraani kahe sõrmega.</translation>
-<translation id="4660783501463101648">Klassikaline versioon on eemaldatud. Klassikalise ChromeVoxi aktiveerimise lüliti on klaviatuurilt eemaldatud.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Liigu järgmisesse veergu</translation>
@@ -617,7 +612,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5087864757604726239">Tagasi</translation>
 <translation id="5102981729317424850">Tööriistariba</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">See uus väljalase hõlmab põnevaid muudatusi. Uuendused on järgmised.</translation>
 <translation id="5111640677200759579">Veeru päis</translation>
 <translation id="5115892389597951922">ChromeVoxi logi</translation>
 <translation id="5119330972669454698">Puidupruun</translation>
@@ -768,7 +762,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6082768461603900813">Navigeerimise põhifunktsioonid</translation>
 <translation id="609281021724813947">Eelmist liugurit ei ole</translation>
 <translation id="6100239002225743044">Liigu ühe rea võrra üles</translation>
-<translation id="6118126368611144850">Androidi rakendused Chrome'i jaoks. Kui teie seadmes on Play pood, saate  vaadata, kuidas ChromeVox Androidi rakendustega töötab. Proovige katselist tuge, laadides Play poest alla Google Chrome Canary.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktiveeri</translation>
 <translation id="6122013438240733403">nupp</translation>
@@ -842,7 +835,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="6697092096875747123">Eelmine liitboks</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{hüüumärk}other{# hüüumärki}}</translation>
 <translation id="670717715607710284">Ekraan on väljas</translation>
-<translation id="6710213216561001401">Eelmine</translation>
 <translation id="6714813999819678458">Eelmine 2. taseme pealkiri</translation>
 <translation id="6730312624811567147">Kasutage klahvi Home/End jaoks klahvikombinatsiooni Otsing + vasaknool/paremnool, otsetee Juhtklahv + Home/End jaoks klahvikombinatsiooni Otsing + Juhtklahv + vasaknool/paremnool, klahvi Lehe võrra üles/alla jaoks klahvikombinatsiooni Otsing + ülesnool/allanool</translation>
 <translation id="6736510033526053669">vaheleht on loodud</translation>
@@ -1190,7 +1182,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="9208241857935108694">Antiikvalge</translation>
 <translation id="9220679313820249046">Punakasoranž</translation>
 <translation id="9223032053830369045">Tumepunane</translation>
-<translation id="923331726185079994">ChromeVox on värskendatud</translation>
 <translation id="93384979447910801">Tume mereroheline</translation>
 <translation id="937605981140327129">TalkBack ei ole praegu installitud. Installige Play poe kaudu Android AccessibilitySuite ja proovige uuesti.</translation>
 <translation id="948171205378458592">Vähenda kõne kiirust</translation>

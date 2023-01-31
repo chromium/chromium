@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">ಸಿಂಕ್ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1076421457278169141">ಕೋಡ್‌ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1076785341346483463">ನಿರ್ವಹಿಸಲಾದ ಖಾತೆ ಬಳಸಿಕೊಂಡು ಸಿಂಕ್ ಮಾಡಿ</translation>
+<translation id="1080365971383768617">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="1084365883616172403">Facebook ಪೋಸ್ಟ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="1085696779717592361">ಡಿಫಾಲ್ಟ್ ಆಗಿ Chrome ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1103523840287552314">ಯಾವಾಗಲೂ ಅನುವಾದಿಸಿ <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">ಇತಿಹಾಸವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2800683595868705743">ಟ್ಯಾಬ್ ಸ್ವಿಚರ್ ತ್ಯಜಿಸಿ</translation>
 <translation id="2815198996063984598">2. ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆ್ಯಪ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
-<translation id="2820289420301699633">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು Chrome ಮೇಲೆ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿದ್ದಾರೆ ಮತ್ತು ಅದರ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು</translation>
 <translation id="2830972654601096923">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
 <translation id="2834399722155632105">3. ಪಾಸ್‌ವರ್ಡ್ ಆಯ್ಕೆಗಳು ಎಂಬುದನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> ಸಮಯದಲ್ಲಿ ಸಮಸ್ಯೆಗಳು ಕಂಡುಬಂದಿವೆ</translation>
 <translation id="5059136629401106827">ಸರಿ</translation>
 <translation id="5062321486222145940">Google ಡ್ರೈವ್‌ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
+<translation id="50641035439563602">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಈಗ ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ (<ph name="ACCOUNT" />) ಸಂಗ್ರಹಿಸಲಾಗಿದೆ. ನೀವು ಲಾಗ್ ಇನ್ ಮಾಡಿದಾಗ ನೀವು ಅವುಗಳನ್ನು ಬಳಸಬಹುದು. ಇದನ್ನು ಆಫ್ ಮಾಡಲು, <ph name="BEGIN_LINK" />ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK" /> ಹೋಗಿ.</translation>
 <translation id="5083464117946352670">ಫೈಲ್‌ ಗಾತ್ರವನ್ನು ನಿರ್ಧರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="5090832849094901128">ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಳಿಸುವುದರಿಂದ <ph name="WEBSITE" /> ನಲ್ಲಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5094827893301452931">Tweet ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ನಿರ್ವಾಹಕವನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ನಂತರ ಸೇರಿಸಿ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5525095647255982834">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಅಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="5525269841082836315">ಪಾಸ್‌ಫ್ರೇಸ್ ರಚಿಸಿ</translation>
+<translation id="5530084793407600786">Google ಬಳಸಿಕೊಂಡು ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="5548760955356983418">ಹ್ಯಾಂಡ್ಆಫ್ ವೆಬ್‌ಸೈಟ್ ಈ ಸಾಧನದಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನಂತರ ನಿಮ್ಮ Mac ನಲ್ಲಿ ಸುಲಭವಾಗಿ ಮುಂದುವರಿಸಲು ಅನುಮತಿಸುತ್ತದೆ. ಪ್ರಸ್ತುತ ತೆರೆದ ವೆಬ್‌ಸೈಟ್ ನಿಮ್ಮ Mac ನಲ್ಲಿನ ಡಾಕ್‌ನಲ್ಲಿ ಗೋಚರಿಸುತ್ತದೆ.
 
@@ -677,7 +679,6 @@
 <translation id="6064824697233747382">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ನೀತಿಯ ಪ್ರಕಾರ ನೀವು ಸಿಂಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="6066301408025741299">ರದ್ದುಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
 <translation id="6071409777669089905">ಟ್ಯಾಬ್ ಅನ್ನು ಅನ್‌ಪಿನ್ ಮಾಡಿ</translation>
-<translation id="60829778314739003">ಸಮ್ಮತಿಸಿ ಮತ್ತು ಮುಂದುವರಿಯಿರಿ</translation>
 <translation id="6084848228346514841">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6103540626693881831">ಸಾಧನದಲ್ಲಿನ ಎನ್‌ಕ್ರಿಪ್ಶನ್</translation>
 <translation id="6119050551270742952">ಪ್ರಸ್ತುತ ವೆಬ್ ಪುಟವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿದೆ</translation>

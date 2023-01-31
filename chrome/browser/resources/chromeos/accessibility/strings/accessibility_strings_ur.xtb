@@ -33,7 +33,6 @@
 <translation id="1195238899008218998">پسِ نوشت</translation>
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="1198865190323699001">ٹچ اشارے</translation>
-<translation id="1201402288615127009">اگلا</translation>
 <translation id="1202112913213080585">منسوخ کریں</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">اگلی سطح 4 کی کوئی ہیڈنگ نہیں ہے</translation>
@@ -72,7 +71,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">تجویز</translation>
 <translation id="1354356357730355833">کاپی کریں</translation>
-<translation id="135978014023467274">‏آپ کو ChromeVox 63 پر اپ ڈیٹ کر دیا گیا ہے!</translation>
 <translation id="1360699455582016846">‏روٹنگ کلید‎ <ph name="ROUTING_KEY_NUMBER" /> کے تحت آئٹم پر کلک کریں</translation>
 <translation id="1376703628032300005">اگلے حرف پر لے جائیں</translation>
 <translation id="1377925789329510816">‏یہ آخری سرخی ہے۔ اس صفحہ پر پہلی سرخی پر جانے کیلئے Search+H دبائیں یا دوسری سرخی پر جانے کیلئے Search+Shift+H دبائیں۔</translation>
@@ -364,7 +362,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3283583562490372694">غیر نشان زد</translation>
 <translation id="3286372614333682499">پورٹریٹ</translation>
 <translation id="3286390186030710347">سلائیڈر</translation>
-<translation id="3300348286427369683">‏رچ ٹیکسٹ سپورٹ۔ ChromeVox اب رچ ٹیکسٹ فیلڈز کو سپورٹ کرتا ہے بشمول جمپ کمانڈز، بریل کرسر روٹنگ، انتخاب اور مزید بہت کچھ۔</translation>
 <translation id="3300733168898541351">کالعدم کریں</translation>
 <translation id="3307886118343381874">ٹیبل کے آخر میں جائیں</translation>
 <translation id="3312997241656799641">اگلا ملاحظہ کردہ لنک</translation>
@@ -551,9 +548,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="4617384941327705512">اسمارٹ چپکنے والی وضع آف ہے</translation>
 <translation id="4623097797855662355">خاتمہ کتاب</translation>
 <translation id="4624970070706497034">‏TalkBack اب Chromebooks کے لیے حسب ضرورت بنانے کی سہولت فراہم نہیں کرتا ہے۔ آپ اب بھی اسے استعمال کر سکتے ہیں لیکن TalkBack کے ڈیفالٹ کی بورڈ شارٹ کٹس کا استعمال کریں۔ دستیاب شارٹ کٹس دیکھنے کے لیے Search + A، پھر K دبائیں۔ اگر آپ اب بھی TalkBack استعمال کرنا چاہتے ہیں تو کمانڈ کو دوبارہ دبائیں۔</translation>
-<translation id="463135993322337640">‏نیا کیا ہے یہ جاننے کیلئے ChromeVox o, n دبائیں</translation>
 <translation id="4649220074413114917">‏کسی بھی موجودہ اسپیچ کو روکنے کے لیے آپ اسکرین کو دو انگلیوں سے تھپتھپا سکتے ہیں۔ اگر آپ نہیں چاہتے کہ ChromeVox کچھ پڑھے تو یہ کارآمد ہے۔ جاری رکھنے کے لیے، دو انگلیوں سے اسکرین پر تھپتھپائیں۔</translation>
-<translation id="4660783501463101648">‏کلاسک ہٹا دیا گیا۔ ChromeVox کلاسک میں واپس سوئچ کرنے والا کی بورڈ ٹوگل ہٹا دیا گیا ہے۔</translation>
 <translation id="4661075872484491155">ٹری</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4677535310137735442">اگلے کالم پر جائیں</translation>
@@ -618,7 +613,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5087864757604726239">پیچھے</translation>
 <translation id="5102981729317424850">ٹول بار</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">اس نئی ریلیز میں ہمارے پاس کچھ دلچسپ تبدیلیاں ہیں؛ نئی چیزیں یہاں پیش ہیں:</translation>
 <translation id="5111640677200759579">کالم ہیڈر</translation>
 <translation id="5115892389597951922">‏ChromeVox لاگ</translation>
 <translation id="5119330972669454698">ریت نما بھورا</translation>
@@ -769,7 +763,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6082768461603900813">بنیادی نیویگیشن</translation>
 <translation id="609281021724813947">کوئی پچھلا سلائیڈر نہیں ہے</translation>
 <translation id="6100239002225743044">ایک لائن اوپر منتقل کریں</translation>
-<translation id="6118126368611144850">‏Chrome کیلئے Android ایپس۔ اگر آپ کے آلہ پر Play اسٹور ہے تو Android ایپس کے ساتھ ChromeVox پر ایک نظر ڈالیں۔ Play اسٹور سے Google Chrome Canary ڈاؤن لوڈ کر کے تجرباتی سپورٹ آزمائیں۔</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">فعال کریں</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -843,7 +836,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="6697092096875747123">پچھلا کومبو باکس</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{فجائیہ}other{# فجائیے}}</translation>
 <translation id="670717715607710284">اسکرین آف کریں</translation>
-<translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6714813999819678458">سطح 2 کی پچھلی سرخی</translation>
 <translation id="6730312624811567147">ہوم یا اینڈ کیلئے سرچ کلید کے ساتھ بائیں یا دائیں تیر والی کلید استعمال کریں، کنٹرول ہوم یا اینڈ کیلئے سرچ اور کنٹرول کلیدوں کے ساتھ بائیں یا دائیں تیر کی کلید استعمال کریں، پیج اَپ یا ڈاؤن کیلئے سرچ کلید کے ساتھ اوپر یا نیچے کے تیر والی کلید استعمال کریں</translation>
 <translation id="6736510033526053669">ٹیب بنایا گیا</translation>
@@ -1191,7 +1183,6 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="9208241857935108694">قدیم سفید</translation>
 <translation id="9220679313820249046">نارنجی سرخ</translation>
 <translation id="9223032053830369045">گہرا سرخ</translation>
-<translation id="923331726185079994">‏ChromeVox کو اپ ڈیٹ کر دیا گیا</translation>
 <translation id="93384979447910801">گہرا سمندری سبز</translation>
 <translation id="937605981140327129">‏TalkBack فی الحال انسٹال نہیں ہے۔ براہ کرم Play اسٹور سے Android ایکسیسبیلٹی سوئٹ انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="948171205378458592">اسپیچ کا ریٹ گھٹائیں</translation>

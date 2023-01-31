@@ -275,6 +275,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> in</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Er is iets misgegaan met het bekijken van deze webpagina.</translation>
+<translation id="1584492003828271317">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, door sites voorgestelde advertenties, je cookie-instellingen en of de site die je bekijkt advertenties personaliseert</translation>
 <translation id="1586541204584340881">Welke extensies je hebt geïnstalleerd</translation>
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1592005682883173041">Lokale gegevenstoegang</translation>
@@ -476,6 +477,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2091887806945687916">Geluid</translation>
 <translation id="2093982008204312032">Google Chrome probeert Windows Hello aan te zetten voor het invullen van wachtwoorden.</translation>
 <translation id="2094505752054353250">Domeinen komen niet overeen</translation>
+<translation id="2094704029599359040">Versiegegevens</translation>
 <translation id="2099652385553570808">Drie nietjes links</translation>
 <translation id="2101225219012730419">Versie:</translation>
 <translation id="2102134110707549001">Sterk wachtwoord voorstellen…</translation>
@@ -856,6 +858,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3121994479408824897">Naar <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
 <translation id="3141093262818886744">Toch openen</translation>
+<translation id="3141641372357166056">Geen beslissing over toestemming</translation>
 <translation id="3145945101586104090">Kan reactie niet decoderen</translation>
 <translation id="3150653042067488994">Tijdelijke serverfout</translation>
 <translation id="3154506275960390542">Deze pagina bevat een formulier dat mogelijk niet beveiligd wordt verzonden. Gegevens die je verzendt, kunnen tijdens de overdracht worden bekeken door anderen of kunnen worden aangepast door een aanvaller om te wijzigen wat de server ontvangt.</translation>
@@ -1101,6 +1104,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3713662424819367124">Parfums en geuren</translation>
 <translation id="3714633008798122362">online agenda</translation>
 <translation id="3714780639079136834">Zet je mobiele data of wifi aan</translation>
+<translation id="3715545959749027023">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, bestandsnamen of metadata, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="3715597595485130451">Verbinding maken met wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en DNS-configuratie<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Apps die deze fout kunnen veroorzaken, omvatten antivirussoftware, firewalls en webfilter- of proxysoftware.</translation>
@@ -1372,6 +1376,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4359160567981085931">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome kan je laten zien wat je nu kunt doen. Klik op 'Account beschermen' om je wachtwoord te wijzigen en Google te laten weten dat je account mogelijk gevaar loopt.</translation>
 <translation id="4363222835916186793">Meldingen voor dit product zijn uitgezet</translation>
 <translation id="437040971055499437">Beveiligingsgebeurtenis vindt plaats</translation>
+<translation id="4371591986692297148">Inactief</translation>
 <translation id="4372948949327679948">Verwachte <ph name="VALUE_TYPE" /> waarde.</translation>
 <translation id="4375864595697821259">Voeg een item opnieuw toe als het op de lijst moet met onderwerpen waaruit Chrome kan kiezen als het een schatting maakt van je interesses</translation>
 <translation id="4377125064752653719">Je probeert <ph name="DOMAIN" /> te bereiken, maar het certificaat dat de server heeft geretourneerd, is ingetrokken door de uitgever. Dat betekent dat de veiligheidsgaranties die de server heeft geretourneerd, absoluut niet kunnen worden vertrouwd. Het kan zijn dat je met een hacker aan het communiceren bent.</translation>
@@ -1398,6 +1403,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="443673843213245140">Er kan geen proxy worden gebruikt, maar er is wel een expliciete proxyconfiguratie opgegeven.</translation>
 <translation id="4441832193888514600">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="4451135742916150903">Kan vragen of deze site verbinding mag maken met HID-apparaten</translation>
+<translation id="4451684391620232683">Tekst die de gebruiker te zien krijgt:</translation>
 <translation id="4452328064229197696">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Google Wachtwoordmanager raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="4460315069258617173">Toegestaan totdat je tabbladen voor deze site sluit</translation>
 <translation id="4464826014807964867">Websites met gegevens van je organisatie</translation>
@@ -1515,6 +1521,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4749011317274908093">Je bent incognito</translation>
 <translation id="4750671009706599284">deze telefoon</translation>
 <translation id="4750917950439032686">Je gegevens (zoals wachtwoorden of creditcardnummers) zijn privé wanneer ze worden verzonden naar deze site.</translation>
+<translation id="4751249061288707459">Toestemming laatst geüpdatet:</translation>
 <translation id="4751476147751820511">Bewegings- of lichtsensoren</translation>
 <translation id="4754461935447132332">Niet toegestaan voor niet-beveiligde sites</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
@@ -1679,6 +1686,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5126510351761255129">Je kaart verifiëren</translation>
 <translation id="512670116361803001">Het formaat van <ph name="APP_NAME" /> wordt misschien niet goed aangepast. Gebruik vooraf ingestelde vensterformaten om te zorgen dat de app geen problemen ondervindt.</translation>
 <translation id="5127934926273826089">Bloemen</translation>
+<translation id="5129534298163637277">Bevestigingsdialoogvenster</translation>
 <translation id="5135404736266831032">Adressen beheren...</translation>
 <translation id="5136841603454277753">Geef de juiste code op</translation>
 <translation id="5138014172396933048">Virtuele kaart nu niet beschikbaar, neem contact op met je bank</translation>
@@ -1982,6 +1990,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5921639886840618607">Pas opslaan in Google-account?</translation>
 <translation id="5922853866070715753">Bijna klaar</translation>
 <translation id="5923492272538889093">Apparaatontgrendeling gebruiken in plaats van CVC?</translation>
+<translation id="5924782825030413055">Bron van laatste update van toestemming:</translation>
 <translation id="5928444777041341328">Huis en tuin</translation>
 <translation id="5932224571077948991">Site toont opdringerige of misleidende advertenties</translation>
 <translation id="5937560539988385583">Pagina vertaald</translation>
@@ -2672,6 +2681,7 @@ Aanvullende informatie:
 <translation id="7619838219691048931">Eindblad</translation>
 <translation id="7625242817712715120">Op basis van het beheerdersbeleid wordt afgeraden deze content af te drukken</translation>
 <translation id="762844065391966283">Eén tegelijk</translation>
+<translation id="7630470133768862132">Status van toestemming:</translation>
 <translation id="7631444403134069754">Atletiek</translation>
 <translation id="7633909222644580952">Prestatiegegevens en crashrapporten</translation>
 <translation id="7637571805876720304">Creditcard verwijderen uit Chromium?</translation>
@@ -2848,6 +2858,7 @@ Aanvullende informatie:
 <translation id="8055534648776115597">Beroeps- en vervolgonderwijs</translation>
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />' is niet correct geconfigureerd. Als je '<ph name="SOFTWARE_NAME" />' verwijdert, wordt het probleem meestal opgelost. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Levensmiddelenindustrie</translation>
+<translation id="8058603697124206642">Niet vereist</translation>
 <translation id="8066225060526005217">Beheerd door cookie-instellingen</translation>
 <translation id="8067872629359326442">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium kan je laten zien wat je nu kunt doen. Klik op 'Account beschermen' om je wachtwoord te wijzigen en Google te laten weten dat je account mogelijk gevaar loopt.</translation>
 <translation id="8070439594494267500">App-icoon</translation>
@@ -2936,6 +2947,7 @@ Aanvullende informatie:
 <translation id="8270242299912238708">Pdf-documenten</translation>
 <translation id="8275952078857499577">Niet aanbieden om deze site te vertalen</translation>
 <translation id="8277900682056760511">Blad voor betalingshandler is geopend</translation>
+<translation id="827820107214076967">Logboeken vernieuwen</translation>
 <translation id="8279611986089885641">Chrome-meldingen moeten aanstaan. Je kunt ze aanzetten in <ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Lade 11</translation>
 <translation id="8281886186245836920">Overslaan</translation>
@@ -3038,6 +3050,7 @@ Aanvullende informatie:
 <translation id="8542014550340843547">Drie nietjes onder</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">Je kunt <ph name="BEGIN_ERROR_LINK" />een detectieprobleem melden<ph name="END_ERROR_LINK" />. Als je de veiligheidsrisico's begrijpt, kun je ook <ph name="BEGIN_LINK" />deze onveilige site bezoeken<ph name="END_LINK" />.</translation>
+<translation id="8546350655047701518">Logboeken exporteren naar JSON</translation>
 <translation id="854892890027593466">Envelop C6/C5</translation>
 <translation id="8553387990086529628">Toeristische bestemmingen</translation>
 <translation id="8554010658308662631">Meer laden</translation>
@@ -3110,6 +3123,7 @@ Aanvullende informatie:
 <translation id="8742371904523228557">Je code voor <ph name="ORIGIN" /> is<ph name="ONE_TIME_CODE" />.</translation>
 <translation id="874918643257405732">Bookmark toevoegen voor dit tabblad</translation>
 <translation id="8751426954251315517">Probeer het de volgende keer opnieuw</translation>
+<translation id="8753913772043329557">Beleidslogboeken</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="8757526089434340176">Google Pay-aanbieding beschikbaar</translation>
 <translation id="8758885506338294482">Competitief videogamen</translation>

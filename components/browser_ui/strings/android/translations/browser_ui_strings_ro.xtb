@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Anunțuri</translation>
 <translation id="1919950603503897840">Selectează persoane de contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Mărește sau micșorează textul și imaginile pentru toate site-urile pe care le accesezi</translation>
 <translation id="1984937141057606926">Permise, cu excepția celor terță parte</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="1994173015038366702">Adresa URL a site-ului</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Sunet</translation>
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="216989819110952009">Chiar și cu ochii ocrotiți de ochelarii verzi, Dorothy și prietenii ei erau orbiți de strălucirea</translation>
+<translation id="2176704795966505152">Afișează opțiunea de zoom în meniul principal</translation>
 <translation id="2182457891543959921">Întreabă înainte de a permite site-urilor să creeze o hartă 3D a lucrurilor din jur sau să urmărească poziția camerei video (recomandat)</translation>
 <translation id="2212565012507486665">Permite cookie-urile</translation>
 <translation id="2228071138934252756">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze camera, activează camera și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Permite cookie-uri pentru un anumit site.</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
 <translation id="4149994727733219643">Afișare simplificată pentru paginile web</translation>
+<translation id="4151930093518524179">Zoom standard</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
 <translation id="4194328954146351878">Întreabă înainte de a permite site-urilor să vadă și să modifice informații de pe dispozitive NFC (recomandat)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Pentru a permite aplicației <ph name="APP_NAME" /> să acceseze microfonul, activează microfonul și în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Dezactivează sunetul microfonului</translation>
 <translation id="4570913071927164677">Detalii</translation>
+<translation id="4575264539271661854">Mărește mai ușor textul și imaginile de pe un site pe care îl accesezi</translation>
 <translation id="4598549027014564149">În modul incognito, site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe site-uri, inclusiv site-urile conexe. Activitatea ta de navigare nu este folosită pentru acțiuni precum personalizarea anunțurilor. Este posibil ca funcțiile de pe anumite site-uri să nu ruleze.</translation>
 <translation id="4645575059429386691">Gestionat de părintele tău</translation>
 <translation id="4670064810192446073">Realitate virtuală</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Subtitrări</translation>
 <translation id="8300705686683892304">Gestionate de aplicație</translation>
 <translation id="8324158725704657629">Nu mai întreba</translation>
+<translation id="8362795839483915693">Poți să mărești sau să micșorezi site-urile pe care le accesezi</translation>
 <translation id="8372893542064058268">Permite sincronizarea în fundal pentru un anumit site.</translation>
 <translation id="8376384591331888629">Inclusiv cookie-urile terță parte de pe acest site</translation>
 <translation id="83792324527827022">Un site folosește camera foto și microfonul</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="ja">
 <translation id="1143896152279775643">パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="1282031177488366470">Chrome の機能と動作の改善に協力する</translation>
+<translation id="1352919863522755794">Google パスワード マネージャーでパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="1462727070346936664">Chrome を最大限に活用するにはログインしてください。</translation>
 <translation id="1479202195792305274">Google アカウントでログインすると、Chrome でパスワードを確認できるようになります。</translation>
 <translation id="1493827051843127077">Chrome を既定に設定すると、タブ、パスワード、お支払い情報をすべてのデバイスで同期できるようになります</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Chrome のデータを同期する</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">このアカウントと保存されていないデータは、Chrome やこのデバイスの他の Google アプリから削除されます。</translation>
-<translation id="1968388653333775699">Chrome でもっと便利に</translation>
 <translation id="2009224836393115614">Chrome でパスワードを確認できませんでした。インターネット接続を確認してみてください。</translation>
 <translation id="2056123005618757196">シンプル、安全で、さらに高速になった Google Chrome をご活用ください。</translation>
 <translation id="2147651015520127414">このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
 <translation id="2199719347983604670">Chrome 同期のデータ</translation>
-<translation id="2313070403598893276">Google Chrome がさらにシンプル、安全、高速になりました</translation>
 <translation id="2339201583852607431">パスワードは Google アカウント（<ph name="EMAIL" />）に保存されます。</translation>
 <translation id="2342919707875585281">Chrome で、許可したサイトと現在地が共有されます。</translation>
 <translation id="2347208864470321755">この機能を有効にすると、外国語のページで翻訳ツールが表示されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">すべてのウェブサイトで Google アカウントからログアウトするには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="2695886661449553974">Chrome でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="2732745070297234559">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
+<translation id="2767464022270041271">保存されているパスワードがありません。パスワードを保存すると、Google パスワード マネージャーで確認できるようになります。</translation>
 <translation id="2869959624320573933">Chrome へのログイン</translation>
 <translation id="2957447865124070833">[<ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />] を選択する</translation>
 <translation id="3030414234702425231"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="4819268619367838612">アプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome ベータ版ではサポートされていません</translation>
+<translation id="4840404732697892756">Google アカウントでログインすると、Google パスワード マネージャーでパスワードを確認できるようになります。</translation>
 <translation id="5030102366287574140">Chrome でデータ侵害や安全でないウェブサイトなどの脅威から保護されているか確認します。</translation>
 <translation id="5108659628347594808">Chrome の品質を向上</translation>
 <translation id="5119391094379141756">[Chrome] を選択する</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome では、定期的にパスワードをオンライン上の公開リストと照合し、確認しています。その際、パスワードとユーザー名は Google を含め誰も読み取ることができないよう暗号化されます。</translation>
 <translation id="5639704535586432836">[設定] &gt; [プライバシー] &gt; [カメラ] &gt; [Google Chrome] の順に選択し、カメラをオンにします。</translation>
 <translation id="5642200033778930880">Google Chrome では、分割表示モードでカメラを使用することはできません</translation>
+<translation id="5661521615548540542">Google パスワード マネージャーですべてのパスワードを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">オフラインのため Chrome でアップデートを確認できません</translation>
 <translation id="5716154293141027663">他のアプリでタップしたリンクを Chrome で開くことができます</translation>
@@ -120,9 +122,11 @@
   2. [デフォルトのブラウザアプリ] をタップします。
   3. [Chrome] を選択します。</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="8736550665979974340">Google Chrome でいつでも安全にブラウジング</translation>
 <translation id="8772179140489533211">Chrome へのログインを促すメッセージが表示されます。</translation>
 <translation id="8788269841521769222">このパスワードを覚えておく必要はありません。パスワードは、<ph name="EMAIL" /> の Google パスワード マネージャーに保存されます</translation>
+<translation id="8857676124663337448">Google パスワード マネージャーですべてのパスワードを確認できませんでした。明日もう一度お試しください。</translation>
 <translation id="8897749957032330183">パスワードは、このデバイスの Google パスワード マネージャーに保存されます。</translation>
 <translation id="8969290730818637510">オンにした場合:
 <ph name="BEGIN_INDENT" />  • 同じように Chrome を使用する他のユーザーの利便性向上に役立てられます。<ph name="END_INDENT" />

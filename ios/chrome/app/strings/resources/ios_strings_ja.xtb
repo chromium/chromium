@@ -243,7 +243,6 @@
 <translation id="2797029671965852011">履歴を表示する</translation>
 <translation id="2800683595868705743">タブ切り替え機能を終了</translation>
 <translation id="2815198996063984598">2. [デフォルトのブラウザアプリ] をタップする</translation>
-<translation id="2820289420301699633">Chrome は管理者の制御下にあり、管理者は Chrome のデータにアクセスできます</translation>
 <translation id="2830972654601096923">住所を管理...</translation>
 <translation id="2834399722155632105">3. [パスワードのオプション] をタップします</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />、<ph name="STATE" />、<ph name="URL" /></translation>
@@ -677,7 +676,6 @@
 <translation id="6064824697233747382">組織が同期をオフにするよう求めています。</translation>
 <translation id="6066301408025741299">タップしてキャンセルします。</translation>
 <translation id="6071409777669089905">タブの固定を解除</translation>
-<translation id="60829778314739003">同意して続行</translation>
 <translation id="6084848228346514841">タブを選択</translation>
 <translation id="6103540626693881831">オンデバイスの暗号化</translation>
 <translation id="6119050551270742952">現在シークレット モードです</translation>
@@ -1097,7 +1095,7 @@
 <translation id="9097506547406246598">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="9100610230175265781">パスフレーズを入力してください</translation>
 <translation id="9107664647686727385">不正使用されたパスワードがないか確認します</translation>
-<translation id="9124387962554796433">検索やその他の Google サービスをカスタマイズする目的で、履歴が Google で使用されることがあります。</translation>
+<translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9157836665414082580">ダイアログを表示しない</translation>

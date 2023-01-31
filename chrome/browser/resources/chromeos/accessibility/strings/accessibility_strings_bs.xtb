@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Pogovor</translation>
 <translation id="1197088940767939838">Narandžasta</translation>
 <translation id="1198865190323699001">Pokreti dodirom</translation>
-<translation id="1201402288615127009">Naprijed</translation>
 <translation id="1202112913213080585">otkaži</translation>
 <translation id="1206619573307042055">pokretni tekst</translation>
 <translation id="1207086294218137981">Nema sljedećeg naslova 4. nivoa</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">članak</translation>
 <translation id="1346059596910821859">Savjet</translation>
 <translation id="1354356357730355833">kopiraj</translation>
-<translation id="135978014023467274">ChromeVox je sada ažuriran na verziju 63!</translation>
 <translation id="1360699455582016846">Klik na stavku ispod ključa za rutiranje <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">prelazak na sljedeći znak</translation>
 <translation id="1377925789329510816">Ovo je posljednji naslov. Pritisnite tipku za pretraživanje + H da pređete na prvi naslov ili pritisnite tipku za pretraživanje + Shift + H da idete na drugi naslov na ovoj stranici.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">nije označeno</translation>
 <translation id="3286372614333682499">uspravno</translation>
 <translation id="3286390186030710347">Klizač</translation>
-<translation id="3300348286427369683">Podrška za obogaćeni tekst. ChromeVox sada podržava polja s obogaćenim tekstom, uključujući komande za skok, upravljanje kursorom za Braillevo pismo, odabir i još mnogo toga.</translation>
 <translation id="3300733168898541351">opozovi</translation>
 <translation id="3307886118343381874">Odlazak na kraj tabele</translation>
 <translation id="3312997241656799641">Sljedeći posjećeni link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Pametni ljepljivi način rada je isključen</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack više ne pruža prilagođavanje za Chromebook uređaje. I dalje ga možete koristiti, ali koristite zadane prečice tastature za TalkBack. Pritisnite Search+A, zatim K da vidite dostupne prečice. Ako i dalje želite koristiti TalkBack, ponovo pritisnite naredbu.</translation>
-<translation id="463135993322337640">Pritisnite ChromeVox + O + N da saznate šta je novo</translation>
 <translation id="4649220074413114917">Dodir ekrana s dva prsta se može koristiti da zaustavite govor koji je u toku. Ovo je korisno ako ne želite da ChromeVox nešto pročita. Da nastavite, dodirnite ekran s dva prsta.</translation>
-<translation id="4660783501463101648">Uklonjena je verzija Classic. Uklonjeno je uključivanje/isključivanje na tastaturi za povratak na verziju ChromeVox Classic.</translation>
 <translation id="4661075872484491155">stablo</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Idi u sljedeću kolonu</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">nazad</translation>
 <translation id="5102981729317424850">Alatna traka</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Uveli smo nekoliko uzbudljivih izmjena u ovom novom izdanju. Evo šta je novo:</translation>
 <translation id="5111640677200759579">Zaglavlje kolone</translation>
 <translation id="5115892389597951922">ChromeVox zapisnik</translation>
 <translation id="5119330972669454698">Boja drveta</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Osnovna navigacija</translation>
 <translation id="609281021724813947">Nema prethodnog klizača</translation>
 <translation id="6100239002225743044">Pomjeri nagore za jedan red</translation>
-<translation id="6118126368611144850">Android aplikacije za Chrome Ako imate Play trgovinu na uređaju, zavirite u ChromeVox s Android aplikacijama. Isprobajte eksperimentalnu podršku preuzimanjem preglednika Google Chrome Canary u Play trgovini.</translation>
 <translation id="611827076493383239">pst</translation>
 <translation id="6119846243427417423">aktiviraj</translation>
 <translation id="6122013438240733403">dgm</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Prethodni kombinirani okvir</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{uzvičnik}one{# uzvičnik}few{# uzvičnika}other{# uzvičnika}}</translation>
 <translation id="670717715607710284">Ekran je isključen</translation>
-<translation id="6710213216561001401">Nazad</translation>
 <translation id="6714813999819678458">Prethodni naslov 2. nivoa</translation>
 <translation id="6730312624811567147">Koristite tipku za pretraživanje i strelicu nalijevo ili nadesno za tipke Home ili End, tipku za pretraživanje, Ctrl i strelicu nalijevo ili nadesno za kombinaciju tipki Ctrl Home ili Ctrl End, tipku za pretraživanje i strelicu nagore ili nadolje za tipku Page Up ili Page Down</translation>
 <translation id="6736510033526053669">kartica je kreirana</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Starinska bijela</translation>
 <translation id="9220679313820249046">Narandžasto crvena</translation>
 <translation id="9223032053830369045">Tamnocrvena</translation>
-<translation id="923331726185079994">ChromeVox je ažuriran</translation>
 <translation id="93384979447910801">Tamna more-zelena</translation>
 <translation id="937605981140327129">TalkBack trenutno nije instaliran. Instalirajte Android paket za pristupačnost putem Play trgovine i pokušajte ponovo.</translation>
 <translation id="948171205378458592">Smanjivanje brzine govora</translation>

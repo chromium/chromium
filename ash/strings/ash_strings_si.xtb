@@ -733,6 +733,7 @@
 <translation id="492453977506755176">ග්‍රහණ ප්‍රකාර යතුර</translation>
 <translation id="4925542575807923399">මෙම ගිණුම සඳහා පරිපාලකට මෙම ගිණුම බහුවිධ පිරීමේ සැසියක් තුළ පළමු පිරූ ගිණුම වීමට අවශ්‍යයි.</translation>
 <translation id="4929163402621253029">ඔබ කථා කරනවා ද? ඔබ නිහඬව සිටියි. තව දැන ගන්න</translation>
+<translation id="4936329710968938986">සියලු දෙනා, ක්‍රියාවිරහිතයි</translation>
 <translation id="4938176435186993759">සියලු යෝජනා සඟවන්න</translation>
 <translation id="4945196315133970626">දැනුම්දීම් ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="4946376291507881335">ග්‍රහණය</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">අවලංගු කිරීමට Alt+සෙවීම හෝ Shift ඔබන්න.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> හට සහය නොදක්වයි. විභේදනය <ph name="FALLBACK_RESOLUTION" /> ට වෙනස් විය. වෙනස්කම් තබා ගැනීමට තහවුරු කිරීම ක්ලික් කරන්න. පෙර සැකසුම් <ph name="TIMEOUT_SECONDS" /> තුළ ප්‍රතිසාධන කෙරේ.</translation>
 <translation id="8496402167048257517">ළඟ බෙදා ගැනීමේ සැකසීම් පෙන්වන්න</translation>
+<translation id="8507563469658346379">සියලු දෙනා, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">ඔබගේ Chromebook හි බ්ලූටූත් ක්‍රියාවිරහිතයි. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
 <translation id="8513108775083588393">ස්වයංක්‍රීය කරකැවීම</translation>
 <translation id="851458219935658693">වත්මන් මේසයෙන් කවුළු පෙන්වයි, රේඩියෝ බොත්තම තෝරා ගන්නා ලදී</translation>

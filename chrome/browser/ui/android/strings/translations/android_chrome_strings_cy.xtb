@@ -237,6 +237,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2321086116217818302">Wrthi'n paratoi cyfrineiriau…</translation>
 <translation id="2323763861024343754">Storfa gwefan</translation>
 <translation id="2328985652426384049">Methu â mewngofnodi</translation>
+<translation id="2341410551640223969">Methu â gosod <ph name="WEBAPK_NAME" />.</translation>
 <translation id="234265804618409743">Methu ag agor eich camera. Aeth rywbeth o'i le.</translation>
 <translation id="2349710944427398404">Cyfanswm y data a ddefnyddir gan Chrome, gan gynnwys cyfrifon, nodau tudalen, a gosodiadau sydd wedi'u cadw</translation>
 <translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
@@ -344,6 +345,7 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="2909615210195135082">Platfform Hysbysiadau Google</translation>
 <translation id="2912296070571964914">Rheoli'r pynciau y mae gennych ddiddordeb ynddynt</translation>
 <translation id="2912345083818861431">Defnyddio clo sgrîn i weld tabiau anhysbys sydd ar agor</translation>
+<translation id="2922568440285376746">Chwilio y tu mewn i lun gyda Google <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Mae'r enw'n annilys</translation>
 <translation id="2932150158123903946">Storfa Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Ni fydd eich bysellfwrdd yn newid</translation>
@@ -665,6 +667,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4684427112815847243">Cysoni popeth</translation>
 <translation id="4685741273709472646">Dewiswch o'r gwymplen</translation>
 <translation id="4687718960473379118">Hysbysebion a awgrymir gan wefan</translation>
+<translation id="4689792375321623175">Chwilio llun gyda Google <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}zero{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}two{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}few{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}many{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> arall}}</translation>
 <translation id="4699172675775169585">Lluniau a ffeiliau sydd wedi'u storio dros dro</translation>
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
@@ -811,6 +814,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5438292632479953702">Lawrlwytho eto</translation>
 <translation id="5441466871879044658">Cyfieithu i'r iaith hon</translation>
 <translation id="5441522332038954058">Neidio i'r bar cyfeiriad</translation>
+<translation id="5444999712122199445">Mynd yn ôl i'r wefan</translation>
 <translation id="544776284582297024">I agor tabiau ac i fynd i wahanol dudalennau ar yr un pryd, tapiwch y botwm tabiau sydd ar agor</translation>
 <translation id="5454166040603940656">gyda <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Tudalen lawrlwytho</translation>

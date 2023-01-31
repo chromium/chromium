@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">उपसंहार</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="1198865190323699001">टच जेस्चरहरू</translation>
-<translation id="1201402288615127009">अर्को</translation>
 <translation id="1202112913213080585">रद्द गर</translation>
 <translation id="1206619573307042055">मार्की</translation>
 <translation id="1207086294218137981">अर्को कुनै पनि लेभल ४ शीर्षक छैन</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">लेख</translation>
 <translation id="1346059596910821859">सुझाव</translation>
 <translation id="1354356357730355833">कपी गरियोस्</translation>
-<translation id="135978014023467274">ChromeVox ६३ मा अद्यावधिक गरिएको छ!</translation>
 <translation id="1360699455582016846">राउटिङ साँचो <ph name="ROUTING_KEY_NUMBER" /> भन्दा तलको वस्तुमा क्लिक गर्नुहोस्</translation>
 <translation id="1376703628032300005">कर्सर सारेर अर्को वर्णमा लगियोस्</translation>
 <translation id="1377925789329510816">यो अन्तिम शीर्षक हो। पहिलो शीर्षकमा जान खोज+H थिच्नुहोस् वा यस पृष्ठको दोस्रो शीर्षकमा जान खोज+सिफ्ट+H थिच्नुहोस्।</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">जाँच चिन्ह नलगाइएको</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
 <translation id="3286390186030710347">स्लाइडर</translation>
-<translation id="3300348286427369683">रिच टेक्स्टसम्बन्धी समर्थन। ChromeVox ले अब जम्प आदेशहरू, ब्रेल कर्सरको राउटिङ, चयन र थप कुराहरू लगायत रिच टेक्स्टसम्बन्धी क्षेत्रहरूको समर्थन गर्छ।</translation>
 <translation id="3300733168898541351">अन्डू गरियोस्</translation>
 <translation id="3307886118343381874">तालिकाको अन्त जानुहोस्</translation>
 <translation id="3312997241656799641">अर्को भ्रमण गरिएको लिङ्क</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">स्मार्ट स्टिकी मोड अफ छ</translation>
 <translation id="4623097797855662355">कोलोफन</translation>
 <translation id="4624970070706497034">TalkBack ले अब Chromebooks मा कस्टमाइज गर्ने सुविधा प्रदान गर्दैन। तपाईं अझै पनि TalkBack प्रयोग गर्न सक्नुहुन्छ तर तपाईंले TalkBack का डिफल्ट किबोर्ड सर्टकटहरू प्रयोग गर्नु पर्ने हुन्छ। उपलब्ध सर्टकटहरू हेर्न Search+A थिच्नुहोस्, त्यसपछि K थिच्नुहोस्। तपाईं अझै पनि TalkBack प्रयोग गर्न चाहनुहुन्छ भने फेरि कमान्ड की थिच्नुहोस्।</translation>
-<translation id="463135993322337640">यसमा नयाँ के छ भन्ने कुरा थाहा पाउन ChromeVox o, n थिच्नुहोस्</translation>
 <translation id="4649220074413114917">तपाईं दुई औँलाले स्क्रिनमा ट्याप गरेर हाल अन रहेको कुनै वाक् सुविधा बन्द गर्न सक्नुहुन्छ। तपाईं ChromeVox ले कुनै कुरा पढेर नसुनाओस् भन्ने चाहनुहुन्छ भने यसो गर्नु उपयोगी हुन्छ। जारी राख्न दुई औँलाले स्क्रिनमा ट्याप गर्नुहोस्।</translation>
-<translation id="4660783501463101648">क्लासिक हटाइयो। ChromeVox क्लासिकमा फर्कने किबोर्डको टगल हटाइएको छ।</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">अर्को स्तम्भमा जानुहोस्</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">पछाडि जानुहोस्</translation>
 <translation id="5102981729317424850">उपकरण पट्टी</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">हामीले यस नयाँ रिलिजमा केही उत्साहलाग्दा परिवर्तनहरू गरेका छौं; ती नयाँ कुराहरू यसप्रकार छन्:</translation>
 <translation id="5111640677200759579">स्तम्भ शीर्षक</translation>
 <translation id="5115892389597951922">ChromeVox को लग</translation>
 <translation id="5119330972669454698">बर्ली उड</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">आधारभूत नेभिगेसन</translation>
 <translation id="609281021724813947">अघिल्लो कुनै पनि स्लाइडर छैन</translation>
 <translation id="6100239002225743044">एक लाइन माथि सार्नुहोस्</translation>
-<translation id="6118126368611144850">Chrome का लागि Android एपहरू। तपाईंको डिभाइसमा Play स्टोर भएको खण्डमा Android एपहरूको सहयोगले ChromeVox रिलिज हुनु अगावै यसलाई चलाई हेर्नुहोस्। Play स्टोरबाट Google Chrome Canary डाउनलोड गरी परीक्षणात्मक समर्थन चलाएर हेर्नुहोस्।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">अन गर्नुहोस्</translation>
 <translation id="6122013438240733403">बटन</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">अघिल्लो कम्बो बाकस</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{विष्मय}other{# विष्मयहरू}}</translation>
 <translation id="670717715607710284">स्क्रिन अफ गरियोस्</translation>
-<translation id="6710213216561001401">अघिल्लो</translation>
 <translation id="6714813999819678458">अधिल्लो चरण 2 शीर्षक</translation>
 <translation id="6730312624811567147">सिरान वा फेदमा जान Search Left वा Right प्रयोग गर्नुहोस्, Control Home वा End मा जान Search Control Left वा Right प्रयोग गर्नुहोस्, माथिल्लो वा तल्लो पृष्ठमा जान Search Up वा Down प्रयोग गर्नुहोस्</translation>
 <translation id="6736510033526053669">ट्याब सिर्जना गरिएको छ</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">एन्टिक सेतो</translation>
 <translation id="9220679313820249046">सुन्तले रातो</translation>
 <translation id="9223032053830369045">गाढा रातो</translation>
-<translation id="923331726185079994">ChromeVox लाई अद्यावधिक गरियो</translation>
 <translation id="93384979447910801">गाढा समुद्री हरियो</translation>
 <translation id="937605981140327129">TalkBack हाल इन्स्टल गरिएको छैन। कृपया Play स्टोरमा गई Android Accessibility Suite इन्स्टल गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="948171205378458592">बोलीको दर धटाउनुहोस्</translation>

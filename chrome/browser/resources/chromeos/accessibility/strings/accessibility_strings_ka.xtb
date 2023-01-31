@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">ბოლოსიტყვაობა</translation>
 <translation id="1197088940767939838">ნარინჯისფერი</translation>
 <translation id="1198865190323699001">შეხების ჟესტები</translation>
-<translation id="1201402288615127009">შემდეგი</translation>
 <translation id="1202112913213080585">გაუქმება</translation>
 <translation id="1206619573307042055">მორბენალი სტრიქონი</translation>
 <translation id="1207086294218137981">შემდეგი მე-4 დონის სათაური არ არის</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">არტიკლი</translation>
 <translation id="1346059596910821859">დამატებითი გასამრჯელო</translation>
 <translation id="1354356357730355833">კოპირება</translation>
-<translation id="135978014023467274">ახლა თქვენ იყენებთ ChromeVox 63-ს!</translation>
 <translation id="1360699455582016846">დააწკაპუნეთ მარშრუტიზაციის კლავიშ <ph name="ROUTING_KEY_NUMBER" />-ის ქვეშ მოცემულ ერთეულზე</translation>
 <translation id="1376703628032300005">შემდეგ სიმბოლოზე გადასვლა</translation>
 <translation id="1377925789329510816">ეს ბოლო სათაურია. დააჭირეთ კლავიშთა კომბინაციას: Search+H პირველ სათაურზე გადასასვლელად, ან კლავიშთა კომბინაციას: Search+Shift+H ამ გვერდზე მეორე სათაურზე გადასასვლელად.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">მოუნიშნავი</translation>
 <translation id="3286372614333682499">პორტრეტი</translation>
 <translation id="3286390186030710347">სლაიდერი</translation>
-<translation id="3300348286427369683">ფორმატირებული ტექსტის მხარდაჭერა. ChromeVox-ის მიერ ახლა მხარდაჭერილია ფორმატირებული ტექსტის ველები (მათ შორის, გადასვლის ბრძანებები, ბრაილის კურსორის მარშრუტიზაცია, არჩევა და სხვა).</translation>
 <translation id="3300733168898541351">მოქმედების გაუქმება</translation>
 <translation id="3307886118343381874">ცხრილის ბოლოში გადასვლა</translation>
 <translation id="3312997241656799641">შემდეგი მონახულებული ბმული</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">გონიერი ფიქსირებული რეჟიმი გამორთულია</translation>
 <translation id="4623097797855662355">კოლოფონი</translation>
 <translation id="4624970070706497034">TalkBack აღარ უზრუნველყოფს მორგებულ ფუნქციებს Chromebook-ისთვის. TalkBack-ის გამოყენება კვლავ შეგიძლიათ, თუმცა კლავიატურის ნაგულისხმევი მალსახმობებით. ხელმისაწვდომი მალსახმობების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას Search+A, შემდეგ კი კლავიშს K. თუ TalkBack-ით სარგებლობის გაგრძელებას გადაწყვეტთ, ხელახლა დააჭირეთ ბრძანებას.</translation>
-<translation id="463135993322337640">სიახლეების გასაცნობად დააჭირეთ კლავიშთა კომბინაციას ChromeVox o, n</translation>
 <translation id="4649220074413114917">ეკრანზე ორი თითით შეხებით შესაძლებელია მეტყველების შეჩერება. ეს გამოგადგებათ, როცა არ გსურთ, რომ ChromeVox რამეს კითხულობდეს. გასაგრძელებლად შეეხეთ ეკრანს ორი თითით.</translation>
-<translation id="4660783501463101648">ChromeVox Classic გაუქმდა. ახლა მასზე კლავიატურის მეშვეობით გადართვა ვეღარ მოხერხდება.</translation>
 <translation id="4661075872484491155">ხე</translation>
 <translation id="4668929960204016307">.</translation>
 <translation id="4677535310137735442">შემდეგ სვეტზე გადასვლა</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">უკან</translation>
 <translation id="5102981729317424850">ხელსაწყოთა ზოლი</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">ახალ ვერსიაში თქვენ გელით საინტერესო სიახლეები:</translation>
 <translation id="5111640677200759579">სვეტის სათაური</translation>
 <translation id="5115892389597951922">ChromeVox ჟურნალი</translation>
 <translation id="5119330972669454698">მკვრივი მერქნისფერი</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">ძირითადი ნავიგაცია</translation>
 <translation id="609281021724813947">წინა სლაიდერი არ არის</translation>
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
-<translation id="6118126368611144850">Android აპები Chrome-ისთვის. ახლა Android-ის აპები აღჭურვილია ChromeVox-ის ექსპერიმენტული მხარდაჭერით, რაც შეგიძლიათ თავად ცადოთ Play Store-იდან Google Chrome Canary-ს ჩამოტვირთვით.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">გააქტიურება</translation>
 <translation id="6122013438240733403">ღილაკი</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">წინა კომბო-ველი</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ძახილის ნიშანი}other{# ძახილის ნიშანი}}</translation>
 <translation id="670717715607710284">ეკრანის გამორთვა</translation>
-<translation id="6710213216561001401">წინა</translation>
 <translation id="6714813999819678458">წინა მე-2 დონის სათაური</translation>
 <translation id="6730312624811567147">გამოიყენეთ კლავიშთა კომბინაცია Search და ისარი მარცხნივ ან მარჯვნივ Home ან End კლავიშის ასამოქმედებლად, კლავიშთა კომბინაცია Search Control და ისარი მარცხნივ ან მარჯვნივ კლავიშთა კომბინაციის Control Home ან Control End ასამოქმედებლად, კლავიშთა კომბინაცია Search და ისარი ზემოთ ან ქვემოთ Page Up ან Page Down კლავიშის ასამოქმედებლად</translation>
 <translation id="6736510033526053669">ჩანართი შეიქმნა</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">ანტიკური თეთრი</translation>
 <translation id="9220679313820249046">მონარინჯისფრო წითელი</translation>
 <translation id="9223032053830369045">მუქი წითელი</translation>
-<translation id="923331726185079994">ChromeVox განახლდა</translation>
 <translation id="93384979447910801">მუქი ზღვისფერი მწვანე</translation>
 <translation id="937605981140327129">TalkBack ამჟამად არ არის დაინსტალირებული. Play Store-იდან დააინსტალირეთ Android AccessibilitySuite და ცადეთ ხელახლა.</translation>
 <translation id="948171205378458592">მეტყველების სიჩქარის შემცირება</translation>

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">చివరిమాట</translation>
 <translation id="1197088940767939838">నారింజ రంగు</translation>
 <translation id="1198865190323699001">తాకే సంజ్ఞలు</translation>
-<translation id="1201402288615127009">తరువాత</translation>
 <translation id="1202112913213080585">రద్దు చేయండి</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">తర్వాత స్థాయి 4 శీర్షిక లేదు</translation>
@@ -71,7 +70,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="1342835525016946179">కథనం</translation>
 <translation id="1346059596910821859">చిట్కా</translation>
 <translation id="1354356357730355833">కాపీ చేయి</translation>
-<translation id="135978014023467274">మీరు ChromeVox 63కు అప్‌డేట్ అయ్యారు!</translation>
 <translation id="1360699455582016846">రూటింగ్ కీ <ph name="ROUTING_KEY_NUMBER" /> కింద ఉన్న అంశాన్ని క్లిక్ చేయండి</translation>
 <translation id="1376703628032300005">తర్వాతి అక్షరానికి వెళ్లండి</translation>
 <translation id="1377925789329510816">ఇది చివరి ముఖ్యశీర్షిక. మొదటి ముఖ్యశీర్షికకు సర్దుబాటు చేసేందుకు, శోధన+H నొక్కండి లేదా ఈ పేజీలోని రెండవ ముఖ్యశీర్షికకు వెళ్లేందుకు, శోధన+Shift+Hను నొక్కండి.</translation>
@@ -364,7 +362,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3283583562490372694">ఎంపికను తీసివేశారు</translation>
 <translation id="3286372614333682499">పోర్ట్రెయిట్‌లో ఉంది</translation>
 <translation id="3286390186030710347">స్లయిడర్</translation>
-<translation id="3300348286427369683">రిచ్ టెక్స్ట్ మద్దతు. ChromeVox ఇప్పుడు దాటవేత ఆదేశాలు, బ్రెయిలీ కర్సర్ రూటింగ్, ఎంపిక మరియు మరిన్నింటితో సహా రిచ్ టెక్స్ట్ ఫీల్డ్‌లకు మద్దతిస్తుంది.</translation>
 <translation id="3300733168898541351">చర్య రద్దు చేయండి</translation>
 <translation id="3307886118343381874">పట్టిక చివరకు వెళ్లండి</translation>
 <translation id="3312997241656799641">తర్వాత సందర్శించిన లింక్</translation>
@@ -551,9 +548,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="4617384941327705512">స్మార్ట్ స్టిక్కీ మోడ్ ఆఫ్‌లో ఉంది</translation>
 <translation id="4623097797855662355">ఆఖరిమాట</translation>
 <translation id="4624970070706497034">TalkBack ఇకపై Chromebookలకు అనుకూలీకరణను అందించదు. మీరు దీనిని ఇప్పటికీ ఉపయోగించవచ్చు, కానీ TalkBack ఆటోమేటిక్ కీబోర్డ్ షార్ట్‌కట్ సెట్టింగ్‌ను ఉపయోగించండి. Search+A, ఆపై Kని నొక్కి అందుబాటులో ఉన్న షార్ట్‌కట్‌లను చూడండి. మీరు ఇప్పటికీ TalkBackను ఉపయోగించాలనుకుంటే, కమాండ్‌ను మళ్లీ నొక్కండి.</translation>
-<translation id="463135993322337640">కొత్తవి ఏమిటో కనుగొనడం కోసం ChromeVox o, n నొక్కండి</translation>
 <translation id="4649220074413114917">రెండు వేళ్లతో స్క్రీన్‌ను ట్యాప్ చేయడం ద్వారా ప్రస్తుతం నడుస్తోన్న ఏ స్పీచ్‌ను అయినా ఆపివేయవచ్చు. ChromeVox ఏదైనా చదవకూడదని మీరు అనుకుంటే ఇది ఉపయోగపడుతుంది. కొనసాగడానికి, రెండు వేళ్లతో స్క్రీన్‌పై ట్యాప్ చేయండి.</translation>
-<translation id="4660783501463101648">క్లాసిక్ తీసివేయబడింది. కీబోర్డ్ టోగుల్ ద్వారా తిరిగి ChromeVox క్లాసిక్‌కు మారడం అనేది తీసివేయబడింది.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">తర్వాతి నిలువు వరుసకు వెళ్లండి</translation>
@@ -618,7 +613,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5087864757604726239">వెనుకకు</translation>
 <translation id="5102981729317424850">సాధనపట్టీ</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">మీకు ఈ సరికొత్త విడుదలలో అద్భుతమైన మార్పులను అందిస్తున్నాము; ఇవి కొత్తవి:</translation>
 <translation id="5111640677200759579">నిలువు వరుస ముఖ్య శీర్షిక</translation>
 <translation id="5115892389597951922">ChromeVox లాగ్</translation>
 <translation id="5119330972669454698">బర్లీ వుడ్ గోధుమ రంగు</translation>
@@ -769,7 +763,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6082768461603900813">ప్రాథమిక నావిగేషన్</translation>
 <translation id="609281021724813947">మునుపటి స్లయిడర్ లేదు</translation>
 <translation id="6100239002225743044">ఒక పంక్తి పైకి జరుపు</translation>
-<translation id="6118126368611144850">Chrome కోసం Android యాప్‌లు. మీ పరికరంలో Play Store ఉన్నట్లయితే, Android యాప్‌లతో ChromeVoxను పరిశీలించండి. Play Store నుండి Google Chrome Canaryని డౌన్‌లోడ్ చేయడం ద్వారా ప్రయోగాత్మక మద్దతును ప్రయత్నించండి.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ఆక్టివేట్ చేయి</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -843,7 +836,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="6697092096875747123">మునుపటి కాంబో పెట్టె</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ఆశ్చర్యార్థక గుర్తు}other{# ఆశ్చర్యార్థక గుర్తులు}}</translation>
 <translation id="670717715607710284">స్క్రీన్ ఆఫ్‌ చేయండి</translation>
-<translation id="6710213216561001401">మునుపటి</translation>
 <translation id="6714813999819678458">మునుపటి స్థాయి 2 శీర్షిక</translation>
 <translation id="6730312624811567147">Home లేదా End బదులుగా Search Left లేదా Rightను, Control Home లేదా Endకు బదులుగా Search Control Left లేదా Rightను, Page Up లేదా Downకు బదులుగా Search Up లేదా Downను ఉపయోగించండి</translation>
 <translation id="6736510033526053669">ట్యాబ్ క్రియేట్ చేయబడింది</translation>
@@ -1191,7 +1183,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="9208241857935108694">ప్రాచీన తెలుపు</translation>
 <translation id="9220679313820249046">నారింజ ఎరుపు</translation>
 <translation id="9223032053830369045">ముదురు ఎరుపు రంగు</translation>
-<translation id="923331726185079994">ChromeVox అప్‌డేట్ చేయబడింది</translation>
 <translation id="93384979447910801">ముదురు సముద్ర ఆకుపచ్చ</translation>
 <translation id="937605981140327129">TalkBack ప్రస్తుతం ఇన్‌స్టాల్ చేయబడలేదు. దయచేసి Play Store ద్వారా Android AccessibilitySuiteను ఇన్‌స్టాల్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="948171205378458592">ప్రసంగ రేటుని తగ్గించండి</translation>

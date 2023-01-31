@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">စာအုပ်ဖတ်ပြီးနောက် သုံးသပ်ချက်</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="1198865190323699001">တို့ထိမှု လက်ဟန်များ</translation>
-<translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1202112913213080585">မလုပ်တော့ပါ</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">နောက်ထပ် အဆင့် ၄ ခေါင်စီး မရှိပါ</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">ဆောင်းပါး</translation>
 <translation id="1346059596910821859">အကြံပြုချက်</translation>
 <translation id="1354356357730355833">မိတ္တူကူးရန်</translation>
-<translation id="135978014023467274">ChromeVox 63 သို့ အပ်ဒိတ်လုပ်ပြီးပါပြီ။</translation>
 <translation id="1360699455582016846">လမ်းကြောင်းခလုတ် <ph name="ROUTING_KEY_NUMBER" /> အောက်ရှိ အရာကို နှိပ်ပါ</translation>
 <translation id="1376703628032300005">နောက်စာလုံးသို့ ရွှေ့ရန်</translation>
 <translation id="1377925789329510816">နောက်ဆုံးခေါင်းစဉ်ကို ရောက်ပါပြီ။ ပထမခေါင်းစဉ်သို့ ပြန်သွားရန် Search+H ကို နှိပ်ပါ သို့မဟုတ် ဤစာမျက်နှာပေါ်ရှိ ဒုတိယခေါင်းစဉ်သို့ သွားရန် Search+Shift+H ကို နှိပ်ပါ။</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">အမှန်ခြစ်မထားပါ</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
 <translation id="3286390186030710347">ရွေ့လျားတန်း</translation>
-<translation id="3300348286427369683">Rich text စာသားစနစ် ပံ့ပိုးမှု။ ChromeVox သည် ယခုအခါ တစ်ခုမှ တစ်ခုသို့ ခုန်ကူးခြင်း ကွန်မန်းများ၊ မျက်မမြင်စာ ကာဆာလမ်းညွှန်၊ ရွေးချယ်ခြင်းနှင့် အခြားအရာများ အပါအဝင် Rich text စာသားစနစ်ကို အပြည့်အဝ ပံ့ပိုးပေးထားပါသည်။</translation>
 <translation id="3300733168898541351">တစ်ဆင့် နောက်ပြန်ရန်</translation>
 <translation id="3307886118343381874">ဇယား အဆုံးသို့ သွားရန်</translation>
 <translation id="3312997241656799641">နောက်ထပ် လည်ပတ်ပြီးသော လင့်ခ်</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">စမတ် ကပ်ခွာစနစ် ပိတ်ထားသည်</translation>
 <translation id="4623097797855662355">အမှတ်တံဆိပ်</translation>
 <translation id="4624970070706497034">Chromebook များအတွက် စိတ်ကြိုက်လုပ်ခြင်းကို Talkback က နောက်ထပ်မပေးတော့ပါ။ ၎င်းကို သုံးနိုင်သေးသော်လည်း Talkback မူရင်းလက်ကွက်ဖြတ်လမ်းများကို သုံးပါ။ Search+A ထို့နောက် K ကိုနှိပ်ပြီး သုံးနိုင်သည့်ဖြတ်လမ်းလင့်ခ်များကို ကြည့်ပါ။ သင် Talkback ကို ဆက်သုံးလိုပါက command ကို ထပ်နှိပ်ပါ။</translation>
-<translation id="463135993322337640">အသစ်များကို သိရှိနိုင်ရန် ChromeVox o၊ n ကို နှိပ်ပါ</translation>
 <translation id="4649220074413114917">လက်ရှိစကားသံတစ်ခုခုကို ရပ်ရန် ဖန်သားပြင်ကို လက်နှစ်ချောင်းဖြင့်တို့ခြင်းကို သုံးနိုင်သည်။ ChromeVox အား တစ်စုံတစ်ခုကို မဖတ်စေလိုလျှင် ၎င်းက အသုံးဝင်သည်။ ရှေ့ဆက်ရန် ဖန်သားပြင်ကို လက်နှစ်ချောင်းဖြင့် တို့ပါ။</translation>
-<translation id="4660783501463101648">Classic ကို ဖယ်ရှားလိုက်ပါပြီ။ ChromeVox Classic သို့ ပြောင်းနိုင်သည့် ကီးဘုတ်ခလုတ်ကို ဖယ်ရှားလိုက်ပါပြီ။</translation>
 <translation id="4661075872484491155">အပင်</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">နောက် ကော်လံသို့ သွားရန်</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">နောက်သို့</translation>
 <translation id="5102981729317424850">ကိရိယာ ဘား</translation>
 <translation id="5105050547967751155">RQ</translation>
-<translation id="5106547198195128110">ဤအသစ်ထုတ်ဝေမှုတွင် စိတ်ဝင်စားစရာ ပြောင်းလဲမှု အချို့ကို ပြုလုပ်ထားပါသည်၊ ၎င်းတို့မှာ−</translation>
 <translation id="5111640677200759579">ကော်လန် ခေါင်းစီး</translation>
 <translation id="5115892389597951922">ChromeVox မှတ်တမ်း</translation>
 <translation id="5119330972669454698">သစ်သားအကွက်</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">အခြေခံလမ်းညွှန်မှု</translation>
 <translation id="609281021724813947">ယခင် ရွှေ့တုံး မရှိပါ</translation>
 <translation id="6100239002225743044">အပေါ်သို့ တစ်ကြောင်းတက်ရန်</translation>
-<translation id="6118126368611144850">Chrome အတွက် Android အက်ပ်များ။ သင့်စက်ပစ္စည်းပေါ်တွင် Play စတိုးရှိလျှင် Android အက်ပ်များဖြင့် ChromeVox ကို စမ်းကြည့်နိုင်ပါသည်။ Play စတိုးမှနေ၍ Google Chrome Canary ကို ဒေါင်းလုဒ်လုပ်၍ စမ်းသပ်ထောက်ပံ့မှုကို စမ်းကြည့်ပါ။</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ဖွင့်သုံးရန်</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">ယခင် ကွမ်ဘို အကွက်</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{အာမေဍိတ်သင်္ကေတ}other{အာမေဍိတ်သင်္ကေတ # ခု}}</translation>
 <translation id="670717715607710284">ဖန်သားပြင် ပိတ်ရန်</translation>
-<translation id="6710213216561001401">အရင်</translation>
 <translation id="6714813999819678458">ယခင် အဆင့် ၂ ခေါင်းစီး</translation>
 <translation id="6730312624811567147">'ပင်မစာမျက်နှာ သို့မဟုတ် အဆုံး' အတွက် 'ဘယ် သို့မဟုတ် ညာ ရှာဖွေမှု'၊ 'ပင်မစာမျက်နှာ သို့မဟုတ် အဆုံးကို ထိန်းချုပ်မှု' အတွက် 'ဘယ် သို့မဟုတ် ညာ ရှာဖွေမှု ထိန်းချုပ်စနစ်'၊ 'စာမျက်နှာ အပေါ် သို့မဟုတ် အောက်' အတွက် 'အပေါ် သို့မဟုတ် အောက် ရှာဖွေမှု' ကို အသုံးပြုပါ</translation>
 <translation id="6736510033526053669">တဘ် ဖန်တီးပြီး</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">ရှေးဟောင်းအဖြူ</translation>
 <translation id="9220679313820249046">လိမ္မော်နီ</translation>
 <translation id="9223032053830369045">အနီရင့်</translation>
-<translation id="923331726185079994">ChromeVox ကို အပ်ဒိတ်လုပ်ပြီးပါပြီ</translation>
 <translation id="93384979447910801">ပင်လယ်စိမ်း အရင့်</translation>
 <translation id="937605981140327129">TalkBack ကို လောလောဆယ် ထည့်သွင်းမထားပါ။ Play Store မှတစ်ဆင့် Android AccessibilitySuite ထည့်သွင်းပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="948171205378458592">စကားပြောမှု နှုန်း လျှော့ချ</translation>

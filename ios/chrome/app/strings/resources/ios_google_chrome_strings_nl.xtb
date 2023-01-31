@@ -3,6 +3,7 @@
 <translationbundle lang="nl">
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Help de functies en prestaties van Chrome verbeteren</translation>
+<translation id="1352919863522755794">Google Wachtwoordmanager kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="1462727070346936664">Log in om het maximale uit Chrome te halen.</translation>
 <translation id="1479202195792305274">Chrome kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="1493827051843127077">Stel Chrome in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
-<translation id="1968388653333775699">Doe meer met Chrome</translation>
 <translation id="2009224836393115614">Chrome kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="2056123005618757196">Krijg meer gedaan met Google Chrome. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="2147651015520127414">Chrome heeft geverifieerd dat <ph name="ISSUER" /> het certificaat voor deze website heeft verstrekt.</translation>
 <translation id="2199719347983604670">Gegevens van Chrome-synchronisatie</translation>
-<translation id="2313070403598893276">Google Chrome is gebruiksvriendelijk, beveiligd en sneller dan ooit</translation>
 <translation id="2339201583852607431">Je wachtwoord wordt opgeslagen in je Google-account (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome deelt je locatie met sites die je toestaat.</translation>
 <translation id="2347208864470321755">Als deze functie aanstaat, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kan niet checken op updates. Probeer het later opnieuw.</translation>
 <translation id="2732745070297234559">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
+<translation id="2767464022270041271">Geen opgeslagen wachtwoorden. Google Wachtwoordmanager kan je wachtwoorden checken als je deze opslaat.</translation>
 <translation id="2869959624320573933">Inloggen bij Chrome</translation>
 <translation id="2957447865124070833">Selecteer <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chrome-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_LINK" />Beheren<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Niet ondersteund in Chrome (bèta)</translation>
+<translation id="4840404732697892756">Google Wachtwoordmanager kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="5030102366287574140">Chrome kan je beschermen tegen gegevenslekken, onveilige websites en meer.</translation>
 <translation id="5108659628347594808">Chrome verbeteren</translation>
 <translation id="5119391094379141756">Selecteer Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome vergelijkt periodiek je wachtwoorden met lijsten die online zijn gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (inclusief Google) kunnen worden gelezen.</translation>
 <translation id="5639704535586432836">Open Instellingen &gt; Privacy &gt; Camera &gt; Google Chrome en zet de camera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
+<translation id="5661521615548540542">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline. Chrome kan niet checken op updates</translation>
 <translation id="5716154293141027663">Chrome openen wanneer je op links in andere apps tikt</translation>
@@ -120,9 +122,11 @@
 2. Tik op Standaard browser-app.
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
 <translation id="8772179140489533211">Toont prompts om in te loggen bij Chrome.</translation>
 <translation id="8788269841521769222">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="8897749957032330183">Wachtwoorden worden opgeslagen in Google Wachtwoordmanager op dit apparaat.</translation>
 <translation id="8969290730818637510">Als dit aanstaat:
 <ph name="BEGIN_INDENT" />  • Help Chrome te verbeteren voor mensen die de browser gebruiken op dezelfde manier als jij.<ph name="END_INDENT" />

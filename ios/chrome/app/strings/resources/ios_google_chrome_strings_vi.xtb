@@ -3,6 +3,7 @@
 <translationbundle lang="vi">
 <translation id="1143896152279775643">Mật khẩu của bạn sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
+<translation id="1352919863522755794">Trình quản lý mật khẩu của Google không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="1462727070346936664">Đăng nhập để khai thác tối đa Chrome.</translation>
 <translation id="1479202195792305274">Chrome có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
 <translation id="1493827051843127077">Hãy đặt Chrome làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Tài khoản này và mọi dữ liệu chưa lưu sẽ bị xóa khỏi Chrome cũng như các ứng dụng khác của Google trên thiết bị này.</translation>
-<translation id="1968388653333775699">Hoàn thành thêm nhiều việc nhờ Chrome</translation>
 <translation id="2009224836393115614">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2056123005618757196">Bạn có thể làm được nhiều việc hơn với phiên bản Google Chrome đơn giản, an toàn và nhanh nhất từ trước đến nay.</translation>
 <translation id="2147651015520127414">Chrome xác minh <ph name="ISSUER" /> đã cấp chứng chỉ của trang web này.</translation>
 <translation id="2199719347983604670">Dữ liệu từ Chrome Sync</translation>
-<translation id="2313070403598893276">Google Chrome giờ đây đơn giản, an toàn và nhanh hơn bao giờ hết</translation>
 <translation id="2339201583852607431">Mật khẩu của bạn sẽ được lưu trong Tài khoản Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="2347208864470321755">Khi tính năng này được bật, Chrome sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Để đăng xuất khỏi Tài khoản Google trên tất cả trang web, hãy <ph name="BEGIN_LINK" />đăng xuất khỏi Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử lại sau.</translation>
 <translation id="2732745070297234559">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
+<translation id="2767464022270041271">Bạn chưa lưu mật khẩu nào. Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó.</translation>
 <translation id="2869959624320573933">Đăng nhập vào Chrome</translation>
 <translation id="2957447865124070833">Chọn <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Vì bạn đăng xuất khỏi tài khoản do <ph name="SIGNOUT_MANAGED_DOMAIN" /> quản lý, nên dữ liệu Chrome của bạn sẽ bị xóa khỏi thiết bị này. Dữ liệu của bạn sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Để giúp cải thiện ứng dụng, Chrome sẽ gửi dữ liệu về sự cố và mức sử dụng cho Google. <ph name="BEGIN_LINK" />Quản lý<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chưa hỗ trợ trên Chrome phiên bản thử nghiệm</translation>
+<translation id="4840404732697892756">Trình quản lý mật khẩu của Google có thể kiểm tra mật khẩu của bạn khi bạn đăng nhập bằng Tài khoản Google.</translation>
 <translation id="5030102366287574140">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác.</translation>
 <translation id="5108659628347594808">Cải thiện Chrome</translation>
 <translation id="5119391094379141756">Chọn Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome kiểm tra định kỳ các mật khẩu của bạn so với những danh sách đã đăng trên Internet. Khi thực hiện việc này, mật khẩu và tên người dùng của bạn được mã hóa nên không ai có thể đọc được, kể cả Google.</translation>
 <translation id="5639704535586432836">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Google Chrome và bật máy ảnh.</translation>
 <translation id="5642200033778930880">Google Chrome không thể sử dụng máy ảnh của bạn ở Chế độ xem phân tách</translation>
+<translation id="5661521615548540542">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại sau.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Không có kết nối mạng, Chrome không thể kiểm tra xem có bản cập nhật mới nào không</translation>
 <translation id="5716154293141027663">Mở Chrome bất cứ khi nào bạn nhấn vào đường liên kết trong các ứng dụng khác</translation>
@@ -120,9 +122,11 @@
   2. Nhấn vào Ứng dụng trình duyệt mặc định
   3. Chọn Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Luôn an toàn khi dùng Google Chrome</translation>
 <translation id="8772179140489533211">Hiển thị lời nhắc đăng nhập vào Chrome.</translation>
 <translation id="8788269841521769222">Bạn không cần nhớ mật khẩu này. Mật khẩu này sẽ được lưu vào Trình quản lý mật khẩu của Google cho <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Trình quản lý mật khẩu của Google không thể kiểm tra tất cả mật khẩu. Hãy thử lại vào ngày mai.</translation>
 <translation id="8897749957032330183">Mật khẩu được lưu vào Trình quản lý mật khẩu của Google trên thiết bị này.</translation>
 <translation id="8969290730818637510">Khi bật:
 <ph name="BEGIN_INDENT" />  • Cải thiện Chrome cho những ai đang dùng Chrome giống bạn.<ph name="END_INDENT" />

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">后记</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="1198865190323699001">触摸手势</translation>
-<translation id="1201402288615127009">下一步</translation>
 <translation id="1202112913213080585">取消</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">没有下一个 4 级标题</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">文章标记</translation>
 <translation id="1346059596910821859">提示</translation>
 <translation id="1354356357730355833">复制</translation>
-<translation id="135978014023467274">您已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">点击路由键 <ph name="ROUTING_KEY_NUMBER" /> 下面的项</translation>
 <translation id="1376703628032300005">移到下一个字符</translation>
 <translation id="1377925789329510816">这是最后一个标题。按 Search+H 组合键可跳回至第一个标题，按 Search+Shift+H 组合键则可转到此页面上的第二个标题。</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">未选中</translation>
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3286390186030710347">滑块</translation>
-<translation id="3300348286427369683">支持富文本。ChromeVox 现在支持富文本字段，包括跳转命令、盲文光标路由、选择等等。</translation>
 <translation id="3300733168898541351">撤消</translation>
 <translation id="3307886118343381874">转到表格末尾</translation>
 <translation id="3312997241656799641">下一个访问过的链接</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">智能粘滞模式处于关闭状态</translation>
 <translation id="4623097797855662355">版权页</translation>
 <translation id="4624970070706497034">我们不再支持在 Chromebook 上自定义 TalkBack 功能。您仍能使用此功能，但应改用 TalkBack 默认键盘快捷键。先按搜索键+A，然后按 K 键，即可查看可用的键盘快捷键。如果您仍想使用 TalkBack，请再次按相应命令。</translation>
-<translation id="463135993322337640">按 ChromeVox 的 O 键、N 键，即可了解最新功能</translation>
 <translation id="4649220074413114917">用 2 根手指点按屏幕可停止任何当前语音。如果您不想让 ChromeVox 读出某些内容，此手势很有用。若要继续，请用 2 根手指点按屏幕。</translation>
-<translation id="4660783501463101648">移除了 Classic。现已无法再通过键盘切换回 ChromeVox Classic。</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">转到下一列</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">后退</translation>
 <translation id="5102981729317424850">工具栏</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">这一新版本中有一些重大变更，具体如下：</translation>
 <translation id="5111640677200759579">列标题</translation>
 <translation id="5115892389597951922">ChromeVox 日志</translation>
 <translation id="5119330972669454698">硬木色</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">基本导航操作</translation>
 <translation id="609281021724813947">没有上一个滑块</translation>
 <translation id="6100239002225743044">上移 1 行</translation>
-<translation id="6118126368611144850">适合在 Chrome 中使用的 Android 应用。如果您的设备上安装了 Play 商店，则可以通过 Android 应用抢先体验 ChromeVox。只需从 Play 商店下载 Google Chrome Canary，即可体验实验功能。</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">激活</translation>
 <translation id="6122013438240733403">按钮</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">上一个组合框</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{1 个感叹号}other{# 个感叹号}}</translation>
 <translation id="670717715607710284">关闭屏幕</translation>
-<translation id="6710213216561001401">上一项</translation>
 <translation id="6714813999819678458">上一个 2 级标题</translation>
 <translation id="6730312624811567147">使用搜索键+向左箭头键或搜索键+向右箭头键代替 Home 键或 End 键，使用搜索键+Ctrl+向左箭头键或搜索键+Ctrl+向右箭头键代替 Ctrl+Home 或 Ctrl+End，使用搜索键+向上箭头键或搜索键+向下箭头键代替 PageUp 键或 PageDown 键</translation>
 <translation id="6736510033526053669">已打开标签页</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">古董白</translation>
 <translation id="9220679313820249046">橘红色</translation>
 <translation id="9223032053830369045">深红色</translation>
-<translation id="923331726185079994">ChromeVox 已更新</translation>
 <translation id="93384979447910801">暗海绿色</translation>
 <translation id="937605981140327129">目前未安装 TalkBack。请通过 Play 商店安装 Android AccessibilitySuite，然后重试。</translation>
 <translation id="948171205378458592">减慢语速</translation>

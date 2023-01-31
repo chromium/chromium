@@ -420,9 +420,11 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="3289674678944039601">Carica tramite adattatore</translation>
 <translation id="3290356915286466215">Non protetta</translation>
 <translation id="3294437725009624529">Ospite</translation>
+<translation id="3298690094479023523">Ancora impossibile verificare il PIN o la password. Riprova.</translation>
 <translation id="3307642347673023554">Passaggio alla modalità laptop effettuato</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> può ancora accedere in seguito.</translation>
 <translation id="3321628682574733415">Codice genitore errato</translation>
+<translation id="332827762492701193">Le notifiche sono nascoste</translation>
 <translation id="3339826665088060472">Cattura schermo, strumenti per acquisire screenshot e registrazione dello schermo</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3341303451326249809">Screenshot acquisito</translation>
@@ -560,6 +562,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
 <translation id="401993194061514265">Indicatore non disponibile. Riapri Registra schermo.</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
+<translation id="4024840464866786680">Se hai dimenticato il PIN e la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
 <translation id="4028481283645788203">Password obbligatoria per maggiore sicurezza</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Stai condividendo lo schermo</translation>
@@ -700,10 +703,12 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4735944890391795473">Scrivania 12</translation>
 <translation id="473775607612524610">Aggiorna</translation>
 <translation id="4740516757091333363">Vuoi eliminare la scrivania salvata?</translation>
+<translation id="4747410141429390146">Sblocca per visualizzare le notifiche</translation>
 <translation id="4752784485658729358">Sono consentite solo 6 scrivanie salvate. Rimuovi una scrivania per salvarne una nuova.</translation>
 <translation id="4759238208242260848">Download</translation>
 <translation id="4762573482154983647">Nascondi le app</translation>
 <translation id="4774338217796918551">Puoi riprendere domani alle ore <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Ancora impossibile verificare la password. Riprova.</translation>
 <translation id="4776917500594043016">Password per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">L'Assistente Google non è disponibile in una sessione demo.</translation>
@@ -734,6 +739,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="492453977506755176">Tasto modalità di acquisizione</translation>
 <translation id="4925542575807923399">L'amministratore di questo account richiede che questo account sia il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="4929163402621253029">Stai parlando? Il tuo microfono è disattivato. Scopri di più</translation>
+<translation id="4936329710968938986">Per tutti, off</translation>
 <translation id="4938176435186993759">Nascondi tutti i suggerimenti</translation>
 <translation id="4945196315133970626">Disattiva le notifiche</translation>
 <translation id="4946376291507881335">Acquisisci</translation>
@@ -842,6 +848,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5536723544185013515">App recenti: usa i tasti Freccia destra o Freccia sinistra per accedere a tutte le app recenti</translation>
 <translation id="553675580533261935">Uscita dalla sessione</translation>
 <translation id="5537725057119320332">Trasmetti</translation>
+<translation id="5546397813406633847">Recupera utente</translation>
 <translation id="554893713779400387">Attiva/disattiva la dettatura</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
 <translation id="5560420195677022218">Visualizza le app del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
@@ -858,6 +865,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5618148318840095371">Abbiamo eseguito per te il passaggio a una rete migliore</translation>
 <translation id="5619862035903135339">Il criterio dell'amministratore disattiva l'acquisizione schermo</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Impossibile verificare la password. Riprova.</translation>
 <translation id="5648021990716966815">Jack per microfono</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> richiede la tua attenzione.</translation>
 <translation id="5662075790140998213">Scrivania 10</translation>
@@ -876,6 +884,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5707775774148071965">Il dispositivo supporta una velocità dati superiore rispetto al cavo. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="5710450975648804523">Funzione Non disturbare attiva</translation>
 <translation id="571295407079589142">I dati mobili non sono attivi</translation>
+<translation id="5727460725221669831">Se hai dimenticato la password o hai modificato la password del tuo Account Google di recente, prova a recuperare questo utente.</translation>
 <translation id="573413375004481890">Questo dispositivo non può supportare tutti i tuoi display, pertanto uno è stato scollegato</translation>
 <translation id="5740328398383587084">Condivisione nelle vicinanze</translation>
 <translation id="574392208103952083">Medio</translation>
@@ -1388,6 +1397,7 @@ Nuova installazione</translation>
 <translation id="8477270416194247200">Premi ALT + tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> non supporta la risoluzione <ph name="SPECIFIED_RESOLUTION" />. È stata impostata la risoluzione <ph name="FALLBACK_RESOLUTION" />. Fai clic su Conferma per mantenere le modifiche. Le impostazioni precedenti verranno ripristinate tra <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Mostra le impostazioni di Condivisione nelle vicinanze</translation>
+<translation id="8507563469658346379">Per tutti, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Il Bluetooth di Chromebook è disattivato. Per sbloccare Chromebook, inserisci la password.</translation>
 <translation id="8513108775083588393">Rotazione aut.</translation>
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>

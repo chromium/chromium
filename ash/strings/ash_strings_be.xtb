@@ -733,6 +733,7 @@
 <translation id="492453977506755176">Клавіша пераходу ў рэжым здымання</translation>
 <translation id="4925542575807923399">Адміністратар гэтага ўліковага запісу патрабуе, каб у сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс быў першым.</translation>
 <translation id="4929163402621253029">Вы спрабуеце гаварыць? У вас выключаны гук. Даведацца больш</translation>
+<translation id="4936329710968938986">Для ўсіх: выключана</translation>
 <translation id="4938176435186993759">Схаваць усе прапановы</translation>
 <translation id="4945196315133970626">Выключыць апавяшчэнні</translation>
 <translation id="4946376291507881335">Зняць</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">Каб скасаваць, націсніце "Alt+Пошук" або "Shift".</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Паказаць налады функцыі "Абагульванне паблізу"</translation>
+<translation id="8507563469658346379">Для ўсіх: <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth на прыладзе Chromebook выключаны. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
 <translation id="8513108775083588393">Аўтапаварот</translation>
 <translation id="851458219935658693">Паказ вокнаў бягучага працоўнага стала, выбраны пераключальнік</translation>

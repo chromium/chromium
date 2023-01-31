@@ -3,6 +3,7 @@
 <translationbundle lang="ka">
 <translation id="1143896152279775643">თქვენი პაროლი შეინახება Google პაროლების მმართველში <ph name="EMAIL" />-ისთვის.</translation>
 <translation id="1282031177488366470">შეუწყვეთ ხელი Chrome-ის ფუნქციებისა და წარმადობის გაუმჯობესებას</translation>
+<translation id="1352919863522755794">Google პაროლების მმართველმა თქვენი პაროლები ვერ შეამოწმა. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="1462727070346936664">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში.</translation>
 <translation id="1479202195792305274">პაროლების Chrome-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
 <translation id="1493827051843127077">დააყენეთ Chrome ნაგულისხმევ ბრაუზერად, რომ თქვენი ჩანართები, პაროლები და საგადახდო ინფორმაცია სინქრონიზებული გქონდეთ თქვენს ყველა მოწყობილობას შორის</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">თქვენი Chrome მონაცემების სინქრონიზაცია</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">ეს ანგარიში და შეუნახავი მონაცემები ამოიშლება როგორც Chrome-იდან, ისე სხვა Google აპებიდან ამ მოწყობილობაზე.</translation>
-<translation id="1968388653333775699">შეასრულეთ მეტი Chrome-ის მეშვეობით</translation>
 <translation id="2009224836393115614">Chrome-მა ვერ შეამოწმა თქვენი პაროლები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2056123005618757196">გამარტივებული, დაცული და დაჩქარებული Google Chrome-ის მეშვეობით კიდევ უფრო მეტს შეძლებთ.</translation>
 <translation id="2147651015520127414">Chrome-მა დაადასტურა, რომ ამ ვებსაიტის სერტიფიკატის გამცემია <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Chrome-ის სინქრონიზაციის მონაცემები</translation>
-<translation id="2313070403598893276">Google Chrome მარტივი, დაცული და ისეთი სწრაფია, როგორც არასდროს</translation>
 <translation id="2339201583852607431">თქვენი პაროლი თქვენს Google ანგარიშში (<ph name="EMAIL" />) შეინახება.</translation>
 <translation id="2342919707875585281">Chrome უზიარებს თქვენს მდებარეობას თქვენ მიერ დაშვებულ საიტებს.</translation>
 <translation id="2347208864470321755">თუ ეს ფუნქცია ჩართულია, Chrome შემოგთავაზებთ სხვა ენებზე შედგენილი გვერდების თარგმნას Google Translate-ით. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chrome-იდან<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
 <translation id="2732745070297234559">Chrome-მა ვერ შეამოწმა ყველა პაროლი. ცადეთ ხვალ.</translation>
+<translation id="2767464022270041271">შენახული პაროლები არ არის. Google პაროლების მმართველი თქვენი პაროლების შემოწმებას შეძლებს მათი შენახვის შემდეგ.</translation>
 <translation id="2869959624320573933">შედით Chrome-ში</translation>
 <translation id="2957447865124070833">აირჩიეთ <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">ვინაიდან თქვენ გადიხართ ანგარიშიდან, რომელსაც მართავს <ph name="SIGNOUT_MANAGED_DOMAIN" />, ამ მოწყობილობიდან წაიშლება თქვენი Chrome მონაცემები, თუმცა ისინი შენარჩუნდება თქვენს Google ანგარიშში.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome-მა ვერ შეამოწმა ყველა პაროლი. ცადეთ ხვალ ან <ph name="BEGIN_LINK" />შეამოწმეთ პაროლები თქვენი Google ანგარიშიდან<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">ამ აპის გაუმჯობესების მიზნით, Chrome უგზავნის Google-ს მოხმარებისა და ავარიულად გათიშვის მონაცემებს. <ph name="BEGIN_LINK" />მართვა<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">მხარდაუჭერელია Chrome Beta-ში</translation>
+<translation id="4840404732697892756">Google პაროლების მმართველი თქვენი პაროლების შემოწმებას შეძლებს, როცა სისტემაში თქვენი Google ანგარიშით შეხვალთ.</translation>
 <translation id="5030102366287574140">Chrome დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისა და სხვა უსიამოვნებისგან.</translation>
 <translation id="5108659628347594808">გააუმჯობესეთ Chrome</translation>
 <translation id="5119391094379141756">აირჩიეთ Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome პერიოდულად შეამოწმებს თქვენს პაროლებს ვებში გამოქვეყნებულ სიებში. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
 <translation id="5639704535586432836">გახსენით: პარამეტრები &gt; კონფიდენციალურობა &gt; კამერა &gt; Google Chrome და ჩართეთ კამერა.</translation>
 <translation id="5642200033778930880">Google Chrome თქვენს კამერას გაყოფილი ხედის რეჟიმში ვერ გამოიყენებს</translation>
+<translation id="5661521615548540542">Google პაროლების მმართველმა ყველა პაროლი ვერ შეამოწმა. ცადეთ მოგვიანებით.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ხაზგარეშეა, Chrome ვერ ახერხებს განახლებების შემოწმებას</translation>
 <translation id="5716154293141027663">გახსენით Chrome ყოველთვის, როცა სხვა აპებში ბმულებს შეეხებით</translation>
@@ -120,9 +122,11 @@
   2. შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“
   3. აირჩიეთ Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google პაროლების მმართველმა ყველა პაროლი ვერ შეამოწმა. ცადეთ ხვალ, ან <ph name="BEGIN_LINK" />შეამოწმეთ პაროლები თქვენი Google ანგარიშიდან<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">იყავით უსაფრთხოდ Google Chrome-თან ერთად</translation>
 <translation id="8772179140489533211">გამოაჩენს Chrome-ში შესვლის მოთხოვნებს.</translation>
 <translation id="8788269841521769222">ამ პაროლის დამახსოვრება არ დაგჭირდებათ. ის შეინახება Google პაროლების მმართველში <ph name="EMAIL" />-თვის</translation>
+<translation id="8857676124663337448">Google პაროლების მმართველმა ყველა პაროლი ვერ შეამოწმა. ცადეთ ხვალ.</translation>
 <translation id="8897749957032330183">პაროლები ინახება Google პაროლების მმართველში ამ მოწყობილობაზე</translation>
 <translation id="8969290730818637510">როდესაც ჩართულია:
 <ph name="BEGIN_INDENT" />  • დაგვეხმარეთ, გავაუმჯობესოთ Chrome მათთვის, ვინც მას თქვენ მსგავსად იყენებს.<ph name="END_INDENT" />

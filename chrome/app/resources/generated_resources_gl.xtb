@@ -4831,6 +4831,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5382591305415226340">Xestionar ligazóns compatibles</translation>
 <translation id="5383377866517186886">A cámara está desactivada nas preferencias do sistema de Mac</translation>
 <translation id="5383740867328871413">Grupo sen nome. <ph name="GROUP_CONTENTS" />. <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (Código: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Modificouse a política de empresa. Engadiuse á barra de ferramentas o botón Experiments. Fai clic nel para abrir un cadro de diálogo que permite activar os experimentos.</translation>
 <translation id="5388885445722491159">Sincronizado</translation>
 <translation id="5390112241331447203">Incluír o ficheiro system_logs.txt enviado en informes de comentarios.</translation>
@@ -5045,6 +5046,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5578059481725149024">Inicio de sesión automático</translation>
 <translation id="5581134892342029705">Finalizou a tradución ao <ph name="LANGUAGE" /></translation>
 <translation id="558170650521898289">Verificación do controlador de hardware de Microsoft Windows</translation>
+<translation id="5581876958763461074">Todas as notas</translation>
 <translation id="5581972110672966454">O dispositivo non se puido vincular ao dominio. Téntao de novo ou ponte en contacto co propietario ou co administrador do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Menú principal</translation>
 <translation id="5583640892426849032">Retroceso</translation>
@@ -6655,7 +6657,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7044211973375150246">Hai unha aplicación configurada para abrir as mesmas ligazóns que <ph name="APP_NAME" />. Con esta acción, <ph name="APP_NAME_2" /> deixará de ser a aplicación predeterminada para abrir as ligazóns compatibles.</translation>
 <translation id="7044606776288350625">Sincronizar datos</translation>
 <translation id="7047059339731138197">Escolle un fondo</translation>
-<translation id="7048457618657122233">Compartir ligazón por <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Queres conservar o ficheiro?</translation>
 <translation id="7050037487872780845">A configuración da zona wifi non é válida</translation>
 <translation id="7052237160939977163">Enviar datos de seguimento de rendemento</translation>

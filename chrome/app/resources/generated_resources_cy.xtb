@@ -3188,6 +3188,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3823310065043511710">Argymhellir o leiaf <ph name="INSTALL_SIZE" /> o le ar gyfer Linux.</translation>
 <translation id="3824621460022590830">Mae'r tocyn cofrestru dyfeisiau yn annilys. Cysylltwch â pherchennog neu weinyddwr eich dyfais. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Cofiwch fy newis ar gyfer y math hwn o ffeil: <ph name="FILE_TYPES" />}zero{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}two{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}few{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}many{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}other{Cofiwch fy newis ar gyfer y mathau hyn o ffeiliau: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Dangos dot ar eicon ap ar gyfer rhybuddion ap</translation>
 <translation id="3826071569074535339">Caniateir defnyddio synwyryddion symudiad</translation>
 <translation id="3826440694796503677">Mae eich gweinyddwr wedi analluogi ychwanegu rhagor o Gyfrifon Google</translation>
 <translation id="3827774300009121996">&amp;Sgrîn lawn</translation>
@@ -4508,6 +4509,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5063480226653192405">Defnydd</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Rheoli DNS diogel yng ngosodiadau ChromeOS</translation>
+<translation id="5066160542186949327">Symud i ffolder arall</translation>
 <translation id="5067399438976153555">Ymlaen o hyd</translation>
 <translation id="5067867186035333991">Gofyn os yw <ph name="HOST" /> am ddefnyddio eich meicroffon</translation>
 <translation id="5068553687099139861">dangos cyfrineiriau</translation>
@@ -6683,7 +6685,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7044211973375150246">Mae ap wedi'i osod i agor yr un dolenni â <ph name="APP_NAME" />. Bydd hyn yn analluogi <ph name="APP_NAME_2" /> rhag agor dolenni a gefnogir.</translation>
 <translation id="7044606776288350625">Cysoni data</translation>
 <translation id="7047059339731138197">Dewiswch gefndir</translation>
-<translation id="7048457618657122233">Rhannu'r ddolen â <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Cadw'r ffeil?</translation>
 <translation id="7050037487872780845">Ffurfweddiad poethfan annilys</translation>
 <translation id="7052237160939977163">Anfon data olrhain perfformiad</translation>

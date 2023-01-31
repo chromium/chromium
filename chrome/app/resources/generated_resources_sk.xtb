@@ -2908,6 +2908,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3602870520245633055">Tlač a skenovanie</translation>
 <translation id="3603622770190368340">Získanie certifkátu siete</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} účet používa rovnaké heslo}few{{COUNT} účty používajú rovnaké heslo}many{{COUNT} accounts using same password}other{{COUNT} účtov používa rovnaké heslo}}</translation>
 <translation id="3605780360466892872">Manažér</translation>
 <translation id="3609277884604412258">Rýchle vyhľadávanie</translation>
 <translation id="3610241585790874201">Nemôžu ukladať dáta v zariadení</translation>
@@ -6665,7 +6666,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7044211973375150246">Určitá aplikácia je nastavená, aby otvárala rovnaké odkazy ako <ph name="APP_NAME" />. Týmto zakážete aplikácii <ph name="APP_NAME_2" /> otvárať podporované odkazy.</translation>
 <translation id="7044606776288350625">Synchronizácia údajov</translation>
 <translation id="7047059339731138197">Vyberte pozadie</translation>
-<translation id="7048457618657122233">Zdieľať odkaz na <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Ponechať súbor?</translation>
 <translation id="7050037487872780845">Neplatná konfigurácia hotspotu</translation>
 <translation id="7052237160939977163">Odosielať údaje sledovania výkonnosti</translation>

@@ -3,6 +3,7 @@
 <translationbundle lang="th">
 <translation id="1143896152279775643">ระบบจะบันทึกรหัสผ่านไว้ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="1282031177488366470">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
+<translation id="1352919863522755794">Google เครื่องมือจัดการรหัสผ่านตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="1462727070346936664">ลงชื่อเข้าใช้เพื่อรับประโยชน์สูงสุดจาก Chrome</translation>
 <translation id="1479202195792305274">Chrome จะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="1493827051843127077">ตั้ง Chrome เป็นค่าเริ่มต้นเพื่อซิงค์แท็บ รหัสผ่าน และข้อมูลการชำระเงินในอุปกรณ์ทุกเครื่องของคุณ</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">ซิงค์ข้อมูล Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chrome และแอปอื่นๆ ของ Google ในอุปกรณ์นี้</translation>
-<translation id="1968388653333775699">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Chrome</translation>
 <translation id="2009224836393115614">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้ โปรดลองตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2056123005618757196">ทำสิ่งต่างๆ ได้มากขึ้นด้วย Google Chrome ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
 <translation id="2147651015520127414">Chrome ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="2199719347983604670">ข้อมูลจากการซิงค์ของ Chrome</translation>
-<translation id="2313070403598893276">Google Chrome ที่ใช้งานง่าย ปลอดภัย และรวดเร็วกว่าที่เคย</translation>
 <translation id="2339201583852607431">ระบบจะบันทึกรหัสผ่านไว้ในบัญชี Google (<ph name="EMAIL" />)</translation>
 <translation id="2342919707875585281">Chrome แชร์ตำแหน่งกับเว็บไซต์ที่คุณอนุญาต</translation>
 <translation id="2347208864470321755">เมื่อเปิดฟีเจอร์นี้ Chrome จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">หากต้องการออกจากระบบบัญชี Google ในเว็บไซต์ทั้งหมด ให้<ph name="BEGIN_LINK" />ออกจากระบบ Chrome<ph name="END_LINK" /></translation>
 <translation id="2695886661449553974">Chrome ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
 <translation id="2732745070297234559">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
+<translation id="2767464022270041271">ไม่มีรหัสผ่านที่บันทึกไว้ Google เครื่องมือจัดการรหัสผ่านจะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกไว้</translation>
 <translation id="2869959624320573933">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="2957447865124070833">เลือก <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">เนื่องจากคุณกำลังออกจากระบบบัญชีที่จัดการโดย <ph name="SIGNOUT_MANAGED_DOMAIN" /> ข้อมูล Chrome ของคุณจะถูกลบออกจากอุปกรณ์นี้ แต่ข้อมูลจะยังคงอยู่ในบัญชี Google</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Chrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_LINK" />จัดการ<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">ไม่รองรับใน Chrome เบต้า</translation>
+<translation id="4840404732697892756">Google เครื่องมือจัดการรหัสผ่านจะตรวจสอบรหัสผ่านได้เมื่อคุณลงชื่อเข้าใช้ด้วยบัญชี Google</translation>
 <translation id="5030102366287574140">Chrome ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>
 <translation id="5108659628347594808">ปรับปรุง Chrome ให้ดีขึ้น</translation>
 <translation id="5119391094379141756">เลือก Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome ตรวจสอบรหัสผ่านของคุณเป็นระยะโดยเทียบกับรายการที่มีการเผยแพร่ออนไลน์ เราเข้ารหัสชื่อผู้ใช้และรหัสผ่านเมื่อทำการตรวจสอบเพื่อไม่ให้ผู้ใดอ่านข้อมูลดังกล่าวได้ รวมถึง Google</translation>
 <translation id="5639704535586432836">เปิดการตั้งค่า &gt; ความเป็นส่วนตัว &gt; กล้อง &gt; Google Chrome เพื่อเปิดกล้องถ่ายรูป</translation>
 <translation id="5642200033778930880">Google Chrome ไม่สามารถใช้กล้องถ่ายรูปในโหมด Split View</translation>
+<translation id="5661521615548540542">Google เครื่องมือจัดการรหัสผ่านตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">ออฟไลน์อยู่ Chrome ตรวจหาอัปเดตไม่ได้</translation>
 <translation id="5716154293141027663">คุณแตะลิงก์ในแอปอื่นๆ เพื่อเปิด Chrome ได้ทุกเมื่อ</translation>
@@ -120,9 +122,11 @@
   2. แตะแอปเบราว์เซอร์เริ่มต้น
   3. เลือก Chrome</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google เครื่องมือจัดการรหัสผ่านตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">ปลอดภัยเสมอด้วย Google Chrome</translation>
 <translation id="8772179140489533211">แสดงข้อความแจ้งให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="8788269841521769222">คุณไม่จำเป็นต้องจำรหัสผ่านนี้ เพราะระบบจะบันทึกไว้ในเครื่องมือจัดการรหัสผ่านของ Google สำหรับ <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google เครื่องมือจัดการรหัสผ่านตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้</translation>
 <translation id="8897749957032330183">รหัสผ่านจะบันทึกอยู่ใน Google เครื่องมือจัดการรหัสผ่านบนอุปกรณ์นี้</translation>
 <translation id="8969290730818637510">เมื่อเปิดไว้ จะมีประโยชน์ดังนี้
 <ph name="BEGIN_INDENT" />  • ช่วยปรับปรุง Chrome ให้ดีขึ้นสำหรับผู้ที่ใช้งานแบบคุณ<ph name="END_INDENT" />

@@ -420,6 +420,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3289674678944039601">Carregando pelo adaptador</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3294437725009624529">Visitante</translation>
+<translation id="3298690094479023523">Ainda não foi possível verificar seu PIN ou sua senha. Tente de novo.</translation>
 <translation id="3307642347673023554">Modo laptop ativado</translation>
 <translation id="3308453408813785101">O usuário <ph name="USER_EMAIL_ADDRESS" /> ainda poderá fazer login mais tarde.</translation>
 <translation id="3321628682574733415">Código de familiar responsável incorreto</translation>
@@ -559,6 +560,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4017989525502048489">Apontador laser</translation>
 <translation id="401993194061514265">Marcador indisponível; Abra o Screencast novamente.</translation>
 <translation id="4021716437419160885">Rolar para baixo</translation>
+<translation id="4024840464866786680">Se você esqueceu o PIN e a senha do dispositivo ou mudou a senha da sua Conta do Google recentemente, tente recuperar o usuário.</translation>
 <translation id="4028481283645788203">A senha é necessária para aumentar a segurança</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Você está compartilhando sua tela</translation>
@@ -703,6 +705,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4762573482154983647">Ocultar apps</translation>
 <translation id="4774338217796918551">Volte amanhã, neste horário: <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Ainda não foi possível verificar sua senha. Tente de novo.</translation>
 <translation id="4776917500594043016">Senha para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">O Google Assistente não está disponível para uma sessão de demonstração.</translation>
@@ -842,6 +845,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5536723544185013515">Apps recentes: use as setas para a esquerda ou direita para acessar os apps recentes</translation>
 <translation id="553675580533261935">Saindo da sessão</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="5546397813406633847">Recuperar usuário</translation>
 <translation id="554893713779400387">Alternar para o ditado</translation>
 <translation id="5558091555391176027">Alternar a alta visibilidade do Compartilhar por proximidade</translation>
 <translation id="5560420195677022218">Veja os apps do smartphone no seu <ph name="DEVICE_TYPE" /></translation>
@@ -858,6 +862,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5618148318840095371">Trocamos sua rede por uma melhor</translation>
 <translation id="5619862035903135339">A captura de tela foi desativada pela política do administrador</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Não foi possível verificar sua senha. Tente de novo.</translation>
 <translation id="5648021990716966815">Entrada para microfone</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> precisa de atenção.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
@@ -876,6 +881,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="5707775774148071965">Seu dispositivo oferece suporte a uma taxa de dados mais alta do que seu cabo. O desempenho do dispositivo pode ser limitado.</translation>
 <translation id="5710450975648804523">O "Não perturbe" está ativado</translation>
 <translation id="571295407079589142">Os dados móveis estão desativados</translation>
+<translation id="5727460725221669831">Se você esqueceu a senha do dispositivo ou mudou a da sua Conta do Google recentemente, tente recuperar o usuário.</translation>
 <translation id="573413375004481890">Este dispositivo não é compatível com essa quantidade de telas. Por isso, uma delas foi desconectada</translation>
 <translation id="5740328398383587084">Compartilhar por proximidade</translation>
 <translation id="574392208103952083">Médio</translation>

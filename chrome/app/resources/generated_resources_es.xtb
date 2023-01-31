@@ -185,6 +185,7 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1161575384898972166">Inicia sesión en <ph name="TOKEN_NAME" /> para exportar el certificado de cliente.</translation>
 <translation id="116173250649946226">El administrador ha establecido un tema predeterminado que no se puede cambiar.</translation>
 <translation id="1162213688509394031">Ocultar barra de título</translation>
+<translation id="1162479191445552288">Abrir al iniciar</translation>
 <translation id="1163931534039071049">&amp;Ver fuente del marco</translation>
 <translation id="1164891049599601209">Introducida en un sitio web engañoso</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -561,6 +562,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
     proxy o ponte en contacto con el administrador de red para
     comprobar si funciona el servidor proxy. Si crees que no debes
     usar un servidor proxy, cambia tu <ph name="LINK_START" />configuración de proxy<ph name="LINK_END" />.</translation>
+<translation id="1510882959204224895">Abrir en ventana</translation>
 <translation id="1511997356770098059">Esta llave de seguridad no puede almacenar datos de inicio de sesión</translation>
 <translation id="1512210426710821809">La única forma de deshacer esta acción es volver a instalar <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="1512642802859169995"><ph name="FILE_NAME" /> está cifrado. Pídele al propietario que lo descifre.</translation>
@@ -1266,6 +1268,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2114820389966440614">Ver Destacadas recientes y otros recuerdos aquí</translation>
 <translation id="2114896190328250491">Foto de <ph name="NAME" /></translation>
 <translation id="2114995631896158695">No hay ninguna tarjeta SIM insertada.</translation>
+<translation id="2116020356255810305">Habilitar inicio de la aplicación al iniciar</translation>
 <translation id="2116619964159595185">Los sitios se suelen conectar a dispositivos Bluetooth para usarlos en funciones como configurar o sincronizar una baliza electrónica, un monitor de actividad física o de salud, o una bombilla inteligente</translation>
 <translation id="2117655453726830283">Diapositiva siguiente</translation>
 <translation id="2119349053129246860">Abrir en <ph name="APP" /></translation>
@@ -5023,6 +5026,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5555639311269196631">Desactivar punto de acceso</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558129378926964177">&amp;Ampliar</translation>
+<translation id="5558247502209241936">Permitir que se abra la aplicación en una ventana</translation>
 <translation id="55601339223879446">Ajusta los extremos de tu escritorio en la pantalla</translation>
 <translation id="5561162485081632007">Detecta y te advierte de los eventos peligrosos cuando suceden</translation>
 <translation id="5562781907504170924">Esta pestaña está conectada a un dispositivo Bluetooth.</translation>
@@ -5318,6 +5322,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5836999627049108525">Idioma del que se va a traducir</translation>
 <translation id="583756221537636748">Funda</translation>
 <translation id="5839524803417937122">Buscar dentro de la imagen con <ph name="SEARCH_ENGINE" /></translation>
+<translation id="5840318881868981258">En tu cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Habilitar Bluetooth</translation>
@@ -5919,6 +5924,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6400360390396538896">Siempre en <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ese dispositivo</translation>
 <translation id="6401597285454423070">Tu ordenador contiene un dispositivo de seguridad del módulo de plataforma de confianza (TPM), que se utiliza para implementar un gran número de funciones clave de seguridad en ChromeOS. Puedes consultar más información en el Centro de Ayuda de Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
+<translation id="6402624310818737708">En tu cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="6404187344102273690">Juegos de Chromebook</translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6406303162637086258">Simular reinicio del navegador</translation>
@@ -6653,7 +6659,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7044211973375150246">Se ha configurado una aplicación para abrir los mismos enlaces que <ph name="APP_NAME" />. Se inhabilitará la apertura de enlaces compatibles desde <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Sincronización de datos</translation>
 <translation id="7047059339731138197">Selecciona un fondo de pantalla</translation>
-<translation id="7048457618657122233">Compartir enlace con <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">¿Quieres conservar el archivo?</translation>
 <translation id="7050037487872780845">Configuración de punto de acceso no válida</translation>
 <translation id="7052237160939977163">Enviar datos de seguimiento de rendimiento</translation>

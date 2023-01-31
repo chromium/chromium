@@ -2917,6 +2917,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3602290021589620013">Xem trước</translation>
 <translation id="3602870520245633055">In và quét</translation>
 <translation id="3603622770190368340">Nhận chứng chỉ mạng</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} tài khoản sử dụng cùng một mật khẩu}other{{COUNT} tài khoản sử dụng cùng một mật khẩu}}</translation>
 <translation id="3605780360466892872">Doanh nhân</translation>
 <translation id="3609277884604412258">Tìm kiếm nhanh</translation>
 <translation id="3610241585790874201">Không được phép lưu dữ liệu trên thiết bị của bạn</translation>
@@ -3846,6 +3847,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4441147046941420429">Để tiếp tục, hãy rút khóa bảo mật khỏi thiết bị rồi cắm lại và chạm vào khóa đó</translation>
 <translation id="444134486829715816">Mở rộng...</translation>
 <translation id="4441928470323187829">Do quản trị viên ghim</translation>
+<translation id="4442863809158514979">Xem các quyền trên web</translation>
 <translation id="4443536555189480885">&amp;Trợ giúp</translation>
 <translation id="4444304522807523469">Truy cập máy quét tài liệu được lắp qua USB hoặc trên mạng cục bộ</translation>
 <translation id="4444512841222467874">Nếu không còn dung lượng trống, người dùng và dữ liệu có thể tự động bị xóa.</translation>
@@ -6671,7 +6673,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7044211973375150246">Một ứng dụng cũng được đặt để mở các đường liên kết giống như <ph name="APP_NAME" />. Thao tác này sẽ ngăn <ph name="APP_NAME_2" /> mở các đường liên kết được hỗ trợ.</translation>
 <translation id="7044606776288350625">Dữ liệu đồng bộ hóa</translation>
 <translation id="7047059339731138197">Chọn nền</translation>
-<translation id="7048457618657122233">Chia sẻ đường liên kết đến <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Giữ tệp?</translation>
 <translation id="7050037487872780845">Cấu hình điểm phát sóng không hợp lệ</translation>
 <translation id="7052237160939977163">Gửi dữ liệu theo dõi hoạt động</translation>
@@ -7476,6 +7477,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="779308894558717334">Xanh lục nhạt</translation>
 <translation id="7793098747275782155">Xanh lam đậm</translation>
 <translation id="7797571222998226653">Đang tắt</translation>
+<translation id="7798504574384119986">Xem các quyền trên web</translation>
 <translation id="7798844538707273832">Đã tự động chặn <ph name="PERMISSION" /></translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="7801679634091975683">Các thay đổi bạn thực hiện tại đây chỉ áp dụng cho Trình duyệt Lacros Chrome. Để thực hiện các thay đổi đối với chế độ cài đặt trên Trình duyệt Chrome của bạn, hãy mở Trình duyệt Chrome và chuyển đến phần cài đặt.</translation>

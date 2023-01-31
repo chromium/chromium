@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">辞書に追加(&amp;A)</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />に保存したパスワードを表示しています</translation>
+<translation id="1022669824195822609">このデバイスは <ph name="DOMAIN" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1028604629594230522">アクセスする可能性の高いページがプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します。</translation>
@@ -1860,6 +1861,7 @@
 <translation id="2643064289437760082">広告測定データは、閲覧データを削除することでいつでも削除できます</translation>
 <translation id="2643698698624765890">[ウィンドウ] メニューの [拡張機能] をクリックして拡張機能を管理できます。</translation>
 <translation id="2645047101481282803">このデバイスは <ph name="PROFILE_NAME" /> によって管理されています。</translation>
+<translation id="2645388244376970260">このタブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64 エンコード ASCII 形式の証明書チェーン</translation>
 <translation id="265156376773362237">標準プリロード</translation>
@@ -2151,7 +2153,7 @@
 <translation id="2891922230654533301">デバイスを使用して <ph name="APP_NAME" /> にログインしますか？</translation>
 <translation id="2893013536106749396">関心のある事柄についての最新情報を表示するカードを選んでください</translation>
 <translation id="2893168226686371498">既定のブラウザ</translation>
-<translation id="2893180576842394309">検索やその他の Google サービスをカスタマイズするために、Google で履歴が使用されることがあります</translation>
+<translation id="2893180576842394309">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
@@ -2732,6 +2734,7 @@
 <translation id="3446274660183028131">Windows をインストールするには Parallels Desktop を起動してください。</translation>
 <translation id="344630545793878684">多数のウェブサイトでのユーザーデータの読み取り</translation>
 <translation id="3447644283769633681">すべてのサードパーティの Cookie をブロック</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> を <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3448492834076427715">アカウントを更新</translation>
 <translation id="3449393517661170867">新規タブ付きウィンドウ</translation>
 <translation id="3449839693241009168"><ph name="SEARCH_KEY" /> を押すと <ph name="EXTENSION_NAME" /> にコマンドが送信されます</translation>
@@ -2885,6 +2888,7 @@
 <translation id="3590295622232282437">管理対象セッションを開始しています。</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> を保持</translation>
 <translation id="3592260987370335752">詳細(&amp;L)</translation>
+<translation id="3592344177526089979">タブを <ph name="DEVICE_NAME" /> にキャストしています</translation>
 <translation id="3593152357631900254">ファジーピンイン モードを有効にする</translation>
 <translation id="3593965109698325041">証明書名の制約</translation>
 <translation id="3596012367874587041">アプリの設定</translation>
@@ -2895,6 +2899,7 @@
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3602870520245633055">印刷とスキャン</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個のアカウントで同じパスワードを使用しています}other{{COUNT} 個のアカウントで同じパスワードを使用しています}}</translation>
 <translation id="3605780360466892872">ボタンダウン</translation>
 <translation id="3609277884604412258">すばやく検索</translation>
 <translation id="3610241585790874201">デバイスへのデータの保存を許可しない</translation>
@@ -6641,7 +6646,6 @@
 <translation id="7044211973375150246"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリがあります。設定を変更すると、<ph name="APP_NAME_2" /> で対応リンクを開けなくなります。</translation>
 <translation id="7044606776288350625">同期データ</translation>
 <translation id="7047059339731138197">背景を選択します</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> へのリンクを共有</translation>
 <translation id="7049293980323620022">ファイルを保存しますか？</translation>
 <translation id="7050037487872780845">無効なアクセス ポイント設定</translation>
 <translation id="7052237160939977163">パフォーマンス追跡データを送信する</translation>

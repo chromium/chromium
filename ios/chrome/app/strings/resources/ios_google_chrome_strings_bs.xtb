@@ -3,6 +3,7 @@
 <translationbundle lang="bs">
 <translation id="1143896152279775643">Vaša lozinka će se sačuvati u Googleov Upravitelj lozinki za račun <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
+<translation id="1352919863522755794">Google upravitelj zaporki nije uspio provjeriti vaše zaporke. Provjerite internetsku vezu.</translation>
 <translation id="1462727070346936664">Prijavite se da iskoristite prednosti Chromea.</translation>
 <translation id="1479202195792305274">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa.</translation>
 <translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromea i drugih Googleovih aplikacija na ovom uređaju.</translation>
-<translation id="1968388653333775699">Obavite više s Chromeom</translation>
 <translation id="2009224836393115614">Chrome nije mogao provjeriti vaše lozinke. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2056123005618757196">Obavite više s jednostavnim i sigurnim Google Chromeom koji je brži nego ikad.</translation>
 <translation id="2147651015520127414">Chrome je potvrdio da <ph name="ISSUER" /> izdaje potvrdu ove web lokacije.</translation>
 <translation id="2199719347983604670">Podaci od Sinhronizacije Chromea</translation>
-<translation id="2313070403598893276">Google Chrome je jednostavan, siguran i brži nego ikad</translation>
 <translation id="2339201583852607431">Vaša lozinka će se sačuvati na vašem Google računu (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će za stranice koje su napisane na drugim jezicima ponuditi prijevod pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Da se odjavite s Google računa na svim web lokacijama, <ph name="BEGIN_LINK" />odjavite se iz Chromea<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra.</translation>
+<translation id="2767464022270041271">Nema nijedne spremljene zaporke. Google upravitelj zaporki može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="2869959624320573933">Prijavite se na Chrome</translation>
 <translation id="2957447865124070833">Odaberite <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">S obzirom na to da se odjavljujete s računa kojim upravlja domena <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea će se izbrisati s ovog uređaja. Vaši podaci će ostati na vašem Google računu.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Radi poboljšanja aplikacije, Chrome šalje Googleu podatke o korištenju i padovima. <ph name="BEGIN_LINK" />Upravljajte<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nije podržano u Beta verziji Chromea</translation>
+<translation id="4840404732697892756">Google upravitelj zaporki može provjeriti vaše zaporke kad se prijavite Google računom.</translation>
 <translation id="5030102366287574140">Chrome vam može pomoći da se zaštitite od narušavanja podataka, nesigurnih web lokacija i još mnogo toga.</translation>
 <translation id="5108659628347594808">Poboljšajte Chrome</translation>
 <translation id="5119391094379141756">Odaberite Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome povremeno provjerava nalaze li se vaše lozinke na listama koje su objavljene na mreži. Prilikom toga, vaše lozinke i korisnička imena su šifrirana i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="5639704535586432836">Otvorite Postavke &gt; Privatnost &gt; Kamera &gt; Google Chrome i uključite kameru.</translation>
 <translation id="5642200033778930880">Google Chrome ne može koristiti vašu kameru u podijeljenom načinu prikaza</translation>
+<translation id="5661521615548540542">Google upravitelj zaporki nije uspio provjeriti sve zaporke. Pokušajte ponovo poslije.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Van mreže, Chrome ne može provjeravati ima li ažuriranja</translation>
 <translation id="5716154293141027663">Otvorite Chrome kad god dodirnete linkove u drugim aplikacijama</translation>
@@ -120,9 +122,11 @@
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Google upravitelj zaporki nije uspio provjeriti sve zaporke. Pokušajte ponovno sutra ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
 <translation id="8772179140489533211">Prikazuje upite za prijavu pomoću Chromea.</translation>
 <translation id="8788269841521769222">Nećete morati zapamtiti ovu lozinku. Sačuvat će se u Googleovom Upravitelju lozinki za račun <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Google upravitelj zaporki nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
 <translation id="8897749957032330183">Lozinke se pohranjuju u Google upravitelju lozinki na ovom uređaju.</translation>
 <translation id="8969290730818637510">Kada je uključeno:
 <ph name="BEGIN_INDENT" />  • Pomozite nam da poboljšamo Chrome za osobe koje ga koriste na isti način kao i vi.<ph name="END_INDENT" />

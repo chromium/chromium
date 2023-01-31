@@ -420,6 +420,7 @@
 <translation id="3289674678944039601">იტენება ადაპტერის მეშვეობით</translation>
 <translation id="3290356915286466215">დაუცველი</translation>
 <translation id="3294437725009624529">სტუმარი</translation>
+<translation id="3298690094479023523">თქვენი PIN-კოდი ან პაროლი კვლავ ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="3307642347673023554">გადართულია ლეპტოპის რეჟიმზე</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> მაინც შეძლებს სისტემაში შესვლას მოგვიანებით.</translation>
 <translation id="3321628682574733415">მშობლის კოდი არასწორია</translation>
@@ -560,6 +561,7 @@
 <translation id="4017989525502048489">ლაზერული მიმთითებელი</translation>
 <translation id="401993194061514265">მარკერი მიუწვდომელია. ხელახლა გახსენით Screencast.</translation>
 <translation id="4021716437419160885">ქვემოთ გადაადგილება</translation>
+<translation id="4024840464866786680">თუ PIN-კოდი და პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="4028481283645788203">დამატებითი უსაფრთხოებისთვის საჭიროა პაროლის შეყვანა</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">თქვენ აზიარებთ ეკრანს</translation>
@@ -705,6 +707,7 @@
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4762573482154983647">აპების დამალვა</translation>
 <translation id="4774338217796918551">დაბრუნდით ხვალ, <ph name="COME_BACK_TIME" />-ზე.</translation>
+<translation id="4776584068981882959">თქვენი პაროლი კვლავ ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="4776917500594043016">პაროლი <ph name="USER_EMAIL_ADDRESS" />-თვის</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Google ასისტენტი მიუწვდომელია დემო-სესიაში.</translation>
@@ -844,6 +847,7 @@
 <translation id="5536723544185013515">ბოლოდროინდელი აპები, ყველა ბოლოდროინდელ აპზე წვდომისთვის გამოიყენეთ კლავიში მარცხნივ ან მარჯვნივ მიმართული ისრით</translation>
 <translation id="553675580533261935">მიმდინარეობს სესიიდან გამოსვლა</translation>
 <translation id="5537725057119320332">მაუწყებლობა</translation>
+<translation id="5546397813406633847">მომხმარებლის აღდგენა</translation>
 <translation id="554893713779400387">კარნახის გადართვა</translation>
 <translation id="5558091555391176027">მახლობლად გაზიარების მაღალი ხილვადობის გადართვა</translation>
 <translation id="5560420195677022218">ნახეთ თქვენი ტელეფონის აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
@@ -860,6 +864,7 @@
 <translation id="5618148318840095371">უკეთეს ქსელზე გადაგრთეთ</translation>
 <translation id="5619862035903135339">ეკრანის აღბეჭდვა გათიშულია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">თქვენი პაროლი ვერ დადასტურდა. ცადეთ ხელახლა.</translation>
 <translation id="5648021990716966815">მიკროფონის ჯეკი</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5662075790140998213">სამუშაო მაგიდა 10</translation>
@@ -878,6 +883,7 @@
 <translation id="5707775774148071965">თქვენს მოწყობილობას აქვს მონაცემების გადაცემის უფრო მაღალი სიჩქარის მხარდაჭერა, ვიდრე თქვენს კაბელს. მოწყობილობის ეფექტურობა შეიძლება შეიზღუდოს.</translation>
 <translation id="5710450975648804523">„არ შემაწუხოთ“ ჩართულია</translation>
 <translation id="571295407079589142">მობილური ინტერნეტი გამორთულია</translation>
+<translation id="5727460725221669831">თუ პაროლი დაგავიწყდათ, ან ახლახან შეცვალეთ თქვენი Google ანგარიშის პაროლი, ცადეთ ამ მომხმარებლის აღდგენა.</translation>
 <translation id="573413375004481890">ამ მოწყობილობას არ შეეძლო თქვენი ყველა ეკრანის მხარდაჭერა, ამიტომ ერთ-ერთი გაითიშა</translation>
 <translation id="5740328398383587084">მახლობლად გაზიარება</translation>
 <translation id="574392208103952083">საშუალო</translation>

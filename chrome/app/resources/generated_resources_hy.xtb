@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;User Agent</translation>
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1022489261739821355">Ցուցադրվում են ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /> պահվող գաղտնաբառերը</translation>
+<translation id="1022669824195822609">Ձեր սարքը կառավարվում է <ph name="DOMAIN" /> տիրույթի կողմից։ Ադմինիստրատորներին հասանելի են այս սարքի բոլոր պրոֆիլների տվյալները։</translation>
 <translation id="1026655690966755180">Ավելացնել միացք</translation>
 <translation id="1026822031284433028">Բեռնել պատկերը</translation>
 <translation id="1028604629594230522">Chrome-ը նախապես բեռնում է էջերը, որոնք դուք հավանաբար կայցելեք, որպեսզի դրանք ավելի արագ բեռնվեն։</translation>
@@ -1868,6 +1869,7 @@
 <translation id="2643064289437760082">Դուք միշտ կարող եք ջնջել գովազդի արդյունավետության գնահատման տվյալները՝ ջնջելով այցելությունների պատմությունը</translation>
 <translation id="2643698698624765890">Կառավարեք ընդլայնումները` Պատուհանի ցանկում սեղմելով Ընդլայնումներ:</translation>
 <translation id="2645047101481282803">Ձեր սարքը կառավարվում է <ph name="PROFILE_NAME" /> տիրույթի կողմից</translation>
+<translation id="2645388244376970260">Այս ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-գաղտնագրված ASCII, վկայագրերի շղթա</translation>
 <translation id="265156376773362237">Սովորական նախաբեռնում</translation>
@@ -2740,6 +2742,7 @@
 <translation id="3446274660183028131">Windows-ը տեղադրելու համար գործարկեք Parallels Desktop-ը։</translation>
 <translation id="344630545793878684">Կարդալ ձեր տվյալները մի շարք կայքերում</translation>
 <translation id="3447644283769633681">Բոլոր կողմնակի քուքիների արգելափակում</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="3448492834076427715">Թարմացնել հաշիվը</translation>
 <translation id="3449393517661170867">Նոր ներդիրով պատուհան</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" />-ին հրամաններ ուղարկելու համար սեղմեք <ph name="SEARCH_KEY" /></translation>
@@ -2894,6 +2897,7 @@
 <translation id="3590295622232282437">Մուտք կառավարվող աշխատաշրջան</translation>
 <translation id="3591057288287063271">Պահպանել <ph name="FILE_NAME" /> ֆայլը</translation>
 <translation id="3592260987370335752">&amp;Իմանալ ավելին</translation>
+<translation id="3592344177526089979">Ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="3593152357631900254">Միացնել Fuzzy-Pinyin ռեժիմը</translation>
 <translation id="3593965109698325041">Վկայագրի անվան սահմանափակումներ</translation>
 <translation id="3596012367874587041">Հավելվածի կարգավորումներ</translation>
@@ -3169,6 +3173,7 @@
 <translation id="3823310065043511710">Լինուքսը տեղադրելու համար խորհուրդ է տրվում ունենալ նվազագույնը <ph name="INSTALL_SIZE" /> ազատ տարածք։</translation>
 <translation id="3824621460022590830">Սարքերի գրանցման թոքենն անվավեր է։ Կապվեք սարքի սեփականատիրոջ կամ ադմինիստրատորի հետ։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Հիշել իմ ընտրությունը ֆայլի այս տեսակի համար՝ <ph name="FILE_TYPES" />}one{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}other{Հիշել իմ ընտրությունը ֆայլերի այս տեսակների համար՝ <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Հավելվածի պատկերակի վրա ցուցադրել կետ, երբ ծանուցումներ են ստացվում</translation>
 <translation id="3826071569074535339">Թույլատրվում է օգտագործել շարժման տվիչները</translation>
 <translation id="3826440694796503677">Ադմինիստրատորն անջատել է այլ Google հաշիվներ ավելացնելու հնարավորությունը</translation>
 <translation id="3827774300009121996">&amp;Լիաէկրան</translation>
@@ -4489,6 +4494,7 @@
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Ապահով DNS սերվերի կառավարում ChromeOS-ի կարգավորումներում</translation>
+<translation id="5066160542186949327">Տեղափոխել այլ պանակ</translation>
 <translation id="5067399438976153555">Միշտ միացված</translation>
 <translation id="5067867186035333991">Հարցնել, երբ <ph name="HOST" />-ն ուզում է օգտագործել խոսափողը</translation>
 <translation id="5068553687099139861">ցուցադրել գաղտնաբառերը</translation>
@@ -6657,7 +6663,6 @@
 <translation id="7044211973375150246">Կա հավելված, որը կարգավորված է այնպես, որ կարողանա բացել նույն հղումները, ինչ <ph name="APP_NAME" /> հավելվածը։ Դա նշանակում է, որ <ph name="APP_NAME_2" /> հավելվածը չի կարողանա բացել աջակցվող հղումներ։</translation>
 <translation id="7044606776288350625">Տվյալների համաժամացում</translation>
 <translation id="7047059339731138197">Ընտրեք ֆոնը</translation>
-<translation id="7048457618657122233">Կիսվել հղումով՝ <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Պահե՞լ ֆայլը:</translation>
 <translation id="7050037487872780845">Թեժ կետի սխալ կազմաձև</translation>
 <translation id="7052237160939977163">Ուղարկել կատարողականության հետագծման տվյալները</translation>

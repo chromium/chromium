@@ -3,6 +3,7 @@
 <translationbundle lang="it">
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
+<translation id="1352919863522755794">Gestore delle password di Google non ha potuto controllare le tue password. Verifica la tua connessione a internet.</translation>
 <translation id="1462727070346936664">Accedi per usare al meglio Chrome.</translation>
 <translation id="1479202195792305274">Chrome può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="1493827051843127077">Imposta Chrome come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
-<translation id="1968388653333775699">Aumenta la tua produttività con Chrome</translation>
 <translation id="2009224836393115614">Chrome non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="2056123005618757196">Aumenta la tua produttività grazie a Google Chrome, che ti offre semplicità, sicurezza e velocità senza precedenti.</translation>
 <translation id="2147651015520127414">Chrome ha verificato che <ph name="ISSUER" /> ha emesso il certificato del sito web.</translation>
 <translation id="2199719347983604670">Dati dalla sincronizzazione Chrome</translation>
-<translation id="2313070403598893276">Google Chrome è semplice, sicuro e più veloce che mai</translation>
 <translation id="2339201583852607431">La password verrà salvata nel tuo Account Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome condivide la tua posizione con i siti autorizzati da te.</translation>
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2732745070297234559">Chrome non ha potuto controllare tutte le password. Riprova domani.</translation>
+<translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chrome non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Per contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
+<translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="5030102366287574140">Chrome può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
 <translation id="5108659628347594808">Migliora Chrome</translation>
 <translation id="5119391094379141756">Seleziona Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5639704535586432836">Apri impostazioni &gt; Privacy &gt; Fotocamera &gt; Google Chrome e attiva la videocamera.</translation>
 <translation id="5642200033778930880">Google Chrome non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
+<translation id="5661521615548540542">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova più tardi.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline. Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="5716154293141027663">Apri Chrome ogni volta che tocchi link in altre app</translation>
@@ -120,9 +122,11 @@
   2. Tocca App browser predefinita.
   3. Seleziona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Resta al sicuro con Google Chrome</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
+<translation id="8857676124663337448">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="8897749957032330183">Le password vengono salvate in Gestore delle password di Google su questo dispositivo.</translation>
 <translation id="8969290730818637510">Quando l'opzione è attiva:
 <ph name="BEGIN_INDENT" />  • Contribuisci a migliorare Chrome per le persone che lo usano come fai tu.<ph name="END_INDENT" />

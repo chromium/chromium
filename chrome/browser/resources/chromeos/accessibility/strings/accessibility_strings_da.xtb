@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Efterskrift</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Berøringsbevægelser</translation>
-<translation id="1201402288615127009">Næste</translation>
 <translation id="1202112913213080585">annuller</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Der er ikke flere niveau 4-overskrifter</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikel</translation>
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">kopiér</translation>
-<translation id="135978014023467274">Du har opdateret til ChromeVox 63</translation>
 <translation id="1360699455582016846">Klik på elementet under routing-tasten <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">gå til næste tegn</translation>
 <translation id="1377925789329510816">Dette er den sidste overskrift. Tryk på søgetasten+H for at gå til den første overskrift, eller tryk på søgetasten+Shift+H for at gå til den anden overskrift på siden.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">ikke markeret</translation>
 <translation id="3286372614333682499">stående</translation>
 <translation id="3286390186030710347">Skyder</translation>
-<translation id="3300348286427369683">Understøttelse af RTF. ChromeVox understøtter nu RTF-felter, bl.a. hoppekommandoer, markørstyring til brailletekst, valg og meget mere.</translation>
 <translation id="3300733168898541351">fortryd</translation>
 <translation id="3307886118343381874">Gå til slutningen af ​​tabellen</translation>
 <translation id="3312997241656799641">Næste besøgte link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Avanceret træg tilstand er deaktiveret</translation>
 <translation id="4623097797855662355">Slutskrift</translation>
 <translation id="4624970070706497034">TalkBack leverer ikke længere tilpasningsmuligheder til Chromebooks. Du kan stadig bruge TalkBack, men du skal bruge TalkBacks standardtastaturgenveje. Tryk på søgetasten+A efterfulgt af K for at se de tilgængelige genveje. Hvis du stadig vil bruge TalkBack, skal du indtaste kommandoen igen.</translation>
-<translation id="463135993322337640">Tryk på ChromeVox o, n for at se nyhederne</translation>
 <translation id="4649220074413114917">Du kan stoppe alt det, der siges, ved at trykke på skærmen med to fingre. Dette er nyttigt, hvis du ikke vil have, at ChromeVox læser noget. Tryk på skærmen med to fingre for at fortsætte.</translation>
-<translation id="4660783501463101648">Classic er fjernet. Tastaturknappen, som skifter tilbage til ChromeVox Classic, er fjernet.</translation>
 <translation id="4661075872484491155">træ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Gå til næste kolonne</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">tilbage</translation>
 <translation id="5102981729317424850">Værktøjslinje</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Vi har nogle spændende ændringer i denne nye udgivelse. Her er nyhederne:</translation>
 <translation id="5111640677200759579">Kolonneoverskrift</translation>
 <translation id="5115892389597951922">ChromeVox-log</translation>
 <translation id="5119330972669454698">Sandfarvet</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Grundlæggende navigation</translation>
 <translation id="609281021724813947">Der er ingen forrige skydere</translation>
 <translation id="6100239002225743044">Gå én linje op</translation>
-<translation id="6118126368611144850">Android-apps til Chrome. Hvis du har Google Play Butik på din enhed, kan du få et smugkig på ChromeVox med Android-apps. Prøv eksperimentel understøttelse ved at downloade Google Chrome Canary i Play Butik.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktivér</translation>
 <translation id="6122013438240733403">knp</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Forrige kombifelt</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{udråbstegn}one{# udråbstegn}other{# udråbstegn}}</translation>
 <translation id="670717715607710284">Sluk skærmen</translation>
-<translation id="6710213216561001401">Forrige</translation>
 <translation id="6714813999819678458">Forrige niveau 2-overskrift</translation>
 <translation id="6730312624811567147">Brug Søg og venstrepil eller højrepil for Home og End. Brug Søg, Control og venstrepil eller højrepil for Control Home og End. Brug Søg og pil op eller ned for Page Up og Page Down</translation>
 <translation id="6736510033526053669">fanen blev oprettet</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Kalkhvid</translation>
 <translation id="9220679313820249046">Orangerød</translation>
 <translation id="9223032053830369045">Mørkerød</translation>
-<translation id="923331726185079994">ChromeVox blev opdateret</translation>
 <translation id="93384979447910801">Mørk havgrøn</translation>
 <translation id="937605981140327129">TalkBack er ikke installeret i øjeblikket. Installer Android AccessibilitySuite via Play Store, og prøv igen.</translation>
 <translation id="948171205378458592">Skru ned for talehastighed</translation>

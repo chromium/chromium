@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Lời bạt</translation>
 <translation id="1197088940767939838">Màu cam</translation>
 <translation id="1198865190323699001">Cử chỉ chạm</translation>
-<translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1202112913213080585">huỷ</translation>
 <translation id="1206619573307042055">bảng chữ chạy</translation>
 <translation id="1207086294218137981">Không có tiêu đề cấp 4 nào tiếp theo</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">bài viết</translation>
 <translation id="1346059596910821859">Mẹo</translation>
 <translation id="1354356357730355833">sao chép</translation>
-<translation id="135978014023467274">Bạn đã cập nhật lên ChromeVox 63!</translation>
 <translation id="1360699455582016846">Hãy nhấp vào mục bên dưới phím định tuyến <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">chuyển đến ký tự tiếp theo</translation>
 <translation id="1377925789329510816">Đây là tiêu đề cuối cùng. Nhấn Search+H để bao gồm tiêu đề đầu tiên hoặc Search+Shift+H để chuyển tới tiêu đề thứ hai trên trang này.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">đã bỏ chọn</translation>
 <translation id="3286372614333682499">dọc</translation>
 <translation id="3286390186030710347">Thanh trượt</translation>
-<translation id="3300348286427369683">Hỗ trợ văn bản đa dạng thức. ChromeVox hiện hỗ trợ các trường văn bản đa dạng thức, bao gồm cả lệnh di chuyển, định tuyến con trỏ chữ nổi, lựa chọn và các trường khác.</translation>
 <translation id="3300733168898541351">huỷ</translation>
 <translation id="3307886118343381874">Đi tới cuối bảng</translation>
 <translation id="3312997241656799641">Liên kết đã truy cập tiếp theo</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Chế độ phím dính thông minh đang tắt</translation>
 <translation id="4623097797855662355">Lời ghi cuối sách</translation>
 <translation id="4624970070706497034">TalkBack không còn hỗ trợ chế độ tuỳ chỉnh trên Chromebook nữa. Bạn vẫn có thể sử dụng tính năng này nhưng hãy sử dụng phím tắt mặc định của TalkBack. Nhấn tổ hợp phím Search+A, rồi nhấn phím K để xem các phím tắt hiện có. Nếu bạn vẫn muốn dùng TalkBack, hãy nhấn lại lệnh này.</translation>
-<translation id="463135993322337640">Bạn có thể tìm hiểu tính năng mới bằng cách nhấn ChromeVox, o, n</translation>
 <translation id="4649220074413114917">Bạn có thể nhấn vào màn hình bằng 2 ngón tay để dừng mọi giọng đọc hiện tại. Thao tác này sẽ hữu ích khi bạn không muốn ChromeVox đọc nội dung nào đó. Để tiếp tục, hãy nhấn vào màn hình bằng 2 ngón tay.</translation>
-<translation id="4660783501463101648">Đã xóa phiên bản cổ điển. Phím chuyển đổi trên bàn phím để quay về phiên bản ChromeVox cổ điển đã bị xóa.</translation>
 <translation id="4661075872484491155">cây</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Chuyển đến cột tiếp theo</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">quay lại</translation>
 <translation id="5102981729317424850">Thanh công cụ</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Chúng tôi có một số thay đổi thú vị trong bản phát hành mới này. Dưới đây là những tính năng mới:</translation>
 <translation id="5111640677200759579">Tiêu đề cột</translation>
 <translation id="5115892389597951922">Nhật ký ChromeVox</translation>
 <translation id="5119330972669454698">Màu gỗ lớn</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Di chuyển cơ bản</translation>
 <translation id="609281021724813947">Không có thanh trượt nào trước đó</translation>
 <translation id="6100239002225743044">Chuyển lên một dòng</translation>
-<translation id="6118126368611144850">Ứng dụng Android dành cho Chrome. Nếu thiết bị của bạn có Cửa hàng Play, hãy dùng thử ChromeVox với các ứng dụng Android. Để dùng thử các tính năng thử nghiệm được hỗ trợ, hãy tải Google Chrome Canary xuống từ Cửa hàng Play.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">kích hoạt</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Hộp kết hợp trước</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{dấu chấm than}other{# dấu chấm than}}</translation>
 <translation id="670717715607710284">Tắt màn hình</translation>
-<translation id="6710213216561001401">Trước</translation>
 <translation id="6714813999819678458">Tiêu đề cấp 2 trước</translation>
 <translation id="6730312624811567147">Sử dụng tổ hợp phím Tìm kiếm Mũi tên trái hoặc phải để thay thế phím Home hoặc End, Tìm kiếm Control Mũi tên trái hoặc Mũi tên phải để thay thế phím Control Home hoặc End, Tìm kiếm Mũi tên lên hoặc xuống để thay thế phím Page Up hoặc Down</translation>
 <translation id="6736510033526053669">thẻ đã được tạo</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Màu trắng hơi cam</translation>
 <translation id="9220679313820249046">Màu đỏ cam</translation>
 <translation id="9223032053830369045">Màu đỏ đậm</translation>
-<translation id="923331726185079994">Đã cập nhật ChromeVox</translation>
 <translation id="93384979447910801">Màu xanh biển đậm</translation>
 <translation id="937605981140327129">Chưa cài đặt TalkBack. Vui lòng cài đặt AccessibilitySuite dành cho Android thông qua Cửa hàng Play rồi thử lại.</translation>
 <translation id="948171205378458592">Giảm tốc độ nói</translation>

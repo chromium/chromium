@@ -2909,6 +2909,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3602290021589620013">Pregled</translation>
 <translation id="3602870520245633055">Ispis i skeniranje</translation>
 <translation id="3603622770190368340">Dobivanje certifikata mreže</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} račun koristi istu zaporku}one{{COUNT} račun koristi istu zaporku}few{{COUNT} računa koriste istu zaporku}other{{COUNT} računa koristi istu zaporku}}</translation>
 <translation id="3605780360466892872">Poslovnjak</translation>
 <translation id="3609277884604412258">Brzo pretraživanje</translation>
 <translation id="3610241585790874201">Spremanje podataka na uređaj nije dopušteno</translation>
@@ -3174,6 +3175,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3823310065043511710">Za Linux se preporučuje najmanje <ph name="INSTALL_SIZE" /> prostora.</translation>
 <translation id="3824621460022590830">Oznaka za registraciju uređaja nije važeća. Obratite se vlasniku ili administratoru uređaja. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Upamti moj izbor za ovu vrstu datoteke: <ph name="FILE_TYPES" />.}one{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}few{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}other{Upamti moj izbor za ove vrste datoteka: <ph name="FILE_TYPES" />.}}</translation>
+<translation id="3825635794653163640">Prikaži točku na ikoni aplikacije za upozorenja aplikacije</translation>
 <translation id="3826071569074535339">Dopuštena je upotreba senzora kretanja</translation>
 <translation id="3826440694796503677">Vaš je administrator onemogućio dodavanje dodatnih Google računa</translation>
 <translation id="3827774300009121996">&amp;Cijeli zaslon</translation>
@@ -4493,6 +4495,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5063480226653192405">Upotreba</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Upravljanje sigurnim DNS-om u postavkama Chrome OS-a</translation>
+<translation id="5066160542186949327">Premjestite u drugu mapu</translation>
 <translation id="5067399438976153555">Uvijek uključeno</translation>
 <translation id="5067867186035333991">Pitaj ako <ph name="HOST" /> želi pristupiti mikrofonu</translation>
 <translation id="5068553687099139861">prikazati zaporke</translation>
@@ -6661,7 +6664,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7044211973375150246">Aplikacija je postavljena tako da otvara iste veze kao <ph name="APP_NAME" />. Time će se aplikaciji <ph name="APP_NAME_2" /> onemogućiti da otvara podržane veze.</translation>
 <translation id="7044606776288350625">Sinkronizacija podataka</translation>
 <translation id="7047059339731138197">Odaberite pozadinu</translation>
-<translation id="7048457618657122233">Podijelite vezu na <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Želite li zadržati datoteku?</translation>
 <translation id="7050037487872780845">Konfiguracija žarišne točke nije važeća</translation>
 <translation id="7052237160939977163">Šalji podatke o praćenju izvedbe</translation>

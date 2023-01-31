@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Afegeix al diccionari</translation>
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1022489261739821355">Es mostren les contrasenyes del teu <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> gestiona el teu dispositiu. Els administradors poden accedir a les dades de qualsevol perfil d'aquest dispositiu.</translation>
 <translation id="1026655690966755180">Afegeix un port</translation>
 <translation id="1026822031284433028">Carrega la imatge</translation>
 <translation id="1028604629594230522">Chrome precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan les visitis.</translation>
@@ -1866,6 +1867,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2643064289437760082">Pots suprimir les dades de mesurament d'anuncis en qualsevol moment suprimint les dades de navegació</translation>
 <translation id="2643698698624765890">Per gestionar les extensions, feu clic a Extensions al menú Finestra.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> gestiona el teu dispositiu</translation>
+<translation id="2645388244376970260">S'està emetent aquesta pestanya a <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII codificat en Base64, cadena de certificats</translation>
 <translation id="265156376773362237">Precàrrega estàndard</translation>
@@ -2738,6 +2740,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3446274660183028131">Inicia Parallels Desktop per instal·lar Windows.</translation>
 <translation id="344630545793878684">Llegir les dades d'una sèrie de llocs web</translation>
 <translation id="3447644283769633681">Bloqueja totes les galetes de tercers</translation>
+<translation id="3447797901512053632">S'està emetent <ph name="TAB_NAME" /> a <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Actualitza el compte</translation>
 <translation id="3449393517661170867">Finestra amb pestanyes nova</translation>
 <translation id="3449839693241009168">Premeu <ph name="SEARCH_KEY" /> per enviar ordres a <ph name="EXTENSION_NAME" /></translation>
@@ -2892,6 +2895,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3590295622232282437">S'està entrant a una sessió gestionada.</translation>
 <translation id="3591057288287063271">Conserva <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Més informació</translation>
+<translation id="3592344177526089979">S'està emetent una pestanya a <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Activa el mode pinyin per aproximació</translation>
 <translation id="3593965109698325041">Restriccions del nom de certificat</translation>
 <translation id="3596012367874587041">Configuració de l'aplicació</translation>
@@ -3167,6 +3171,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3823310065043511710">Es recomana tenir almenys <ph name="INSTALL_SIZE" /> d'espai lliure per a Linux.</translation>
 <translation id="3824621460022590830">El testimoni d'inscripció de dispositius no és vàlid. Contacta amb el propietari o l'administrador del dispositiu. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Recorda la meva selecció per a aquest tipus de fitxer: <ph name="FILE_TYPES" />}other{Recorda la meva selecció per a aquests tipus de fitxers: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Mostra el punt a la icona de l'aplicació per a les alertes d'aplicacions</translation>
 <translation id="3826071569074535339">Amb permís per utilitzar sensors de moviment</translation>
 <translation id="3826440694796503677">El teu administrador ha desactivat l'opció d'afegir més Comptes de Google</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
@@ -4485,6 +4490,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Gestiona el DNS segur a la configuració de Chrome OS</translation>
+<translation id="5066160542186949327">Mou a una altra carpeta</translation>
 <translation id="5067399438976153555">Sempre activat</translation>
 <translation id="5067867186035333991">Pregunta si <ph name="HOST" /> vol accedir al micròfon</translation>
 <translation id="5068553687099139861">mostrar les contrasenyes</translation>
@@ -6651,7 +6657,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7044211973375150246">S'ha configurat una aplicació per obrir els mateixos enllaços que <ph name="APP_NAME" />. Es desactivarà l'obertura d'enllaços compatibles des de l'aplicació <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Sincronitza les dades</translation>
 <translation id="7047059339731138197">Tria un fons</translation>
-<translation id="7048457618657122233">Comparteix l'enllaç a <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Vols desar el fitxer?</translation>
 <translation id="7050037487872780845">La configuració del punt d'accés Wi‐Fi no és vàlida</translation>
 <translation id="7052237160939977163">Envia dades de traça del rendiment</translation>

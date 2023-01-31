@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Afterword</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Touch gestures</translation>
-<translation id="1201402288615127009">Next</translation>
 <translation id="1202112913213080585">cancel</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No next level 4 heading</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">copy</translation>
-<translation id="135978014023467274">You've been updated to ChromeVox 63!</translation>
 <translation id="1360699455582016846">Click the item under routing key <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">move to the next character</translation>
 <translation id="1377925789329510816">This is the last heading. Press Search+H to wrap to the first heading, or Search+Shift+H to go to the second heading on this page.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">unticked</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3286390186030710347">Slider</translation>
-<translation id="3300348286427369683">Rich text support. ChromeVox now supports rich text fields including jump commands, braille cursor routing, selection and more.</translation>
 <translation id="3300733168898541351">undo</translation>
 <translation id="3307886118343381874">Go to end of table</translation>
 <translation id="3312997241656799641">Next visited link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Smart sticky mode off</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="4624970070706497034">TalkBack no longer provides customisation for Chromebooks. You can still use it, but use TalkBack default keyboard shortcuts. Press Search+A then K to see available shortcuts. If you still want to use TalkBack, press the command again.</translation>
-<translation id="463135993322337640">Press ChromeVox o, n to find out what's new</translation>
 <translation id="4649220074413114917">Tapping the screen with two fingers can be used to stop any current speech. This is useful if you don’t want ChromeVox to read something. To continue, tap the screen with two fingers.</translation>
-<translation id="4660783501463101648">Classic removed. The keyboard toggle to switch back into ChromeVox Classic has been removed.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Go to the next column</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">back</translation>
 <translation id="5102981729317424850">Tool bar</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">We have some exciting changes in this new release; here's what's new:</translation>
 <translation id="5111640677200759579">Column header</translation>
 <translation id="5115892389597951922">ChromeVox Log</translation>
 <translation id="5119330972669454698">Burly Wood</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Basic Navigation</translation>
 <translation id="609281021724813947">No previous slider</translation>
 <translation id="6100239002225743044">Move up one line</translation>
-<translation id="6118126368611144850">Android apps for Chrome. If you have Play Store on your device, get a sneak peek at ChromeVox with Android apps. Try the experimental support by downloading Google Chrome Canary from the Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">activate</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Previous combo box</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamation}other{# exclamations}}</translation>
 <translation id="670717715607710284">Screen off</translation>
-<translation id="6710213216561001401">Previous</translation>
 <translation id="6714813999819678458">Previous level 2 heading</translation>
 <translation id="6730312624811567147">Use search left or right for home or end, search control left or right for control home or end, search up or down for page up or down</translation>
 <translation id="6736510033526053669">tab created</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Antique White</translation>
 <translation id="9220679313820249046">Orange red</translation>
 <translation id="9223032053830369045">Dark Red</translation>
-<translation id="923331726185079994">ChromeVox Updated</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>
 <translation id="937605981140327129">TalkBack is currently not installed. Please install Android Accessibility Suite through Play Store and try again.</translation>
 <translation id="948171205378458592">Decrease rate of speech</translation>

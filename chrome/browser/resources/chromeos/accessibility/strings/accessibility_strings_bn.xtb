@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1198865190323699001">জেসচার মেনুতে স্পর্শ করুন</translation>
-<translation id="1201402288615127009">পরের</translation>
 <translation id="1202112913213080585">বাতিল করুন</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">কোনও পরবর্তী লেভেল ৪ শিরোনাম নেই</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">নিবন্ধ</translation>
 <translation id="1346059596910821859">টিপ</translation>
 <translation id="1354356357730355833">কপি করুন</translation>
-<translation id="135978014023467274">আপনার ChormeVox, ChromeVox 63 তে আপগ্রেড করা হয়েছে!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> নম্বর রাউটিং কী-এর আইটেমে ক্লিক করুন</translation>
 <translation id="1376703628032300005">পরের অক্ষরে সরান</translation>
 <translation id="1377925789329510816">এটিই সর্বশেষ শিরোনাম। প্রথম শিরোনামে ফিরে যেতে সার্চ+H টিপুন, অথবা এই পৃষ্ঠার দ্বিতীয় শিরোনামে যেতে সার্চ+Shift+H টিপুন।</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">টিকচিহ্ন সরানো হয়েছে</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
 <translation id="3286390186030710347">স্লাইডার</translation>
-<translation id="3300348286427369683">রিচ টেক্সট ব্যবহার করা যাবে। ChromeVox এ এখন রিচ টেক্সট ফিল্ড ব্যবহার করা যাবে, যাতে জাম্প কমান্ড, ব্রেল কারসর রুটিং, বেছে নেওয়া এবং আরও অনেক কিছু রয়েছে।</translation>
 <translation id="3300733168898541351">আগের অবস্থায় ফিরে যান</translation>
 <translation id="3307886118343381874">সারণীর শেষে যান</translation>
 <translation id="3312997241656799641">পরবর্তী ঘুরে দেখা লিঙ্ক</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">স্মার্ট স্টিকি মোড বন্ধ আছে</translation>
 <translation id="4623097797855662355">বইটির সম্পর্কে</translation>
 <translation id="4624970070706497034">টকব্যাক আর Chromebook-এর জন্য কাস্টমাইজ করার সুবিধা প্রদান করে না। আপনি এখনও এটি ব্যবহার করতে পারেন, তবে টকব্যাক ডিফল্ট কীবোর্ড শর্টকাট ব্যবহার করুন। কী কী শর্টকাট উপলভ্য আছে দেখতে Search+A এবং তারপরে K প্রেস করুন। এখনও টকব্যাক ব্যবহার করতে চাইলে, আবার 'কমান্ড' কী প্রেস করুন।</translation>
-<translation id="463135993322337640">নতুন কি আছে তা দেখার জন্য ChromeVox o, n টিপুন</translation>
 <translation id="4649220074413114917">কোনও বর্তমান স্পিচ বন্ধ করতে দুই আঙুল দিয়ে স্ক্রিনে ট্যাপ করুন। ChromeVox-এর পড়ে শোনানো কোনও স্পিচ আপনি শুনতে না চাইলে এই পদ্ধতিটি কার্যকরী। চালিয়ে যেতে, দুই আঙুল দিয়ে স্ক্রিনে ট্যাপ করুন।</translation>
-<translation id="4660783501463101648">ক্লাসিক ভার্সন সরানো হয়েছে। কীবোর্ড টগল করে ChromeVox ক্লাসিক ভার্সনে ফিরে যাওয়ার সুবিধা সরিয়ে দেওয়া হয়েছে।</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">পরের কলামে যান</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">ফিরুন</translation>
 <translation id="5102981729317424850">টুল বার</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">এই নতুন রিলিজে আমরা কিছু আকর্ষণীয় পরিবর্তন নিয়ে এসেছি; নতুন কি আছে তা এখানে দেওয়া হল:</translation>
 <translation id="5111640677200759579">কলাম শিরোলেখ</translation>
 <translation id="5115892389597951922">ChromeVox লগ</translation>
 <translation id="5119330972669454698">বারলি উড</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">প্রাথমিক নেভিগেশান</translation>
 <translation id="609281021724813947">কোনও পূর্ববর্তী স্লাইডার নেই</translation>
 <translation id="6100239002225743044">টেক্সটের কার্সার এক লাইন উপরে নিয়ে যান</translation>
-<translation id="6118126368611144850">Chrome এর জন্য Android অ্যাপ। আপনার ডিভাইসে যদি Play Store থাকে তাহলে Android অ্যাপের সাথে ChromeVox ব্যবহার করে দেখুন। Play Store থেকে Google Chrome Canary ডাউনলোড করার মাধ্যমে পরীক্ষামূলক সহায়তা পান।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">সক্রিয় করুন</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">পূর্ববর্তী কম্বো বাক্স</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{টি বিস্ময়সূচক চিহ্ন}one{#টি বিস্ময়সূচক চিহ্ন}other{#টি বিস্ময়সূচক চিহ্ন}}</translation>
 <translation id="670717715607710284">স্ক্রিন বন্ধ করো</translation>
-<translation id="6710213216561001401">আগের</translation>
 <translation id="6714813999819678458">পূর্ববর্তী স্তর ২ শিরোনাম</translation>
 <translation id="6730312624811567147">'হোম' বা 'এন্ড'-এ যেতে সার্চের সাথে বাম অথবা ডানদিকের তীরচিহ্ন বোতামটি টিপুন, কন্ট্রোল হোম অথবা এন্ডের জন্য সার্চ কন্ট্রোলের সাথে বাম অথবা ডানদিকের তীরচিহ্ন বোতামটি টিপুন, পেজ আপ ও পেজ ডাউনের জন্য সার্চের সাথে উপরের বা নিচের তীরচিহ্ন বোতামটি টিপুন</translation>
 <translation id="6736510033526053669">ট্যাব তৈরি করা হয়েছে</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">পুরনো সাদা</translation>
 <translation id="9220679313820249046">কমলা লাল</translation>
 <translation id="9223032053830369045">গাঢ় লাল</translation>
-<translation id="923331726185079994">ChromeVox আপডেট হয়েছে</translation>
 <translation id="93384979447910801">গাঢ় নীলাভ সবুজ</translation>
 <translation id="937605981140327129">টকব্যাক বর্তমানে ইনস্টল করা নেই। Play Store থেকে Android AccessibilitySuite ইনস্টল করে আবার চেষ্টা করুন।</translation>
 <translation id="948171205378458592">স্পিচের হার কমান</translation>

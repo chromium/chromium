@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">Улантуу үчүн <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөнүңүздү, электрондук почтаңызды жана профилиңиздин сүрөтүн ушул сайт менен бөлүшөт. Бул сайттын <ph name="BEGIN_LINK1" />купуялык саясатын<ph name="END_LINK1" /> көрүңүз.</translation>
 <translation id="2000419248597011803">Дарек тилкесиндеги жана издөө кутучасындагы издөөлөрдү жана айрым cookie файлдарын демейки издөө тутумуна жөнөтөт</translation>
 <translation id="200114059308480249">Google'да издегенде көбүрөөк текст камтылсынбы?</translation>
+<translation id="2009341475524975924">Жарнаманын майнаптуулугун талдоо үчүн сайттар бири-бири менен жарнаманын кайсы убакытта көрсөтүлгөнү сыяктуу белгилүү бир маалыматтын түрлөрүн бөлүшүүсү мүмкүн.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# файл}other{# файл}}</translation>
 <translation id="2021896219286479412">Сайтты толук экран режиминде көзөмөлдөө</translation>
 <translation id="2038563949887743358">Иш тактасынын сайтындагы суроо-талапты күйгүзүү</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
 <translation id="2328985652426384049">Аккаунтка кирүү мүмкүн эмес</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> орнотулган жок.</translation>
 <translation id="234265804618409743">Камера ачылбай жатат. Бир жерден ката кетти.</translation>
 <translation id="2349710944427398404">Chrome пайдаланган жалпы дайындардын, анын ичинде каттоо эсептери, кыстармалар жана сакталган жөндөөлөрдүн жалпы өлчөмү</translation>
 <translation id="235789365079050412">Google Купуялык саясаты</translation>
@@ -343,6 +345,7 @@
 <translation id="2909615210195135082">Google билдирмелеринин платформасы</translation>
 <translation id="2912296070571964914">Кызыктуу темаларды башкарыңыз</translation>
 <translation id="2912345083818861431">Ачылып турган Жашыруун өтмөктөрдү көрүү үчүн экрандын кулпусун колдонуңуз</translation>
+<translation id="2922568440285376746">Google аркылуу сүрөттөн издөө <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Аты-жөнү жараксыз</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сактагычы</translation>
 <translation id="2932222164150889403">Баскычтоп өзгөрбөйт</translation>
@@ -651,6 +654,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> колдонмосун ачуу</translation>
 <translation id="4619564267100705184">Өзүңүз экениңизди ырастаңыз</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
+<translation id="4637420359569396807">Жарнамалардын майнаптуулугун талдоо үчүн сайттар жана колдонмолор бири-бири менен жарнаманын кайсы убакытта көрсөтүлгөнү сыяктуу белгилүү бир маалыматтын түрлөрүн бөлүшүүсү мүмкүн.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 уурдалган сырсөз бар}other{# уурдалган сырсөз бар}}</translation>
 <translation id="4650364565596261010">Демейки тутум</translation>
 <translation id="465657074423018424">Коопсуз серептөө сизди кооптуу вебсайттардан коргойт. Эгер аны өчүрсөңүз, серептегенде, өзгөчө сырсөздөрдү киргизгенде этият болуңуз.</translation>
@@ -663,6 +667,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4684427112815847243">Баарын шайкештештирүү</translation>
 <translation id="4685741273709472646">Түрүлмө тизмеден тандоо</translation>
 <translation id="4687718960473379118">Сайт сунуштаган жарнамалар</translation>
+<translation id="4689792375321623175">Google аркылуу сүрөттөн издөө <ph name="BEGIN_NEW" />Жаңылык<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кештелген сүрөттөр жана файлдар</translation>
 <translation id="4719927025381752090">Которуу сунушталсын</translation>
@@ -809,6 +814,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5438292632479953702">Кайра жүктөп алуу</translation>
 <translation id="5441466871879044658">Төмөнкү тилге которуу</translation>
 <translation id="5441522332038954058">Дарек тилкесине секирүү</translation>
+<translation id="5444999712122199445">Сайтка кайтуу</translation>
 <translation id="544776284582297024">Бир учурда бир нече өтмөктү ачып, бир нече баракка өтүү үчүн өтмөктөрдү ачуу баскычын басыңыз</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> менен</translation>
 <translation id="5456381639095306749">Баракты жүктөп алуу</translation>

@@ -110,6 +110,7 @@ Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph
 <translation id="1079801999187584280">Non consentire l'utilizzo degli Strumenti per sviluppatori</translation>
 <translation id="1082802595100075771">Consenti agli utenti di scegliere un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="1087057100912843460">Consenti aggiornamenti</translation>
+<translation id="1087187152710800704">Nega l'autorizzazione per la gestione delle finestre su tutti i siti per impostazione predefinita</translation>
 <translation id="1087437665304381368">Questa norma consente di controllare esclusivamente la modalità sviluppatore di <ph name="PRODUCT_OS_NAME" />. Se vuoi impedire l'accesso alle Opzioni sviluppatore Android, devi impostare la norma <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
 <translation id="1087707496788636333">L'elenco dei criteri di Chrome Enterprise è in fase di trasferimento. Aggiorna i tuoi preferiti con l'URL <ph name="POLICY_DOCUMENTATION_URL" />.</translation>
 <translation id="1089150222292592899">Compila automaticamente il nome utente sulla pagina dell'IdP SAML</translation>
@@ -308,6 +309,13 @@ La disponibilità delle estensioni è comunque controllata da altri criteri.</tr
 
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto per le istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1285819498003746288">L'API Event.path non sarà disponibile.</translation>
+<translation id="1290722184971934486">Se il criterio viene impostato su <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valore 2), per impostazione predefinita viene automaticamente negata ai siti l'autorizzazione per la gestione delle finestre. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
+
+Se il criterio viene impostato su <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valore 3), per impostazione predefinita viene mostrata all'utente la richiesta di autorizzazione per la gestione delle finestre. Se l'utente concede l'autorizzazione, i siti potranno vedere le informazioni sulle schermate del dispositivo e utilizzare quelle informazioni per aprire e posizionare le finestre oppure per richiedere lo schermo interno su schermate specifiche.
+
+Se il criterio non viene configurato, si applica il criterio <ph name="ASK_WINDOW_MANAGEMENT_POLICY_NAME" />, ma gli utenti possono cambiare l'impostazione.
+
+Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> obsoleto.</translation>
 <translation id="129206366270737897">Consente di disattivare tutti i metodi asincroni di <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
 <translation id="129392056654547767">L'immagine del firmware UEFI utilizzata dalla VM. Questa è una misura temporanea adottata durante la pacchettizzazione come DLC di ChromeOS.</translation>
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
@@ -696,8 +704,10 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio non viene configurato, vengono utilizzate le dimensioni della cache predefinite e gli utenti possono apportare modifiche con il flag --media-cache-size.</translation>
 <translation id="1648816843164517573">Elenco di nomi che eviteranno il controllo dei criteri HSTS</translation>
 <translation id="1651197070942919276">Non consentire al dispositivo di eseguire macchine virtuali</translation>
+<translation id="1651810147727432656">Blocca l'autorizzazione per la gestione delle finestre su questi siti</translation>
 <translation id="1654087023995670109">Applica modalità ospite del browser</translation>
 <translation id="1655229863189977773">Imposta le dimensioni della cache su disco in byte</translation>
+<translation id="1655518801232583832">Attiva la risoluzione DNS di sistema all'esterno del servizio di rete</translation>
 <translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
@@ -809,6 +819,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 
        Nota: per esempi più dettagliati, consulta la pagina The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1767673020408652620">Attiva consigli di app a stato nullo della casella di ricerca</translation>
+<translation id="1768225118528727376">Concedi l'autorizzazione per la gestione delle finestre su questi siti</translation>
 <translation id="1770071413238151235">Formato dell'orologio di 12 ore</translation>
 <translation id="1771024053220392089">Disattiva Supporto dei browser precedenti</translation>
 <translation id="1781356041596378058">Questa norma controlla anche l'accesso alle Opzioni sviluppatore di Android. Se la norma viene impostata su true, gli utenti non possono accedere alle Opzioni sviluppatore. Se la norma viene impostata su false o non viene impostata, gli utenti possono accedere alle Opzioni sviluppatore toccando sette volte il numero di build nell'app Impostazioni di Android.</translation>
@@ -1831,6 +1842,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Questo criterio richiede una configurazione aggiuntiva per essere applicato. Visita https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting per maggiori informazioni.</translation>
 <translation id="2731627323327011390">Disattiva l'utilizzo dei certificati <ph name="PRODUCT_OS_NAME" /> per le app ARC</translation>
+<translation id="273678600057164019">La risoluzione DNS di sistema verrà eseguita all'interno del processo di rete.</translation>
 <translation id="2737917415184832294">Utilizza HTTPS per i download di aggiornamento</translation>
 <translation id="2742843273354638707">Consente di nascondere l'app Chrome Web Store e il link nel piè di pagina nella pagina Nuova scheda e in Avvio applicazioni di <ph name="PRODUCT_OS_NAME" />.
 
@@ -2495,6 +2507,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3302829897293005699">Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano informazioni relative alla sessione kiosk attiva quali ID applicazione e versione.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
+<translation id="3303770131697159224">Impostazione predefinita dell'autorizzazione per la gestione delle finestre</translation>
 <translation id="3303911765031636277">Criterio di configurazione per il connettore OnFileAttached di Chrome Enterprise</translation>
 <translation id="3304662785258434098">Consente di stabilire se gli utenti possono aggiungere eccezioni per consentire contenuti misti per siti specifici.
 
@@ -3190,6 +3203,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="3973371701361892765">Non nascondere mai automaticamente la barra delle app</translation>
 <translation id="3977304360459208438">Utilizza l'impostazione predefinita per le suite di crittografia 3DES in TLS</translation>
 <translation id="3979738908158213640">URL a cui verrà concesso l'accesso per eseguire l'attestazione del dispositivo durante l'autenticazione SAML</translation>
+<translation id="3983162212222338509">La risoluzione DNS di sistema può essere essere eseguita nel processo di rete, all'esterno del processo di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="3984028218719007910">Consente di stabilire se tenere o meno memorizzati in <ph name="PRODUCT_OS_NAME" /> i dati degli account locali dopo l'uscita. Se la norma viene impostata su true, in <ph name="PRODUCT_OS_NAME" /> non verranno conservati gli account persistenti e tutti i dati della sessione utente verranno eliminati dopo l'uscita. Se la norma viene impostata su false o non viene configurata, il dispositivo potrebbe conservare i dati utente locali (criptati).</translation>
 <translation id="3986700049001404598">Consenti agli utenti di terminare i processi con il Task Manager di Chrome</translation>
 <translation id="398884292557092447">Se il criterio viene impostato su true o se non viene configurato, gli utenti possono controllare i suggerimenti di compilazione automatica per le carte di credito nella UI.
@@ -3308,6 +3322,7 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 
       Se configuri il criterio, gli utenti non possono modificarlo. Se il criterio non è configurato, la Lente d'ingrandimento risulta disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="4098920079809952737">Consenti la stampa con e senza immagini di sfondo</translation>
+<translation id="410061592404122032">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione per la gestione delle finestre</translation>
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4102347680024644994">Segnala eventi di rilevamento e risposta estesi (XDR)</translation>
@@ -3450,6 +3465,11 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
           Se questo criterio non viene impostato, inizialmente il clic automatico è disattivato, ma l'utente può attivarlo in qualsiasi momento.</translation>
 <translation id="4212181786686887763">L'URL da cui è possibile scaricare l'immagine di sfondo.</translation>
 <translation id="4224610387358583899">Ritardi del blocco schermo</translation>
+<translation id="42267415200641481">Se questo criterio viene impostato su true, la risoluzione DNS di sistema (getaddrinfo()) potrebbe essere eseguita al di fuori del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.
+
+      Se questo criterio viene impostato su false, la risoluzione DNS di sistema (getaddrinfo()) viene eseguita nel processo di rete anziché nel browser. Questa operazione potrebbe forzare la disattivazione della sandbox del servizio di rete, riducendo la sicurezza di <ph name="PRODUCT_NAME" />.
+
+      Se questo criterio non viene configurato, la risoluzione DNS di sistema potrebbe essere eseguita nel servizio di rete, all'esterno del servizio di rete o parzialmente all'interno e all'esterno, a seconda della configurazione del sistema e dei flag funzionalità.</translation>
 <translation id="4228745249339680042">La configurazione del criterio consente di specificare gli URL e i domini per i quali non vengono visualizzati messaggi quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata la singola attestazione. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
 
       Gli URL corrispondono soltanto ad appID U2F. I domini corrispondono soltanto a ID RP webauthn. Di conseguenza, per includere entrambe le API U2F e webauthn per un determinato sito, devono essere elencati sia il dominio sia l'URL appID.</translation>
@@ -3639,6 +3659,11 @@ Se questo criterio viene configurato, <ph name="PRODUCT_OS_NAME" /> consente agl
 <translation id="445505634382262792">Se il criterio viene impostato su 3, i siti web possono richiedere l'accesso di scrittura di file e directory nel file system del sistema operativo host. Se il criterio viene impostato su 2, l'accesso viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="4457113781439375078">Questo criterio è stato ritirato.
+
+      Se il criterio viene attivato, i dispositivi registrati segnalano periodicamente la loro posizione.
+
+      Se viene disattivato o se non viene configurato, i dispositivi registrati non segnalano la loro posizione.</translation>
 <translation id="4463675333222095358">Attiva conversione unità di Risposte rapide</translation>
 <translation id="4464365009416584564">Disattiva <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
@@ -5243,9 +5268,6 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
       Se il criterio non viene impostato, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.
 
       <ph name="PRODUCT_NAME" /> gestisce i contenuti della directory principale di un volume. Per prevenire la perdita di dati o altri errori, non impostare questo criterio nella directory principale né sulle directory utilizzate per altri scopi. Vedi le variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
-<translation id="6083356110032622782">WebSQL in contesti non sicuri verrà rimosso a partire dalla versione M110. Questo criterio consente di riattivare l'API.
-          Se questo criterio viene impostato su True, WebSQL in contesti non sicuri sarà disponibile.
-          Se il criterio viene impostato su False o se non viene configurato, WebSQL in contesti non sicuri rimarrà disponibile fino alla versione M109, dopodiché non sarà disponibile a partire dalla versione M110.</translation>
 <translation id="6083631234867522991">Windows (client Windows):</translation>
 <translation id="608788685013546076">Imposta un valore percentuale per il limite di consumo della batteria per la variazione dei picchi energetici</translation>
 <translation id="6089679180657323464">Consente di stabilire le impostazioni del controller DTC (Diagnostics and Telemetry Controller) wilco.</translation>
@@ -5422,6 +5444,17 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="6261643884958898336">Segnala informazioni di identificazione dei computer</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
 <translation id="6266043141694454734">Determina se verranno utilizzati Chrome Root Store e lo strumento di verifica dei certificati integrato per verificare i certificati del server</translation>
+<translation id="6267130578410325007">Questo criterio consente per impostazione predefinita il clustering di agenti con chiave di origine.
+
+L'intestazione HTTP Origin-Agent-Cluster consente di stabilire se un documento viene isolato in un cluster di agenti con chiave di origine o in un cluster di agenti con chiave del sito. Questo comporta implicazioni relative alla sicurezza perché un cluster di agenti con chiave di origine consente di isolare i documenti per origine. La conseguenza evidente di questo comportamento per gli sviluppatori è che non è più possibile impostare la funzione di accesso document.domain.
+
+Il comportamento predefinito (se non è stata impostata alcuna intestazione Origin-Agent-Cluster) cambia in M111 da "con chiave del sito" a "con chiave di origine".
+
+Se questo criterio viene attivato o se non viene configurato, il browser seguirà questo nuovo comportamento predefinito a partire dalla versione indicata.
+
+Se il criterio viene disattivato, questa modifica viene annullata e i documenti senza intestazioni Origin-Agent-Cluster verranno assegnati a cluster di agenti con chiave del sito. Di conseguenza, la funzione di accesso document.domain rimane configurabile per impostazione predefinita (comportamento precedente).
+
+Per maggiori informazioni, visita la pagina https://developer.chrome.com/blog/immutable-document-domain/.</translation>
 <translation id="6270615143812355589">Attiva l'input audio</translation>
 <translation id="6270791075656665237">Non consentire QUIC</translation>
 <translation id="6273015149273504999">
@@ -5475,6 +5508,7 @@ Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia im
 <translation id="6287128640500683781">Consenti a qualsiasi utente di accedere</translation>
 <translation id="6287310684159482272">Impostazioni dei cookie</translation>
 <translation id="6299147100249359151">Consenti il rilevamento dell'ambito dei criteri.</translation>
+<translation id="6299554629216555326">Impostazioni di gestione delle finestre</translation>
 <translation id="6300871921951390976">Gli utenti sono autorizzati a modificare il canale di rilascio del dispositivo solo se questo criterio è impostato su True. Se questo criterio è impostato su False o non viene configurato, gli utenti non potranno modificare il canale.
 
       L'impostazione di <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ha effetto solo se <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> è impostato su False.</translation>
@@ -6147,6 +6181,13 @@ Se viene impostato su False o se non viene configurato, il layout non è disponi
       Se il criterio non viene configurato, non vengono applicate limitazioni imposte da tale criterio al gruppo di app che gli utenti possono attivare nella schermata di blocco.</translation>
 <translation id="6882028194958060206">Applica l'impostazione dei contenuti Flash a tutti i contenuti (deprecato)</translation>
 <translation id="6889123056995503704">Gli utenti decidono il comportamento del downgrade del canale</translation>
+<translation id="6889617338886728275">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente concessa. Ciò estenderà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
+
+Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.
+
+Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> obsoleto.</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Rileva automaticamente impostazioni proxy</translation>
@@ -6347,6 +6388,16 @@ Se il criterio viene impostato su Disabled o se non viene configurato, verrà ap
       Se imposti questo criterio come obbligatorio, gli utenti non potranno modificarlo o ignorarlo.
 
       Se il criterio non viene impostato, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
+<translation id="7037853989942016900">Questo criterio consente di controllare il recente refactoring delle API Graphics3D nel plug-in PPAPI.
+
+La migrazione interessa solo i dettagli di implementazione interni e non deve modificare alcun comportamento. Tuttavia, questo criterio può essere utilizzato nel caso in cui eventuali applicazioni PPAPI non funzionino come previsto.
+
+Se il criterio non viene configurato o se viene impostato su Enabled, il browser deciderà quale implementazione usare.
+Se il criterio viene impostato su Disabled, il browser utilizzerà la vecchia implementazione fino alla scadenza del criterio.
+
+Se devi usare il criterio, invia una segnalazione di bug su crbug.com spiegando il tuo caso d'uso. Il criterio sarà valido fino alla versione 114 di <ph name="PRODUCT_NAME" />, dopodiché la vecchia implementazione verrà rimossa.
+
+NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai processi del renderer appena avviati mentre il browser è in esecuzione.</translation>
 <translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
@@ -6608,6 +6659,13 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="731208205557053914">Segnala informazioni sui VPD</translation>
 <translation id="7313672174502374994">L'hash SHA-256 dell'immagine di sfondo.</translation>
 <translation id="7322825363493984512">La password per l'autenticazione dei servizi di sistema per il proxy web remoto.</translation>
+<translation id="7323855063560306712">Consente di impostare un elenco di pattern URL per i siti che specifica i siti a cui l'autorizzazione per la gestione delle finestre viene automaticamente negata. Ciò limiterà la capacità dei siti di vedere le informazioni sulle schermate del dispositivo e di utilizzare quelle informazioni per aprire e posizionare finestre oppure per richiedere lo schermo intero su schermate specifiche.
+
+Per informazioni dettagliate sui pattern URL di siti validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti. Questo criterio ha corrispondenze basate soltanto sull'origine, pertanto qualsiasi percorso nel pattern URL viene ignorato.
+
+Se il criterio non viene configurato per un sito, il criterio di <ph name="DEFAULT_WINDOW_MANAGEMENT_SETTING_POLICY_NAME" /> viene applicato al sito, se configurato, altrimenti l'autorizzazione seguirà le impostazioni predefinite del browser e consentirà agli utenti di scegliere se concedere o meno l'autorizzazione per ciascun sito.
+
+Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME" /> obsoleto.</translation>
 <translation id="7323896582714668701">Parametri aggiuntivi della riga di comando per <ph name="PRODUCT_NAME" /></translation>
 <translation id="7325801934761922681">Chrome non può bloccare le navigazioni ai protocolli esterni all'interno di iframe con sandbox</translation>
 <translation id="7326394567531622570">Simile a Wipe (valore 2), ma prova a mantenere i token di accesso per evitare all'utente di dover accedere di nuovo.</translation>
@@ -8599,6 +8657,7 @@ Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="943865157632139008">Consente di configurare il renderer HTML predefinito quando è installato <ph name="PRODUCT_FRAME_NAME" />.
       Per impostazione predefinita, l'host browser esegue il rendering, ma in alternativa è possibile sostituire questa impostazione e far sì che <ph name="PRODUCT_FRAME_NAME" /> esegua il rendering delle pagine HTML per impostazione predefinita.</translation>
 <translation id="944817693306670849">Imposta dimensioni cache su disco</translation>
+<translation id="957322141096206402">La risoluzione DNS di sistema può essere eseguita all'interno o all'esterno del processo di rete, a seconda della configurazione di sistema e dei flag funzionalità.</translation>
 <translation id="957778406002650056">L'URL da cui è possibile scaricare l'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="957920984193041197">Consenti alle pagine di mostrare popup durante l'unload</translation>
 <translation id="958285142322823422">Impedisci l'apertura di un'altra finestra del browser da un'app web kiosk</translation>

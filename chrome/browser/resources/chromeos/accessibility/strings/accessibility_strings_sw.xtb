@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Maelezo kuhusu kitabu</translation>
 <translation id="1197088940767939838">Rangi ya machungwa</translation>
 <translation id="1198865190323699001">Ishara za Kugusa</translation>
-<translation id="1201402288615127009">Endelea</translation>
 <translation id="1202112913213080585">ghairi</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Hakuna kichwa cha kiwango cha nne kinachofuata</translation>
@@ -71,7 +70,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="1342835525016946179">makala</translation>
 <translation id="1346059596910821859">Kidokezo</translation>
 <translation id="1354356357730355833">nakili</translation>
-<translation id="135978014023467274">Kifaa chako kimesasishwa kitumie ChromeVox 63!</translation>
 <translation id="1360699455582016846">Bofya kipengee kilicho chini ya ufunguo wa ruta cha <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">nenda kwenye herufi inayofuata</translation>
 <translation id="1377925789329510816">Hiki ndicho kichwa cha mwisho. Bonyeza Search+H uende kwenye kichwa cha kwanza, au Search+Shift+H uende kwenye kichwa cha pili kwenye ukurasa huu.</translation>
@@ -363,7 +361,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="3283583562490372694">haijateuliwa</translation>
 <translation id="3286372614333682499">wima</translation>
 <translation id="3286390186030710347">Kitelezi</translation>
-<translation id="3300348286427369683">Inatumia maandishi anuai. ChromeVox sasa inatumia sehemu za maandishi anuai ikiwa ni pamoja na amri za kuruka, kiashiria cha kuelekeza nukta nundu, uteuzi na mengineyo.</translation>
 <translation id="3300733168898541351">tendua</translation>
 <translation id="3307886118343381874">Nenda hadi mwisho wa jedwali</translation>
 <translation id="3312997241656799641">Kiungo kilichotembelewa kinachofuata</translation>
@@ -550,9 +547,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="4617384941327705512">Kipengele mahiri cha kuzima hali ya kunata kimezimwa</translation>
 <translation id="4623097797855662355">Kolofoni</translation>
 <translation id="4624970070706497034">TalkBack haiwezeshi tena kuweka mapendeleo kwenye Chromebooks. Bado unaweza kuitumia, lakini tumia mikato chaguomsingi ya kibodi ya TalkBack. Bonyeza kitufe cha Search+A kisha 'K' ili uone njia za mkato zilizopo. Ikiwa bado ungependa kutumia TalkBack, bonyeza amri hiyo tena.</translation>
-<translation id="463135993322337640">Bonyeza ChromeVox o, n ili upate matoleo mapya</translation>
 <translation id="4649220074413114917">Unaweza kugusa skrini kwa vidole viwili ili ukomeshe matamshi yoyote yanayoendelea. Hatua hii ni muhimu iwapo hutaki ChromeVox isome kitu. Ili uendelee, gusa skrini kwa vidole viwili.</translation>
-<translation id="4660783501463101648">Kibodi ya kawaida imeondolewa. Kipengele cha kugeuza kibodi ili kurudi kwenye kibodi ya Kawaida ya ChromeVox kimeondolewa.</translation>
 <translation id="4661075872484491155">mti</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Nenda kwenye safu wima inayofuata</translation>
@@ -617,7 +612,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="5087864757604726239">nyuma</translation>
 <translation id="5102981729317424850">Upau zana</translation>
 <translation id="5105050547967751155">inahitajika</translation>
-<translation id="5106547198195128110">Tuna mabadiliko ya kusisimua katika toleo hili jipya; yafuatayo ni mambo mapya:</translation>
 <translation id="5111640677200759579">Kichwa cha safu wima</translation>
 <translation id="5115892389597951922">Kumbukumbu ya ChromeVox</translation>
 <translation id="5119330972669454698">Kijivu Cheupe</translation>
@@ -768,7 +762,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6082768461603900813">Usogezaji wa Kawaida</translation>
 <translation id="609281021724813947">Hakuna kitelezi kilichotangulia</translation>
 <translation id="6100239002225743044">Sogeza juu kwa mstari mmoja</translation>
-<translation id="6118126368611144850">Programu za Android za Chrome. Kama una programu ya Duka la Google Play kwenye kifaa chako, angalia toleo la awali la ChromeVox katika programu za Android. Jaribu kutumia jaribio kwa kupakua programu ya Google Chrome Canary kutoka Duka la Google Play.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">wezesha</translation>
 <translation id="6122013438240733403">kitufe</translation>
@@ -842,7 +835,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6697092096875747123">Kikasha mseto kilichotangulia</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{alama hisi}other{alama hisi #}}</translation>
 <translation id="670717715607710284">Skrini imezimwa</translation>
-<translation id="6710213216561001401">Iliyopita</translation>
 <translation id="6714813999819678458">Kichwa cha ngazi ya 2 kilichotangulia</translation>
 <translation id="6730312624811567147">Tumia kitufe cha 'Search Left' au 'Search Right' badala ya 'Home' au 'End', 'Search Control Left' au 'Search Control Right' badala ya 'Control Home' au 'Control End', 'Search Up' au 'Search Down' badala ya 'Page Up' au 'Page Down'</translation>
 <translation id="6736510033526053669">kichupo kimeundwa</translation>
@@ -1190,7 +1182,6 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="9208241857935108694">Nyeupe Hafifu</translation>
 <translation id="9220679313820249046">Nyekundu ya Chungwa</translation>
 <translation id="9223032053830369045">Nyekundu Iliyokolea</translation>
-<translation id="923331726185079994">ChromeVox Imesasishwa</translation>
 <translation id="93384979447910801">Kijani Kilichokolea</translation>
 <translation id="937605981140327129">TalkBack haijasakinishwa kwa sasa. Tafadhali sakinisha Kifurushi cha Ufikivu cha Android kupitia Duka la Google Play kisha ujaribu tena.</translation>
 <translation id="948171205378458592">Punguza kasi ya usemi</translation>

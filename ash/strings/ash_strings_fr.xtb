@@ -732,6 +732,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="492453977506755176">Touche du mode de capture</translation>
 <translation id="4925542575807923399">L'administrateur de ce compte a configuré ce dernier de sorte qu'il soit le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="4929163402621253029">Êtes-vous en train de parler ? Le micro est coupé. En savoir plus</translation>
+<translation id="4936329710968938986">Tout le monde, désactivé</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
@@ -1386,6 +1387,7 @@ Nouvelle installation</translation>
 <translation id="8477270416194247200">Appuyez sur Alt+Rechercher ou Maj pour annuler.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Afficher les paramètres du Partage à proximité</translation>
+<translation id="8507563469658346379">Tout le monde, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Le Bluetooth est désactivé sur votre Chromebook. Pour déverrouiller, saisissez votre mot de passe.</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>

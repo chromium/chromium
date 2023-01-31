@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">كلمة ختامية</translation>
 <translation id="1197088940767939838">برتقالي</translation>
 <translation id="1198865190323699001">إيماءات اللمس</translation>
-<translation id="1201402288615127009">التالي</translation>
 <translation id="1202112913213080585">إلغاء</translation>
 <translation id="1206619573307042055">صورة بها نص متحرك</translation>
 <translation id="1207086294218137981">ليس هناك عنوان تالٍ من المستوى الرابع.</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">نصيحة</translation>
 <translation id="1354356357730355833">نسخ</translation>
-<translation id="135978014023467274">‏تمّ التحديث إلى ChromeVox 63!</translation>
 <translation id="1360699455582016846">النقر على العنصر أسفل مفتاح التوجيه <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">الانتقال إلى الحرف التالي</translation>
 <translation id="1377925789329510816">‏هذا هو العنوان الأخير. اضغط على "Search+H" للانتقال إلى العنوان الأول، أو "Search+Shift+H" للانتقال إلى العنوان الثاني في هذه الصفحة.</translation>
@@ -364,7 +362,6 @@
 <translation id="3283583562490372694">غير مُحدّد</translation>
 <translation id="3286372614333682499">عمودي</translation>
 <translation id="3286390186030710347">شريط تمرير</translation>
-<translation id="3300348286427369683">‏دعم نص منسق. يدعم ChromeVox الآن حقول النص المنسق، بما في ذلك أوامر الانتقال السريع وتوجيه مؤشر لغة برايل والاختيار والمزيد.</translation>
 <translation id="3300733168898541351">تراجع</translation>
 <translation id="3307886118343381874">الانتقال إلى نهاية الجدول</translation>
 <translation id="3312997241656799641">الرابط التالي الذي تم الانتقال إليه</translation>
@@ -551,9 +548,7 @@
 <translation id="4617384941327705512">"وضع التثبيت الذكي" غير مفعَّل</translation>
 <translation id="4623097797855662355">إشارة ناشر</translation>
 <translation id="4624970070706497034">‏لم تعُد ميزة TalkBack توفّر إمكانية التخصيص لأجهزة Chromebook. سيظل بإمكانك استخدام هذه الميزة، إلا أنّه سيكون عليك استخدام اختصارات لوحة المفاتيح التلقائية التي توفّرها TalkBack. اضغط على مفتاح البحث + A ثم K للاطّلاع على الاختصارات المتاحة. لمواصلة استخدام TalkBack، اضغط على الأمر مرة أخرى.</translation>
-<translation id="463135993322337640">‏اضغط على "ChromeVox o، n" للاطلاع على الميزات الجديدة.</translation>
 <translation id="4649220074413114917">‏يمكنك النقر على الشاشة بإصبعين لإيقاف الكلام. يمكنك استخدام هذا الإجراء إذا كنت تريد من ChromeVox التوقف عن قراءة أي جزء. للمتابعة، انقر على الشاشة بإصبعين.</translation>
-<translation id="4660783501463101648">‏تمت إزالة الإصدار الكلاسيكي. وتمت إزالة مفتاح تبديل لوحة المفاتيح للعودة إلى الإصدار الكلاسيكي من ChromeVox.</translation>
 <translation id="4661075872484491155">متفرع</translation>
 <translation id="4668929960204016307">،</translation>
 <translation id="4677535310137735442">انتقِل إلى العمود التالي.</translation>
@@ -618,7 +613,6 @@
 <translation id="5087864757604726239">رجوع</translation>
 <translation id="5102981729317424850">شريط الأدوات</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">لقد أجرينا بعض التغييرات المثيرة في الإصدار الجديد، فيما يلي الميزات الجديدة:</translation>
 <translation id="5111640677200759579">عنوان العمود</translation>
 <translation id="5115892389597951922">‏سجلّ ChromeVox</translation>
 <translation id="5119330972669454698">خشبي صلب</translation>
@@ -769,7 +763,6 @@
 <translation id="6082768461603900813">التنقل الأساسي</translation>
 <translation id="609281021724813947">ليس هناك شريط تمرير سابق.</translation>
 <translation id="6100239002225743044">نقل للأعلى سطر واحد</translation>
-<translation id="6118126368611144850">‏تطبيقات Android في متصفح Chrome. إذا كان لديك متجر Play على جهازك، يمكنك إلقاء نظرة سريعة على ChromeVox مع تطبيقات Android، كما يمكنك تجربة الدعم التجريبي من خلال تنزيل Google Chrome Canary من متجر Play.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">تفعيل</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -843,7 +836,6 @@
 <translation id="6697092096875747123">مربع التحرير والسرد السابق</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{علامة تعجب واحدة}zero{# علامة تعجب}two{علامتا تعجب (#)}few{# علامات تعجب}many{# علامة تعجب}other{# علامة تعجب}}</translation>
 <translation id="670717715607710284">إيقاف الشاشة</translation>
-<translation id="6710213216561001401">السابق</translation>
 <translation id="6714813999819678458">عنوان المستوى الثاني السابق</translation>
 <translation id="6730312624811567147">‏يمكنك استخدام الزر Search مع السهم المتجه لليسار أو لليمين كبديل عن Home أو End، وSearch مع Control والسهم المتجه لليسار أو لليمين كبديل عن Control Home أو Control End، وكذلك Search مع السهم المتجه للأعلى أو للأسفل لتحريك الصفحة للأعلى أو للأسفل.</translation>
 <translation id="6736510033526053669">تم إنشاء علامة تبويب</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">أبيض عتيق</translation>
 <translation id="9220679313820249046">أحمر برتقالي</translation>
 <translation id="9223032053830369045">أحمر داكن</translation>
-<translation id="923331726185079994">‏تم تحديث ChromeVox</translation>
 <translation id="93384979447910801">أخضر بحري داكن</translation>
 <translation id="937605981140327129">‏ميزة TalkBack غير مُثبّتة حاليًا. يُرجى تثبيت "خدمات تسهيل استخدام Android" عن طريق "متجر Play" والمحاولة لاحقًا.</translation>
 <translation id="948171205378458592">خفض تقييم النطق</translation>

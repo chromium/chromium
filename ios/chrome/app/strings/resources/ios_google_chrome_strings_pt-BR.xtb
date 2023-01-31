@@ -3,6 +3,7 @@
 <translationbundle lang="pt-BR">
 <translation id="1143896152279775643">A senha será salva no Gerenciador de senhas do Google da conta <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
+<translation id="1352919863522755794">O Gerenciador de senhas do Google não conseguiu verificar suas senhas. Confira sua conexão de Internet.</translation>
 <translation id="1462727070346936664">Faça login para aproveitar o Chrome ao máximo.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">A conta e os dados não salvos serão removidos do Chrome e de outros apps do Google neste dispositivo.</translation>
-<translation id="1968388653333775699">Use o Chrome e seja ainda mais eficiente</translation>
 <translation id="2009224836393115614">Não foi possível verificar suas senhas com o Chrome. Verifique sua conexão de Internet.</translation>
 <translation id="2056123005618757196">Seja mais eficiente com um Google Chrome simples, seguro e mais rápido do que nunca.</translation>
 <translation id="2147651015520127414">O Chrome verificou que <ph name="ISSUER" /> emitiu o certificado desse website.</translation>
 <translation id="2199719347983604670">Dados da "Sincronização do Chrome"</translation>
-<translation id="2313070403598893276">O Google Chrome é simples, seguro e está mais rápido do que nunca</translation>
 <translation id="2339201583852607431">A senha será salva na sua Conta do Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">O Chrome compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Para sair da sua Conta do Google em todos os sites, <ph name="BEGIN_LINK" />saia do Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="2732745070297234559">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã.</translation>
+<translation id="2767464022270041271">Nenhuma senha salva. O Gerenciador de senhas do Google pode verificar suas senhas quando você as salva.</translation>
 <translation id="2869959624320573933">Faça login no Chrome</translation>
 <translation id="2957447865124070833">Selecione o <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" />.</translation>
 <translation id="3030414234702425231">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chrome serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Não foi possível verificar todas as senhas com o Chrome. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Para ajudar a melhorar o app, o Chrome envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
+<translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
 <translation id="5030102366287574140">O Chrome pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>
 <translation id="5108659628347594808">Melhorar o Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">O Chrome verifica periodicamente se suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
 <translation id="5639704535586432836">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Google Chrome e ative a câmera.</translation>
 <translation id="5642200033778930880">O Google Chrome não pode usar a câmera no modo Visualização dividida</translation>
+<translation id="5661521615548540542">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo mais tarde.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Off-line. Não é possível verificar se há atualizações</translation>
 <translation id="5716154293141027663">Abrir o Chrome sempre que você tocar nos links em outros apps</translation>
@@ -120,9 +122,11 @@
   2. Toque em "App do navegador padrão".
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
 <translation id="8772179140489533211">Mostra solicitações para fazer login no Chrome.</translation>
 <translation id="8788269841521769222">Você não terá que se lembrar dessa senha. Ela vai ficar salva na conta <ph name="EMAIL" /> do Gerenciador de senhas do Google</translation>
+<translation id="8857676124663337448">O Gerenciador de senhas do Google não conseguiu verificar todas as senhas. Tente de novo amanhã.</translation>
 <translation id="8897749957032330183">As senhas são salvas no Gerenciador de senhas do Google neste dispositivo.</translation>
 <translation id="8969290730818637510">Quando ativada, essa configuração:
 <ph name="BEGIN_INDENT" />  • ajuda a melhorar o Chrome para as pessoas que o usam da mesma forma que você.<ph name="END_INDENT" />

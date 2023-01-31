@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Gehitu hiztegian</translation>
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google-ko kontu<ph name="END_LINK" /> honetako pasahitzak daude ikusgai</translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> da gailuaren kudeatzailea. Administratzaileek gailuko profil guztietako datuak atzi ditzakete.</translation>
 <translation id="1026655690966755180">Gehitu ataka</translation>
 <translation id="1026822031284433028">Kargatu irudia</translation>
 <translation id="1028604629594230522">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chrome-k, bisitatzen dituzunean bizkorrago karga daitezen.</translation>
@@ -1866,6 +1867,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2643064289437760082">Iragarkien neurketen datuak ezabatzeko, ezabatu arakatze-datuak.</translation>
 <translation id="2643698698624765890">Luzapenak kudeatzeko, sakatu Luzapenak Leihoa menuan.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> da gailuaren kudeatzailea</translation>
+<translation id="2645388244376970260">Fitxa hau <ph name="DEVICE_NAME" /> gailura igortzen</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64 bidez kodetutako ASCII kodea, ziurtagiri-katea</translation>
 <translation id="265156376773362237">Aurrez kargatzeko modu arrunta</translation>
@@ -2738,6 +2740,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3446274660183028131">Windows instalatzeko, abiarazi Parallels Desktop.</translation>
 <translation id="344630545793878684">Irakurri zenbait webgunetan dituzun datuak</translation>
 <translation id="3447644283769633681">Blokeatu hirugarrenen cookie guztiak</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> <ph name="DEVICE_NAME" /> gailura igortzen</translation>
 <translation id="3448492834076427715">Eguneratu kontua</translation>
 <translation id="3449393517661170867">Leiho fitxadun berria</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> luzapenera aginduak bidaltzeko, sakatu <ph name="SEARCH_KEY" /></translation>
@@ -2892,6 +2895,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3590295622232282437">Saio kudeatuan sartzen.</translation>
 <translation id="3591057288287063271">Mantendu <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Lortu informazio gehiago</translation>
+<translation id="3592344177526089979">Fitxa bat <ph name="DEVICE_NAME" /> gailura igortzen</translation>
 <translation id="3593152357631900254">Gaitu Fuzzy-Pinyin modua</translation>
 <translation id="3593965109698325041">Ziurtagiri-izenen murriztapenak</translation>
 <translation id="3596012367874587041">Aplikazioen ezarpenak</translation>
@@ -3167,6 +3171,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3823310065043511710">Linux instalatzeko, gutxienez <ph name="INSTALL_SIZE" /> eduki behar dira libre.</translation>
 <translation id="3824621460022590830">Gailuaren erregistro-tokenak ez du balio. Jarri harremanetan gailuaren jabearekin edo administratzailearekin. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Gogoratu fitxategi mota honetarako aukeratu dudana: <ph name="FILE_TYPES" />}other{Gogoratu fitxategi mota hauetarako aukeratu dudana: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Aplikazio batek alertaren bat badu, erakutsi puntu bat haren ikonoan</translation>
 <translation id="3826071569074535339">Mugimendu-sentsoreak erabil ditzakete</translation>
 <translation id="3826440694796503677">Administratzaileak desgaitu egin du Google-ko kontuak gehitzeko aukera</translation>
 <translation id="3827774300009121996">&amp;Pantaila osoa</translation>
@@ -4486,6 +4491,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5063480226653192405">Erabilera</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Kudeatu DNS segurua Chrome OS-ren ezarpenetan</translation>
+<translation id="5066160542186949327">Eraman beste karpeta batera</translation>
 <translation id="5067399438976153555">Beti aktibatuta</translation>
 <translation id="5067867186035333991">Eskatu baimena <ph name="HOST" /> ostalariak kamera atzitu nahi badu</translation>
 <translation id="5068553687099139861">pasahitzak erakutsi nahi ditu</translation>
@@ -6650,7 +6656,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7044211973375150246">Esteka berak <ph name="APP_NAME" /> aplikazioarekin irekitzeko konfiguratuta dago aplikazio bat. <ph name="APP_NAME_2" /> aplikazioak ezingo du ireki esteka bateragarririk.</translation>
 <translation id="7044606776288350625">Sinkronizatu datuak</translation>
 <translation id="7047059339731138197">Aukeratu atzeko plano bat</translation>
-<translation id="7048457618657122233">Partekatu esteka hemen: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Fitxategia gorde nahi duzu?</translation>
 <translation id="7050037487872780845">Wifi-gunearen konfigurazioak ez du balio</translation>
 <translation id="7052237160939977163">Bidali errendimenduaren jarraipena egiteko datuak</translation>

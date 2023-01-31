@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Rheoli Cysoni</translation>
 <translation id="1076421457278169141">Mae'r cod wedi'i sganio</translation>
 <translation id="1076785341346483463">Cysoni Gyda Chyfrif a Reolir</translation>
+<translation id="1080365971383768617">Cyfrineiriau ar eich holl ddyfeisiau</translation>
 <translation id="1084365883616172403">Wedi gorffen postio i Facebook.</translation>
 <translation id="1085696779717592361">Defnyddiwch Chrome yn Ddiofyn</translation>
 <translation id="1103523840287552314">Cyfieithu <ph name="LANGUAGE" /> bob amser</translation>
@@ -243,7 +244,6 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="2797029671965852011">Dangos Hanes</translation>
 <translation id="2800683595868705743">Gadael y Newidiwr Tabiau</translation>
 <translation id="2815198996063984598">2. Tapiwch Ap Pori Diofyn</translation>
-<translation id="2820289420301699633">Mae gan eich gweinyddwr reolaeth dros Chrome a gall gael mynediad at ei ddata</translation>
 <translation id="2830972654601096923">Rheoli Cyfeiriadau...</translation>
 <translation id="2834399722155632105">3. Tapiwch Opsiynau Cyfrinair</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5056446788882570708">Canfuwyd problem <ph name="TIME" /></translation>
 <translation id="5059136629401106827">Iawn</translation>
 <translation id="5062321486222145940">Gosod Google Drive</translation>
+<translation id="50641035439563602">Mae cyfrineiriau bellach yn cael eu cadw i'ch Cyfrif Google (<ph name="ACCOUNT" />). Gallwch eu defnyddio ble bynnag rydych wedi mewngofnodi. I ddiffodd hyn, ewch i'r <ph name="BEGIN_LINK" />gosodiadau<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Ni ellir pennu maint y ffeil.</translation>
 <translation id="5090832849094901128">Ni fydd dileu'r cyfrinair hwn yn dileu'ch cyfrif ar <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Wedi cyhoeddi Tweet.</translation>
@@ -595,6 +596,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5520466080178053306">Tapiwch Reolwr Cyfrineiriau Yna Tapiwch Ychwanegu</translation>
 <translation id="5525095647255982834">I anfon y tab hwn i ddyfais arall, mewngofnodwch i Chrome yno.</translation>
 <translation id="5525269841082836315">Creu Cyfrinymadrodd</translation>
+<translation id="5530084793407600786">Chwilio y tu mewn i lun gyda Google</translation>
 <translation id="5542540507657872337">Canfuwyd <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Mae Handoff yn gadael i chi ddechrau pori gwefan ar y ddyfais hon ac yna parhau yn hawdd ar eich Mac. Bydd y wefan sydd ar agor yn bresennol yn ymddangos yn Noc eich Mac.
 
@@ -677,7 +679,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6064824697233747382">Mae eich sefydliad yn gofyn i chi ddiffodd cysoni.</translation>
 <translation id="6066301408025741299">Tapiwch i ganslo.</translation>
 <translation id="6071409777669089905">Dad-binio Tab</translation>
-<translation id="60829778314739003">Derbyn a Pharhau</translation>
 <translation id="6084848228346514841">Dewis Tabiau</translation>
 <translation id="6103540626693881831">Amgryptio ar y Ddyfais</translation>
 <translation id="6119050551270742952">Mae'r dudalen we bresennol yn y modd Anhysbys</translation>

@@ -391,6 +391,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3072980200212375806"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și Sistemul de operare Chrome<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Politica de confidențialitate<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Afișează conținutul clipboardului</translation>
 <translation id="3098745985164956033">Unele imagini sunt trimise la Google pentru îmbunătățirea descrierilor</translation>
+<translation id="3104179992611025423">Browserul este gestionat de părinții tăi</translation>
 <translation id="3114507951000454849">Citește știrile de azi <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">conectat cu</translation>
 <translation id="3123734510202723619">Anunțuri</translation>
@@ -400,6 +401,7 @@ Indicativele de stare private îmbunătățesc confidențialitatea pe web și nu
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3166827708714933426">Comenzi rapide pentru file și ferestre</translation>
 <translation id="316694332262407393">Chrome rulează deja aici.</translation>
+<translation id="3167258285411721858">Poți solicita site-ul mobil pentru <ph name="HOST_NAME" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">Ad measurement</translation>
 <translation id="3207960819495026254">Marcată</translation>
@@ -1466,6 +1468,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8849001918648564819">Ascuns</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, filă</translation>
 <translation id="8854223127042600341">Vezi fișierele offline</translation>
+<translation id="885480114717186641">Poți solicita versiunea site-ului pentru computer pentru <ph name="HOST_NAME" /></translation>
 <translation id="8856607253650333758">Generează descrieri</translation>
 <translation id="8856931513242997049">Fluxul de permisiune pentru notificări a fost închis</translation>
 <translation id="8873817150012960745">Atinge aici pentru a începe</translation>

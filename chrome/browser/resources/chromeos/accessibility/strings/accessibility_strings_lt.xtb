@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Baigiamasis žodis</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="1198865190323699001">Lietimo gestai</translation>
-<translation id="1201402288615127009">Kitas</translation>
 <translation id="1202112913213080585">atšaukti</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Nėra kitos 4 lygio antraštės</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artikelis</translation>
 <translation id="1346059596910821859">Arbatpinigiai</translation>
 <translation id="1354356357730355833">kopijuoti</translation>
-<translation id="135978014023467274">Atnaujinta į 63 versijos „ChromeVox“!</translation>
 <translation id="1360699455582016846">Spustelėkite <ph name="ROUTING_KEY_NUMBER" /> maršruto parinkimo klavišo elementą</translation>
 <translation id="1376703628032300005">eiti prie kito simbolio</translation>
 <translation id="1377925789329510816">Tai yra paskutinė antraštė. Paspauskite „Search“ + H, kad pereitumėte į pirmą antraštę, arba „Search“ + „Shift“ + H, kad pereitumėte į antrą antraštę šiame puslapyje.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">nepažymėta</translation>
 <translation id="3286372614333682499">portretas</translation>
 <translation id="3286390186030710347">Šliaužiklis</translation>
-<translation id="3300348286427369683">Raiškiojo teksto palaikymas. „ChromeVox“ dabar palaiko raiškiojo teksto laukus, įskaitant perėjimo komandas, Brailio žymeklio nukreipimą, pasirinkimą ir daugiau.</translation>
 <translation id="3300733168898541351">anuliuoti</translation>
 <translation id="3307886118343381874">Eiti į lentelės pabaigą</translation>
 <translation id="3312997241656799641">Kita aplankyta nuoroda</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Išmanusis atmenusis režimas išjungtas</translation>
 <translation id="4623097797855662355">Informacija apie leidimą</translation>
 <translation id="4624970070706497034">Naudojant „TalkBack“ nebeteikiama tinkinimo funkcija „Chromebook“ įrenginiuose. Vis tiek galite ją naudoti, bet turite naudoti numatytuosius „TalkBack“ sparčiuosius klavišus. Paspauskite paieškos klavišą ir A, tada K, kad peržiūrėtumėte pasiekiamus sparčiuosius klavišus. Jei vis tiek norite naudoti „TalkBack“, dar kartą paspauskite komandą.</translation>
-<translation id="463135993322337640">Paspauskite „ChromeVox“ o, n ir sužinokite, kas nauja</translation>
 <translation id="4649220074413114917">Liesdami ekraną dviem pirštais galite sustabdyti bet kurią dabartinę kalbą. Tai naudinga, jei nenorite, kad „ChromeVox“ skaitytų turinį. Jei norite tęsti, palieskite ekraną dviem pirštais.</translation>
-<translation id="4660783501463101648">Klasikinė versija pašalinta. Klaviatūros perjungimo jungiklis, skirtas grįžti į klasikinės versijos „ChromeVox“, pašalintas.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Pereiti prie kito stulpelio</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">atgal</translation>
 <translation id="5102981729317424850">Įrankių juosta</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Šiame naujame leidime pristatėme puikių pakeitimų; toliau nurodyta, kas nauja.</translation>
 <translation id="5111640677200759579">Stulpelio antraštė</translation>
 <translation id="5115892389597951922">„ChromeVox“ žurnalas</translation>
 <translation id="5119330972669454698">Šviesiai ruda spalva</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Pagrindinės naršymo funkcijos</translation>
 <translation id="609281021724813947">Nėra ankstesnio šliaužiklio</translation>
 <translation id="6100239002225743044">Perkelti į viršų per vieną eilutę</translation>
-<translation id="6118126368611144850">„Android“ programos, skirtos „Chrome“. Jei įrenginyje turite „Play“ parduotuvę, išbandykite „ChromeVox“ su „Android“ programomis. Išbandykite eksperimentinį palaikymą atsisiuntę „Google Chrome Canary“ iš „Play“ parduotuvės.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">suaktyvinti</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Ankstesnis išskleidžiamasis sąrašas</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{šauktukas}one{# šauktukas}few{# šauktukai}many{# šauktuko}other{# šauktukų}}</translation>
 <translation id="670717715607710284">Ekranas išjungtas</translation>
-<translation id="6710213216561001401">Ankstesnė</translation>
 <translation id="6714813999819678458">Ankstesnė 2 lygio antraštė</translation>
 <translation id="6730312624811567147">Naudokite paieškos klavišą ir rodyklę į kairę arba į dešinę, norėdami atlikti klavišo „Home“ ar „End“ funkcijas; „Search Control“ ir rodyklę į kairę arba į dešinę, norėdami atlikti klavišo „Control Home“ ar „End“ funkcijas; paieškos klavišą ir rodyklę į viršų arba į apačią, norėdami atlikti klavišo „Page Up“ ar „Page Down“ funkcijas</translation>
 <translation id="6736510033526053669">skirtukas sukurtas</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Gelsvai balta spalva</translation>
 <translation id="9220679313820249046">Oranžinio atspalvio raudona spalva</translation>
 <translation id="9223032053830369045">Tamsiai raudona spalva</translation>
-<translation id="923331726185079994">„ChromeVox“ atnaujintas</translation>
 <translation id="93384979447910801">Tamsi jūros žalumo spalva</translation>
 <translation id="937605981140327129">Šiuo metu „TalkBack“ nėra įdiegta. Įdiekite „Android Accessibility Suite“ iš „Play“ parduotuvės ir bandykite dar kartą.</translation>
 <translation id="948171205378458592">Sumažinti kalbos tempą</translation>

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Пасляслоўе</translation>
 <translation id="1197088940767939838">Аранжавы</translation>
 <translation id="1198865190323699001">Жэсты дакранання</translation>
-<translation id="1201402288615127009">Далей</translation>
 <translation id="1202112913213080585">скасаваць</translation>
 <translation id="1206619573307042055">бягучы радок</translation>
 <translation id="1207086294218137981">Няма наступнага загалоўка ўзроўню 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">артыкул</translation>
 <translation id="1346059596910821859">Парада</translation>
 <translation id="1354356357730355833">скапіраваць</translation>
-<translation id="135978014023467274">ChromeVox абноўлены да версіі 63!</translation>
 <translation id="1360699455582016846">Націснуць на элемент пад ключом маршрутызацыі <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">перайсці да наступнага сімвала</translation>
 <translation id="1377925789329510816">Гэта апошні загаловак. Націсніце "Пошук"+H, каб прагартаць да першага загалоўка, або "Пошук"+Shift+H, каб перайсці да другога загалоўка на гэтай старонцы.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">не выбрана</translation>
 <translation id="3286372614333682499">кніжная</translation>
 <translation id="3286390186030710347">Паўзунок</translation>
-<translation id="3300348286427369683">Падтрымка RTF. ChromeVox цяпер падтрымлівае тэкставыя палі фармату RTF, у тым ліку каманды пераходу, кіраванне курсорам з дысплэя Брайля, вылучэнне і іншае.</translation>
 <translation id="3300733168898541351">адрабіць</translation>
 <translation id="3307886118343381874">Перайсці ў канец табліцы</translation>
 <translation id="3312997241656799641">Наступная наведаная спасылка</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Разумны рэжым заліпання клавіш выключаны</translation>
 <translation id="4623097797855662355">Калафон</translation>
 <translation id="4624970070706497034">TalkBack больш не падтрымлівае персаналізацыю на прыладах Chromebook. Гэтай функцыяй усё яшчэ можна карыстацца, але ў ёй даступныя толькі стандартныя спалучэнні клавіш TalkBack. Каб паглядзець даступныя спалучэнні клавіш, націсніце Пошук + A, затым K. Калі вы па-ранейшаму хочаце выкарыстоўваць TalkBack, націсніце гэту камбінацыю яшчэ раз.</translation>
-<translation id="463135993322337640">Націсніце на ChromeVox, каб даведацца пра абнаўленні</translation>
 <translation id="4649220074413114917">Дакрануўшыся да экрана двума пальцамі, можна спыніць агучванне тэксту. Гэта зручна, калі вы не хочаце, каб праграма ChromeVox нешта зачытвала. Каб працягнуць, націсніце на экран двума пальцамі.</translation>
-<translation id="4660783501463101648">Класічная версія выдалена. Пераключэнне на класічную версію ChromeVox з клавіятуры выдалена.</translation>
 <translation id="4661075872484491155">дрэва</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Перайсці да наступнага слупка</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5102981729317424850">Панэль інструментаў</translation>
 <translation id="5105050547967751155">абав</translation>
-<translation id="5106547198195128110">У гэтым новым выпуску вас чакаюць цікавыя змены. Новае ў ім:</translation>
 <translation id="5111640677200759579">Загаловак слупка</translation>
 <translation id="5115892389597951922">Журнал ChromeVox</translation>
 <translation id="5119330972669454698">Старое дрэва</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Асноўныя спосабы навігацыі</translation>
 <translation id="609281021724813947">Папярэдняга паўзунка няма</translation>
 <translation id="6100239002225743044">Перамясціць на адзін радок вышэй</translation>
-<translation id="6118126368611144850">Праграмы Android для Chrome. Калі ў вас на прыладзе ёсць Крама Play, вы можаце зірнуць на працу ChromeVox з праграмамі Android. Паспрабуйце эксперыментальную падтрымку: спампуйце Google Chrome Canary з Крамы Play.</translation>
 <translation id="611827076493383239">наведана</translation>
 <translation id="6119846243427417423">актываваць</translation>
 <translation id="6122013438240733403">кнопка</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Папярэдняе камбінаванае акно</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{клічнік}one{# клічнік}few{# клічнікі}many{# клічнікаў}other{# клічніка}}</translation>
 <translation id="670717715607710284">Выключыць экран</translation>
-<translation id="6710213216561001401">Назад</translation>
 <translation id="6714813999819678458">Папярэдні загаловак узроўню 2</translation>
 <translation id="6730312624811567147">Клавішы Пошук + Стрэлка ўлева або Стрэлка ўправа – гэта Home або End адпаведна, клавішы Пошук + Control + Стрэлка ўлева або Стрэлка ўправа – гэта Control + Home або End адпаведна, клавішы Пошук + Стрэлка ўверх або Стрэлка ўніз – гэта Page Up або Down</translation>
 <translation id="6736510033526053669">укладка створана</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Антычны белы</translation>
 <translation id="9220679313820249046">Аранжава-чырвоны</translation>
 <translation id="9223032053830369045">Цёмна-чырвоны</translation>
-<translation id="923331726185079994">ChromeVox абноўлены</translation>
 <translation id="93384979447910801">Цёмная марская зелень</translation>
 <translation id="937605981140327129">TalkBack не ўсталяваны. Усталюйце Android Accessibility Suite з Крамы Play і паўтарыце спробу.</translation>
 <translation id="948171205378458592">Паменшыць хуткасць маўлення</translation>

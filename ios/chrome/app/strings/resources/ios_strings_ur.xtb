@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">مطابقت پذیری کا نظم کريں</translation>
 <translation id="1076421457278169141">کوڈ اسکین ہوگیا</translation>
 <translation id="1076785341346483463">نظم کردہ اکاؤنٹ کے ساتھ سِنک کریں</translation>
+<translation id="1080365971383768617">آپ کے تمام آلات پر پاس ورڈز</translation>
 <translation id="1084365883616172403">‏Facebook کی اشاعت مکمل ہوگئی۔</translation>
 <translation id="1085696779717592361">‏بطور ڈیفالٹ Chrome کا استعمال کریں</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">سرگزشت دکھائیں</translation>
 <translation id="2800683595868705743">ٹیب سوئچ کنندہ کو چھوڑیں</translation>
 <translation id="2815198996063984598">2۔ ڈیفالٹ براؤزر ایپ تھپتھپائیں</translation>
-<translation id="2820289420301699633">‏آپ کے منتظم کو Chrome پر کنٹرول حاصل ہے اور وہ اس کے ڈیٹا تک رسائی حاصل کر سکتا ہے</translation>
 <translation id="2830972654601096923">پتوں کا نظم کریں...</translation>
 <translation id="2834399722155632105">3. پاس ورڈ کے اختیارات پر تھپتھپائیں۔</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> مسائل کا پتا چلا۔</translation>
 <translation id="5059136629401106827">ٹھیک ہے</translation>
 <translation id="5062321486222145940">‏Google Drive انسٹال کریں</translation>
+<translation id="50641035439563602">‏پاس ورڈز اب آپ کے Google اکاؤنٹ (<ph name="ACCOUNT" />) میں محفوظ ہیں۔ جہاں بھی آپ سائن ان ہوں آپ انہیں استعمال کر سکتے ہیں۔ اسے آف کرنے کے لیے، <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> پر جائیں۔</translation>
 <translation id="5083464117946352670">فائل سائز کا تعین نہیں کیا جا سکتا ہے۔</translation>
 <translation id="5090832849094901128">اس پاس ورڈ کو حذف کرنے سے آپ کا اکاؤنٹ <ph name="WEBSITE" /> سے حذف نہیں ہوگا۔</translation>
 <translation id="5094827893301452931">ٹویٹ مکمل ہوگیا۔</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">پاس ورڈز مینیجر پر تھپتھپائیں پھر شامل کریں پر تھپتھپائیں</translation>
 <translation id="5525095647255982834">‏اس ٹیب کو کسی اور آلے میں بھیجنے کے لیے وہاں Chrome میں سائن ان کریں۔</translation>
 <translation id="5525269841082836315">پاس فریز بنائیں</translation>
+<translation id="5530084793407600786">‏Google کے ساتھ تصویر کے اندر تلاش کریں</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> ملے</translation>
 <translation id="5548760955356983418">‏Handoff آپ کو اس آلہ پر کسی ویب سائٹ کی براؤزنگ شروع کرنے اور پھر آسانی سےآپ کے Mac پر جاری رکھنے دیتا ہے۔ موجودہ کھلی ویب سائٹ آپ کے Mac کے ڈاک میں ظاہر ہوگی۔
 
@@ -677,7 +679,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6064824697233747382">آپ کی تنظیم آپ سے مطابقت پذیری کو بند کرنے کا تقاضا کرتی ہے۔</translation>
 <translation id="6066301408025741299">منسوخ کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="6071409777669089905">ٹیب کی پن ہٹائیں</translation>
-<translation id="60829778314739003">قبول کریں اور جاری رکھیں</translation>
 <translation id="6084848228346514841">ٹیبز منتخب کریں</translation>
 <translation id="6103540626693881831">آلے پر مرموزکاری</translation>
 <translation id="6119050551270742952">موجودہ ویب صفحہ پوشیدگی پر ہے</translation>

@@ -18,6 +18,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="1066060668811609597">Gérer la synchronisation</translation>
 <translation id="1076421457278169141">Code numérisé</translation>
 <translation id="1076785341346483463">Synchroniser avec un compte géré</translation>
+<translation id="1080365971383768617">Mots de passe sur tous vos appareils</translation>
 <translation id="1084365883616172403">Message Facebook terminé.</translation>
 <translation id="1085696779717592361">Utiliser Chrome par défaut</translation>
 <translation id="1103523840287552314">Toujours traduire les pages rédigées en <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2797029671965852011">Afficher l'historique</translation>
 <translation id="2800683595868705743">Quitter le gestionnaire d’onglets</translation>
 <translation id="2815198996063984598">2. Touchez Navigateur par défaut</translation>
-<translation id="2820289420301699633">L'administrateur peut gérer Chrome et accéder à ses données</translation>
 <translation id="2830972654601096923">Gérer les adresses…</translation>
 <translation id="2834399722155632105">3. Appuyez sur Options de mot de passe</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5056446788882570708"><ph name="TIME" /> problèmes trouvés.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installer Google Disque</translation>
+<translation id="50641035439563602">Les mots de passe sont désormais enregistrés dans votre compte Google (<ph name="ACCOUNT" />). Vous pouvez les utiliser peu importe l'endroit où vous êtes connecté. Pour désactiver cette fonctionnalité, accédez aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Imposs. déterm. taille fichier</translation>
 <translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Gazouillis terminé.</translation>
@@ -595,6 +596,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5520466080178053306">Touchez Gestionnaire de mots de passe, puis Ajouter</translation>
 <translation id="5525095647255982834">Pour envoyer cet onglet vers un autre appareil, connectez-vous à Chrome sur ce dernier.</translation>
 <translation id="5525269841082836315">Créer phrase passe</translation>
+<translation id="5530084793407600786">Rechercher dans l'image avec Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> trouvés</translation>
 <translation id="5548760955356983418">La fonction de transfert vous permet de commencer à naviguer sur un site Web sur cet appareil et de continuer facilement sur votre Mac. Le site Web actuellement ouvert apparaîtra dans le Dock de votre Mac.
 
@@ -677,7 +679,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6064824697233747382">Votre organisation vous demande de désactiver la synchronisation.</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
 <translation id="6071409777669089905">Annuler l'épinglage de l'onglet</translation>
-<translation id="60829778314739003">Accepter et continuer</translation>
 <translation id="6084848228346514841">Sélectionner des onglets</translation>
 <translation id="6103540626693881831">Chiffrement sur l'appareil</translation>
 <translation id="6119050551270742952">La page Web actuelle est ouverte en mode de navigation privée</translation>

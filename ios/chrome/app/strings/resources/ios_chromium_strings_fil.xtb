@@ -6,12 +6,12 @@
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1257458525759135959">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chromium na magdagdag sa iyong mga larawan</translation>
 <translation id="1289216811211435351">Lumipat sa Chromium</translation>
+<translation id="1352919863522755794">Hindi masuri ng Google Password Manager ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="1361748954329991663">Luma na ang Chromium. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chromium.</translation>
 <translation id="1431818719585918472">Payagan ang Chromium na i-lock ang iyong mga tab na Incognito.</translation>
 <translation id="1472013873724362412">Hindi gumagana ang iyong account sa Chromium. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="1507010443238049608">Tumulong sa Pagpapahusay ng Mga Feature at Performance ng Chromium</translation>
 <translation id="1531155317299575425">Nagpapakita ng mga prompt na mag-sign in sa Chromium.</translation>
-<translation id="1584569488888892906">Simple, secure, at mas mabilis na ngayon ang Chromium</translation>
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1736662517232558588">Na-clear Chromium data</translation>
@@ -36,6 +36,7 @@
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
 <translation id="2684230048001240293">Itakda ang Chromium bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
+<translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2915596697727466327">Gumagamit ang Chromium ng Face ID para tiyakin ang awtorisadong pag-access sa iyong mga password.</translation>
 <translation id="2918709798697875261">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chromium.</translation>
 <translation id="2942241131342758843">Gamitin ang Chromium bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
@@ -58,6 +59,7 @@
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
 <translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="4840404732697892756">Masusuri ng Google Password Manager ang iyong mga password kapag nag-sign in ka sa Google Account mo.</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
 <translation id="4996471330284142407">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Chromium.</translation>
 <translation id="4999538639245140991">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chromium sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
@@ -68,6 +70,7 @@
 <translation id="5521125884468363740">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in at i-on ang pag-sync</translation>
 <translation id="5522297504975449419">Hindi na magiging available ang ilang feature ng Chromium.</translation>
 <translation id="5573014823074921752">Tip sa Chromium. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
+<translation id="5661521615548540542">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
@@ -88,7 +91,6 @@
 <translation id="7018284295775193585">Hindi makapag-update ang Chromium</translation>
 <translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
 <translation id="7099326575020694068">Hindi magamit ng Chromium ang iyong camera sa Split View mode</translation>
-<translation id="7108914401277488191">Maging Mas Produktibo Gamit ang Chromium</translation>
 <translation id="7118091470949186573">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="7175400662502680481">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Password Manager na palitan na ito ngayon.</translation>
 <translation id="7208566199746267865">Nakakatipid ka ng oras sa Chromium sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
@@ -115,6 +117,7 @@
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
+<translation id="8603022514504485810">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8685813584220679697">Mag-sign in sa site na ito at sa Chromium.</translation>
@@ -128,6 +131,7 @@ Mga bagay na dapat isaalang-alang:
 
   • Kung io-on mo ang pag-sync, posible ring kasama sa mga sukatan ang impormasyon tungkol sa mga URL na binibisita mo.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
+<translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="894437814105052438">Kapag nag-sign out ka, hindi magsi-sync ang Chromium ng anumang bagong data sa iyong Google Account. Mananatili sa account ang data na dati nang na-sync.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="9059693977935746710">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Password Manager para sa <ph name="EMAIL" /></translation>

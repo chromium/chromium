@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Doslov</translation>
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="1198865190323699001">Dotykové gestá</translation>
-<translation id="1201402288615127009">Ďalej</translation>
 <translation id="1202112913213080585">zruš</translation>
 <translation id="1206619573307042055">pohyblivý prvok</translation>
 <translation id="1207086294218137981">Žiadny ďalší nadpis štvrtej úrovne</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">článok</translation>
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">kopírovať</translation>
-<translation id="135978014023467274">Čítačka ChromeVox bola aktualizovaná na verziu 63.</translation>
 <translation id="1360699455582016846">Kliknite na položku pod navigačným klávesom <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">prejsť na ďalší znak</translation>
 <translation id="1377925789329510816">Toto je posledný nadpis. Stlačením kombinácie klávesov Hľadať+H prejdete na prvý nadpis. Stlačením kombinácie klávesov Hľadať+Shift+H prejdete na druhý nadpis na tejto stránke.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">nezačiarknuté</translation>
 <translation id="3286372614333682499">na výšku</translation>
 <translation id="3286390186030710347">Posuvník</translation>
-<translation id="3300348286427369683">Podpora formátovaného textu. ChromeVox teraz podporuje polia pre formátovaný text vrátane príkazov na preskočenie, smerovania braillovho kurzora, výberu atď.</translation>
 <translation id="3300733168898541351">späť</translation>
 <translation id="3307886118343381874">Prejsť na koniec tabuľky</translation>
 <translation id="3312997241656799641">Ďalší navštívený odkaz</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Inteligentný režim uzamknutia klávesa je vypnutý</translation>
 <translation id="4623097797855662355">Kolofón</translation>
 <translation id="4624970070706497034">TalkBack už neposkytuje prispôsobenie Chromebookov. Môžete ho stále používať, ale pomocou predvolených klávesových skratiek aplikácie TalkBack. Ak si chcete zobraziť dostupné skratky, stlačte kláves vyhľadávania + A, potom K. Ak chcete stále použiť TalkBack, znova stlačte kláves Command.</translation>
-<translation id="463135993322337640">Ak chcete získať ďalšie informácie o novinkách, stlačte tlačidlá ChromeVox + O + N</translation>
 <translation id="4649220074413114917">Klepnutím dvoma prstami na obrazovku zastavíte akúkoľvek prebiehajúcu reč. Je to užitočné, keď nechcete, aby čítačka Chromevox čítala nejaký text. Ak chcete pokračovať, klepnite dvoma prstami na obrazovku.</translation>
-<translation id="4660783501463101648">Klasická verzia bola odstránená. Prepínač na klávesnici umožňujúci prepnúť späť na verziu ChromeVox Classic bol odstránený.</translation>
 <translation id="4661075872484491155">strom</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Prechod na ďalší stĺpec</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">späť</translation>
 <translation id="5102981729317424850">Panel s nástrojmi</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">V tomto novom vydaní máme pre vás niekoľko zaujímavých zmien. Novinky:</translation>
 <translation id="5111640677200759579">Hlavička stĺpca</translation>
 <translation id="5115892389597951922">Denník ChromeVox</translation>
 <translation id="5119330972669454698">Krémová</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Základná navigácia</translation>
 <translation id="609281021724813947">Žiadny predchádzajúci posúvač</translation>
 <translation id="6100239002225743044">Posunúť o riadok nahor</translation>
-<translation id="6118126368611144850">Aplikácie Android pre Chrome. Ak máte v zariadení Obchod Play, vyskúšajte ChromeVox s aplikáciami pre Android. Vyskúšajte experimentálnu podporu stiahnutím prehliadača Google Chrome Canary z Obchodu Play.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktivovať</translation>
 <translation id="6122013438240733403">tlačidlo</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Predchádzajúce rozbaľovacie pole</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{výkričník}few{# výkričníky}many{# výkričníka}other{# výkričníkov}}</translation>
 <translation id="670717715607710284">Obrazovka je vypnutá</translation>
-<translation id="6710213216561001401">Späť</translation>
 <translation id="6714813999819678458">Predchádzajúci nadpis 2. úrovne</translation>
 <translation id="6730312624811567147">Kombinácia klávesov Hľadať + šípka doľava alebo doprava slúži ako Home alebo End, kombinácia Hľadať + Ctrl + šípka doľava alebo doprava funguje ako Ctrl Home alebo Ctrl End, kombinácia klávesov Hľadať + šípka nahor alebo nadol slúži ako Page Up alebo Page Down</translation>
 <translation id="6736510033526053669">karta sa vytvorila</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Antická biela</translation>
 <translation id="9220679313820249046">Oranžovočervená</translation>
 <translation id="9223032053830369045">Tmavočervená</translation>
-<translation id="923331726185079994">Aplikácia ChromeVox bola aktualizovaná</translation>
 <translation id="93384979447910801">Tmavá morská zelená</translation>
 <translation id="937605981140327129">Aplikácia TalkBack nie je momentálne nainštalovaná. Nainštalujte si Služby dostupnosti pre Android z Obchodu Play a skúste to znova.</translation>
 <translation id="948171205378458592">Znížiť rýchlosť reči</translation>

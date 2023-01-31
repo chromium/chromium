@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Управление на синхронизирането</translation>
 <translation id="1076421457278169141">Кодът бе сканиран</translation>
 <translation id="1076785341346483463">Синхронизиране с управляван профил</translation>
+<translation id="1080365971383768617">Паролите са достъпни на всичките ви устройства</translation>
 <translation id="1084365883616172403">Публикацията във Facebook е завършена.</translation>
 <translation id="1085696779717592361">Използване на Chrome по подразбиране</translation>
 <translation id="1103523840287552314">Винаги да се превежда от <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">Показване на историята</translation>
 <translation id="2800683595868705743">Излизане от превключвателя на раздели</translation>
 <translation id="2815198996063984598">2. Докоснете „Стандартно прилож. за браузър“.</translation>
-<translation id="2820289420301699633">Администраторът ви контролира Chrome и има достъп до данните в браузъра</translation>
 <translation id="2830972654601096923">Управление на адресите...</translation>
 <translation id="2834399722155632105">3. Докоснете „Опции за паролите“.</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708">Бяха намерени проблеми <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Инсталиране на Google Диск</translation>
+<translation id="50641035439563602">Паролите вече се запазват в профила ви в Google (<ph name="ACCOUNT" />). Можете да ги използвате навсякъде, където сте влезли в него. За да изключите това, отворете <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Неизвестен файлов размер.</translation>
 <translation id="5090832849094901128">Изтриването на тази парола няма да премахне профила ви за <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Съобщението в Twitter е завършено.</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">Докоснете „Мениджър на паролите“ и след това „Добавяне“.</translation>
 <translation id="5525095647255982834">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome там.</translation>
 <translation id="5525269841082836315">Създаване на пропуск</translation>
+<translation id="5530084793407600786">Търсене в изображението с Google</translation>
 <translation id="5542540507657872337">Намерени: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">С Handoff можете да започнете да разглеждате уебсайт на това устройство, след което лесно да продължите сърфирането от своя Mac. Отвореният сайт ще се покаже в лентата Dock.
 
@@ -677,7 +679,6 @@
 <translation id="6064824697233747382">Организацията ви изисква да изключите синхронизирането.</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
 <translation id="6071409777669089905">Освобождаване на раздела</translation>
-<translation id="60829778314739003">Приемам и продължавам</translation>
 <translation id="6084848228346514841">Избиране на раздели</translation>
 <translation id="6103540626693881831">Шифроване на устройството</translation>
 <translation id="6119050551270742952">Страницата е в режим „инкогнито“</translation>

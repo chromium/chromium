@@ -2921,6 +2921,7 @@
 <translation id="3602290021589620013">ពិនិត្យមើល</translation>
 <translation id="3602870520245633055">បោះពុម្ព និង​ស្កេន</translation>
 <translation id="3603622770190368340">ទទួលយកវិញ្ញាបនប័ត្របណ្តាញ</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{គណនី {COUNT} កំពុងប្រើប្រាស់ពាក្យសម្ងាត់ដូចគ្នា}other{គណនី {COUNT} កំពុងប្រើប្រាស់ពាក្យសម្ងាត់ដូចគ្នា}}</translation>
 <translation id="3605780360466892872">Buttondown</translation>
 <translation id="3609277884604412258">ការស្វែងរករហ័ស</translation>
 <translation id="3610241585790874201">មិនបានអនុញ្ញាត​ឱ្យរក្សាទុក​ទិន្នន័យ​នៅលើ​ឧបករណ៍​របស់អ្នកទេ</translation>
@@ -4849,6 +4850,7 @@
 <translation id="5382591305415226340">គ្រប់គ្រងតំណដែលគាំទ្រ</translation>
 <translation id="5383377866517186886">កាម៉េរា​ត្រូវបានបិទ​ក្នុងចំណូលចិត្តប្រព័ន្ធ Mac</translation>
 <translation id="5383740867328871413">ក្រុមដែលមិនបានដាក់ឈ្មោះ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (លេខសម្គាល់៖ <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">បានផ្លាស់ប្ដូរ​គោលការណ៍សហគ្រាស។ បានបញ្ចូលប៊ូតុង​ពិសោធន៍ទៅ​របារឧបករណ៍។ សូមចុច​ប៊ូតុងនេះ ដើម្បីបើក​ប្រអប់សម្រាប់បើកការពិសោធ។</translation>
 <translation id="5388885445722491159">បានផ្គូផ្គង</translation>
 <translation id="5390112241331447203">រួមបញ្ចូល​ឯកសារ system_logs.txt ដែលបានផ្ញើ​នៅក្នុង​របាយការណ៍អំពីមតិកែលម្អ។</translation>
@@ -5063,6 +5065,7 @@
 <translation id="5578059481725149024">ចូល​ដោយស្វ័យប្រវត្តិ</translation>
 <translation id="5581134892342029705">ការបកប្រែ​ទៅជាភាសា<ph name="LANGUAGE" />បានបញ្ចប់</translation>
 <translation id="558170650521898289">ការផ្ទៀងផ្ទាត់ដ្រាយវ័រផ្នែករឹង Microsoft Windows</translation>
+<translation id="5581876958763461074">កំណត់ចំណាំទាំងអស់</translation>
 <translation id="5581972110672966454">មិនអាចភ្ជាប់ឧបករណ៍ជាមួយដែនបានទេ។ សូម​ព្យាយាម​ម្ដងទៀត ឬ​ទាក់ទង​អ្នកគ្រប់គ្រង ឬម្ចាស់ឧបករណ៍របស់អ្នក។ លេខ​កូដ​បញ្ហា៖ <ph name="ERROR_CODE" />។</translation>
 <translation id="5582839680698949063">ម៉ឺនុយមេ</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -6677,7 +6680,6 @@
 <translation id="7044211973375150246">កម្មវិធី​ត្រូវបានកំណត់ឱ្យបើក​តំណដូចគ្នានឹង <ph name="APP_NAME" />។ សកម្មភាពនេះ​នឹងបិទ <ph name="APP_NAME_2" /> មិនឱ្យបើក​តំណដែលអាចប្រើបាន។</translation>
 <translation id="7044606776288350625">ទិន្នន័យសមកាលកម្ម​</translation>
 <translation id="7047059339731138197">ជ្រើសរើស​ផ្ទៃខាងក្រោយ</translation>
-<translation id="7048457618657122233">ចែករំលែកតំណទៅ <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">រក្សាឯកសារឬ?</translation>
 <translation id="7050037487872780845">ការកំណត់រចនាសម្ព័ន្ធ​ហតស្ប៉តមិន​ត្រឹមត្រូវ</translation>
 <translation id="7052237160939977163">ផ្ញើទិន្នន័យតាមដានប្រតិបត្តិការ</translation>

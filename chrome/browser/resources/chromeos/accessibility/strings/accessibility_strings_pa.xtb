@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">ਅੰਤ-ਕਥਨ</translation>
 <translation id="1197088940767939838">ਸੰਤਰੀ</translation>
 <translation id="1198865190323699001">ਸਪਰਸ਼ ਇਸ਼ਾਰੇ</translation>
-<translation id="1201402288615127009">ਅੱਗੇ</translation>
 <translation id="1202112913213080585">ਰੱਦ ਕਰੋ</translation>
 <translation id="1206619573307042055">ਵੱਡਾ ਤੰਬੂ</translation>
 <translation id="1207086294218137981">ਕੋਈ ਹੋਰ ਪੱਧਰ 4 ਸਿਰਲੇਖ ਨਹੀਂ</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">ਲੇਖ</translation>
 <translation id="1346059596910821859">ਨੁਕਤਾ</translation>
 <translation id="1354356357730355833">ਕਾਪੀ ਕਰੋ</translation>
-<translation id="135978014023467274">ਤੁਹਾਨੂੰ ChromeVox 63 ਲਈ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ!</translation>
 <translation id="1360699455582016846">ਰੂਟਿੰਗ ਕੁੰਜੀ <ph name="ROUTING_KEY_NUMBER" /> ਦੇ ਅਧੀਨ ਆਈਟਮ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="1376703628032300005">ਅਗਲੇ ਅੱਖਰ-ਚਿੰਨ੍ਹ 'ਤੇ ਜਾਓ</translation>
 <translation id="1377925789329510816">ਇਹ ਆਖਰੀ ਸਿਰਲੇਖ ਹੈ। ਪਹਿਲੇ ਸਿਰਲੇਖ ਤੱਕ ਸੀਮਾਬੱਧ ਕਰਨ ਲਈ Search+H ਦਬਾਓ, ਜਾਂ ਇਸ ਪੰਨੇ 'ਤੇ ਦੂਜੇ ਸਿਰਲੇਖ ਤੱਕ ਜਾਣ ਲਈ Search+Shift+H ਦਬਾਓ।</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">ਨਿਸ਼ਾਨ ਹਟਾਇਆ ਗਿਆ</translation>
 <translation id="3286372614333682499">ਪੋਰਟਰੇਟ</translation>
 <translation id="3286390186030710347">ਸਲਾਈਡਰ</translation>
-<translation id="3300348286427369683">Rich ਲਿਖਤ ਸਮਰਥਨ। ChromeVox ਹੁਣ ਜੰਪ ਆਦੇਸ਼, ਬ੍ਰੇਲ ਕਰਸਰ ਰੂਟਿੰਗ, ਚੋਣਾਂ ਅਤੇ ਕੁਝ ਹੋਰ ਸਮੇਤ ਰਿਚ ਲਿਖਤ ਖੇਤਰਾਂ ਦਾ ਸਮਰਥਨ ਕਰਦਾ ਹੈ।</translation>
 <translation id="3300733168898541351">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="3307886118343381874">ਸਾਰਨੀ ਦੇ ਅੰਤ 'ਤੇ ਜਾਓ</translation>
 <translation id="3312997241656799641">ਨਵੇਂ ਵਿਜਿਟ ਕੀਤੇ ਲਿੰਕ</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">ਸਮਾਰਟ ਸਥਿਰ ਮੋਡ ਬੰਦ ਹੈ</translation>
 <translation id="4623097797855662355">ਪੁਸਤਕ 'ਤੇ ਦਿੱਤਾ ਪ੍ਰਕਾਸ਼ਕ ਦਾ ਨਾਮ ਜਾਂ ਚਿੰਨ੍ਹ</translation>
 <translation id="4624970070706497034">TalkBack ਹੁਣ Chromebooks ਲਈ ਵਿਉਂਤਬੱਧਕਰਨ ਮੁਹੱਈਆ ਨਹੀਂ ਕਰਵਾਉਂਦੀ ਹੈ। ਤੁਸੀਂ ਹਾਲੇ ਵੀ ਇਸਨੂੰ ਵਰਤ ਸਕਦੇ ਹੋ, ਪਰ TalkBack ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਵਰਤੋ। ਉਪਲਬਧ ਸ਼ਾਰਟਕੱਟ ਦੇਖਣ ਲਈ Search+A, ਫਿਰ K ਦਬਾਓ। ਜੇ ਤੁਸੀਂ ਹਾਲੇ ਵੀ TalkBack ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ ਆਦੇਸ਼ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ।</translation>
-<translation id="463135993322337640">ਨਵਾਂ ਕੀ ਹੈ, ਇਹ ਪਤਾ ਕਰਨ ਲਈ, ChromeVox 'ਤੇ o, n ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4649220074413114917">ਕਿਸੇ ਮੌਜੂਦਾ ਬੋਲਚਾਲ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਸਕ੍ਰੀਨ 'ਤੇ ਟੈਪ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਜੇ ਤੁਸੀਂ ਚਾਹੁੰਦੇ ਕਿ ChromeVox ਕੁਝ ਨਾ ਪੜ੍ਹੇ, ਤਾਂ ਇਹ ਲਾਹੇਵੰਦ ਹੁੰਦਾ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਸਕ੍ਰੀਨ 'ਤੇ ਦੋ ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ।</translation>
-<translation id="4660783501463101648">ਕਲਾਸਿਕ ਹਟਾਇਆ ਗਿਆ। ChromeVox ਕਲਾਸਿਕ ਵਿੱਚ ਵਾਪਸ ਜਾਣ ਲਈ ਕੀ-ਬੋਰਡ ਟੌਗਲ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="4661075872484491155">ਰੁੱਖ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">ਅਗਲੇ ਕਾਲਮ 'ਤੇ ਜਾਓ</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">ਪਿੱਛੇ</translation>
 <translation id="5102981729317424850">ਟੂਲ ਬਾਰ</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">ਇਸ ਨਵੀਂ ਰੀਲੀਜ਼ ਵਿੱਚ ਕੁਝ ਦਿਲਚਸਪ ਬਦਲਾਅ ਹਨ; ਇੱਥੇ ਦੇਖੋ ਨਵਾਂ ਕੀ ਹੈ:</translation>
 <translation id="5111640677200759579">ਕਾੱਲਮ ਸਿਰਲੇਖ</translation>
 <translation id="5115892389597951922">ChromeVox ਲੌਗ</translation>
 <translation id="5119330972669454698">ਫਿੱਕਾ ਖਾਕੀ</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">ਮੁੱਢਲਾ ਆਵਾਗੌਣ</translation>
 <translation id="609281021724813947">ਕੋਈ ਪਿਛਲਾ ਸਲਾਈਡਰ ਨਹੀਂ</translation>
 <translation id="6100239002225743044">ਇੱਕ ਲਾਈਨ ਉੱਪਰ ਵੱਲ ਲਿਜਾਓ</translation>
-<translation id="6118126368611144850">Chrome ਲਈ Android ਐਪਾਂ। ਜੇਕਰ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ Play Store ਹੈ, ਤਾਂ Android ਐਪਾਂ ਵਾਲੇ ChromeVox 'ਤੇ ਇੱਕ ਝਾਤ ਮਾਰੋ। Play Store ਤੋਂ Google Chrome Canary ਡਾਊਨਲੋਡ ਕਰਕੇ ਇੱਕ ਪ੍ਰੋਯਗਮਈ ਸਹਾਇਤਾ ਅਜ਼ਮਾਓ।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ਸਕਿਰਿਆ ਕਰੋ</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">ਪਿਛਲਾ ਕੌਂਬੋ ਬਾਕਸ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ਵਿਸਮਕ ਚਿੰਨ੍ਹ}one{# ਵਿਸਮਕ ਚਿੰਨ੍ਹ}other{# ਵਿਸਮਕ ਚਿੰਨ੍ਹ}}</translation>
 <translation id="670717715607710284">ਸਕ੍ਰੀਨ ਬੰਦ ਕਰੋ</translation>
-<translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6714813999819678458">ਪਿਛਲਾ ਪੱਧਰ 2 ਸਿਰਲੇਖ</translation>
 <translation id="6730312624811567147">Home ਜਾਂ End ਦੀ ਥਾਂ Search ਕੁੰਜੀ ਨਾਲ Left ਜਾਂ Right ਵਰਤੋ, Control Home ਜਾਂ End ਦੀ ਥਾਂ Search Control Left ਜਾਂ Right ਵਰਤੋ, Page Up ਜਾਂ Down ਦੀ ਥਾਂ Search Up ਜਾਂ Down ਵਰਤੋ</translation>
 <translation id="6736510033526053669">ਟੈਬ ਰਚਨਾ ਕੀਤੀ ਗਈ</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">ਮਟਮੈਲਾ ਸਫ਼ੈਦ</translation>
 <translation id="9220679313820249046">ਨਸਵਾਰੀ</translation>
 <translation id="9223032053830369045">ਗੂੜ੍ਹਾ ਲਾਲ</translation>
-<translation id="923331726185079994">ChromeVox ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="93384979447910801">ਗੂੜ੍ਹਾ ਸਮੁੰਦਰੀ ਹਰਾ</translation>
 <translation id="937605981140327129">TalkBack ਫ਼ਿਲਹਾਲ ਸਥਾਪਤ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ Play Store ਰਾਹੀਂ Android Accessibility Suite ਸਥਾਪਤ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="948171205378458592">ਸਪੀਚ ਦਾ ਰੇਟ ਘਟਾਓ</translation>

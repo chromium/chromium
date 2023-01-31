@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1022489261739821355">ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಿಂದ<ph name="END_LINK" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1022669824195822609">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ. ನಿರ್ವಾಹಕರು ಈ ಸಾಧನದಲ್ಲಿನ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1026655690966755180">ಪೋರ್ಟ್ ಸೇರಿಸಿ</translation>
 <translation id="1026822031284433028">ಚಿತ್ರ ಲೋಡ್ ಮಾಡು</translation>
 <translation id="1028604629594230522">ನೀವು ಭೇಟಿ ನೀಡುವ ಸಾಧ್ಯತೆಯಿರುವ ಪುಟಗಳನ್ನು Chrome ಪ್ರಿಲೋಡ್ ಮಾಡುತ್ತದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಭೇಟಿ ಮಾಡಿದಾಗ ಅವು ಹೆಚ್ಚು ವೇಗವಾಗಿ ಲೋಡ್ ಆಗುತ್ತವೆ.</translation>
@@ -1874,6 +1875,7 @@
 <translation id="2643064289437760082">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುವ ಮೂಲಕ, ನೀವು ಯಾವಾಗಲೂ ಜಾಹೀರಾತು-ಮಾಪನ ಡೇಟಾವನ್ನು ಅಳಿಸಬಹುದು</translation>
 <translation id="2643698698624765890">ವಿಂಡೋ ಮೆನುವಿನಲ್ಲಿರುವ ‘ವಿಸ್ತರಣೆಗಳು’ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="2645047101481282803">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="PROFILE_NAME" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2645388244376970260">ಈ ಟ್ಯಾಬ್ ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-ಎನ್‌ಕೋಡ್ ಮಾಡಿದ ASCII, ಪ್ರಮಾಣಪತ್ರ ಸರಣಿ</translation>
 <translation id="265156376773362237">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ</translation>
@@ -2746,6 +2748,7 @@
 <translation id="3446274660183028131">Windows ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು Parallels Desktop ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="344630545793878684">ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಹಲವಾರು ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಓದಿ</translation>
 <translation id="3447644283769633681">ಮೂರನೇ-ವ್ಯಕ್ತಿಯ ಎಲ್ಲ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸು</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3448492834076427715">ಖಾತೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="3449393517661170867">ಹೊಸ ಟ್ಯಾಬ್ ಮಾಡಿರುವ ವಿಂಡೋ</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> ಗೆ ಆದೇಶಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SEARCH_KEY" /> ಒತ್ತಿರಿ</translation>
@@ -2900,6 +2903,7 @@
 <translation id="3590295622232282437">ನಿರ್ವಹಿಸಲಾದ ಸೆಷನ್‌ಗೆ ಪ್ರವೇಶಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> ಇರಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="3592260987370335752">&amp;ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="3592344177526089979">ಒಂದು ಟ್ಯಾಬ್ ಅನ್ನು <ph name="DEVICE_NAME" /> ಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3593152357631900254">ಅಸ್ಪಷ್ಟ -ಪಿನ್‌ಯಿನ್‌ ಮೋಡ್‌ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3593965109698325041">ಪ್ರಮಾಣಪತ್ರ ಹೆಸರು ನಿರ್ಬಂಧಗಳು</translation>
 <translation id="3596012367874587041">ಆ್ಯಪ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -3176,6 +3180,7 @@
 <translation id="3823310065043511710">Linux ಗಾಗಿ ಕನಿಷ್ಠ <ph name="INSTALL_SIZE" /> ಸ್ಥಳಾವಕಾಶವನ್ನು ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3824621460022590830">ಸಾಧನ ನೋಂದಣಿ ಟೋಕನ್ ಅಮಾನ್ಯವಾಗಿದೆ. ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{ಈ ಫೈಲ್ ಪ್ರಕಾರಕ್ಕಾಗಿ ನನ್ನ ಆಯ್ಕೆಯನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ: <ph name="FILE_TYPES" />}one{ಈ ಫೈಲ್ ಪ್ರಕಾರಗಳಿಗಾಗಿ ನನ್ನ ಆಯ್ಕೆಯನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ: <ph name="FILE_TYPES" />}other{ಈ ಫೈಲ್ ಪ್ರಕಾರಗಳಿಗಾಗಿ ನನ್ನ ಆಯ್ಕೆಯನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಿ: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">ಆ್ಯಪ್ ಎಚ್ಚರಿಕೆಗಳಿಗಾಗಿ ಆ್ಯಪ್ ಐಕಾನ್ ಮೇಲೆ ಡಾಟ್ ತೋರಿಸಿ</translation>
 <translation id="3826071569074535339">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳನ್ನು ಬಳಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3826440694796503677">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚಿನ Google ಖಾತೆಗಳ ಸೇರಿಸುವಿಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ</translation>
 <translation id="3827774300009121996">&amp;ಪೂರ್ಣ ಪರದೆ</translation>
@@ -4496,6 +4501,7 @@
 <translation id="5063480226653192405">ಬಳಕೆ</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿನ ಸುರಕ್ಷಿತ DNS ಅನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="5066160542186949327">ಇನ್ನೊಂದು ಫೋಲ್ಡರ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="5067399438976153555">ಯಾವಾಗಲೂ ಆನ್</translation>
 <translation id="5067867186035333991">ನಿಮ್ಮ ಮೈಕ್ರೋಫೋನ್ ಪ್ರವೇಶಿಸಲು <ph name="HOST" /> ಬಯಸುತ್ತದೆಯೇ ಎಂಬುದನ್ನು ಕೇಳಿ</translation>
 <translation id="5068553687099139861">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -6667,7 +6673,6 @@
 <translation id="7044211973375150246">ಆ್ಯಪ್‌ ಅನ್ನು <ph name="APP_NAME" /> ನಂತೆಯೇ ಲಿಂಕ್ ತೆರೆಯಲು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ. ಇದು <ph name="APP_NAME_2" /> ಆ್ಯಪ್‌ನ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ತೆರೆಯುವುದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="7044606776288350625">ಡೇಟಾ ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7047059339731138197">ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> ಗೆ ಲಿಂಕ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="7049293980323620022">ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="7050037487872780845">ಅಮಾನ್ಯ ಹಾಟ್‌ಸ್ಪಾಟ್ ಕಾನ್ಫಿಗರೇಶನ್</translation>
 <translation id="7052237160939977163">ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್‌ ಡೇಟಾ ಕಳುಹಿಸಿ</translation>

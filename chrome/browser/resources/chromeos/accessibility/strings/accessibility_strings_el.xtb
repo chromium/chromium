@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Επίλογος</translation>
 <translation id="1197088940767939838">Πορτοκαλί</translation>
 <translation id="1198865190323699001">Κινήσεις αφής</translation>
-<translation id="1201402288615127009">Επόμενο</translation>
 <translation id="1202112913213080585">ακύρωση</translation>
 <translation id="1206619573307042055">μαρκίζα</translation>
 <translation id="1207086294218137981">Δεν υπάρχει επόμενη κεφαλίδα επιπέδου 4.</translation>
@@ -72,7 +71,6 @@
 <translation id="1342835525016946179">άρθρο</translation>
 <translation id="1346059596910821859">Συμβουλή</translation>
 <translation id="1354356357730355833">αντιγραφή</translation>
-<translation id="135978014023467274">Έγινε ενημέρωση στο ChromeVox 63!</translation>
 <translation id="1360699455582016846">Κάντε κλικ στο στοιχείο κάτω από το πλήκτρο δρομολόγησης <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">μετακίνηση στον επόμενο χαρακτήρα</translation>
 <translation id="1377925789329510816">Αυτή είναι η τελευταία επικεφαλίδα. Πατήστε Search+H για να περικλείσετε την πρώτη επικεφαλίδα, ή Search+Shift+H για να μεταβείτε στην δεύτερη επικεφαλίδα σε αυτήν τη σελίδα.</translation>
@@ -364,7 +362,6 @@
 <translation id="3283583562490372694">καταργήθηκε η επιλογή του</translation>
 <translation id="3286372614333682499">κατακόρυφος προσανατολισμός</translation>
 <translation id="3286390186030710347">Ρυθμιστικό</translation>
-<translation id="3300348286427369683">Υποστήριξη εμπλουτισμένου κειμένου. Το ChromeVox υποστηρίζει πλέον πεδία εμπλουτισμένου κειμένου, όπως εντολές μετάβασης, δρομολόγηση δρομέα μπράιγ, επιλογή και άλλα.</translation>
 <translation id="3300733168898541351">αναίρεση</translation>
 <translation id="3307886118343381874">Μετάβαση στο τέλος του πίνακα</translation>
 <translation id="3312997241656799641">Επόμενος σύνδεσμος που έχετε επισκεφτεί</translation>
@@ -551,9 +548,7 @@
 <translation id="4617384941327705512">Η Έξυπνη λειτουργία σταθερών πλήκτρων είναι απενεργοποιημένη</translation>
 <translation id="4623097797855662355">Εκδοτικό σήμα</translation>
 <translation id="4624970070706497034">Το TalkBack δεν παρέχει πλέον δυνατότητα προσαρμογής στα Chromebook. Μπορείτε ακόμα να το χρησιμοποιείτε, αλλά θα πρέπει να χρησιμοποιείτε τις προεπιλεγμένες συντομεύσεις πληκτρολογίου του Talkback. Πατήστε Αναζήτηση+A και έπειτα K για να δείτε τις διαθέσιμες συντομεύσεις. Εάν θέλετε ακόμα να χρησιμοποιήσετε το TalkBack, πατήστε ξανά την εντολή.</translation>
-<translation id="463135993322337640">Πατήστε ChromeVox o, n για να μάθετε τι νέο υπάρχει</translation>
 <translation id="4649220074413114917">Το πάτημα στην οθόνη με δύο δάχτυλα μπορεί να χρησιμοποιηθεί για τη διακοπή της τρέχουσας ομιλίας. Αυτή η κίνηση είναι χρήσιμη εάν δεν θέλετε το ChromeVox να διαβάσει κάτι. Για να συνεχίσετε, πατήστε στην οθόνη με δύο δάχτυλα.</translation>
-<translation id="4660783501463101648">Η κλασική προβολή καταργήθηκε. Η εναλλαγή πληκτρολογίου για επιστροφή στην κλασική προβολή του ChromeVox καταργήθηκε.</translation>
 <translation id="4661075872484491155">δέντρο</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Μετάβαση στην επόμενη στήλη</translation>
@@ -618,7 +613,6 @@
 <translation id="5087864757604726239">πίσω</translation>
 <translation id="5102981729317424850">Γραμμή εργαλείων</translation>
 <translation id="5105050547967751155">απαιτείται</translation>
-<translation id="5106547198195128110">Κάναμε μερικές συναρπαστικές αλλαγές σε αυτήν τη νέα κυκλοφορία. Δείτε τι νέο υπάρχει:</translation>
 <translation id="5111640677200759579">Κεφαλίδα στήλης</translation>
 <translation id="5115892389597951922">Αρχείο καταγραφής ChromeVox</translation>
 <translation id="5119330972669454698">Ρόζοι ξύλου</translation>
@@ -769,7 +763,6 @@
 <translation id="6082768461603900813">Βασική πλοήγηση</translation>
 <translation id="609281021724813947">Δεν υπάρχει προηγούμενο ρυθμιστικό.</translation>
 <translation id="6100239002225743044">Μετακίνηση προς τα πάνω κατά μία γραμμή</translation>
-<translation id="6118126368611144850">Εφαρμογές Android για Chrome. Εάν έχετε εγκατεστημένο το Play Store στη συσκευή σας, μπορείτε να πάρετε μια γεύση από το ChromeVox με τις εφαρμογές Android. Δοκιμάστε την πειραματική υποστήριξη κατεβάζοντας το Google Chrome Canary από το Play Store.</translation>
 <translation id="611827076493383239">ιστότοπος που επισκεφτήκατε</translation>
 <translation id="6119846243427417423">ενεργοποίηση</translation>
 <translation id="6122013438240733403">κουμπί</translation>
@@ -843,7 +836,6 @@
 <translation id="6697092096875747123">Προηγούμενο σύνθετο πλαίσιο</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{θαυμαστικό}other{# θαυμαστικά}}</translation>
 <translation id="670717715607710284">Η οθόνη απενεργοποιήθηκε</translation>
-<translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6714813999819678458">Επικεφαλίδα προηγούμενου επιπέδου 2</translation>
 <translation id="6730312624811567147">Χρησιμοποιήστε τους συνδυασμούς πλήκτρων Αναζήτηση και αριστερό βέλος ή δεξί βέλος για Home ή End, Αναζήτηση Control και αριστερό ή δεξί βέλος για Control Home ή End, Αναζήτηση και επάνω βέλος ή κάτω βέλος για Page Up ή Down.</translation>
 <translation id="6736510033526053669">δημιουργήθηκε καρτέλα</translation>
@@ -1191,7 +1183,6 @@
 <translation id="9208241857935108694">Λευκό αντίκας</translation>
 <translation id="9220679313820249046">Πορτοκαλοκόκκινο</translation>
 <translation id="9223032053830369045">Σκούρο κόκκινο</translation>
-<translation id="923331726185079994">Έγινε ενημέρωση του ChromeVox</translation>
 <translation id="93384979447910801">Σκούρο πράσινο μαρέν</translation>
 <translation id="937605981140327129">Το TalkBack δεν είναι εγκατεστημένο αυτήν τη στιγμή. Εγκαταστήστε το Android AccessibilitySuite μέσω του Play Store και δοκιμάστε ξανά.</translation>
 <translation id="948171205378458592">Μείωση ταχύτητας ομιλίας</translation>

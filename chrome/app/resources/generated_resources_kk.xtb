@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Сөздікке қосу</translation>
 <translation id="1018656279737460067">Бас тартылды</translation>
 <translation id="1022489261739821355"><ph name="BEGIN_LINK" />Google аккаунтыңыздың<ph name="END_LINK" /> құпия сөздерін көрсету</translation>
+<translation id="1022669824195822609">Құрылғыңызды <ph name="DOMAIN" /> басқарады. Әкімшілер бұл құрылғыдағы кез келген профильдің деректерін пайдалана алады.</translation>
 <translation id="1026655690966755180">Порт енгізу</translation>
 <translation id="1026822031284433028">Кескінді жүктеу</translation>
 <translation id="1028604629594230522">Chrome сіз кіруіңіз мүмкін беттерді алдын ала жүктейді, сонда олар кірген кезде тезірек жүктеледі.</translation>
@@ -1863,6 +1864,7 @@
 <translation id="2643064289437760082">Браузерді қолдану деректерін жою арқылы жарнаманы өлшеу деректерін әрдайым өшіре аласыз</translation>
 <translation id="2643698698624765890">Кеңейтімдерді реттеу үшін "Терезе" мәзіріндегі "Кеңейтімдер" опциясын басыңыз.</translation>
 <translation id="2645047101481282803">Құрылғыңызды <ph name="PROFILE_NAME" /> басқарады.</translation>
+<translation id="2645388244376970260">Бұл қойынды <ph name="DEVICE_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64 арқылы шифрланған ASCII, сертификаттар тізбегі</translation>
 <translation id="265156376773362237">Стандартты алдын ала жүктеу</translation>
@@ -2735,6 +2737,7 @@
 <translation id="3446274660183028131">Windows жүйесін орнату үшін Parallels Desktop-ты іске қосыңыз.</translation>
 <translation id="344630545793878684">Көптеген веб-сайттардағы деректеріңізді оқу</translation>
 <translation id="3447644283769633681">Барлық үшінші тарап cookie файлын бөгеу</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> қойындысынан <ph name="DEVICE_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="3448492834076427715">Аккаунтты жаңарту</translation>
 <translation id="3449393517661170867">Қойындысы бар жаңа терезе</translation>
 <translation id="3449839693241009168">Пәрмендерді <ph name="EXTENSION_NAME" /> кеңейтіміне жіберу үшін <ph name="SEARCH_KEY" /> басыңыз</translation>
@@ -2889,6 +2892,7 @@
 <translation id="3590295622232282437">Басқарылатын сеансқа кіріп жатырсыз.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> файлын сақтау</translation>
 <translation id="3592260987370335752">&amp;Толығырақ</translation>
+<translation id="3592344177526089979">Қойынды <ph name="DEVICE_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="3593152357631900254">Fuzzy-Pinyin режимін қосу</translation>
 <translation id="3593965109698325041">Сертификат атауы шектеулері</translation>
 <translation id="3596012367874587041">Қолданба параметрлері</translation>
@@ -6649,7 +6653,6 @@
 <translation id="7044211973375150246"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданба да аша алатын болып реттелді. <ph name="APP_NAME_2" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
 <translation id="7044606776288350625">Деректерді синхрондау</translation>
 <translation id="7047059339731138197">Фонды таңдау</translation>
-<translation id="7048457618657122233">Сілтемені бөлісу желісі: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Файл сақталсын ба?</translation>
 <translation id="7050037487872780845">Хотспот конфигурациясы жарамсыз</translation>
 <translation id="7052237160939977163">Өнімділікті бақылау деректерін жіберу</translation>

@@ -4849,6 +4849,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5382591305415226340">Manage supported links</translation>
 <translation id="5383377866517186886">Camera is turned off in Mac System Preferences</translation>
 <translation id="5383740867328871413">Unnamed group – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="5385612634631487511"><ph name="EXTENSION_NAME" /> (ID: <ph name="EXTENSION_ID" />)</translation>
 <translation id="538822246583124912">Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialogue to enable experiments.</translation>
 <translation id="5388885445722491159">Paired</translation>
 <translation id="5390112241331447203">Include the system_logs.txt file sent in feedback reports.</translation>
@@ -5063,6 +5064,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5578059481725149024">Auto sign-in</translation>
 <translation id="5581134892342029705">Translation to <ph name="LANGUAGE" /> complete</translation>
 <translation id="558170650521898289">Microsoft Windows Hardware Driver Verification</translation>
+<translation id="5581876958763461074">All notes</translation>
 <translation id="5581972110672966454">Can't join the device to the domain. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5582839680698949063">Main menu</translation>
 <translation id="5583640892426849032">Backspace</translation>
@@ -6676,7 +6678,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7044211973375150246">An app is set to open the same links as <ph name="APP_NAME" />. This will disable <ph name="APP_NAME_2" /> from opening supported links.</translation>
 <translation id="7044606776288350625">Sync data</translation>
 <translation id="7047059339731138197">Pick a background</translation>
-<translation id="7048457618657122233">Share link to <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Keep file?</translation>
 <translation id="7050037487872780845">Invalid hotspot configuration</translation>
 <translation id="7052237160939977163">Send performance trace data</translation>

@@ -18,6 +18,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="1066060668811609597">Gestisci la sincronizzazione</translation>
 <translation id="1076421457278169141">Scansione del codice eseguita</translation>
 <translation id="1076785341346483463">Sincronizza con account gestito</translation>
+<translation id="1080365971383768617">Password su tutti i tuoi dispositivi</translation>
 <translation id="1084365883616172403">Pubblicazione su Facebook completata.</translation>
 <translation id="1085696779717592361">Usa Chrome per impostazione predefinita</translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2797029671965852011">Mostra la cronologia</translation>
 <translation id="2800683595868705743">Chiudi selettore di schede</translation>
 <translation id="2815198996063984598">2. Tocca App browser predefinita</translation>
-<translation id="2820289420301699633">L'amministratore ha il controllo di Chrome e può accedere ai relativi dati</translation>
 <translation id="2830972654601096923">Gestisci indirizzi…</translation>
 <translation id="2834399722155632105">3. Tocca Opzioni password</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5056446788882570708">Sono stati riscontrati problemi <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installa Google Drive</translation>
+<translation id="50641035439563602">Le password sono state salvate nel tuo Account Google (<ph name="ACCOUNT" />). Puoi usarle ovunque tu abbia eseguito l'accesso. Per disattivare questa impostazione, vai alle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5094827893301452931">Tweet completato.</translation>
@@ -595,6 +596,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5520466080178053306">Tocca Gestore delle password, quindi Aggiungi</translation>
 <translation id="5525095647255982834">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo.</translation>
 <translation id="5525269841082836315">Crea passphrase</translation>
+<translation id="5530084793407600786">Cerca nell'immagine con Google</translation>
 <translation id="5542540507657872337">Schede trovate: <ph name="COUNT" /></translation>
 <translation id="5548760955356983418">Handoff ti consente di iniziare a consultare un sito web su questo dispositivo per poi continuare facilmente sul Mac. Il sito web attualmente aperto verrà visualizzato nel Dock sul Mac.
 
@@ -677,7 +679,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6064824697233747382">La tua organizzazione richiede di disattivare la sincronizzazione.</translation>
 <translation id="6066301408025741299">Tocca per annullare.</translation>
 <translation id="6071409777669089905">Sblocca scheda</translation>
-<translation id="60829778314739003">Accetta e continua</translation>
 <translation id="6084848228346514841">Seleziona schede</translation>
 <translation id="6103540626693881831">Crittografia on-device</translation>
 <translation id="6119050551270742952">Pagina web corrente in incognito</translation>
@@ -956,7 +957,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8023878949384262191">Viene espansa la sezione.</translation>
 <translation id="8027581147000338959">Apri in un'altra finestra</translation>
-<translation id="8032569120109842252">Seguito</translation>
+<translation id="8032569120109842252">Stai seguendo</translation>
 <translation id="804225253087497565">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminarli in qualsiasi momento.</translation>
 <translation id="804427445359061970">Qui troverai le tue schede aperte su altri dispositivi</translation>
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>

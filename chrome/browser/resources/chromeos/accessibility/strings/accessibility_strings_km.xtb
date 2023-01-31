@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">សេចក្ដី​បញ្ចប់</translation>
 <translation id="1197088940767939838">ទឹក​ក្រូច</translation>
 <translation id="1198865190323699001">ចលនាចុច</translation>
-<translation id="1201402288615127009">បន្ទាប់</translation>
 <translation id="1202112913213080585">បោះបង់</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">គ្មានផ្នែកក្បាលកម្រិតទី 4 បន្ទាប់ទេ</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">អត្ថបទ</translation>
 <translation id="1346059596910821859">គន្លឹះ</translation>
 <translation id="1354356357730355833">ចម្លង</translation>
-<translation id="135978014023467274">អ្នកបានដំឡើងជំនាន់ទៅ ChromeVox 63 ហើយ!</translation>
 <translation id="1360699455582016846">ចុចធាតុ​ខាងក្រោម​គ្រាប់ចុច​នាំផ្លូវ <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">ផ្លាស់ទីទៅតួអក្សរបន្ទាប់</translation>
 <translation id="1377925789329510816">នេះគឺជាចំណងជើងចុងក្រោយ។ ចុច Search+H ដើម្បីតម្រឹមចំណងជើងដំបូង ឬចុច Search+Shift+H ដើម្បីចូលទៅកាន់ចំណងជើងទីពីរនៅលើទំព័រនេះ។</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">បានដោះធីក</translation>
 <translation id="3286372614333682499">បញ្ឈរ​</translation>
 <translation id="3286390186030710347">របារំកិល</translation>
-<translation id="3300348286427369683">អាចប្រើអត្ថបទសម្បូរបែបបាន។ ឥឡូវនេះ ChromeVox ស្គាល់កន្លែងបញ្ចូលអក្សរសម្បូរបែប រួមទាំងពាក្យបញ្ជាផ្លោះ ការនាំផ្លូវសញ្ញាព្រួញអក្សរស្ទាប ការជ្រើសរើស និងច្រើនទៀត។</translation>
 <translation id="3300733168898541351">ត្រឡប់វិញ</translation>
 <translation id="3307886118343381874">ទៅកាន់ផ្នែកខាងចុងនៃតារាង</translation>
 <translation id="3312997241656799641">តំណដែលបានទៅកាន់បន្ទាប់</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">មុខងារ​ស្អិតឆ្លាតវៃ​ត្រូវ​បានបិទ</translation>
 <translation id="4623097797855662355">ឈ្មោះ​ក្រុមហ៊ុន​បោះពុម្ព​ផ្សាយ</translation>
 <translation id="4624970070706497034">TalkBack លែង​ផ្ដល់​ការប្ដូរតាមបំណង​សម្រាប់ Chromebook ទៀតហើយ។ អ្នកនៅអាច​ប្រើប្រាស់វា ប៉ុន្តែ​ប្រើប្រាស់​ផ្លូវកាត់​ក្ដារចុច​លំនាំដើម TalkBack។ ចុច Search+A រួច K ដើម្បីមើលឃើញ​​ផ្លូវកាត់​ដែល​អាចប្រើបាន។ ប្រសិនបើ​អ្នក​នៅតែ​ចង់​ប្រើប្រាស់ TalkBack សូម​ចុច​ឃ្លាបញ្ជា​ម្ដងទៀត។</translation>
-<translation id="463135993322337640">ចុច ChromeVox o, n ដើម្បីស្វែងយល់ពីអ្វីដែលថ្មី</translation>
 <translation id="4649220074413114917">ការចុច​លើអេក្រង់​ដោយប្រើម្រាមដៃពីរ​អាចត្រូវបានប្រើ​ដើម្បីបញ្ឈប់​ការនិយាយ​បច្ចុប្បន្ន។ សកម្មភាពនេះគឺ​មានប្រយោជន៍ ប្រសិនបើអ្នក​មិនចង់ឱ្យ ChromeVox អានអ្វីមួយនោះទេ។ ដើម្បីបន្ត សូមចុច​លើអេក្រង់​ដោយប្រើ​ម្រាមដៃពីរ។</translation>
-<translation id="4660783501463101648">បានលុបក្ដារចុចធម្មតាចេញ។ ប៊ូតុងបិទ/បើកក្ដារចុច ដើម្បីចុចប្ដូរត្រឡប់ទៅ ChromeVox Classic វិញត្រូវបានលុប។</translation>
 <translation id="4661075872484491155">ដើមឈើ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">ទៅ​កាន់​ជួរ​ឈរ​បន្ទាប់</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">ថយក្រោយ</translation>
 <translation id="5102981729317424850">របាឧបករណ៍</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">យើងមានការផ្លាស់ប្ដូរដ៏គួរឱ្យភ្ញាក់ផ្អើលសម្រាប់ការ​ចេញ​ផ្សាយថ្មីនេះ ហើយនេះគឺជាអ្វីដែលថ្មី៖</translation>
 <translation id="5111640677200759579">ផ្នែកក្បាលជួរឈរ</translation>
 <translation id="5115892389597951922">កំណត់​ហេតុ ChromeVox</translation>
 <translation id="5119330972669454698">ទង់ដែងស្រាល</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">ការរុករកមូលដ្ឋាន</translation>
 <translation id="609281021724813947">គ្មានរបាររំកិលមុនទេ</translation>
 <translation id="6100239002225743044">ផ្លាស់ទី​ឡើងលើ​មួយជួរ</translation>
-<translation id="6118126368611144850">កម្មវិធី Android សម្រាប់ Chrome ។ ប្រសិនបើអ្នកមាន Play Store នៅលើឧបករណ៍របស់អ្នក សូម​សាកល្បង​ប្រើ​ ChromeVox ជាមួយកម្មវិធី Android មុនការប្រកាសឱ្យប្រើជាផ្លូវការ។ សូមសាកល្បងប្រើជំនួយសាកល្បងដោយទាញយក Google Chrome Canary ពី Play Store ។</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ធ្វើសកម្មភាព</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">ប្រអប់បន្សំពីមុន</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{សញ្ញាឧទាន}other{សញ្ញាឧទាន #}}</translation>
 <translation id="670717715607710284">បិទអេក្រង់</translation>
-<translation id="6710213216561001401">មុន</translation>
 <translation id="6714813999819678458">ផ្នែកក្បាលកម្រិត 2 ពីមុន។</translation>
 <translation id="6730312624811567147">ប្រើ Search Left ឬ Right សម្រាប់ Home ឬ End, ប្រើ Search Control Left ឬ Right សម្រាប់ Control Home ឬ End, ប្រើ Search Up ឬ Down ​សម្រាប់ Page Up ឬ Down</translation>
 <translation id="6736510033526053669">ផ្ទាំងត្រូវបានបង្កើត</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">ប្រផេះស្រាល</translation>
 <translation id="9220679313820249046">ក្រហមទុំ</translation>
 <translation id="9223032053830369045">ពណ៌​ឈាមជ្រូក</translation>
-<translation id="923331726185079994">បានអាប់ដេត ChromeVox</translation>
 <translation id="93384979447910801">បៃតង​ចាស់</translation>
 <translation id="937605981140327129">បច្ចុប្បន្ននេះ មិនបានដំឡើងមុខងារ TalkBack ទេ។ សូមដំឡើង Android AccessibilitySuite តាមរយៈ Play Store រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="948171205378458592">បន្ថយកម្រិតនៃការនិយាយ</translation>

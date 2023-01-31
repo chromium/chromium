@@ -3173,6 +3173,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3823310065043511710">Sistēmai Linux ir ieteicams vismaz <ph name="INSTALL_SIZE" /> vietas krātuvē.</translation>
 <translation id="3824621460022590830">Ierīces reģistrācijas marķieris nav derīgs. Lūdzu, sazinieties ar ierīces īpašnieku vai administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Atcerēties manu izvēli šim failu tipam: <ph name="FILE_TYPES" />}zero{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}one{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}other{Atcerēties manu izvēli šiem failu tipiem: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Rādīt lietotnes brīdinājumu punktu lietotnes ikonā</translation>
 <translation id="3826071569074535339">Drīkst izmantot kustību sensorus</translation>
 <translation id="3826440694796503677">Administrators ir atspējojis citu Google kontu pievienošanu.</translation>
 <translation id="3827774300009121996">Pil&amp;nekrāna režīms</translation>
@@ -4492,6 +4493,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5063480226653192405">Lietojums</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Drošas DNS pārvaldība Chrome OS iestatījumos</translation>
+<translation id="5066160542186949327">Pārvietot uz citu mapi</translation>
 <translation id="5067399438976153555">Vienmēr iespējots</translation>
 <translation id="5067867186035333991">Vaicāt, vai vietne <ph name="HOST" /> vēlas piekļūt mikrofonam</translation>
 <translation id="5068553687099139861">rādīt paroles</translation>
@@ -6660,7 +6662,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7044211973375150246">Lietotne ir iestatīta to pašu saišu atvēršanai, ko var atvērt, izmantojot lietotni <ph name="APP_NAME" />. Atbalstītās saites vairs nevarēs atvērt, izmantojot lietotni <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Datu sinhronizēšana</translation>
 <translation id="7047059339731138197">Izvēlieties fonu</translation>
-<translation id="7048457618657122233">Kopīgot saiti uz: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Vai paturēt failu?</translation>
 <translation id="7050037487872780845">Nederīga tīklāja konfigurācija</translation>
 <translation id="7052237160939977163">Sūtīt veiktspējas izsekošanas datus</translation>

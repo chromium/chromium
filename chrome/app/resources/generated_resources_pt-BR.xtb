@@ -2923,6 +2923,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3602290021589620013">Visualizar</translation>
 <translation id="3602870520245633055">Imprimir e digitalizar</translation>
 <translation id="3603622770190368340">Obter certificado de rede</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} conta usando a mesma senha}one{{COUNT} conta usando a mesma senha}other{{COUNT} contas usando a mesma senha}}</translation>
 <translation id="3605780360466892872">Esporte fino</translation>
 <translation id="3609277884604412258">Pesquisa rápida</translation>
 <translation id="3610241585790874201">Sem permissão para salvar dados no dispositivo</translation>
@@ -5378,7 +5379,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5865508026715185451">O app <ph name="APP_NAME" /> será pausado em breve</translation>
 <translation id="586567932979200359">Você está executando o <ph name="PRODUCT_NAME" /> a partir de uma imagem de disco. Instalá-lo no computador permite executá-lo sem a imagem de disco e garante que ele se manterá atualizado.</translation>
 <translation id="5865733239029070421">Envia estatísticas de uso e relatórios de erros automaticamente para o Google</translation>
-<translation id="5867841422488265304">Pesquisar ou digitar endereço da Web</translation>
+<translation id="5867841422488265304">Digitar um URL ou pesquisar</translation>
 <translation id="5869029295770560994">Ok, entendi</translation>
 <translation id="5869522115854928033">Senhas salvas</translation>
 <translation id="5870086504539785141">Fechar o menu de acessibilidade</translation>
@@ -6680,7 +6681,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7044211973375150246">Um app está configurado para abrir os mesmos links que <ph name="APP_NAME" />. Esta ação impedirá que o app <ph name="APP_NAME_2" /> abra links compatíveis.</translation>
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um plano de fundo</translation>
-<translation id="7048457618657122233">Compartilhar link por <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Manter arquivo?</translation>
 <translation id="7050037487872780845">Configuração de ponto de acesso inválida</translation>
 <translation id="7052237160939977163">Enviar dados de rastreamento de desempenho</translation>

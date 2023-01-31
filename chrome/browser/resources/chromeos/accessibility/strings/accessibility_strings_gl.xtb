@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Epílogo</translation>
 <translation id="1197088940767939838">Laranxa</translation>
 <translation id="1198865190323699001">Xestos táctiles</translation>
-<translation id="1201402288615127009">Seguinte</translation>
 <translation id="1202112913213080585">cancela o ditado</translation>
 <translation id="1206619573307042055">letreiro</translation>
 <translation id="1207086294218137981">Non hai ningunha cabeceira posterior de nivel 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">artigo</translation>
 <translation id="1346059596910821859">Consello</translation>
 <translation id="1354356357730355833">copia</translation>
-<translation id="135978014023467274">Instalouse a versión 63 de ChromeVox.</translation>
 <translation id="1360699455582016846">Fai clic no elemento situado baixo a tecla de encamiñamento <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">moverse ao seguinte carácter</translation>
 <translation id="1377925789329510816">Este é o último título. Preme Buscar + H para volver ao primeiro ou Buscar + Maiúsculas + H para ir ao segundo desta páxina.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">sen marcar</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3286390186030710347">Control desprazable</translation>
-<translation id="3300348286427369683">Compatibilidade con texto enriquecido. ChromeVox admite campos con texto enriquecido, mesmo comandos de salto, desprazamento de cursor en dispositivos braille, seleccións etc.</translation>
 <translation id="3300733168898541351">desfai</translation>
 <translation id="3307886118343381874">Vai ao final da táboa</translation>
 <translation id="3312997241656799641">Seguinte ligazón visitada</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Modo persistente intelixente desactivado</translation>
 <translation id="4623097797855662355">Colofón</translation>
 <translation id="4624970070706497034">Os atallos de teclado de TalkBack xa non están personalizados para Chromebooks. Podes seguir usando esta función, pero cos predeterminados. Preme Buscar + A e despois K para ver os atallos de teclado dispoñibles. Se queres usar TalkBack, volve premer o comando.</translation>
-<translation id="463135993322337640">Para obter máis información sobre as novidades, preme ChromeVox seguido da tecla O e, despois, a N</translation>
 <translation id="4649220074413114917">Para deter a voz que estea soando actualmente, podes tocar a pantalla con dous dedos. Resultarache útil cando non queiras que ChromeVox lea algo. Para continuar, toca a pantalla con dous dedos.</translation>
-<translation id="4660783501463101648">Eliminouse a versión clásica. Quitouse a combinación de teclas para volver á versión clásica de ChromeVox.</translation>
 <translation id="4661075872484491155">árbore</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Ir á columna seguinte</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">volver</translation>
 <translation id="5102981729317424850">Barra de ferramentas</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Esta nova versión inclúe algúns cambios fascinantes. Estas son as novidades.</translation>
 <translation id="5111640677200759579">Cabeceira de columna</translation>
 <translation id="5115892389597951922">Rexistro de ChromeVox</translation>
 <translation id="5119330972669454698">Beixe escuro</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Navegación básica</translation>
 <translation id="609281021724813947">Non hai ningún control desprazable anterior</translation>
 <translation id="6100239002225743044">Subir unha liña</translation>
-<translation id="6118126368611144850">Aplicacións para Android para Chrome. Se tes Play Store no dispositivo, bota unha ollada a ChromeVox coas aplicacións para Android. Descarga Google Chrome Canary desde Play Store e proba a compatibilidade experimental.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">activar</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Caixa de combinación anterior</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamación}other{# exclamacións}}</translation>
 <translation id="670717715607710284">Desactiva a pantalla</translation>
-<translation id="6710213216561001401">Anterior</translation>
 <translation id="6714813999819678458">Título de nivel 2 anterior</translation>
 <translation id="6730312624811567147">Usa a tecla de busca + frecha cara á esquerda ou á dereita para acceder a Inicio ou Fin. Usa a tecla de busca + Control ou a frecha cara á esquerda ou á dereita para acceder a Control + Inicio ou Fin. Usa a tecla de busca + frecha cara arriba ou abaixo para retroceder ou avanzar pola páxina</translation>
 <translation id="6736510033526053669">pestana creada</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Branco antigo</translation>
 <translation id="9220679313820249046">Vermello alaranxado</translation>
 <translation id="9223032053830369045">Vermello escuro</translation>
-<translation id="923331726185079994">Actualizouse ChromeVox</translation>
 <translation id="93384979447910801">Verde mariño escuro</translation>
 <translation id="937605981140327129">Nestes momentos non está instalado TalkBack. Instala Accesibilidade de Android a través de Play Store e téntao de novo.</translation>
 <translation id="948171205378458592">Reduce a velocidade da fala</translation>

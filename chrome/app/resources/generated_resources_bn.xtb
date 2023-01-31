@@ -2922,6 +2922,7 @@
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3602870520245633055">প্রিন্ট ও স্ক্যান করুন</translation>
 <translation id="3603622770190368340">নেটওয়ার্ক সার্টিফিকেট প্রাপ্ত করুন</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}one{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}other{{COUNT}টি অ্যাকাউন্ট একই পাসওয়ার্ড ব্যবহার করছে}}</translation>
 <translation id="3605780360466892872">বটনডাউন</translation>
 <translation id="3609277884604412258">কুইক সার্চ</translation>
 <translation id="3610241585790874201">আপনার ডিভাইসে ডেটা সেভ করার অনুমতি নেই</translation>
@@ -6681,7 +6682,6 @@
 <translation id="7044211973375150246">একটি অ্যাপ, <ph name="APP_NAME" />-এর মতো একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" />-এর সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="7044606776288350625">ডেটা সিঙ্ক করুন</translation>
 <translation id="7047059339731138197">একটি ব্যাকগ্রাউন্ড বেছে নিন</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" />-এ লিঙ্ক শেয়ার করুন</translation>
 <translation id="7049293980323620022">ফাইল রাখবেন?</translation>
 <translation id="7050037487872780845">হটস্পট কনফিগারেশনটি সঠিক নয়</translation>
 <translation id="7052237160939977163">কার্য-সম্পাদনা ট্রেস ডেটা পাঠান</translation>

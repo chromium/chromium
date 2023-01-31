@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Pasthënie</translation>
 <translation id="1197088940767939838">Portokalli</translation>
 <translation id="1198865190323699001">Gjestet me prekje</translation>
-<translation id="1201402288615127009">Para</translation>
 <translation id="1202112913213080585">anulo</translation>
 <translation id="1206619573307042055">tenda</translation>
 <translation id="1207086294218137981">Nuk ka titull tjetër të nivelit 4</translation>
@@ -71,7 +70,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1342835525016946179">artikull</translation>
 <translation id="1346059596910821859">Këshillë</translation>
 <translation id="1354356357730355833">kopjo</translation>
-<translation id="135978014023467274">Je përditësuar me ChromeVox 63!</translation>
 <translation id="1360699455582016846">Kliko tek artikulli nën tastin e rrugëzimit <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">kalo te karakteri tjetër</translation>
 <translation id="1377925789329510816">Ky është titulli i fundit. Shtyp "Kërko+H" për të kaluar te titulli i parë ose "Kërko+Shift+H" për të shkuar te titulli i dytë në këtë faqe.</translation>
@@ -363,7 +361,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3283583562490372694">e pazgjedhur</translation>
 <translation id="3286372614333682499">portret</translation>
 <translation id="3286390186030710347">Rrëshqitës</translation>
-<translation id="3300348286427369683">Mbështetja për tekstin e pasuruar. ChromeVox tani mbështet fushat e tekstit të pasuruar, duke përfshirë komandat e kërcimit, rrugëzimin e kursorit të shkrimit breil, përzgjedhjen etj.</translation>
 <translation id="3300733168898541351">zhbëj</translation>
 <translation id="3307886118343381874">Shko në fund të tabelës</translation>
 <translation id="3312997241656799641">Lidhja tjetër e vizituar</translation>
@@ -550,9 +547,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4617384941327705512">"Modaliteti 'i ngjitur' inteligjent" është joaktiv</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">TalkBack nuk e ofron më personalizimin për pajisjet Chromebook. Mund ta përdorësh përsëri, por përdor shkurtoret e parazgjedhura të tastierës të TalkBack. Shtyp Kërko+A dhe më pas K për të parë shkurtoret e disponueshme. Nëse dëshiron të përdorësh përsëri TalkBack, shtyp përsëri komandën.</translation>
-<translation id="463135993322337640">Shtyp ChromeVox o, n për të zbuluar të rejat</translation>
 <translation id="4649220074413114917">Trokitja me dy gishta në ekran mund të përdoret për të ndaluar çdo ligjërim aktual. Kjo është e dobishme nëse nuk dëshiron që ChromeVox të lexojë diçka. Për të vazhduar, trokit në ekran me dy gishta.</translation>
-<translation id="4660783501463101648">Versioni klasik u hoq. Ndryshimi i tastierës për të kaluar përsëri te versioni klasik i ChromeVox është hequr.</translation>
 <translation id="4661075872484491155">pemë</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Shko te kolona tjetër</translation>
@@ -617,7 +612,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5087864757604726239">prapa</translation>
 <translation id="5102981729317424850">Shiriti i veglave</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Në këtë version të ri kemi disa ndryshime emocionuese; ja se çfarë ka të re:</translation>
 <translation id="5111640677200759579">Titulli i kolonës</translation>
 <translation id="5115892389597951922">Evidenca e ChromeVox</translation>
 <translation id="5119330972669454698">Dru i madh</translation>
@@ -768,7 +762,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6082768461603900813">Navigimi bazë</translation>
 <translation id="609281021724813947">Nuk ka asnjë rrëshqitës të mëparshëm</translation>
 <translation id="6100239002225743044">Lëviz lart një rresht</translation>
-<translation id="6118126368611144850">Aplikacionet e Android për Chrome. Nëse ke "Dyqanin e Play" në pajisjen tënde, hidhi një vështrim të shpejtë ChromeVox me aplikacionet e Android. Provo mbështetjen eksperimentale duke shkarkuar Google Chrome Canary nga "Dyqani i Play".</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">aktivizo</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="6697092096875747123">Kutia e mëparshme e kombinuar</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{pikëçuditje}other{# pikëçuditje}}</translation>
 <translation id="670717715607710284">Ekrani është i fikur</translation>
-<translation id="6710213216561001401">Prapa</translation>
 <translation id="6714813999819678458">Titulli i mëparshëm i nivelit 2</translation>
 <translation id="6730312624811567147">Përdor "Kërko" dhe shigjetat "Majtas" ose "Djathtas" për "Kreu" ose "Fundi", "Kërko" dhe CTRL dhe shigjetat "Majtas" ose "Djathtas" për CTRL dhe "Kreu" ose "Fundi", "Kërko" dhe shigjetat "Lart" ose "Poshtë" për të kaluar te "Faqja lart" ose "Faqja poshtë"</translation>
 <translation id="6736510033526053669">skeda u krijua</translation>
@@ -1190,7 +1182,6 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="9208241857935108694">E bardhë antike</translation>
 <translation id="9220679313820249046">E kuqe portokalli</translation>
 <translation id="9223032053830369045">E kuqe e errët</translation>
-<translation id="923331726185079994">ChromeVox është përditësuar</translation>
 <translation id="93384979447910801">E gjelbër deti e errët</translation>
 <translation id="937605981140327129">TalkBack nuk është instaluar aktualisht. Instalo AccessibilitySuite të Android nëpërmjet "Dyqanit të Play" dhe provo sërish.</translation>
 <translation id="948171205378458592">Ul shpejtësinë e ligjërimit</translation>

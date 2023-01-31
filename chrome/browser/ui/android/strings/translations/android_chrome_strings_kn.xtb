@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">ಮುಂದುವರಿಸಲು, ಈ ಸೈಟ್‌ನ ಜೊತೆಗೆ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ನಿಮ್ಮ ಹೆಸರು, ಇಮೇಲ್ ವಿಳಾಸ ಮತ್ತು ಪ್ರೊಫೈಲ್ ಚಿತ್ರವನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ. ಈ ಸೈಟ್‌ನ <ph name="BEGIN_LINK1" />ಗೌಪ್ಯತೆ ನೀತಿಯನ್ನು<ph name="END_LINK1" /> ನೋಡಿ.</translation>
 <translation id="2000419248597011803">ಕೆಲವು ಕುಕೀಗಳನ್ನು ಹಾಗೂ ವಿಳಾಸ ಪಟ್ಟಿ ಮತ್ತು ಹುಡುಕಾಟ ಬಾಕ್ಸ್‌ನಿಂದ ಹುಡುಕಾಟಗಳನ್ನು, ನಿಮ್ಮ ಡಿಫಾಲ್ಟ್ ಹುಡುಕಾಟದ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="200114059308480249">Google ಹುಡುಕಾಟಗಳಲ್ಲಿ ಸುತ್ತಮುತ್ತಲಿನ ಪಠ್ಯವನ್ನು ಸೇರಿಸಬೇಕೇ?</translation>
+<translation id="2009341475524975924">ಜಾಹೀರಾತಿನ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಅಳೆಯಲು, ಸೈಟ್‌ಗಳ ನಡುವೆ ಸೀಮಿತ ಪ್ರಕಾರದ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದು, ಉದಾಹರಣೆಗೆ, ದಿನದ ಯಾವ ಸಮಯದಲ್ಲಿ ನಿಮಗೆ ಜಾಹೀರಾತನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗಿದೆ ಎಂಬುದರ ಡೇಟಾ.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="2021896219286479412">ಪೂರ್ಣ ಪರದೆ ಸೈಟ್ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="2038563949887743358">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್ ವಿನಂತಿಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="2323763861024343754">ಸೈಟ್ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2328985652426384049">ಸೈನ್ ಇನ್ ಆಗಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="234265804618409743">ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="2349710944427398404">ಖಾತೆಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ Chrome ಬಳಸಿದ ಒಟ್ಟು ಡೇಟಾ</translation>
 <translation id="235789365079050412">Google ಗೌಪ್ಯತೆ ನೀತಿ</translation>
@@ -343,6 +345,7 @@
 <translation id="2909615210195135082">Google ಅಧಿಸೂಚನೆಗಳು ಪ್ಲ್ಯಾಟ್‌ಫಾರ್ಮ್</translation>
 <translation id="2912296070571964914">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2912345083818861431">ತೆರೆದ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಬಳಸಿ</translation>
+<translation id="2922568440285376746">Google ಬಳಸಿಕೊಂಡು ಚಿತ್ರದ ಒಳಗೆ ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">ಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ಸಂಗ್ರಹಣೆ</translation>
 <translation id="2932222164150889403">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಬದಲಾಗುವುದಿಲ್ಲ</translation>
@@ -650,6 +653,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> ತೆರೆಯಿರಿ</translation>
 <translation id="4619564267100705184">ಇದು ನೀವೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="4634124774493850572">ಪಾಸ್‌ವರ್ಡ್ ಬಳಸಿ</translation>
+<translation id="4637420359569396807">ಜಾಹೀರಾತು ಮಾಪನದ ಮೂಲಕ, ತಮ್ಮ ಜಾಹೀರಾತುಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಅಳೆಯುವುದಕ್ಕಾಗಿ ಸೈಟ್‌ಗಳು ಹಾಗೂ ಆ್ಯಪ್‌ಗಳ ನಡುವೆ ಸೀಮಿತ ಪ್ರಕಾರದ ಡೇಟಾವನ್ನು ಹಂಚಿಕೊಳ್ಳಬಹುದು, ಉದಾಹರಣೆಗೆ, ದಿನದ ಯಾವ ಸಮಯದಲ್ಲಿ ನಿಮಗೆ ಜಾಹೀರಾತನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗಿದೆ ಎಂಬುದರ ಡೇಟಾ.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ಪಾಸ್‌ವರ್ಡ್ ಅಪಾಯಕ್ಕೀಡಾಗಿದೆ}one{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}other{# ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅಪಾಯಕ್ಕೀಡಾಗಿವೆ}}</translation>
 <translation id="4650364565596261010">ಸಿಸ್ಟಂ ಡಿಫಾಲ್ಟ್</translation>
 <translation id="465657074423018424">ಮೋಸಗೊಳಿಸುವ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ರಕ್ಷಿಸುತ್ತದೆ. ಇದನ್ನು ನೀವು ಆಫ್ ಮಾಡಿದರೆ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಮೂದಿಸುವ ಮೊದಲು, ಬ್ರೌಸ್ ಮಾಡುವಾಗ ಹೆಚ್ಚುವರಿ ಜಾಗರೂಕರಾಗಿರಿ.</translation>
@@ -662,6 +666,7 @@
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4685741273709472646">ಡ್ರಾಪ್‌ಡೌನ್ ಪಟ್ಟಿಯಿಂದ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4687718960473379118">ಸೈಟ್ ಸೂಚಿಸಿದ ಜಾಹೀರಾತುಗಳು</translation>
+<translation id="4689792375321623175">Google ಬಳಸಿಕೊಂಡು ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">ಸಂಗ್ರಹಿಸಲಾಗಿರುವ ಚಿತ್ರಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳು</translation>
 <translation id="4719927025381752090">ಅನುವಾದಿಸಲು ಅವಕಾಶಿಸಿ</translation>
@@ -808,6 +813,7 @@
 <translation id="5438292632479953702">ಪುನಃ ಡೌನ್‍ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="5441466871879044658">ಈ ಭಾಷೆಗೆ ಅನುವಾದಿಸಿ</translation>
 <translation id="5441522332038954058">ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಹೋಗಿ</translation>
+<translation id="5444999712122199445">ಸೈಟ್‌ಗೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="544776284582297024">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಲು ಮತ್ತು ಒಂದೇ ಸಮಯದಲ್ಲಿ ವಿಭಿನ್ನ ಪುಟಗಳಿಗೆ ಭೇಟಿ ನೀಡಲು, ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ ಬಟನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> ಜೊತೆಗೆ</translation>
 <translation id="5456381639095306749">ಪುಟ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>

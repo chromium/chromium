@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Післямова</translation>
 <translation id="1197088940767939838">Оранжевий</translation>
 <translation id="1198865190323699001">Жести натискання</translation>
-<translation id="1201402288615127009">Далі</translation>
 <translation id="1202112913213080585">скасувати</translation>
 <translation id="1206619573307042055">область виділення</translation>
 <translation id="1207086294218137981">Немає наступного заголовка рівня 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">стаття</translation>
 <translation id="1346059596910821859">Чайові</translation>
 <translation id="1354356357730355833">копіювати</translation>
-<translation id="135978014023467274">Тепер ви використовуєте ChromeVox 63!</translation>
 <translation id="1360699455582016846">Натиснути елемент під клавішею маршрутизації <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">перейти до наступного символа</translation>
 <translation id="1377925789329510816">Перехід між заголовками. Натисніть комбінацію Search+H, щоб повернутися до першого заголовка, або Search+Shift+H, щоб перейти до другого заголовка на цій сторінці.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">без прапорця</translation>
 <translation id="3286372614333682499">книжкова</translation>
 <translation id="3286390186030710347">Повзунок</translation>
-<translation id="3300348286427369683">Підтримка форматованого тексту. Тепер ChromeVox підтримує поля форматованого тексту, зокрема команди переходу, переміщення курсора за допомогою брайлівської клавіатури, виділення тексту тощо.</translation>
 <translation id="3300733168898541351">відмінити</translation>
 <translation id="3307886118343381874">Перейти в кінець таблиці</translation>
 <translation id="3312997241656799641">Наступне натиснуте посилання</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Розумний режим залипання клавіш вимкнено</translation>
 <translation id="4623097797855662355">Емблема видавництва</translation>
 <translation id="4624970070706497034">Функцію TalkBack більше не можна налаштовувати на пристроях Chromebook. Ви можете й надалі її використовувати, але лише з комбінаціями клавіш TalkBack за умовчанням. Щоб переглянути доступні комбінації клавіш, натисніть Search + A, а потім – K. Якщо ви все ще хочете використовувати TalkBack, знову натисніть командну кнопку.</translation>
-<translation id="463135993322337640">Натисніть ChromeVox o, n, щоб дізнатися про нові функції</translation>
 <translation id="4649220074413114917">Торкнувшись екрана двома пальцями, можна зупинити озвучення. Це корисно, коли ви хочете, щоб програма ChromeVox перестала читати текст. Щоб продовжити, торкніться екрана двома пальцями.</translation>
-<translation id="4660783501463101648">Видалено версію Classic. Комбінацію клавіш для переходу до ChromeVox Classic видалено.</translation>
 <translation id="4661075872484491155">дерево</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Перейти до наступного стовпця</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5102981729317424850">Панель інструментів</translation>
 <translation id="5105050547967751155">обов’язково</translation>
-<translation id="5106547198195128110">Нижче зазначено, що змінилося в новому випуску.</translation>
 <translation id="5111640677200759579">Заголовок стовпця</translation>
 <translation id="5115892389597951922">Журнал ChromeVox</translation>
 <translation id="5119330972669454698">Жовтуватий</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Основна навігація</translation>
 <translation id="609281021724813947">Немає попереднього повзунка</translation>
 <translation id="6100239002225743044">Перемістити на рядок вище</translation>
-<translation id="6118126368611144850">Додатки Android для Chrome. Якщо на вашому пристрої встановлено Play Маркет, спробуйте експериментальну функцію ChromeVox із додатками Android. Завантажте Google Chrome Canary з Play Маркету.</translation>
 <translation id="611827076493383239">натиснуто</translation>
 <translation id="6119846243427417423">активувати</translation>
 <translation id="6122013438240733403">кнопка</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Попереднє комбіноване вікно</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{знак оклику}one{# знак оклику}few{# знаки оклику}many{# знаків оклику}other{# знаку оклику}}</translation>
 <translation id="670717715607710284">Вимкнути екран</translation>
-<translation id="6710213216561001401">Назад</translation>
 <translation id="6714813999819678458">Попередній заголовок рівня 2</translation>
 <translation id="6730312624811567147">Використовуйте комбінацію клавіші пошуку зі стрілкою праворуч або ліворуч як клавішу Home або End, комбінацію клавіш пошуку та Control зі стрілкою праворуч чи ліворуч як клавіші Control Home або End, а клавішу пошуку зі стрілкою вгору чи вниз – як клавіші Page Up або Page Down</translation>
 <translation id="6736510033526053669">вкладку створено</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Молочно-білий</translation>
 <translation id="9220679313820249046">Помаранчево-червоний</translation>
 <translation id="9223032053830369045">Темно-червоний</translation>
-<translation id="923331726185079994">ChromeVox оновлено</translation>
 <translation id="93384979447910801">Темний зелене море</translation>
 <translation id="937605981140327129">TalkBack наразі не встановлено. Установіть додаток Спеціальні можливості Android із Play Маркету й повторіть спробу.</translation>
 <translation id="948171205378458592">Зменшити темп мовлення</translation>

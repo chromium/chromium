@@ -6,12 +6,12 @@
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1257458525759135959">Als je afbeeldingen wilt opslaan, tik je op Instellingen om ze door Chromium aan je foto's te laten toevoegen</translation>
 <translation id="1289216811211435351">Overschakelen naar Chromium</translation>
+<translation id="1352919863522755794">Google Wachtwoordmanager kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
 <translation id="1361748954329991663">Chromium is verouderd. Als er geen update beschikbaar is in de <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, ondersteunt je apparaat nieuwe versies van Chromium mogelijk niet.</translation>
 <translation id="1431818719585918472">Laat Chromium je incognitotabbladen vergrendelen.</translation>
 <translation id="1472013873724362412">Je account werkt niet in Chromium. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
 <translation id="1507010443238049608">Help de functies en prestaties van Chromium te verbeteren</translation>
 <translation id="1531155317299575425">Toont prompts om in te loggen bij Chromium.</translation>
-<translation id="1584569488888892906">Chromium is gebruiksvriendelijk, beveiligd en sneller dan ooit</translation>
 <translation id="1617663976202781617">Gegevens van Chromium-synchronisatie</translation>
 <translation id="1722370509450468186">Je wachtwoord wordt opgeslagen in je account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-gegevens gewist</translation>
@@ -36,6 +36,7 @@
 <translation id="2650312721222849884">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="2684230048001240293">Stel Chromium in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
+<translation id="2767464022270041271">Geen opgeslagen wachtwoorden. Google Wachtwoordmanager kan je wachtwoorden checken als je deze opslaat.</translation>
 <translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
 <translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
@@ -58,6 +59,7 @@
 <translation id="4681781466797808448">Chromium-scanner aanzetten</translation>
 <translation id="4736424910885271643">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chromium-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
+<translation id="4840404732697892756">Google Wachtwoordmanager kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
@@ -68,6 +70,7 @@
 <translation id="5521125884468363740">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
 <translation id="5522297504975449419">Sommige Chromium-functies zijn niet meer beschikbaar.</translation>
 <translation id="5573014823074921752">Chromium-tip. Voor meer tabbladopties tik je in de werkbalk onder- of bovenaan het scherm op de knop Tabbladen bekijken en houd je deze vast.</translation>
+<translation id="5661521615548540542">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="5700709190537129682">Chromium kan je wachtwoorden niet checken</translation>
 <translation id="5777187867430702742">Chromium-pagina</translation>
 <translation id="5945387852661427312">Je logt in met een account dat wordt beheerd door <ph name="DOMAIN" />, waarmee je de eigenaar beheer geeft over je Chromium-gegevens. Je gegevens worden permanent gekoppeld aan dit account. Als je uitlogt van Chromium, worden je gegevens van dit apparaat verwijderd. Ze blijven echter opgeslagen in je Google-account.</translation>
@@ -88,7 +91,6 @@
 <translation id="7018284295775193585">Chromium kan niet updaten</translation>
 <translation id="7045244423563602563">Chromium personaliseren</translation>
 <translation id="7099326575020694068">Chromium kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
-<translation id="7108914401277488191">Doe meer met Chromium</translation>
 <translation id="7118091470949186573">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7175400662502680481">Je wachtwoord is gelekt bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen.</translation>
 <translation id="7208566199746267865">Chromium bespaart je tijd door je accounts beschikbaar te maken op internet. Je kunt accounts toevoegen of verwijderen bij Instellingen.</translation>
@@ -115,6 +117,7 @@
 <translation id="8409374867500149834">Je hebt de krachtigste beveiliging van Chromium tegen schadelijke websites</translation>
 <translation id="858114650497379505">Je kunt de wachtwoorden die je in Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
+<translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Beschermt je op Chromium en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="8663480472502753423">Houd Chromium up-to-date</translation>
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>
@@ -128,6 +131,7 @@ Aandachtspunten:
 
   • Als je synchronisatie aanzet, kunnen statistieken ook informatie bevatten over de URL's die je bezoekt.<ph name="END_INDENT" /></translation>
 <translation id="8776843108004031667">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chromium.</translation>
+<translation id="8857676124663337448">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="894437814105052438">Als je uitlogt, synchroniseert Chromium geen nieuwe gegevens met je Google-account. Eerder gesynchroniseerde gegevens blijven in het account staan.</translation>
 <translation id="9022552996538154597">Inloggen bij Chromium</translation>
 <translation id="9059693977935746710">Je hoeft dit wachtwoord niet te onthouden. Het wordt opgeslagen in Wachtwoordmanager voor <ph name="EMAIL" />.</translation>

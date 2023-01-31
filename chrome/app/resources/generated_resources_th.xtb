@@ -2906,6 +2906,7 @@
 <translation id="3602290021589620013">ดูตัวอย่าง</translation>
 <translation id="3602870520245633055">พิมพ์และสแกน</translation>
 <translation id="3603622770190368340">รับใบรับรองเครือข่าย</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} บัญชีใช้รหัสผ่านเดียวกัน}other{{COUNT} บัญชีใช้รหัสผ่านเดียวกัน}}</translation>
 <translation id="3605780360466892872">บัตเทิ่นดาวน์</translation>
 <translation id="3609277884604412258">ค้นหาด่วน</translation>
 <translation id="3610241585790874201">ไม่ได้รับอนุญาตให้บันทึกข้อมูลลงในอุปกรณ์</translation>
@@ -6656,7 +6657,6 @@
 <translation id="7044211973375150246">มีแอปได้รับการตั้งค่าให้เปิดลิงก์เดียวกับ <ph name="APP_NAME" /> การดำเนินการนี้จะทำให้ <ph name="APP_NAME_2" /> ไม่สามารถเปิดลิงก์ที่รองรับ</translation>
 <translation id="7044606776288350625">ซิงค์ข้อมูล</translation>
 <translation id="7047059339731138197">เลือกพื้นหลัง</translation>
-<translation id="7048457618657122233">แชร์ลิงก์ใน <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">เก็บไฟล์ไว้ไหม</translation>
 <translation id="7050037487872780845">การกำหนดค่าฮอตสปอตไม่ถูกต้อง</translation>
 <translation id="7052237160939977163">ส่งข้อมูลการติดตามผลการปฏิบัติงาน</translation>

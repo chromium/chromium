@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Соңку сөз</translation>
 <translation id="1197088940767939838">Кызгылт сары</translation>
 <translation id="1198865190323699001">Тийүү жаңсоолору</translation>
-<translation id="1201402288615127009">Кийинки</translation>
 <translation id="1202112913213080585">токтотуу</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Кийинки 4-деңгээлдин башкы аталышы жок</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Кеңеш</translation>
 <translation id="1354356357730355833">көчүрүү</translation>
-<translation id="135978014023467274">ChromeVox 63 – эң акыркы версиясы орнотулду!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> багыттоо баскычынын астындагы нерсени чыкылдатыңыз</translation>
 <translation id="1376703628032300005">кийинки символго өтүү</translation>
 <translation id="1377925789329510816">Бул эң акыркы тема. Бул барактагы биринчи темага өтүү үчүн Search+H баскычтарын же экинчи темага өтүү үчүн Search+Shift+H баскычтарын басыңыз.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">белгиленген эмес</translation>
 <translation id="3286372614333682499">тигинен</translation>
 <translation id="3286390186030710347">Слайдер</translation>
-<translation id="3300348286427369683">Rich text колдоого алынды. Эми ChromeVox rich text талааларын, анын ичинде секиртүү буйруктарын, Брайль курсорун иштетүүнү, тандоону жана башкаларды колдоого алат.</translation>
 <translation id="3300733168898541351">артка кайтаруу</translation>
 <translation id="3307886118343381874">Жадыбалдын аягына өтүү</translation>
 <translation id="3312997241656799641">Кийинки каралган шилтеме.</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Smart sticky mode өчүк</translation>
 <translation id="4623097797855662355">Чыгуу маалыматы</translation>
 <translation id="4624970070706497034">TalkBack Chromebook түзмөктөрүндө жекелештирүүнү колдоого албай калган. Аны пайдалана бересиз, бирок TalkBack функциясынын демейки ыкчам баскычтарын колдонуңуз. Жеткиликтүү ыкчам баскычтарды көрүү үчүн Search+A, андан кийин K баскычын басыңыз. TalkBack функциясын дагы эле колдонгуңуз келсе, буйрукту кайрадан басыңыз.</translation>
-<translation id="463135993322337640">Жаңы функциялар жөнүндө билүү үчүн ChromeVox o, n баскычтарын басыңыз</translation>
 <translation id="4649220074413114917">Учурдагы кепти токтотуу үчүн экранды эки манжаңыз менен таптап коюңуз. ChromeVox белгилүү бир нерсени окубасын десеңиз ушул жаңсоону колдонуңуз. Улантуу үчүн экранды экит манжаңыз менен басыңыз.</translation>
-<translation id="4660783501463101648">Classic өчүрүлдү. ChromeVox Classic версиясына которуштурган баскычтоптогу баскыч өчүрүлдү.</translation>
 <translation id="4661075872484491155">дарак</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Кийинки тилкеге өтүү</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">артка</translation>
 <translation id="5102981729317424850">Куралдар тилкеси</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Жаңы версияда бир катар кызыктуу өзгөрүүлөр бар, алар төмөндө берилген:</translation>
 <translation id="5111640677200759579">Тилкенин башы</translation>
 <translation id="5115892389597951922">ChromeVox таржымалы</translation>
 <translation id="5119330972669454698">Кум түстүү күрөң</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Чабыттоонун негиздери</translation>
 <translation id="609281021724813947">Мурунку сыдырма жок</translation>
 <translation id="6100239002225743044">Бир сап өйдө жылдыруу</translation>
-<translation id="6118126368611144850">Chrome'го арналган Android колдонмолору. Эгер түзмөгүңүздө Play Store орнотулган болсо, ChromeVox'ту Android колдонмолору менен пайдаланып көрүңүз. Play Storeдөн Google Chrome Canary'ни жүктөп алып, тажрыйбалуу колдоону байкап көрүңүз.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">жандыруу</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Мурунку айкалыштырылган кутуча</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{илеп белгиси}other{# илеп белгиси}}</translation>
 <translation id="670717715607710284">Экран өчүк</translation>
-<translation id="6710213216561001401">Мурунку</translation>
 <translation id="6714813999819678458">Мурунку 2-деңгээлдеги баш аты.</translation>
 <translation id="6730312624811567147">Барактын башына же аягына өтүү үчүн издөө баскычы менен "сол" же "оң" жебени басыңыз. Саптын башына же аягына өтүү үчүн издөө баскычын, Control жана "сол" же "оң" жебени басыңыз. Барактоо үчүн издөө баскычы менен "өйдө" же "төмөн" жебени басыңыз</translation>
 <translation id="6736510033526053669">өтмөк түзүлдү</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Ачык сары кызгылтым ак</translation>
 <translation id="9220679313820249046">Кызгылтым ток сары</translation>
 <translation id="9223032053830369045">Күңүрт кызыл</translation>
-<translation id="923331726185079994">ChromeVox жаңырды</translation>
 <translation id="93384979447910801">Деңиздей күңүрт жашыл</translation>
 <translation id="937605981140327129">Учурда TalkBack орнотулбай турат. Play Store'дон Android AccessibilitySuite колдонмосун жүктөп алып, кайталаңыз.</translation>
 <translation id="948171205378458592">Кептин ылдамдыгын жайлатуу</translation>

@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">शब्दकोशात &amp;जोडा</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1022489261739821355">तुमच्या <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> वरील पासवर्ड दाखवत आहे</translation>
+<translation id="1022669824195822609">तुमचे डिव्हाइस <ph name="DOMAIN" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर या डिव्हाइसवरील कोणत्याही प्रोफाइलचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="1026655690966755180">पोर्ट जोडा</translation>
 <translation id="1026822031284433028">इमेज लोड करा</translation>
 <translation id="1028604629594230522">Chrome तुम्ही भेट देण्याची शक्यता असलेली पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात.</translation>
@@ -1880,6 +1881,7 @@
 <translation id="2643064289437760082">तुमचा ब्राउझिंग डेटा हटवून तुम्ही कधीही जाहिरात मापन डेटा हटवू शकता</translation>
 <translation id="2643698698624765890">विंडो मेनूमध्‍ये विस्तारांवर क्लिक करुन ‍तुमचे विस्तार व्यवस्थापित करा.</translation>
 <translation id="2645047101481282803">तुमचे डिव्हाइस <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले आहे</translation>
+<translation id="2645388244376970260"><ph name="DEVICE_NAME" /> वर हा टॅब कास्ट करत आहे</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, सर्टिफिकेट श्रृंखला</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
@@ -2752,6 +2754,7 @@
 <translation id="3446274660183028131">Windows इंस्टॉल करण्यासाठी कृपया Parallels Desktop लाँच करा.</translation>
 <translation id="344630545793878684">अनेक वेबसाइटवर तुमचा डेटा वाचा</translation>
 <translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
+<translation id="3447797901512053632"><ph name="DEVICE_NAME" /> वर <ph name="TAB_NAME" /> कास्ट करत आहे</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
 <translation id="3449393517661170867">नवीन टॅब असलेल्या विंडोमध्ये उघडा</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> कडे कमांड पाठविण्यासाठी <ph name="SEARCH_KEY" /> दाबा</translation>
@@ -2906,6 +2909,7 @@
 <translation id="3590295622232282437">व्यवस्थापित केलेल्या सेशनमध्ये एंटर करत आहे.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> ठेवा</translation>
 <translation id="3592260987370335752">&amp;अधिक जाणून घ्या</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करत आहे</translation>
 <translation id="3593152357631900254"> Fuzzy-Pinyin मोड सक्षम करा</translation>
 <translation id="3593965109698325041">सर्टिफिकेट नाव प्रतिबंध</translation>
 <translation id="3596012367874587041">अ‍ॅप सेटिंग्ज</translation>
@@ -3181,6 +3185,7 @@
 <translation id="3823310065043511710">Linux साठी किमान <ph name="INSTALL_SIZE" /> जागेची शिफारस केली जाते.</translation>
 <translation id="3824621460022590830">डिव्हाइस नोंदणी टोकन चुकीचे आहे. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{या फाइल प्रकारासाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}other{या फाइल प्रकारांसाठी माझी निवड लक्षात ठेवा: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">अ‍ॅप सूचनांसाठी अ‍ॅप आयकनवर बिंदू दाखवा</translation>
 <translation id="3826071569074535339">मोशन सेन्सर वापरण्याची अनुमती आहे</translation>
 <translation id="3826440694796503677">तुमच्या अ‍ॅडमिनिस्ट्रेटरने आणखी Google खाती जोडणे बंद केले आहे</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रीन</translation>
@@ -4499,6 +4504,7 @@
 <translation id="5063480226653192405">वापर</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">ChromeOS सेटिंग्जमध्ये सुरक्षित DNS व्यवस्थापित करा</translation>
+<translation id="5066160542186949327">दुसऱ्या फोल्डरमध्ये हलवा</translation>
 <translation id="5067399438976153555">नेहमी सुरू</translation>
 <translation id="5067867186035333991"><ph name="HOST" /> तुमचा मायक्रोफोन ॲक्सेस करू इच्छित असल्यास विचारा</translation>
 <translation id="5068553687099139861">पासवर्ड दाखवा</translation>
@@ -6667,7 +6673,6 @@
 <translation id="7044211973375150246">ॲप हे <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केले आहे. हे <ph name="APP_NAME_2" /> ला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="7044606776288350625">डेटा सिंक करा</translation>
 <translation id="7047059339731138197">बॅकग्राउंड निवडा</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> वर लिंक शेअर करा</translation>
 <translation id="7049293980323620022">फाईल ठेवायची?</translation>
 <translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉंफिगरेशन</translation>
 <translation id="7052237160939977163">कार्यप्रदर्शन ट्रेस डेटा पाठवा</translation>

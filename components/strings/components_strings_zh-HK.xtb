@@ -275,6 +275,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
+<translation id="1584492003828271317">上網時是否會看到個人化廣告，取決於這項設定、網站建議廣告、Cookie 設定，以及網站是否顯示個人化廣告</translation>
 <translation id="1586541204584340881">您已安裝的擴充程式</translation>
 <translation id="1588438908519853928">正常</translation>
 <translation id="1592005682883173041">本地資料存取</translation>
@@ -476,6 +477,7 @@
 <translation id="2091887806945687916">音效</translation>
 <translation id="2093982008204312032">Google Chrome 正在嘗試關閉 Windows Hello，以便填入密碼。</translation>
 <translation id="2094505752054353250">網域不符</translation>
+<translation id="2094704029599359040">版本資訊</translation>
 <translation id="2099652385553570808">三釘 (左側)</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議安全性強的密碼…</translation>
@@ -856,6 +858,7 @@
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{ # 個帳戶的登入資料}}</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
+<translation id="3141641372357166056">沒有同意聲明決定</translation>
 <translation id="3145945101586104090">無法將回應解碼</translation>
 <translation id="3150653042067488994">伺服器暫時發生錯誤</translation>
 <translation id="3154506275960390542">這個網頁含有可能不經安全途徑提交內容的表格。其他人可能會在傳輸期間查看您的資料，攻擊者也可能會修改這些資料，導致伺服器接收不同內容。</translation>
@@ -1376,6 +1379,7 @@
 <translation id="4359160567981085931">您剛才在欺詐網站上輸入了密碼。Chrome 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
 <translation id="4363222835916186793">此產品的通知已關閉</translation>
 <translation id="437040971055499437">發生安全性事件</translation>
+<translation id="4371591986692297148">未啟用</translation>
 <translation id="4372948949327679948">預期的「<ph name="VALUE_TYPE" />」值。</translation>
 <translation id="4375864595697821259">您亦可將項目加回清單，作為 Chrome 推測興趣的依據</translation>
 <translation id="4377125064752653719">您嘗試前往 <ph name="DOMAIN" />，但是發行者已撤銷伺服器提供的憑證。在這種情況下，請勿信任伺服器提供的安全性憑證，因為您可能連接至攻擊者。</translation>
@@ -1402,6 +1406,7 @@
 <translation id="443673843213245140">雖然已停用 Proxy，不過已明確指定了 Proxy 設定。</translation>
 <translation id="4441832193888514600">由於此政策只能設定為雲端使用者政策，因此系統已忽略。</translation>
 <translation id="4451135742916150903">可要求連接 HID 裝置</translation>
+<translation id="4451684391620232683">向使用者顯示的文字：</translation>
 <translation id="4452328064229197696">系統發現您剛才使用的密碼因資料外洩而被洩露。為確保帳戶安全，Google 密碼管理工具建議您檢查已儲存的密碼。</translation>
 <translation id="4460315069258617173">權限於此網站的分頁關閉時到期</translation>
 <translation id="4464826014807964867">有來自您機構資料的網站</translation>
@@ -1519,6 +1524,7 @@
 <translation id="4749011317274908093">您已啟用無痕模式</translation>
 <translation id="4750671009706599284">此手機</translation>
 <translation id="4750917950439032686">傳送資料至此網站時 (例如密碼或信用卡號碼)，您的資料將會保密。</translation>
+<translation id="4751249061288707459">同意聲明上次更新時間：</translation>
 <translation id="4751476147751820511">動態或光線感應器</translation>
 <translation id="4754461935447132332">不允許用於不安全的網站</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
@@ -1683,6 +1689,7 @@
 <translation id="5126510351761255129">驗證信用卡</translation>
 <translation id="512670116361803001">「<ph name="APP_NAME" />」可能無法正常調整大小。請使用預設視窗大小，以免應用程式發生問題。</translation>
 <translation id="5127934926273826089">花</translation>
+<translation id="5129534298163637277">確認對話方塊</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">請輸入正確的驗證碼</translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
@@ -1986,6 +1993,7 @@
 <translation id="5921639886840618607">要將付款卡儲存至 Google 帳戶嗎？</translation>
 <translation id="5922853866070715753">快將完成</translation>
 <translation id="5923492272538889093">要使用裝置解鎖功能取代 CVC 嗎？</translation>
+<translation id="5924782825030413055">同意聲明上次更新來源：</translation>
 <translation id="5928444777041341328">家居和園藝</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
 <translation id="5937560539988385583">已翻譯網頁</translation>
@@ -2677,6 +2685,7 @@
 <translation id="7619838219691048931">結束工作表</translation>
 <translation id="7625242817712715120">管理員政策不建議列印此內容</translation>
 <translation id="762844065391966283">一次一個物件</translation>
+<translation id="7630470133768862132">同意聲明狀態：</translation>
 <translation id="7631444403134069754">田徑</translation>
 <translation id="7633909222644580952">效能資料和當機報告</translation>
 <translation id="7637571805876720304">要從 Chromium 移除信用卡嗎？</translation>
@@ -2853,6 +2862,7 @@
 <translation id="8055534648776115597">職業和持續教育</translation>
 <translation id="8057711352706143257">無法正確安裝「<ph name="SOFTWARE_NAME" />」，解除安裝「<ph name="SOFTWARE_NAME" />」通常能修正相關問題。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">食品生產</translation>
+<translation id="8058603697124206642">不需要</translation>
 <translation id="8066225060526005217">由 Cookie 設定管理</translation>
 <translation id="8067872629359326442">您剛才在欺詐網站上輸入了密碼。Chromium 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
 <translation id="8070439594494267500">應用程式圖示</translation>
@@ -2941,6 +2951,7 @@
 <translation id="8270242299912238708">PDF 文件</translation>
 <translation id="8275952078857499577">不要詢問是否翻譯此網站</translation>
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
+<translation id="827820107214076967">重新整理記錄</translation>
 <translation id="8279611986089885641">必須開啟 Chrome 通知。您可在<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />開啟</translation>
 <translation id="8280630997017109758">紙匣 11</translation>
 <translation id="8281886186245836920">略過</translation>
@@ -3043,6 +3054,7 @@
 <translation id="8542014550340843547">三釘 (底部)</translation>
 <translation id="8542617028204211143">SRA0</translation>
 <translation id="8543181531796978784">您可以<ph name="BEGIN_ERROR_LINK" />報告偵測問題<ph name="END_ERROR_LINK" />；或如果您瞭解安全性風險，也可以<ph name="BEGIN_LINK" />瀏覽這個不安全的網站<ph name="END_LINK" />。</translation>
+<translation id="8546350655047701518">將記錄匯出成 JSON 檔</translation>
 <translation id="854892890027593466">C6/C5 信封</translation>
 <translation id="8553387990086529628">旅遊勝地</translation>
 <translation id="8554010658308662631">載入更多</translation>
@@ -3115,6 +3127,7 @@
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍候再試</translation>
+<translation id="8753913772043329557">政策記錄</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="8757526089434340176">提供 Google Pay 優惠</translation>
 <translation id="8758885506338294482">電子競技</translation>

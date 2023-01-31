@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Oglasi</translation>
 <translation id="1919950603503897840">Odaberite kontakte</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Uvećajte ili umanjite tekst i slike za sve web lokacije koje posjećujete</translation>
 <translation id="1984937141057606926">Dozvoljeno, izuzev trećim stranama</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1994173015038366702">URL web lokacije</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Zvuk</translation>
 <translation id="2148716181193084225">Danas</translation>
 <translation id="216989819110952009">Čak i s očima zaštićenim zelenim naočalama, Dorothy i njene prijateljice su isprva bile zaslijepljene</translation>
+<translation id="2176704795966505152">Prikaži opciju zumiranja u glavnom meniju</translation>
 <translation id="2182457891543959921">Web lokacije moraju tražiti odobrenje za kreiranje 3D mape okruženja i praćenje položaja kamere (preporučeno)</translation>
 <translation id="2212565012507486665">Dozvoli kolačiće</translation>
 <translation id="2228071138934252756">Da omogućite aplikaciji <ph name="APP_NAME" /> pristup kameri, također uključite kameru u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Omogućavanje kolačića za određenu web lokaciju.</translation>
 <translation id="4046123991198612571">Sljedeća numera</translation>
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web lokacije</translation>
+<translation id="4151930093518524179">Zadano zumiranje</translation>
 <translation id="4165986682804962316">Postavke web lokacije</translation>
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
 <translation id="4194328954146351878">Web lokacije moraju tražiti odobrenje za pregled i izmjenu informacija na NFC uređajima (preporučeno)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Da aplikaciji <ph name="APP_NAME" /> dozvolite pristup mikrofonu, također uključite mikrofon u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">Isključi mikrofon</translation>
 <translation id="4570913071927164677">Detalji</translation>
+<translation id="4575264539271661854">Olakšajte uvećavanje teksta i slika na web lokaciji koju posjećujete</translation>
 <translation id="4598549027014564149">U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu aktivnost pregledanja na web lokacijama, čak ni na srodnim web lokacijama. Aktivnost pregledanja se ne koristi za stvari kao što je personaliziranje oglasa. Moguće je da funkcije neće raditi na nekim web lokacijama.</translation>
 <translation id="4645575059429386691">Upravlja roditelj</translation>
 <translation id="4670064810192446073">Virtuelna realnost</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8324158725704657629">Ne pitaj ponovo</translation>
+<translation id="8362795839483915693">Možete uvećati ili umanjiti na web lokacijama koje posjećujete</translation>
 <translation id="8372893542064058268">Dozvolite sinhronizaciju u pozadini za određenu web lokaciju.</translation>
 <translation id="8376384591331888629">Uključujući kolačiće treće strane na ovoj web lokaciji</translation>
 <translation id="83792324527827022">Web lokacija koristi vašu kameru i mikrofon</translation>

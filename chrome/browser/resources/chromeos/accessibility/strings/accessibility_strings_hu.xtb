@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Utószó</translation>
 <translation id="1197088940767939838">Narancssárga</translation>
 <translation id="1198865190323699001">Érintéses kézmozdulatok</translation>
-<translation id="1201402288615127009">Tovább</translation>
 <translation id="1202112913213080585">mégse</translation>
 <translation id="1206619573307042055">fényújság</translation>
 <translation id="1207086294218137981">Nincs következő 4. szintű címsor</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">cikk</translation>
 <translation id="1346059596910821859">Tipp</translation>
 <translation id="1354356357730355833">másolás</translation>
-<translation id="135978014023467274">Sikeresen frissített a ChromeVox 63-as verziójára</translation>
 <translation id="1360699455582016846">Kattintson a(z) <ph name="ROUTING_KEY_NUMBER" /> átirányítási kulcs alatti elemre</translation>
 <translation id="1376703628032300005">ugrás a következő karakterre</translation>
 <translation id="1377925789329510816">Ez az utolsó címsor. Nyomja le a Keresés+H billentyűkombinációt az első címsorra ugráshoz, vagy a Keresés+Shift+H-t az oldalon található második címsorra lépéshez.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">nincs bejelölve</translation>
 <translation id="3286372614333682499">álló</translation>
 <translation id="3286390186030710347">Csúszka</translation>
-<translation id="3300348286427369683">Formázott szöveg támogatása. A ChromeVox már támogatja a formázott szöveget tartalmazó mezőket, beleértve az „ugrás” parancsokat, a Braille-kurzor irányítását, a kiválasztást és egyebeket.</translation>
 <translation id="3300733168898541351">visszavonás</translation>
 <translation id="3307886118343381874">Ugrás a táblázat végére</translation>
 <translation id="3312997241656799641">A következő felkeresett link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Intelligens beragadó mód kikapcsolva</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="4624970070706497034">A TalkBack már nem biztosít testreszabást a Chromebookok esetében. A funkciót továbbra is használhatja az alapértelmezett billentyűparancsokkal. A rendelkezésre álló billentyűparancsok megtekintéséhez nyomja le a Search + A billentyűkombinációt, majd pedig a K billentyűt. Ha továbbra is szeretné használni a TalkBack szolgáltatást, nyomja meg újra a parancsot.</translation>
-<translation id="463135993322337640">Nyomja meg a ChromeVox o, n billentyűket, ha többet szeretne megtudni az újdonságokról</translation>
 <translation id="4649220074413114917">Ha két ujjal koppint a képernyőre, bármilyen folyamatban lévő beszédet leállíthat. Ez akkor hasznos, ha nem szeretné, hogy a ChromeVox felolvasson valamit. A folytatáshoz koppintson két ujjal a képernyőre.</translation>
-<translation id="4660783501463101648">A hagyományos verzió eltávolítva. A ChromeVox hagyományos verziójára való váltásra alkalmas billentyűzetkapcsolót eltávolítottuk.</translation>
 <translation id="4661075872484491155">fa</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Ugrás a következő oszlopra</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">vissza</translation>
 <translation id="5102981729317424850">Eszköztár</translation>
 <translation id="5105050547967751155">kötelező</translation>
-<translation id="5106547198195128110">Érdekes módosításokat hajtottunk végre ebben az új kiadásban; íme az újdonságok:</translation>
 <translation id="5111640677200759579">Oszlopfejléc</translation>
 <translation id="5115892389597951922">ChromeVox-napló</translation>
 <translation id="5119330972669454698">Nyersfa</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Alapvető navigáció</translation>
 <translation id="609281021724813947">Nincs előző csúszka</translation>
 <translation id="6100239002225743044">Ugrás feljebb egy sorral</translation>
-<translation id="6118126368611144850">Android-alkalmazások Chrome-ra. Ha eszközén telepítve van a Play Áruház, előzetes betekintést kaphat a ChromeVox Android-alkalmazásokkal való használatába. Töltse le a Google Chrome Canary verzióját a Play Áruházból, és próbálja ki a kísérleti támogatást.</translation>
 <translation id="611827076493383239">felkeresett</translation>
 <translation id="6119846243427417423">Aktiválás</translation>
 <translation id="6122013438240733403">gmb</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Előző legördülő lista</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{felkiáltójel}other{# felkiáltójel}}</translation>
 <translation id="670717715607710284">Képernyő kikapcsolása</translation>
-<translation id="6710213216561001401">Előző</translation>
 <translation id="6714813999819678458">Előző 2. szintű fejléc</translation>
 <translation id="6730312624811567147">Keresés és balra vagy jobbra használata Home vagy End billentyűként, Keresés és Control és balra vagy jobbra használata Control és Home vagy End billentyűparancsként, Keresés és fel vagy le használata Page Up vagy Down billentyűként</translation>
 <translation id="6736510033526053669">lap létrehozva</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Antikfehér</translation>
 <translation id="9220679313820249046">Pirosas narancssárga</translation>
 <translation id="9223032053830369045">Sötétpiros</translation>
-<translation id="923331726185079994">ChromeVox frissítve</translation>
 <translation id="93384979447910801">Sötét tengerzöld</translation>
 <translation id="937605981140327129">A TalkBack jelenleg nincs telepítve. Telepítse a „Kisegítő csomag Androidhoz” szolgáltatást a Play Áruházból, és próbálkozzon újra.</translation>
 <translation id="948171205378458592">Beszédsebesség csökkentése</translation>

@@ -733,6 +733,7 @@
 <translation id="492453977506755176">מקש של מצב צילום</translation>
 <translation id="4925542575807923399">מנהל המערכת עבור החשבון הזה דורש שהחשבון הזה יהיה הראשון שיבצעו עבורו כניסה בעת כניסה עם מספר חשבונות</translation>
 <translation id="4929163402621253029">ניסית לדבר? המיקרופון שלך מושתק. מידע נוסף</translation>
+<translation id="4936329710968938986">כולם, במצב כבוי</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
@@ -1389,6 +1390,7 @@
 <translation id="8477270416194247200">‏יש להקיש על Alt+Search או על Shift כדי לבטל.</translation>
 <translation id="8492573885090281069">התצוגה של <ph name="DISPLAY_NAME" /> לא תומכת ברזולוציה <ph name="SPECIFIED_RESOLUTION" />. הרזולוציה שונתה ל-<ph name="FALLBACK_RESOLUTION" />. לשמירת השינויים, יש ללחוץ על 'אישור'. ההגדרות הקודמות ישוחזרו בעוד <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">הצגת ההגדרות של שיתוף בקרבת מקום</translation>
+<translation id="8507563469658346379">כולם, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">‏החיבור של ה-Chromebook ל-Bluetooth כבוי. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
 <translation id="8513108775083588393">סיבוב אוטומטי</translation>
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, לחצן הבחירה נבחר</translation>

@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">لغت میں &amp;شامل کریں</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1022489261739821355">‏آپ کے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے پاس ورڈز کو دکھایا جا رہا ہے</translation>
+<translation id="1022669824195822609">آپ کا آلہ <ph name="DOMAIN" /> کے زیر انتظام ہے۔ منتظمین اس آلے پر کسی بھی پروفائل میں ڈیٹا تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
 <translation id="1028604629594230522">‏Chrome صفحات کو پیشگی لوڈ کرتا ہے جنہیں آپ ملاحظہ کر سکتے ہیں، تاکہ وہ آپ کے ملاحظہ کرتے وقت مزید تیزی سے لوڈ ہو سکیں۔</translation>
@@ -1868,6 +1869,7 @@
 <translation id="2643064289437760082">‏آپ اپنے براؤزنگ ڈیٹا کو حذف کر کے کبھی بھی Ad measurement ڈیٹا کو حذف کر سکتے ہیں</translation>
 <translation id="2643698698624765890">ونڈو مینو میں ایکسٹینشنز پر کلک کر کے اپنے ایکسٹینشنز کا نظم کریں۔</translation>
 <translation id="2645047101481282803">آپ کا آلہ <ph name="PROFILE_NAME" /> کے زیر انتظام ہے</translation>
+<translation id="2645388244376970260">اس ٹیب کو <ph name="DEVICE_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">‏Base64-ان کوڈ کردہ ASCII، سرٹیفکیٹ چین</translation>
 <translation id="265156376773362237">معیاری پیشگی لوڈنگ</translation>
@@ -2740,6 +2742,7 @@
 <translation id="3446274660183028131">‏براہ کرم Windows انسٹال کرنے کیلئے Parallels ڈیسک ٹاپ شروع کریں۔</translation>
 <translation id="344630545793878684">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں</translation>
 <translation id="3447644283769633681">سبھی فریق ثالث کوکیز کو مسدود کریں</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> کو <ph name="DEVICE_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="3448492834076427715">اکاؤنٹ اپ ڈیٹ کریں</translation>
 <translation id="3449393517661170867">نئی ٹیب والی ونڈو</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> پر کمانڈز بھیجنے کیلئے <ph name="SEARCH_KEY" /> دبائیں</translation>
@@ -2894,6 +2897,7 @@
 <translation id="3590295622232282437">نظم کردہ سیشن میں داخل ہو رہے ہیں۔</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> کو رکھیں</translation>
 <translation id="3592260987370335752">مزید &amp;جانیں</translation>
+<translation id="3592344177526089979"><ph name="DEVICE_NAME" /> پر ٹیب کاسٹ کیا جا رہا ہے</translation>
 <translation id="3593152357631900254">‏Fuzzy-Pinyin وضع فعال کریں</translation>
 <translation id="3593965109698325041">سرٹیفکیٹ نام کی پابندیاں</translation>
 <translation id="3596012367874587041">ایپ کی ترتیبات</translation>
@@ -3169,6 +3173,7 @@
 <translation id="3823310065043511710">‏کم از کم <ph name="INSTALL_SIZE" />  خالی جگہ Linux کے لیے تجویز کی جاتی ہے۔</translation>
 <translation id="3824621460022590830">آلہ کے اندراج کا ٹوکن غلط ہے۔ براہ کرم اپنے آلہ کے مالک یا منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{فائل کی اس قسم کے لیے میرا انتخاب یاد رکھیں: <ph name="FILE_TYPES" />}other{فائل کی ان اقسام کے لیے میرا انتخاب یاد رکھیں: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">ایپ الرٹس کے لیے ایپ آئیکن پر ڈاٹ دکھائیں</translation>
 <translation id="3826071569074535339">موشن سینسرز استعمال کرنے کی اجازت ہے</translation>
 <translation id="3826440694796503677">‏آپ کے منتظم نے مزید Google اکاؤنٹس شامل کرنے کا عمل کو غیر فعال کر دیا ہے</translation>
 <translation id="3827774300009121996">&amp;پوری اسکرین</translation>
@@ -4488,6 +4493,7 @@
 <translation id="5063480226653192405">استعمال</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">‏ChromeOS ترتیبات میں محفوظ DNS کا نظم کریں</translation>
+<translation id="5066160542186949327">دوسرے فولڈر پر جائیں</translation>
 <translation id="5067399438976153555">ہمیشہ آن رکھیں</translation>
 <translation id="5067867186035333991">پوچھیں کہ آیا <ph name="HOST" /> آپ کے مائیکروفون تک رسائی حاصل کرنا چاہتا ہے</translation>
 <translation id="5068553687099139861">پاس ورڈز دکھائیں</translation>
@@ -6654,7 +6660,6 @@
 <translation id="7044211973375150246">ایک ایپ <ph name="APP_NAME" /> کی طرح اس لنک کو کھولنے کے لیے سیٹ کی گئی ہے۔ یہ <ph name="APP_NAME_2" /> کو تعاون یافتہ لنکس کھولنے سے غیر فعال کر دے گی۔</translation>
 <translation id="7044606776288350625">ڈیٹا سنک کریں</translation>
 <translation id="7047059339731138197">ایک پس منظر منتخب کریں</translation>
-<translation id="7048457618657122233"><ph name="SHARE_TARGET" /> میں لنک کا اشتراک کریں</translation>
 <translation id="7049293980323620022">فائل رکھیں؟</translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
 <translation id="7052237160939977163">کارکردگی کا پتا لگانے کا ڈیٹا بھیجیں</translation>

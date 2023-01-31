@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">સમાપન ભાષણ</translation>
 <translation id="1197088940767939838">નારંગી</translation>
 <translation id="1198865190323699001">ટચના સંકેતો</translation>
-<translation id="1201402288615127009">આગલું</translation>
 <translation id="1202112913213080585">રદ કરો</translation>
 <translation id="1206619573307042055">માર્કી</translation>
 <translation id="1207086294218137981">કોઈ આગલું 'લેવલ 4' મથાળું નથી</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">લેખ</translation>
 <translation id="1346059596910821859">ટિપ</translation>
 <translation id="1354356357730355833">કૉપિ કરો</translation>
-<translation id="135978014023467274">તમને ChromeVox 63 પર અપડેટ કરવામાં આવ્યા છે!</translation>
 <translation id="1360699455582016846">રૂટિંગ કી <ph name="ROUTING_KEY_NUMBER" /> હેઠળની આઇટમને ક્લિક કરો</translation>
 <translation id="1376703628032300005">આગલા અક્ષર પર ખસેડો</translation>
 <translation id="1377925789329510816">આ છેલ્લું મથાળું છે. આ પેજ પર સીધા જ પહેલા મથાળા પર જવા માટે Search+H, અથવા બીજા મથાળા પર જવા માટે Search+Shift+H દબાવો.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">અનચેક કરેલ</translation>
 <translation id="3286372614333682499">પોર્ટ્રેટ</translation>
 <translation id="3286390186030710347">સ્લાઇડર</translation>
-<translation id="3300348286427369683">રિચ ટેક્સ્ટ સહાય. ChromeVox હવે રિચ ટેક્સ્ટ ફીલ્ડને સહાય કરે છે, જેમાં જમ્પ આદેશો, બ્રેઇલ કર્સરનું રાઉટિંગ, પસંદગી અને બીજા ઘણા બધાનો સમાવેશ થાય છે.</translation>
 <translation id="3300733168898541351">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="3307886118343381874">કોષ્ટકની સમાપ્તિ પર જાઓ</translation>
 <translation id="3312997241656799641">આગલી મુલાકાત લીધેલી લિંક</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">સ્માર્ટ સ્ટીકી મોડ બંધ છે</translation>
 <translation id="4623097797855662355">પુષ્પિકા</translation>
 <translation id="4624970070706497034">TalkBack હવે Chromebooks પર કસ્ટમાઇઝેશનની સુવિધા આપતું નથી. તેમ છતાં તમે તેનો ઉપયોગ કરી શકો છો, પરંતુ તેના માટે TalkBackના ડિફૉલ્ટ કીબોર્ડ શૉર્ટકટનો ઉપયોગ કરો. ઉપલબ્ધ શૉર્ટકટ જોવા માટે કૃપા કરીને Search+A અને પછી K દબાવો. આમ છતાં જો તમે TalkBackનો ઉપયોગ કરવા માગતા હો, તો ફરી કમાંડ દબાવો.</translation>
-<translation id="463135993322337640">નવું શું છે તે શોધવા માટે ChromeVox o, n દબાવો</translation>
 <translation id="4649220074413114917">સ્ક્રીન પર બે આંગળી વડે ટૅપ કરવાથી કોઈપણ વર્તમાન સ્પીચ રોકી શકાય છે. જ્યારે તમે તેવું નથી ઈચ્છતા કે ChromeVox કંઈ વાંચે ત્યારે આ સહાયરૂપ થાય છે. ચાલુ રાખવા માટે, સ્ક્રીન પર બે આંગળી વડે ટૅપ કરો.</translation>
-<translation id="4660783501463101648">ક્લાસિક કાઢી નાખ્યું. ChromeVox ક્લાસિક પર સ્વિચ કરવા માટે કીબોર્ડ ટૉગલ કાઢી નાખવામાં આવ્યું છે.</translation>
 <translation id="4661075872484491155">ટ્રી</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">આગળની કૉલમ પર જાઓ</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">પાછા ફરો</translation>
 <translation id="5102981729317424850">ટુલ બાર</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">આ નવા રિલીઝમાં અમે કેટલાક આકર્ષક ફેરફારો લાવ્યા છીએ; નવું અહીં પ્રસ્તુત છે:</translation>
 <translation id="5111640677200759579">કૉલમ હેડર</translation>
 <translation id="5115892389597951922">ChromeVox લૉગ</translation>
 <translation id="5119330972669454698">મજબૂત લાકડા જેવો</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">મૂળભૂત નૅવિગેશન</translation>
 <translation id="609281021724813947">કોઈ પાછલું સ્લાઇડર નથી</translation>
 <translation id="6100239002225743044">એક લાઇન ઉપર ખસેડો</translation>
-<translation id="6118126368611144850">Chrome માટેની Android ઍપ. જો તમારા ડિવાઇસમાં Play Store હોય, તો Android ઍપ ધરાવતા ChromeVoxની ઝલક મેળવો. Play Store પરથી Google Chrome Canary ડાઉનલોડ કરીને પ્રયોગાત્મક સહાયનો અનુભવ મેળવો.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">સક્રિય કરો</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">પાછલું કોમ્બો બૉક્સ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ઉદ્ગારવાચક ચિહ્ન}one{# ઉદ્ગારવાચક ચિહ્ન}other{# ઉદ્ગારવાચક ચિહ્ન}}</translation>
 <translation id="670717715607710284">સ્ક્રીન બંધ કરો</translation>
-<translation id="6710213216561001401">પાછલી</translation>
 <translation id="6714813999819678458">પાછલું લેવલ 2 શીર્ષક</translation>
 <translation id="6730312624811567147">Home કે End કી માટે શોધ અને જમણી કે ડાબી ઍરો કી, Control Home કે End માટે કંટ્રોલ અને ડાબી કે જમણી ઍરો કી, પેજ ઉપર કે નીચે કરવા શોધ અને ઉપર કે નીચેની ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="6736510033526053669">ટેબ બનાવ્યું</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">પ્રાચીન સફેદ</translation>
 <translation id="9220679313820249046">નારંગી લાલ</translation>
 <translation id="9223032053830369045">ઘાટો લાલ</translation>
-<translation id="923331726185079994">ChromeVox અપડેટ થયું</translation>
 <translation id="93384979447910801">ઘેરો દરિયાઈ લીલો</translation>
 <translation id="937605981140327129">TalkBack હાલમાં ઇન્સ્ટૉલ કરવામાં આવ્યું નથી. કૃપા કરીને Play Store મારફતે Android AccessibilitySuite ઇન્સ્ટૉલ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="948171205378458592">ભાષણનો રેટ ઘટાડો</translation>

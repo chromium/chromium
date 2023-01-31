@@ -3847,6 +3847,7 @@
 <translation id="4441147046941420429">برای ادامه کار، کلید امنیتی‌تان را از دستگاه جدا کنید و سپس آن را دوباره وارد کنید و لمس کنید</translation>
 <translation id="444134486829715816">گسترده کردن...</translation>
 <translation id="4441928470323187829">سرپرستتان آن را پین کرده است</translation>
+<translation id="4442863809158514979">مشاهده اجازه‌های وب</translation>
 <translation id="4443536555189480885">&amp;راهنما</translation>
 <translation id="4444304522807523469">‏دسترسی به اسکنرهای سند متصل شده از طریق USB یا در شبکه محلی</translation>
 <translation id="4444512841222467874">اگر فضای کافی در دسترس قرار نگیرد، ممکن است کاربران و داده‌ها به‌طور خودکار حذف شوند.</translation>
@@ -6674,7 +6675,6 @@
 <translation id="7044211973375150246">برنامه‌ای تنظیم شده است تا همان پیوندها را مثل <ph name="APP_NAME" /> باز کند. با این کار <ph name="APP_NAME_2" /> غیرفعال خواهد شد تا پیوندهای پشتیبانی‌شده را باز نکند.</translation>
 <translation id="7044606776288350625">همگام‌سازی داده‌ها</translation>
 <translation id="7047059339731138197">انتخاب پس‌زمینه</translation>
-<translation id="7048457618657122233">هم‌رسانی پیوند در <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">فایل حفظ شود؟</translation>
 <translation id="7050037487872780845">پیکربندی نقطه اتصال نامعتبر است</translation>
 <translation id="7052237160939977163">ارسال داده‌های ردیابی عملکرد</translation>
@@ -7478,6 +7478,7 @@
 <translation id="779308894558717334">سبز روشن</translation>
 <translation id="7793098747275782155">آبی تیره</translation>
 <translation id="7797571222998226653">خاموش</translation>
+<translation id="7798504574384119986">مشاهده اجازه‌های وب</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> به‌طور خودکار مسدود‌ شده است</translation>
 <translation id="7800518121066352902">چرخاندن خلاف جهت ع&amp;قربه‌های ساعت</translation>
 <translation id="7801679634091975683">‏تغییراتی که اینجا ایجاد می‌کنید فقط در «مرورگر Lacros Chrome» اعمال می‌شود. برای ایجاد تغییرات در تنظیمات «مرورگر Chrome»، «مرورگر Chrome» را باز کنید و به تنظیمات بروید.</translation>

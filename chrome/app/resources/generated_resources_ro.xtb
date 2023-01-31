@@ -3836,6 +3836,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4441147046941420429">Ca să continui, elimină cheia de securitate de pe dispozitiv, apoi introdu-o din nou și atinge-o</translation>
 <translation id="444134486829715816">Extinde...</translation>
 <translation id="4441928470323187829">Fixată de administrator</translation>
+<translation id="4442863809158514979">Vezi permisiunile web</translation>
 <translation id="4443536555189480885">&amp;Ajutor</translation>
 <translation id="4444304522807523469">Accesează scanerele de documente atașate prin USB sau dintr-o rețea locală</translation>
 <translation id="4444512841222467874">Dacă nu se eliberează spațiu, este posibil ca utilizatorii și datele să fie eliminate automat.</translation>
@@ -6662,7 +6663,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7044211973375150246">O aplicație este setată să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> va fi setată să nu mai deschidă linkurile acceptate.</translation>
 <translation id="7044606776288350625">Sincronizează datele</translation>
 <translation id="7047059339731138197">Alege un fundal</translation>
-<translation id="7048457618657122233">Trimite linkul către <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Păstrezi fișierul?</translation>
 <translation id="7050037487872780845">Configurația hotspotului nu este validă</translation>
 <translation id="7052237160939977163">Trimiteți datele privind urmărirea performanței</translation>
@@ -7467,6 +7467,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="779308894558717334">Verde deschis</translation>
 <translation id="7793098747275782155">Albastru închis</translation>
 <translation id="7797571222998226653">Dezactivat</translation>
+<translation id="7798504574384119986">Vezi permisiunile web</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> a fost blocată automat</translation>
 <translation id="7800518121066352902">Rotiți în sens &amp;invers acelor de ceasornic</translation>
 <translation id="7801679634091975683">Modificările pe care le faci aici se aplică numai în browserul Lacros Chrome. Pentru a face modificări în setările browserului Chrome, deschide browserul Chrome și accesează setările.</translation>

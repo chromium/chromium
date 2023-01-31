@@ -46,6 +46,7 @@
 <translation id="1919345977826869612">Mga Ad</translation>
 <translation id="1919950603503897840">Pumili ng mga contact</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1979673356880165407">Mas palakihin o mas paliitin ang text at mga larawan para sa lahat ng site na binibisita mo</translation>
 <translation id="1984937141057606926">Pinapayagan, maliban ang third-party</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="1994173015038366702">URL ng site</translation>
@@ -56,6 +57,7 @@
 <translation id="2091887806945687916">Tunog</translation>
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="216989819110952009">Kahit na pinoprotektahan ng berdeng salamin ang mga mata, sa una ay nasilaw si Dorothy at ang kanyang mga kaibigan sa</translation>
+<translation id="2176704795966505152">Ipakita ang opsyon sa pag-zoom sa pangunahing menu</translation>
 <translation id="2182457891543959921">Magtanong bago payagan ang mga site na gumawa ng 3D na mapa ng iyong kapaligiran o subaybayan ang posisyon ng camera (inirerekomenda)</translation>
 <translation id="2212565012507486665">Payagan ang cookies</translation>
 <translation id="2228071138934252756">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong camera, i-on din ang camera sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
@@ -165,6 +167,7 @@
 <translation id="4008040567710660924">Payagan ang cookies para sa isang partikular na site.</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
+<translation id="4151930093518524179">Default na pag-zoom</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
 <translation id="4169549551965910670">Nakakonekta sa USB device</translation>
 <translation id="4194328954146351878">Magtanong bago payagan ang mga site na tingnan at baguhin ang impormasyon sa mga NFC device (inirerekomenda)</translation>
@@ -188,6 +191,7 @@
 <translation id="4534723447064627427">Para payagan ang <ph name="APP_NAME" /> na i-access ang iyong mikropono, i-on din ang mikropono sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="4566417217121906555">I-mute ang mikropono</translation>
 <translation id="4570913071927164677">Mga Detalye</translation>
+<translation id="4575264539271661854">Mas padaliin ang pag-zoom in sa text at mga larawan para sa site na binibisita mo</translation>
 <translation id="4598549027014564149">Habang nasa Incognito, hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa lahat ng site, kahit sa mga nauugnay na site. Hindi ginagamit ang iyong aktibidad sa pag-browse para sa mga bagay tulad ng pag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
 <translation id="4645575059429386691">Pinamamahalaan ng iyong magulang</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
@@ -383,6 +387,7 @@
 <translation id="8284326494547611709">Mga Caption</translation>
 <translation id="8300705686683892304">Pinapamahalaan ng app</translation>
 <translation id="8324158725704657629">Huwag nang itanong ulit</translation>
+<translation id="8362795839483915693">Puwede kang mag-zoom in o mag-zoom out sa mga site na bibisitahin mo</translation>
 <translation id="8372893542064058268">Payagan ang Pag-sync sa Background para sa isang partikular na site.</translation>
 <translation id="8376384591331888629">Kasama ang third-party na cookies sa site na ito</translation>
 <translation id="83792324527827022">Ginagamit ng isang site ang iyong camera at mikropono</translation>

@@ -5184,8 +5184,6 @@
       如果未設定，<ph name="PRODUCT_NAME" /> 會使用預設的快取目錄，但使用者可透過 --disk-cache-dir 指令列旗標來變更這項設定。
 
       <ph name="PRODUCT_NAME" /> 會管理磁碟區根目錄的內容。因此，請勿將這項政策設為根目錄或任何用於其他用途的目錄，以免遺失資料或發生其他錯誤。如要查看可使用的變數，請參閱 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。</translation>
-<translation id="6083356110032622782">自 M110 起，系統將移除不安全環境中的 WebSQL。這項政策會重新啟用這個 API。
-          如果將這項政策設為 True，系統將在不安全的環境中開放使用 WebSQL。如果將這項政策設為 False 或不設定，則在 M109 以前，仍可在不安全的環境中使用 WebSQL，但自 M110 起將無法使用。</translation>
 <translation id="6083631234867522991">Windows (Windows 用戶端)：</translation>
 <translation id="608788685013546076">設定用電尖峰轉移電池閾值 (以百分比為單位)</translation>
 <translation id="6089679180657323464">控管 wilco 診斷與遙測控制器設定。</translation>
@@ -5359,6 +5357,13 @@
 <translation id="6261643884958898336">回報裝置識別資訊</translation>
 <translation id="6265892395051519509">允許在這些網站上存取感應器</translation>
 <translation id="6266043141694454734">決定是否要使用 Chrome Root Store 和內建的憑證驗證器來驗證伺服器憑證</translation>
+<translation id="6267130578410325007">這項政策預設允許使用 origin-keyed 代理程式叢集。
+
+Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式叢集或 site-keyed 代理程式叢集中隔離。由於 origin-keyed 代理程式叢集允許系統依來源隔離文件，因此這項做法有安全疑慮。對開發人員來說，採用這項做法就無法再設定 document.domain 存取子。
+
+      預設行為 - 未設定 Origin-Agent-Cluster 標頭時 - 在 M111 版本中從 site-keyed 變更為 origin-keyed。如果將這項政策設為啟用或不設定，瀏覽器會自該版本起採用這項新的預設設定。如果將這項政策設為停用，系統會復原這項變更，並將沒有 Origin-Agent-Cluster 標頭的文件指派給 site-keyed 代理程式叢集。因此，開發人員在預設情況下仍可設定 document.domain 存取子。這個做法與舊行為相符。
+
+詳情請參閱 https://developer.chrome.com/blog/immutable-document-domain/。</translation>
 <translation id="6270615143812355589">啟用音訊輸入</translation>
 <translation id="6270791075656665237">不允許 QUIC</translation>
 <translation id="6273015149273504999">
@@ -6286,6 +6291,16 @@
       如果將這項政策設為強制套用，使用者即無法變更或覆寫設定。
 
           如果不設定這項政策，檔案櫃預設會顯示在畫面底部，且使用者可以變更檔案櫃的位置。</translation>
+<translation id="7037853989942016900">這項政策會控制 PPAPI 外掛程式中的 Graphics 3D API 近期重構作業。
+
+遷移作業只會影響內部實作詳細資料，且不應該變更任何行為。不過，如有任何 PPAPI 應用程式未正常運作，也可以使用這項政策。
+
+如果這項政策未設定或設為啟用，瀏覽器就會判斷要使用的影片解碼器。
+如果將這項政策設為停用，瀏覽器就會在這項政策失效前使用舊版影片解碼器。
+
+如果你必須使用這項政策，請前往 crbug.com 回報錯誤及說明用途。這項政策預計將可持續使用到 <ph name="PRODUCT_NAME" /> 114 版，屆時我們將移除舊的實作。
+
+注意：在瀏覽器執行期間，只有新啟動的轉譯器程序會反映這項政策的變更。</translation>
 <translation id="7039815268521168329">在初始設定期間顯示 Google 助理 Voice Match 流程</translation>
 <translation id="7040229947030068419">範例值：</translation>
 <translation id="7044883996351280650">控制 Android 備份與還原服務</translation>

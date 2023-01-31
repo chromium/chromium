@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">հետգրություն</translation>
 <translation id="1197088940767939838">Նարնջագույն</translation>
 <translation id="1198865190323699001">Հպման ժեստեր</translation>
-<translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1202112913213080585">չեղարկել</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">4-րդ մակարդակի հաջորդ վերնագիր չկա</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Խորհուրդ</translation>
 <translation id="1354356357730355833">պատճենել</translation>
-<translation id="135978014023467274">Դուք օգտագործում եք ChromeVox 63:</translation>
 <translation id="1360699455582016846">Սեղմեք <ph name="ROUTING_KEY_NUMBER" /> երթուղման բանալու տակի տարրի վրա</translation>
 <translation id="1376703628032300005">անցնել հաջորդ նիշին</translation>
 <translation id="1377925789329510816">Սա վերջին պարբերությունն է: Սեղմեք «Search + H»՝ առաջին պարբերությանը վերադառնալու համար, կամ «Search + Shift + H»՝ այս էջի երկրորդ պարբերությանն անցնելու համար:</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">նշված չէ</translation>
 <translation id="3286372614333682499">ուղղաձիգ</translation>
 <translation id="3286390186030710347">Սահիչ</translation>
-<translation id="3300348286427369683">Տեքստի խմբագրման ավելի լայն հնարավորություններ։ ChromeVox-ն այժմ աջակցում է տեքստի խմբագրման ավելի շատ տարբերակներ, օրինակ՝ արագ նավիգացիայի հրահանգներ, բրայլյան էկրանի միջոցով նշորդի տեղաշարժում, ընտրություն և ավելին։</translation>
 <translation id="3300733168898541351">հետարկել</translation>
 <translation id="3307886118343381874">Անցնել աղյուսակի վերջ</translation>
 <translation id="3312997241656799641">Հաջորդ այցելած հղումը</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Խելացի կպչուն ռեժիմն անջատված է</translation>
 <translation id="4623097797855662355">Հիշատակարան</translation>
 <translation id="4624970070706497034">TalkBack-ն այլևս չի տրամադրում անհատականացում Chromebook սարքերի համար։ Դուք նախկինի պես կարող եք օգտվել TalkBack-ից, սակայն օգտագործեք դրա կանխադրված ստեղնային դյուրանցումները։ Սեղմեք Search+A, այնուհետև K՝ հասանելի դյուրանցումները տեսնելու համար։ Եթե, այնուամենայնիվ, ուզում եք օգտվել TalkBack-ից, ապա նորից սեղմեք հրամանը։</translation>
-<translation id="463135993322337640">ChromeVox-ի նորություններին ծանոթանալու համար՝ սեղմեք ChromeVox + O + N ստեղները:</translation>
 <translation id="4649220074413114917">Երկու մատով էկրանին հպելով կարող եք անջատել տեքստի հնչեցումը, հատկապես, եթե չեք ցանկանում, որ ChromeVox-ը որևէ տեքստ հնչեցնի։ Շարունակելու համար երկու մատով հպեք էկրանին։</translation>
-<translation id="4660783501463101648">Classic տարբերակը հեռացվել է։ ChromeVox Classic տարբերակին վերադառնալու ստեղնների համակցությունը հեռացվել է։</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Անցնել հաջորդ սյունակ</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">հետ</translation>
 <translation id="5102981729317424850">Գործիքագոտի</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Նոր տարբերակում ձեզ սպասվում են նոր փոփոխություններ: Ծանոթացեք նորություններին։</translation>
 <translation id="5111640677200759579">Սյունակի վերնագիր</translation>
 <translation id="5115892389597951922">ChromeVox-ի մատյան</translation>
 <translation id="5119330972669454698">Փայտագույն</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Հիմնական նավիգացիա</translation>
 <translation id="609281021724813947">Նախորդ սահիչ չկա</translation>
 <translation id="6100239002225743044">Մեկ տող վերև գնալ</translation>
-<translation id="6118126368611144850">Android հավելվածներ Chrome-ի համար: Եթե ձեր սարքում տեղադրված է Play Խանութ հավելվածը, ծանոթացեք ChromeVox-ին Android հավելվածների միջոցով: Play Խանութ հավելվածից ներբեռնեք Google Chrome Canary և օգտվեք փորձնական տարբերակից:</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ակտիվացնել</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Նախորդ համակցված տուփը</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{բացականչական նշան}one{# exclamations}other{# բացականչական նշան}}</translation>
 <translation id="670717715607710284">Անջատել էկրանը</translation>
-<translation id="6710213216561001401">Նախորդը</translation>
 <translation id="6714813999819678458">2-րդ մակարդակի նախորդ վերնագիրը</translation>
 <translation id="6730312624811567147">Օգտագործեք Search + ձախ/աջ սլաքը՝ Home և End ստեղների փոխարեն, Search + Ctrl + ձախ/աջ սլաքը՝ Ctrl + Home/End-ի փոխարեն, Search + վեր/վար սլաքը՝ Page Up և Page Down ստեղների փոխարեն</translation>
 <translation id="6736510033526053669">ներդիրը ստեղծվել է</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Անտիկ սպիտակ</translation>
 <translation id="9220679313820249046">Կարմրանարնջագույն</translation>
 <translation id="9223032053830369045">Մուգ կարմիր</translation>
-<translation id="923331726185079994">ChromeVox-ը թարմացվել է</translation>
 <translation id="93384979447910801">Մուգ ծովականաչ</translation>
 <translation id="937605981140327129">TalkBack-ը տեղադրված չէ։ Տեղադրեք Android AccessibilitySuite-ը Play Խանութից և նորից փորձեք։</translation>
 <translation id="948171205378458592">Դանդաղեցնել խոսքը</translation>

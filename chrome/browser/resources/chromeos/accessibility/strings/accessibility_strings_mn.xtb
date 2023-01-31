@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Төгсгөлийн үг</translation>
 <translation id="1197088940767939838">Улбар шар</translation>
 <translation id="1198865190323699001">Хүрэх зангаа</translation>
-<translation id="1201402288615127009">Дараагийнх</translation>
 <translation id="1202112913213080585">цуцал</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Дараагийн 4-р түвшний гарчиг алга байна</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">Гарчиг</translation>
 <translation id="1346059596910821859">Зөвлөгөө</translation>
 <translation id="1354356357730355833">хуулах</translation>
-<translation id="135978014023467274">Та ChromeVox 63-н хувилбарыг шинэчилсэн байна!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" />маршрутын түлхүүр доорх зүйлийг дарах</translation>
 <translation id="1376703628032300005">дараагийн тэмдэгт рүү очих</translation>
 <translation id="1377925789329510816">Энэ нь сүүлийн гарчиг юм. Эхний гарчгийг хураахын тулд Search+H, эсвэл энэ хуудасны хоёрдугаар гарчигт очихын тулд Search+Shift+H-г дарна уу.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">сонгоогүй</translation>
 <translation id="3286372614333682499">хөрөг зураг</translation>
 <translation id="3286390186030710347">Гулгагч</translation>
-<translation id="3300348286427369683">Их хэмжээтэй текстийн дэмжлэг. ChromeVox одоо үсрэх тушаал, брайл чиглүүлэгчийн маршрут, сонголт болон бусад хэлбэрийн их хэмжээтэй текстийн талбарыг дэмждэг боллоо.</translation>
 <translation id="3300733168898541351">болих</translation>
 <translation id="3307886118343381874">Хүснэгтийн төгсгөлд очих</translation>
 <translation id="3312997241656799641">Дараагийн хандалт хийсэн линк</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Ухаалаг бэхлэгч горим унтраалттай байна</translation>
 <translation id="4623097797855662355">Колофон</translation>
 <translation id="4624970070706497034">TalkBack нь Chromebooks-д зориулсан тохируулга хийхээ больсон. Та үүнийг ашиглаж болно гэхдээ TalkBack-н өгөгдмөл товчлуурын шууд холбоосыг ашиглана уу. Search+A гэж дарсны дараа K дээр дарж боломжтой товчлолуудыг харна уу. Хэрэв та TalkBack-г ашигламаар байвал тушаалыг дахин дарна уу.</translation>
-<translation id="463135993322337640">Шинээр гарсан зүйлсийг олохын тулд ChromeVox o, n-г дарна уу</translation>
 <translation id="4649220074413114917">Дэлгэцийг хоёр хуруугаараа товшихыг мөн одоогийн аливаа яриаг зогсооход ашиглах боломжтой. Та ChromeVox-г ямар нэг зүйл уншихыг хүсэхгүй байх үед энэ нь хэрэг болно. Үргэлжлүүлэхийн тулд дэлгэцийг хоёр хуруугаараа товшино уу.</translation>
-<translation id="4660783501463101648">Классикийг устгасан. ChromeVox Классикт буцааж сольдог гарын асаах/унтраах товчлуурыг устгасан.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Дараагийн багана руу очих</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">буцах</translation>
 <translation id="5102981729317424850">Хэрэгслийн цонх</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Энэ шинэ хувилбарт гайхалтай өөрчлөлтүүдийг оруулсан болно. Үүнд:</translation>
 <translation id="5111640677200759579">Баганын толгой</translation>
 <translation id="5115892389597951922">ChromeVox лог</translation>
 <translation id="5119330972669454698">Цайвар бор</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Үндсэн шилжилт</translation>
 <translation id="609281021724813947">Өмнөх слайдер алга байна</translation>
 <translation id="6100239002225743044">Нэг мөрөөр дээшээ зөөвөрлөх</translation>
-<translation id="6118126368611144850">Chrome-н Андройд апп. Хэрэв таны төхөөрөмжид Play Store байвал Андройд аппаар ChromeVox-г туршиж үзээрэй. Play Store-с Google Chrome Canary-г татаж туршилтын дэмжлэгийг ашиглаж үзнэ үү.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">идэвхжүүлэх</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Өмнөх ComboBox</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{анхаарлын тэмдэг}other{# анхаарлын тэмдэг}}</translation>
 <translation id="670717715607710284">Дэлгэц унтраалттай</translation>
-<translation id="6710213216561001401">Өмнөх</translation>
 <translation id="6714813999819678458">Өмнөх 2-р түвшний гарчиг</translation>
 <translation id="6730312624811567147">Home эсвэл End товчлуурын оронд Search товчлуурыг зүүн эсвэл баруун товчлууртай, Control товчлуурыг Home эсвэл End товчлууртай хамт хэрэглэхийн оронд Search болон Control товчлууруудыг зүүн эсвэл баруун товчлууртай, Page Up эсвэл Page Down товчлуурын оронд Search товчлуурыг дээш эсвэл доош товчлууртай хамт хэрэглэнэ</translation>
 <translation id="6736510033526053669">Үүссэн цонх</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Цагаан саарал</translation>
 <translation id="9220679313820249046">Улаан туяатай улбар шар</translation>
 <translation id="9223032053830369045">Гүн улаан</translation>
-<translation id="923331726185079994">ChromeVox-г шинэчилсэн</translation>
 <translation id="93384979447910801">Тэнгисийн гүн ногоон</translation>
 <translation id="937605981140327129">TalkBack-г одоогоор суулгаагүй байна. Android AccessibilitySuite-г Play Store-с суулгаад, дахин оролдоно уу.</translation>
 <translation id="948171205378458592">Ярианы хувь хэмжээг бууруулах</translation>

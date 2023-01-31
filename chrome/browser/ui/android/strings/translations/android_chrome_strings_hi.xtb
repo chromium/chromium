@@ -182,6 +182,7 @@
 <translation id="1995884366040846621">जारी रखने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK1" />निजता नीति<ph name="END_LINK1" /> देखें.</translation>
 <translation id="2000419248597011803">'पता बार' और 'खोज बॉक्स' की कुछ कुकी और खोजों को आपके डिफ़ॉल्ट खोज इंजन पर भेजा जाता है</translation>
 <translation id="200114059308480249">क्या आप Google पर कुछ खोजते समय, खोज से जुड़े मिलते-जुलते शब्द भी शामिल करना चाहते हैं?</translation>
+<translation id="2009341475524975924">किसी विज्ञापन की परफ़ॉर्मेंस को मापने के लिए, साइटों के बीच सीमित डेटा शेयर किया जा सकता है. जैसे, दिन में किस समय आपको विज्ञापन दिखाया गया.</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# फ़ाइल}one{# फ़ाइलें}other{# फ़ाइलें}}</translation>
 <translation id="2021896219286479412">पूरी स्क्रीन के साइट नियंत्रण</translation>
 <translation id="2038563949887743358">अनुरोध डेस्कटॉप साइट चालू करें</translation>
@@ -236,6 +237,7 @@
 <translation id="2321086116217818302">पासवर्ड तैयार हो रहे हैं…</translation>
 <translation id="2323763861024343754">साइट मेमोरी</translation>
 <translation id="2328985652426384049">साइन इन नहीं कर सकते</translation>
+<translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> को इंस्टॉल नहीं किया जा सका.</translation>
 <translation id="234265804618409743">कैमरा खाेला नहीं जा सकता. कोई गड़बड़ी हुई.</translation>
 <translation id="2349710944427398404">Chrome द्वारा उपयोग किया गया कुल डेटा, जिसमें खाते, बुकमार्क और सहेजी गईं सेटिंग शामिल हैं</translation>
 <translation id="235789365079050412">Google निजता नीति</translation>
@@ -343,6 +345,7 @@
 <translation id="2909615210195135082">Google सूचना प्लैटफ़ॉर्म</translation>
 <translation id="2912296070571964914">अपनी पसंद के विषयों को मैनेज करें</translation>
 <translation id="2912345083818861431">खुले हुए गुप्त टैब देखने के लिए, स्क्रीन लॉक का इस्तेमाल करें</translation>
+<translation id="2922568440285376746">Google से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">नाम अमान्य है</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> मेमोरी</translation>
 <translation id="2932222164150889403">आपका कीबोर्ड नहीं बदलेगा</translation>
@@ -651,6 +654,7 @@
 <translation id="4616150815774728855"><ph name="WEBAPK_NAME" /> को खोलें</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4634124774493850572">पासवर्ड का इस्तेमाल करें</translation>
+<translation id="4637420359569396807">'विज्ञापन की परफ़ॉर्मेंस मापना' सेटिंग का इस्तेमाल, साइटों और ऐप्लिकेशन के बीच सीमित डेटा शेयर करने के लिए किया जा सकता है, ताकि विज्ञापनों की परफ़ॉर्मेंस को मापा जा सके. जैसे, दिन में किस समय आपको विज्ञापन दिखाया गया.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 पासवर्ड या तो हैक हुआ है या चोरी हुआ है}one{# पासवर्ड या तो हैक हुआ है या चोरी हुआ है}other{# पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं}}</translation>
 <translation id="4650364565596261010">सिस्टम डिफ़ॉल्ट</translation>
 <translation id="465657074423018424">सुरक्षित ब्राउज़िंग की सुविधा, धोखाधड़ी करने वाली वेबसाइटों से आपकी सुरक्षा करती है. अगर आप इसे बंद करते हैं, तो ब्राउज़ करते समय ज़्यादा सावधानी बरतें, खास तौर पर पासवर्ड डालने से पहले.</translation>
@@ -663,6 +667,7 @@
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
 <translation id="4685741273709472646">ड्रॉपडाउन सूची में से चुनें</translation>
 <translation id="4687718960473379118">साइट के सुझाए गए विज्ञापन</translation>
+<translation id="4689792375321623175">Google से इमेज खोजें <ph name="BEGIN_NEW" />नया<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}one{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 और <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> अन्य}}</translation>
 <translation id="4699172675775169585">कैश इमेज और फ़ाइलें</translation>
 <translation id="4719927025381752090">अनुवाद करना ऑफ़र करें</translation>
@@ -809,6 +814,7 @@
 <translation id="5438292632479953702">फिर से डाउनलोड करें</translation>
 <translation id="5441466871879044658">इस भाषा में अनुवाद करें</translation>
 <translation id="5441522332038954058">सीधे पता बार पर जाएं</translation>
+<translation id="5444999712122199445">साइट पर वापस जाएं</translation>
 <translation id="544776284582297024">टैब खोलने और एक ही समय में अलग-अलग पेजों पर जाने के लिए, 'टैब खोलें' बटन पर टैप करें</translation>
 <translation id="5454166040603940656"><ph name="PROVIDER" /> के साथ</translation>
 <translation id="5456381639095306749">पेज डाउनलोड करें</translation>

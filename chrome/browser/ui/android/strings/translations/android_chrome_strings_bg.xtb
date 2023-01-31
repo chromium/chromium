@@ -237,6 +237,7 @@
 <translation id="2321086116217818302">Паролите се подготвят…</translation>
 <translation id="2323763861024343754">Данни от сайтове</translation>
 <translation id="2328985652426384049">Влизането в профила не е възможно</translation>
+<translation id="2341410551640223969">Инсталирането на <ph name="WEBAPK_NAME" /> не бе успешно.</translation>
 <translation id="234265804618409743">Камерата не може да се отвори. Нещо се обърка.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
@@ -344,6 +345,7 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Управлявайте темите, от които се интересувате</translation>
 <translation id="2912345083818861431">Използване на функцията за заключване на екрана за преглед на отворените раздели в режим „инкогнито“</translation>
+<translation id="2922568440285376746">Търсене в изобр. с Google <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
 <translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
@@ -665,6 +667,7 @@
 <translation id="4684427112815847243">Синхронизиране на всичко</translation>
 <translation id="4685741273709472646">Избиране от падащия списък</translation>
 <translation id="4687718960473379118">Предложени от сайтовете реклами</translation>
+<translation id="4689792375321623175">Търс. на изобр. с Google <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="4699172675775169585">Кеширани изображения и файлове</translation>
 <translation id="4719927025381752090">Предложения за превод</translation>
@@ -811,6 +814,7 @@
 <translation id="5438292632479953702">Повторно изтегляне</translation>
 <translation id="5441466871879044658">Превеждане на този език</translation>
 <translation id="5441522332038954058">Преминаване към адресната лента</translation>
+<translation id="5444999712122199445">Назад към сайта</translation>
 <translation id="544776284582297024">За да отваряте раздели и да посещавате различни страници едновременно, докоснете бутона за отворени раздели</translation>
 <translation id="5454166040603940656">с/ъс <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Изтегляне на страницата</translation>

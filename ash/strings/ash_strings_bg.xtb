@@ -733,6 +733,7 @@
 <translation id="492453977506755176">Клавиш за режима на заснемане</translation>
 <translation id="4925542575807923399">Този администратор изисква профилът му да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="4929163402621253029">Говорите ли? Звукът е заглушен. Научете повече</translation>
+<translation id="4936329710968938986">Всички, изключено</translation>
 <translation id="4938176435186993759">Скриване на всички предложения</translation>
 <translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
@@ -1387,6 +1388,7 @@
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддържа <ph name="SPECIFIED_RESOLUTION" />. Разделителната способност бе променена на <ph name="FALLBACK_RESOLUTION" />. Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Показване на настройките на „Споделяне наблизо“</translation>
+<translation id="8507563469658346379">Всички, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Функцията за Bluetooth на вашия Chromebook е изключена. За да го отключите, въведете паролата си.</translation>
 <translation id="8513108775083588393">Автоматично</translation>
 <translation id="851458219935658693">Показват се прозорците от текущия работен кът, активиран е бутон за избор</translation>

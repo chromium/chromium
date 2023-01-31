@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Ôl-eiriau</translation>
 <translation id="1197088940767939838">Oren</translation>
 <translation id="1198865190323699001">Ystumiau Cyffwrdd</translation>
-<translation id="1201402288615127009">Nesaf</translation>
 <translation id="1202112913213080585">canslwch</translation>
 <translation id="1206619573307042055">pabell fawr</translation>
 <translation id="1207086294218137981">Dim pennawd lefel 4 nesaf</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">erthygl</translation>
 <translation id="1346059596910821859">Awgrym</translation>
 <translation id="1354356357730355833">copïo</translation>
-<translation id="135978014023467274">Rydych wedi cael eich diweddaru i ChromeVox 63!</translation>
 <translation id="1360699455582016846">Cliciwch yr eitem o dan yr allwedd llwybro <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">symud i'r nod nesaf</translation>
 <translation id="1377925789329510816">Dyma'r pennawd olaf. Pwyswch Search+H i neidio i'r pennawd cyntaf, neu Search+Shift+H i fynd i'r ail bennawd ar y dudalen hon.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">wedi'i ddad-dicio</translation>
 <translation id="3286372614333682499">portread</translation>
 <translation id="3286390186030710347">Llithrydd</translation>
-<translation id="3300348286427369683">Cymorth testun cyfoethog. Mae ChromeVox bellach yn cefnogi meysydd testun cyfoethog gan gynnwys gorchmynion neidio, llwybro cyrchwr braille, dewis a rhagor.</translation>
 <translation id="3300733168898541351">dadwneud</translation>
 <translation id="3307886118343381874">Mynd i ben y bwrdd</translation>
 <translation id="3312997241656799641">Y ddolen yr ymwelwyd â hi nesaf</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Mae'r modd gludiog clyfar wedi'i ddiffodd</translation>
 <translation id="4623097797855662355">Coloffon</translation>
 <translation id="4624970070706497034">Nid yw TalkBack bellach yn darparu addasu ar gyfer Chromebooks. Gallwch ei ddefnyddio o hyd, ond defnyddiwch lwybrau byr bysellfwrdd diofyn TalkBack. Pwyswch Search+A, yna K i weld y llwybrau byr sydd ar gael. Os ydych eisiau defnyddio TalkBack o hyd, pwyswch y gorchymyn eto.</translation>
-<translation id="463135993322337640">Pwyswch ChromeVox o, n i ddarganfod beth sy'n newydd</translation>
 <translation id="4649220074413114917">Gellir defnyddio tapio'r sgrîn gyda dau fys i atal unrhyw lefarydd presennol. Mae hyn yn ddefnyddiol os nad ydych am i ChromeVox ddarllen rhywbeth. I barhau, tapiwch y sgrîn gyda dau fys.</translation>
-<translation id="4660783501463101648">Tynnwyd Classic. Mae'r togl bysellfwrdd i newid yn ôl i ChromeVox Classic wedi'i dynnu.</translation>
 <translation id="4661075872484491155">coeden</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Mynd i'r golofn nesaf</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">nôl</translation>
 <translation id="5102981729317424850">Bar offer</translation>
 <translation id="5105050547967751155">gfnl</translation>
-<translation id="5106547198195128110">Mae gennym newidiadau cyffrous yn y cyhoeddiad newydd hwn; dyma beth sy'n newydd:</translation>
 <translation id="5111640677200759579">Pennawd y golofn</translation>
 <translation id="5115892389597951922">Cofnod ChromeVox</translation>
 <translation id="5119330972669454698">Pren Golau</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Llywio Sylfaenol</translation>
 <translation id="609281021724813947">Dim llithrydd blaenorol</translation>
 <translation id="6100239002225743044">Symud i fyny un llinell</translation>
-<translation id="6118126368611144850">Apiau Android ar gyfer Chrome. Os oes gennych Play Store ar eich dyfais, gallwch gael gipolwg ar ChromeVox gydag apiau Android. Rhowch gynnig ar y cymorth arbrofol drwy lawrlwytho Google Chrome Canary o'r Play Store.</translation>
 <translation id="611827076493383239">ymwld</translation>
 <translation id="6119846243427417423">gweithredu</translation>
 <translation id="6122013438240733403">btm</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Blwch cyfun blaenorol</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ebychnod}zero{# ebychnod}two{# ebychnod}few{# ebychnod}many{# ebychnod}other{# ebychnod}}</translation>
 <translation id="670717715607710284">Mae'r sgrîn wedi'i diffodd</translation>
-<translation id="6710213216561001401">Blaenorol</translation>
 <translation id="6714813999819678458">Pennawd lefel 2 blaenorol</translation>
 <translation id="6730312624811567147">Defnyddiwch Search a'r Saeth Chwith neu Dde ar gyfer Home neu End, Search, Contorl a'r Saeth Chwith neu Dde ar gyfer Control Home neu End, Search a'r Saeth i fyny neu i lawr ar gyfer Page Up neu Page Down</translation>
 <translation id="6736510033526053669">tab wedi'i greu</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Gwyn Hynafol</translation>
 <translation id="9220679313820249046">Coch Oren</translation>
 <translation id="9223032053830369045">Coch Tywyll</translation>
-<translation id="923331726185079994">Mae ChromeVox wedi'i Ddiweddaru</translation>
 <translation id="93384979447910801">Gwyrddlas Tywyll</translation>
 <translation id="937605981140327129">Nid yw TalkBack wedi'i osod ar hyn o bryd. Gosodwch Android AccessibilitySuite drwy Play Store a rhowch gynnig arall arni.</translation>
 <translation id="948171205378458592">Arafu cyfradd lleferydd</translation>

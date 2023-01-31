@@ -3335,7 +3335,7 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
 <translation id="4122473079291425973">De pagina Nieuw tabblad laat kaarten zien als er content beschikbaar is, maar gebruikers mogen deze instelling wijzigen</translation>
 <translation id="4122565688998751716">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="ALLOW_SYSTEM_NOTIFICATIONS_POLICY_NAME" />.
 
-Bepaalt of <ph name="PRODUCT_NAME" /> op Linux systeemeigen meldingen gebruikt.
+Bepaalt of <ph name="PRODUCT_NAME" /> in Linux systeemeigen meldingen gebruikt.
 
 Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> systeemeigen meldingen gebruiken.
 
@@ -3647,6 +3647,11 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="445505634382262792">Als je het beleid instelt op 3, kunnen websites schrijftoegang vragen tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host. Als je het beleid instelt op 2, wordt toegang geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="4457113781439375078">Dit beleid is beëindigd.
+
+      Als je het beleid toepast, rapporteren ingeschreven apparaten periodiek hun locatie.
+
+      Als je het beleid niet toepast of niet instelt, rapporteren ingeschreven apparaten hun locatie niet.</translation>
 <translation id="4463675333222095358">Eenheidsconversie van Snelle antwoorden aanzetten</translation>
 <translation id="4464365009416584564"><ph name="CHROME_SYNC_NAME" /> uitzetten</translation>
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
@@ -4351,7 +4356,7 @@ Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zij
 
 De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="5206454085187851382">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
-<translation id="5207543664699568887">Bepaalt of <ph name="PRODUCT_NAME" /> op Linux systeemmeldingen gebruikt.
+<translation id="5207543664699568887">Bepaalt of <ph name="PRODUCT_NAME" /> in Linux systeemmeldingen gebruikt.
 
 Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> systeemmeldingen gebruiken.
 
@@ -5238,9 +5243,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard cachedirectory. Gebruikers kunnen die instelling echter wijzigen met behulp van de opdrachtregel '--disk-cache-dir'.
 
       <ph name="PRODUCT_NAME" /> beheert de inhoud van de root-map van een volume. Als je gegevensverlies of andere fouten wilt voorkomen, moet je dit beleid niet instellen op de root-map of een directory die voor andere doeleinden wordt gebruikt. Bekijk de variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
-<translation id="6083356110032622782">WebSQL in niet-beveiligde contexten wordt verwijderd vanaf M110. Dit beleid zet de API opnieuw aan.
-          Als je dit beleid instelt op True, is WebSQL in niet-beveiligde contexten beschikbaar.
-          Als je dit beleid instelt op False of niet instelt, blijft WebSQL in niet-beveiligde contexten beschikbaar tot M109 en is dit niet meer beschikbaar vanaf M110.</translation>
 <translation id="6083631234867522991">Windows (Windows-clients):</translation>
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
@@ -5413,6 +5415,17 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="6261643884958898336">ID-gegevens van machine rapporteren</translation>
 <translation id="6265892395051519509">Toegang tot sensoren op deze sites toestaan</translation>
 <translation id="6266043141694454734">Hiermee wordt bepaald of de Chrome Root Store en de ingebouwde certificaatverificatie worden gebruikt om servercertificaten te verifiëren</translation>
+<translation id="6267130578410325007">Dit beleid staat origin-keyed agentclustering standaard toe.
+
+De HTTP-header Origin-Agent-Cluster bepaalt of een document wordt geïsoleerd in een origin-keyed agentcluster of in een site-keyed agentcluster. Dit heeft beveiligingsimplicaties omdat een origin-keyed agentcluster isolatie van documenten op basis van oorsprong toestaat. Het voor de ontwikkelaar zichtbare gevolg hiervan is dat de accessor document.domain niet meer kan worden ingesteld.
+
+Het standaardgedrag (wanneer er geen header Origin-Agent-Cluster: is ingesteld) verandert in M111 van site-keyed naar origin-keyed.
+
+Als je dit beleid toepast of niet instelt, volgt de browser deze nieuwe standaardwaarde vanaf die versie.
+
+Als je dit beleid niet toepast, wordt deze wijziging teruggedraaid en worden documenten zonder een header Origin-Agent-Cluster: toegewezen aan site-keyed agentclusters. Als gevolg hiervan blijft de accessor document.domain standaard instelbaar. Dit komt overeen met het verouderde gedrag.
+
+Zie https://developer.chrome.com/blog/immutable-document-domain/ voor meer informatie.</translation>
 <translation id="6270615143812355589">Audio-invoer aanzetten</translation>
 <translation id="6270791075656665237">QUIC niet toestaan</translation>
 <translation id="6273015149273504999">
@@ -5763,7 +5776,7 @@ Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat
 <translation id="6556586932263358975">Schermvergrendeling toestaan</translation>
 <translation id="6558013557780651644">Vertraging voordat acties bij inactiviteit worden uitgevoerd</translation>
 <translation id="6559057113164934677">Niet toestaan dat sites toegang krijgen tot de camera en microfoon</translation>
-<translation id="65591220958874949">De ingebouwde DNS-client gebruiken op Windows, macOS, Android en ChromeOS</translation>
+<translation id="65591220958874949">De ingebouwde DNS-client gebruiken in Windows, macOS, Android en ChromeOS</translation>
 <translation id="6559221564468029245">Als je dit beleid toepast of niet instelt, worden gebruikers niet als inactief gezien als er audio wordt afgespeeld. Hierdoor wordt voorkomen dat de time-out voor inactiviteit wordt bereikt en dat de actie bij inactiviteit wordt ondernomen. Het dimmen, uitzetten of vergrendelen van het scherm wordt nog wel uitgevoerd na de ingestelde periode, ongeacht of er audio wordt afgespeeld.
 
       Als je het beleid niet toepast, worden gebruikers wel als inactief gezien, ook als er audio wordt afgespeeld.</translation>
@@ -6339,6 +6352,16 @@ Als je het beleid niet toepast of niet instelt, is het standaardgedrag van toepa
       Als je dit beleid als verplicht instelt, kunnen gebruikers de instelling niet wijzigen of overschrijven.
 
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
+<translation id="7037853989942016900">Dit beleid beheert de recente refactor voor Graphics3D-API's in PPAPI-plug-in.
+
+De migratie heeft alleen invloed op interne implementatiegegevens en verandert niets aan het gedrag. Dit beleid kan worden gebruikt als PPAPI-apps niet werken zoals verwacht.
+
+Als je het beleid toepast of niet instelt, bepaalt de browser welke implementatie wordt gebruikt.
+Als je het beleid niet toepast, gebruikt de browser de oude implementatie totdat het beleid is verlopen.
+
+Als je het beleid moet gebruiken, dien je een bug in op crbug.com waarin je je use case uitlegt. Volgens de planning wordt het beleid voortgezet tot en met versie 114 van <ph name="PRODUCT_NAME" />, waarna de oude implementatie wordt verwijderd.
+
+OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestarte weergaveprocessen terwijl de browser actief is.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
@@ -7480,9 +7503,9 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
       Deze acties worden ondersteund:
 
-<ph name="CLOSE_BROWSERS_ACTION" />: alle browservensters en PWA's voor dit profiel sluiten. Niet ondersteund op Android.
+<ph name="CLOSE_BROWSERS_ACTION" />: alle browservensters en PWA's voor dit profiel sluiten. Niet ondersteund in Android.
 
-      <ph name="SHOW_PROFILE_PICKER_ACTION" />: het profielkiezervenster tonen. Niet ondersteund op Android.
+      <ph name="SHOW_PROFILE_PICKER_ACTION" />: het profielkiezervenster tonen. Niet ondersteund in Android.
 
       <ph name="CLEAR_BROWSING_HISTORY_ACTION" />, <ph name="CLEAR_DOWNLOAD_HISTORY_ACTION" />, <ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION" />, <ph name="CLEAR_CACHED_IMAGES_AND_FILES_ACTION" />, <ph name="CLEAR_PASSWORD_SIGNIN_ACTION" />, <ph name="CLEAR_AUTOFILL_ACTION" />, <ph name="CLEAR_SITE_SETTINGS_ACTION" />, <ph name="CLEAR_HOSTED_APP_DATA_ACTION" />: de bijbehorende browsegegevens wissen. Zie het beleid <ph name="CLEAR_BROWSING_DATA_ON_EXIT_LIST_POLICY_NAME" /> voor meer informatie.</translation>
 <translation id="8164144100557223371">Beginpunt voor werkbalk met experimentele browserfuncties uitzetten</translation>

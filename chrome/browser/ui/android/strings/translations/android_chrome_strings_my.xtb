@@ -391,6 +391,7 @@
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK3" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
 <translation id="3091010850649238832">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
+<translation id="3104179992611025423">သင့်ဘရောင်ဇာကို သင့်မိဘများက စီမံခန့်ခွဲသည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="311958134571892113">အောက်ပါနှင့် လင့်ခ်ချိတ်ထားသည်</translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
@@ -400,6 +401,7 @@
 <translation id="3157931365184549694">ပြန်လည်ဖေါ်ထုတ်ရန်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
 <translation id="316694332262407393">Chrome ဖွင့်ထားပြီးသားဖြစ်သည်။</translation>
+<translation id="3167258285411721858"><ph name="HOST_NAME" /> အတွက် မိုဘိုင်းဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3187472288455401631">ကြော်ငြာတိုင်းတာခြင်း</translation>
 <translation id="3207960819495026254">ဘွတ်မက်လုပ်ပြီး၏</translation>
@@ -433,6 +435,7 @@
 <translation id="3297344142967351106">အသံ အကူအညီ</translation>
 <translation id="3303414029551471755">အကြောင်းအရာအား ဒေါင်းလုပ်လုပ်ရန် ရှေ့ဆက်မလား?</translation>
 <translation id="3305795716056605962">‘နောက်ထပ်ရွေးစရာများ’ ခလုတ်မှတစ်ဆင့် စာမျက်နှာများ ဘာသာပြန်နိုင်သည်</translation>
+<translation id="3319664549618064419">ဤဝဘ်ဆိုက်ကို ပိုမိုကောင်းစွာကြည့်နိုင်ရန် ဒက်စ်တော့ဝဘ်ဆိုက်သို့ ပြောင်းနိုင်သည်</translation>
 <translation id="3334729583274622784">ဖိုင်နောက်ဆက်တွဲ ပြောင်းမလား။</translation>
 <translation id="3341262203274374114">လိုက်မကြည့်တော့၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="3359667936385849800">သင်၏လက်ရှိ ဝန်ဆောင်မှုပေးသူကို သုံးရန်</translation>
@@ -1465,6 +1468,7 @@
 <translation id="8849001918648564819">ဖျောက်ထားသည်</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />၊ တဘ်</translation>
 <translation id="8854223127042600341">သင်၏အော့ဖ်လိုင်း ဖိုင်များ ကြည့်ရန်</translation>
+<translation id="885480114717186641"><ph name="HOST_NAME" /> အတွက် ဒက်စ်တော့ဝဘ်ဆိုက်ကို တောင်းဆိုနိုင်သည်</translation>
 <translation id="8856607253650333758">ရှင်းလင်းချက်များ ရယူရန်</translation>
 <translation id="8856931513242997049">အကြောင်းကြားခွင့် လုပ်ငန်းစဉ် ပိတ်ထားသည်</translation>
 <translation id="8873817150012960745">စတင်ရန် ဤနေရာကိုတို့ပါ</translation>

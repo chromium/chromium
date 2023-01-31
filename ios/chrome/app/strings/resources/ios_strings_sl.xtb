@@ -244,7 +244,6 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2797029671965852011">Prikaz zgodovine</translation>
 <translation id="2800683595868705743">Leave Tab Switcher</translation>
 <translation id="2815198996063984598">2. Dotaknite se možnosti za privzeto aplikacijo za brskanje.</translation>
-<translation id="2820289420301699633">Skrbnik ima nadzor nad Chromom in lahko dostopa do podatkov v njem.</translation>
 <translation id="2830972654601096923">Upravljanje naslovov ...</translation>
 <translation id="2834399722155632105">3. Dotaknite se »Password Options« (Možnosti gesla).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -680,7 +679,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6064824697233747382">Vaša organizacija zahteva, da izklopite sinhronizacijo.</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
 <translation id="6071409777669089905">Odpni zavihek</translation>
-<translation id="60829778314739003">Sprejmi in nadaljuj</translation>
 <translation id="6084848228346514841">Izbira zavihkov</translation>
 <translation id="6103540626693881831">Šifriranje v napravi</translation>
 <translation id="6119050551270742952">Trenutna spletna stran je v anonimnem načinu</translation>

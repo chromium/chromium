@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Համաժամացման կառավարում</translation>
 <translation id="1076421457278169141">Կոդը ընթերցվեց</translation>
 <translation id="1076785341346483463">Համաժամացում կառավարվող հաշվի հետ</translation>
+<translation id="1080365971383768617">Գաղտնաբառերը ձեր բոլոր սարքերում</translation>
 <translation id="1084365883616172403">Ֆեյսբուքում փակցնումն ավարտվեց:</translation>
 <translation id="1085696779717592361">Օգտագործեք Chrome-ն ըստ կանխադրման</translation>
 <translation id="1103523840287552314">Միշտ թարգմանել <ph name="LANGUAGE" />-ից</translation>
@@ -243,7 +244,6 @@
 <translation id="2797029671965852011">Ցույց տալ պատմությունը</translation>
 <translation id="2800683595868705743">Փակել ներդիրների փոխանջատիչը</translation>
 <translation id="2815198996063984598">2. Հպեք «Դիտարկիչի կանխադրված հավելված»։</translation>
-<translation id="2820289420301699633">Ադմինիստրատորը վերահսկում է Chrome-ը, և նրան հասանելի են դրա տվյալները։</translation>
 <translation id="2830972654601096923">Կառավարել հասցեները…</translation>
 <translation id="2834399722155632105">3. Հպեք Գաղտնաբառերի կարգավորումներին</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@
 <translation id="5056446788882570708">Խնդիրները հայտնաբերվել են <ph name="TIME" />։</translation>
 <translation id="5059136629401106827">Եղավ</translation>
 <translation id="5062321486222145940">Տեղադրել Google Drive-ը</translation>
+<translation id="50641035439563602">Գաղտնաբառերն այժմ պահվում են ձեր Google հաշվում (<ph name="ACCOUNT" />)։ Դուք կարող եք օգտագործել դրանք ցանկացած սարքում, որում մուտք եք գործել հաշիվ։ Այս գործառույթն անջատելու համար անցեք <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
 <translation id="5090832849094901128">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="WEBSITE" /> կայքից։</translation>
 <translation id="5094827893301452931">Twitter-ում տարածումն ավարտվեց:</translation>
@@ -595,6 +596,7 @@
 <translation id="5520466080178053306">Հպեք «Գաղտնաբառերի կառավարիչ», ապա սեղմեք «Ավելացնել»</translation>
 <translation id="5525095647255982834">Այս ներդիրը մեկ այլ սարք ուղարկելու համար մուտք գործեք Chrome այդ սարքում։</translation>
 <translation id="5525269841082836315">Ստեղծել անցաբառ</translation>
+<translation id="5530084793407600786">Որոնել պատկերում Google-ի միջոցով</translation>
 <translation id="5542540507657872337">Գտնվել է <ph name="COUNT" /> ներդիր</translation>
 <translation id="5548760955356983418">Handoff-ը թույլ է տալիս ձեզ սկսել որևէ կայքի դիտարկումը այս սարքում, ապա հեշտությամբ շարունակել այն ձեր Mac սարքում: Ներկայումս բաց կայքը կհայտնվի Mac սարքի Միակցիչում:
 
@@ -677,7 +679,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6064824697233747382">Ձեր կազմակերպությունը պահանջում է, որ անջատեք համաժամացումը։</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
 <translation id="6071409777669089905">Ապամրացնել ներդիրը</translation>
-<translation id="60829778314739003">Ընդունել և շարունակել</translation>
 <translation id="6084848228346514841">Ընտրեք ներդիրներ</translation>
 <translation id="6103540626693881831">Գաղտնագրում սարքում</translation>
 <translation id="6119050551270742952">Ընթացիկ կայքէջը ինկոգնիտո ռեժիմում է բացված</translation>

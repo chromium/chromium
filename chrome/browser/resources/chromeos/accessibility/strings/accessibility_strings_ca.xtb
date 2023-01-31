@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Cloenda</translation>
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="1198865190323699001">Gestos tàctils</translation>
-<translation id="1201402288615127009">Següent</translation>
 <translation id="1202112913213080585">cancel·la</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">No hi ha cap encapçalament més de nivell 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Consell</translation>
 <translation id="1354356357730355833">copia</translation>
-<translation id="135978014023467274">ChromeVox s'ha actualitzat a la versió 63</translation>
 <translation id="1360699455582016846">Fes clic a l'element que hi ha a sota de la tecla d'encaminament <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">ves al caràcter següent</translation>
 <translation id="1377925789329510816">Aquest és l'últim encapçalament. Prem Cerca+H per anar al primer o Cerca+Maj+H per anar al segon de la pàgina.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">desmarcada</translation>
 <translation id="3286372614333682499">vertical</translation>
 <translation id="3286390186030710347">Control lliscant</translation>
-<translation id="3300348286427369683">Compatibilitat amb text enriquit. Ara ChromeVox admet els camps de text enriquit, com ara les ordres de salt, l'encaminament del cursor Braille i la selecció, entre d'altres.</translation>
 <translation id="3300733168898541351">desfés</translation>
 <translation id="3307886118343381874">Ves al final de la taula</translation>
 <translation id="3312997241656799641">Enllaç visitat següent</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">El mode permanent intel·ligent està desactivat</translation>
 <translation id="4623097797855662355">Colofó</translation>
 <translation id="4624970070706497034">TalkBack ja no ofereix la personalització per als Chromebooks. Podràs continuar fent-la servir, però utilitza les tecles de drecera predeterminades de TalkBack. Prem Cerca+A i després K per veure les dreceres disponibles. Si vols continuar fent servir TalkBack, torna a prémer l'ordre.</translation>
-<translation id="463135993322337640">Prem les tecles O i N de ChromeVox per descobrir-ne les novetats</translation>
 <translation id="4649220074413114917">Pots tocar la pantalla amb dos dits per aturar qualsevol entrada de veu en curs. Aquesta acció serveix si no vols que ChromeVox llegeixi contingut. Per continuar, toca la pantalla amb dos dits.</translation>
-<translation id="4660783501463101648">La versió clàssica s'ha suprimit. S'ha tret la combinació de tecles que permetia tornar a la versió clàssica de ChromeVox.</translation>
 <translation id="4661075872484491155">arbre</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Ves a la columna següent</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">enrere</translation>
 <translation id="5102981729317424850">Barra d'eines</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Aquesta versió nova inclou alguns canvis molt interessants. Dona-hi una ullada a continuació:</translation>
 <translation id="5111640677200759579">Capçalera de la columna</translation>
 <translation id="5115892389597951922">Registre de ChromeVox</translation>
 <translation id="5119330972669454698">Fusta</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Navegació bàsica</translation>
 <translation id="609281021724813947">No hi ha cap control lliscant anterior</translation>
 <translation id="6100239002225743044">Puja una línia</translation>
-<translation id="6118126368611144850">Aplicacions d'Android per a Chrome. Si tens Play Store al dispositiu, dona un cop d'ull a ChromeVox amb les aplicacions d'Android. Baixa Google Chrome Canary de Play Store per provar aquesta compatibilitat experimental.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">activa</translation>
 <translation id="6122013438240733403">botó</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Quadre combinat anterior</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{exclamació}other{# exclamacions}}</translation>
 <translation id="670717715607710284">Desactiva la pantalla</translation>
-<translation id="6710213216561001401">Anterior</translation>
 <translation id="6714813999819678458">Capçalera del nivell 2 anterior</translation>
 <translation id="6730312624811567147">Fes servir Cerca+fletxa esquerra/dreta en comptes d'Inici/Fi; Cerca+Control+fletxa esquerra/dreta en comptes de Control+Inici/Fi, i Cerca+fletxa amunt/avall en comptes de Re/Av Pàg</translation>
 <translation id="6736510033526053669">S'ha creat una pestanya.</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Blanc trencat</translation>
 <translation id="9220679313820249046">Vermell ataronjat</translation>
 <translation id="9223032053830369045">Vermell fosc</translation>
-<translation id="923331726185079994">S'ha actualitzat ChromeVox</translation>
 <translation id="93384979447910801">Verd marí fosc</translation>
 <translation id="937605981140327129">TalkBack no està instal·lat actualment. Instal·la AccessibilitySuite d'Android mitjançant Play Store i torna-ho a provar.</translation>
 <translation id="948171205378458592">Disminueix la velocitat de la veu.</translation>

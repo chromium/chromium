@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Послеслов</translation>
 <translation id="1197088940767939838">оранжево</translation>
 <translation id="1198865190323699001">Жестове с докосване</translation>
-<translation id="1201402288615127009">Напред</translation>
 <translation id="1202112913213080585">отказ</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Няма следващо заглавие от четвърто ниво</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">статия</translation>
 <translation id="1346059596910821859">Бакшиш</translation>
 <translation id="1354356357730355833">копиране</translation>
-<translation id="135978014023467274">Екранният четец ChromeVox бе актуализиран до версия 63!</translation>
 <translation id="1360699455582016846">Кликване върху елемента под ключ за пренасочване <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">преминаване към следващия знак</translation>
 <translation id="1377925789329510816">Това е последното заглавие. Натиснете клавиша „търсене“ + H, за да се върнете към първото, или „търсене“ + Shift + H, за да преминете към второто заглавие на тази страница.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">без отметка</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
 <translation id="3286390186030710347">Плъзгач</translation>
-<translation id="3300348286427369683">Поддръжка за разширени функции при работа с текст: ChromeVox вече поддържа текстови полета с разширени функции, включително команди за преход, следване на курсора при брайлови дисплеи, избиране и др.</translation>
 <translation id="3300733168898541351">отмяна</translation>
 <translation id="3307886118343381874">Към края на таблицата</translation>
 <translation id="3312997241656799641">Следваща посетена връзка</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Интелигентният фиксиран режим е изключен</translation>
 <translation id="4623097797855662355">Колофон</translation>
 <translation id="4624970070706497034">TalkBack вече не предлага персонализиране за устройства Chromebook. Можете да продължите да използвате функцията, но със стандартните ѝ клавишни комбинации. За да видите наличните, натиснете клавиша „търсене“ + A и след това K. Ако все пак искате да използвате TalkBack, изпълнете командата отново.</translation>
-<translation id="463135993322337640">Натиснете „o“ и „n“ в ChromeVox, за да научите кои са новите неща</translation>
 <translation id="4649220074413114917">Докосването на екрана с два пръста може да се използва за спиране на говора. Това е полезно, ако не искате ChromeVox да чете даден текст. За да продължите, докоснете екрана с два пръста.</translation>
-<translation id="4660783501463101648">Класическият изглед е премахнат: Превключвателят на клавиатурата за връщане към класическия изглед на ChromeVox е премахнат.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Преминаване към следващата колона</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">назад</translation>
 <translation id="5102981729317424850">Лента с инструменти</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Направихме някои вълнуващи промени в тази версия. Ето и новите неща:</translation>
 <translation id="5111640677200759579">Заглавка на графа</translation>
 <translation id="5115892389597951922">Регистрационен файл на ChromeVox</translation>
 <translation id="5119330972669454698">светлокафяво</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Основна навигация</translation>
 <translation id="609281021724813947">Няма предишен плъзгач</translation>
 <translation id="6100239002225743044">Преместване нагоре с един ред</translation>
-<translation id="6118126368611144850">Приложения за Android в Chrome: Ако имате Google Play Магазин на устройството си, изтеглете Google Chrome Canary оттам, за да изпробвате експерименталната поддръжка за ChromeVox в приложения за Android.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">активиране</translation>
 <translation id="6122013438240733403">бутон</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Предишният разгъващ се списък</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{удивителен знак}other{# удивителни знака}}</translation>
 <translation id="670717715607710284">Изключване на екрана</translation>
-<translation id="6710213216561001401">Предишно</translation>
 <translation id="6714813999819678458">Предишното заглавие от второ ниво</translation>
 <translation id="6730312624811567147">Използвайте Търсене и стрелка за наляво или надясно за Home или End; Търсене, Control и стрелка за наляво или надясно за Control Home или Control End; Търсене и стрелка за нагоре или надолу за Page Up или Page Down</translation>
 <translation id="6736510033526053669">разделът е създаден</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">кремавобяло</translation>
 <translation id="9220679313820249046">оранжево-червено</translation>
 <translation id="9223032053830369045">тъмночервено</translation>
-<translation id="923331726185079994">Екранният четец ChromeVox е актуализиран</translation>
 <translation id="93384979447910801">тъмно морскозелено</translation>
 <translation id="937605981140327129">Понастоящем услугата TalkBack не е инсталирана. Моля, инсталирайте Android AccessibilitySuite чрез Google Play Магазин и опитайте отново.</translation>
 <translation id="948171205378458592">Намаляване на скоростта на говора</translation>

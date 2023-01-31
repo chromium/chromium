@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Afterword</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1198865190323699001">Mga Touch Gesture</translation>
-<translation id="1201402288615127009">Susunod</translation>
 <translation id="1202112913213080585">kanselahin</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Walang susunod na heading sa antas 4</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Tip</translation>
 <translation id="1354356357730355833">kopyahin</translation>
-<translation id="135978014023467274">Na-update ka sa ChromeVox 63!</translation>
 <translation id="1360699455582016846">I-click ang item sa ilalim ng routing key na <ph name="ROUTING_KEY_NUMBER" /></translation>
 <translation id="1376703628032300005">pumunta sa susunod na character</translation>
 <translation id="1377925789329510816">Ito ang huling heading. Pindutin ang Search+H upang pumunta sa unang heading, o ang Search+Shift+H upang pumunta sa pangalawang heading sa page na ito.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">hindi naka-check</translation>
 <translation id="3286372614333682499">portrait</translation>
 <translation id="3286390186030710347">Slider</translation>
-<translation id="3300348286427369683">Suporta sa rich text. Sinusuportahan na ng ChromeVox ang mga field ng rich text kabilang ang mga jump command, pag-route ng braille cursor, pagpili, at higit pa.</translation>
 <translation id="3300733168898541351">i-undo</translation>
 <translation id="3307886118343381874">Pumunta sa dulo ng talahanayan</translation>
 <translation id="3312997241656799641">Sunod na binisitang link</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Naka-off ang Smart sticky mode</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="4624970070706497034">Hindi na nagbibigay ang TalkBack ng pag-customize para sa mga Chromebook. Magagamit mo pa rin ito, pero gamitin ang mga default na keyboard shortcut ng TalkBack. Pindutin ang Search+A, pagkatapos ay K para makita ang lahat ng available na shortcut. Kung gusto mo pa ring gamitin ang TalkBack, pindutin ulit ang command.</translation>
-<translation id="463135993322337640">Pindutin ang ChromeVox o, n upang malaman kung ano ang bago</translation>
 <translation id="4649220074413114917">Puwedeng i-tap ang screen gamit ang dalawang daliri para ihinto ang anumang kasalukuyang speech. Kapaki-pakinabang ito kung ayaw mong magbasa ang ChromeVox. Para magpatuloy, i-tap ang screen gamit ang dalawang daliri.</translation>
-<translation id="4660783501463101648">Inalis ang classic. Inalis ang toggle ng keyboard upang lumipat sa ChromeVox Classic.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Pumunta sa susunod na column</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">bumalik</translation>
 <translation id="5102981729317424850">Tool bar</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">May ilan kaming kapana-panabik na pagbabago sa bagong release na ito; narito ang bago:</translation>
 <translation id="5111640677200759579">Header ng column</translation>
 <translation id="5115892389597951922">Log ng ChromeVox</translation>
 <translation id="5119330972669454698">Burly Wood</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Basic na Pag-navigate</translation>
 <translation id="609281021724813947">Walang nakaraang slider</translation>
 <translation id="6100239002225743044">Umakyat nang isang linya</translation>
-<translation id="6118126368611144850">Mga android app para sa Chrome. Kung may Play Store ka sa iyong device, maunang makita ang ChromeVox sa pamamagitan ng mga Android app. Subukan ang pinag-eeksperimentuhang suporta sa pamamagitan ng pag-download ng Google Chrome Canary mula sa Play Store.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">isaaktibo</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Nakaraang combo box</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{tandang-padamdam}one{# tandang-padamdam}other{# na tandang-padamdam}}</translation>
 <translation id="670717715607710284">I-off ang screen</translation>
-<translation id="6710213216561001401">Nauna</translation>
 <translation id="6714813999819678458">Nakaraang heading sa antas 2</translation>
 <translation id="6730312624811567147">Gamitin ang Maghanap Pakaliwa o Pakanan para sa Home o End, Maghanap ng Kontrol Pakaliwa o Pakanan para sa Control Home o End, at Maghanap Pataas o Pababa para sa Page Up o Down</translation>
 <translation id="6736510033526053669">nagawa ang tab</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Antique White</translation>
 <translation id="9220679313820249046">Orange Red</translation>
 <translation id="9223032053830369045">Dark Red</translation>
-<translation id="923331726185079994">Na-update ang ChromeVox</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>
 <translation id="937605981140327129">Kasalukuyang hindi naka-install ang TalkBack. Paki-install ang Accessibility Suite ng Android sa pamamagitan ng Play Store at subukan ulit.</translation>
 <translation id="948171205378458592">Bawasan ang rate ng speech</translation>

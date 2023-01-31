@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">後記</translation>
 <translation id="1197088940767939838">橙色</translation>
 <translation id="1198865190323699001">輕觸手勢</translation>
-<translation id="1201402288615127009">下一個</translation>
 <translation id="1202112913213080585">取消</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">冇下一個第 4 級標題</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">文章</translation>
 <translation id="1346059596910821859">小費</translation>
 <translation id="1354356357730355833">複製</translation>
-<translation id="135978014023467274">您已更新至 ChromeVox 63！</translation>
 <translation id="1360699455582016846">按一下 Routing 鍵 <ph name="ROUTING_KEY_NUMBER" /> 下方的項目</translation>
 <translation id="1376703628032300005">移去下一個字元</translation>
 <translation id="1377925789329510816">這是最後一個標題。按 Search+H 鍵即可跳回至第一個標題，或按 Search+Shift+H 鍵前往此頁面上的第二個標題。</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">取消勾選</translation>
 <translation id="3286372614333682499">直向</translation>
 <translation id="3286390186030710347">滑桿</translation>
-<translation id="3300348286427369683">支援 RTF 格式：ChromeVox 現在支援 RTF 格式欄位，包括跳轉指令、點字游標路線、選取等等。</translation>
 <translation id="3300733168898541351">復原</translation>
 <translation id="3307886118343381874">前往表格的結尾</translation>
 <translation id="3312997241656799641">下一個瀏覽過的連結</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">智能相黏模式已關閉</translation>
 <translation id="4623097797855662355">版權頁</translation>
 <translation id="4624970070706497034">TalkBack 唔再為 Chromebook 提供自訂項目。你仍然可以用自訂功能，不過用唔到 TalkBack 預設嘅鍵盤快速鍵。先㩒搜尋鍵 + A 鍵，然後㩒 K 鍵就睇到可以用嘅快速鍵。如果您仍然想用 TalkBack，請㩒多次指令鍵。</translation>
-<translation id="463135993322337640">按下 ChromeVox 的 O 鍵、N 鍵，即可瞭解最新功能</translation>
 <translation id="4649220074413114917">以兩指輕按螢幕可以停止目前朗讀的任何內容。如果不希望 ChromeVox 繼續朗讀，這種做法非常實用。如要繼續，請以兩指輕按螢幕。</translation>
-<translation id="4660783501463101648">已移除傳統版。現在無法再透過鍵盤切換回 ChromeVox 傳統版。</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4677535310137735442">前往下一欄</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">返回</translation>
 <translation id="5102981729317424850">工具列</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">此新版本中有一些重大變更，說明如下：</translation>
 <translation id="5111640677200759579">欄標題</translation>
 <translation id="5115892389597951922">ChromeVox 記錄</translation>
 <translation id="5119330972669454698">硬木色</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">基本導覽操作</translation>
 <translation id="609281021724813947">冇上一個滑桿</translation>
 <translation id="6100239002225743044">上移一行</translation>
-<translation id="6118126368611144850">Chrome 上專用的 Android 應用程式：如果您的裝置上有「Play 商店」，可透過 Android 應用程式率先體驗 ChromeVox。只要從「Play 商店」下載 Google Chrome Canary 版，即可體驗實驗功能。</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">啟動</translation>
 <translation id="6122013438240733403">按鈕</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">上一個下拉式方塊</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{感嘆號}other{# 個感嘆號}}</translation>
 <translation id="670717715607710284">閂螢幕</translation>
-<translation id="6710213216561001401">上一個</translation>
 <translation id="6714813999819678458">上一個第 2 級標題</translation>
 <translation id="6730312624811567147">用搜尋掣加向左掣或向右掣嚟取代 Home 掣或者 End 掣，用搜尋掣，Control 掣加向左掣或者向右掣嚟取代 Control 掣加 Home 掣或者 End 掣，用搜尋掣加向上掣或者向下掣嚟取代 Page Up 掣或者 Page Down 掣</translation>
 <translation id="6736510033526053669">已建立新分頁</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">古董白色</translation>
 <translation id="9220679313820249046">橙紅色</translation>
 <translation id="9223032053830369045">深紅色</translation>
-<translation id="923331726185079994">已更新 ChromeVox</translation>
 <translation id="93384979447910801">暗海綠色</translation>
 <translation id="937605981140327129">現時未安裝 TalkBack。請透過「Play 商店」安裝 Android 無障礙套件，然後試多次</translation>
 <translation id="948171205378458592">放慢說話速度</translation>

@@ -2920,6 +2920,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3602870520245633055">Tulostus ja skannaus</translation>
 <translation id="3603622770190368340">Hanki verkkovarmenne</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} tilillä käytetään samaa salasanaa}other{{COUNT} tilillä käytetään samaa salasanaa}}</translation>
 <translation id="3605780360466892872">Dave</translation>
 <translation id="3609277884604412258">Pikahaku</translation>
 <translation id="3610241585790874201">Datan tallentaminen laitteelle on kielletty</translation>
@@ -6671,7 +6672,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7044211973375150246">Toinen sovellus on asetettu avaamaan samat linkit kuin <ph name="APP_NAME" />. Muutoksen jälkeen <ph name="APP_NAME_2" /> ei enää voi avata tuettuja linkkejä.</translation>
 <translation id="7044606776288350625">Datan synkronointi</translation>
 <translation id="7047059339731138197">Valitse taustakuva</translation>
-<translation id="7048457618657122233">Jaa linkki: <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Pidetäänkö tiedosto?</translation>
 <translation id="7050037487872780845">Virheellinen hotspotin määritys</translation>
 <translation id="7052237160939977163">Lähetä tehokkuuden tarkkailutietoja</translation>

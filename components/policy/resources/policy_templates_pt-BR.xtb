@@ -3682,6 +3682,11 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="445505634382262792">Se a política for definida como "3" os sites poderão pedir permissão de acesso de gravação de arquivos e diretórios no sistema de arquivos do sistema operacional do host. Se for definida como "2", o acesso será negado.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="4457113781439375078">O uso desta política foi descontinuado.
+
+      Se a política for ativada, os dispositivos registrados vão informar a localização periodicamente.
+
+      Se ela for desativada ou deixada sem definição, os dispositivos registrados não vão informar a localização.</translation>
 <translation id="4463675333222095358">Ativar a conversão de unidades das Respostas rápidas</translation>
 <translation id="4464365009416584564">Desativar a <ph name="CHROME_SYNC_NAME" /></translation>
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
@@ -5322,9 +5327,6 @@ O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de e
       Se ela não for definida, o <ph name="PRODUCT_NAME" /> usará o diretório de cache padrão, mas os usuários poderão mudar isso com a sinalização da linha de comando "--disk-cache-dir".
 
       O <ph name="PRODUCT_NAME" /> gerencia o conteúdo do diretório raiz de um volume. Portanto, para evitar a perda de dados ou outros erros, não defina a política para o diretório raiz nem qualquer diretório usado para outros propósitos. Veja as variáveis que podem ser usadas: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês).</translation>
-<translation id="6083356110032622782">O WebSQL em contextos não seguros vai ser removido da versão M110 em diante. A política reativa essa API.
-          Se a política for definida como verdadeira, o WebSQL em contextos não seguros ficará disponível.
-          Se ela for definida como falsa ou for deixada sem definição, o WebSQL em contextos não seguros continuará disponível até a versão M109 e ficará indisponível da M110 em diante.</translation>
 <translation id="6083631234867522991">Windows (clientes do Windows):</translation>
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>

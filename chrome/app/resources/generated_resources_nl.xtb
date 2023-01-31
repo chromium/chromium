@@ -2906,6 +2906,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3602290021589620013">Voorbeeld</translation>
 <translation id="3602870520245633055">Afdrukken en scannen</translation>
 <translation id="3603622770190368340">Netwerkcertificaat verkrijgen</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account gebruikt hetzelfde wachtwoord}other{{COUNT} accounts gebruiken hetzelfde wachtwoord}}</translation>
 <translation id="3605780360466892872">Zakenman</translation>
 <translation id="3609277884604412258">Snel zoeken</translation>
 <translation id="3610241585790874201">Geen toestemming om gegevens op je apparaat op te slaan</translation>
@@ -6652,7 +6653,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7044211973375150246">Een app is ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> ondersteunde links opent.</translation>
 <translation id="7044606776288350625">Gegevens synchroniseren</translation>
 <translation id="7047059339731138197">Een achtergrond kiezen</translation>
-<translation id="7048457618657122233">Link delen via <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Bestand behouden?</translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
 <translation id="7052237160939977163">Gegevens over het bijhouden van prestaties verzenden</translation>

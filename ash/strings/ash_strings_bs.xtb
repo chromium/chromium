@@ -420,9 +420,11 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3289674678944039601">Punjenje putem adaptera</translation>
 <translation id="3290356915286466215">Nije osigurano</translation>
 <translation id="3294437725009624529">Gost</translation>
+<translation id="3298690094479023523">Bez obzira na to, vaš PIN ili zaporku nije bilo moguće potvrditi. Pokušajte ponovo.</translation>
 <translation id="3307642347673023554">Promijenjeno u način rada za laptop</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se može ponovo prijaviti kasnije.</translation>
 <translation id="3321628682574733415">Pogrešan kôd za roditelja</translation>
+<translation id="332827762492701193">Obavještenja su skrivena</translation>
 <translation id="3339826665088060472">Snimanje ekrana, alati za kreiranje slika i snimaka ekrana</translation>
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
@@ -559,6 +561,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4017989525502048489">Laserski pokazivač</translation>
 <translation id="401993194061514265">Označivač nije dostupan. Ponovo otvorite Snimanje ekrana.</translation>
 <translation id="4021716437419160885">Klizni prema dolje</translation>
+<translation id="4024840464866786680">Ako ste zaboravili PIN i zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
 <translation id="4028481283645788203">Potrebna je lozinka za dodatnu sigurnost</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Trenutno dijelite ekran</translation>
@@ -699,10 +702,12 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4735944890391795473">12. radna površina</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4740516757091333363">Izbrisati sačuvanu radnu površinu?</translation>
+<translation id="4747410141429390146">Otključajte da pregledate obavještenja</translation>
 <translation id="4752784485658729358">Dozvoljeno je samo 6 radnih površina. Uklonite jednu radnu površinu da sačuvate novu.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4762573482154983647">Sakrijte aplikacije</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
+<translation id="4776584068981882959">Vašu zaporku opet nije bilo moguće potvrditi. Pokušajte ponovo.</translation>
 <translation id="4776917500594043016">Lozinka za račun <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play trgovina</translation>
 <translation id="4778095205580009397">Google Asistent nije dostupan u demo sesiji.</translation>
@@ -733,6 +738,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="492453977506755176">Tipka za snimanje</translation>
 <translation id="4925542575807923399">Administrator ovog računa traži da se prvi prijavi na račun u sesiji višestruke prijave.</translation>
 <translation id="4929163402621253029">Govorite li? Isključen vam je zvuk. Saznajte više</translation>
+<translation id="4936329710968938986">Svako, isključeno</translation>
 <translation id="4938176435186993759">Sakrij sve prijedloge</translation>
 <translation id="4945196315133970626">Isključi obavještenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
@@ -841,6 +847,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5536723544185013515">Nedavne aplikacije, navigirajte tipkom sa strelicom ulijevo ili udesno da pristupite svim nedavnim aplikacijama</translation>
 <translation id="553675580533261935">Izlazak iz sesije</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
+<translation id="5546397813406633847">Oporavi korisnika</translation>
 <translation id="554893713779400387">Uključi/isključi diktiranje</translation>
 <translation id="5558091555391176027">Uključite/isključite veliku vidljivost Dijeljenja u blizini</translation>
 <translation id="5560420195677022218">Pogledajte aplikacije telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
@@ -857,6 +864,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
 <translation id="5625955975703555628">LTE+</translation>
+<translation id="5627392655516693966">Vaš identitet nije potvrđen. Pokušajte ponovo.</translation>
 <translation id="5648021990716966815">Priključak za mikrofon</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> traži da reagirate.</translation>
 <translation id="5662075790140998213">10. radna površina</translation>
@@ -875,6 +883,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5707775774148071965">Uređaj podržava veću brzinu prijenosa podataka od kabla. Performanse uređaja su možda ograničene.</translation>
 <translation id="5710450975648804523">Uključen je način rada Ne ometaj</translation>
 <translation id="571295407079589142">Prijenos podataka na mobilnoj mreži je isključen</translation>
+<translation id="5727460725221669831">Ako ste zaboravili zaporku ili ste nedavno promijenili zaporku Google računa, pokušajte oporaviti korisnika.</translation>
 <translation id="573413375004481890">Ovaj uređaj ne može podržati sve vaše ekrane pa je s jednim prekinuta veza</translation>
 <translation id="5740328398383587084">Dijeljenje u blizini</translation>
 <translation id="574392208103952083">Srednje</translation>
@@ -1387,6 +1396,7 @@ Nova instalacija</translation>
 <translation id="8477270416194247200">Za otkazivanje pritisnite Alt + tipku za pretraživanje ili Shift.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ne podržava <ph name="SPECIFIED_RESOLUTION" />. Rezolucija je promijenjena na <ph name="FALLBACK_RESOLUTION" />. Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8496402167048257517">Pogledajte postavke Dijeljenja u blizini</translation>
+<translation id="8507563469658346379">Svako, <ph name="REMAINING_TIME" /></translation>
 <translation id="85123341071060231">Bluetooth na vašem Chromebooku je isključen. Da otključate Chromebook, unesite lozinku.</translation>
 <translation id="8513108775083588393">Aut. rotiranje</translation>
 <translation id="851458219935658693">Prikazivanje prozora s trenutne radne površine, odabrano je dugme za izbor</translation>

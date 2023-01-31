@@ -18,6 +18,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="1066060668811609597">Hantera synkronisering</translation>
 <translation id="1076421457278169141">Koden skannades</translation>
 <translation id="1076785341346483463">Synkronisera med ett hanterat konto</translation>
+<translation id="1080365971383768617">Lösenord på alla dina enheter</translation>
 <translation id="1084365883616172403">Inlägg på Facebook klart.</translation>
 <translation id="1085696779717592361">Använd Chrome som standard</translation>
 <translation id="1103523840287552314">Översätt alltid <ph name="LANGUAGE" /></translation>
@@ -243,7 +244,6 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2797029671965852011">Visa historik</translation>
 <translation id="2800683595868705743">Stäng funktionen för flikbyte</translation>
 <translation id="2815198996063984598">2. Tryck på Standardwebbläsarapp</translation>
-<translation id="2820289420301699633">Administratören har kontroll över Chrome och kan få åtkomst till dess data</translation>
 <translation id="2830972654601096923">Hantera adresser …</translation>
 <translation id="2834399722155632105">3. Tryck på Lösenordsalternativ</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -545,6 +545,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5056446788882570708">Problem hittades för <ph name="TIME" />.</translation>
 <translation id="5059136629401106827">OK</translation>
 <translation id="5062321486222145940">Installera Google Drive</translation>
+<translation id="50641035439563602">Lösenorden har nu sparats i Google-kontot (<ph name="ACCOUNT" />). Du kan använda dem överallt där du är inloggad. Om du vill inaktivera detta öppnar du <ph name="BEGIN_LINK" />inställningarna<ph name="END_LINK" />.</translation>
 <translation id="5083464117946352670">Det gick inte att bestämma filstorleken.</translation>
 <translation id="5090832849094901128">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas.</translation>
 <translation id="5094827893301452931">Tweet klart.</translation>
@@ -595,6 +596,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5520466080178053306">Tryck på Lösenordshantering och sedan på Lägg till</translation>
 <translation id="5525095647255982834">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på den enheten.</translation>
 <translation id="5525269841082836315">Skapa lösenfras</translation>
+<translation id="5530084793407600786">Sök i bilden med Google</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> hittades</translation>
 <translation id="5548760955356983418">Med Handoff kan du börja visa en webbplats på den här enheten och sedan enkelt fortsätta på din Mac. Den aktuella öppna webbplatsen visas i Dock på din Mac.
 
@@ -677,7 +679,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6064824697233747382">Organisationen kräver att du inaktiverar synkronisering.</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
 <translation id="6071409777669089905">Lossa flik</translation>
-<translation id="60829778314739003">Godkänn och fortsätt</translation>
 <translation id="6084848228346514841">Välj flikar</translation>
 <translation id="6103540626693881831">Kryptering på enheten</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>

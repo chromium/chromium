@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Tilføj til ordbog</translation>
 <translation id="1018656279737460067">Annulleret</translation>
 <translation id="1022489261739821355">Viser adgangskoder fra din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Din enhed administreres af <ph name="DOMAIN" />. Administratorer kan få adgang til dataene på enhver profil på denne enhed.</translation>
 <translation id="1026655690966755180">Tilføj port</translation>
 <translation id="1026822031284433028">Indlæs billede</translation>
 <translation id="1028604629594230522">Chrome forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem.</translation>
@@ -1882,6 +1883,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2643064289437760082">Du kan til enhver tid slette data om annoncemåling ved at slette dine browserdata</translation>
 <translation id="2643698698624765890">Administrer dine udvidelser ved at klikke på Udvidelser i menuen Vindue.</translation>
 <translation id="2645047101481282803">Din enhed administreres af <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Caster denne fane til <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, certifikatkæde</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
@@ -2754,6 +2756,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3446274660183028131">Start Parallels Desktop for at installere Windows.</translation>
 <translation id="344630545793878684">Læs dine data på en række websites</translation>
 <translation id="3447644283769633681">Bloker alle cookies fra tredjeparter</translation>
+<translation id="3447797901512053632">Caster <ph name="TAB_NAME" /> til <ph name="DEVICE_NAME" /></translation>
 <translation id="3448492834076427715">Opdater konto</translation>
 <translation id="3449393517661170867">Nyt fanevindue</translation>
 <translation id="3449839693241009168">Tryk på <ph name="SEARCH_KEY" /> for at sende kommandoer til <ph name="EXTENSION_NAME" /></translation>
@@ -2908,6 +2911,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3590295622232282437">Starter administreret session.</translation>
 <translation id="3591057288287063271">Behold <ph name="FILE_NAME" /></translation>
 <translation id="3592260987370335752">&amp;Få flere oplysninger</translation>
+<translation id="3592344177526089979">Caster en fane til <ph name="DEVICE_NAME" /></translation>
 <translation id="3593152357631900254">Aktiver tilstanden Fuzzy-pinyin</translation>
 <translation id="3593965109698325041">Begrænsninger for certifikatnavn</translation>
 <translation id="3596012367874587041">Appindstillinger</translation>
@@ -6674,7 +6678,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7044211973375150246">En app er konfigureret til at åbne de samme links som <ph name="APP_NAME" />. Det gør, at <ph name="APP_NAME_2" /> ikke kan åbne understøttede links.</translation>
 <translation id="7044606776288350625">Synkroniser data</translation>
 <translation id="7047059339731138197">Vælg en baggrund</translation>
-<translation id="7048457618657122233">Del link med <ph name="SHARE_TARGET" /></translation>
 <translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7050037487872780845">Ugyldig konfiguration af hotspot</translation>
 <translation id="7052237160939977163">Send data om ydeevne</translation>

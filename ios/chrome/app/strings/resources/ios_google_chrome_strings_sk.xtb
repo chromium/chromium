@@ -3,6 +3,7 @@
 <translationbundle lang="sk">
 <translation id="1143896152279775643">Heslo bude uložené do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Pomoc so zlepšovaním funkcií a výkonu Chromu</translation>
+<translation id="1352919863522755794">Správcovi hesiel Google sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="1462727070346936664">Prihláste sa, aby ste mohli Chrome využívať naplno.</translation>
 <translation id="1479202195792305274">Keď sa prihlásite účtom Google, Chrome môže skontrolovať vaše heslá.</translation>
 <translation id="1493827051843127077">Nastavte si Chromium ako predvolený prehliadač na synchronizovanie kariet, hesiel a platobných údajov vo všetkých zariadeniach</translation>
@@ -12,12 +13,10 @@
 <translation id="1682483655351012182">Synchronizácia údajov Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1917964099031477364">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z Chromu a ďalších aplikácií Google v tomto zariadení.</translation>
-<translation id="1968388653333775699">S prehliadačom Chrome zvládnete viac</translation>
 <translation id="2009224836393115614">Chromu sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="2056123005618757196">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Google Chrome, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="2147651015520127414">Chrome overil, že certifikát tohto webu vydal vydavateľ <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Údaje zo synchronizácie Chromu</translation>
-<translation id="2313070403598893276">Google Chrome je jednoduchý, bezpečný a rýchlejší ako kedykoľvek predtým</translation>
 <translation id="2339201583852607431">Heslo bude uložené do vášho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome zdieľa vašu s webmi, pre ktoré to povolíte.</translation>
 <translation id="2347208864470321755">Po zapnutí tejto funkcie bude prehliadač Chrome ponúkať preloženie stránok napísaných v inom jazyku pomocou služby Prekladač Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
@@ -31,6 +30,7 @@
 <translation id="2689064829982324496">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z Chromu<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
 <translation id="2732745070297234559">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="2767464022270041271">Žiadne uložené heslá. Správca hesiel Google môže kontrolovať heslá, keď ich uložíte.</translation>
 <translation id="2869959624320573933">Prihláste sa do Chromu</translation>
 <translation id="2957447865124070833">Vyberte <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
@@ -59,6 +59,7 @@
 <translation id="4698415050768537821">Chromu sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Chrome odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Nepodporované vo verzii Chrome Beta</translation>
+<translation id="4840404732697892756">Správca hesiel môže kontrolovať heslá, keď sa prihlásite účtom Google.</translation>
 <translation id="5030102366287574140">Chrome vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>
 <translation id="5108659628347594808">Zlepšujte Chrome</translation>
 <translation id="5119391094379141756">Vyberte Chrome</translation>
@@ -68,6 +69,7 @@
 <translation id="5552137475244467770">Chrome pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené online. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="5639704535586432836">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Google Chrome a zapnite fotoaparát.</translation>
 <translation id="5642200033778930880">Google Chrome nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
+<translation id="5661521615548540542">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Offline, Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5716154293141027663">Chrome otvoríte vždy, keď klepnete na odkazy v iných aplikáciách</translation>
@@ -120,9 +122,11 @@
   2. Klepnite na predvolenú aplikáciu prehliadača.
         3. Vyberte Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8603022514504485810">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google.<ph name="END_LINK" /></translation>
 <translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 <translation id="8772179140489533211">Zobrazí výzvy na prihlásenie do Chromu.</translation>
 <translation id="8788269841521769222">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel Google v účte <ph name="EMAIL" />.</translation>
+<translation id="8857676124663337448">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="8897749957032330183">Heslá sa ukladajú do Správcu hesiel Google v tomto zariadení.</translation>
 <translation id="8969290730818637510">Keď túto možnosť zapnete:
 <ph name="BEGIN_INDENT" />  • budete pomáhať zlepšovať Chrome pre ľudí, ktorí ho používajú rovnako ako vy.<ph name="END_INDENT" />

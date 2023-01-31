@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">ನಂತರದ</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
 <translation id="1198865190323699001">ಟಚ್ ಗೆಸ್ಚರ್‌ಗಳು</translation>
-<translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1202112913213080585">ರದ್ದುಮಾಡಿ</translation>
 <translation id="1206619573307042055">ಮಾರ್ಕ್ಯೂ</translation>
 <translation id="1207086294218137981">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 4 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">ಲೇಖನ</translation>
 <translation id="1346059596910821859">ಸಲಹೆ</translation>
 <translation id="1354356357730355833">ನಕಲಿಸಿ</translation>
-<translation id="135978014023467274">ನೀವು ChromeVox 63 ಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಿರುವಿರಿ!</translation>
 <translation id="1360699455582016846">ರೂಟಿಂಗ್ ಕೀ <ph name="ROUTING_KEY_NUMBER" /> ಕೆಳಗಿರುವ ಐಟಂ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1376703628032300005">ಮುಂದಿನ ಅಕ್ಷರಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1377925789329510816">ಇದು ಕೊನೆಯ ಶಿರೋನಾಮೆ. ಈ ಪುಟದಲ್ಲಿ ಮೊದಲ ಶಿರೋನಾಮೆಗೆ ವ್ರ್ಯಾಪ್ ಮಾಡಲು ಹುಡುಕಾಟ+H ಅಥವಾ ಎರಡನೇ ಶಿರೋನಾಮೆಗೆ ಹೋಗಲು ಹುಡುಕಾಟ+Shift+H ಒತ್ತಿ.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">ಗುರುತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="3286372614333682499">ಪೋರ್ಟ್ರೇಟ್</translation>
 <translation id="3286390186030710347">ಸ್ಲೈಡರ್</translation>
-<translation id="3300348286427369683">ಸಮೃದ್ಧ ಪಠ್ಯ ಬೆಂಬಲ. ಜಂಪ್ ಕಮಾಂಡ್‌ಗಳು, ಬ್ರೈಲ್ ಕರ್ಸರ್ ರೌಟಿಂಗ್, ಆಯ್ಕೆ, ಮತ್ತು ಹೆಚ್ಚಿನವುಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಸಮೃದ್ಧ ಪಠ್ಯ ಕ್ಷೇತ್ರಗಳನ್ನು ಇದೀಗ ChromeVox ಬೆಂಬಲಿಸುತ್ತದೆ.</translation>
 <translation id="3300733168898541351">ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="3307886118343381874">ಕೋಷ್ಟಕದ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="3312997241656799641">ಮುಂದಿನ ಭೇಟಿ ನೀಡಿದ ಲಿಂಕ್</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">ಸ್ಮಾರ್ಟ್ ಸ್ಟಿಕಿ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="4623097797855662355">ಕೊಲೊಫೋನ್</translation>
 <translation id="4624970070706497034">TalkBack ಇನ್ನು ಮುಂದೆ Chromebook ಗಳಿಗಾಗಿ ಕಸ್ಟಮೈಸೇಶನ್‌ ಅನ್ನು ಒದಗಿಸುವುದಿಲ್ಲ. ನೀವು ಈಗಲೂ ಇದನ್ನು ಬಳಸಬಹುದು, ಆದರೆ TalkBack ಡೀಫಾಲ್ಟ್ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಬಳಸಿ. ಲಭ್ಯವಿರುವ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ನೋಡಲು ಹುಡುಕಾಟ + A ಮತ್ತು ನಂತರ K ಒತ್ತಿರಿ. ನೀವು ಇನ್ನೂ TalkBack ಅನ್ನು ಬಳಸಲು ಬಯಸಿದರೆ, ಕಮಾಂಡ್ ಅನ್ನು ಮತ್ತೊಮ್ಮೆ ಒತ್ತಿರಿ.</translation>
-<translation id="463135993322337640">ಹೊಸದೇನಿದೆ ಎಂಬುದನ್ನು ಕಂಡುಕೊಳ್ಳಲು ChromeVox o, n ಅನ್ನು ಒತ್ತಿ</translation>
 <translation id="4649220074413114917">ಪ್ರಸ್ತುತ ಯಾವುದೇ ಭಾಷಣವನ್ನು ನಿಲ್ಲಿಸಲು, ಎರಡು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಲು ಬಳಸಬಹುದು. ChromeVox ಏನನ್ನಾದರೂ ಓದಲು ನೀವು ಬಯಸದಿದ್ದರೆ, ಇದು ಉಪಯುಕ್ತವಾಗಿರುತ್ತದೆ. ಮುಂದುವರಿಸಲು, ಎರಡು ಬೆರಳುಗಳಿಂದ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
-<translation id="4660783501463101648">ಕ್ಲಾಸಿಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ. ChromeVox ಕ್ಲಾಸಿಕ್‌ಗೆ ಹಿಂತಿರುಗಲು ಕೀಬೋರ್ಡ್ ಟಾಗಲ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ.</translation>
 <translation id="4661075872484491155">ಮರ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">ಮುಂದಿನ ಕಾಲಮ್‌ಗೆ ಹೋಗಿ</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">ಹಿಂದೆ</translation>
 <translation id="5102981729317424850">ಪರಿಕರ ಪಟ್ಟಿ</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">ಈ ಹೊಸ ಬಿಡುಗಡೆಯಲ್ಲಿ ನಾವು ಕೆಲವೊಂದು ಉತ್ತೇಜಕ ಬದಲಾವಣೆಗಳನ್ನು ಹೊಂದಿದ್ದೇವೆ; ಹೊಸದೇನಿದೆ ಎಂಬುದು ಇಲ್ಲಿದೆ:</translation>
 <translation id="5111640677200759579">ಕಾಲಮ್ ಶಿರೋನಾಮೆ</translation>
 <translation id="5115892389597951922">ChromeVox ಲಾಗ್</translation>
 <translation id="5119330972669454698">ಬರ್ಲಿ ವುಡ್</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">ಬೇಸಿಕ್ ನ್ಯಾವಿಗೇಶನ್</translation>
 <translation id="609281021724813947">ಯಾವುದೇ ಹಿಂದಿನ ಸ್ಲೈಡರ್ ಇಲ್ಲ</translation>
 <translation id="6100239002225743044">ಒಂದು ಸಾಲು ಮೇಲಕ್ಕೆ ಸರಿಸಿ</translation>
-<translation id="6118126368611144850">Chrome ಗಾಗಿ Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳು. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ನೀವು Play Store  ಅನ್ನು ಹೊಂದಿದ್ದರೆ, Android ಅಪ್ಲಿಕೇಶನ್‌ಗಳೊಂದಿಗೆ ChromeVox ನಲ್ಲಿ ಸ್ನೀಕ್ ಪೀಕ್ ಅನ್ನು ಪಡೆದುಕೊಳ್ಳಿ. Play Store ‌ನಿಂದ Google Chrome Canary ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಮೂಲಕ ಪ್ರಾಯೋಗಿಕ ಬೆಂಬಲವನ್ನು ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">ಸಕ್ರಿಯಗೊಳಿಸು</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">ಹಿಂದಿನ ಕಾಂಬೊ ಬಾಕ್ಸ್</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ಆಶ್ಚರ್ಯಸೂಚಕ }one{# ಆಶ್ಚರ್ಯಸೂಚಕಗಳು}other{# ಆಶ್ಚರ್ಯಸೂಚಕಗಳು}}</translation>
 <translation id="670717715607710284">ಸ್ಕ್ರೀನ್ ಆಫ್</translation>
-<translation id="6710213216561001401">ಹಿಂದಿನದು</translation>
 <translation id="6714813999819678458">ಹಿಂದಿನ ಹಂತದ 2 ಶಿರೋನಾಮೆ</translation>
 <translation id="6730312624811567147">ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಎಡ ಅಥವಾ ಬಲ, ಕಂಟ್ರೋಲ್ ಹೋಮ್ ಅಥವಾ ಎಂಡ್‌ಗಾಗಿ ಹುಡುಕಾಟ ಕಂಟ್ರೋಲ್ ಎಡ ಅಥವಾ ಬಲ, ಪುಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಮಾಡಲು ಹುಡುಕಾಟ ಮೇಲೆ ಅಥವಾ ಕೆಳಗೆ ಬಳಸಿ</translation>
 <translation id="6736510033526053669">ಟ್ಯಾಬ್ ರಚಿಸಲಾಗಿದೆ</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">ಆಂಟಿಕ್ ವೈಟ್</translation>
 <translation id="9220679313820249046">ಕಿತ್ತಳೆ ಕೆಂಪು</translation>
 <translation id="9223032053830369045">ಕಡು ಗೆಂಪು</translation>
-<translation id="923331726185079994">ChromeVox ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="93384979447910801">ಗಾಢ ಸಮುದ್ರ ಹಸಿರು</translation>
 <translation id="937605981140327129">ಪ್ರಸ್ತುತವಾಗಿ TalkBack ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ. Play Store ಮೂಲಕ Android AccessibilitySuite ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="948171205378458592">ಮಾತಿನ ಪ್ರಮಾಣವನ್ನು ಇಳಿಸಿ</translation>

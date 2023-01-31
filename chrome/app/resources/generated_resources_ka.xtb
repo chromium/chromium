@@ -2906,6 +2906,7 @@
 <translation id="3602290021589620013">გადახედვა</translation>
 <translation id="3602870520245633055">ბეჭდვა და სკანირება</translation>
 <translation id="3603622770190368340">მიიღეთ ქსელის სერთიფიკატი</translation>
+<translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} ანგარიში ერთსა და იმავე პაროლს იყენებს}other{{COUNT} ანგარიში ერთსა და იმავე პაროლს იყენებს}}</translation>
 <translation id="3605780360466892872">ღილაკის დაჭერა</translation>
 <translation id="3609277884604412258">სწრაფი ძიება</translation>
 <translation id="3610241585790874201">თქვენს მოწყობილობაზე მონაცემების შენახვა დაშვებული არ არის</translation>
@@ -6659,7 +6660,6 @@
 <translation id="7044211973375150246">იმ ბმულების გასახსნელად, რომლებსაც <ph name="APP_NAME" /> ხსნის, დაყენებულია სხვა აპი. ამ ქმედების შედეგად, <ph name="APP_NAME_2" /> აღარ გახსნის მხარდაჭერილ ბმულებს.</translation>
 <translation id="7044606776288350625">მონაცემთა სინქრონიზაცია</translation>
 <translation id="7047059339731138197">ფონის არჩევა</translation>
-<translation id="7048457618657122233">ბმულის გაზიარება <ph name="SHARE_TARGET" />-ში</translation>
 <translation id="7049293980323620022">გსურთ ფაილის შენარჩუნება?</translation>
 <translation id="7050037487872780845">უსადენო ქსელის კონფიგურაცია არასწორია</translation>
 <translation id="7052237160939977163">ეფექტურობის ტრასირების მონაცემების გაგზავნა</translation>

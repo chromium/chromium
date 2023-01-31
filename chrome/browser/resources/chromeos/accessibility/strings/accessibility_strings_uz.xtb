@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Xotima</translation>
 <translation id="1197088940767939838">Apelsinrang</translation>
 <translation id="1198865190323699001">Sensorli ishoralar</translation>
-<translation id="1201402288615127009">Keyingisi</translation>
 <translation id="1202112913213080585">bekor qilish</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Bundan keyin boshqa 2-darajali sarlavha mavjud emas</translation>
@@ -70,7 +69,6 @@
 <translation id="1342835525016946179">article</translation>
 <translation id="1346059596910821859">Maslahat</translation>
 <translation id="1354356357730355833">nusxalash</translation>
-<translation id="135978014023467274">Endi ChromeVox 63-versiyasidan foydalanyapsiz!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> strelka tugmasi ostidagi band ustiga bosing</translation>
 <translation id="1376703628032300005">keyingi belgiga oʻtish</translation>
 <translation id="1377925789329510816">Bu so‘nggi sarlavha. Bu sahidagi birinchi sarlavhaga o‘tish uchun Search+H, ikkinchi sarlavhaga o‘tish uchun esa Search+Shift+H tugmalarini bosing.</translation>
@@ -362,7 +360,6 @@
 <translation id="3283583562490372694">belgilanmagan</translation>
 <translation id="3286372614333682499">tik</translation>
 <translation id="3286390186030710347">Slayder</translation>
-<translation id="3300348286427369683">ChromeVoxda matn tahriri uchun yangi imkoniyatlar paydo bo‘ldi. Masalan, tezkor navigatsiya, breyl ekranida kursorni surish, tanlash va hokazo buyruqlar.</translation>
 <translation id="3300733168898541351">bekor qilish</translation>
 <translation id="3307886118343381874">Jadvalni oxiriga o‘tish</translation>
 <translation id="3312997241656799641">Keyingi ochilgan havola</translation>
@@ -549,9 +546,7 @@
 <translation id="4617384941327705512">Smart yopishqoq rejim oʻchiq</translation>
 <translation id="4623097797855662355">Nashriyot ramzi</translation>
 <translation id="4624970070706497034">TalkBack endi Chromebook qurilmalarini sozlamaydi. Undan foydalanishingiz mumkin, lekin TalkBack standart klaviatura tugmalaridan foydalaning. Mavjud tugmalarni koʻrish uchun avval Search+A, keyin esa K tugmasini bosing. Hali ham TalkBack ishlatishni istasangiz, buyruq ustiga yana bir marta bosing.</translation>
-<translation id="463135993322337640">Yangi o‘zgarishlarni ko‘rish uchun ChromeVox tugmasini, keyin esa O va N harflarini bosing</translation>
 <translation id="4649220074413114917">Ekranni ikkita barmoq bilan bosish orqali joriy qidiruvni bekor qilish mumkin. Bu ChromeVox biror nimani oʻqimasligi kerak boʻlganda qulay. Davom etish uchun ekranni ikkita barmoq bilan bosing.</translation>
-<translation id="4660783501463101648">ChromeVox Classic olib tashlandi. Endi unga klaviatura orqali qaytib bo‘lmaydi.</translation>
 <translation id="4661075872484491155">daraxt</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Keyingi ustunga o‘tish</translation>
@@ -616,7 +611,6 @@
 <translation id="5087864757604726239">ortga</translation>
 <translation id="5102981729317424850">Asboblar paneli</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">Yangi versiyada ajoyib o‘zgarishlar mavjud; ular bilan quyida tanishing:</translation>
 <translation id="5111640677200759579">Ustun sarlavhasi</translation>
 <translation id="5115892389597951922">ChromeVox jurnali</translation>
 <translation id="5119330972669454698">Yogʻochrang</translation>
@@ -767,7 +761,6 @@
 <translation id="6082768461603900813">Asosiy navigatsiya</translation>
 <translation id="609281021724813947">Avvalgi slayder mavjud emas</translation>
 <translation id="6100239002225743044">Bitta tepadagi qatorga oʻtish</translation>
-<translation id="6118126368611144850">Endi ChromeVox android ilovalarida ishlaydi. Agar qurilmangizda Play Market o‘rnatilgan bo‘lsa, Google Chrome Canary versiyasini o‘rnatib buni o‘zingiz sinab ko‘ring.</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">faollashtirish</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -841,7 +834,6 @@
 <translation id="6697092096875747123">Avvalgi ro‘yxatli maydon</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{undov belgisi}other{# ta undov belgisi}}</translation>
 <translation id="670717715607710284">Ekranni oʻchirish</translation>
-<translation id="6710213216561001401">Avvalgi</translation>
 <translation id="6714813999819678458">Avvalgi 2chi darajali sarlavha yo‘q</translation>
 <translation id="6730312624811567147">Home yoki End tugmalari oʻrniga Search va Chapga yoki Oʻngga, Control Home yoki End tugmalari oʻrniga Search Control va Chapga yoki Oʻngga, Page Up yoki Down tugmalari oʻrniga Search va Tepaga yoki Pastga strelkalardan foydalaning</translation>
 <translation id="6736510033526053669">yangi ichki oyna ochildi</translation>
@@ -1189,7 +1181,6 @@
 <translation id="9208241857935108694">Oq pudrarang</translation>
 <translation id="9220679313820249046">Qizgʻish sabzirang</translation>
 <translation id="9223032053830369045">Toʻq qizil</translation>
-<translation id="923331726185079994">ChromeVox yangilandi</translation>
 <translation id="93384979447910801">Kulrangsimon yashil</translation>
 <translation id="937605981140327129">Ayni vaqtda TalkBack oʻrnatilmagan. Play Market orqali Android AccessibilitySuite ilovasini oʻrnating va qaytadan urining.</translation>
 <translation id="948171205378458592">Nutq tezligini kamaytirish</translation>

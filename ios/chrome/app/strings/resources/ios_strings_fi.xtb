@@ -244,7 +244,6 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2797029671965852011">Näytä historia</translation>
 <translation id="2800683595868705743">Sulje välilehden vaihtaja</translation>
 <translation id="2815198996063984598">2. Valitse Oletusselain</translation>
-<translation id="2820289420301699633">Järjestelmänvalvoja hallitsee Chromea ja pääsee sen dataan</translation>
 <translation id="2830972654601096923">Määritä osoitteet…</translation>
 <translation id="2834399722155632105">3. Valitse Salasana-asetukset</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
@@ -680,7 +679,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6064824697233747382">Organisaatiosi edellyttää, että laitat synkronoinnin pois päältä.</translation>
 <translation id="6066301408025741299">Peru napauttamalla.</translation>
 <translation id="6071409777669089905">Irrota välilehti</translation>
-<translation id="60829778314739003">Hyväksy ja jatka</translation>
 <translation id="6084848228346514841">Valitse välilehdet</translation>
 <translation id="6103540626693881831">Laitteen salaus</translation>
 <translation id="6119050551270742952">Nykyinen verkkosivu on incognito-tilassa</translation>

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">ଉପସଂହାର</translation>
 <translation id="1197088940767939838">କମଳା</translation>
 <translation id="1198865190323699001">ଟଚ ଜେଶ୍ଚର</translation>
-<translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
 <translation id="1202112913213080585">ବାତିଲ କରନ୍ତୁ</translation>
 <translation id="1206619573307042055">ମାର୍କୀ</translation>
 <translation id="1207086294218137981">କୌଣସି ପରବର୍ତ୍ତୀ ସ୍ତର 4 ହେଡିଂ ନାହିଁ</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">ଆର୍ଟିକଲ୍‍</translation>
 <translation id="1346059596910821859">ପରାମର୍ଶ</translation>
 <translation id="1354356357730355833">କପି କରନ୍ତୁ</translation>
-<translation id="135978014023467274">ଆପଣଙ୍କୁ ChromeVox 63ରେ ଅପ୍‍‍ଡେଟ୍ କରାଯାଇଛି!</translation>
 <translation id="1360699455582016846"><ph name="ROUTING_KEY_NUMBER" /> ରାଉଟିଂ କୀ' ଅଧୀନରେ ଥିବା ଆଇଟମ୍ ଉପରେ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="1376703628032300005">ପରବର୍ତ୍ତୀ ଅକ୍ଷରକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="1377925789329510816">ଏହା ହେଉଛି ଅନ୍ତିମ ଶୀର୍ଷକ। ଏହି ପୃଷ୍ଠାର ପ୍ରଥମ ଶୀର୍ଷକକୁ ଯିବା ପାଇଁ Search+H କିମ୍ବା ଦ୍ଵିତୀୟ ଶୀର୍ଷକକୁ ଯିବା ପାଇଁ Search+Shift+Hକୁ ଦବାନ୍ତୁ।</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">ଅନ୍‌ଚେକ୍‌ କରାଯାଇନାହିଁ</translation>
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ</translation>
 <translation id="3286390186030710347">ସ୍ଲାଇଡର୍</translation>
-<translation id="3300348286427369683">ରିଚ୍ ଟେକ୍ସଟ୍ ସମର୍ଥନ। ChromeVox ବର୍ତ୍ତମାନ ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକ, ବ୍ରେଲ୍ଲୀ କର୍ସର୍ ରାଉଟିଂ, ଚୟନ ଏବଂ ଆହୁରି ଅନେକ ସମେତ ରିଚ୍ ଟେକ୍ସଟ୍ କ୍ଷେତ୍ରଗୁଡ଼ିକୁ ସମର୍ଥନ କରେ।</translation>
 <translation id="3300733168898541351">ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3307886118343381874">ଟେବଲ୍‍ର ଶେଷକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="3312997241656799641">ପରେ ଦେଖାଯାଇଥିବା ଲିଙ୍କ</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">ସ୍ମାର୍ଟ ଷ୍ଟିକି ମୋଡ ବନ୍ଦ ଅଛି</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="4624970070706497034">TalkBack ଆଉ Chromebooks ପାଇଁ କଷ୍ଟମାଇଜେସନ ପ୍ରଦାନ କରୁ ନାହିଁ। ଆପଣ ଏବେ ବି ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ, କିନ୍ତୁ TalkBack ଡିଫଲ୍ଟ କୀବୋର୍ଡ ସର୍ଟକଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରନ୍ତୁ। ଉପଲବ୍ଧ ସର୍ଟକଟଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ, Search+A, ତା'ପରେ K ଦବାନ୍ତୁ। ଯଦି ଆପଣ ଏବେ ବି TalkBack ବ୍ୟବହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି, ତେବେ କମାଣ୍ଡକୁ ପୁଣି ଦବାନ୍ତୁ।</translation>
-<translation id="463135993322337640">ନୂଆ କଣ ଅଛି ତାହା ଦେଖିବାକୁ ChromeVox o, n ଦବାନ୍ତୁ</translation>
 <translation id="4649220074413114917">ବର୍ତ୍ତମାନର ଯେ କୌଣସି ସ୍ପିଚକୁ ବନ୍ଦ କରିବା ପାଇଁ ଦୁଇ ଆଙ୍ଗୁଠିରେ ସ୍କ୍ରିନକୁ ଟାପ୍ କରିବା ସୁବିଧାକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ। ଯଦି ChromeVox କିଛି ପଢ଼ୁ ବୋଲି ଆପଣ ଚାହୁଁ ନାହାଁନ୍ତି, ତେବେ ଏହା ଉପଯୋଗୀ ହୋଇଥାଏ। ଜାରି ରଖିବାକୁ, ଦୁଇ ଆଙ୍ଗୁଠିରେ ସ୍କ୍ରିନକୁ ଟାପ୍ କରନ୍ତୁ।</translation>
-<translation id="4660783501463101648">କ୍ଲାସିକ୍ କାଢ଼ିଦିଆଯାଇଛି। ChromeVox କ୍ଲାସିକ୍‌କୁ ଫେରାଇ ନେବାକୁ କୀବୋର୍ଡ ଟଗଲ୍‌କୁ ହଟାଇଦିଆଯାଇଛି।</translation>
 <translation id="4661075872484491155">ଟ୍ରୀ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">ପରବର୍ତ୍ତୀ ସ୍ତମ୍ଭକୁ ଯାଆନ୍ତୁ</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">ପଛକୁ</translation>
 <translation id="5102981729317424850">ଟୁଲ୍ ବାର୍</translation>
 <translation id="5105050547967751155">rq</translation>
-<translation id="5106547198195128110">ଏହି ନୂତନ ରିଲିଜ୍‌ରେ ଆମେ କିଛି ଆଗ୍ରହ ଉଦ୍ଦୀପକ ପରିବର୍ତ୍ତନ ଆଣିଛୁ; ନୂତନ କ'ଣ ଅଛି ତାହା ଏଠାରେ ଦିଆଗଲା:</translation>
 <translation id="5111640677200759579">ସ୍ତମ୍ଭର ଶୀର୍ଷକ</translation>
 <translation id="5115892389597951922">ChromeVox ଲଗ୍</translation>
 <translation id="5119330972669454698">ବର୍ଲି ଉଡ୍</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">ମୌଳିକ ନାଭିଗେସନ୍</translation>
 <translation id="609281021724813947">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ଲାଇଡର୍ ନାହିଁ</translation>
 <translation id="6100239002225743044">ଗୋଟିଏ ଲାଇନ୍ ଉପରକୁ ନିଅନ୍ତୁ</translation>
-<translation id="6118126368611144850">Chrome ପାଇଁ Android ଆପ୍ସ। ଯଦି ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଆପଣଙ୍କର Play Store ଅଛି, ତେବେ Android ଆପ୍ସ ମାଧ୍ୟମରେ ChromeVoxରେ ଏକ ନଜର ପକାନ୍ତୁ। Play Storeରୁ Google Chrome Canary ଡାଉନ୍‌ଲୋଡ୍‌ କରି ପରୀକ୍ଷଣ ଭାବରେ ଦିଆଯାଇଥିବା ସୁବିଧା ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">କ୍ରିୟାଶୀଳ କରନ୍ତୁ</translation>
 <translation id="6122013438240733403">ବଟନ୍</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">ପୂର୍ବବର୍ତ୍ତୀ କମ୍ୱୋ ବକ୍ସ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}other{#ଟି ବିସ୍ମୟସୂଚକ ଚିହ୍ନ}}</translation>
 <translation id="670717715607710284">ସ୍କ୍ରିନ୍ ବନ୍ଦ ଅଛି</translation>
-<translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>
 <translation id="6714813999819678458">ପୂର୍ବବର୍ତ୍ତୀ ସ୍ତର 2 ଶୀର୍ଷକ</translation>
 <translation id="6730312624811567147">Home କିମ୍ବା End ପାଇଁ Search Left କିମ୍ବା Right, Control Home କିମ୍ବା End ପାଇଁ Search Control Left କିମ୍ବା Right, Page Up କିମ୍ବା Down ପାଇଁ Search Up କିମ୍ବା Down ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6736510033526053669">ଟାବ୍‍ ତିଆରି କରାଗଲା</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">ଆଣ୍ଟିକ୍ ଧଳା</translation>
 <translation id="9220679313820249046">କମଳା ନାଲି</translation>
 <translation id="9223032053830369045">ଗାଢ଼ ନାଲି</translation>
-<translation id="923331726185079994">ChromeVox ଅପ୍‌ଡେଟ୍ କରାଗଲା</translation>
 <translation id="93384979447910801">ଗାଢ଼ ସାମୁଦ୍ରିକ ସବୁଜ</translation>
 <translation id="937605981140327129">TalkBack ବର୍ତ୍ତମାନ ଇନଷ୍ଟଲ କରାଯାଇନାହିଁ। ଦୟାକରି Play Store ମାଧ୍ୟମରେ Android AccessibilitySuiteକୁ ଇନଷ୍ଟଲ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="948171205378458592">ସ୍ପୀଚ୍‌ର ହାର ହ୍ରାସ କରନ୍ତୁ</translation>

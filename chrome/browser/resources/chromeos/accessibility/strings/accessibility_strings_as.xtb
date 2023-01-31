@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">উত্তৰভাষ</translation>
 <translation id="1197088940767939838">কমলা</translation>
 <translation id="1198865190323699001">স্পৰ্শেৰে কৰা নিৰ্দেশ</translation>
-<translation id="1201402288615127009">পৰৱৰ্তী</translation>
 <translation id="1202112913213080585">বাতিল কৰক</translation>
 <translation id="1206619573307042055">মাৰ্কী</translation>
 <translation id="1207086294218137981">কোনো পৰৱর্তী স্তৰ ৪ৰ শিৰোনাম নাই</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">প্ৰৱন্ধ</translation>
 <translation id="1346059596910821859">দিহা:</translation>
 <translation id="1354356357730355833">প্ৰতিলিপি কৰক</translation>
-<translation id="135978014023467274">আপোনাক ChromeVox 63লৈ আপডে'ট কৰা হ'ল!</translation>
 <translation id="1360699455582016846">ৰাউটিং কী <ph name="ROUTING_KEY_NUMBER" />ৰ তলৰ বস্তুত ক্লিক কৰক</translation>
 <translation id="1376703628032300005">পৰৱৰ্তী বৰ্ণলৈ নিয়ক</translation>
 <translation id="1377925789329510816">এইটো শেষ শিৰোনাম। প্ৰথম শিৰোনামলৈ যাবলৈ Search+H টিপক বা এই পৃষ্ঠাৰ দ্বিতীয় শিৰোনামলৈ যাবলৈ Search+Shift+H টিপক।</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">টিক চিহ্ন আঁতৰোৱা হ’ল</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
 <translation id="3286390186030710347">শ্লাইডাৰ</translation>
-<translation id="3300348286427369683">ৰিচ্চ টেক্সটৰ সহায়তা। বর্তমান ChromeVoxএ ৰিচ্চ টেক্সট ক্ষেত্ৰ সহায় কৰে, য'ত পোনপটীয়াকৈ যোৱাৰ নির্দেশনা, ব্ৰেইল কাৰ্ছাৰ ৰাউটিং, বাছনি আৰু বহুতো অন্তর্ভুক্ত হয়।</translation>
 <translation id="3300733168898541351">আনডু কৰক</translation>
 <translation id="3307886118343381874">তালিকাৰ শেষলৈ যাওক</translation>
 <translation id="3312997241656799641">চোৱা পৰৱর্তী লিংক</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">স্মাৰ্ট ষ্টিকি ম’ড অফ আছে</translation>
 <translation id="4623097797855662355">ক'ল'ফ'ন</translation>
 <translation id="4624970070706497034">TalkBackএ Chromebooksৰ বাবে আৰু কাষ্টমাইজেশ্বনৰ সুবিধা প্ৰদান নকৰে। আপুনি তথাপিও এইটো ব্যৱহাৰ কৰিব পাৰে, কিন্তু TalkBackৰ ডিফ’ল্ট কীব’ৰ্ডৰ শ্বৰ্টকাটসমূহ ব্যৱহাৰ কৰক। উপলব্ধ শ্বৰ্টকাটসমূহ চাবলৈ প্ৰথমে ছাৰ্চ+এ টিপক, তাৰ পাছত কে টিপক। যদি আপুনি তথাপিও TalkBack ব্যৱহাৰ কৰিবলৈ বিচাৰে, পুনৰ নিৰ্দেশনাটো টিপক।</translation>
-<translation id="463135993322337640">নতুন কি আছে জানিবলৈ ChromeVox o, n টিপক</translation>
 <translation id="4649220074413114917">বৰ্তমানৰ যিকোনো কথন বন্ধ কৰিবলৈ দুটা আঙুলিৰে স্ক্ৰীনখনত টিপাৰ সুবিধাটো ব্যৱহাৰ কৰিব পাৰি। আপুনি যদি ChromeVoxএ কিবা এটা পঢ়াটো নিবিচাৰে, তেন্তে এইটো সহায়ক হয়। অব্যাহত ৰাখিবলৈ দুটা আঙুলিৰে স্ক্ৰীনখনত টিপক।</translation>
-<translation id="4660783501463101648">ক্লাছিক আঁতৰোৱা হ’ল। ChromeVox ক্লাছিকলৈ ঘূৰি যাব পৰা কীব’ৰ্ড ট’গলটো আঁতৰোৱা হ’ল।</translation>
 <translation id="4661075872484491155">গছ</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">পৰৱর্তী স্তম্ভলৈ যাওক</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">উভতি যাওক</translation>
 <translation id="5102981729317424850">টুল বাৰ</translation>
 <translation id="5105050547967751155">জৰুৰী</translation>
-<translation id="5106547198195128110">আমি এই নতুন আপডে'টত কিছুমান আকর্ষণীয় সাল সলনি কৰিছোঁ, সেইবোৰ হৈছে:</translation>
 <translation id="5111640677200759579">স্তম্ভৰ হেডাৰ</translation>
 <translation id="5115892389597951922">ChromeVoxৰ লগ</translation>
 <translation id="5119330972669454698">বাৰ্লী ৱুড</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">মূল নেভিগেশ্বন</translation>
 <translation id="609281021724813947">কোনো পূৰ্বৱৰ্তী শ্লাইডাৰ নাই</translation>
 <translation id="6100239002225743044">এটা শাৰী ওপৰলৈ যাওক</translation>
-<translation id="6118126368611144850">Chromeৰ বাবে Android এপ্‌ সেৱা। যদি আপোনাৰ নিজৰ ডিভাইচত Play Store আছে তেন্তে Android এপৰ জৰিয়তে ChromeVoxৰ এটা আভাস পাওক। Play Storeৰ পৰা Google Chrome Canary ডাউনল'ড কৰি পৰীক্ষণমূলক সহায় সেৱা ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">সক্ৰিয় কৰক</translation>
 <translation id="6122013438240733403">btn</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">পূৰ্বৱৰ্তী ক'ম্ব' বাকছ</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{ভাববোধক চিহ্ন}one{# ভাববোধক চিহ্নসমূহ}other{# ভাববোধক চিহ্নসমূহ}}</translation>
 <translation id="670717715607710284">স্ক্ৰীন অফ কৰক</translation>
-<translation id="6710213216561001401">পূৰ্বৱৰ্তী</translation>
 <translation id="6714813999819678458">পূর্বৱর্তী স্তৰ ২ৰ শিৰোনাম</translation>
 <translation id="6730312624811567147">Home অথবা Endৰ বাবে Search Left অথবা Right, Control Home অথবা Endৰ বাবে Search Control Left অথবা Right, Page Up অথবা Downৰ বাবে Search Up অথবা Down ব্যৱহাৰ কৰক</translation>
 <translation id="6736510033526053669">টেব সৃষ্টি কৰা হ’ল</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">পুৰণিকলীয়া বগা</translation>
 <translation id="9220679313820249046">কমলাৰঙী ৰঙা</translation>
 <translation id="9223032053830369045">গাঢ় ৰঙা</translation>
-<translation id="923331726185079994">ChromeVox আপডে'ট কৰা হ'ল</translation>
 <translation id="93384979447910801">সাগৰৰ দৰে গাঢ় সেউজীয়া</translation>
 <translation id="937605981140327129">বৰ্তমান TalkBack ইনষ্টল কৰি থোৱা নাই। অনুগ্ৰহ কৰি Play Storeৰ পৰা Android AccessibilitySuite ইনষ্টল কৰি পুনৰ চেষ্টা কৰক।</translation>
 <translation id="948171205378458592">কথনৰ হাৰ কমাওক</translation>

@@ -32,7 +32,6 @@
 <translation id="1195238899008218998">Pēcvārds</translation>
 <translation id="1197088940767939838">Oranža</translation>
 <translation id="1198865190323699001">Skārienu žesti</translation>
-<translation id="1201402288615127009">Tālāk</translation>
 <translation id="1202112913213080585">atcelt</translation>
 <translation id="1206619573307042055">slīdošais teksts</translation>
 <translation id="1207086294218137981">Nav nākamā 4. līmeņa virsraksta.</translation>
@@ -71,7 +70,6 @@
 <translation id="1342835525016946179">raksts</translation>
 <translation id="1346059596910821859">Padoms</translation>
 <translation id="1354356357730355833">kopēt</translation>
-<translation id="135978014023467274">Tagad jūs izmantojat ChromeVox 63. versiju!</translation>
 <translation id="1360699455582016846">Noklikšķiniet uz vienuma zem maršrutēšanas atslēgas<ph name="ROUTING_KEY_NUMBER" />.</translation>
 <translation id="1376703628032300005">pāriet uz nākamo rakstzīmi</translation>
 <translation id="1377925789329510816">Šis ir pēdējais virsraksts. Nospiediet Search+H” lai dotos pie pirmā virsraksta, vai Search+Shift+H, lai dotos uz lapas otro virsrakstu.</translation>
@@ -363,7 +361,6 @@
 <translation id="3283583562490372694">nav atzīmēts</translation>
 <translation id="3286372614333682499">portrets</translation>
 <translation id="3286390186030710347">Slīdnis</translation>
-<translation id="3300348286427369683">Bagātināta teksta atbalsts. Tagad ChromeVox tiek atbalstīti bagātināta teksta lauki, tostarp pārejas komandas, Braila raksta kursora maršrutēšana, atlasīšana un citas darbības.</translation>
 <translation id="3300733168898541351">atsaukt</translation>
 <translation id="3307886118343381874">Pāriet uz tabulas beigām</translation>
 <translation id="3312997241656799641">Nākamā apmeklētā saite</translation>
@@ -550,9 +547,7 @@
 <translation id="4617384941327705512">Viedais saistošais režīms ir izslēgts</translation>
 <translation id="4623097797855662355">Izdošanas ziņas</translation>
 <translation id="4624970070706497034">Funkcija TalkBack vairs neatbalsta pielāgošanu Chromebook datoriem. Jūs joprojām varat to izmantot, taču ir pieejami tikai TalkBack noklusējuma īsinājumtaustiņi. Nospiediet taustiņu kombināciju Search+A un pēc tam — taustiņu K, lai skatītu pieejamos īsinājumtaustiņus. Ja joprojām vēlaties izmantot funkciju TalkBack, vēlreiz nospiediet šo taustiņu kombināciju.</translation>
-<translation id="463135993322337640">Nospiediet ChromeVox “o”, “n”, lai uzzinātu par jaunajām funkcijām.</translation>
 <translation id="4649220074413114917">Pieskaroties ekrānam ar diviem pirkstiem, tiek apturēta runas izvade. Šis žests var būt noderīgs, ja nevēlaties, lai ChromeVox atskaņotu kādu saturu. Lai turpinātu, pieskarieties ekrānam ar diviem pirkstiem.</translation>
-<translation id="4660783501463101648">Klasiskā versija ir noņemta. Tastatūras slēdzis, lai pārslēgtos atpakaļ uz ChromeVox klasisko versiju, ir noņemts.</translation>
 <translation id="4661075872484491155">koks</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4677535310137735442">Pāriet uz nākamo sleju</translation>
@@ -617,7 +612,6 @@
 <translation id="5087864757604726239">atpakaļ</translation>
 <translation id="5102981729317424850">Rīkjosla</translation>
 <translation id="5105050547967751155">nepieciešams</translation>
-<translation id="5106547198195128110">Šajā jaunajā laidienā ir patīkamas izmaiņas.</translation>
 <translation id="5111640677200759579">Slejas virsraksts</translation>
 <translation id="5115892389597951922">ChromeVox žurnāls</translation>
 <translation id="5119330972669454698">Koksnes brūna</translation>
@@ -768,7 +762,6 @@
 <translation id="6082768461603900813">Navigācijas pamatiespējas</translation>
 <translation id="609281021724813947">Nav iepriekšējā slīdņa.</translation>
 <translation id="6100239002225743044">Pārvietot par vienu rindiņu augstāk</translation>
-<translation id="6118126368611144850">Android lietotnes pārlūkam Chrome. Ja jūsu ierīcē ir pieejams Play veikals, izmēģiniet ChromeVox darbību ar Android lietotnēm. Izmēģiniet eksperimentālo atbalstu, lejupielādējot Google Chrome Canary no Play veikala.</translation>
 <translation id="611827076493383239">apmeklēta</translation>
 <translation id="6119846243427417423">aktivizt</translation>
 <translation id="6122013438240733403">poga</translation>
@@ -842,7 +835,6 @@
 <translation id="6697092096875747123">Iepriekšējais kombinētais lodziņš</translation>
 <translation id="6702609185760332517">{COUNT,plural, =1{izsaukuma zīme}zero{# izsaukuma zīmju}one{# izsaukuma zīme}other{# izsaukuma zīmes}}</translation>
 <translation id="670717715607710284">Izslēgt ekrānu</translation>
-<translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6714813999819678458">Iepriekšējais 2. līmeņa virsraksts</translation>
 <translation id="6730312624811567147">Lai pārietu uz lapas sākumu vai beigām, izmantojiet meklēšanas taustiņu un kreiso vai labo bulttaustiņu. Lai pārietu uz rindiņas sākumu vai beigām, izmantojiet meklēšanas taustiņu, vadības taustiņu un kreiso vai labo bulttaustiņu. Lai lapā pārietu uz augšu vai uz leju, izmantojiet meklēšanas taustiņu un augšupvērsto vai lejupvērsto bulttaustiņu.</translation>
 <translation id="6736510033526053669">Tika izveidota cilne.</translation>
@@ -1190,7 +1182,6 @@
 <translation id="9208241857935108694">Seni balta</translation>
 <translation id="9220679313820249046">Oranžsarkana</translation>
 <translation id="9223032053830369045">Tumši sarkana</translation>
-<translation id="923331726185079994">ChromeVox atjaunināts</translation>
 <translation id="93384979447910801">Tumši jūraszaļa</translation>
 <translation id="937605981140327129">Funkcija TalkBack pašlaik nav instalēta. Lūdzu, instalējiet Android Accessibility Suite, izmantojot Play veikalu, un mēģiniet vēlreiz.</translation>
 <translation id="948171205378458592">Samazināt runas ātrumu</translation>
