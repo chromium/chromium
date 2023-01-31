@@ -159,13 +159,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   bool IsOobeUIDialogVisible() const override;
 
  private:
-  // Way to restore if renderer have crashed.
-  enum RestorePath {
-    RESTORE_UNKNOWN,
-    RESTORE_WIZARD,
-    RESTORE_SIGN_IN,
-  };
-
   // Type of animations to run after the login screen.
   enum FinalizeAnimationType {
     ANIMATION_NONE,       // No animation.
@@ -243,9 +236,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // How many times renderer has crashed.
   int crash_count_ = 0;
-
-  // Way to restore if renderer have crashed.
-  RestorePath restore_path_ = RESTORE_UNKNOWN;
 
   // Stored parameters for StartWizard, required to restore in case of crash.
   OobeScreenId first_screen_ = ash::OOBE_SCREEN_UNKNOWN;

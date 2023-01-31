@@ -539,8 +539,6 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
 
   TryToPlayOobeStartupSound();
 
-  // Keep parameters to restore if renderer crashes.
-  restore_path_ = RESTORE_WIZARD;
   first_screen_ = first_screen;
 
   VLOG(1) << "Login WebUI >> wizard";
@@ -579,7 +577,6 @@ void LoginDisplayHostWebUI::CancelUserAdding() {
 void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DisableKeyboardOverscroll();
 
-  restore_path_ = RESTORE_SIGN_IN;
   finalize_animation_type_ = ANIMATION_WORKSPACE;
 
   VLOG(1) << "Login WebUI >> sign in";
