@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #import "ios/chrome/browser/sync/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -147,10 +148,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
         kSegmentationPlatformProfileObserverKey,
         std::make_unique<IncognitoObserver>(service.get(), otr_observer));
   }
-  service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
-                       std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service.get(), chrome_browser_state->GetPrefs(),
-                           field_trial_register));
+  service->SetUserData(
+      kSegmentationDeviceSwitcherUserDataKey,
+      std::make_unique<DeviceSwitcherResultDispatcher>(
+          service.get(),
+          SyncServiceFactory::GetForBrowserState(chrome_browser_state),
+          chrome_browser_state->GetPrefs(), field_trial_register));
   return service;
 }
 
@@ -181,6 +184,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =

@@ -4,6 +4,7 @@
 
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -23,11 +24,23 @@ const char kDeviceSwitcherFieldTrialName[] = "Segmentation_DeviceSwitcher";
 
 DeviceSwitcherResultDispatcher::DeviceSwitcherResultDispatcher(
     SegmentationPlatformService* segmentation_service,
+    syncer::SyncService* sync_service,
     PrefService* prefs,
     FieldTrialRegister* field_trial_register)
     : segmentation_service_(segmentation_service),
+      sync_service_(sync_service),
       prefs_(prefs),
       field_trial_register_(field_trial_register) {
+  if (sync_service_) {
+    if (sync_service_->HasSyncConsent()) {
+      sync_consent_timestamp_ = base::Time::Now();
+      has_sync_consent_at_startup_ = true;
+    } else {
+      sync_observation_.Observe(sync_service);
+      has_sync_consent_at_startup_ = false;
+    }
+  }
+
   absl::optional<ClassificationResult> result = ReadResultFromPref();
   if (result && field_trial_register_) {
     field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
@@ -69,8 +82,31 @@ void DeviceSwitcherResultDispatcher::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kDeviceSwitcherUserSegmentPrefKey);
 }
 
+void DeviceSwitcherResultDispatcher::OnStateChanged(syncer::SyncService* sync) {
+  DCHECK_EQ(sync_consent_timestamp_, base::Time());
+  if (sync->HasSyncConsent()) {
+    sync_consent_timestamp_ = base::Time::Now();
+    sync_observation_.Reset();
+  }
+}
+
+void DeviceSwitcherResultDispatcher::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_observation_.Reset();
+}
+
 void DeviceSwitcherResultDispatcher::OnGotResult(
     const ClassificationResult& result) {
+  base::TimeDelta consent_verification_to_result_duration =
+      base::Time::Now() - sync_consent_timestamp_;
+  if (has_sync_consent_at_startup_) {
+    base::UmaHistogramMediumTimes(
+        "SegmentationPlatform.DeviceSwicther.TimeFromStartupToResult",
+        consent_verification_to_result_duration);
+  } else {
+    base::UmaHistogramMediumTimes(
+        "SegmentationPlatform.DeviceSwicther.TimeFromConsentToResult",
+        consent_verification_to_result_duration);
+  }
   SaveResultToPref(result);
   initialized_ = true;
   field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,

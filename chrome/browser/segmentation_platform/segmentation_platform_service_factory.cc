@@ -18,6 +18,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
 #include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #include "components/segmentation_platform/embedder/model_provider_factory_impl.h"
@@ -74,6 +75,7 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
@@ -125,7 +127,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   }
   service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
                        std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service, profile->GetPrefs(), field_trial_register));
+                           service, SyncServiceFactory::GetForProfile(profile),
+                           profile->GetPrefs(), field_trial_register));
 
   return service;
 }

@@ -29,6 +29,7 @@ static_library("default_model") {
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
+    "//components/sync/driver",
     "//ui/base",
   ]
   if (is_android) {
@@ -83,6 +84,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public:public",
     "//components/segmentation_platform/public:test_support",
     "//components/segmentation_platform/public/proto",
+    "//components/sync:test_support",
     "//testing/gtest",
   ]
 }
