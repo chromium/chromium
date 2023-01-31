@@ -336,7 +336,7 @@ group("gn_all") {
   if (is_mac) {
     deps += [
       "//chrome/installer/gcapi_mac:gcapi_example",
-      "//tools/mac/power:all",
+      "//tools/mac",
     ]
   }
 
