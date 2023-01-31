@@ -5,36 +5,34 @@
 #import "ios/net/cookies/cookie_store_ios.h"
 
 #import <Foundation/Foundation.h>
-#include <stddef.h>
 
-#include <utility>
+#import <utility>
 
-#include "base/check_op.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/mac/foundation_util.h"
-#include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
-#include "base/observer_list.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
+#import "base/check_op.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/functional/bind.h"
+#import "base/location.h"
+#import "base/mac/foundation_util.h"
+#import "base/memory/weak_ptr.h"
+#import "base/notreached.h"
+#import "base/observer_list.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
-#include "base/threading/thread_restrictions.h"
-#include "base/time/time.h"
-#include "ios/net/cookies/cookie_store_ios_client.h"
+#import "base/threading/thread_restrictions.h"
+#import "base/time/time.h"
+#import "ios/net/cookies/cookie_store_ios_client.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_util.h"
-#include "ios/net/ios_net_buildflags.h"
+#import "ios/net/ios_net_buildflags.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_util.h"
-#include "net/cookies/parsed_cookie.h"
-#include "net/log/net_log.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
+#import "net/cookies/cookie_constants.h"
+#import "net/cookies/cookie_util.h"
+#import "net/cookies/parsed_cookie.h"
+#import "net/log/net_log.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -226,14 +224,6 @@ void CookieStoreIOS::NotifySystemCookiesChanged() {
   NotificationTrampoline::GetInstance()->NotifyCookiesChanged();
 }
 
-void CookieStoreIOS::SetMetricsEnabled() {
-  static CookieStoreIOS* g_cookie_store_with_metrics = nullptr;
-  DCHECK(!g_cookie_store_with_metrics || g_cookie_store_with_metrics == this)
-      << "Only one cookie store may use metrics.";
-  g_cookie_store_with_metrics = this;
-  metrics_enabled_ = true;
-}
-
 #pragma mark -
 #pragma mark CookieStore methods
 
@@ -418,7 +408,6 @@ CookieStoreIOS::CookieStoreIOS(
     NetLog* net_log)
     : cookie_monster_(new net::CookieMonster(persistent_store, net_log)),
       system_store_(std::move(system_store)),
-      metrics_enabled_(false),
       cookie_cache_(new CookieCache()),
       change_dispatcher_(this),
       weak_factory_(this) {
@@ -471,8 +460,7 @@ void CookieStoreIOS::WriteToCookieMonster(NSArray* system_cookies) {
   // Copy the cookies from the global cookie store to |cookie_monster_|.
   // Unlike the system store, CookieMonster requires unique creation times.
   net::CookieList cookie_list;
-  NSUInteger cookie_count = [system_cookies count];
-  cookie_list.reserve(cookie_count);
+  cookie_list.reserve([system_cookies count]);
   for (NSHTTPCookie* cookie in system_cookies) {
     if (std::unique_ptr<net::CanonicalCookie> canonical_cookie =
             CanonicalCookieFromSystemCookie(
@@ -481,10 +469,6 @@ void CookieStoreIOS::WriteToCookieMonster(NSArray* system_cookies) {
     }
   }
   cookie_monster_->SetAllCookiesAsync(cookie_list, SetCookiesCallback());
-
-  // Update metrics.
-  if (metrics_enabled_)
-    UMA_HISTOGRAM_COUNTS_10000("CookieIOS.CookieWrittenCount", cookie_count);
 }
 
 void CookieStoreIOS::DeleteCookiesMatchingInfoAsync(

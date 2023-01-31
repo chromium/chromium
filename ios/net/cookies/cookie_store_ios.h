@@ -127,8 +127,6 @@ class CookieStoreIOS : public net::CookieStore,
   DeleteCallback WrapDeleteCallback(DeleteCallback callback);
   base::OnceClosure WrapClosure(base::OnceClosure callback);
 
-  bool metrics_enabled() { return metrics_enabled_; }
-
   net::CookieMonster* cookie_monster() { return cookie_monster_.get(); }
 
   THREAD_CHECKER(thread_checker_);
@@ -213,7 +211,6 @@ class CookieStoreIOS : public net::CookieStore,
 
   std::unique_ptr<net::CookieMonster> cookie_monster_;
   std::unique_ptr<SystemCookieStore> system_store_;
-  bool metrics_enabled_;
   base::CancelableOnceClosure flush_closure_;
 
   // Cookie notification methods.

@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/net/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/components/cookie_util/cookie_util.h"
-#import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/net/cookies/ns_http_system_cookie_store.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -181,12 +180,6 @@ void ChromeBrowserStateImplIOData::InitializeInternal(
   auto cookie_store = cookie_util::CreateCookieStore(
       ios_cookie_config, std::move(profile_params->system_cookie_store),
       io_thread->net_log());
-
-  if (profile_params->path.BaseName().value() ==
-      kIOSChromeInitialBrowserState) {
-    // Enable metrics on the default profile, not secondary profiles.
-    static_cast<net::CookieStoreIOS*>(cookie_store.get())->SetMetricsEnabled();
-  }
 
   context_builder->SetCookieStore(std::move(cookie_store));
   net::URLRequestContextBuilder::HttpCacheParams cache_params;
