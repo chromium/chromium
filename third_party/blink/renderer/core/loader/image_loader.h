@@ -226,7 +226,6 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
   Member<ImageResourceContent> image_content_;
   Member<ImageResourceContent> image_content_for_image_document_;
 
-  String last_base_element_url_;
   network::mojom::ReferrerPolicy last_referrer_policy_ =
       network::mojom::ReferrerPolicy::kDefault;
   AtomicString failed_load_url_;

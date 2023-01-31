@@ -294,13 +294,6 @@ bool ImageLoader::ShouldUpdateOnInsertedInto(
   if (!insertion_point.isConnected())
     return false;
 
-  // If the base element URL changed, it means that we might be in the process
-  // of fetching a wrong image. We should update to ensure we fetch the correct
-  // image. This can happen when inserting content into an iframe which has a
-  // base element. See crbug.com/897545 for more details.
-  if (element_->GetDocument().ValidBaseElementURL() != last_base_element_url_)
-    return true;
-
   // If we already have image content, then we don't need an update.
   if (image_content_)
     return false;
@@ -643,8 +636,6 @@ void ImageLoader::UpdateFromElement(
 
   AtomicString image_source_url = element_->ImageSourceURL();
   suppress_error_events_ = (update_behavior == kUpdateSizeChanged);
-  last_base_element_url_ =
-      element_->GetDocument().ValidBaseElementURL().GetString();
   last_referrer_policy_ = referrer_policy;
 
   if (update_behavior == kUpdateIgnorePreviousError)
