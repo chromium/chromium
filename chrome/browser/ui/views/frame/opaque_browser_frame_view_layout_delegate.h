@@ -103,6 +103,11 @@ class OpaqueBrowserFrameViewLayoutDelegate {
   virtual ui::WindowTiledEdges GetTiledEdges() const = 0;
 #endif
 
+  // Returns the (preferred) heights of buttons in the web app frame toolbar. If
+  // the toolbar isn't visible, or if features::kWebAppFrameToolbarInBrowserView
+  // isn't enabled, this returns 0.
+  virtual int WebAppButtonHeight() const = 0;
+
  protected:
   virtual ~OpaqueBrowserFrameViewLayoutDelegate() = default;
 };

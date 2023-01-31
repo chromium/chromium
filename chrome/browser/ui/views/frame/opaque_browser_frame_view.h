@@ -120,6 +120,7 @@ class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::WindowTiledEdges GetTiledEdges() const override;
 #endif
+  int WebAppButtonHeight() const override;
 
  protected:
   views::Button* minimize_button() const { return minimize_button_; }

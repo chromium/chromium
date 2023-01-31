@@ -51,6 +51,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   ui::WindowTiledEdges GetTiledEdges() const override { return tiled_edges_; }
 #endif
+  int WebAppButtonHeight() const override { return 0; }
 
   ui::WindowTiledEdges tiled_edges_;
 };
