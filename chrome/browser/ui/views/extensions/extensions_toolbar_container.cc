@@ -37,6 +37,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -665,13 +666,14 @@ void ExtensionsToolbarContainer::WriteDragDataForView(
       model_->pinned_action_ids(), sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
   DCHECK(it != model_->pinned_action_ids().cend());
-
-  size_t index = it - model_->pinned_action_ids().cbegin();
-
   ToolbarActionView* extension_view = GetViewForId(*it);
-  data->provider().SetDragImage(GetExtensionIcon(extension_view),
+
+  ui::ImageModel icon = GetExtensionIcon(extension_view);
+  data->provider().SetDragImage(icon.Rasterize(GetColorProvider()),
                                 press_pt.OffsetFromOrigin());
+
   // Fill in the remaining info.
+  size_t index = it - model_->pinned_action_ids().cbegin();
   BrowserActionDragData drag_data(extension_view->view_controller()->GetId(),
                                   index);
   drag_data.Write(browser_->profile(), data);
@@ -809,11 +811,10 @@ size_t ExtensionsToolbarContainer::WidthToIconCount(int x_offset) {
   return std::min(unclamped_count, actions_.size());
 }
 
-gfx::ImageSkia ExtensionsToolbarContainer::GetExtensionIcon(
+ui::ImageModel ExtensionsToolbarContainer::GetExtensionIcon(
     ToolbarActionView* extension_view) {
-  return extension_view->view_controller()
-      ->GetIcon(GetCurrentWebContents(), GetToolbarActionSize())
-      .AsImageSkia();
+  return extension_view->view_controller()->GetIcon(GetCurrentWebContents(),
+                                                    GetToolbarActionSize());
 }
 
 void ExtensionsToolbarContainer::SetExtensionIconVisibility(
@@ -831,8 +832,7 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
 
   extension_view->SetImageModel(
       views::Button::STATE_NORMAL,
-      visible ? ui::ImageModel::FromImageSkia(GetExtensionIcon(extension_view))
-              : ui::ImageModel());
+      visible ? GetExtensionIcon(extension_view) : ui::ImageModel());
 }
 
 void ExtensionsToolbarContainer::UpdateContainerVisibility() {

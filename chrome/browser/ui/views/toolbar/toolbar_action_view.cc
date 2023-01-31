@@ -28,14 +28,13 @@
 #include "extensions/common/extension_features.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/image/image_skia_source.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -152,13 +151,11 @@ void ToolbarActionView::UpdateState() {
   if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid())
     return;
 
-  gfx::ImageSkia icon(
-      view_controller_->GetIcon(web_contents, GetPreferredSize())
-          .AsImageSkia());
-
-  if (!icon.isNull())
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromImageSkia(icon));
+  ui::ImageModel icon =
+      view_controller_->GetIcon(web_contents, GetPreferredSize());
+  if (!icon.IsEmpty()) {
+    SetImageModel(views::Button::STATE_NORMAL, icon);
+  }
 
   if (!base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {

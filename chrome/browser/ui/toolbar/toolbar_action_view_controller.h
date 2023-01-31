@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -104,8 +105,8 @@ class ToolbarActionViewController {
   virtual void SetDelegate(ToolbarActionViewDelegate* delegate) = 0;
 
   // Returns the icon to use for the given |web_contents| and |size|.
-  virtual gfx::Image GetIcon(content::WebContents* web_contents,
-                             const gfx::Size& size) = 0;
+  virtual ui::ImageModel GetIcon(content::WebContents* web_contents,
+                                 const gfx::Size& size) = 0;
 
   // Returns the name of the action, which can be separate from the accessible
   // name or name for the tooltip.

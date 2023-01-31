@@ -74,10 +74,9 @@ void ExtensionsMenuButton::UpdateState() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
   const int icon_size =
       provider->GetDistanceMetric(DISTANCE_EXTENSIONS_MENU_EXTENSION_ICON_SIZE);
-  SetImage(Button::STATE_NORMAL, controller_
-                                     ->GetIcon(GetCurrentWebContents(),
-                                               gfx::Size(icon_size, icon_size))
-                                     .AsImageSkia());
+  SetImageModel(Button::STATE_NORMAL,
+                controller_->GetIcon(GetCurrentWebContents(),
+                                     gfx::Size(icon_size, icon_size)));
 
   SetText(controller_->GetActionName());
   SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));

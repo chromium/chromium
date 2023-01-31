@@ -65,9 +65,9 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
 // "action" action based on the web contents.
 ui::ImageModel GetIcon(ToolbarActionViewController* action,
                        content::WebContents* web_contents) {
-  return ui::ImageModel::FromImage(action->GetIcon(
-      web_contents, gfx::Size(extension_misc::EXTENSION_ICON_SMALLISH,
-                              extension_misc::EXTENSION_ICON_SMALLISH)));
+  return action->GetIcon(web_contents,
+                         gfx::Size(extension_misc::EXTENSION_ICON_SMALLISH,
+                                   extension_misc::EXTENSION_ICON_SMALLISH));
 }
 
 std::u16string GetCurrentHost(content::WebContents* web_contents) {

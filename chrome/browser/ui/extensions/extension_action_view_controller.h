@@ -17,7 +17,6 @@
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
-#include "ui/gfx/image/image.h"
 
 class Browser;
 class ExtensionActionPlatformDelegate;
@@ -32,6 +31,10 @@ class ExtensionAction;
 class ExtensionRegistry;
 class ExtensionViewHost;
 class SitePermissionsHelper;
+}
+
+namespace ui {
+class ImageModel;
 }
 
 // The platform-independent controller for an ExtensionAction that is shown on
@@ -64,8 +67,8 @@ class ExtensionActionViewController
   // ToolbarActionViewController:
   std::string GetId() const override;
   void SetDelegate(ToolbarActionViewDelegate* delegate) override;
-  gfx::Image GetIcon(content::WebContents* web_contents,
-                     const gfx::Size& size) override;
+  ui::ImageModel GetIcon(content::WebContents* web_contents,
+                         const gfx::Size& size) override;
   std::u16string GetActionName() const override;
   std::u16string GetAccessibleName(
       content::WebContents* web_contents) const override;

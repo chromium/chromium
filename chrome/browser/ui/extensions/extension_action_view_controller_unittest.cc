@@ -45,6 +45,7 @@
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/test/test_extension_dir.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -810,7 +811,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   // a non-empty icon should be returned.
   ExtensionActionViewController* const controller =
       GetViewControllerForId(extension->id());
-  gfx::Image icon = controller->GetIcon(nullptr, view_size());
+  ui::ImageModel icon = controller->GetIcon(nullptr, view_size());
   EXPECT_FALSE(icon.IsEmpty());
 }
 
