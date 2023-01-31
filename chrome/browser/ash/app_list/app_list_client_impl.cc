@@ -13,6 +13,8 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/shell.h"
+#include "ash/system/federated/federated_service_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -500,7 +502,8 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
 void AppListClientImpl::SetUpSearchUI() {
   search_controller_ = app_list::CreateSearchController(
-      profile_, current_model_updater_, this, GetNotifier());
+      profile_, current_model_updater_, this, GetNotifier(),
+      ash::Shell::Get()->federated_service_controller());
 
   // Refresh the results used for the suggestion chips with empty query.
   // This fixes crbug.com/999287.

@@ -47,14 +47,17 @@ void ClearNonZeroStateResults(ResultsMap& results) {
 
 }  // namespace
 
-SearchController::SearchController(AppListModelUpdater* model_updater,
-                                   AppListControllerDelegate* list_controller,
-                                   ash::AppListNotifier* notifier,
-                                   Profile* profile)
+SearchController::SearchController(
+    AppListModelUpdater* model_updater,
+    AppListControllerDelegate* list_controller,
+    ash::AppListNotifier* notifier,
+    Profile* profile,
+    ash::federated::FederatedServiceController* federated_service_controller)
     : profile_(profile),
       model_updater_(model_updater),
       list_controller_(list_controller),
-      notifier_(notifier) {}
+      notifier_(notifier),
+      federated_service_controller_(federated_service_controller) {}
 
 SearchController::~SearchController() = default;
 
@@ -66,8 +69,8 @@ void SearchController::Initialize() {
       std::make_unique<SearchMetricsManager>(profile_, notifier_);
   session_metrics_manager_ =
       std::make_unique<SearchSessionMetricsManager>(profile_, notifier_);
-  federated_metrics_manager_ =
-      std::make_unique<FederatedMetricsManager>(notifier_);
+  federated_metrics_manager_ = std::make_unique<FederatedMetricsManager>(
+      notifier_, federated_service_controller_);
   app_search_data_source_ = std::make_unique<AppSearchDataSource>(
       profile_, list_controller_, base::DefaultClock::GetInstance());
 }

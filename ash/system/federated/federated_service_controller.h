@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_FEDERATED_FEDERATED_SERVICE_CONTROLLER_H_
 #define ASH_SYSTEM_FEDERATED_FEDERATED_SERVICE_CONTROLLER_H_
 
+#include "ash/ash_export.h"
+
 namespace ash::federated {
 
 // Controller class for the federated service.

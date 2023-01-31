@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_notifier.h"
+#include "ash/system/federated/federated_service_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace app_list {
@@ -19,7 +21,9 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
   using Result = ash::AppListNotifier::Result;
   using Location = ash::AppListNotifier::Location;
 
-  explicit FederatedMetricsManager(ash::AppListNotifier* notifier);
+  FederatedMetricsManager(
+      ash::AppListNotifier* notifier,
+      ash::federated::FederatedServiceController* controller);
   ~FederatedMetricsManager() override;
 
   FederatedMetricsManager(const FederatedMetricsManager&) = delete;
@@ -37,6 +41,7 @@ class FederatedMetricsManager : ash::AppListNotifier::Observer {
  private:
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>
       observation_{this};
+  const raw_ptr<ash::federated::FederatedServiceController> controller_;
 };
 
 }  // namespace app_list

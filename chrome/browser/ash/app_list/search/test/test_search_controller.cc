@@ -10,7 +10,7 @@
 namespace app_list {
 
 TestSearchController::TestSearchController()
-    : SearchController(nullptr, nullptr, nullptr, nullptr) {}
+    : SearchController(nullptr, nullptr, nullptr, nullptr, nullptr) {}
 
 TestSearchController::~TestSearchController() = default;
 

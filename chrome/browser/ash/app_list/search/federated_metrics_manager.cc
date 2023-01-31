@@ -17,8 +17,13 @@ bool IsLoggingEnabled() {
 }  // namespace
 
 FederatedMetricsManager::FederatedMetricsManager(
-    ash::AppListNotifier* notifier) {
+    ash::AppListNotifier* notifier,
+    ash::federated::FederatedServiceController* controller)
+    : controller_(controller) {
   // TODO(b/262611120): Implement.
+  if (!controller_) {
+    // TODO(b/262611120): Metrics.
+  }
 }
 
 FederatedMetricsManager::~FederatedMetricsManager() = default;
