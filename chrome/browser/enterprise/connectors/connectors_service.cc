@@ -622,10 +622,6 @@ content::BrowserContext* ConnectorsServiceFactory::GetBrowserContextToUse(
         return primary_browser_context;
       }
     }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    Profile* profile = Profile::FromBrowserContext(context);
-    if (profile)
-      return profile;
 #endif
   }
   return context;
