@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/mac/foundation_util.h"
+#import "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/mac/scoped_objc_class_swizzler.h"
 #import "base/task/single_thread_task_runner.h"
@@ -339,6 +340,14 @@ class WindowOcclusionBrowserTestMac
     } else {
       _features.InitAndDisableFeature(features::kMacWebContentsOcclusion);
     }
+  }
+
+  void SetUp() override {
+    if (base::mac::IsAtLeastOS13()) {
+      GTEST_SKIP()
+          << "Manual window occlusion detection is broken on macOS Ventura.";
+    }
+    ContentBrowserTest::SetUp();
   }
 
   ~WindowOcclusionBrowserTestMac() {
