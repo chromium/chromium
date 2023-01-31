@@ -105905,6 +105905,8 @@ others/histograms.xml -->
 <enum name="WallpaperGooglePhotosSource">
   <int value="0" label="Photos"/>
   <int value="1" label="Albums"/>
+  <int value="2" label="Owned Albums"/>
+  <int value="3" label="Shared Albums"/>
 </enum>
 
 <enum name="WallpaperImage">

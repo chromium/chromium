@@ -246,7 +246,7 @@ absl::optional<GooglePhotosApi> ToGooglePhotosApi(const GURL& url) {
     return GooglePhotosApi::kGetAlbums;
   }
   if (base::StartsWith(spec, kGooglePhotosSharedAlbumsUrl)) {
-    return GooglePhotosApi::kGetAlbums;
+    return GooglePhotosApi::kGetSharedAlbums;
   }
   if (base::StartsWith(spec, kGooglePhotosPhotoUrl)) {
     return GooglePhotosApi::kGetPhoto;

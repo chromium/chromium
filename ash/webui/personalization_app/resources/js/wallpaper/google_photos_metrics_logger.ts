@@ -13,12 +13,14 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
  */
 export enum WallpaperGooglePhotosSource {
   PHOTOS = 0,
-  ALBUMS = 1,
-  NUM_SOURCES = 2,
+  ALBUMS = 1,  // This enum will be retired with the shared albums feature.
+  OWNED_ALBUMS = 2,
+  SHARED_ALBUMS = 3,
+  NUM_SOURCES = 4,
 }
 
 const WallpaperGooglePhotosSourceHistogramName: string =
-    'Ash.Wallpaper.GooglePhotos.Source';
+    'Ash.Wallpaper.GooglePhotos.Source2';
 
 /**
  * Records the section of the Wallpaper app from which a new Google Photos

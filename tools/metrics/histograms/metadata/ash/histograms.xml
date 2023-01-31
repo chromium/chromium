@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <variant name="GetEnabled" summary="returns enablement state"/>
   <variant name="GetPhoto" summary="returns a single photo"/>
   <variant name="GetPhotos" summary="returns all photos"/>
+  <variant name="GetSharedAlbums" summary="returns all shared albums"/>
 </variants>
 
 <variants name="HotseatTransitionType">
@@ -5596,7 +5597,23 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Wallpaper.GooglePhotos.Source"
     enum="WallpaperGooglePhotosSource" expires_after="2023-07-09">
+  <obsolete>
+    Replaced 01/2023 by Ash.Wallpaper.GooglePhotos.Source2.
+  </obsolete>
   <owner>xiaohuic@google.com</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Records the section of the Wallpaper App from which a Google Photos
+    wallpaper was selected. Emitted regardless of the selection's success.
+    b/262449270: Adds new enums to record when a user picks a photo from owned
+    or shared albums with the Google Photos shared albums feature.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.GooglePhotos.Source2"
+    enum="WallpaperGooglePhotosSource" expires_after="2024-01-30">
+  <owner>thuongphan@google.com</owner>
+  <owner>cowmoo@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
     Records the section of the Wallpaper App from which a Google Photos
