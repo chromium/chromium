@@ -1701,6 +1701,8 @@ static_library("ui") {
       "webui/signin/login_ui_service_factory.h",
       "webui/signin/signin_utils.cc",
       "webui/signin/signin_utils.h",
+      "webui/suggest_internals/suggest_internals_ui.cc",
+      "webui/suggest_internals/suggest_internals_ui.h",
       "webui/support_tool/support_tool_ui.cc",
       "webui/support_tool/support_tool_ui.h",
       "webui/support_tool/support_tool_ui_utils.cc",

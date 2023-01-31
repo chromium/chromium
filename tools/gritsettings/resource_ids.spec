@@ -457,6 +457,10 @@
     "META": {"sizes": {"includes": [20]}},
     "includes": [2420],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/suggest_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [2430],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/quota_internals/quota_internals_resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2440],
