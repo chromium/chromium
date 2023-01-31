@@ -86,6 +86,23 @@
       "use_goma": true
     }
   },
+  "android_arm64_high_end-builder-perf": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_high_end_android": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
   "chromecast-linux-builder-perf": {
     "gn_args": {
       "dcheck_always_on": false,

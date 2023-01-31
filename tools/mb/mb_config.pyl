@@ -663,6 +663,7 @@
       'android-builder-perf-pgo': 'official_goma_minimal_symbols_android_pgo',
       'android_arm64-builder-perf': 'official_reclient_minimal_symbols_android_arm64',
       'android_arm64-builder-perf-pgo': 'official_goma_minimal_symbols_android_arm64_pgo',
+      'android_arm64_high_end-builder-perf': 'official_goma_minimal_symbols_android_arm64_high_end',
       'chromecast-linux-builder-perf': 'cast_binary_size',
       'chromeos-amd64-generic-lacros-builder-perf': 'chromeos_amd64-generic_lacros_official',
       'chromeos-arm-generic-lacros-builder-perf': 'chromeos_arm-generic_lacros_official',
@@ -3306,6 +3307,10 @@
       'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo'
     ],
 
+    'official_goma_minimal_symbols_android_arm64_high_end': [
+      'official', 'goma', 'minimal_symbols', 'android', 'arm64', 'pgo_phase_0', 'no_default_afdo', 'android_high_end'
+    ],
+
     'official_goma_minimal_symbols_android_arm64_pgo': [
       'official', 'goma', 'minimal_symbols', 'android', 'arm64'
     ],
@@ -3816,6 +3821,10 @@
     # It's significantly faster to build without static analysis checks.
     'android_fastbuild': {
       'gn_args': 'android_static_analysis="off"',
+    },
+
+    'android_high_end': {
+      'gn_args': 'is_high_end_android=true',
     },
 
     # TODO(https://crbug.com/1020714): This is temporary. We'd like to run a

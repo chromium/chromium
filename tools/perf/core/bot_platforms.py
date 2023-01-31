@@ -493,6 +493,15 @@ _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.mobile'),
     _GetBenchmarkConfig('system_health.scroll_jank_mobile')
 ])
+_ANDROID_PIXEL6_BENCHMARK_CONFIGS = PerfSuite(_OFFICIAL_EXCEPT_DISPLAY_LOCKING)
+_ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
+    _OFFICIAL_EXCEPT_DISPLAY_LOCKING)
+_ANDROID_PIXEL6_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60),
+])
+_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS = frozenset([
+    _components_perftests(60),
+])
 _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS = PerfSuite(
     [_GetBenchmarkConfig('startup.mobile'),
      _GetBenchmarkConfig('speedometer2')])
@@ -722,6 +731,19 @@ ANDROID_PIXEL4A_POWER = PerfPlatform('android-pixel4a_power-perf',
 ANDROID_PIXEL4A_POWER_PGO = PerfPlatform(
     'android-pixel4a_power-perf-pgo', 'Android QD4A.200102.001.A1',
     _ANDROID_PIXEL4A_POWER_BENCHMARK_CONFIGS, 12, 'android')
+ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
+                              'Android T',
+                              _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
+                              28,
+                              'android',
+                              executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS)
+ANDROID_PIXEL6_PRO = PerfPlatform(
+    'android-pixel6-pro-perf',
+    'Android T',
+    _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS,
+    16,
+    'android',
+    executables=_ANDROID_PIXEL6_PRO_EXECUTABLE_CONFIGS)
 ANDROID_GO_WEMBLEY = PerfPlatform('android-go-wembley-perf',
                                   'Android U',
                                   _ANDROID_GO_WEMBLEY_BENCHMARK_CONFIGS, 2,

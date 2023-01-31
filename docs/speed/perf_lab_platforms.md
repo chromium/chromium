@@ -20,6 +20,8 @@
  * [android-pixel4_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4_webview-perf): Android R.
  * [android-pixel4a_power-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf): Android QD4A.200102.001.A1.
  * [android-pixel4a_power-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4a_power-perf-pgo): Android QD4A.200102.001.A1.
+ * [android-pixel6-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-perf): Android T.
+ * [android-pixel6-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel6-pro-perf): Android T.
 
 ## Chromeos
 
