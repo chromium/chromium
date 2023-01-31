@@ -16,6 +16,7 @@
           {
             "name": "stringify",
             "type": "function",
+            "optional": true,
             "description": "Converts a recording from the Recorder panel format into a string.",
             "parameters": [
               {
@@ -28,6 +29,7 @@
           {
             "name": "stringifyStep",
             "type": "function",
+            "optional": true,
             "description": "Converts a step of the recording from the Recorder panel format into a string.",
             "parameters": [
               {
@@ -36,6 +38,43 @@
                 "description": "A step of the recording of a user interaction with the page. This should match <a href=\"https://github.com/puppeteer/replay/blob/main/docs/api/modules/Schema.md#step\">Puppeteer's step schema</a>."
               }
             ]
+          },
+          {
+            "name": "replay",
+            "type": "function",
+            "optional": true,
+            "description": "Allows the extension to implement custom replay functionality.",
+            "parameters": [
+              {
+                "name": "recording",
+                "type": "object",
+                "description": "A recording of the user interaction with the page. This should match <a href=\"https://github.com/puppeteer/replay/blob/main/docs/api/interfaces/Schema.UserFlow.md\">Puppeteer's recording schema</a>."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "RecorderView",
+        "type": "object",
+        "description": "Represents a view created by extension to be embedded inside the Recorder panel.",
+        "functions": [
+          {
+            "name": "show",
+            "description": "Indicates that the extension wants to show this view in the Recorder panel.",
+            "parameters": []
+          }
+        ],
+        "events": [
+          {
+            "name": "onShown",
+            "type": "function",
+            "description": "Fired when the view is shown."
+          },
+          {
+            "name": "onHidden",
+            "type": "function",
+            "description": "Fired when the view is hidden."
           }
         ]
       }
@@ -62,6 +101,24 @@
             "description": "The media type of the string content that the plugin produces."
           }
         ]
+      },
+      {
+        "name": "createView",
+        "type": "function",
+        "description": "Creates a view that can handle the replay. This view will be embedded inside the Recorder panel.",
+        "parameters": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Title that is displayed next to the extension icon in the Developer Tools toolbar."
+          },
+          {
+            "name": "pagePath",
+            "type": "string",
+            "description": "Path of the panel's HTML page relative to the extension directory."
+          }
+        ],
+        "returns": { "$ref": "RecorderView" }
       }
     ]
   }
