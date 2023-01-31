@@ -19,10 +19,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.IBinder;
 import android.view.ContextThemeWrapper;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -386,5 +388,31 @@ public class CompositorViewHolderUnitTest {
                 mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
         verify(mCompositorViewHolder, times(0))
                 .notifyVirtualKeyboardOverlayRect(mWebContents, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void testInMotionSupplier() {
+        long time = System.currentTimeMillis();
+        MotionEvent down = MotionEvent.obtain(time, time, MotionEvent.ACTION_DOWN, 1, 1, 0);
+        MotionEvent up = MotionEvent.obtain(time, time, MotionEvent.ACTION_UP, 1, 1, 0);
+
+        mCompositorViewHolder.dispatchTouchEvent(down);
+        mCompositorViewHolder.onInterceptTouchEvent(down);
+        Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
+
+        mCompositorViewHolder.dispatchTouchEvent(up);
+        mCompositorViewHolder.onInterceptTouchEvent(up);
+        Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
+
+        mCompositorViewHolder.dispatchTouchEvent(down);
+        mCompositorViewHolder.onInterceptTouchEvent(down);
+        Assert.assertTrue(mCompositorViewHolder.getInMotionSupplier().get());
+
+        // Simulate a child handling a scroll, where they call requestDisallowInterceptTouchEvent
+        // and then we no longer get onInterceptTouchEvent. The dispatchTouchEvent alone should
+        // still cause our motion status to correctly update.
+        mCompositorViewHolder.requestDisallowInterceptTouchEvent(true);
+        mCompositorViewHolder.dispatchTouchEvent(up);
+        Assert.assertFalse(mCompositorViewHolder.getInMotionSupplier().get());
     }
 }
