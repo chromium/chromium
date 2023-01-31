@@ -585,6 +585,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage"
     units="ms" expires_after="2023-03-12">
+  <obsolete>
+    Never actually logged in production, removed in M111.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -598,6 +601,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage"
     units="ms" expires_after="2023-03-12">
+  <obsolete>
+    Never actually logged in production, removed in M111.
+  </obsolete>
   <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

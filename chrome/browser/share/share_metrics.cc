@@ -19,14 +19,4 @@ void RecordSharingHubTimeToShow(base::TimeDelta time) {
   UMA_HISTOGRAM_TIMES("Sharing.SharingHubDesktop.TimeToShow", time);
 }
 
-void RecordSharingHubTimeToFetchHQPreviewImage(base::TimeDelta time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
-      "Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage", time);
-}
-
-void RecordSharingHubTimeToFetchFaviconPreviewImage(base::TimeDelta time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
-      "Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage", time);
-}
-
 }  // namespace share

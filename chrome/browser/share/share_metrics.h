@@ -25,8 +25,6 @@ void LogShareSourceDesktop(ShareSourceDesktop source);
 
 // Sharing hub metrics logging functions:
 void RecordSharingHubTimeToShow(base::TimeDelta time);
-void RecordSharingHubTimeToFetchHQPreviewImage(base::TimeDelta time);
-void RecordSharingHubTimeToFetchFaviconPreviewImage(base::TimeDelta time);
 
 }  // namespace share
 
