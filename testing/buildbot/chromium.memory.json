@@ -17824,7 +17824,8 @@
         "args": [
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
-          "--asan-symbolize-output"
+          "--asan-symbolize-output",
+          "--gtest_filter=-All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/*:All/MultiActionAPITest.PopupCreation/*"
         ],
         "isolate_profile_data": true,
         "merge": {

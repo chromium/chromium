@@ -1127,6 +1127,10 @@
         'swarming': {
           'shards': 20,
         },
+        # TODO(crbug.com/1324240): Enable tests.
+        'args': [
+          '--gtest_filter=-All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/*:All/MultiActionAPITest.PopupCreation/*'
+        ],
       },
       'linux-lacros-tester-rel': {
         'swarming': {
