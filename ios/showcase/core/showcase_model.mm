@@ -210,6 +210,11 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey :
           @"Sign in promo half sheet for feed personalization menu options",
     },
+    @{
+      showcase::kClassForDisplayKey : @"SCUserPolicyPromptViewController",
+      showcase::kClassForInstantiationKey : @"SCUserPolicyPromptCoordinator",
+      showcase::kUseCaseKey : @"User Policy prompt half sheet",
+    },
   ];
   DCHECK(IsShowcaseModelValid(model));
   return model;

@@ -48,6 +48,11 @@ extern NSString* const kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 // The text for the secondary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* secondaryActionString;
 
+// The color of the text for the secondary action. Must be set before the view
+// is loaded to be effective. Use the kBlueColor by default if the property is
+// not set.
+@property(nonatomic, copy) NSString* secondaryActionTextColor;
+
 // The text for the tertiary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* tertiaryActionString;
 

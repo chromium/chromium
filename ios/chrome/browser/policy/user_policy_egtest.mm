@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -137,6 +138,12 @@ void WaitOnUserPolicy(base::TimeDelta timeout) {
 }
 
 void VerifyTheNotificationUI() {
+  // Swipe up to make sure that all the text content in the prompt is visible.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
+
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
   NSString* subtitle = l10n_util::GetNSStringF(
@@ -144,9 +151,9 @@ void VerifyTheNotificationUI() {
       base::UTF8ToUTF16(std::string(policy::SignatureProvider::kTestDomain1)));
 
   // Verify the notification UI.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(title)]
+  [[EarlGrey selectElementWithMatcher:grey_text(title)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(subtitle)]
+  [[EarlGrey selectElementWithMatcher:grey_text(subtitle)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

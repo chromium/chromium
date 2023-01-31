@@ -6,31 +6,19 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
-#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_signin_service.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/system_identity.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
-#import "ios/chrome/browser/ui/main/scene_controller.h"
 #import "ios/chrome/browser/ui/main/scene_ui_provider.h"
+#import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator.h"
+#import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/grit/ios_chromium_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,9 +29,6 @@
   // shown on this scene.
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
 }
-
-// Alert coordinator that is used to display the notification dialog.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 // Browser of the main interface of the scene.
 @property(nonatomic, assign, readonly) Browser* mainBrowser;
@@ -65,6 +50,13 @@
 @property(nonatomic, assign, readonly)
     policy::UserPolicySigninService* policyService;
 
+// Coordinator for the User Policy prompt.
+@property(nonatomic, strong)
+    UserPolicyPromptCoordinator* userPolicyPromptCoordinator;
+
+@end
+
+@interface UserPolicySceneAgent () <UserPolicyPromptCoordinatorDelegate>
 @end
 
 // TODO(crbug.com/1325115): Remove the logic to show the notification dialog
@@ -105,7 +97,7 @@
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
   [self.sceneState.appState removeObserver:self];
-  _uiBlocker.reset();
+  [self stopUserPolicyPromptCoordinator];
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -131,6 +123,17 @@
   // Monitor the app intialization stages to consider showing the sign-in
   // prompts at a point in the initialization of the app that allows it.
   [self maybeShowUserPolicyNotification];
+}
+
+#pragma mark - UserPolicyPromptCoordinatorDelegate
+
+- (void)didCompletePresentation:(UserPolicyPromptCoordinator*)coordinator {
+  // Mark the prompt as seen.
+  self.prefService->SetBoolean(
+      policy::policy_prefs::kUserPolicyNotificationWasShown, true);
+  self.policyService->OnUserPolicyNotificationSeen();
+
+  [self stopUserPolicyPromptCoordinator];
 }
 
 #pragma mark - Internal
@@ -171,7 +174,6 @@
 // Shows the notification dialog on top of the active view controller (e.g. the
 // browser view controller).
 - (void)showNotification {
-  DCHECK(!self.alertCoordinator);
   DCHECK(self.sceneState.UIEnabled);
 
   _uiBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
@@ -180,88 +182,29 @@
   [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{
     __typeof(self) strongSelf = weakSelf;
     [strongSelf
-        showManagedConfirmationForHostedDomain:[strongSelf hostedDomain]
-                                viewController:[strongSelf.sceneUIProvider
-                                                       activeViewController]
-                                       browser:strongSelf.mainBrowser];
+        showManagedConfirmationOnViewController:[strongSelf.sceneUIProvider
+                                                        activeViewController]
+                                        browser:strongSelf.mainBrowser];
   }];
 }
 
-// Returns the hosted domain of the primary account. Returns an empty string if
-// the account isn't managed OR isn't syncing.
-- (NSString*)hostedDomain {
-  return base::SysUTF16ToNSString(
-      HostedDomainForPrimaryAccount(self.mainBrowser));
+// Shows the notification dialog for the account on the `viewController`.
+- (void)showManagedConfirmationOnViewController:
+            (UIViewController*)viewController
+                                        browser:(Browser*)browser {
+  self.userPolicyPromptCoordinator = [[UserPolicyPromptCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser];
+  self.userPolicyPromptCoordinator.delegate = self;
+
+  [self.userPolicyPromptCoordinator start];
 }
 
-// Shows the notification dialog for the account in `hostedDomain` on the
-// provided `viewController`.
-- (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
-                                viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser {
-  DCHECK(!self.alertCoordinator);
-
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_NOTIFICATION_TITLE);
-  NSString* subtitle =
-      l10n_util::GetNSStringF(IDS_IOS_USER_POLICY_NOTIFICATION_SUBTITLE,
-                              base::SysNSStringToUTF16(hostedDomain));
-  NSString* continueLabel =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_CONTINUE);
-  NSString* signOutAndClearDataLabel =
-      l10n_util::GetNSString(IDS_IOS_USER_POLICY_SIGNOUT_AND_CLEAR_DATA);
-
-  self.alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:viewController
-                                                   browser:browser
-                                                     title:title
-                                                   message:subtitle];
-
-  __weak __typeof(self) weakSelf = self;
-  __weak AlertCoordinator* weakAlert = self.alertCoordinator;
-  ProceduralBlock acceptBlock = ^{
-    [weakSelf didContinueFromNotification:weakAlert];
-  };
-  ProceduralBlock cancelBlock = ^{
-    [weakSelf didSignoutFromNotification:weakAlert];
-  };
-
-  [self.alertCoordinator addItemWithTitle:signOutAndClearDataLabel
-                                   action:cancelBlock
-                                    style:UIAlertActionStyleDestructive];
-  [self.alertCoordinator addItemWithTitle:continueLabel
-                                   action:acceptBlock
-                                    style:UIAlertActionStyleDefault];
-  [self.alertCoordinator setCancelAction:cancelBlock];
-  [self.alertCoordinator start];
-}
-
-- (void)alertControllerDidComplete:(AlertCoordinator*)alertCoordinator {
-  DCHECK(self.alertCoordinator == alertCoordinator);
-
-  self.alertCoordinator = nil;
-
-  self.prefService->SetBoolean(
-      policy::policy_prefs::kUserPolicyNotificationWasShown, true);
-  self.policyService->OnUserPolicyNotificationSeen();
-
-  // Release the UI blockers on the other scenes because the notification dialog
-  // is now dismissed.
+- (void)stopUserPolicyPromptCoordinator {
   _uiBlocker.reset();
-}
 
-- (void)didContinueFromNotification:(AlertCoordinator*)alertCoordinator {
-  [self alertControllerDidComplete:alertCoordinator];
-}
-
-- (void)didSignoutFromNotification:(AlertCoordinator*)alertCoordinator {
-  __weak __typeof(self) weakSelf = self;
-  self.authService->SignOut(
-      signin_metrics::ProfileSignout::
-          kUserClickedSignoutFromUserPolicyNotificationDialog,
-      false, ^{
-        [weakSelf alertControllerDidComplete:alertCoordinator];
-      });
+  [self.userPolicyPromptCoordinator stop];
+  self.userPolicyPromptCoordinator = nil;
 }
 
 @end
