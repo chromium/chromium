@@ -81469,6 +81469,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
     Level 2 not synchronized on Linux. Operation not supported on Mac. Resource
     deadlock avoided on Windows.
   </int>
+  <int value="62" label="ETIME/_/_">Timer expired on Linux</int>
   <int value="63" label="ENOSR/ENAMETOOLONG/_">
     Out of streams resources on Linux. File name too long on Mac.
   </int>
