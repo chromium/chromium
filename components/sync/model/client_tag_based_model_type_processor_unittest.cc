@@ -366,6 +366,8 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     request.sync_mode = sync_mode;
     request.configuration_start_time = base::Time::Now();
 
+    error_reported_ = false;
+
     // |run_loop_| may exist here if OnSyncStarting is called without resetting
     // state. But it is safe to remove it.
     ASSERT_TRUE(!run_loop_ || !run_loop_->running());
@@ -505,6 +507,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     histogram_tester_->ExpectBucketCount("Sync.ModelTypeErrorSite.PREFERENCE",
                                          *expect_error_, /*count=*/1);
     expect_error_ = absl::nullopt;
+    error_reported_ = true;
     // Do not expect for a start callback anymore.
     if (run_loop_) {
       run_loop_->Quit();
@@ -521,6 +524,8 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
     ASSERT_TRUE(run_loop_);
     run_loop_->Run();
   }
+
+  bool error_reported() const { return error_reported_; }
 
  private:
   std::unique_ptr<TestModelTypeSyncBridge> bridge_;
@@ -539,6 +544,7 @@ class ClientTagBasedModelTypeProcessorTest : public ::testing::Test {
   // Whether to expect an error from the processor (and from which site).
   absl::optional<ClientTagBasedModelTypeProcessor::ErrorSite> expect_error_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+  bool error_reported_ = false;
 };
 
 TEST_F(ClientTagBasedModelTypeProcessorTest,
@@ -3062,6 +3068,37 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       "Sync.ModelTypeUpdateDrop.DroppedByBridge",
       /*bucket=*/ModelTypeHistogramValue(GetModelType()),
       /*count=*/1);
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotReportErrorAfterOnSyncStopping) {
+  InitializeToReadyState();
+  // This should reset activation_request and consequently, the error_handler.
+  type_processor()->OnSyncStopping(KEEP_METADATA);
+  ASSERT_FALSE(error_reported());
+
+  ModelError error{FROM_HERE, "boom"};
+  type_processor()->ReportError(error);
+  // Error was raised but did not trigger ErrorReceived().
+  // Note: If an error is issued to the error_handler but the expectation is not
+  // set via ExpectError(), the test fails.
+  ASSERT_TRUE(type_processor()->GetError().has_value());
+  ASSERT_EQ(type_processor()->GetError()->location(), error.location());
+
+  // No call to error_handler since ErrorReceived() was not triggered.
+  EXPECT_FALSE(error_reported());
+}
+
+TEST_F(ClientTagBasedModelTypeProcessorTest,
+       ShouldNotInvokeBridgeOnSyncStartingFromOnSyncStopping) {
+  InitializeToReadyState();
+  ASSERT_TRUE(bridge()->sync_started());
+  // OnSyncStopping() calls bridge's ApplyStopSyncChanges(), which should reset
+  // `sync_started_` flag.
+  type_processor()->OnSyncStopping(CLEAR_METADATA);
+  // OnSyncStopping() should clear the activation request, hence avoiding call
+  // to bridge's OnSyncStarting().
+  EXPECT_FALSE(bridge()->sync_started());
 }
 
 // The param indicates whether the password notes feature is enabled.

@@ -205,6 +205,11 @@ void ClientTagBasedModelTypeProcessor::OnSyncStopping(
   DCHECK(model_ready_to_sync_);
   DCHECK(!start_callback_);
 
+  // Reset `activation_request_`. This acts as a flag that the processor has
+  // been stopped or has not been started yet. Note: this avoids calling
+  // bridge's OnSyncStarting() from ClearAllTrackedMetadataAndResetState().
+  activation_request_ = DataTypeActivationRequest{};
+
   switch (metadata_fate) {
     case KEEP_METADATA: {
       bridge_->ApplyStopSyncChanges(
