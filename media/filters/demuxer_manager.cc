@@ -140,10 +140,10 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
 
 #if BUILDFLAG(IS_ANDROID)
   if (error == DEMUXER_ERROR_DETECTED_HLS) {
-    PipelineStatus::Or<GURL> hls_url =
+    PipelineStatus reset_status =
         ResetAfterHlsDetected(client_->IsSecurityOriginCryptographic());
-    if (!hls_url.has_value()) {
-      client_->OnError(std::move(hls_url).error().AddCause(std::move(error)));
+    if (!reset_status.is_ok()) {
+      client_->OnError(std::move(reset_status).AddCause(std::move(error)));
       return;
     }
     // We have to stop the pipeline and delete the demuxer thread dumper pronto.
@@ -192,8 +192,7 @@ void DemuxerManager::SetLoadedUrl(GURL url) {
   loaded_url_ = std::move(url);
 }
 
-PipelineStatus::Or<GURL> DemuxerManager::ResetAfterHlsDetected(
-    bool cryptographic_url) {
+PipelineStatus DemuxerManager::ResetAfterHlsDetected(bool cryptographic_url) {
 #if BUILDFLAG(IS_ANDROID)
   // If HLS isn't enabled, HLS detection should be the error.
   if (!base::FeatureList::IsEnabled(kHlsPlayer)) {
@@ -239,7 +238,11 @@ PipelineStatus::Or<GURL> DemuxerManager::ResetAfterHlsDetected(
   // Can't fail anymore, so set hls flag to true for next time we create a
   // new demuxer.
   demuxer_found_hls_ = true;
-  return GetDataSourceUrlAfterRedirects().value();
+  loaded_url_ = GetDataSourceUrlAfterRedirects().value();
+  if (client_) {
+    client_->UpdateLoadedUrl(loaded_url_);
+  }
+  return OkStatus();
 #else
   return DEMUXER_ERROR_DETECTED_HLS;
 #endif  // BUILDFLAG(IS_ANDROID)

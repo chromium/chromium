@@ -421,6 +421,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void StopForDemuxerReset() override;
   bool RestartForHls() override;
   bool IsSecurityOriginCryptographic() const override;
+  void UpdateLoadedUrl(const GURL& url) override;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   void AddAudioTrack(const std::string& id,

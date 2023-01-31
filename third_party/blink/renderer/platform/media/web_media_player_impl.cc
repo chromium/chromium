@@ -1797,6 +1797,10 @@ bool WebMediaPlayerImpl::IsSecurityOriginCryptographic() const {
       .SchemeIsCryptographic();
 }
 
+void WebMediaPlayerImpl::UpdateLoadedUrl(const GURL& url) {
+  loaded_url_ = url;
+}
+
 bool WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 

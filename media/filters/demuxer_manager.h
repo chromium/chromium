@@ -83,6 +83,10 @@ class MEDIA_EXPORT DemuxerManager {
     virtual void MakeDemuxerThreadDumper(media::Demuxer* demuxer) = 0;
 
     virtual double CurrentTime() const = 0;
+
+    // Allows us to set a loaded url on the client, which might happen when we
+    // handle a redirect as part of a restart for switching to HLS.
+    virtual void UpdateLoadedUrl(const GURL& url) = 0;
   };
 
   // Demuxer, StartType, IsStreaming, IsStatic
@@ -104,7 +108,7 @@ class MEDIA_EXPORT DemuxerManager {
 
   void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);
-  PipelineStatus::Or<GURL> ResetAfterHlsDetected(bool cryptographic_url);
+  PipelineStatus ResetAfterHlsDetected(bool cryptographic_url);
   void DisallowFallback();
 
   // Methods that help manage demuxers
