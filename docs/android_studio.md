@@ -21,18 +21,17 @@ To import the project:
 See [android_test_instructions.md](testing/android_test_instructions.md#Using-Emulators)
 for more information about building and running emulators.
 
-If you're asked to use Studio's Android SDK: No.
+Feel free to accept Android Studio's recommended actions. `generate_gradle.py`
+should have already set up a working version of the gradle wrapper and the
+android gradle plugin, as well as a default Android SDK location at
+`~/Android/Sdk`. Since the same script needs to support various versions of
+Android Studio, the defaults may have lower version than the one recommended by
+your version of Android Studio. After you accept Android Studio's update actions
+the `generate_gradle.py` script will try to keep the newer versions when it is
+re-run.
 
-If you're asked to use Studio's Gradle wrapper: Yes.
-
-You need to re-run `generate_gradle.py` whenever `BUILD.gn` files change, for
-example, when you add a new directory containing source files.
-
-Since newer gradle versions are released regularly and it is not possible to set
-a gradle version in `root.jinja` that is the newest for each version of Android
-Studio, feel free to update the value in `build.gradle` locally when you see the
-"A newer version of gradle is available" notification. This will likely happen
-each time after `generate_gradle.py` runs.
+You'll need to re-run `generate_gradle.py` whenever new directories containing
+source files are added.
 
 * After regenerating, Android Studio should prompt you to "Sync". If it
   doesn't, try some of the following options:
@@ -48,40 +47,25 @@ By default, only an `_all` module containing all java apk targets is generated.
 If just one apk target is explicitly specified, then a single apk module is
 generated.
 
-To see more detailed structure of gn targets, the `--split-projects` flag can
-be used. This will generate one module for every gn target in the dependency
-graph. This can be very slow.
+If you really prefer a more detailed structure of gn targets, the deprecated
+`--split-projects` flag can be used. This will generate one module for every gn
+target in the dependency graph. This can be very slow and is no longer
+supported.
 
-### Excluded Files
-
-Gradle supports source directories but not source files. However, files in
-Chromium are used amongst multiple targets. To accommodate this, the script
-detects such targets and creates exclude patterns to exclude files not in the
-current target. The editor does not respect these exclude patterns, so the
-`_all` pseudo module is added which includes directories from all targets. This
-allows imports and refactoring to be across all targets.
-
-### Extracting .srcjars
+### Generated files
 
 Most generated .java files in GN are stored as `.srcjars`. Android Studio does
-not support them. The generator script builds and extracts them to
-`extracted-srcjars/` subdirectories for each target that contains generated
-files. This is the reason that the `_all` pseudo module may contain multiple
-copies of generated files. It can be slow to build all these generated files,
-so if `--fast` is passed then the generator script skips building and
-extracting them.
-
-*** note
-** TLDR:** Always re-generate project files when generated files change (this
-includes `R.java`).
-***
+not support them. Our build will automatically extract them to a
+`generated_java` directory in the output directory during the build. Thus if a
+generated file is missing in Android Studio, build it with ninja first and it
+should show up in Android Studio afterwards.
 
 ### Native Files
 
-This option is no longer supported since Android Studio is very slow when
-editing in a code base with a large number of C++ files, and Chromium has a lot
-of C++ code. It is recommended to use [VS Code](vscode.md) to edit native files
-and stick to just editing java files in Android Studio.
+This option is deprecated and no longer supported since Android Studio is very
+slow when editing in a code base with a large number of C++ files, and Chromium
+has a lot of C++ code. It is recommended to use [VS Code](vscode.md) to edit
+native files and stick to just editing java files in Android Studio.
 
 If you still want to enable editing native C/C++ files with Android Studio, pass
 in any number of `--native-target [target name]` flags in order to use it. The
@@ -110,12 +94,13 @@ build/android/gradle/generate_gradle.py --native-target //chrome/android:libchro
 * Use environment variables to avoid having to specify `--output-directory`.
     * Example: Append `export CHROMIUM_OUT_DIR=out; export BUILDTYPE=Debug` to
       your `~/.bashrc` to always default to `out/Debug`.
-* Using the Java debugger is documented [here](android_debugging_instructions.md#android-studio).
+* Using the Java debugger is documented
+  [here](android_debugging_instructions.md#android-studio).
 * Configuration instructions can be found
   [here](http://tools.android.com/tech-docs/configuration). One suggestions:
     * Launch it with more RAM:
       `STUDIO_VM_OPTIONS=-Xmx2048m /opt/android-studio-stable/bin/studio-launcher.sh`
-* If you ever need to reset it: `rm -r ~/.AndroidStudio*/`
+* If you ever need to reset it: `rm -r ~/.config/Google/AndroidStudio*/`
 * Import Chromium-specific style and inspections settings:
     * Help -&gt; Find Action -&gt; "Code Style" (settings) -&gt; Java -&gt;
       Scheme -&gt; Import Scheme
@@ -155,28 +140,16 @@ build/android/gradle/generate_gradle.py --native-target //chrome/android:libchro
 * `Alt + Enter`: Quick Fix (use on underlined errors)
 * `F2`: Find next error
 
-### Building from the Command Line
+### Building with Gradle
 
-Gradle builds can be done from the command-line after importing the project
-into Android Studio (importing into the IDE causes the Gradle wrapper to be
-added). This wrapper can also be used to invoke gradle commands.
-
-    cd $GRADLE_PROJECT_DIR && bash gradlew
-
-The resulting artifacts are not terribly useful. They are missing assets,
-resources, native libraries, etc.
-
-* Use a
-  [gradle daemon](https://docs.gradle.org/2.14.1/userguide/gradle_daemon.html)
-  to speed up builds using the gradlew script:
-    * Add the line `org.gradle.daemon=true` to `~/.gradle/gradle.properties`,
-      creating it if necessary.
+Gradle builds are not supported. Only editing is supported in Android Studio.
+Use ninja to build as usual.
 
 ## Status
 
 ### What works
 
-* Android Studio v2021 & v2022.
+* Android Studio v2021~v2023.
 * Java editing.
     * Application code in `main` sourceset.
     * Instrumentation test code in `androidTest` sourceset.
@@ -187,14 +160,12 @@ resources, native libraries, etc.
 * Java debugging (see
 [here](/docs/android_debugging_instructions.md#Android-Studio)).
 * Import resolution and refactoring across java files.
-* Correct lint and AndroidManifest when only one target is specified.
-* Emulators (more docs coming soon).
 * Separate Android SDK for Android Studio.
 
 ### What doesn't work
 
-* Gradle being aware of assets.
-* Having the "Make Project" button work correctly.
+* Building with Gradle.
+* The "Make Project" button doesn't work.
     * Stick to using `autoninja` to build targets and just use Android Studio
       for editing java source files.
 * No active work is underway or planned to expand Android Studio support.
