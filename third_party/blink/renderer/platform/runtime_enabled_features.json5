@@ -802,7 +802,7 @@
       //
       // https://csswg.sesse.net/css-nesting-1/
       name: "CSSNesting",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "CSSNewRootFontUnits",

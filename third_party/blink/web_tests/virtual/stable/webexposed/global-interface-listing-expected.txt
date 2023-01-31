@@ -725,10 +725,13 @@ interface CSSStyleDeclaration
     setter cssText
 interface CSSStyleRule : CSSRule
     attribute @@toStringTag
+    getter cssRules
     getter selectorText
     getter style
     getter styleMap
     method constructor
+    method deleteRule
+    method insertRule
     setter selectorText
     setter style
 interface CSSStyleSheet : StyleSheet
