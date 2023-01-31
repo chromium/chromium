@@ -135,17 +135,17 @@ export class EmptyFolderController {
       return;
     }
 
-    switch (this.recentEntry_.recentFileType) {
-      case chrome.fileManagerPrivate.RecentFileType.AUDIO:
+    switch (this.recentEntry_.fileCategory) {
+      case chrome.fileManagerPrivate.FileCategory.AUDIO:
         this.label_.innerText = str('RECENT_EMPTY_AUDIO_FOLDER');
         break;
-      case chrome.fileManagerPrivate.RecentFileType.DOCUMENT:
+      case chrome.fileManagerPrivate.FileCategory.DOCUMENT:
         this.label_.innerText = str('RECENT_EMPTY_DOCUMENTS_FOLDER');
         break;
-      case chrome.fileManagerPrivate.RecentFileType.IMAGE:
+      case chrome.fileManagerPrivate.FileCategory.IMAGE:
         this.label_.innerText = str('RECENT_EMPTY_IMAGES_FOLDER');
         break;
-      case chrome.fileManagerPrivate.RecentFileType.VIDEO:
+      case chrome.fileManagerPrivate.FileCategory.VIDEO:
         this.label_.innerText = str('RECENT_EMPTY_VIDEOS_FOLDER');
         break;
       default:

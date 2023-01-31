@@ -91,7 +91,7 @@ export function setUp() {
   recentEntry = new FakeEntryImpl(
       'Recent', VolumeManagerCommon.RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
-      chrome.fileManagerPrivate.RecentFileType.ALL);
+      chrome.fileManagerPrivate.FileCategory.ALL);
   fileTypeFiltersController = new FileTypeFiltersController(
       container, directoryModel, recentEntry, mockA11y);
 
@@ -246,7 +246,7 @@ export function testActiveButtonIsResetOnLeavingRecents() {
 
 /**
  * Tests that the active state of each button is reflected to the Recent entry's
- * recentFileType property, and DirectoryModel.rescan() is called after the
+ * fileCategory property, and DirectoryModel.rescan() is called after the
  * Recent entry's property is modified.
  */
 export function testAppliedFilters() {
@@ -257,42 +257,39 @@ export function testAppliedFilters() {
 
   buttons[1].click();
   assertEquals(
-      recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.AUDIO);
+      recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.AUDIO);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 
   // Clicking an active button will trigger a scan for "All".
   buttons[1].click();
   assertEquals(
-      recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
+      recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.ALL);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 
   buttons[2].click();
   assertEquals(
-      recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
+      recentEntry.fileCategory,
+      chrome.fileManagerPrivate.FileCategory.DOCUMENT);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 
   buttons[3].click();
   assertEquals(
-      recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.IMAGE);
+      recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.IMAGE);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 
   buttons[4].click();
   assertEquals(
-      recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.VIDEO);
+      recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.VIDEO);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 
   buttons[0].click();
   assertEquals(
-      recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
+      recentEntry.fileCategory, chrome.fileManagerPrivate.FileCategory.ALL);
   assertTrue(window.isScanCalled);
   window.isScanCalled = false;
 }

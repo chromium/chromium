@@ -1464,7 +1464,7 @@ export class DirectoryModel extends EventTarget {
             query,
             this.volumeManager_,
             fakeEntry.sourceRestriction,
-            fakeEntry.recentFileType,
+            fakeEntry.fileCategory,
         );
       };
     }

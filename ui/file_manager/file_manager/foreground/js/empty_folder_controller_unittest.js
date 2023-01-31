@@ -57,7 +57,7 @@ export function setUp() {
   recentEntry = new FakeEntryImpl(
       'Recent', VolumeManagerCommon.RootType.RECENT,
       chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
-      chrome.fileManagerPrivate.RecentFileType.ALL);
+      chrome.fileManagerPrivate.FileCategory.ALL);
   emptyFolderController =
       new EmptyFolderController(element, directoryModel, recentEntry);
 }
@@ -76,28 +76,27 @@ export function testNoFilesMessage() {
   assertEquals(
       str('RECENT_EMPTY_FOLDER'), emptyFolderController.label_.innerText);
   // For audio filter.
-  recentEntry.recentFileType = chrome.fileManagerPrivate.RecentFileType.AUDIO;
+  recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.AUDIO;
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_AUDIO_FOLDER'), emptyFolderController.label_.innerText);
   // For document filter.
-  recentEntry.recentFileType =
-      chrome.fileManagerPrivate.RecentFileType.DOCUMENT;
+  recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.DOCUMENT;
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_DOCUMENTS_FOLDER'),
       emptyFolderController.label_.innerText);
   // For image filter.
-  recentEntry.recentFileType = chrome.fileManagerPrivate.RecentFileType.IMAGE;
+  recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.IMAGE;
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_IMAGES_FOLDER'),
       emptyFolderController.label_.innerText);
   // For video filter.
-  recentEntry.recentFileType = chrome.fileManagerPrivate.RecentFileType.VIDEO;
+  recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.VIDEO;
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(

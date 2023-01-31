@@ -151,10 +151,10 @@ export class FakeEntry extends FilesAppDirEntry {
    * @param {!VolumeManagerCommon.RootType} rootType Root type of this entry.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
    *    used on Recents to filter the source of recent files/directories.
-   * @param {chrome.fileManagerPrivate.RecentFileType=} opt_recentFileType
+   * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    *    used on Recents to filter recent files by their file types.
    */
-  constructor(label, rootType, opt_sourceRestriction, opt_recentFileType) {
+  constructor(label, rootType, opt_sourceRestriction, opt_fileCategory) {
     super();
     /**
      * @public {string} label: Label to be used when displaying to user, it
@@ -182,11 +182,11 @@ export class FakeEntry extends FilesAppDirEntry {
     this.sourceRestriction;
 
     /**
-     * @public {chrome.fileManagerPrivate.RecentFileType|undefined} It's used to
-     * communicate file-type filter to chrome.fileManagerPrivate.getRecentFiles
+     * @public {chrome.fileManagerPrivate.FileCategory|undefined} It's used to
+     * communicate category filter to chrome.fileManagerPrivate.getRecentFiles
      * API.
      */
-    this.recentFileType;
+    this.fileCategory;
 
     /**
      * @public {string} the class name for this class. It's workaround for the

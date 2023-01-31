@@ -257,7 +257,7 @@ chrome.fileManagerPrivate.SourceRestriction = {
 };
 
 /** @enum {string} */
-chrome.fileManagerPrivate.RecentFileType = {
+chrome.fileManagerPrivate.FileCategory = {
   ALL: 'all',
   AUDIO: 'audio',
   IMAGE: 'image',

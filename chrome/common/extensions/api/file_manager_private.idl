@@ -273,8 +273,8 @@ enum SourceRestriction {
   native_source
 };
 
-// Recent file types to filter results from getRecentFiles().
-enum RecentFileType {
+// File categories to filter results from getRecentFiles().
+enum FileCategory {
   all,
   audio,
   image,
@@ -1680,7 +1680,7 @@ interface Functions {
   // |callback|
   [nocompile]
   static void getRecentFiles(SourceRestriction restriction,
-                             RecentFileType fileType,
+                             FileCategory fileCategory,
                              boolean invalidateCache,
                              GetRecentFilesCallback callback);
 

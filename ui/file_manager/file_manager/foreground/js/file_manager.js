@@ -1105,7 +1105,7 @@ export class FileManager extends EventTarget {
     this.recentEntry_ = new FakeEntryImpl(
         str('RECENT_ROOT_LABEL'), VolumeManagerCommon.RootType.RECENT,
         this.getSourceRestriction_(),
-        chrome.fileManagerPrivate.RecentFileType.ALL);
+        chrome.fileManagerPrivate.FileCategory.ALL);
 
     assert(this.launchParams_);
     this.selectionHandler_ = new FileSelectionHandler(

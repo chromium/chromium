@@ -1887,8 +1887,8 @@ export class FakeItem extends FilesTreeItem {
     }
 
     if (util.isRecentRootType(rootType)) {
-      if (this.dirEntry_.recentFileType) {
-        icon.setAttribute('recent-file-type', this.dirEntry_.recentFileType);
+      if (this.dirEntry_.fileCategory) {
+        icon.setAttribute('recent-file-type', this.dirEntry_.fileType);
       } else {  // Recent tab scroll fix: crbug.com/1027973.
         this.labelElement.scrollIntoViewIfNeeded = () => {
           this.scrollIntoView(true);

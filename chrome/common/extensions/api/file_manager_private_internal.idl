@@ -130,7 +130,7 @@ namespace fileManagerPrivateInternal {
     static void getVolumeRoot(fileManagerPrivate.GetVolumeRootOptions options,
                               GetVolumeRootCallback callback);
     static void getRecentFiles(fileManagerPrivate.SourceRestriction restriction,
-                               fileManagerPrivate.RecentFileType file_type,
+                               fileManagerPrivate.FileCategory file_category,
                                boolean invalidate_cache,
                                GetRecentFilesCallback callback);
     static void sharePathsWithCrostini(DOMString vmName, DOMString[] urls,

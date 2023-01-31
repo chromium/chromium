@@ -465,9 +465,9 @@ export class RecentContentScanner extends ContentScanner {
    * @param {string} query Search query.
    * @param {VolumeManager} volumeManager Volume manager.
    * @param {chrome.fileManagerPrivate.SourceRestriction=} opt_sourceRestriction
-   * @param {chrome.fileManagerPrivate.RecentFileType=} opt_recentFileType
+   * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    */
-  constructor(query, volumeManager, opt_sourceRestriction, opt_recentFileType) {
+  constructor(query, volumeManager, opt_sourceRestriction, opt_fileCategory) {
     super();
 
     /**
@@ -487,10 +487,10 @@ export class RecentContentScanner extends ContentScanner {
         chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE;
 
     /**
-     * @private {chrome.fileManagerPrivate.RecentFileType}
+     * @private {chrome.fileManagerPrivate.FileCategory}
      */
-    this.recentFileType_ =
-        opt_recentFileType || chrome.fileManagerPrivate.RecentFileType.ALL;
+    this.fileCategory_ =
+        opt_fileCategory || chrome.fileManagerPrivate.FileCategory.ALL;
   }
 
   /**
@@ -511,7 +511,7 @@ export class RecentContentScanner extends ContentScanner {
     const isAllowedVolume = (entry) =>
         this.volumeManager_.getVolumeInfo(entry) !== null;
     chrome.fileManagerPrivate.getRecentFiles(
-        this.sourceRestriction_, this.recentFileType_, invalidateCache,
+        this.sourceRestriction_, this.fileCategory_, invalidateCache,
         entries => {
           if (chrome.runtime.lastError) {
             console.error(chrome.runtime.lastError.message);
