@@ -7899,12 +7899,11 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledPrerenderDUIAndDSE_20221025",
+                    "name": "EnabledPrerenderDSE_20230131",
                     "params": {
                         "implementation_type": "use_prefetch"
                     },
                     "enable_features": [
-                        "OmniboxTriggerForPrerender2",
                         "SupportSearchSuggestionForPrerender2"
                     ],
                     "disable_features": [
@@ -7912,7 +7911,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrerenderDUI_20221107",
+                    "name": "Control_20230131",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2"
                     ],
@@ -7922,25 +7921,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledPrefetchDUIControl_20221107",
-                    "enable_features": [
-                        "OmniboxTriggerForNoStatePrefetch"
-                    ],
-                    "disable_features": [
-                        "OmniboxTriggerForPrerender2",
-                        "SupportSearchSuggestionForPrerender2"
-                    ]
-                },
-                {
-                    "name": "DisabledDUI_20221025",
-                    "disable_features": [
-                        "OmniboxTriggerForNoStatePrefetch",
-                        "OmniboxTriggerForPrerender2",
-                        "SupportSearchSuggestionForPrerender2"
-                    ]
-                },
-                {
-                    "name": "EnabledPrerenderDSE_20221025",
+                    "name": "EnabledPrerenderDSE_20230131",
                     "params": {
                         "implementation_type": "use_prefetch"
                     },
@@ -7952,9 +7933,8 @@
                     ]
                 },
                 {
-                    "name": "HoldbackDisabledPrerenderDUI_20221107",
+                    "name": "HoldbackDisabled_20230131",
                     "enable_features": [
-                        "OmniboxTriggerForPrerender2",
                         "Prerender2Holdback"
                     ],
                     "disable_features": [
@@ -7963,7 +7943,7 @@
                     ]
                 },
                 {
-                    "name": "HoldbackEnabledPrerenderDUI_20221107",
+                    "name": "HoldbackEnabled_20230131",
                     "enable_features": [
                         "OmniboxTriggerForPrerender2"
                     ],
