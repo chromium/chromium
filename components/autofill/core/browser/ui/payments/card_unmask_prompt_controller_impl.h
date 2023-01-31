@@ -90,7 +90,7 @@ class CardUnmaskPromptControllerImpl : public CardUnmaskPromptController {
 
  private:
   bool AllowsRetry(AutofillClient::PaymentsRpcResult result);
-  bool IsCvcInFront();
+  bool IsCvcInFront() const;
   bool ShouldDismissUnmaskPromptUponResult(
       AutofillClient::PaymentsRpcResult result);
   void LogOnCloseEvents();
