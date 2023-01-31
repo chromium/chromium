@@ -9,6 +9,8 @@
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/login/arc_vm_data_migration_screen_handler.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -38,7 +40,11 @@ class ArcVmDataMigrationScreen : public BaseScreen {
 
   void HandleFatalError();
 
+  device::mojom::WakeLock* GetWakeLock();
+
   Profile* profile_;
+
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   base::WeakPtr<ArcVmDataMigrationScreenView> view_;
 

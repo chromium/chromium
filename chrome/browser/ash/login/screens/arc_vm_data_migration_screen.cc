@@ -13,6 +13,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/device_service.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 namespace ash {
 
@@ -46,12 +49,16 @@ void ArcVmDataMigrationScreen::ShowImpl() {
   profile_ = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile_);
 
+  GetWakeLock()->RequestWakeLock();
+
   view_->Show();
   // TODO(b/258278176): Stop stale ARCVM and Upstart jobs while loading.
   SetUpInitialView();
 }
 
-void ArcVmDataMigrationScreen::HideImpl() {}
+void ArcVmDataMigrationScreen::HideImpl() {
+  GetWakeLock()->CancelWakeLock();
+}
 
 void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
@@ -134,6 +141,27 @@ void ArcVmDataMigrationScreen::HandleUpdate() {
 void ArcVmDataMigrationScreen::HandleFatalError() {
   // TODO(b/258278176): Show a fatal error screen and report the reason.
   chrome::AttemptRelaunch();
+}
+
+device::mojom::WakeLock* ArcVmDataMigrationScreen::GetWakeLock() {
+  // |wake_lock_| is lazy bound and reused, even after a connection error.
+  if (wake_lock_) {
+    return wake_lock_.get();
+  }
+
+  mojo::PendingReceiver<device::mojom::WakeLock> receiver =
+      wake_lock_.BindNewPipeAndPassReceiver();
+
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
+  content::GetDeviceService().BindWakeLockProvider(
+      wake_lock_provider.BindNewPipeAndPassReceiver());
+  wake_lock_provider->GetWakeLockWithoutContext(
+      device::mojom::WakeLockType::kPreventAppSuspension,
+      device::mojom::WakeLockReason::kOther,
+      "ARCVM /data migration is in progress...", std::move(receiver));
+  return wake_lock_.get();
 }
 
 }  // namespace ash
