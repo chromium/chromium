@@ -202,11 +202,12 @@ export class LogPage {
    * Format time stamp.
    * In this log, events are dispatched many times in a short time, so
    * milliseconds order time stamp is required.
-   * @param {!Date} date
+   * @param {!string} dateStr
    * @return {!string}
    * @private
    */
-  formatTimeStamp_(date) {
+  formatTimeStamp_(dateStr) {
+    const date = new Date(dateStr);
     let time = date.getTime();
     time -= date.getTimezoneOffset() * 1000 * 60;
     let timeStr =

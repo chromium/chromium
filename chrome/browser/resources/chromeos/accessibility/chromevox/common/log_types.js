@@ -31,7 +31,7 @@ export const LogType = {
 /**
  * @typedef {{
  *   logType: !LogType,
- *   date: !Date,
+ *   date: !string,
  *   value: string
  * }}
  */
@@ -48,8 +48,11 @@ export class BaseLog {
 
   /** @return {!SerializableLog} */
   serialize() {
-    return /** @type {!SerializableLog} */ (
-        {logType: this.logType, date: this.date, value: this.toString()});
+    return /** @type {!SerializableLog} */ ({
+      logType: this.logType,
+      date: this.date.toString(),  // Explicit toString(); converts either way.
+      value: this.toString(),
+    });
   }
 
   /** @return {string} */
