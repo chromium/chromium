@@ -1545,34 +1545,72 @@ void AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
 }
 
 // static
-void AutofillMetrics::LogStoredProfileCountStatistics(
-    size_t num_profiles,
-    size_t num_disused_profiles,
-    size_t num_countryless_profiles) {
-  UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileCount", num_profiles);
-
-  // For users without any profiles do not record the other metrics.
-  if (num_profiles == 0)
-    return;
-
-  DCHECK_LE(num_disused_profiles, num_profiles);
-  size_t num_used_profiles = num_profiles - num_disused_profiles;
-
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileUsedCount",
-                            num_used_profiles);
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.StoredProfileDisusedCount",
-                            num_disused_profiles);
-  UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileWithoutCountryCount",
-                          num_countryless_profiles);
-
-  int use_percentage = (100 * num_used_profiles) / num_profiles;
-  UMA_HISTOGRAM_PERCENTAGE("Autofill.StoredProfileUsedPercentage",
-                           use_percentage);
+AutofillMetrics::AutofillProfileSourceCategory
+AutofillMetrics::GetCategoryOfProfile(const AutofillProfile& profile) {
+  switch (profile.source()) {
+    case AutofillProfile::Source::kLocalOrSyncable:
+      return AutofillMetrics::AutofillProfileSourceCategory::kLocalOrSyncable;
+    case AutofillProfile::Source::kAccount:
+      return profile.initial_creator_id() ==
+                     AutofillProfile::kInitialCreatorOrModifierChrome
+                 ? AutofillMetrics::AutofillProfileSourceCategory::
+                       kAccountChrome
+                 : AutofillMetrics::AutofillProfileSourceCategory::
+                       kAccountNonChrome;
+  }
 }
 
 // static
-void AutofillMetrics::LogStoredProfileDaysSinceLastUse(size_t days) {
-  UMA_HISTOGRAM_COUNTS_1000("Autofill.DaysSinceLastUse.StoredProfile", days);
+const char* AutofillMetrics::GetProfileCategorySuffix(
+    AutofillMetrics::AutofillProfileSourceCategory category) {
+  switch (category) {
+    case AutofillMetrics::AutofillProfileSourceCategory::kLocalOrSyncable:
+      return "Legacy";
+    case AutofillMetrics::AutofillProfileSourceCategory::kAccountChrome:
+      return "AccountChrome";
+    case AutofillMetrics::AutofillProfileSourceCategory::kAccountNonChrome:
+      return "AccountNonChrome";
+  }
+}
+
+// static
+void AutofillMetrics::LogStoredProfileCountStatistics(
+    AutofillProfileSourceCategory category,
+    const StoredProfileCounts& counts) {
+  const std::string kSuffix = GetProfileCategorySuffix(category);
+
+  base::UmaHistogramCounts1M("Autofill.StoredProfileCount." + kSuffix,
+                             counts.total);
+  // For users without any profiles do not record the other metrics.
+  if (counts.total == 0) {
+    return;
+  }
+  DCHECK_LE(counts.disused, counts.total);
+  size_t used = counts.total - counts.disused;
+  base::UmaHistogramCounts1000("Autofill.StoredProfileUsedCount." + kSuffix,
+                               used);
+  base::UmaHistogramCounts1000("Autofill.StoredProfileDisusedCount." + kSuffix,
+                               counts.disused);
+  base::UmaHistogramPercentage(
+      "Autofill.StoredProfileUsedPercentage." + kSuffix,
+      100 * used / counts.total);
+  // `kAccount` profiles are guaranteed to have a country, so this metric is
+  // only tracked for the `kLocalOrSyncable` category. For this reason `kSuffix`
+  // is not applied to the metrics name either.
+  if (category == AutofillProfileSourceCategory::kLocalOrSyncable) {
+    UMA_HISTOGRAM_COUNTS_1M("Autofill.StoredProfileWithoutCountryCount",
+                            counts.without_country);
+  }
+}
+
+// static
+void AutofillMetrics::LogStoredProfileDaysSinceLastUse(
+    AutofillProfileSourceCategory category,
+    size_t days) {
+  base::UmaHistogramCounts1000(
+      base::StrCat({"Autofill.DaysSinceLastUse.StoredProfile.",
+                    GetProfileCategorySuffix(category)}),
+      days);
 }
 
 // static

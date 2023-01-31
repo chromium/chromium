@@ -224,6 +224,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".Reshows" summary="Bubble was reopened after being closed"/>
 </variants>
 
+<variants name="AutofillProfileCategory">
+  <variant name="AccountChrome"
+      summary="kAccount profiles originating from Chrome"/>
+  <variant name="AccountNonChrome"
+      summary="kAccount profiles originating from outside Chrome"/>
+  <variant name="Legacy" summary="kLegacyOrSyncable profiles"/>
+</variants>
+
 <variants name="AutofillSaveCreditCardPromptDestination">
   <variant name=".Local" summary="to local storage"/>
   <variant name=".Upload" summary="to upload"/>
@@ -1353,6 +1361,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.DaysSinceLastUse.StoredProfile" units="days"
     expires_after="2023-06-18">
+  <obsolete>
+    Deprecated in M111. Subsumed by
+    Autofill.DaysSinceLastUse.StoredProfile.Legacy.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1361,6 +1373,19 @@ chromium-metrics-reviews@google.com.
     This is logged for each Autofill address profile once per Chrome User
     Profile load.
   </summary>
+</histogram>
+
+<histogram name="Autofill.DaysSinceLastUse.StoredProfile.{Category}"
+    units="days" expires_after="2023-12-31">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    This histogram captures the number of days that have passed since each
+    stored address profile belonging to a given Chrome Profile was last used.
+    This is logged for each Autofill address profile of the given category once
+    per Chrome User Profile load.
+  </summary>
+  <token key="Category" variants="AutofillProfileCategory"/>
 </histogram>
 
 <histogram name="Autofill.DeveloperEngagement"
@@ -3742,11 +3767,25 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.StoredProfileCount" units="units"
     expires_after="2023-06-18">
+  <obsolete>
+    Deprecated in M111. Subsumed by Autofill.StoredProfileCount.Legacy.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     The number of Autofill addresses a user has stored, measured at launch time.
   </summary>
+</histogram>
+
+<histogram name="Autofill.StoredProfileCount.{Category}" units="Profiles"
+    expires_after="2023-12-31">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill addresses a user has stored of the given category,
+    measured at launch time.
+  </summary>
+  <token key="Category" variants="AutofillProfileCategory"/>
 </histogram>
 
 <histogram name="Autofill.StoredProfileCountAtAutofillableFormSubmission"
@@ -3761,6 +3800,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.StoredProfileDisusedCount" units="units"
     expires_after="2023-06-18">
+  <obsolete>
+    Deprecated in M111. Subsumed by Autofill.StoredProfileDisusedCount.Legacy.
+  </obsolete>
   <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3771,8 +3813,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.StoredProfileDisusedCount.{Category}"
+    units="Profiles" expires_after="2023-12-31">
+  <owner>battre@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of stored Autofill address profiles of the given category, which
+    have not been used in a sufficiently long time for autofill to consider them
+    disused. Measured once per Chrome user profile launch. This metric is only
+    recorded if the user has at least one profile of that category.
+  </summary>
+  <token key="Category" variants="AutofillProfileCategory"/>
+</histogram>
+
 <histogram name="Autofill.StoredProfileUsedCount" units="units"
     expires_after="2023-02-12">
+  <obsolete>
+    Deprecated in M111. Subsumed by Autofill.StoredProfileUsedCount.Legacy.
+  </obsolete>
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3782,8 +3840,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.StoredProfileUsedCount.{Category}" units="Profiles"
+    expires_after="2023-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of stored Autofill address profiles of the given category, which
+    are not in the disused state. Measured once per Chrome user profile launch.
+    This metric is only recorded if the user has at least one profile of that
+    category.
+  </summary>
+  <token key="Category" variants="AutofillProfileCategory"/>
+</histogram>
+
 <histogram name="Autofill.StoredProfileUsedPercentage" units="units"
     expires_after="2023-02-12">
+  <obsolete>
+    Deprecated in M111. Subsumed by Autofill.StoredProfileUsedPercentage.Legacy.
+  </obsolete>
   <owner>koerber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3793,14 +3867,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.StoredProfileWithoutCountryCount" units="units"
-    expires_after="2023-06-11">
+<histogram name="Autofill.StoredProfileUsedPercentage.{Category}"
+    units="Profiles" expires_after="2023-12-31">
+  <owner>koerber@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The percentage of stored Autofill address profiles of the given category,
+    which are not in the disused state. Measured once per Chrome user profile
+    launch. This metric is only recorded if the user has at least one profile of
+    that category.
+  </summary>
+  <token key="Category" variants="AutofillProfileCategory"/>
+</histogram>
+
+<histogram name="Autofill.StoredProfileWithoutCountryCount" units="Profiles"
+    expires_after="2023-12-31">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    The number of Autofill addresses without a country a user has stored,
-    measured at launch time. This metric is only recorded if the user has at
-    least one profile.
+    The number of Autofill profiles of type kLegacyOrSyncable without a country
+    a user has stored, measured at launch time. This metric is only recorded if
+    the user has at least one kLegacyOrSyncable profile.
   </summary>
 </histogram>
 

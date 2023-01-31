@@ -2075,32 +2075,39 @@ std::string PersonalDataManager::SaveImportedIBAN(IBAN& imported_iban) {
 
 void PersonalDataManager::LogStoredProfileMetrics() const {
   if (!has_logged_stored_profile_metrics_) {
-    // Track the number of disused profiles and profiles without country
-    // information.
-    size_t num_disused_profiles = 0;
-    size_t num_profiles_without_country = 0;
-
-    // Determine the number of disused and country-less profiles
     const base::Time now = AutofillClock::Now();
-    // TODO(crbug.com/1348294): Create a separate metric for `kAccount`
-    // profiles.
-    const std::vector<AutofillProfile*> local_profiles =
-        GetProfilesFromSource(AutofillProfile::Source::kLocalOrSyncable);
-    for (const AutofillProfile* profile : local_profiles) {
-      const base::TimeDelta time_since_last_use = now - profile->use_date();
-      AutofillMetrics::LogStoredProfileDaysSinceLastUse(
-          time_since_last_use.InDays());
-      if (time_since_last_use > kDisusedDataModelTimeDelta)
-        ++num_disused_profiles;
-      if (profile->GetRawInfo(ADDRESS_HOME_COUNTRY).empty())
-        ++num_profiles_without_country;
+    // Counts stored profile metrics for all profile of the given `category` and
+    // emits UMA metrics for them.
+    auto count_and_log =
+        [&](AutofillMetrics::AutofillProfileSourceCategory category) {
+          AutofillMetrics::StoredProfileCounts counts;
+          for (const AutofillProfile* profile : GetProfiles()) {
+            if (category != AutofillMetrics::GetCategoryOfProfile(*profile)) {
+              continue;
+            }
+            const base::TimeDelta time_since_last_use =
+                now - profile->use_date();
+            AutofillMetrics::LogStoredProfileDaysSinceLastUse(
+                category, time_since_last_use.InDays());
+            counts.total++;
+            counts.disused += time_since_last_use > kDisusedDataModelTimeDelta;
+            counts.without_country += profile->HasRawInfo(ADDRESS_HOME_COUNTRY);
+          }
+          AutofillMetrics::LogStoredProfileCountStatistics(category, counts);
+        };
+
+    count_and_log(
+        AutofillMetrics::AutofillProfileSourceCategory::kLocalOrSyncable);
+    // These metrics are only relevant when kAccount profiles are loaded.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillAccountProfilesUnionView)) {
+      count_and_log(
+          AutofillMetrics::AutofillProfileSourceCategory::kAccountChrome);
+      count_and_log(
+          AutofillMetrics::AutofillProfileSourceCategory::kAccountNonChrome);
     }
 
-    AutofillMetrics::LogStoredProfileCountStatistics(
-        local_profiles.size(), num_disused_profiles,
-        num_profiles_without_country);
-
-    // Only log this info once per chrome user profile load.
+    // Only log this info once per Chrome user profile load.
     has_logged_stored_profile_metrics_ = true;
   }
 }
