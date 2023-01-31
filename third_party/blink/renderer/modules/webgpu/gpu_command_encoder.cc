@@ -107,7 +107,7 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
 
   if (webgpu_desc->hasStencilLoadOp()) {
     dawn_desc.stencilLoadOp = AsDawnEnum(webgpu_desc->stencilLoadOp());
-    dawn_desc.clearStencil = webgpu_desc->stencilClearValue();
+    dawn_desc.stencilClearValue = webgpu_desc->stencilClearValue();
   }
 
   if (webgpu_desc->hasStencilStoreOp()) {
