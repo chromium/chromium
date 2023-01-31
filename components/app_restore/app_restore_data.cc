@@ -43,21 +43,21 @@ constexpr char kBoundsInRoot[] = "bounds_in_root";
 constexpr char kPrimaryColorKey[] = "primary_color";
 constexpr char kStatusBarColorKey[] = "status_bar_color";
 
-// Converts |size| to base::Value, e.g. { 100, 300 }.
-base::Value ConvertSizeToValue(const gfx::Size& size) {
-  base::Value size_list(base::Value::Type::LIST);
-  size_list.Append(base::Value(size.width()));
-  size_list.Append(base::Value(size.height()));
+// Converts |size| to base::Value::List, e.g. { 100, 300 }.
+base::Value::List ConvertSizeToList(const gfx::Size& size) {
+  base::Value::List size_list;
+  size_list.Append(size.width());
+  size_list.Append(size.height());
   return size_list;
 }
 
 // Converts |rect| to base::Value, e.g. { 0, 100, 200, 300 }.
-base::Value ConvertRectToValue(const gfx::Rect& rect) {
-  base::Value rect_list(base::Value::Type::LIST);
-  rect_list.Append(base::Value(rect.x()));
-  rect_list.Append(base::Value(rect.y()));
-  rect_list.Append(base::Value(rect.width()));
-  rect_list.Append(base::Value(rect.height()));
+base::Value::List ConvertRectToList(const gfx::Rect& rect) {
+  base::Value::List rect_list;
+  rect_list.Append(rect.x());
+  rect_list.Append(rect.y());
+  rect_list.Append(rect.width());
+  rect_list.Append(rect.height());
   return rect_list;
 }
 
@@ -372,117 +372,116 @@ std::unique_ptr<AppRestoreData> AppRestoreData::Clone() const {
 }
 
 base::Value AppRestoreData::ConvertToValue() const {
-  base::Value launch_info_dict(base::Value::Type::DICT);
+  base::Value::Dict launch_info_dict;
 
   if (event_flag.has_value())
-    launch_info_dict.SetIntKey(kEventFlagKey, event_flag.value());
+    launch_info_dict.Set(kEventFlagKey, event_flag.value());
 
   if (container.has_value())
-    launch_info_dict.SetIntKey(kContainerKey, container.value());
+    launch_info_dict.Set(kContainerKey, container.value());
 
   if (disposition.has_value())
-    launch_info_dict.SetIntKey(kDispositionKey, disposition.value());
+    launch_info_dict.Set(kDispositionKey, disposition.value());
 
   if (override_url.has_value())
-    launch_info_dict.SetStringKey(kOverrideUrlKey, override_url.value().spec());
+    launch_info_dict.Set(kOverrideUrlKey, override_url.value().spec());
 
   if (display_id.has_value()) {
-    launch_info_dict.SetStringKey(kDisplayIdKey,
-                                  base::NumberToString(display_id.value()));
+    launch_info_dict.Set(kDisplayIdKey,
+                         base::NumberToString(display_id.value()));
   }
 
   if (handler_id.has_value())
-    launch_info_dict.SetStringKey(kHandlerIdKey, handler_id.value());
+    launch_info_dict.Set(kHandlerIdKey, handler_id.value());
 
   if (urls.has_value() && !urls.value().empty()) {
-    base::Value urls_list(base::Value::Type::LIST);
+    base::Value::List urls_list;
     for (auto& url : urls.value())
-      urls_list.Append(base::Value(url.spec()));
-    launch_info_dict.SetKey(kUrlsKey, std::move(urls_list));
+      urls_list.Append(url.spec());
+    launch_info_dict.Set(kUrlsKey, std::move(urls_list));
   }
 
   if (active_tab_index.has_value())
-    launch_info_dict.SetIntKey(kActiveTabIndexKey, active_tab_index.value());
+    launch_info_dict.Set(kActiveTabIndexKey, active_tab_index.value());
 
   if (first_non_pinned_tab_index.has_value()) {
-    launch_info_dict.SetIntKey(kFirstNonPinnedTabIndexKey,
-                               first_non_pinned_tab_index.value());
+    launch_info_dict.Set(kFirstNonPinnedTabIndexKey,
+                         first_non_pinned_tab_index.value());
   }
 
   if (intent) {
-    launch_info_dict.SetKey(kIntentKey,
-                            apps_util::ConvertIntentToValue(intent));
+    launch_info_dict.Set(kIntentKey, apps_util::ConvertIntentToValue(intent));
   }
 
   if (file_paths.has_value() && !file_paths.value().empty()) {
-    base::Value file_paths_list(base::Value::Type::LIST);
+    base::Value::List file_paths_list;
     for (auto& file_path : file_paths.value())
-      file_paths_list.Append(base::Value(file_path.value()));
-    launch_info_dict.SetKey(kFilePathsKey, std::move(file_paths_list));
+      file_paths_list.Append(file_path.value());
+    launch_info_dict.Set(kFilePathsKey, std::move(file_paths_list));
   }
 
   if (app_type_browser.has_value())
-    launch_info_dict.SetBoolKey(kAppTypeBrowserKey, app_type_browser.value());
+    launch_info_dict.Set(kAppTypeBrowserKey, app_type_browser.value());
 
   if (app_name.has_value())
-    launch_info_dict.SetStringKey(kAppNameKey, app_name.value());
+    launch_info_dict.Set(kAppNameKey, app_name.value());
 
   if (title.has_value())
-    launch_info_dict.SetStringKey(kTitleKey, base::UTF16ToUTF8(title.value()));
+    launch_info_dict.Set(kTitleKey, base::UTF16ToUTF8(title.value()));
 
   if (activation_index.has_value())
-    launch_info_dict.SetIntKey(kActivationIndexKey, activation_index.value());
+    launch_info_dict.Set(kActivationIndexKey, activation_index.value());
 
   if (desk_id.has_value())
-    launch_info_dict.SetIntKey(kDeskIdKey, desk_id.value());
+    launch_info_dict.Set(kDeskIdKey, desk_id.value());
 
   if (current_bounds.has_value()) {
-    launch_info_dict.SetKey(kCurrentBoundsKey,
-                            ConvertRectToValue(current_bounds.value()));
+    launch_info_dict.Set(kCurrentBoundsKey,
+                         ConvertRectToList(current_bounds.value()));
   }
 
   if (window_state_type.has_value()) {
-    launch_info_dict.SetIntKey(kWindowStateTypeKey,
-                               static_cast<int>(window_state_type.value()));
+    launch_info_dict.Set(kWindowStateTypeKey,
+                         static_cast<int>(window_state_type.value()));
   }
 
   if (pre_minimized_show_state_type.has_value()) {
-    launch_info_dict.SetIntKey(
+    launch_info_dict.Set(
         kPreMinimizedShowStateTypeKey,
         static_cast<int>(pre_minimized_show_state_type.value()));
   }
 
   if (snap_percentage.has_value()) {
-    launch_info_dict.SetKey(kSnapPercentageKey,
-                            ConvertUintToValue(snap_percentage.value()));
+    launch_info_dict.Set(kSnapPercentageKey,
+                         ConvertUintToValue(snap_percentage.value()));
   }
 
   if (maximum_size.has_value()) {
-    launch_info_dict.SetKey(kMaximumSizeKey,
-                            ConvertSizeToValue(maximum_size.value()));
+    launch_info_dict.Set(kMaximumSizeKey,
+                         ConvertSizeToList(maximum_size.value()));
   }
 
   if (minimum_size.has_value()) {
-    launch_info_dict.SetKey(kMinimumSizeKey,
-                            ConvertSizeToValue(minimum_size.value()));
+    launch_info_dict.Set(kMinimumSizeKey,
+                         ConvertSizeToList(minimum_size.value()));
   }
 
   if (bounds_in_root.has_value()) {
-    launch_info_dict.SetKey(kBoundsInRoot,
-                            ConvertRectToValue(bounds_in_root.value()));
+    launch_info_dict.Set(kBoundsInRoot,
+                         ConvertRectToList(bounds_in_root.value()));
   }
 
   if (primary_color.has_value()) {
-    launch_info_dict.SetKey(kPrimaryColorKey,
-                            ConvertUintToValue(primary_color.value()));
+    launch_info_dict.Set(kPrimaryColorKey,
+                         ConvertUintToValue(primary_color.value()));
   }
 
   if (status_bar_color.has_value()) {
-    launch_info_dict.SetKey(kStatusBarColorKey,
-                            ConvertUintToValue(status_bar_color.value()));
+    launch_info_dict.Set(kStatusBarColorKey,
+                         ConvertUintToValue(status_bar_color.value()));
   }
 
-  return launch_info_dict;
+  return base::Value(std::move(launch_info_dict));
 }
 
 void AppRestoreData::ModifyWindowInfo(const WindowInfo& window_info) {
