@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS The "beforetoggle" event (listener) get properly dispatched for popovers
+PASS The "beforetoggle" event (attribute) get properly dispatched for popovers
+PASS The "beforetoggle" event is cancelable for the "opening" transition
+PASS The "beforetoggle" event is not fired for element removal
+FAIL The "toggle" event is coalesced assert_equals: Single event should have been fired, which is a "show" (singleShow) expected true but got false
+Harness: the test ran to completion.
+

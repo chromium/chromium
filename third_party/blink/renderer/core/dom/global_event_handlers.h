@@ -40,7 +40,6 @@ class GlobalEventHandlers {
 
  public:
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(aftertoggle, kAftertoggle)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationiteration,
                                          kAnimationiteration)

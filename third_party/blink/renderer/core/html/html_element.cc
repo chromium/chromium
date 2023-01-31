@@ -60,7 +60,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
-#include "third_party/blink/renderer/core/events/popover_toggle_event.h"
+#include "third_party/blink/renderer/core/events/toggle_event.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -99,6 +99,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
@@ -426,8 +427,6 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
 
       {html_names::kOnabortAttr, kNoWebFeature, event_type_names::kAbort,
        nullptr},
-      {html_names::kOnaftertoggleAttr, kNoWebFeature,
-       event_type_names::kAftertoggle, nullptr},
       {html_names::kOnanimationendAttr, kNoWebFeature,
        event_type_names::kAnimationend, nullptr},
       {html_names::kOnanimationiterationAttr, kNoWebFeature,
@@ -1360,12 +1359,12 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
   }
 
   // Fire the "opening" beforetoggle event.
-  auto* event = PopoverToggleEvent::CreateBubble(
+  auto* event = ToggleEvent::CreateBubble(
       event_type_names::kBeforetoggle, Event::Cancelable::kYes,
-      /*current_state*/ "closed", /*new_state*/ "open");
+      /*old_state*/ "closed", /*new_state*/ "open");
   DCHECK(event->bubbles());
   DCHECK(event->cancelable());
-  DCHECK_EQ(event->currentState(), "closed");
+  DCHECK_EQ(event->oldState(), "closed");
   DCHECK_EQ(event->newState(), "open");
   event->SetTarget(this);
   if (DispatchEvent(*event) != DispatchEventResult::kNotCanceled)
@@ -1439,13 +1438,13 @@ void HTMLElement::ShowPopoverInternal(ExceptionState* exception_state) {
     GetPopoverData()->setPreviouslyFocusedElement(originally_focused_element);
   }
 
-  // Queue the "opening" aftertoggle event.
-  auto* after_event = PopoverToggleEvent::CreateBubble(
-      event_type_names::kAftertoggle, Event::Cancelable::kNo,
-      /*current_state*/ "open", /*new_state*/ "open");
+  // Queue the "opening" toggle event.
+  auto* after_event = ToggleEvent::CreateBubble(
+      event_type_names::kToggle, Event::Cancelable::kNo,
+      /*old_state*/ "open", /*new_state*/ "open");
   DCHECK(after_event->bubbles());
   DCHECK(!after_event->cancelable());
-  DCHECK_EQ(after_event->currentState(), "open");
+  DCHECK_EQ(after_event->oldState(), "open");
   DCHECK_EQ(after_event->newState(), "open");
   after_event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(after_event);
@@ -1589,12 +1588,12 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
   }
 
   // Fire the "closing" beforetoggle event.
-  auto* event = PopoverToggleEvent::CreateBubble(
+  auto* event = ToggleEvent::CreateBubble(
       event_type_names::kBeforetoggle, Event::Cancelable::kNo,
-      /*current_state*/ "open", /*new_state*/ "closed");
+      /*old_state*/ "open", /*new_state*/ "closed");
   DCHECK(event->bubbles());
   DCHECK(!event->cancelable());
-  DCHECK_EQ(event->currentState(), "open");
+  DCHECK_EQ(event->oldState(), "open");
   DCHECK_EQ(event->newState(), "closed");
   event->SetTarget(this);
   auto result = DispatchEvent(*event);
@@ -1630,13 +1629,13 @@ void HTMLElement::HidePopoverInternal(HidePopoverFocusBehavior focus_behavior,
             this, std::move(animations)));
   }
 
-  // Queue the "closing" aftertoggle event.
-  auto* after_event = PopoverToggleEvent::CreateBubble(
-      event_type_names::kAftertoggle, Event::Cancelable::kNo,
-      /*current_state*/ "closed", /*new_state*/ "closed");
+  // Queue the "closing" toggle event.
+  auto* after_event = ToggleEvent::CreateBubble(
+      event_type_names::kToggle, Event::Cancelable::kNo,
+      /*old_state*/ "closed", /*new_state*/ "closed");
   DCHECK(after_event->bubbles());
   DCHECK(!after_event->cancelable());
-  DCHECK_EQ(after_event->currentState(), "closed");
+  DCHECK_EQ(after_event->oldState(), "closed");
   DCHECK_EQ(after_event->newState(), "closed");
   after_event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(after_event);
