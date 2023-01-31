@@ -27,8 +27,9 @@ void FakeCommandBufferHelper::StubLost() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   // Keep a reference to |this| in case the destruction cb drops the last one.
   scoped_refptr<CommandBufferHelper> thiz(this);
-  if (will_destroy_stub_cb_)
-    std::move(will_destroy_stub_cb_).Run(!is_context_lost_);
+  for (auto& callback : will_destroy_stub_callbacks_) {
+    std::move(callback).Run(!is_context_lost_);
+  }
   has_stub_ = false;
   is_context_lost_ = true;
   is_context_current_ = false;
@@ -181,10 +182,8 @@ gpu::Mailbox FakeCommandBufferHelper::CreateLegacyMailbox(GLuint service_id) {
   return gpu::Mailbox::GenerateLegacyMailboxForTesting();
 }
 
-void FakeCommandBufferHelper::SetWillDestroyStubCB(
-    WillDestroyStubCB will_destroy_stub_cb) {
-  DCHECK(!will_destroy_stub_cb_);
-  will_destroy_stub_cb_ = std::move(will_destroy_stub_cb);
+void FakeCommandBufferHelper::AddWillDestroyStubCB(WillDestroyStubCB callback) {
+  will_destroy_stub_callbacks_.push_back(std::move(callback));
 }
 
 bool FakeCommandBufferHelper::IsPassthrough() const {

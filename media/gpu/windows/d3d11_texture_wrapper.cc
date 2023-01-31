@@ -202,6 +202,9 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
     return;
   }
 
+  helper_->AddWillDestroyStubCB(
+      base::BindOnce(&GpuResources::Destroy, weak_factory_.GetWeakPtr()));
+
   // Usage flags to allow the display compositor to draw from it, video to
   // decode, and allow webgl/canvas access.
   uint32_t usage =
@@ -275,7 +278,12 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
 
 DefaultTexture2DWrapper::GpuResources::~GpuResources() {
   // Destroy shared images with a current context, otherwise mark context lost.
-  if (!helper_ || !helper_->MakeContextCurrent()) {
+  const bool have_context = helper_ && helper_->MakeContextCurrent();
+  Destroy(have_context);
+}
+
+void DefaultTexture2DWrapper::GpuResources::Destroy(bool have_context) {
+  if (!have_context) {
     for (auto& shared_image_rep : shared_images_) {
       shared_image_rep->OnContextLost();
     }
