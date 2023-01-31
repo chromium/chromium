@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -229,7 +230,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
     }
   };
 
-  using Files = std::map<Id, File>;
+  using Files = std::unordered_map<Id, File>;
 
   // Adds an item to the files to track.  Does nothing if an item with the same
   // ID already exists in the map. Updates the total number of bytes to transfer
