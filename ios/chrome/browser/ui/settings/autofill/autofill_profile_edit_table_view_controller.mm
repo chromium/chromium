@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeField = kItemTypeEnumZero,
+  ItemTypeFooter
 };
 
 }  // namespace
@@ -46,25 +47,28 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // `dataManager`.
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
             personalDataManager:(autofill::PersonalDataManager*)dataManager
-    NS_DESIGNATED_INITIALIZER;
+                      userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation AutofillProfileEditTableViewController {
   autofill::PersonalDataManager* _personalDataManager;  // weak
   autofill::AutofillProfile _autofillProfile;
+  NSString* _userEmail;
 }
 
 #pragma mark - Initialization
 
 - (instancetype)initWithProfile:(const autofill::AutofillProfile&)profile
-            personalDataManager:(autofill::PersonalDataManager*)dataManager {
+            personalDataManager:(autofill::PersonalDataManager*)dataManager
+                      userEmail:(NSString*)userEmail {
   DCHECK(dataManager);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     _personalDataManager = dataManager;
     _autofillProfile = profile;
+    _userEmail = userEmail;
 
     [self setTitle:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS)];
   }
@@ -74,8 +78,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 + (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
                   personalDataManager:
-                      (autofill::PersonalDataManager*)dataManager {
-  return [[self alloc] initWithProfile:profile personalDataManager:dataManager];
+                      (autofill::PersonalDataManager*)dataManager
+                            userEmail:(NSString*)userEmail {
+  return [[self alloc] initWithProfile:profile
+                   personalDataManager:dataManager
+                             userEmail:userEmail];
 }
 
 - (void)viewDidLoad {
@@ -166,6 +173,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
     item.keyboardType = field.keyboardType;
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAccountProfilesUnionView) &&
+      _autofillProfile.source() ==
+          autofill::AutofillProfile::Source::kAccount &&
+      _userEmail != nil) {
+    [model setFooter:[self footerItem]
+        forSectionWithIdentifier:SectionIdentifierFields];
+  }
 }
 
 #pragma mark - UITableViewDataSource
@@ -211,6 +227,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)tableView:(UITableView*)tableview
     shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
   return NO;
+}
+
+#pragma mark - Private
+
+// Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
+- (TableViewLinkHeaderFooterItem*)footerItem {
+  TableViewLinkHeaderFooterItem* item =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+  // TODO(crbug.com/1407666): Add footer string compatible with i18n.
+  item.text = [NSString
+      stringWithFormat:
+          @"Test The address is saved in your Google Account(%@). "
+          @"You can use the address across Google products on any device",
+          _userEmail];
+  return item;
 }
 
 @end

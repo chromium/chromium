@@ -19,7 +19,8 @@ class PersonalDataManager;
 // Creates a controller for `profile` and `dataManager` that cannot be null.
 + (instancetype)controllerWithProfile:(const autofill::AutofillProfile&)profile
                   personalDataManager:
-                      (autofill::PersonalDataManager*)dataManager;
+                      (autofill::PersonalDataManager*)dataManager
+                            userEmail:(NSString*)userEmail;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

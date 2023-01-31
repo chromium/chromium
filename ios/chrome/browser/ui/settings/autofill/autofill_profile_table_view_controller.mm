@@ -19,6 +19,10 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_setup_service.h"
+#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_profile_item.h"
@@ -327,10 +331,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
       _personalDataManager->GetProfiles();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  DCHECK(authenticationService);
+  NSString* syncingUserEmail = nil;
+  id<SystemIdentity> identity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+  if (identity) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(_browserState);
+    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
+      syncingUserEmail = identity.userEmail;
+    }
+  }
   AutofillProfileEditTableViewController* controller =
       [AutofillProfileEditTableViewController
           controllerWithProfile:*autofillProfiles[indexPath.item]
-            personalDataManager:_personalDataManager];
+            personalDataManager:_personalDataManager
+                      userEmail:syncingUserEmail];
   controller.dispatcher = self.dispatcher;
   [self.navigationController pushViewController:controller animated:YES];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];

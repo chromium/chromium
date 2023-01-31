@@ -10,6 +10,7 @@
 #import "base/guid.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -17,10 +18,12 @@
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/settings/personal_data_manager_finished_profile_tasks_waiter.h"
+#import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -78,6 +81,9 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
           ->set_local_state_for_testing(local_state_.Get());
     }
     personal_data_manager_->OnSyncServiceInitialized(nullptr);
+  }
+
+  void LoadController(bool is_account_profile = false) {
     PersonalDataManagerFinishedProfileTasksWaiter waiter(
         personal_data_manager_);
 
@@ -101,12 +107,21 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
                                 kTestCountryCode);
     autofill_profile.SetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER, kTestPhone);
     autofill_profile.SetRawInfo(autofill::EMAIL_ADDRESS, kTestEmail);
-    personal_data_manager_->SaveImportedProfile(autofill_profile);
+    if (is_account_profile) {
+      autofill_profile.set_source_for_testing(
+          autofill::AutofillProfile::Source::kAccount);
+      personal_data_manager_->AddProfile(autofill_profile);
+    } else {
+      personal_data_manager_->SaveImportedProfile(autofill_profile);
+    }
     waiter.Wait();  // Wait for the completion of the asynchronous operation.
 
     autofill_profile_edit_controller_ = [AutofillProfileEditTableViewController
         controllerWithProfile:autofill_profile
-          personalDataManager:personal_data_manager_];
+          personalDataManager:personal_data_manager_
+                    userEmail:(is_account_profile
+                                   ? base::SysUTF16ToNSString(kTestEmail)
+                                   : nil)];
 
     // Load the view to force the loading of the model.
     [autofill_profile_edit_controller_ loadViewIfNeeded];
@@ -121,6 +136,7 @@ class AutofillProfileEditTableViewControllerTest : public PlatformTest {
 
 // Default test case of no addresses or credit cards.
 TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
+  LoadController();
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   int rowCnt =
       base::FeatureList::IsEnabled(
@@ -134,6 +150,7 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestInitialization) {
 
 // Adding a single address results in an address section.
 TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
+  LoadController();
   TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
   UITableView* tableView = [autofill_profile_edit_controller_ tableView];
 
@@ -160,6 +177,26 @@ TEST_F(AutofillProfileEditTableViewControllerTest, TestOneProfile) {
     EXPECT_TRUE([[field text]
         isEqualToString:base::SysUTF16ToNSString(expected_values[row])]);
   }
+}
+
+// Tests the footer text of the view controller for the address profiles with
+// source kAccount when `autofill::features::kAutofillAccountProfilesUnionView`
+// is enabled.
+TEST_F(AutofillProfileEditTableViewControllerTest, TestFooterTextWithEmail) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillAccountProfilesUnionView);
+  LoadController(true);
+
+  TableViewModel* model = [autofill_profile_edit_controller_ tableViewModel];
+
+  NSString* expected_footer_text = [NSString
+      stringWithFormat:
+          @"Test The address is saved in your Google Account(%@). You can "
+          @"use the address across Google products on any device",
+          base::SysUTF16ToNSString(kTestEmail)];
+  TableViewLinkHeaderFooterItem* footer = [model footerForSectionIndex:0];
+  EXPECT_NSEQ(expected_footer_text, footer.text);
 }
 
 }  // namespace
