@@ -2822,25 +2822,21 @@ if (enable_java_templates) {
   }
 
   # Compile Java source files into a .jar file, potentially using an
-  # annotation processor, and/or the errorprone compiler.
+  # annotation processor, and/or the errorprone compiler. Also includes Kotlin
+  # source files in the resulting info file.
   #
   # Note that the only way to specify custom annotation processors is
   # by using build_config to point to a file that corresponds to a java-related
   # target that includes javac:processor_classes entries (i.e. there is no
   # variable here that can be used for this purpose).
   #
-  # Note also the peculiar use of java_files / target_sources_file. The content
-  # of the java_files list and the .java files in target_sources_file file must
-  # match exactly (extra .kt files in target_sources_file will be ignored by
-  # compile_java.py). This rule uses java_files only to list the inputs to the
-  # action that calls compile_java.py, but will pass the list of all target
-  # source files with the '@${target_sources_file}" command-line syntax. Not a
-  # problem in practice since this is only called from java_library_impl() that
-  # sets up the variables properly.
+  # Note also the peculiar use of source_files / target_sources_file. The content
+  # of the source_files list and the source files in target_sources_file file must
+  # match exactly.
   #
   # Variables:
   #  main_target_name: Used when extracting srcjars for codesearch.
-  #  java_files: Optional list of Java source file paths.
+  #  source_files: Optional list of Java and Kotlin source file paths.
   #  srcjar_deps: Optional list of .srcjar dependencies (not file paths).
   #    The corresponding source files they contain will be compiled too.
   #  target_sources_file: Optional path to file containing list of source file
@@ -2932,8 +2928,8 @@ if (enable_java_templates) {
       if (!invoker.enable_errorprone && !invoker.use_turbine) {
         outputs += [ invoker.output_jar_path + ".info" ]
       }
-      inputs = invoker.java_files + _java_srcjars + [ _build_config ]
-      if (invoker.java_files != []) {
+      inputs = invoker.source_files + _java_srcjars + [ _build_config ]
+      if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
       }
 
@@ -3060,7 +3056,7 @@ if (enable_java_templates) {
             [ "--additional-jar-file=" +
               rebase_path(file_tuple[0], root_build_dir) + ":" + file_tuple[1] ]
       }
-      if (invoker.java_files != []) {
+      if (invoker.source_files != []) {
         args +=
             [ "@" + rebase_path(invoker.target_sources_file, root_build_dir) ]
       }
@@ -3788,13 +3784,13 @@ if (enable_java_templates) {
             build_config = _build_config
 
             if (_enable_errorprone) {
-              java_files = _filtered_java_files
+              source_files = _filtered_java_files
             } else {
-              java_files = _java_files
+              source_files = _source_files
               srcjar_deps = _srcjar_deps
             }
 
-            if (java_files != []) {
+            if (source_files != []) {
               target_sources_file = _target_sources_file
             }
             chromium_code = _chromium_code
