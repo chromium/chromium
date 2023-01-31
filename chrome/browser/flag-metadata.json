@@ -4467,7 +4467,7 @@
   {
     "name": "keyboard-shortcuts-menu",
     "owners": [ "lpromero", "bling-flags@google.com" ],
-    "expiry_milestone": 112
+    "expiry_milestone": 115
   },
   {
     "name": "lacros-availability-ignore",
