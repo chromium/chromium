@@ -866,6 +866,33 @@ ExtensionFunction::ResponseAction SetPreferenceFunction::Run() {
         BuildPrivacySandboxDeprecationInspectorIssueInfo(source_url()));
   }
 
+  // Clear the new Privacy Sandbox APIs if an extension sets to true the
+  // deprecated pref |kPrivacySandboxApisEnabled| and set to false the new
+  // Privacy Sandbox APIs if an extension sets to false the deprecated pref
+  // |kPrivacySandboxApisEnabled| in order to maintain backward compatibility
+  // during the migration period.
+  // TODO(b/263568309): Remove this once the deprecated API is retired.
+  if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
+    if (browser_pref_value->GetBool()) {
+      prefs_helper->RemoveExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1TopicsEnabled, scope);
+      prefs_helper->RemoveExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1FledgeEnabled, scope);
+      prefs_helper->RemoveExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1AdMeasurementEnabled, scope);
+    } else {
+      prefs_helper->SetExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1TopicsEnabled, scope,
+          base::Value(false));
+      prefs_helper->SetExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1FledgeEnabled, scope,
+          base::Value(false));
+      prefs_helper->SetExtensionControlledPref(
+          extension_id(), prefs::kPrivacySandboxM1AdMeasurementEnabled, scope,
+          base::Value(false));
+    }
+  }
+
   prefs_helper->SetExtensionControlledPref(extension_id(), browser_pref, scope,
                                            browser_pref_value->Clone());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -959,6 +986,19 @@ ExtensionFunction::ResponseAction ClearPreferenceFunction::Run() {
   if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
     ReportInspectorIssue(
         BuildPrivacySandboxDeprecationInspectorIssueInfo(source_url()));
+  }
+
+  // Clear the new Privacy Sandbox APIs if an extension clears the deprecated
+  // pref |kPrivacySandboxApisEnabled| in order to maintain backward
+  // compatibility during the migration period.
+  // TODO(b/263568309): Remove this once the deprecated API is retired.
+  if (prefs::kPrivacySandboxApisEnabled == browser_pref) {
+    prefs_helper->RemoveExtensionControlledPref(
+        extension_id(), prefs::kPrivacySandboxM1TopicsEnabled, scope);
+    prefs_helper->RemoveExtensionControlledPref(
+        extension_id(), prefs::kPrivacySandboxM1FledgeEnabled, scope);
+    prefs_helper->RemoveExtensionControlledPref(
+        extension_id(), prefs::kPrivacySandboxM1AdMeasurementEnabled, scope);
   }
 
   // Whenever an extension clears the |kSafeBrowsingEnabled| preference,

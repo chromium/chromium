@@ -104,7 +104,7 @@
             "$ref": "types.ChromeSetting",
             "value": ["privacySandboxEnabled", {"type": "boolean"}],
             "deprecated": "We’re deprecating the API <code><a href='#property-websites-privacySandboxEnabled'>chrome.privacy.websites.privacySandboxEnabled</a></code>, though it will remain active for backward compatibility until release M113. Instead, please use <code><a href='#property-websites-topicsEnabled'>chrome.privacy.websites.topicsEnabled</a></code>, <code><a href='#property-websites-fledgeEnabled'>chrome.privacy.websites.fledgeEnabled</a></code> and <code><a href='#property-websites-adMeasurementEnabled'>chrome.privacy.websites.adMeasurementEnabled</a></code>.",
-            "description": "If enabled, the experimental <a href=”https://www.chromium.org/Home/chromium-privacy/privacy-sandbox”>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>. PLEASE NOTE: The schema of this API may change in the future as the Privacy Sandbox features crystallize. In that case, we will provide prior notice."
+            "description": "If enabled, the experimental <a href='https://www.chromium.org/Home/chromium-privacy/privacy-sandbox'>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>."
           },
           "topicsEnabled": {
             "$ref": "types.ChromeSetting",
