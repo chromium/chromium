@@ -3889,9 +3889,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded"
-    units="units" expires_after="2022-10-31">
+    units="units" expires_after="2024-01-20">
   <owner>minch@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>yunchengs@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     The number of windows restored in multi-display scenario, such as due to
     disconnecting and reconnecting display, enabling and disabling mirror mode,
@@ -3900,9 +3902,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation"
-    units="units" expires_after="2023-01-15">
+    units="units" expires_after="2024-01-20">
   <owner>minch@chromium.org</owner>
-  <owner>fanafan@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>yunchengs@google.com</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
   <summary>
     Emits the number of windows bounds restored when rotating the screen back to
     the previous screen orientation. Zero is not recorded.
