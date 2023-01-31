@@ -687,18 +687,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (!didTriggerPromo) {
-            RationaleDelegate rationaleUIDelegate;
+            Supplier<RationaleDelegate> rationaleUIDelegateSupplier;
 
             if (NotificationPermissionController.shouldUseBottomSheetRationaleUi()) {
-                rationaleUIDelegate = new NotificationPermissionRationaleBottomSheet(
-                        mActivity, getBottomSheetController());
+                rationaleUIDelegateSupplier = ()
+                        -> new NotificationPermissionRationaleBottomSheet(
+                                mActivity, getBottomSheetController());
             } else {
-                rationaleUIDelegate = new NotificationPermissionRationaleDialogController(
-                        mActivity, mModalDialogManagerSupplier.get());
+                rationaleUIDelegateSupplier = ()
+                        -> new NotificationPermissionRationaleDialogController(
+                                mActivity, mModalDialogManagerSupplier.get());
             }
 
-            mNotificationPermissionController =
-                    new NotificationPermissionController(mWindowAndroid, rationaleUIDelegate);
+            mNotificationPermissionController = new NotificationPermissionController(
+                    mWindowAndroid, rationaleUIDelegateSupplier);
 
             NotificationPermissionController.attach(
                     mWindowAndroid, mNotificationPermissionController);

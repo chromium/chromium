@@ -73,16 +73,6 @@ public class NotificationPermissionRationaleBottomSheet
                     mWasSheetOpened = true;
                 }
             }
-
-            @Override
-            public void onSheetContentChanged(BottomSheetContent newContent) {
-                // Destroy the content view when no longer needed, we do it here instead of on
-                // destroy() because getContentView() is called after it.
-                if (newContent == null
-                        || newContent != NotificationPermissionRationaleBottomSheet.this) {
-                    destroyContentView();
-                }
-            }
         };
     }
 
@@ -118,6 +108,8 @@ public class NotificationPermissionRationaleBottomSheet
 
     private void executeResponseCallback(@RationaleUiResult int callbackResult,
             @NotificationRationaleResult int detailedResultForMetrics) {
+        if (mResponseCallback == null) return;
+
         NotificationUmaTracker.getInstance().onNotificationPermissionRationaleResult(
                 detailedResultForMetrics);
 
@@ -132,19 +124,10 @@ public class NotificationPermissionRationaleBottomSheet
         assert !mBottomSheetController.isSheetOpen();
 
         initializeContentView();
-
         mResponseCallback = callback;
         mBottomSheetController.addObserver(mBottomSheetObserver);
-        if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
-            executeResponseCallback(RationaleUiResult.NOT_SHOWN,
-                    NotificationRationaleResult.BOTTOM_SHEET_FAILED_TO_OPEN);
-            destroy();
-        }
-    }
-
-    private void destroyContentView() {
-        mBottomSheetController.removeObserver(mBottomSheetObserver);
-        mContentView = null;
+        mBottomSheetController.requestShowContent(
+                NotificationPermissionRationaleBottomSheet.this, /* animate= */ true);
     }
 
     /* BottomSheetContent implementation. */
@@ -165,18 +148,15 @@ public class NotificationPermissionRationaleBottomSheet
 
     @Override
     public void destroy() {
-        if (mResponseCallback != null) {
-            if (!mWasSheetOpened) {
-                // Some startup cases may destroy the action sheet before it's shown.
-                executeResponseCallback(RationaleUiResult.NOT_SHOWN,
-                        NotificationRationaleResult.BOTTOM_SHEET_NEVER_OPENED);
-                // If the content view was never shown then destroy it here, otherwise wait until it
-                // has been replaced (see onSheetContentChanged).
-            } else {
-                executeResponseCallback(RationaleUiResult.REJECTED,
-                        NotificationRationaleResult.BOTTOM_SHEET_DESTROYED);
-            }
+        if (!mWasSheetOpened) {
+            // Some startup cases may destroy the action sheet before it's shown.
+            executeResponseCallback(RationaleUiResult.NOT_SHOWN,
+                    NotificationRationaleResult.BOTTOM_SHEET_NEVER_OPENED);
+        } else {
+            executeResponseCallback(
+                    RationaleUiResult.REJECTED, NotificationRationaleResult.BOTTOM_SHEET_DESTROYED);
         }
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 
     @Override
@@ -207,6 +187,14 @@ public class NotificationPermissionRationaleBottomSheet
     @Override
     public int getSheetContentDescriptionStringId() {
         return R.string.notification_permission_rationale_content_description;
+    }
+
+    @Override
+    public boolean hasCustomLifecycle() {
+        // This is set to true to be able to display on startup without being removed by start
+        // surface.
+        // TODO(crbug.com/1410793): Get rid of this once we no longer show this on startup.
+        return true;
     }
 
     @Override

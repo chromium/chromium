@@ -94,7 +94,8 @@ public class NotificationPermissionControllerTest {
     private NotificationPermissionController createNotificationPermissionController(
             RationaleDelegate rationaleDelegate,
             TestAndroidPermissionDelegate androidPermissionDelegate) {
-        return new NotificationPermissionController(androidPermissionDelegate, rationaleDelegate);
+        return new NotificationPermissionController(
+                androidPermissionDelegate, () -> rationaleDelegate);
     }
 
     private void verifyStateHistogramWasRecorded(

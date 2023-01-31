@@ -220,20 +220,4 @@ public class NotificationPermissionRationaleBottomSheetTest {
                         "Mobile.SystemNotification.Permission.RationaleResult",
                         NotificationRationaleResult.BOTTOM_SHEET_NEVER_OPENED));
     }
-
-    @Test
-    public void testResultBottomSheetFailedToOpen() {
-        NotificationPermissionRationaleBottomSheet bottomSheet =
-                new NotificationPermissionRationaleBottomSheet(mContext, mBottomSheetController);
-        Mockito.when(mBottomSheetController.requestShowContent(any(), anyBoolean()))
-                .thenReturn(false);
-
-        bottomSheet.showRationaleUi(mMockCallback);
-
-        verify(mMockCallback).onResult(RationaleUiResult.NOT_SHOWN);
-        assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Mobile.SystemNotification.Permission.RationaleResult",
-                        NotificationRationaleResult.BOTTOM_SHEET_FAILED_TO_OPEN));
-    }
 }

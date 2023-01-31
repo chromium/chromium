@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
@@ -104,19 +105,19 @@ public class NotificationPermissionController implements UnownedUserData {
             new UnownedUserDataKey<>(NotificationPermissionController.class);
 
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
-    private final RationaleDelegate mRationaleDelegate;
+    private final Supplier<RationaleDelegate> mRationaleDelegateSupplier;
 
     /**
      * Constructor. Should only be called by {@link ChromeTabbedActivity}. Features looking to
      * request this permission in context should instead use {@link
      * ContextualNotificationPermissionRequester}.
      * @param androidPermissionDelegate The delegate to request Android permissions.
-     * @param rationaleDelegate The delegate to show the rationale UI.
+     * @param rationaleDelegateSupplier The delegate to show the rationale UI.
      */
     public NotificationPermissionController(AndroidPermissionDelegate androidPermissionDelegate,
-            RationaleDelegate rationaleDelegate) {
+            Supplier<RationaleDelegate> rationaleDelegateSupplier) {
         mAndroidPermissionDelegate = androidPermissionDelegate;
-        mRationaleDelegate = rationaleDelegate;
+        mRationaleDelegateSupplier = rationaleDelegateSupplier;
     }
 
     /**
@@ -179,7 +180,7 @@ public class NotificationPermissionController implements UnownedUserData {
             requestAndroidPermission();
             recordOsPromptShown();
         } else if (requestMode == PermissionRequestMode.REQUEST_PERMISSION_WITH_RATIONALE) {
-            mRationaleDelegate.showRationaleUi(rationaleResult -> {
+            mRationaleDelegateSupplier.get().showRationaleUi(rationaleResult -> {
                 if (rationaleResult != RationaleUiResult.NOT_SHOWN) {
                     recordRationaleUiShown();
                 }
