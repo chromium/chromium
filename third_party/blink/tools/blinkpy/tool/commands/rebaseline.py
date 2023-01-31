@@ -646,8 +646,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             test_baseline_set, options)
         lines_to_remove = {}
         # TODO(crbug/1213998): Make both copy and rebaseline command use the
-        # message pool, currently the second time when run the message pool,
-        # it will halt there.
+        # message pool.
         self._run_in_parallel(copy_baseline_commands, False)
         command_results = self._run_in_parallel(
             rebaseline_commands, getattr(options, 'resultDB', False))

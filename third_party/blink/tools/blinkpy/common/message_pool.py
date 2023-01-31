@@ -282,6 +282,12 @@ class _WorkerProcess(multiprocessing.Process):
             self._logger.removeHandler(self._log_handler)
         self._log_handler = None
         self._logger = None
+        # Need to give the queue's I/O thread time to put the 'done' message
+        # into the underlying OS pipe. Without this, the message pool (manager)
+        # may hang forever. See also: crrev.com/c/3723551.
+        if not isinstance(self._messages_to_manager, queue.Queue):
+            self._messages_to_manager.close()
+            self._messages_to_manager.join_thread()
 
     def start(self):
         if not self._running_inline:
