@@ -73,11 +73,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.AttachmentServices.Duration" units="ms"
-    expires_after="2020-02-23">
+    expires_after="never">
+<!-- expires-never: Monitors downloads system health -->
+
   <owner>dtrainor@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Time taken to invoke IAttachmentExecute::Save() excluding the time taken to
-    instantiate CLSID_AttachmentServices.
+    instantiate CLSID_AttachmentServices. Warning: this histogram was expired
+    from 2020-02-23 to 2023-01-30; data may be missing.
   </summary>
 </histogram>
 
