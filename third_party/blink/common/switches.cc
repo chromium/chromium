@@ -204,8 +204,5 @@ extern const char kSendMouseEventsDisabledFormControlsPolicy_ForceDisable[] =
 extern const char kSendMouseEventsDisabledFormControlsPolicy_ForceEnable[] =
     "1";
 
-// Controls whether legacy quota API webkitStorageInfo is forced enabled.
-const char kPrefixedStorageInfoEnabled[] = "prefixed-storage-info-enabled";
-
 }  // namespace switches
 }  // namespace blink

@@ -1778,9 +1778,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kUrlParameterToAutofillSAMLUsername,
     base::Value::Type::STRING },
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kPrefixedStorageInfoEnabled,
-    storage::kPrefixedStorageInfoEnabled,
-    base::Value::Type::BOOLEAN },
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kHighEfficiencyModeEnabled,
     performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled,

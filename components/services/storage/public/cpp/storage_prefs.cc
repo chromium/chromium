@@ -11,13 +11,8 @@ namespace storage {
 // Boolean policy to force WebSQL to be enabled.
 const char kWebSQLAccess[] = "policy.web_sql_access";
 
-// Boolean policy to force PrefixedStorageInfo to be enabled.
-const char kPrefixedStorageInfoEnabled[] =
-    "policy.prefixed_storage_info_enabled";
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebSQLAccess, false);
-  registry->RegisterBooleanPref(kPrefixedStorageInfoEnabled, false);
 }
 
 }  // namespace storage

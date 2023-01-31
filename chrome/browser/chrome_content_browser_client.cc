@@ -2704,12 +2704,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(blink::switches::kWebSQLAccess);
       }
 
-      // Enable legacy quota API if enabled by enterprise policy.
-      if (prefs->GetBoolean(storage::kPrefixedStorageInfoEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kPrefixedStorageInfoEnabled);
-      }
-
 #if !BUILDFLAG(IS_ANDROID)
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);
