@@ -97,10 +97,12 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
       std::vector<GrBackendSemaphore>* begin_semaphores,
       std::vector<GrBackendSemaphore>* end_semaphores);
 
-  // Returns true if |texture_base| is a gles2::Texture and all necessary
-  // operations completed successfully. In this case, |*size| is the size of
-  // of level 0.
-  bool BindTextureIfNecessary(gpu::TextureBase* texture_base, gfx::Size* size);
+  // Returns true if |texture_base| is a gles2::Texture. In this case, |*size|
+  // is the size of of level 0.
+  // TODO(crbug.com/1323341): Determine whether the code calling this method is
+  // still necessary. If not, eliminate it; if yes, fold this method into the
+  // callsite.
+  bool ShouldCheckTextureSize(gpu::TextureBase* texture_base, gfx::Size* size);
 
   const bool maybe_concurrent_reads_ = false;
   const bool allow_keeping_read_access_ = true;
