@@ -2629,9 +2629,14 @@ void StoragePartitionImpl::ClearDataForOrigin(
   CookieDeletionFilterPtr deletion_filter = CookieDeletionFilter::New();
   if (!storage_origin.host().empty())
     deletion_filter->host_name = storage_origin.host();
-  ClearDataImpl(remove_mask, quota_storage_remove_mask,
-                blink::StorageKey(url::Origin::Create(storage_origin)),
-                /*filter_builder=*/nullptr, StorageKeyPolicyMatcherFunction(),
+  // Construct a |BrowsingDataFilterBuilder| instead of just passing a storage
+  // key based on the origin directly. This is needed to be able to delete the
+  // associated 3P data embedded on the origin.
+  auto filter_builder = BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  filter_builder->AddOrigin(url::Origin::Create(storage_origin));
+  ClearDataImpl(remove_mask, quota_storage_remove_mask, blink::StorageKey(),
+                filter_builder.get(), StorageKeyPolicyMatcherFunction(),
                 std::move(deletion_filter), false, base::Time(),
                 base::Time::Max(), std::move(callback));
 }
