@@ -26,8 +26,8 @@
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
+#include "components/headless/policy/headless_mode_policy.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/lib/browser/policy/headless_policies.h"
 #endif
 
@@ -116,7 +116,7 @@ void HeadlessBrowserMainParts::MaybeStartLocalDevToolsHttpHandler() {
 
 #if defined(HEADLESS_USE_POLICY)
   const PrefService* pref_service = browser_->GetPrefs();
-  if (!policy::IsRemoteDebuggingAllowed(pref_service)) {
+  if (!IsRemoteDebuggingAllowed(pref_service)) {
     // Follow content/browser/devtools/devtools_http_handler.cc that reports its
     // remote debugging port on stderr for symmetry.
     fputs("\nDevTools remote debugging is disallowed by the system admin.\n",
@@ -161,7 +161,7 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   PrefServiceFactory factory;
 
 #if defined(HEADLESS_USE_POLICY)
-  policy::RegisterPrefs(pref_registry.get());
+  RegisterHeadlessPrefs(pref_registry.get());
 
   policy_connector_ =
       std::make_unique<policy::HeadlessBrowserPolicyConnector>();

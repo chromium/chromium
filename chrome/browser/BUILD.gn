@@ -4407,6 +4407,7 @@ static_library("browser") {
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/feedback/redaction_tool",
+      "//components/headless/policy",
       "//components/image_fetcher/core",
       "//components/keep_alive_registry",
       "//components/live_caption",

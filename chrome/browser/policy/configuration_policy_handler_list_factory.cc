@@ -134,6 +134,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #include "chrome/browser/policy/managed_account_policy_handler.h"
+#include "components/headless/policy/headless_mode_policy_handler.h"
 #include "components/media_router/common/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1931,6 +1932,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           chrome_schema));
 
   handlers->AddHandler(std::make_unique<GuestModePolicyHandler>());
+  handlers->AddHandler(std::make_unique<headless::HeadlessModePolicyHandler>());
   handlers->AddHandler(std::make_unique<DeveloperToolsPolicyHandler>());
   handlers->AddHandler(
       std::make_unique<DownloadAutoOpenPolicyHandler>(chrome_schema));

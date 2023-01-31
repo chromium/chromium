@@ -20,6 +20,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "components/headless/policy/headless_mode_policy.h"
 #include "components/headless/test/capture_std_stream.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -27,7 +28,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/policy/headless_mode_policy.h"
 #include "headless/public/headless_browser.h"
 #include "headless/public/switches.h"
 #include "headless/test/headless_browser_test.h"
@@ -45,7 +45,7 @@
 namespace headless {
 
 // The following enum values must match HeadlessMode policy template in
-// components/policy/resources/policy_templates.json
+// components/policy/resources/templates/policy_definitions/Miscellaneous/HeadlessMode.yaml
 enum {
   kHeadlessModePolicyEnabled = 1,
   kHeadlessModePolicyDisabled = 2,
@@ -97,13 +97,11 @@ class HeadlessBrowserTestWithHeadlessModePolicy
     int headless_mode_policy = std::get<0>(GetParam());
     if (headless_mode_policy != kHeadlessModePolicyUnset) {
       SetHeadlessModePolicy(
-          static_cast<policy::HeadlessModePolicy::HeadlessMode>(
-              headless_mode_policy));
+          static_cast<HeadlessModePolicy::HeadlessMode>(headless_mode_policy));
     }
   }
 
-  void SetHeadlessModePolicy(
-      policy::HeadlessModePolicy::HeadlessMode headless_mode) {
+  void SetHeadlessModePolicy(HeadlessModePolicy::HeadlessMode headless_mode) {
     policy::PolicyMap policy;
     policy.Set("HeadlessMode", policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
@@ -114,7 +112,7 @@ class HeadlessBrowserTestWithHeadlessModePolicy
 
   bool expected_enabled() { return std::get<1>(GetParam()); }
   bool actual_enabled() {
-    return !policy::HeadlessModePolicy::IsHeadlessDisabled(GetPrefs());
+    return !HeadlessModePolicy::IsHeadlessModeDisabled(GetPrefs());
   }
 };
 

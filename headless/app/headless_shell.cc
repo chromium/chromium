@@ -39,7 +39,7 @@
 #endif
 
 #if defined(HEADLESS_USE_POLICY)
-#include "headless/lib/browser/policy/headless_mode_policy.h"
+#include "components/headless/policy/headless_mode_policy.h"
 #endif
 
 #if defined(HEADLESS_ENABLE_COMMANDS)
@@ -92,9 +92,9 @@ void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   browser_ = browser;
 
 #if defined(HEADLESS_USE_POLICY)
-  if (policy::HeadlessModePolicy::IsHeadlessDisabled(
+  if (HeadlessModePolicy::IsHeadlessModeDisabled(
           static_cast<HeadlessBrowserImpl*>(browser)->GetPrefs())) {
-    LOG(ERROR) << "Headless mode is disabled by policy.";
+    LOG(ERROR) << "Headless mode is disallowed by the system admin.";
     ShutdownSoon();
     return;
   }

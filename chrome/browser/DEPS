@@ -158,6 +158,7 @@ include_rules = [
   "+components/grit",
   "+components/guest_view/browser",
   "+components/handoff",
+  "+components/headless",
   "+components/heap_profiling",
   "+components/heavy_ad_intervention",
   "+components/history/content/browser",

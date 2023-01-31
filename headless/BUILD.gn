@@ -482,14 +482,13 @@ component("headless_non_renderer") {
     sources += [
       "lib/browser/policy/headless_browser_policy_connector.cc",
       "lib/browser/policy/headless_browser_policy_connector.h",
-      "lib/browser/policy/headless_mode_policy.cc",
-      "lib/browser/policy/headless_mode_policy.h",
       "lib/browser/policy/headless_policies.cc",
       "lib/browser/policy/headless_policies.h",
-      "lib/browser/policy/headless_pref_names.cc",
-      "lib/browser/policy/headless_pref_names.h",
+      "lib/browser/policy/headless_prefs.cc",
+      "lib/browser/policy/headless_prefs.h",
     ]
     deps += [
+      "//components/headless/policy",
       "//components/policy/content",
       "//components/policy/core/browser",
     ]
@@ -810,7 +809,10 @@ test("headless_browsertests") {
   }
 
   if (headless_use_policy) {
-    deps += [ "//components/policy/core/common:test_support" ]
+    deps += [
+      "//components/headless/policy",
+      "//components/policy/core/common:test_support",
+    ]
   }
 
   if (headless_enable_commands) {
@@ -844,7 +846,10 @@ if (is_win) {
       "//sandbox",
     ]
     if (headless_use_policy) {
-      deps += [ "//components/policy/content" ]
+      deps += [
+        "//components/headless/policy",
+        "//components/policy/content",
+      ]
     }
     if (enable_printing) {
       deps += [ "//components/printing/browser/headless:headless" ]
@@ -912,8 +917,11 @@ static_library("headless_shell_lib") {
     ]
   }
 
-  if (headless_use_policy && !is_component_build) {
-    deps += [ "//components/policy/content" ]
+  if (headless_use_policy) {
+    deps += [
+      "//components/headless/policy",
+      "//components/policy/content",
+    ]
   }
 
   if (headless_enable_commands) {

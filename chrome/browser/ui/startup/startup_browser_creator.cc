@@ -133,7 +133,9 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/ui/startup/web_app_info_recorder_utils.h"
+#include "components/headless/policy/headless_mode_policy.h"
 #endif
 
 using content::BrowserThread;
@@ -910,6 +912,15 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   DCHECK_NE(profile_info.mode, StartupProfileMode::kError);
   TRACE_EVENT0("startup", "StartupBrowserCreator::ProcessCmdLineImpl");
   ComputeAndRecordLaunchMode(command_line);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (headless::IsHeadlessMode() &&
+      headless::HeadlessModePolicy::IsHeadlessModeDisabled(
+          g_browser_process->local_state())) {
+    LOG(ERROR) << "Headless mode is disallowed by the system admin.";
+    return false;
+  }
+#endif
 
   if (process_startup == chrome::startup::IsProcessStartup::kYes &&
       command_line.HasSwitch(switches::kDisablePromptOnRepost)) {

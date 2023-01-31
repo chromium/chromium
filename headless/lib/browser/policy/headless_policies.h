@@ -11,14 +11,14 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace policy {
+namespace headless {
 
 // Registers headless policies' prefs in |registry|.
-void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry);
+void RegisterHeadlessPrefs(user_prefs::PrefRegistrySyncable* registry);
 
 // Returns positive if current policy in |pref_service| allows Remote Debugging.
 bool IsRemoteDebuggingAllowed(const PrefService* pref_service);
 
-}  // namespace policy
+}  // namespace headless
 
 #endif  // HEADLESS_LIB_BROWSER_POLICY_HEADLESS_POLICIES_H_

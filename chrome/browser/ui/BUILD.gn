@@ -1823,6 +1823,7 @@ static_library("ui") {
       "//components/commerce/core/webui",
       "//components/enterprise/common:files_scan_data",
       "//components/feedback/proto",
+      "//components/headless/policy",
       "//components/keep_alive_registry",
       "//components/media_router/common/mojom:media_router",
       "//components/network_session_configurator/common",

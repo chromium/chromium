@@ -16,6 +16,7 @@ items:
   name: Disabled
   value: 2
 owners:
+- kvitekp@chromium.org
 - file://headless/OWNERS
 schema:
   enum:
@@ -25,5 +26,7 @@ schema:
 supported_on:
 - chrome.*:91-
 - fuchsia:106-
+future_on:
+- chrome_os
 tags: []
 type: int-enum
