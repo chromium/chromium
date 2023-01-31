@@ -716,7 +716,8 @@ TEST(CTAPResponseTest, TestReadGetInfoResponse) {
   EXPECT_EQ(get_info_response->ctap2_versions.size(), 1u);
   EXPECT_TRUE(base::Contains(get_info_response->ctap2_versions,
                              Ctap2Version::kCtap2_0));
-  EXPECT_TRUE(get_info_response->options.is_platform_device);
+  EXPECT_EQ(get_info_response->options.is_platform_device,
+            AuthenticatorSupportedOptions::PlatformDevice::kYes);
   EXPECT_TRUE(get_info_response->options.supports_resident_key);
   EXPECT_TRUE(get_info_response->options.supports_user_presence);
   EXPECT_EQ(AuthenticatorSupportedOptions::UserVerificationAvailability::
@@ -787,7 +788,8 @@ TEST(CTAPResponseTest, TestSerializeGetInfoResponse) {
   response.extensions.emplace({std::string("uvm"), std::string("hmac-secret")});
   AuthenticatorSupportedOptions options;
   options.supports_resident_key = true;
-  options.is_platform_device = true;
+  options.is_platform_device =
+      AuthenticatorSupportedOptions::PlatformDevice::kYes;
   options.client_pin_availability = AuthenticatorSupportedOptions::
       ClientPinAvailability::kSupportedButPinNotSet;
   options.user_verification_availability = AuthenticatorSupportedOptions::

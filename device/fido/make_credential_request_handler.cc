@@ -104,12 +104,22 @@ bool IsCandidateAuthenticatorPreTouch(
     return true;
   }
 
-  if ((requested_attachment == AuthenticatorAttachment::kPlatform &&
-       !opt_options->is_platform_device) ||
-      (requested_attachment == AuthenticatorAttachment::kCrossPlatform &&
-       opt_options->is_platform_device &&
-       !allow_platform_authenticator_for_make_credential_request)) {
-    return false;
+  switch (opt_options->is_platform_device) {
+    case AuthenticatorSupportedOptions::PlatformDevice::kYes:
+      if (requested_attachment == AuthenticatorAttachment::kCrossPlatform &&
+          !allow_platform_authenticator_for_make_credential_request) {
+        return false;
+      }
+      break;
+
+    case AuthenticatorSupportedOptions::PlatformDevice::kNo:
+      if (requested_attachment == AuthenticatorAttachment::kPlatform) {
+        return false;
+      }
+      break;
+
+    case AuthenticatorSupportedOptions::PlatformDevice::kBoth:
+      break;
   }
 
   return true;
@@ -150,7 +160,8 @@ MakeCredentialStatus IsCandidateAuthenticatorPostTouch(
   // DeviceSecondFactorAuthentication enterprise policy.
   if (options.authenticator_attachment ==
           AuthenticatorAttachment::kCrossPlatform &&
-      auth_options->is_platform_device) {
+      auth_options->is_platform_device ==
+          AuthenticatorSupportedOptions::PlatformDevice::kYes) {
     if (options.resident_key == ResidentKeyRequirement::kRequired) {
       return MakeCredentialStatus::kAuthenticatorMissingResidentKeys;
     }
@@ -490,7 +501,8 @@ void MakeCredentialRequestHandler::DispatchRequest(
 #endif  // BUILDFLAG(IS_WIN)
 
     if (authenticator->Options() &&
-        authenticator->Options()->is_platform_device) {
+        authenticator->Options()->is_platform_device !=
+            AuthenticatorSupportedOptions::PlatformDevice::kNo) {
       HandleInapplicableAuthenticator(authenticator, post_touch_status);
       return;
     }

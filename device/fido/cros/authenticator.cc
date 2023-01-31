@@ -48,7 +48,8 @@ namespace {
 
 AuthenticatorSupportedOptions ChromeOSAuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
-  options.is_platform_device = true;
+  options.is_platform_device =
+      AuthenticatorSupportedOptions::PlatformDevice::kYes;
   // TODO(yichengli): change supports_resident_key to true once it's supported.
   options.supports_resident_key = false;
   // Even if the user has no fingerprints enrolled, we will have password

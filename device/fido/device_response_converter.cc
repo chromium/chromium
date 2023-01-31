@@ -356,7 +356,10 @@ absl::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
       if (!option_map_it->second.is_bool())
         return absl::nullopt;
 
-      options.is_platform_device = option_map_it->second.GetBool();
+      options.is_platform_device =
+          option_map_it->second.GetBool()
+              ? AuthenticatorSupportedOptions::PlatformDevice::kYes
+              : AuthenticatorSupportedOptions::PlatformDevice::kNo;
     }
 
     option_map_it = option_map.find(CBOR(kResidentKeyMapKey));
