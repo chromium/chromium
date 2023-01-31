@@ -533,8 +533,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '108.0.5359.172',
-      'cros_img': 'eve-release/R108-15183.78.0',
+      'cros_chrome_version': '108.0.5359.219',
+      'cros_img': 'eve-release/R108-15183.82.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
