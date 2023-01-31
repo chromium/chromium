@@ -109,8 +109,14 @@ void DeviceSwitcherResultDispatcher::OnGotResult(
   }
   SaveResultToPref(result);
   initialized_ = true;
-  field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
-                                            result.ordered_labels[0]);
+  if (result.status == PredictionStatus::kSucceeded &&
+      !result.ordered_labels.empty()) {
+    field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
+                                              result.ordered_labels[0]);
+  } else {
+    field_trial_register_->RegisterFieldTrial(kDeviceSwitcherFieldTrialName,
+                                              "Unselected");
+  }
   if (!waiting_callback_.is_null()) {
     std::move(waiting_callback_).Run(result);
   }
