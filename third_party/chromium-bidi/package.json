@@ -8,7 +8,7 @@
     "e2e-headful": "npm run server-no-build -- --headless=false & npm run e2e-only",
     "e2e-headless": "npm run server-no-build & npm run e2e-only",
     "e2e": "npm run e2e-headless",
-    "e2e-only": "python3 -m pytest --rootdir=tests",
+    "e2e-only": "python3 -m pytest",
     "eslint": "eslint --ext js --ext ts --fix .",
     "format": "npm run eslint && npm run prettier & npm run yapf",
     "prepare": "npm run clean && npm run build",
