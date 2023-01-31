@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/types/display_constants.h"
 
 namespace aura {
 class Window;
@@ -30,7 +31,10 @@ COMPONENT_EXPORT(UI_WM) void DeactivateWindow(aura::Window* window);
 COMPONENT_EXPORT(UI_WM) bool IsActiveWindow(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM) bool CanActivateWindow(const aura::Window* window);
 COMPONENT_EXPORT(UI_WM)
-void SetWindowFullscreen(aura::Window* window, bool fullscreen);
+void SetWindowFullscreen(
+    aura::Window* window,
+    bool fullscreen,
+    int64_t target_display_id = display::kInvalidDisplayId);
 
 // Returns true if |window|'s show state is |state|.
 COMPONENT_EXPORT(UI_WM)

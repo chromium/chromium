@@ -768,12 +768,10 @@ void NativeWidgetAura::Restore() {
 
 void NativeWidgetAura::SetFullscreen(bool fullscreen,
                                      int64_t target_display_id) {
-  // TODO(crbug.com/1034783) Support `target_display_id` on this platform.
-  DCHECK_EQ(target_display_id, display::kInvalidDisplayId);
-  if (!window_ || IsFullscreen() == fullscreen)
-    return;  // Nothing to do.
-
-  wm::SetWindowFullscreen(window_, fullscreen);
+  if (!window_) {
+    return;
+  }
+  wm::SetWindowFullscreen(window_, fullscreen, target_display_id);
 }
 
 bool NativeWidgetAura::IsFullscreen() const {

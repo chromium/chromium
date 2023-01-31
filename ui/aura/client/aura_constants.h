@@ -148,6 +148,11 @@ AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
     kShowStateKey;
 
+// A property key to store the display id on which to put the fullscreen window.
+// display::kInvalidDisplayId means use the display the window is currently on.
+AURA_EXPORT extern const WindowProperty<int64_t>* const
+    kFullscreenTargetDisplayIdKey;
+
 // A property key to store ui::WindowShowState for a window to restore back to
 // from the current window show state.
 AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const

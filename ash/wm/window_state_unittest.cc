@@ -566,9 +566,7 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   window->layer()->GetAnimator()->Step(base::TimeTicks::Now() +
                                        base::Seconds(1));
   EXPECT_EQ(expected, window->GetBoundsInScreen());
-  LOG(ERROR) << "pass here";
   EXPECT_EQ(0.5f, *window_state->snap_ratio());
-  LOG(ERROR) << "pass here2";
 
   // Drag the window to unsnap but do not release.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -578,7 +576,6 @@ TEST_F(WindowStateTest, SnapSnappedWindow) {
   // While dragged, the window size should restore to its normal bound.
   EXPECT_EQ(window_normal_size, window->bounds().size());
   EXPECT_EQ(1.0f, *window_state->snap_ratio());
-  LOG(ERROR) << "pass here3";
 
   // Continue dragging the window and snap it back to the same position.
   generator->MoveMouseBy(-405, 0);
@@ -839,6 +836,253 @@ TEST_F(WindowStateTest, FullscreenMinimizedSwitching) {
   // return to the state before minimizing and fullscreen.
   ToggleFullScreen(window_state, nullptr);
   ASSERT_TRUE(window_state->IsMaximized());
+}
+
+TEST_F(WindowStateTest, FullscreenToCurrentDisplayExplicitly) {
+  UpdateDisplay("800x600,1024x768");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(displays.size(), 2u);
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
+  EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
+
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Start from the 1st display.
+  const gfx::Rect initial_bounds(100, 10, 200, 100);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(initial_bounds));
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[0].id());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  // Fullscreen onto current display explicitly.
+  ::wm::SetWindowFullscreen(window.get(), true, displays[0].id());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[0].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[0].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore back to current display.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[0].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), initial_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+}
+
+TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromNormal) {
+  UpdateDisplay("800x600,1024x768,1280x720");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(displays.size(), 3u);
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
+  EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
+  EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
+
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Start from the 2nd display.
+  const gfx::Rect initial_bounds(900, 10, 200, 100);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(initial_bounds));
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  // Fullscreen onto 3rd display.
+  ::wm::SetWindowFullscreen(window.get(), true, displays[2].id());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[2].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[2].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore back to 2nd display.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), initial_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+}
+
+TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromOtherStates) {
+  UpdateDisplay("800x600,1024x768,1280x720");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(displays.size(), 3u);
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
+  EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
+  EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
+
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Start from the 2nd display.
+  const gfx::Rect initial_bounds(900, 10, 200, 100);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(initial_bounds));
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  const WMEvent snap_right_event(WM_EVENT_SNAP_SECONDARY);
+  window_state->OnWMEvent(&snap_right_event);
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+  const gfx::Rect snapped_bounds = window_state->GetCurrentBoundsInScreen();
+
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+  const gfx::Rect maximized_bounds = window_state->GetCurrentBoundsInScreen();
+  EXPECT_EQ(maximized_bounds, displays[1].work_area());
+
+  // Fullscreen onto 3rd display.
+  ::wm::SetWindowFullscreen(window.get(), true, displays[2].id());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[2].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[2].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore back to 2nd display maximized.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), maximized_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore again back to snapped.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), snapped_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore again back to normal state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), initial_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+}
+
+TEST_F(WindowStateTest, FullscreenToAnotherDisplayFromFullscreen) {
+  UpdateDisplay("800x600,1024x768,1280x720");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(displays.size(), 3u);
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
+  EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
+  EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
+
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Start from the 2nd display.
+  const gfx::Rect initial_bounds(900, 10, 200, 100);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(initial_bounds));
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  // Fullscreen onto 2nd display.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[1].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Fullscreen onto 3rd display.
+  ::wm::SetWindowFullscreen(window.get(), true, displays[2].id());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[2].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[2].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore back to normal state.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), initial_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+}
+
+TEST_F(WindowStateTest, FullscreenToAnotherDisplayWithMinimize) {
+  UpdateDisplay("800x600,1024x768,1280x720");
+  const auto& displays = display_manager()->active_display_list();
+  ASSERT_EQ(displays.size(), 3u);
+  EXPECT_EQ(displays[0].size(), gfx::Size(800, 600));
+  EXPECT_EQ(displays[1].size(), gfx::Size(1024, 768));
+  EXPECT_EQ(displays[2].size(), gfx::Size(1280, 720));
+
+  display::Screen* screen = display::Screen::GetScreen();
+
+  // Start from the 2nd display.
+  const gfx::Rect initial_bounds(900, 10, 200, 100);
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(initial_bounds));
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  window_state->Maximize();
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+  const gfx::Rect maximized_bounds = window_state->GetCurrentBoundsInScreen();
+  EXPECT_EQ(maximized_bounds, displays[1].work_area());
+
+  // Fullscreen onto 3rd display.
+  ::wm::SetWindowFullscreen(window.get(), true, displays[2].id());
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[2].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[2].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Minimize and restore.
+  window_state->Minimize();
+  EXPECT_TRUE(window_state->IsMinimized());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsFullscreen());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[2].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), displays[2].bounds());
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore back to 2nd display snapped.
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), maximized_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), initial_bounds);
+
+  // Restore again back to normal state.
+  window_state->Restore();
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_EQ(screen->GetDisplayNearestWindow(window.get()).id(),
+            displays[1].id());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), initial_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
 }
 
 TEST_F(WindowStateTest, CanConsumeSystemKeys) {

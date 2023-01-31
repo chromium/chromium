@@ -9,6 +9,8 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/wm/core/transient_window_manager.h"
 #include "ui/wm/core/window_properties.h"
 #include "ui/wm/public/activation_client.h"
@@ -28,7 +30,7 @@ void CloneChildren(ui::Layer* to_clone,
   Layers children(to_clone->children());
   for (Layers::const_iterator i = children.begin(); i != children.end(); ++i) {
     ui::LayerOwner* owner = (*i)->owner();
-    ui::Layer* old_layer = owner ? map_func.Run(owner).release() : NULL;
+    ui::Layer* old_layer = owner ? map_func.Run(owner).release() : nullptr;
     if (old_layer) {
       parent->Add(old_layer);
       // RecreateLayer() moves the existing children to the new layer. Create a
@@ -85,14 +87,33 @@ bool CanActivateWindow(const aura::Window* window) {
   return client && client->CanActivateWindow(window);
 }
 
-void SetWindowFullscreen(aura::Window* window, bool fullscreen) {
+void SetWindowFullscreen(aura::Window* window,
+                         bool fullscreen,
+                         int64_t target_display_id) {
   DCHECK(window);
+  // Should only specify display id when entering fullscreen.
+  DCHECK(target_display_id == display::kInvalidDisplayId || fullscreen);
+
   ui::WindowShowState current_show_state =
       window->GetProperty(aura::client::kShowStateKey);
   const bool is_fullscreen = current_show_state == ui::SHOW_STATE_FULLSCREEN;
-  if (fullscreen == is_fullscreen)
+  if (fullscreen == is_fullscreen &&
+      target_display_id == display::kInvalidDisplayId) {
     return;
+  }
   if (fullscreen) {
+    // We only want the current display id if the window is rooted in a display.
+    // Need to check for root window, otherwise GetDisplayNearestWindow() would
+    // return the primary display by default.
+    int64_t current_display_id =
+        window->GetRootWindow()
+            ? display::Screen::GetScreen()->GetDisplayNearestWindow(window).id()
+            : display::kInvalidDisplayId;
+    if (is_fullscreen && target_display_id == current_display_id) {
+      // Already fullscreened on the target display.
+      return;
+    }
+
     // Save the current show state as its restore show state so that we can
     // correctly restore it after exiting the fullscreen mode.
     // Note `aura::client::kRestoreShowStateKey` can be overwritten later by the
@@ -104,7 +125,12 @@ void SetWindowFullscreen(aura::Window* window, bool fullscreen) {
       window->SetProperty(aura::client::kRestoreShowStateKey,
                           current_show_state);
     }
+    // Set fullscreen display id first, so it's available when the show state
+    // property change is processed.
+    window->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
+                        target_display_id);
     window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+    window->ClearProperty(aura::client::kFullscreenTargetDisplayIdKey);
   } else {
     Restore(window);
   }
@@ -133,7 +159,7 @@ void Unminimize(aura::Window* window) {
 
 aura::Window* GetActivatableWindow(aura::Window* window) {
   ActivationClient* client = GetActivationClient(window->GetRootWindow());
-  return client ? client->GetActivatableWindow(window) : NULL;
+  return client ? client->GetActivatableWindow(window) : nullptr;
 }
 
 aura::Window* GetToplevelWindow(aura::Window* window) {
@@ -143,7 +169,7 @@ aura::Window* GetToplevelWindow(aura::Window* window) {
 
 const aura::Window* GetToplevelWindow(const aura::Window* window) {
   const ActivationClient* client = GetActivationClient(window->GetRootWindow());
-  return client ? client->GetToplevelWindow(window) : NULL;
+  return client ? client->GetToplevelWindow(window) : nullptr;
 }
 
 std::unique_ptr<ui::LayerTreeOwner> RecreateLayers(ui::LayerOwner* root) {

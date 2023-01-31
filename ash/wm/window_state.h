@@ -169,6 +169,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool IsPip() const;
   bool IsFloated() const;
 
+  // Gets the id of the display to show fullscreen on.
+  // Returns kInvalidDisplay if not set.
+  int64_t GetFullscreenTargetDisplayId() const;
+
   // True if the window's state type is chromeos::WindowStateType::kMaximized,
   // chromeos::WindowStateType::kFullscreen or
   // chromeos::WindowStateType::kPinned.
@@ -218,6 +222,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
 
   // Set the window state to its previous applicable window state.
   void Restore();
+
+  // Determines whether transitioning from the `previous_state` to the current
+  // state counts as restoring.
+  bool IsRestoring(chromeos::WindowStateType previous_state) const;
 
   // Caches, then disables z-ordering state and then stacks |window_| below
   // |window_on_top| if |window_| currently has a special z-order.

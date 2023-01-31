@@ -7,6 +7,7 @@
 #include "ui/base/class_property.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -76,6 +77,9 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
                              kShowStateKey,
                              ui::SHOW_STATE_DEFAULT)
+DEFINE_UI_CLASS_PROPERTY_KEY(int64_t,
+                             kFullscreenTargetDisplayIdKey,
+                             display::kInvalidDisplayId)
 DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
                              kRestoreShowStateKey,
                              ui::SHOW_STATE_NORMAL)

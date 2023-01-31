@@ -4280,10 +4280,10 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
     }
   }
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Request target display fullscreen from lower layers on supported platforms.
   frame_->SetFullscreen(fullscreen, display_id);
-#else  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#else   // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1034783): Reimplement this at lower layers on all platforms.
   if (fullscreen && display_id != display::kInvalidDisplayId) {
     display::Screen* screen = display::Screen::GetScreen();
@@ -4325,17 +4325,12 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
             weak_ptr_factory_.GetWeakPtr(), bounds_to_restore, was_maximized);
       }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // Always Restore() on ChromeOS Ash, to support moving snapped windows.
-      // TODO(crbug.com/1250088): Find a similar workaround on ChromeOS Lacros.
-      // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
-      const bool should_restore_window = true;
-#else
-      const bool should_restore_window = was_maximized;
-#endif
       // Restore the window as needed, so it can be moved to the target display.
-      if (should_restore_window)
+      // TODO(crbug.com/1250088): Support cross-display fullscreen for Lacros.
+      // TODO(crbug.com/1034783): Support lower-layer fullscreen-on-display.
+      if (was_maximized) {
         Restore();
+      }
       SetBounds({display.work_area().origin(),
                  frame_->GetWindowBoundsInScreen().size()});
     }
@@ -4343,7 +4338,7 @@ void BrowserView::ProcessFullscreen(bool fullscreen,
   frame_->SetFullscreen(fullscreen);
   if (!fullscreen && restore_pre_fullscreen_bounds_callback_)
     std::move(restore_pre_fullscreen_bounds_callback_).Run();
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Enable immersive before the browser refreshes its list of enabled commands.
   const bool should_stay_in_immersive =

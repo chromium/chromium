@@ -36,6 +36,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -62,15 +63,47 @@ gfx::Size GetWindowMaximumSize(aura::Window* window) {
                             : gfx::Size();
 }
 
-// Called to ensure the window is moved to the correct display when entering the
+// Moves the window to the specified display if necessary.
+void MoveWindowToDisplayAsNeeded(aura::Window* window, int64_t display_id) {
+  if (!window || display_id == display::kInvalidDisplayId) {
+    return;
+  }
+  aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
+  if (!root || root == window->GetRootWindow()) {
+    // No need to move unless window is rooted in a different display.
+    return;
+  }
+  root->GetChildById(window->parent()->GetId())->AddChild(window);
+}
+
+// Ensures the window is moved to the correct display when entering the
 // next state, taking into account whether it's restoring or not.
-void MoveWindowToDisplay(WindowState* window_state) {
+void EnsureWindowInCorrectDisplay(WindowState* window_state,
+                                  WindowStateType previous_state_type) {
+  if (window_state->IsMinimized()) {
+    return;
+  }
+
+  // When restoring, we want to use the restore bounds to calculate which
+  // display it should be moved to, hence the check for IsRestoring() and
+  // HasRestoreBounds(), otherwise we move the window according to its current
+  // bounds. A special case is when we come out of minimized state, where the
+  // current bounds is the bounds of the new state we're going back to, so we
+  // use that to move the window.
+  // The check for IsMaximizedOrFullscreenOrPinned() was moved from
+  // EnterToNextState(), which preserves some legacy behavior that may not be
+  // relevant anymore. It may be needed for the case of maximizing to another
+  // display then restoring, which should remain on the other display.
+  // TODO(aluh): Look into removing check for IsMaximizedOrFullscreenOrPinned().
   const gfx::Rect window_bounds =
-      window_state->HasRestoreBounds()
+      ((window_state->IsMaximizedOrFullscreenOrPinned() ||
+        window_state->IsRestoring(previous_state_type)) &&
+       window_state->HasRestoreBounds() &&
+       !chromeos::IsMinimizedWindowStateType(previous_state_type))
           ? window_state->GetRestoreBoundsInScreen()
           : window_state->GetCurrentBoundsInScreen();
 
-  // Move only if the restore bounds is outside of
+  // Move only if the window bounds is outside of
   // the display. There is no information about in which
   // display it should be restored, so this is best guess.
   // TODO(oshima): Restore information should contain the
@@ -81,18 +114,30 @@ void MoveWindowToDisplay(WindowState* window_state) {
                                .bounds();
 
   if (!display_area.Intersects(window_bounds)) {
-    const display::Display& display =
-        display::Screen::GetScreen()->GetDisplayMatching(window_bounds);
-    RootWindowController* new_root_controller =
-        Shell::Get()->GetRootWindowControllerWithDisplayId(display.id());
-    if (new_root_controller->GetRootWindow() !=
-        window_state->window()->GetRootWindow()) {
-      aura::Window* new_container =
-          new_root_controller->GetRootWindow()->GetChildById(
-              window_state->window()->parent()->GetId());
-      new_container->AddChild(window_state->window());
-    }
+    int64_t display_id =
+        display::Screen::GetScreen()->GetDisplayMatching(window_bounds).id();
+    MoveWindowToDisplayAsNeeded(window_state->window(), display_id);
   }
+}
+
+// Returns true if next state should be entered from the current state.
+bool ShouldEnterNextState(WindowStateType current_state,
+                          WindowStateType next_state,
+                          WindowState* window_state) {
+  if (current_state != next_state) {
+    return true;
+  }
+  // This handles the case where a window is already fullscreen on a display
+  // and we want to fullscreen it on a different display.
+  // TODO(aluh): Consider handling earlier, before call to EnterToNextState(),
+  // so we don't have to special case here. May run into tricky restore
+  // state/bounds corner cases.
+  if (next_state == chromeos::WindowStateType::kFullscreen &&
+      window_state->GetFullscreenTargetDisplayId() !=
+          display::kInvalidDisplayId) {
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -442,9 +487,9 @@ void DefaultState::SetBounds(WindowState* window_state,
 
 void DefaultState::EnterToNextState(WindowState* window_state,
                                     WindowStateType next_state_type) {
-  // Do nothing if  we're already in the same state.
-  if (state_type_ == next_state_type)
+  if (!ShouldEnterNextState(state_type_, next_state_type, window_state)) {
     return;
+  }
 
   WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
@@ -480,9 +525,6 @@ void DefaultState::EnterToNextState(WindowState* window_state,
         !window_state->unminimize_to_restore_bounds()) {
       window_state->SaveCurrentBoundsForRestore();
     }
-
-    if (window_state->IsMaximizedOrFullscreenOrPinned())
-      MoveWindowToDisplay(window_state);
 
     UpdateBoundsFromState(window_state, previous_state_type);
     UpdateMinimizedState(window_state, previous_state_type);
@@ -539,6 +581,11 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
   aura::Window* window = window_state->window();
   gfx::Rect bounds_in_parent;
 
+  // A window can be rooted in a different display than its bounds, in cases
+  // such as creating a new window with bounds in a different display, or
+  // restoring to a previous state that was in a different display.
+  EnsureWindowInCorrectDisplay(window_state, previous_state_type);
+
   switch (state_type_) {
     case WindowStateType::kPrimarySnapped:
     case WindowStateType::kSecondarySnapped:
@@ -587,6 +634,8 @@ void DefaultState::UpdateBoundsFromState(WindowState* window_state,
     case WindowStateType::kFullscreen:
     case WindowStateType::kPinned:
     case WindowStateType::kTrustedPinned:
+      MoveWindowToDisplayAsNeeded(window_state->window(),
+                                  window_state->GetFullscreenTargetDisplayId());
       bounds_in_parent = screen_util::GetFullscreenWindowBoundsInParent(window);
       break;
 

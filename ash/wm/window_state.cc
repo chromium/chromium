@@ -122,8 +122,11 @@ bool IsValidForRestoreHistory(WindowStateType state_type) {
 bool CanRestoreState(WindowStateType current_state,
                      WindowStateType previous_state,
                      bool allow_same_level_restore) {
-  DCHECK(IsValidForRestoreHistory(current_state));
-  DCHECK(IsValidForRestoreHistory(previous_state));
+  if (!IsValidForRestoreHistory(current_state) ||
+      !IsValidForRestoreHistory(previous_state)) {
+    return false;
+  }
+
   if (kWindowStateRestoreHistoryLayerMap.at(current_state) >
       kWindowStateRestoreHistoryLayerMap.at(previous_state)) {
     return true;
@@ -147,10 +150,8 @@ bool CanRestoreState(WindowStateType current_state,
 bool IsEquivalent(WindowStateType lhs, WindowStateType rhs) {
   return lhs == rhs ||
          // Treat kDefault and kNormal as equivalent.
-         ((lhs == chromeos::WindowStateType::kDefault &&
-           rhs == chromeos::WindowStateType::kNormal) ||
-          (lhs == chromeos::WindowStateType::kNormal &&
-           rhs == chromeos::WindowStateType::kDefault));
+         (chromeos::IsNormalWindowStateType(lhs) &&
+          chromeos::IsNormalWindowStateType(rhs));
 }
 
 // Gets the bounds in screen coordinates from the RestoreState that can be used
@@ -411,6 +412,10 @@ bool WindowState::IsFloated() const {
   return GetStateType() == WindowStateType::kFloated;
 }
 
+int64_t WindowState::GetFullscreenTargetDisplayId() const {
+  return window_->GetProperty(aura::client::kFullscreenTargetDisplayIdKey);
+}
+
 bool WindowState::IsNormalStateType() const {
   return IsNormalWindowStateType(GetStateType());
 }
@@ -484,6 +489,11 @@ void WindowState::Deactivate() {
 void WindowState::Restore() {
   const WMEvent event(WM_EVENT_RESTORE);
   OnWMEvent(&event);
+}
+
+bool WindowState::IsRestoring(WindowStateType previous_state) const {
+  return CanRestoreState(previous_state, GetStateType(),
+                         /*allow_same_level_restore=*/false);
 }
 
 void WindowState::DisableZOrdering(aura::Window* window_on_top) {
