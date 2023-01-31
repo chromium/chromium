@@ -3865,6 +3865,18 @@
           # '--enable-metal-debug-layers',
         ],
       },
+      'mac-angle-chromium-amd': {
+        'args': [
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
+        ],
+      },
+      'mac-angle-chromium-intel': {
+        'args': [
+          '--enable-metal-debug-layers',
+        ],
+      },
     },
   },
   'webgl2_conformance_validating_tests': {
@@ -3948,6 +3960,18 @@
           # This slows down tests and we are currently having AMD Mac capacity
           # issues.
           # '--enable-metal-debug-layers',
+        ],
+      },
+      'mac-angle-chromium-amd': {
+        'args': [
+          # This slows down tests and we are currently having AMD Mac capacity
+          # issues.
+          # '--enable-metal-debug-layers',
+        ],
+      },
+      'mac-angle-chromium-intel': {
+        'args': [
+          '--enable-metal-debug-layers',
         ],
       },
     },
