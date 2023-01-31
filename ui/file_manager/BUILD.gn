@@ -140,7 +140,8 @@ ash_ts_library("build_ts") {
 
   deps = [
     "//third_party/material_web_components:library",
-    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 
   path_mappings = [ "chrome://resources/mwc/*|" + rebase_path(
@@ -193,6 +194,8 @@ ts_library("test_build_ts") {
   deps = [
     ":build_ts",
     "//chrome/test/data/webui:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
   extra_deps = [
     ":copy_definitions_to_gen",
@@ -208,7 +211,6 @@ ts_definitions("generate_definitions") {
   out_dir = target_gen_dir
 
   extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
-  deps = [ "//ui/webui/resources:library" ]
 
   js_files = generate_definitions_js_files
 }
