@@ -11,7 +11,7 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [ "color_internals.mojom" ]
 
-  webui_module_path = "/ash/webui/color_internals"
+  webui_module_path = "/" + rebase_path(".", "//")
 
   public_deps = [ "//skia/public/mojom" ]
 
@@ -31,15 +31,6 @@ mojom("mojom") {
       ]
     },
   ]
-}
 
-ts_library("mojom_ts") {
-  mojom_gen_dir = "$root_gen_dir/mojom-webui/" + rebase_path(".", "//")
-  root_dir = mojom_gen_dir
-  out_dir = "$mojom_gen_dir/tsc"
-  tsconfig_base = "../resources/tsconfig_base.json"
-  in_files = [ "color_internals.mojom-webui.js" ]
-  deps = [ "//ui/webui/resources/mojo:library" ]
-  extra_deps = [ ":mojom_webui_js" ]
-  composite = true
+  use_typescript_sources = true
 }
