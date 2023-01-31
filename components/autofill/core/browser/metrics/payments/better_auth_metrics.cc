@@ -23,8 +23,10 @@ void LogCardUnmaskDurationAfterWebauthn(
       duration);
 }
 
-void LogCardUnmaskPreflightCalled() {
-  UMA_HISTOGRAM_BOOLEAN("Autofill.BetterAuth.CardUnmaskPreflightCalled", true);
+void LogCardUnmaskPreflightCalled(bool is_user_opted_in) {
+  UMA_HISTOGRAM_BOOLEAN(
+      "Autofill.BetterAuth.CardUnmaskPreflightCalledWithFidoOptInStatus",
+      is_user_opted_in);
 }
 
 void LogCardUnmaskPreflightDuration(const base::TimeDelta& duration) {

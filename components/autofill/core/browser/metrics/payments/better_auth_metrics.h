@@ -109,8 +109,10 @@ void LogCardUnmaskDurationAfterWebauthn(
     AutofillClient::PaymentsRpcCardType card_type);
 
 // Logs the count of calls to PaymentsClient::GetUnmaskDetails() (aka
-// GetDetailsForGetRealPan).
-void LogCardUnmaskPreflightCalled();
+// GetDetailsForGetRealPan). If `is_user_opted_in` is true, then the user is
+// opted-in to FIDO auth, and if the user is not opted-in to FIDO auth then
+// `is_user_opted_in` is false.
+void LogCardUnmaskPreflightCalled(bool is_user_opted_in);
 
 // Logs the duration of the PaymentsClient::GetUnmaskDetails() call (aka
 // GetDetailsForGetRealPan).
