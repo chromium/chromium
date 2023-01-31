@@ -132,8 +132,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.Flow.{UserVisibility}.{UserCount}"
-    enum="LoginFlowUserLoginType" expires_after="2022-12-15">
-  <owner>sherrilin@google.com</owner>
+    enum="LoginFlowUserLoginType" expires_after="2023-06-01">
+  <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
     Report the type of user login and the number of it on a device. It is

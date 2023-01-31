@@ -29529,7 +29529,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Shelf_ShutDown">
-  <owner>sherrilin@google.com</owner>
+  <owner>antrim@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <description>User shut down from the shelf shutdown button.</description>
 </action>
