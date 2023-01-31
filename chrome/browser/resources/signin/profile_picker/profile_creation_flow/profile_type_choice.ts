@@ -58,6 +58,13 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
         notify: true,
       },
 
+      isNewDesign_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isNewDesign');
+        },
+      },
+
       /**
        * The disclaimer for managed devices.
        */
@@ -86,6 +93,7 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   private managedDeviceDisclaimer_: boolean;
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
+  private isNewDesign_: boolean;
 
   // <if expr="chromeos_lacros">
   private hasAvailableAccounts_: boolean;
@@ -150,6 +158,10 @@ export class ProfileTypeChoiceElement extends ProfileTypeChoiceElementBase {
   private getBackButtonAriaLabel_(): string {
     return this.i18n(
         'backButtonAriaLabel', this.i18n('profileTypeChoiceTitle'));
+  }
+
+  private getNewDesignClass_() {
+    return this.isNewDesign_ ? 'new-design' : '';
   }
 
   // <if expr="chromeos_lacros">

@@ -29,11 +29,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/profile_picker_resources.h"
 #include "chrome/grit/profile_picker_resources_map.h"
+#include "chrome/grit/signin_resources.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -256,6 +258,18 @@ void AddStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "isLocalProfileCreationDialogEnabled",
       base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
+
+  // Update the profile picker design to match tangible sync styles when
+  // `switches::kTangibleSync` is enabled
+  html_source->AddBoolean(
+      "isNewDesign", base::FeatureList::IsEnabled(switches::kTangibleSync));
+
+  html_source->AddResourcePath(
+      "images/profile_type_choice_left_illustration.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_LEFT_ILLUSTRATION_SVG);
+  html_source->AddResourcePath(
+      "images/profile_type_choice_right_illustration.svg",
+      IDR_SIGNIN_SYNC_CONFIRMATION_IMAGES_TANGIBLE_SYNC_WINDOW_RIGHT_ILLUSTRATION_SVG);
 }
 
 }  // namespace

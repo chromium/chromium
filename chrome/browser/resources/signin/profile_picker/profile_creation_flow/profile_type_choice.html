@@ -66,6 +66,43 @@
     text-align: center;
   }
 
+  #new-design-left-illustration {
+    content: url(../images/profile_type_choice_left_illustration.svg);
+    left: 0;
+  }
+
+  #new-design-right-illustration {
+    content: url(../images/profile_type_choice_right_illustration.svg);
+    right: 0;
+  }
+
+  #new-design-left-illustration,
+  #new-design-right-illustration {
+    max-width: 320px;
+    position: absolute;
+    top: 0;
+    width: 17vw;
+  }
+
+  .new-design .title {
+    font-family: 'Google Sans', arial, sans-serif;
+    font-size: 2.25rem;
+    font-weight: 500;
+    line-height: 43px;
+    margin-bottom: 16px;
+  }
+
+  .new-design .subtitle {
+    font-size: 1.25rem;
+    line-height: 24px;
+  }
+
+  .new-design cr-button {
+    --cr-button-height: 36px;
+    font-family: 'Google Sans', arial, sans-serif;
+    font-size: 0.75rem;
+  }
+
   @media (prefers-color-scheme: dark) {
     .info-box {
       border-color: var(--google-grey-600);
@@ -78,7 +115,8 @@
   }
 </style>
 
-<div id="leftBanner" class="banner"></div>
+<div id="leftBanner" class="banner" hidden="[[isNewDesign_]]"></div>
+<img id="new-design-left-illustration" hidden="[[!isNewDesign_]]">
 <div id="headerContainer"
     style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
@@ -90,11 +128,11 @@
     <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
   </div>
 </div>
-<div class="title-container">
+<div class$="title-container [[getNewDesignClass_()]]">
   <h1 class="title">$i18n{profileTypeChoiceTitle}</h1>
   <div class="subtitle">$i18n{profileTypeChoiceSubtitle}</div>
 </div>
-<div id="actionContainer">
+<div id="actionContainer" class$="[[getNewDesignClass_()]]">
   <cr-button id="signInButton" class="action-button" on-click="onSignInClick_"
       disabled="[[profileCreationInProgress]]">
     $i18n{signInButtonLabel}
@@ -104,7 +142,8 @@
     $i18n{notNowButtonLabel}
   </cr-button>
 </div>
-<div id="rightBanner" class="banner"></div>
+<div id="rightBanner" class="banner" hidden="[[isNewDesign_]]"></div>
+<img id="new-design-right-illustration" hidden="[[!isNewDesign_]]">
 
 <template is="dom-if" if="[[managedDeviceDisclaimer_]]">
   <div id="infoContainer">
