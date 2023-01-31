@@ -688,7 +688,19 @@ void AuraSurface::ShowTooltip(const char* text,
   auto* tooltip_controller = ash::Shell::Get()->tooltip_controller();
   tooltip_controller->SetShowTooltipDelay(window, show_delay);
   tooltip_controller->SetHideTooltipTimeout(window, hide_delay);
-  tooltip_controller->UpdateTooltip(window);
+
+  switch (trigger) {
+    case ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR:
+      tooltip_controller->UpdateTooltip(window);
+      break;
+    case ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD:
+      tooltip_controller->UpdateTooltipFromKeyboardWithAnchorPoint(position,
+                                                                   window);
+      break;
+    default:
+      VLOG(2) << "Unknown aura-shell tooltip trigger type: " << trigger;
+      tooltip_controller->UpdateTooltip(window);
+  }
 }
 
 void AuraSurface::HideTooltip() {

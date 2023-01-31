@@ -185,7 +185,13 @@ void TooltipController::UpdateTooltip(aura::Window* target) {
 
 void TooltipController::UpdateTooltipFromKeyboard(const gfx::Rect& bounds,
                                                   aura::Window* target) {
-  anchor_point_ = bounds.bottom_center();
+  UpdateTooltipFromKeyboardWithAnchorPoint(bounds.bottom_center(), target);
+}
+
+void TooltipController::UpdateTooltipFromKeyboardWithAnchorPoint(
+    const gfx::Point& anchor_point,
+    aura::Window* target) {
+  anchor_point_ = anchor_point;
   SetObservedWindow(target);
 
   // Update the position of the active but not yet visible keyboard triggered
