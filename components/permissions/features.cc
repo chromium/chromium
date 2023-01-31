@@ -116,7 +116,7 @@ BASE_FEATURE(kPermissionsPostPromptSurvey,
 // is not handled by this component, but left to the embedding browser.
 BASE_FEATURE(kRecordPermissionExpirationTimestamps,
              "RecordPermissionExpirationTimestamps",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
