@@ -410,8 +410,7 @@
 // item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
   return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
-         self.isIncognito &&
-         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+         self.isIncognito;
 }
 
 // Returns the menu for the new tab button.

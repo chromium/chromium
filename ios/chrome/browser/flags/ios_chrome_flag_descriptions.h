@@ -742,11 +742,6 @@ extern const char kToolbarContainerDescription[];
 extern const char kTrendingQueriesModuleName[];
 extern const char kTrendingQueriesModuleDescription[];
 
-// Title and description for the flag to enable removing any entry points to the
-// history UI from Incognito mode.
-extern const char kUpdateHistoryEntryPointsInIncognitoName[];
-extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
-
 // Title and description for the flag to enable using Lens to search for an
 // image from the long press context menu.
 extern const char kUseLensToSearchForImageName[];

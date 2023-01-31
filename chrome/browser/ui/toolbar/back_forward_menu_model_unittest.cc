@@ -113,12 +113,7 @@ class BackFwdMenuModelTest : public ChromeRenderViewHostTestHarness {
 
 class BackFwdMenuModelIncognitoTest : public ChromeRenderViewHostTestHarness {
  public:
-  BackFwdMenuModelIncognitoTest() {
-    // Enable kUpdateHistoryEntryPointsInIncognito feature flag to change menu
-    // content.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kUpdateHistoryEntryPointsInIncognito);
-  }
+  BackFwdMenuModelIncognitoTest() = default;
 
   void LoadURLAndUpdateState(const char* url, const std::u16string& title) {
     NavigateAndCommit(GURL(url));

@@ -297,7 +297,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceRefactor,
     &kStartSurfaceDisabledFeedImprovement,
     &kUmaBackgroundSessions,
-    &kUpdateHistoryEntryPointsInIncognito,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kVoiceSearchAudioCapturePolicy,
@@ -979,10 +978,6 @@ BASE_FEATURE(kStartSurfaceDisabledFeedImprovement,
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
 BASE_FEATURE(kUmaBackgroundSessions,
              "UMABackgroundSessions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kUpdateHistoryEntryPointsInIncognito,
-             "UpdateHistoryEntryPointsInIncognito",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUpdateNotificationScheduleServiceImmediateShowOption,

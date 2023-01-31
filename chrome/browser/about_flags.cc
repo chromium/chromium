@@ -8006,11 +8006,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnableKeyboardBacklightToggle)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"update-history-entry-points-in-incognito",
-     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoName,
-     flag_descriptions::kUpdateHistoryEntryPointsInIncognitoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kUpdateHistoryEntryPointsInIncognito)},
-
     {"align-wakeups", flag_descriptions::kAlignWakeUpsName,
      flag_descriptions::kAlignWakeUpsDescription, kOsAll,
      FEATURE_VALUE_TYPE(base::kAlignWakeUps)},

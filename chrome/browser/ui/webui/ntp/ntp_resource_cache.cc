@@ -310,11 +310,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
-  replacements["title"] = l10n_util::GetStringUTF8(
-      base::FeatureList::IsEnabled(
-          features::kUpdateHistoryEntryPointsInIncognito)
-          ? IDS_NEW_INCOGNITO_TAB_TITLE
-          : IDS_NEW_TAB_TITLE);
+  replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
   replacements["cookieControlsToggleChecked"] =
       cookie_controls_service->GetToggleCheckedValue() ? "checked" : "";
   replacements["hideTooltipIcon"] =

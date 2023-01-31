@@ -1755,13 +1755,6 @@ const char kIncognitoReauthenticationForAndroidDescription[] =
     "When enabled, a setting appears in Settings > Privacy and Security, to "
     "enable reauthentication for accessing your existing Incognito tabs.";
 
-const char kUpdateHistoryEntryPointsInIncognitoName[] =
-    "Update history entry points in Incognito.";
-const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
-    "When enabled, the entry points to history UI from Incognito mode will be "
-    "removed for iOS and Desktop. An educative placeholder will be shown for "
-    "Android history page.";
-
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI";

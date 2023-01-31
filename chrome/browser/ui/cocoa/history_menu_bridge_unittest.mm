@@ -568,8 +568,6 @@ TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForRegularMode) {
 }
 
 TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForIncognitoMode) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kUpdateHistoryEntryPointsInIncognito);
   bridge_ = std::make_unique<MockBridge>(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   CheckMenuItemVisibility(this, true);

@@ -599,11 +599,6 @@ void HistoryMenuBridge::SetVisibilityOfMenuItems() {
 }
 
 bool HistoryMenuBridge::ShouldMenuItemBeVisible(NSMenuItem* item) {
-  if (!base::FeatureList::IsEnabled(
-          features::kUpdateHistoryEntryPointsInIncognito)) {
-    return true;
-  }
-
   int tag = [item tag];
   switch (tag) {
     // The common menu items for both profiles

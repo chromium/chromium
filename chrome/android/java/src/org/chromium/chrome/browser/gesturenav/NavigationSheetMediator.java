@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -39,8 +38,6 @@ import java.util.Set;
  * Mediator class for navigation sheet.
  */
 class NavigationSheetMediator {
-    private static final String INCOGNITO_HISTORY_ENTRIES_FLAG =
-            ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO;
     private final ClickListener mClickListener;
     private final FaviconHelper mFaviconHelper;
     private final RoundedIconGenerator mIconGenerator;
@@ -171,16 +168,10 @@ class NavigationSheetMediator {
     }
 
     private Drawable getNTPIcon() {
-        return mProfile.isOffTheRecord()
-                        && ChromeFeatureList.isEnabled(INCOGNITO_HISTORY_ENTRIES_FLAG)
-                ? mIncognitoIcon
-                : mDefaultIcon;
+        return mProfile.isOffTheRecord() ? mIncognitoIcon : mDefaultIcon;
     }
 
     private String getNTPText() {
-        return mProfile.isOffTheRecord()
-                        && ChromeFeatureList.isEnabled(INCOGNITO_HISTORY_ENTRIES_FLAG)
-                ? mNewIncognitoTabText
-                : mNewTabText;
+        return mProfile.isOffTheRecord() ? mNewIncognitoTabText : mNewTabText;
     }
 }

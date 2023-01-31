@@ -151,7 +151,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
         recordUserAction("Show");
         // If incognito placeholder is shown, we don't need to create History UI elements.
-        if (shouldShowIncognitoPlaceholder()) {
+        if (mIsIncognito) {
             mRootView = getIncognitoHistoryPlaceholderView();
             return;
         }
@@ -551,12 +551,6 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         return mRootView;
     }
 
-    private boolean shouldShowIncognitoPlaceholder() {
-        return mIsIncognito
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO);
-    }
-
     /**
      * @return The placeholder view to be shown instead of history UI in incognito mode.
      */
@@ -577,7 +571,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
     private void swapContentView() {
         boolean toHistoryClusters;
-        if (shouldShowIncognitoPlaceholder()) {
+        if (mIsIncognito) {
             return;
         } else if (isHistoryClustersUIShowing()) {
             toHistoryClusters = false;
@@ -639,7 +633,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * Called when the activity/native page is destroyed.
      */
     public void onDestroyed() {
-        if (shouldShowIncognitoPlaceholder()) {
+        if (mIsIncognito) {
             // If Incognito placeholder is shown no need to call any destroy method.
             return;
         }
@@ -659,7 +653,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
      * @return True if manager handles this event, false if it decides to ignore.
      */
     public boolean onBackPressed() {
-        if (shouldShowIncognitoPlaceholder() || mSelectableListLayout == null) {
+        if (mIsIncognito || mSelectableListLayout == null) {
             // If Incognito placeholder is shown, the back press should handled by HistoryActivity.
             return false;
         } else if (isHistoryClustersUIShowing()) {

@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gesturenav.NavigationSheetMediator.ItemProperties;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,7 +34,6 @@ import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
@@ -231,7 +229,6 @@ public class NavigationSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO})
     public void testFieldsForOffTheRecordProfile() throws ExecutionException {
         TestNavigationController controller = new TestNavigationController();
         NavigationSheetCoordinator sheet = (NavigationSheetCoordinator) showPopup(controller, true);
@@ -260,7 +257,6 @@ public class NavigationSheetTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO})
     public void testFieldsForRegularProfile() throws ExecutionException {
         TestNavigationController controller = new TestNavigationController();
         NavigationSheetCoordinator sheet =

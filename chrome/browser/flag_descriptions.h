@@ -979,9 +979,6 @@ extern const char kIncognitoReauthenticationForAndroidDescription[];
 extern const char kIncognitoDownloadsWarningName[];
 extern const char kIncognitoDownloadsWarningDescription[];
 
-extern const char kUpdateHistoryEntryPointsInIncognitoName[];
-extern const char kUpdateHistoryEntryPointsInIncognitoDescription[];
-
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
 

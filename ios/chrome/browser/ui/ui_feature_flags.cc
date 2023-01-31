@@ -63,10 +63,6 @@ BASE_FEATURE(kIOSLocationBarUseNativeContextMenu,
              "IOSLocationBarUseNativeContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUpdateHistoryEntryPointsInIncognito,
-             "UpdateHistoryEntryPointsInIncognito",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseLensToSearchForImage,
              "UseLensToSearchForImage",
              base::FEATURE_ENABLED_BY_DEFAULT);

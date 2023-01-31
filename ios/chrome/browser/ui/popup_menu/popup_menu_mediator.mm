@@ -1281,8 +1281,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_SETTINGS, PopupMenuActionSettings,
                           @"popup_menu_settings", kToolsMenuSettingsActionId);
 
-  if (self.isIncognito &&
-      base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito)) {
+  if (self.isIncognito) {
     return @[ bookmarks, self.readingListItem, downloadsFolder, settings ];
   }
 
@@ -1324,9 +1323,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // Returns YES if incognito NTP title and image should be used for back/forward
 // item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
-  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
-         self.isIncognito &&
-         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+    return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
+           self.isIncognito;
 }
 
 // Searches the copied image. If `usingLens` is set, then the search will be

@@ -526,8 +526,6 @@ public abstract class ChromeFeatureList {
     public static final String UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES =
             "UnifiedPasswordManagerErrorMessages";
     public static final String UPCOMING_SHARING_FEATURES = "UpcomingSharingFeatures";
-    public static final String UPDATE_HISTORY_ENTRY_POINTS_IN_INCOGNITO =
-            "UpdateHistoryEntryPointsInIncognito";
     public static final String UPDATE_NOTIFICATION_IMMEDIATE_SHOW_OPTION =
             "UpdateNotificationScheduleServiceImmediateShowOption";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";

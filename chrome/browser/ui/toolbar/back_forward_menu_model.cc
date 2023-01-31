@@ -486,7 +486,5 @@ std::string BackForwardMenuModel::BuildActionName(
 }
 
 bool BackForwardMenuModel::ShouldShowFullHistoryBeVisible() const {
-  return !browser_->profile()->IsOffTheRecord() ||
-         !base::FeatureList::IsEnabled(
-             features::kUpdateHistoryEntryPointsInIncognito);
+  return !browser_->profile()->IsOffTheRecord();
 }

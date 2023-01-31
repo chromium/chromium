@@ -847,12 +847,6 @@ extern const char kTrendingQueriesModuleName[] = "Show Trending Queries module";
 extern const char kTrendingQueriesModuleDescription[] =
     "When enabled, the trending queries module will be shown in the NTP";
 
-const char kUpdateHistoryEntryPointsInIncognitoName[] =
-    "Update history entry points in Incognito.";
-const char kUpdateHistoryEntryPointsInIncognitoDescription[] =
-    "When enabled, the entry points to history UI from Incognito mode will be "
-    "removed.";
-
 const char kUseLensToSearchForImageName[] =
     "Use Google Lens to Search for images";
 const char kUseLensToSearchForImageDescription[] =

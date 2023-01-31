@@ -1012,6 +1012,48 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
   EXPECT_EQ(profile, new_browser->profile());
 }
 
+// Test switching from Regular to OTR profiles updates the history menu.
+IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
+                       SwitchToIncognitoRemovesHistoryItems) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  AppController* ac =
+      base::mac::ObjCCastStrict<AppController>([NSApp delegate]);
+  ASSERT_TRUE(ac);
+
+  GURL simple(embedded_test_server()->GetURL("/simple.html"));
+  SendOpenUrlToAppController(simple);
+
+  Profile* profile = browser()->profile();
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+
+  // Load profile's History Service backend so it will be assigned to the
+  // HistoryMenuBridge, or else this test will fail flaky.
+  ui_test_utils::WaitForHistoryToLoad(HistoryServiceFactory::GetForProfile(
+      profile, ServiceAccessType::EXPLICIT_ACCESS));
+
+  // Verify that history bridge service is available for regular profiles.
+  EXPECT_TRUE([ac historyMenuBridge]->service());
+
+  // Open a URL in Incognito window.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), simple, WindowOpenDisposition::OFF_THE_RECORD,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+
+  // Check that there are exactly 2 browsers (regular and incognito).
+  BrowserList* active_browser_list = BrowserList::GetInstance();
+  EXPECT_EQ(2u, active_browser_list->size());
+
+  // Verify that history beidge service is not available in Incognito.
+  EXPECT_FALSE([ac historyMenuBridge]->service());
+
+  // Switch back to the regular profile window.
+  Browser* browser1 = active_browser_list->get(0);
+  browser1->window()->Show();
+
+  // Verify that history bridge service is available again.
+  EXPECT_TRUE([ac historyMenuBridge]->service());
+}
+
 class AppControllerIncognitoSwitchTest : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

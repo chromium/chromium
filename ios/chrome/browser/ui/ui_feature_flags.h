@@ -59,10 +59,6 @@ BASE_DECLARE_FEATURE(kIOSNewOmniboxImplementation);
 // Feature flag that removes the crash infobar.
 BASE_DECLARE_FEATURE(kRemoveCrashInfobar);
 
-// Feature flag to enable removing any entry points to the history UI from
-// Incognito mode.
-BASE_DECLARE_FEATURE(kUpdateHistoryEntryPointsInIncognito);
-
 // Feature flag to enable using Lens to search for images.
 BASE_DECLARE_FEATURE(kUseLensToSearchForImage);
 

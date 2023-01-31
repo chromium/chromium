@@ -258,9 +258,7 @@ void ShowHistory(Browser* browser, const std::string& host_name) {
   // History UI should not be shown in Incognito mode, instead history
   // disclaimer bubble should show up. This also updates the behavior of history
   // keyboard shortcts in Incognito.
-  if (browser->profile()->IsOffTheRecord() &&
-      base::FeatureList::IsEnabled(
-          features::kUpdateHistoryEntryPointsInIncognito)) {
+  if (browser->profile()->IsOffTheRecord()) {
     browser->window()->ShowIncognitoHistoryDisclaimerDialog();
     return;
   }
