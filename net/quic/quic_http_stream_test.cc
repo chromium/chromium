@@ -114,8 +114,14 @@ std::vector<TestParams> GetTestParams() {
   quic::ParsedQuicVersionVector all_supported_versions =
       quic::AllSupportedVersions();
   for (const auto& version : all_supported_versions) {
-    params.push_back(TestParams{version, false});
-    params.push_back(TestParams{version, true});
+    // Incremental support only exists for HTTP/3 and doesn't need to be tested
+    // in different permutations for previous versions of Quic.
+    if (quic::VersionUsesHttp3(version.transport_version)) {
+      params.push_back(TestParams{version, false});
+      params.push_back(TestParams{version, true});
+    } else {
+      params.push_back(TestParams{version, true});
+    }
   }
   return params;
 }
