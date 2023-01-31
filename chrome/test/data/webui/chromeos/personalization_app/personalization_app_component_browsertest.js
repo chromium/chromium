@@ -23,7 +23,7 @@ var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kAmbientSubpageUIChange',
+        'ash::features::kPersonalizationJelly',
       ]
     };
   }

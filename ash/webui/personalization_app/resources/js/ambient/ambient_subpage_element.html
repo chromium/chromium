@@ -96,7 +96,7 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
+  <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
     <ambient-preview-small></ambient-preview-small>
   </template>
   <!-- restamp to avoid layout issues with iron-list resizing while hidden -->
@@ -116,7 +116,7 @@
       </template>
       <template is="dom-if" if="[[ambientModeEnabled_]]">
         <!-- TODO(b/253470553): Remove after Ambient subpage UI change is released. -->
-        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
+        <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
           <ambient-preview-small class="pre-ui-change"></ambient-preview-small>
         </template>
         <template is="dom-if" if="[[loadingSettings_]]">
@@ -172,7 +172,7 @@
           </ambient-weather-unit>
         </template>
       </template>
-      <template is="dom-if" if="[[shouldShowZeroState_(ambientModeEnabled_, isAmbientSubpageUiChangeEnabled_)]]">
+      <template is="dom-if" if="[[shouldShowZeroState_(ambientModeEnabled_, isPersonalizationJellyEnabled_)]]">
         <ambient-zero-state id="zeroState"></ambient-zero-state>
       </template>
     </div>

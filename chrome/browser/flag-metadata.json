@@ -132,11 +132,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ambient-subpage-ui-change",
-    "owners": [ "assistive-eng@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "android-force-app-language-prompt",
     "owners": [ "perrier", "chrome-language@google.com" ],
     "expiry_milestone": 115
@@ -5683,6 +5678,11 @@
     "name": "permission-quiet-chip",
     "owners": [ "elklm", "engedy"],
     "expiry_milestone": 110
+  },
+  {
+    "name": "personalization-jelly",
+    "owners": ["assistive-eng@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "phone-hub-nudge",

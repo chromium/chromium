@@ -34,7 +34,7 @@ suite('AmbientSubpageTest', function() {
   setup(() => {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
-      isAmbientSubpageUiChangeEnabled: true,
+      isPersonalizationJellyEnabled: true,
     });
     const mocks = baseSetup();
     ambientProvider = mocks.ambientProvider;
@@ -688,8 +688,8 @@ suite('AmbientSubpageTest', function() {
   });
 
   test('displays zero state when ambient mode is disabled', async () => {
-    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({['isAmbientSubpageUiChangeEnabled']: false});
+    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
+    loadTimeData.overrideValues({['isPersonalizationJellyEnabled']: false});
 
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,

@@ -315,7 +315,7 @@
   </template>
   <template is="dom-if" if="[[loading_]]">
     <div id="imagePlaceholder" class="placeholder"></div>
-    <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
+    <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
       <div id="thumbnailPlaceholder" class="placeholder"></div>
     </template>
     <div id="textPlaceholder"
@@ -323,7 +323,7 @@
       <div class="placeholder"></div>
       <div class="placeholder"></div>
     </div>
-    <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
+    <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
       <div id="collagePlaceholder" class="placeholder"></div>
     </template>
   </template>
@@ -335,7 +335,7 @@
         <img class="preview-image disabled"
             src="//personalization/images/slideshow.png">
       </div>
-      <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
+      <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
         <div id="messageContainer" class="pre-ui-change">
           <span class="text" id="turnOnDescription">
             $i18n{ambientModeMainPageZeroStateMessage}
@@ -346,7 +346,7 @@
           </cr-button>
         </div>
       </template>
-      <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
+      <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
         <div id="messageContainer">
           <ambient-zero-state-svg></ambient-zero-state-svg>
           <template is="dom-if" if="[[!isAmbientModeManaged_]]">
@@ -384,7 +384,7 @@
               on-click="onClickPreviewImage_"
               on-keypress="onClickPreviewImage_">
         </div>
-        <template is="dom-if" if="[[isAmbientSubpageUiChangeEnabled_]]">
+        <template is="dom-if" if="[[isPersonalizationJellyEnabled_]]">
           <div id="thumbnailContainer" aria-hidden="true"
               class$="[[getThumbnailContainerClass_(collageImages_)]]"
               on-click="onClickPhotoCollage_"
@@ -418,7 +418,7 @@
             </span>
           </h3>
         </template>
-        <template is="dom-if" if="[[!isAmbientSubpageUiChangeEnabled_]]">
+        <template is="dom-if" if="[[!isPersonalizationJellyEnabled_]]">
           <h3 id="textContainer"
               class="preview-text-container album-info-mainpage pre-ui-change"
               aria-label$="[[getPreviewTextAriaLabel_(firstPreviewAlbum_, topicSource_, previewAlbums_)]]">

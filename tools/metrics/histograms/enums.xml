@@ -58416,6 +58416,7 @@ from previous Chrome versions.
   <int value="-1633416642" label="WallpaperFullScreenPreview:disabled"/>
   <int value="-1632828661" label="PrivacyReorderedAndroid:disabled"/>
   <int value="-1631329950" label="ssl-version-max"/>
+  <int value="-1631100739" label="PersonalizationJelly:disabled"/>
   <int value="-1631037170" label="IncludeIpcOverheadInNavigationStart:enabled"/>
   <int value="-1630419335" label="enable-download-notification"/>
   <int value="-1630332314" label="CellularForbidAttachApn:enabled"/>
@@ -60095,6 +60096,7 @@ from previous Chrome versions.
   <int value="-711991950" label="SiteExplorationUi:enabled"/>
   <int value="-711890895" label="enable-website-settings-manager"/>
   <int value="-711422585" label="kSignInProfileCreationEnterprise:disabled"/>
+  <int value="-710794209" label="PersonalizationJelly:enabled"/>
   <int value="-710519788" label="VariableCOLRV1:disabled"/>
   <int value="-709058455" label="ui-slow-animations"/>
   <int value="-708531565" label="EsbIphBubbleAndCollapseSettings:enabled"/>

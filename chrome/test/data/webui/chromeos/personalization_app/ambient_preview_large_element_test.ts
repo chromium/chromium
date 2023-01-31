@@ -40,6 +40,7 @@ suite('AmbientPreviewLargeTest', function() {
 
   test(
       'displays zero state message when ambient mode is disabled', async () => {
+        loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
         personalizationStore.data.ambient.albums = ambientProvider.albums;
         personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
         personalizationStore.data.ambient.ambientModeEnabled = false;
@@ -135,8 +136,8 @@ suite('AmbientPreviewLargeTest', function() {
   });
 
   test('click ambient collage goes to ambient albums subpage', async () => {
-    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: false});
+    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
 
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
@@ -189,7 +190,7 @@ suite('AmbientPreviewLargeTest', function() {
   });
 
   test('click ambient thumbnail goes to ambient albums subpage', async () => {
-    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: true});
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: true});
 
     personalizationStore.data.ambient = {
       ...personalizationStore.data.ambient,
@@ -242,8 +243,8 @@ suite('AmbientPreviewLargeTest', function() {
   });
 
   test('displays zero state message before UI change', async () => {
-    // Disables `isAmbientSubpageUiChangeEnabled` to show the previous UI.
-    loadTimeData.overrideValues({isAmbientSubpageUiChangeEnabled: false});
+    // Disables `isPersonalizationJellyEnabled` to show the previous UI.
+    loadTimeData.overrideValues({isPersonalizationJellyEnabled: false});
 
     personalizationStore.data.ambient.albums = ambientProvider.albums;
     personalizationStore.data.ambient.topicSource = TopicSource.kArtGallery;
@@ -271,7 +272,7 @@ suite('AmbientPreviewLargeTest', function() {
       async () => {
         // Enable `isAmbientModeManaged` to mock an enterprise controlled user.
         loadTimeData.overrideValues({
-          isAmbientSubpageUiChangeEnabled: true,
+          isPersonalizationJellyEnabled: true,
           isAmbientModeManaged: true,
         });
 

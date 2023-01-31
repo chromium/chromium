@@ -58,10 +58,10 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
         type: Array,
         value: null,
       },
-      isAmbientSubpageUiChangeEnabled_: {
+      isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled');
+          return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
         },
       },
       isAmbientModeManaged_: {
@@ -75,7 +75,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
 
   protected ambientModeEnabled_: boolean|null;
   protected googlePhotosAlbumsPreviews_: Url[]|null;
-  protected isAmbientSubpageUiChangeEnabled_: boolean;
+  protected isPersonalizationJellyEnabled_: boolean;
   protected previewAlbums_: AmbientModeAlbum[]|null;
   protected topicSource_: TopicSource|null;
 
@@ -149,7 +149,7 @@ export class AmbientPreviewBase extends WithPersonalizationStore {
 
     /* TODO(b/253470553): Remove this condition after Ambient subpage UI change
      * is released. */
-    if (!this.isAmbientSubpageUiChangeEnabled_) {
+    if (!this.isPersonalizationJellyEnabled_) {
       classes.push('pre-ui-change');
     }
     return classes.join(' ');

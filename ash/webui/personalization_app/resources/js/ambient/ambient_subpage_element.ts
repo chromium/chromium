@@ -68,10 +68,10 @@ export class AmbientSubpage extends WithPersonalizationStore {
         computed:
             'computeLoadingSettings_(albums_, temperatureUnit_, topicSource_)',
       },
-      isAmbientSubpageUiChangeEnabled_: {
+      isPersonalizationJellyEnabled_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('isAmbientSubpageUiChangeEnabled');
+          return loadTimeData.getBoolean('isPersonalizationJellyEnabled');
         },
       },
     };
@@ -84,7 +84,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private animationTheme_: AnimationTheme|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
-  private isAmbientSubpageUiChangeEnabled_: boolean;
+  private isPersonalizationJellyEnabled_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.
@@ -194,7 +194,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private shouldShowZeroState_(): boolean {
     // TODO(b/253470693): Remove after Ambient subpage UI change is released.
     return this.ambientModeEnabled_ === false &&
-        !this.isAmbientSubpageUiChangeEnabled_;
+        !this.isPersonalizationJellyEnabled_;
   }
 
   private isLoadingAmbientMode_(): boolean {

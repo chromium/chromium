@@ -63,11 +63,11 @@ export class AmbientPreviewLarge extends AmbientPreviewBase {
    *        - if `previewAlbums_` contains fewer than 4 albums, return one of
    *        their previews; otherwise return the first 4.
    *
-   * If isAmbientSubpageUiChangeEnabled flag is on, max number of collage image
+   * If isPersonalizationJellyEnabled flag is on, max number of collage image
    * will be 3 instead of 4.
    */
   private computeCollageImages_(): Url[] {
-    const maxLength = this.isAmbientSubpageUiChangeEnabled_ ? 3 : 4;
+    const maxLength = this.isPersonalizationJellyEnabled_ ? 3 : 4;
     switch (this.topicSource_) {
       case TopicSource.kArtGallery:
         return (this.previewAlbums_ || [])

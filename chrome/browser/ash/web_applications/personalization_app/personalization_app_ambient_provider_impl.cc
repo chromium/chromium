@@ -515,11 +515,11 @@ void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
 
 void PersonalizationAppAmbientProviderImpl::FetchGooglePhotosAlbumsPreviews(
     const std::vector<std::string>& album_ids) {
-  const int num_previews = features::IsAmbientSubpageUIChangeEnabled() ? 3 : 4;
+  const int num_previews = features::IsPersonalizationJellyEnabled() ? 3 : 4;
   const int preview_width =
-      features::IsAmbientSubpageUIChangeEnabled() ? 360 : kBannerWidthPx;
+      features::IsPersonalizationJellyEnabled() ? 360 : kBannerWidthPx;
   const int preview_height =
-      features::IsAmbientSubpageUIChangeEnabled() ? 130 : kBannerHeightPx;
+      features::IsPersonalizationJellyEnabled() ? 130 : kBannerHeightPx;
   DCHECK(!album_ids.empty());
   google_photos_albums_previews_weak_factory_.InvalidateWeakPtrs();
   ash::AmbientBackendController::Get()->GetGooglePhotosAlbumsPreview(

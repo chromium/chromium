@@ -131,10 +131,6 @@ BASE_FEATURE(kAmbientModeThrottleAnimation,
              "ChromeOSAmbientModeThrottleAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAmbientSubpageUIChange,
-             "AmbientSubpageUIChange",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kApnRevamp, "ApnRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppCollectionFolderRefresh,
@@ -1560,6 +1556,11 @@ BASE_FEATURE(kPcieBillboardNotification,
 // currently active desk.
 BASE_FEATURE(kPerDeskShelf, "PerDeskShelf", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Jelly features in Personalization App.
+BASE_FEATURE(kPersonalizationJelly,
+             "PersonalizationJelly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within ChromeOS.
 BASE_FEATURE(kPhoneHub, "PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2304,10 +2305,6 @@ bool IsAmbientModeThrottleAnimationEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeThrottleAnimation);
 }
 
-bool IsAmbientSubpageUIChangeEnabled() {
-  return base::FeatureList::IsEnabled(kAmbientSubpageUIChange);
-}
-
 bool IsApnRevampEnabled() {
   return base::FeatureList::IsEnabled(kApnRevamp);
 }
@@ -2906,6 +2903,11 @@ bool IsPcieBillboardNotificationEnabled() {
 
 bool IsPerDeskShelfEnabled() {
   return base::FeatureList::IsEnabled(kPerDeskShelf);
+}
+
+bool IsPersonalizationJellyEnabled() {
+  return base::FeatureList::IsEnabled(kPersonalizationJelly) &&
+         IsJellyEnabled();
 }
 
 bool IsPhoneHubCameraRollEnabled() {
