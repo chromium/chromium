@@ -113,12 +113,9 @@ bool VP9Decoder::VP9Accelerator::SupportsContextProbabilityReadback() const {
 
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
                        VideoCodecProfile profile,
-                       const VideoColorSpace& container_color_space,
-                       bool ignore_resolution_changes_to_smaller)
+                       const VideoColorSpace& container_color_space)
     : state_(kNeedStreamMetadata),
       container_color_space_(container_color_space),
-      ignore_resolution_changes_to_smaller_(
-          ignore_resolution_changes_to_smaller),
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
@@ -294,19 +291,11 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
     }
 
     DCHECK(!new_pic_size.IsEmpty());
-
-    const bool is_pic_size_different = new_pic_size != pic_size_;
-    const bool is_pic_size_larger = new_pic_size.width() > pic_size_.width() ||
-                                    new_pic_size.height() > pic_size_.height();
-    const bool is_new_configuration_different_enough =
-        (ignore_resolution_changes_to_smaller_ ? is_pic_size_larger
-                                               : is_pic_size_different) ||
-        new_profile != profile_ || curr_frame_hdr_->bit_depth != bit_depth_;
-
-    if (is_new_configuration_different_enough) {
+    if (new_pic_size != pic_size_ || new_profile != profile_ ||
+        curr_frame_hdr_->bit_depth != bit_depth_) {
       DVLOG(1) << "New profile: " << GetProfileName(new_profile)
-               << ", new resolution: " << new_pic_size.ToString()
-               << ", new bit depth: "
+               << ", New resolution: " << new_pic_size.ToString()
+               << ", New bit depth: "
                << base::strict_cast<int>(curr_frame_hdr_->bit_depth);
 
       if (!curr_frame_hdr_->IsKeyframe() &&
