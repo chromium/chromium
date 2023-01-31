@@ -11,6 +11,7 @@
 
 #include "ash/login_status.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
@@ -611,6 +612,24 @@ TEST_F(SessionControllerImplTest, IsUserFirstLogin) {
   session.user_info.is_new_profile = true;
   controller()->UpdateUserSession(session);
   EXPECT_TRUE(controller()->IsUserFirstLogin());
+}
+
+TEST_F(SessionControllerImplTest, ScopedScreenLockBlocker) {
+  SessionInfo info;
+  FillDefaultSessionInfo(&info);
+  SetSessionInfo(info);
+  UpdateSession(1u, "user1@test.com");
+  EXPECT_TRUE(controller()->CanLockScreen());
+  {
+    auto blocker1 = controller()->GetScopedScreenLockBlocker();
+    EXPECT_FALSE(controller()->CanLockScreen());
+    {
+      auto blocker2 = controller()->GetScopedScreenLockBlocker();
+      EXPECT_FALSE(controller()->CanLockScreen());
+    }
+    EXPECT_FALSE(controller()->CanLockScreen());
+  }
+  EXPECT_TRUE(controller()->CanLockScreen());
 }
 
 class CanSwitchUserTest : public AshTestBase {

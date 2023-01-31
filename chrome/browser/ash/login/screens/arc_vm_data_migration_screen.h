@@ -15,6 +15,8 @@
 
 namespace ash {
 
+class ScopedScreenLockBlocker;
+
 class ArcVmDataMigrationScreen : public BaseScreen {
  public:
   explicit ArcVmDataMigrationScreen(
@@ -45,6 +47,7 @@ class ArcVmDataMigrationScreen : public BaseScreen {
   Profile* profile_;
 
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
+  std::unique_ptr<ScopedScreenLockBlocker> scoped_screen_lock_blocker_;
 
   base::WeakPtr<ArcVmDataMigrationScreenView> view_;
 

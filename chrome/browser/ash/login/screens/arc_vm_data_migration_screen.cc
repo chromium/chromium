@@ -7,6 +7,9 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
+#include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -51,6 +54,11 @@ void ArcVmDataMigrationScreen::ShowImpl() {
 
   GetWakeLock()->RequestWakeLock();
 
+  DCHECK(Shell::Get());
+  DCHECK(Shell::Get()->session_controller());
+  scoped_screen_lock_blocker_ =
+      Shell::Get()->session_controller()->GetScopedScreenLockBlocker();
+
   view_->Show();
   // TODO(b/258278176): Stop stale ARCVM and Upstart jobs while loading.
   SetUpInitialView();
@@ -58,6 +66,9 @@ void ArcVmDataMigrationScreen::ShowImpl() {
 
 void ArcVmDataMigrationScreen::HideImpl() {
   GetWakeLock()->CancelWakeLock();
+  if (scoped_screen_lock_blocker_) {
+    scoped_screen_lock_blocker_.reset();
+  }
 }
 
 void ArcVmDataMigrationScreen::OnUserAction(const base::Value::List& args) {

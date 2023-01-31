@@ -12,6 +12,7 @@
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/signout_screenshot_handler.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/public/cpp/session/scoped_screen_lock_blocker.h"
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "ash/public/cpp/session/session_controller_client.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -41,6 +42,25 @@
 using session_manager::SessionState;
 
 namespace ash {
+
+class SessionControllerImpl::ScopedScreenLockBlockerImpl
+    : public ScopedScreenLockBlocker {
+ public:
+  explicit ScopedScreenLockBlockerImpl(
+      base::WeakPtr<SessionControllerImpl> session_controller)
+      : session_controller_(session_controller) {
+    DCHECK(session_controller_);
+  }
+
+  ~ScopedScreenLockBlockerImpl() override {
+    if (session_controller_) {
+      session_controller_->RemoveScopedScreenLockBlocker();
+    }
+  }
+
+ private:
+  base::WeakPtr<SessionControllerImpl> session_controller_;
+};
 
 SessionControllerImpl::SessionControllerImpl()
     : fullscreen_controller_(std::make_unique<FullscreenController>(this)) {
@@ -72,7 +92,8 @@ bool SessionControllerImpl::IsActiveUserSessionStarted() const {
 }
 
 bool SessionControllerImpl::CanLockScreen() const {
-  return IsActiveUserSessionStarted() && can_lock_;
+  return scoped_screen_lock_blocker_count_ == 0 &&
+         IsActiveUserSessionStarted() && can_lock_;
 }
 
 bool SessionControllerImpl::ShouldLockScreenAutomatically() const {
@@ -298,6 +319,14 @@ PrefService* SessionControllerImpl::GetActivePrefService() const {
   if (last_active_user_prefs_)
     return last_active_user_prefs_;
   return GetSigninScreenPrefService();
+}
+
+std::unique_ptr<ScopedScreenLockBlocker>
+SessionControllerImpl::GetScopedScreenLockBlocker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++scoped_screen_lock_blocker_count_;
+  return std::make_unique<SessionControllerImpl::ScopedScreenLockBlockerImpl>(
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SessionControllerImpl::AddObserver(SessionObserver* observer) {
@@ -693,6 +722,12 @@ void SessionControllerImpl::EnsureActiveWindowAfterUnblockingUserSession() {
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   if (!mru_list.empty())
     mru_list.front()->Focus();
+}
+
+void SessionControllerImpl::RemoveScopedScreenLockBlocker() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(scoped_screen_lock_blocker_count_, 0);
+  --scoped_screen_lock_blocker_count_;
 }
 
 }  // namespace ash
