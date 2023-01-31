@@ -1,5 +1,4 @@
 This is a testharness.js-based test.
-FAIL batchNormalization float32 2D tensor (mean and variance are non-constant) default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 2D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 3D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 4D tensor default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
@@ -11,7 +10,6 @@ FAIL batchNormalization float32 4D NCHW tensor options.bias / cpu / async promis
 FAIL batchNormalization float32 4D NCHW tensor options.epsilon / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 4D NCHW tensor options.activation relu / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 4D NHWC tensor all options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL batchNormalization float32 2D tensor (mean and variance are non-constant) default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 2D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 3D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 FAIL batchNormalization float32 4D tensor default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"

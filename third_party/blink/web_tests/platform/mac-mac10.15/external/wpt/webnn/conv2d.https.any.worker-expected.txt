@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-Found 104 tests; 0 PASS, 104 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL conv2d float32 4D input and filter(non-constant) tensors default options / cpu / sync builder.buildSync is not a function
+Found 100 tests; 0 PASS, 100 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL conv2d float32 4D input and filter tensors default options / cpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.padding / cpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.strides / cpu / sync builder.buildSync is not a function
@@ -26,7 +25,6 @@ FAIL conv2d float32 4D input and filter tensors options.activation=relu / cpu / 
 FAIL conv2d float32 4D input and filter tensors options.activation=sigmoid / cpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.dilations with options.strides / cpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors all options / cpu / sync builder.buildSync is not a function
-FAIL conv2d float32 4D input and filter(non-constant) tensors default options / gpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors default options / gpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.padding / gpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.strides / gpu / sync builder.buildSync is not a function
@@ -52,7 +50,6 @@ FAIL conv2d float32 4D input and filter tensors options.activation=relu / gpu / 
 FAIL conv2d float32 4D input and filter tensors options.activation=sigmoid / gpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors options.dilations with options.strides / gpu / sync builder.buildSync is not a function
 FAIL conv2d float32 4D input and filter tensors all options / gpu / sync builder.buildSync is not a function
-FAIL conv2d float32 4D input and filter(non-constant) tensors default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors default options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors options.padding / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors options.strides / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
@@ -78,7 +75,6 @@ FAIL conv2d float32 4D input and filter tensors options.activation=relu / cpu / 
 FAIL conv2d float32 4D input and filter tensors options.activation=sigmoid / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors options.dilations with options.strides / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors all options / cpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL conv2d float32 4D input and filter(non-constant) tensors default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors default options / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors options.padding / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 FAIL conv2d float32 4D input and filter tensors options.strides / gpu / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
