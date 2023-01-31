@@ -694,7 +694,8 @@ void HTMLTextAreaElement::UpdatePlaceholderText() {
   if (!placeholder) {
     auto* new_element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
     placeholder = new_element;
-    placeholder->SetShadowPseudoId(AtomicString("-webkit-input-placeholder"));
+    placeholder->SetShadowPseudoId(
+        shadow_element_names::kPseudoInputPlaceholder);
     placeholder->setAttribute(html_names::kIdAttr,
                               shadow_element_names::kIdPlaceholder);
     placeholder->SetInlineStyleProperty(

@@ -96,7 +96,7 @@ class DataListIndicatorElement final : public HTMLDivElement {
   void InitializeInShadowTree() {
     DCHECK(ContainingShadowRoot());
     DCHECK(ContainingShadowRoot()->IsUserAgent());
-    SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
+    SetShadowPseudoId(shadow_element_names::kPseudoCalendarPickerIndicator);
     setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
     setAttribute(html_names::kStyleAttr,
                  "display:list-item; "

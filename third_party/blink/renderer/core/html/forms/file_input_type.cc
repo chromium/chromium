@@ -342,7 +342,7 @@ void FileInputType::CreateShadowSubtree() {
       AtomicString(GetLocale().QueryString(
           GetElement().Multiple() ? IDS_FORM_MULTIPLE_FILES_BUTTON_LABEL
                                   : IDS_FORM_FILE_BUTTON_LABEL)));
-  button->SetShadowPseudoId(AtomicString("-webkit-file-upload-button"));
+  button->SetShadowPseudoId(shadow_element_names::kPseudoFileUploadButton);
   button->setAttribute(html_names::kIdAttr,
                        shadow_element_names::kIdFileUploadButton);
   button->SetActive(GetElement().CanReceiveDroppedFiles());

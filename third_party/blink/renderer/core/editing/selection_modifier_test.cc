@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -429,7 +430,8 @@ TEST_F(SelectionModifierTest, OptgroupAndTable) {
 
   Element* optgroup = GetDocument().QuerySelector("optgroup");
   ShadowRoot* shadow_root = optgroup->GetShadowRoot();
-  Element* label = shadow_root->getElementById("optgroup-label");
+  Element* label =
+      shadow_root->getElementById(shadow_element_names::kIdOptGroupLabel);
   EXPECT_EQ(Position(label, 0), selection.Base());
   EXPECT_EQ(Position(shadow_root, 1), selection.Extent());
 }

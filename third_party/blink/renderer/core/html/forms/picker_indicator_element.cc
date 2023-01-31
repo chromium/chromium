@@ -49,7 +49,7 @@ PickerIndicatorElement::PickerIndicatorElement(
     PickerIndicatorOwner& picker_indicator_owner)
     : HTMLDivElement(document),
       picker_indicator_owner_(&picker_indicator_owner) {
-  SetShadowPseudoId(AtomicString("-webkit-calendar-picker-indicator"));
+  SetShadowPseudoId(shadow_element_names::kPseudoCalendarPickerIndicator);
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdPickerIndicator);
 }
 
