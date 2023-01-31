@@ -300,7 +300,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
   private getIcon_(
       issues: chrome.passwordsPrivate.PasswordUiEntry[],
       checkForError: boolean): string {
-    if (checkForError && this.didCompromiseCheckFail_()) {
+    if (checkForError && this.status_ && this.didCompromiseCheckFail_()) {
       return 'cr:error';
     }
     return !!issues && issues.length ? 'cr:error' : 'cr:check-circle';
