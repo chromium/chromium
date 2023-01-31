@@ -1750,7 +1750,12 @@ const CGFloat kSymbolSize = 18;
     // placeholder gap.
     if (_isReordering && !hasPlaceholderGap &&
         CGRectGetMinX(dragFrame) < virtualMinX + (currentTabWith / 2.0)) {
-      virtualMinX += currentTabWith - [self tabOverlap];
+      if (_pinnedTabCount > 0) {
+        // The gap should be equal to the dragged tab width.
+        virtualMinX += dragFrame.size.width - [self tabOverlap];
+      } else {
+        virtualMinX += currentTabWith - [self tabOverlap];
+      }
       hasPlaceholderGap = YES;
 
       // Fix up the z-ordering of the current view.  It was placed assuming that
