@@ -1,0 +1,8 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_LANDMARK xml-roles:complementary
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='aside inside section with role presentational.'
+++IA2_ROLE_SECTION xml-roles:generic
+++++IA2_ROLE_LANDMARK xml-roles:complementary
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='aside inside section with role generic.'

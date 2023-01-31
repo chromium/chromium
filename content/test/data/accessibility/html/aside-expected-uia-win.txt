@@ -2,7 +2,15 @@ Document
 ++Group IsControlElement=false
 ++++Text Name='The aside tag defines some content aside from the content it is placed in.'
 ++Group
-++++Text Name='Aside tag'
-++++++Text Name='Aside tag' IsControlElement=false
+++++Text Name='Body aside'
+++++++Text Name='Body aside' IsControlElement=false
 ++++Group IsControlElement=false
 ++++++Text Name='The aside content should be related to the surrounding content.'
+++Group
+++++Group IsControlElement=false
+++++++Text Name='The main content'
+++++Group
+++++++Text Name='Main aside'
+++++++++Text Name='Main aside' IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='The aside content should be related to the surrounding content.'

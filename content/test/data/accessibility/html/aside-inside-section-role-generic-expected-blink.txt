@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++complementary
+++++++++paragraph
+++++++++++staticText name='aside inside section with role presentational.'
+++++++++++++inlineTextBox name='aside inside section with role presentational.'
+++++++genericContainer
+++++++++complementary
+++++++++++paragraph
+++++++++++++staticText name='aside inside section with role generic.'
+++++++++++++++inlineTextBox name='aside inside section with role generic.'

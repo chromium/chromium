@@ -1,0 +1,15 @@
+Document
+++Group
+++++Group IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='Unnamed aside inside article.'
+++++Group LocalizedControlType='complementary' Name='aside'
+++++++Group IsControlElement=false
+++++++++Text Name='Named aside inside article.'
+++Group
+++++Group IsControlElement=false
+++++++Group IsControlElement=false
+++++++++Text Name='Unnamed aside inside section.'
+++++Group LocalizedControlType='complementary' Name='aside'
+++++++Group IsControlElement=false
+++++++++Text Name='Named aside inside section.'

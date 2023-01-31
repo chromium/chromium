@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="complementary", roleDescription="complementary"]
+++++TextView text:"aside inside section with role presentational." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View actions:[AX_FOCUS] bundle:[chromeRole="complementary", roleDescription="complementary"]
+++++++TextView text:"aside inside section with role generic." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

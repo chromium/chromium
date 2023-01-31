@@ -2,7 +2,15 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='The aside tag defines some content aside from the content it is placed in.'
 ++AXGroup AXSubrole=AXLandmarkComplementary AXRoleDescription='complementary'
-++++AXHeading AXRoleDescription='heading' AXTitle='Aside tag' AXValue=4
-++++++AXStaticText AXRoleDescription='text' AXValue='Aside tag'
+++++AXHeading AXRoleDescription='heading' AXTitle='Body aside' AXValue=4
+++++++AXStaticText AXRoleDescription='text' AXValue='Body aside'
 ++++AXGroup AXRoleDescription='group'
 ++++++AXStaticText AXRoleDescription='text' AXValue='The aside content should be related to the surrounding content.'
+++AXGroup AXSubrole=AXLandmarkMain AXRoleDescription='main'
+++++AXGroup AXRoleDescription='group'
+++++++AXStaticText AXRoleDescription='text' AXValue='The main content'
+++++AXGroup AXSubrole=AXLandmarkComplementary AXRoleDescription='complementary'
+++++++AXHeading AXRoleDescription='heading' AXTitle='Main aside' AXValue=4
+++++++++AXStaticText AXRoleDescription='text' AXValue='Main aside'
+++++++AXGroup AXRoleDescription='group'
+++++++++AXStaticText AXRoleDescription='text' AXValue='The aside content should be related to the surrounding content.'

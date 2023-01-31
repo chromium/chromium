@@ -1,0 +1,15 @@
+[document web]
+++[article]
+++++[section]
+++++++[paragraph]
+++++++++[static] name='Unnamed aside inside article.'
+++++[landmark] name='aside' xml-roles:complementary
+++++++[paragraph]
+++++++++[static] name='Named aside inside article.'
+++[section]
+++++[section]
+++++++[paragraph]
+++++++++[static] name='Unnamed aside inside section.'
+++++[landmark] name='aside' xml-roles:complementary
+++++++[paragraph]
+++++++++[static] name='Named aside inside section.'

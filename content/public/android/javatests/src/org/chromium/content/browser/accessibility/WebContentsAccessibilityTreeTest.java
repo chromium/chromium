@@ -1257,6 +1257,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_aside_inside_other_section() {
+        performHtmlTest("aside-inside-other-section.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_aside_inside_section_role_generic() {
+        performHtmlTest("aside-inside-section-role-generic.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_b() {
         performHtmlTest("b.html");
     }

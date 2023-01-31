@@ -131,7 +131,7 @@ AXRole: AXGenericContainer
                         AXRole: AXInlineTextBox "𝑏"
     AXRole: AXMain
         AXRole: AXArticle
-            AXRole: AXHeaderAsNonLandmark
+            AXRole: AXHeader
                 AXRole: AXHeading "Most important heading here"
                     AXRole: AXStaticText "Most important heading here"
                         AXRole: AXInlineTextBox "Most important heading here"
@@ -141,7 +141,7 @@ AXRole: AXGenericContainer
             AXRole: AXParagraph
                 AXRole: AXStaticText "Google Chrome is a free, open-source web browser developed by Google, released in 2008."
                     AXRole: AXInlineTextBox "Google Chrome is a free, open-source web browser developed by Google, released in 2008."
-            AXRole: AXFooterAsNonLandmark
+            AXRole: AXFooter
                 AXRole: AXParagraph
                     AXRole: AXStaticText "Footer in article"
                         AXRole: AXInlineTextBox "Footer in article"
@@ -176,14 +176,14 @@ element
             AXRole: AXInlineTextBox "
 "
     AXRole: AXSection
-        AXRole: AXHeaderAsNonLandmark
+        AXRole: AXHeader
             AXRole: AXHeading "Most important heading here"
                 AXRole: AXStaticText "Most important heading here"
                     AXRole: AXInlineTextBox "Most important heading here"
         AXRole: AXParagraph
             AXRole: AXStaticText "Section"
                 AXRole: AXInlineTextBox "Section"
-        AXRole: AXFooterAsNonLandmark
+        AXRole: AXFooter
             AXRole: AXParagraph
                 AXRole: AXStaticText "Footer in section"
                     AXRole: AXInlineTextBox "Footer in section"

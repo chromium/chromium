@@ -1,12 +1,12 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++headerAsNonLandmark
+++++++header
 ++++++++paragraph
 ++++++++++staticText name='header inside section with role presentational.'
 ++++++++++++inlineTextBox name='header inside section with role presentational.'
 ++++++genericContainer
-++++++++headerAsNonLandmark
+++++++++header
 ++++++++++paragraph
 ++++++++++++staticText name='header inside section with role generic.'
 ++++++++++++++inlineTextBox name='header inside section with role generic.'

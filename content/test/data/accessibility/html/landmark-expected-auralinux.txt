@@ -41,21 +41,6 @@
 ++[section]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[block quote]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[panel]
-++++[toggle button] name='Details'
-++++++[static] name='Details'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[panel] xml-roles:group
-++++[section]
-++++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
@@ -71,20 +56,6 @@
 ++[section]
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
-++[block quote]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[panel]
-++++[toggle button] name='Details'
-++++++[static] name='Details'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have banner role.'
-++[section]
-++++[static] name='This should NOT have banner role.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have banner role.'
@@ -100,20 +71,6 @@
 ++[section]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[block quote]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[panel]
-++++[toggle button] name='Details'
-++++++[static] name='Details'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[section]
-++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
@@ -129,21 +86,36 @@
 ++[section]
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
-++[block quote]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[panel]
-++++[toggle button] name='Details'
-++++++[static] name='Details'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[panel]
-++++[section]
-++++++[static] name='This should NOT have footer role.'
-++[panel] xml-roles:group
-++++[section]
-++++++[static] name='This should NOT have footer role.'
 ++[landmark] xml-roles:main
 ++++[section]
 ++++++[static] name='This should NOT have footer role.'
+++[article]
+++++[section]
+++++++[static] name='This should NOT complementary role.'
+++[landmark] xml-roles:complementary
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[landmark] xml-roles:navigation
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[section]
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[landmark] xml-roles:main
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'
+++[article]
+++++[section]
+++++++[static] name='This should NOT complementary role.'
+++[landmark] xml-roles:complementary
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[landmark] xml-roles:navigation
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[section]
+++++[section]
+++++++[static] name='This should NOT have complementary role.'
+++[landmark] xml-roles:main
+++++[landmark] xml-roles:complementary
+++++++[static] name='This should have complementary role.'

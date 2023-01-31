@@ -41,21 +41,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++IA2_ROLE_SECTION
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING
-++++ROLE_SYSTEM_PUSHBUTTON name='Details' FOCUSABLE
-++++++ROLE_SYSTEM_STATICTEXT name='Details'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING xml-roles:group
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
@@ -71,20 +56,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++IA2_ROLE_SECTION
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING
-++++ROLE_SYSTEM_PUSHBUTTON name='Details' FOCUSABLE
-++++++ROLE_SYSTEM_STATICTEXT name='Details'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have banner role.'
@@ -100,20 +71,6 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++IA2_ROLE_SECTION
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING
-++++ROLE_SYSTEM_PUSHBUTTON name='Details' FOCUSABLE
-++++++ROLE_SYSTEM_STATICTEXT name='Details'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
@@ -129,21 +86,36 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++IA2_ROLE_SECTION
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING
-++++ROLE_SYSTEM_PUSHBUTTON name='Details' FOCUSABLE
-++++++ROLE_SYSTEM_STATICTEXT name='Details'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
-++ROLE_SYSTEM_GROUPING xml-roles:group
-++++IA2_ROLE_SECTION
-++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
 ++IA2_ROLE_LANDMARK xml-roles:main
 ++++IA2_ROLE_SECTION
 ++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have footer role.'
+++ROLE_SYSTEM_DOCUMENT READONLY
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:complementary
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:navigation
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:main
+++++IA2_ROLE_LANDMARK xml-roles:complementary
+++++++ROLE_SYSTEM_STATICTEXT name='This should have complementary role.'
+++ROLE_SYSTEM_DOCUMENT READONLY
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:complementary
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:navigation
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_SECTION
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='This should NOT have complementary role.'
+++IA2_ROLE_LANDMARK xml-roles:main
+++++IA2_ROLE_LANDMARK xml-roles:complementary
+++++++ROLE_SYSTEM_STATICTEXT name='This should have complementary role.'
