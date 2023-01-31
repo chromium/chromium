@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">Шайкештирүүнү башкаруу</translation>
 <translation id="1076421457278169141">Код скандалды</translation>
 <translation id="1076785341346483463">Көзөмөлдөнгөн аккаунт менен шайкештирүү</translation>
+<translation id="1080365971383768617">Бардык түзмөктөрүңүздөгү сырсөздөр</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
 <translation id="1085696779717592361">Chrome'ду демейки катары колдонуу</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708"><ph name="TIME" /> маселелер табылды.</translation>
 <translation id="5059136629401106827">Жарайт</translation>
 <translation id="5062321486222145940">Google Drive'ды орнотуу</translation>
+<translation id="50641035439563602">Сырсөздөр эми Google аккаунтуңузга (<ph name="ACCOUNT" />) сакталат. Аларды аккаунтуңузга кирип турган бардык түзмөктөн колдоно аласыз. Аны өчүрүү үчүн <ph name="BEGIN_LINK" />параметрлерге<ph name="END_LINK" /> өтүңүз.</translation>
 <translation id="5083464117946352670">Файлдын өлчөмү аныкталбайт.</translation>
 <translation id="5090832849094901128">Бул сырсөздү жок кылуу менен <ph name="WEBSITE" /> аккаунтуңуз өчпөйт.</translation>
 <translation id="5094827893301452931">Твиттелди.</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Сырсөздөрдү башкаргычты таптап, андан кийин Кошуу дегенди таптаңыз</translation>
 <translation id="5525095647255982834">Бул өтмөктү башка түзмөккө жөнөтүү үчүн ошол түзмөктөн Chrome'го кириңиз.</translation>
 <translation id="5525269841082836315">Купя сөз айкшын тзүү</translation>
+<translation id="5530084793407600786">Google аркылуу сүрөттөн издөө</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> табылды</translation>
 <translation id="5548760955356983418">Handoff аркылуу вебсайтты ушул түзмөктөн серептеп баштап, Mac компьютериңизде улантып кете аласыз. Учурда ачылып турган вебсайт Мас компьютериңиздин Dock тактасында көрүнөт.
 

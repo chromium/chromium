@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">शब्दकोशमा &amp;थप्नुहोस</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
 <translation id="1022489261739821355">तपाईंको <ph name="BEGIN_LINK" />Google खाता<ph name="END_LINK" />मा सुरक्षित गरिएका पासवर्डहरू देखाउँदै</translation>
+<translation id="1022669824195822609"><ph name="DOMAIN" /> ले तपाईंको डिभाइस व्यवस्थापन गर्छ। एड्मिनहरू यो डिभाइसमा रहेका जुनसुकै प्रोफाइलमा भएका डेटा हेर्न तथा प्रयोग गर्न सक्छन्।</translation>
 <translation id="1026655690966755180">पोर्ट थप्नुहोस्</translation>
 <translation id="1026822031284433028">छवि लोड गर्नुहोस्</translation>
 <translation id="1028604629594230522">Chrome ले तपाईंले खोल्न सक्ने पेजहरू प्रिलोड गर्छ। तपाईंले ती पेज खोल्दा ती पेजहरू अझ छिटो लोड होऊन् भन्नाका लागि Chrome ले यसो गर्छ।</translation>
@@ -1862,6 +1863,7 @@
 <translation id="2643064289437760082">तपाईं आफ्नो ब्राउजिङ डेटा मेटाएर जुनसुकै बेला विज्ञापनको पर्फर्मेन्सको मापनसम्बन्धी डेटा मेटाउन सक्नुहुन्छ</translation>
 <translation id="2643698698624765890">तपाइँका विस्तारहरू विन्डोस मेनुमा क्लिक गरेर व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> ले तपाईंको डिभाइसको व्यवस्थापन गर्छ</translation>
+<translation id="2645388244376970260">यो ट्याब <ph name="DEVICE_NAME" /> मा कास्ट गरिँदै छ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">आधार64-एन्कोडेड ASCII, प्रमाणपत्र साङ्लो</translation>
 <translation id="265156376773362237">पेज प्रिलोड गर्ने डिफल्ट मोड</translation>
@@ -2735,6 +2737,7 @@
 <translation id="3446274660183028131">कृपया Windows इन्स्टल गर्न Parallels Desktop खोल्नुहोस्।</translation>
 <translation id="344630545793878684">विभिन्न वेबसाइटहरूमा तपाईँको डेटा पढ्नुहोस्</translation>
 <translation id="3447644283769633681">तेस्रो पक्षीय सबै कुकीहरू ब्लक गर्नुहोस्</translation>
+<translation id="3447797901512053632"><ph name="TAB_NAME" /> <ph name="DEVICE_NAME" /> मा कास्ट गरिँदै छ</translation>
 <translation id="3448492834076427715">खाता अपडेट गर्नुहोस्</translation>
 <translation id="3449393517661170867">नयाँ ट्याबमा खोलिएको विन्डो</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> लाई आदेशहरू पठाउनको लागि <ph name="SEARCH_KEY" /> थिच्नुहोस्</translation>
@@ -2889,6 +2892,7 @@
 <translation id="3590295622232282437">व्यवस्थित सत्रमा प्रवेश गर्दै।</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> राख्नुहोस्</translation>
 <translation id="3592260987370335752">&amp;थप जान्नुहोस्</translation>
+<translation id="3592344177526089979">कुनै ट्याब <ph name="DEVICE_NAME" /> मा कास्ट गरिँदै छ</translation>
 <translation id="3593152357631900254">फज्जि-</translation>
 <translation id="3593965109698325041">प्रमाणपत्र नाम अवरोध</translation>
 <translation id="3596012367874587041">एपका सेटिङ</translation>
@@ -3827,6 +3831,7 @@
 <translation id="4441147046941420429">जारी राख्न, आफ्नो डिभाइसबाट सुरक्षा साँचो हटाउनुहोस्, त्यसपछि उक्त साँचो पुनः छिराउनुहोस् र त्यसमा छुनुहोस्</translation>
 <translation id="444134486829715816">विस्तृत गर्नुहोस्</translation>
 <translation id="4441928470323187829">तपाईंका एड्मिनले पिन गर्नुभएको</translation>
+<translation id="4442863809158514979">वेबसम्बन्धी अनुमतिहरू हेर्नुहोस्</translation>
 <translation id="4443536555189480885">&amp;मद्दत</translation>
 <translation id="4444304522807523469">USB मार्फत वा स्थानीय सञ्जालमा सम्मिलित कागजात स्क्यानरहरू पहुँच गर्नुहोस्</translation>
 <translation id="4444512841222467874">खाली ठाउँ उपलब्ध गराइएन भने प्रयोगकर्ता र डेटालाई स्वतः हटाइन सक्छ।</translation>
@@ -7455,6 +7460,7 @@
 <translation id="779308894558717334">हल्का हरियो</translation>
 <translation id="7793098747275782155">गाढा निलो</translation>
 <translation id="7797571222998226653">निष्क्रिय छ</translation>
+<translation id="7798504574384119986">वेबसम्बन्धी अनुमतिहरू हेर्नुहोस्</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> माथि स्वतः रोक लगाइएको छ</translation>
 <translation id="7800518121066352902">वा&amp;मावर्त घुमाउनुहोस्</translation>
 <translation id="7801679634091975683">तपाईंले यहाँ गर्ने परिवर्तनहरू Lacros Chrome ब्राउजरमा मात्र लागू हुन्छन्। आफ्नो Chrome ब्राउजरको सेटिङ परिवर्तन गर्न Chrome ब्राउजर खोल्नुहोस् र सेटिङमा जानुहोस्।</translation>

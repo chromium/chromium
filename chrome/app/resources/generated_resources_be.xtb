@@ -27,6 +27,7 @@
 <translation id="1017280919048282932">&amp;Дадаць у слоўнік</translation>
 <translation id="1018656279737460067">Скасавана</translation>
 <translation id="1022489261739821355">Паказаны паролі, захаваныя ва <ph name="BEGIN_LINK" />Уліковым запісе Google<ph name="END_LINK" /></translation>
+<translation id="1022669824195822609">Гэтай прыладай кіруе <ph name="DOMAIN" />. Адміністратары маюць доступ да даных ва ўсіх профілях на гэтай прыладзе.</translation>
 <translation id="1026655690966755180">Дадаць порт</translation>
 <translation id="1026822031284433028">Загрузіць відарыс</translation>
 <translation id="1028604629594230522">Chrome папярэдне загружае старонкі, на якія вы з высокай імавернасцю можаце перайсці, каб яны адкрыліся хутчэй, калі вы іх наведаеце.</translation>
@@ -1868,6 +1869,7 @@
 <translation id="2643064289437760082">Вы заўсёды можаце выдаліць даныя вымярэння паказчыкаў, звязаных з рэкламай, выдаліўшы даныя прагляду старонак у інтэрнэце.</translation>
 <translation id="2643698698624765890">Каб кіраваць пашырэннямі, націсніце "Пашырэнні" ў меню "Акно".</translation>
 <translation id="2645047101481282803">Гэтай прыладай кіруе <ph name="PROFILE_NAME" /></translation>
+<translation id="2645388244376970260">Ідзе трансляцыя гэтай укладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">ASCII з кадзіраваннем Base64, ланцужок сертыфікатаў</translation>
 <translation id="265156376773362237">Стандартная перадзагрузка</translation>
@@ -2740,6 +2742,7 @@
 <translation id="3446274660183028131">Каб усталяваць Windows, запусціце Parallels Desktop.</translation>
 <translation id="344630545793878684">Прагляд вашых даных на шэрагу вэб-сайтаў</translation>
 <translation id="3447644283769633681">Блакіроўка ўсіх старонніх файлаў cookie</translation>
+<translation id="3447797901512053632">Ідзе трансляцыя ўкладкі "<ph name="TAB_NAME" />" на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3448492834076427715">Абнавіць уліковы запіс</translation>
 <translation id="3449393517661170867">Новае акно ва ўкладцы</translation>
 <translation id="3449839693241009168">Націсніце <ph name="SEARCH_KEY" />, каб адправіць каманды ў пашырэнне <ph name="EXTENSION_NAME" /></translation>
@@ -2894,6 +2897,7 @@
 <translation id="3590295622232282437">Выконваецца ўваход у сеанс пад кіраваннем.</translation>
 <translation id="3591057288287063271">Захаваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="3592260987370335752">&amp;Даведацца больш</translation>
+<translation id="3592344177526089979">Ідзе трансляцыя ўкладкі на прыладу "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3593152357631900254">Уключыць рэжым Fuzzy Pinyin</translation>
 <translation id="3593965109698325041">Абмежаванні назваў сертыфікатаў</translation>
 <translation id="3596012367874587041">Налады праграмы</translation>
@@ -3167,6 +3171,7 @@
 <translation id="3823310065043511710">Для выкарыстання Linux рэкамендуецца мець як мінімум <ph name="INSTALL_SIZE" />.</translation>
 <translation id="3824621460022590830">Токен рэгістрацыі прылады несапраўдны. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запомніць мой выбар для файлаў гэтага тыпу: <ph name="FILE_TYPES" />}one{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}few{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}many{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}other{Запомніць мой выбар для файлаў гэтых тыпаў: <ph name="FILE_TYPES" />}}</translation>
+<translation id="3825635794653163640">Паказваць кропку на значку праграмы, калі ёсць абвесткі</translation>
 <translation id="3826071569074535339">Дазволена выкарыстоўваць датчыкі руху</translation>
 <translation id="3826440694796503677">Адміністратар выключыў дадаванне іншых Уліковых запісаў Google</translation>
 <translation id="3827774300009121996">&amp;Поўнаэкранны рэжым</translation>
@@ -4486,6 +4491,7 @@
 <translation id="5063480226653192405">Выкарыстанне</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">Кіраванне абароненай DNS у наладах Chrome OS</translation>
+<translation id="5066160542186949327">Перамясціць у іншую папку</translation>
 <translation id="5067399438976153555">Заўсёды ўключана</translation>
 <translation id="5067867186035333991">Запытваць, калі <ph name="HOST" /> патрабуе доступ да мікрафона</translation>
 <translation id="5068553687099139861">паказаць паролі</translation>

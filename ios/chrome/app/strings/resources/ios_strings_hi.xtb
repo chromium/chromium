@@ -18,6 +18,7 @@
 <translation id="1066060668811609597">सिंक प्रबंधित करें</translation>
 <translation id="1076421457278169141">कोड स्कैन किया गया</translation>
 <translation id="1076785341346483463">मैनेज किए जा रहे खाते के साथ सिंक करें</translation>
+<translation id="1080365971383768617">आपके सभी डिवाइसों पर पासवर्ड</translation>
 <translation id="1084365883616172403">Facebook पोस्ट पूरी हुई.</translation>
 <translation id="1085696779717592361">Chrome को अपना डिफ़ॉल्ट ब्राउज़र बनाएं</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> का हमेशा अनुवाद करें</translation>
@@ -545,6 +546,7 @@
 <translation id="5056446788882570708">समस्याएं <ph name="TIME" /> मिलीं.</translation>
 <translation id="5059136629401106827">ठीक</translation>
 <translation id="5062321486222145940">Google डिस्क इंस्टॉल करें</translation>
+<translation id="50641035439563602">पासवर्ड अब आपके Google खाते (<ph name="ACCOUNT" />) में सेव हैं. किसी भी डिवाइस पर साइन इन करके, इनका इस्तेमाल किया जा सकता है. <ph name="BEGIN_LINK" />सेटिंग<ph name="END_LINK" /> में जाकर, इस सुविधा को बंद किया जा सकता है.</translation>
 <translation id="5083464117946352670">फ़ाइल आकार तय नहीं हो पा रहा.</translation>
 <translation id="5090832849094901128">इस पासवर्ड को मिटाने से, आपका <ph name="WEBSITE" /> वाला खाता नहीं मिटेगा.</translation>
 <translation id="5094827893301452931">ट्वीट पूरा हुआ.</translation>
@@ -595,6 +597,7 @@
 <translation id="5520466080178053306">Password Manager पर टैप करें. इसके बाद, 'जोड़ें' पर टैप करें</translation>
 <translation id="5525095647255982834">इस टैब को किसी दूसरे डिवाइस पर भेजने के लिए, उस डिवाइस पर जाकर Chrome में साइन इन करें.</translation>
 <translation id="5525269841082836315">'पासफ़्रेज़' बनाएं</translation>
+<translation id="5530084793407600786">Google से इमेज के बारे में खोजें</translation>
 <translation id="5542540507657872337"><ph name="COUNT" /> मिले</translation>
 <translation id="5548760955356983418">Handoff से आप इस डिवाइस पर वेबसाइट ब्राउज़ करना प्रारंभ करके उसे अपने Mac पर आसानी से जारी रख सकते हैं. वर्तमान में खुली हुई वेबसाइट आपके Mac के Dock में दिखाई देगी.
 

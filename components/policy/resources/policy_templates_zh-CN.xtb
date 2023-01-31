@@ -1088,7 +1088,7 @@
 <translation id="2018425641414671849">不允许用户在设备锁定时播放媒体</translation>
 <translation id="2021087124402050619">允许 Chrome 清理功能定期扫描系统并启用人工扫描</translation>
 <translation id="2024476116966025075">为远程访问客户端配置必要的域名</translation>
-<translation id="2027764364653772586">配置要让系统等到设备闲置多久（以秒为单位）之后在登录屏幕上显示屏保。
+<translation id="2027764364653772586">配置要让系统等到设备闲置多久（以秒为单位）之后在登录界面上显示屏保。
 
 有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（7 秒）。
 
@@ -1451,13 +1451,13 @@
 <translation id="2366301887862414321">允许使用用户级和系统级原生消息传递主机</translation>
 <translation id="2373014700224092497">允许用户添加 Kerberos 帐号</translation>
 <translation id="2376134474855349829">为登录屏幕停用屏幕键盘，并允许用户暂时启用它</translation>
-<translation id="2377822335794178310">为登录屏幕配置设备级屏保。
+<translation id="2377822335794178310">为登录界面配置设备级屏保。
 
-如果此政策设为 true，当 <ph name="PRODUCT_OS_NAME" /> 设备在登录屏幕中处于闲置状态时，系统会显示屏保。
+如果此政策设为 true，当 <ph name="PRODUCT_OS_NAME" /> 设备在登录界面中处于闲置状态时，系统会显示屏保。
 
-如果此政策设为 false 或未设置，系统不会在登录屏幕中显示屏保。
+如果此政策设为 false 或未设置，系统不会在登录界面中显示屏保。
 
-设备屏保会显示 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 政策引用的图片。如果 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 未设置，或者设为空列表或不含任何有效图片的列表，系统不会在登录屏幕中显示屏保。
+设备屏保会显示 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 政策引用的图片。如果 <ph name="DEVICE_SCREENSAVER_IMAGES_POLICY_NAME" /> 未设置，或者设为空列表或不含任何有效图片的列表，系统不会在登录界面中显示屏保。
 
 如需修改用于启动屏保的闲置状态超时时限设置，请使用 <ph name="DEVICE_SCREENSAVER_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> 政策；如需修改图片的显示时间间隔设置，请使用 <ph name="DEVICE_SCREENSAVER_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" /> 政策。如果未设置上述任一政策，系统将改用相应的默认值。</translation>
 <translation id="2382672620906337383">在达到某个更高的嵌套阈值之后，JavaScript setTimeout() 才会被强制设为下限值。</translation>
@@ -1910,7 +1910,7 @@
 
       如果您停用或不设置此政策，生成的 Kerberos SPN 便不会包含端口。</translation>
 <translation id="2834965199373338033">启用后台模式</translation>
-<translation id="2835648603076938116">当为登录屏幕设定的屏保有多张可显示的图片时，此政策可用于指定图片的显示时间间隔（以秒为单位）。
+<translation id="2835648603076938116">当为登录界面设定的屏保有多张可显示的图片时，此政策可用于指定图片的显示时间间隔（以秒为单位）。
 
 有效值范围为 1 秒到 9999 秒。如果您未设置此政策，<ph name="PRODUCT_OS_NAME" /> 将会使用默认值（60 秒）。
 
@@ -4707,13 +4707,13 @@
 <translation id="5535256585099022933">设置重新启动时间间隔</translation>
 <translation id="553806128266843748">一个布尔值标记，用于表明是否启用节流功能。</translation>
 <translation id="5540885720415375851">允许使用“本地设备发现”功能</translation>
-<translation id="5545132877693005604">以列表形式配置要在为登录屏幕设定的屏保中显示的图片。
+<translation id="5545132877693005604">以列表形式配置要在为登录界面设定的屏保中显示的图片。
 
 每个列表项都会引用要在屏保中显示的某张图片。每个列表项都必须包含以下元素：相应图片的网址，以及用于进行验证的图片文件 SHA-256 哈希值。图片格式必须是 JPEG。<ph name="PRODUCT_OS_NAME" /> 设备会下载这些图片，并保留所涉引用的本地缓存。
 
 如果 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策设为 false，此政策将不会产生任何影响。
 
-如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为登录屏幕显示屏保。</translation>
+如果此政策未设置，或者列表不含任何有效的图片引用，那么无论 <ph name="DEVICE_SCREENSAVER_ENABLED_POLICY_NAME" /> 政策中设置了什么值，系统都不会为登录界面显示屏保。</translation>
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="555022085242359084">在登录屏幕上启用高对比度模式</translation>
 <translation id="555077880566103058">允许所有网站自动运行 <ph name="FLASH_PLUGIN_NAME" /> 插件</translation>
@@ -6479,7 +6479,7 @@
       如果您将此政策设为 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" />（值 3），默认情况下，当网站请求获取窗口放置权限时，系统会提示用户。如果用户同意授予这项权限，则会扩展网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
       如果您未设置此政策，则系统会应用 <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> 政策，但用户可以更改此设置。</translation>
-<translation id="7238955809343698945">为登录屏幕启用屏保。</translation>
+<translation id="7238955809343698945">为登录界面启用屏保。</translation>
 <translation id="7244600351241637530">如果启用此设置，已选择启用 Phone Hub 功能的用户将能够在 Chrome 操作系统中查看和下载其手机上近期拍摄的照片和视频。
 
       如果停用此设置，用户将无法使用该功能。如果停用 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策，用户也将无法使用该功能。
@@ -7703,7 +7703,7 @@
 
       如果此政策设为 true 或未设置，用户会获得对 Crostini 容器的 root 权限。
       如果此政策设为 false，用户将不会获得对现有以及新的 Crostini 容器的 root 权限。</translation>
-<translation id="8409672666693526293">不为登录屏幕启用屏保。</translation>
+<translation id="8409672666693526293">不为登录界面启用屏保。</translation>
 <translation id="8410477879938914253">此政策仅适用于受管理的访客会话。
       如果此政策设为 True 或未设置，系统会在用户关闭最后一个窗口时显示一个对话框，让用户确认或否认退出登录。
       将此政策设为 False 会阻止系统显示该对话框，因而亦会停用在用户关闭最后一个窗口时自动退出登录的功能。</translation>
