@@ -96,12 +96,13 @@ void PrerenderCommitDeferringCondition::DidFinishNavigation(
     return;
   }
 
-  // Since the prerender navigation finished, and
-  // PrerenderNavigationThrottle disallows another navigation after the
-  // initial commit, there should not be another navigation starting.
-  DCHECK(!prerender_frame_tree_node->HasNavigation());
-
-  if (done_closure_) {
+  // PrerenderNavigationThrottle allows navigations after the initial commit so
+  // the callback should be called after all ongoing navigations are completed.
+  if (done_closure_ && !prerender_frame_tree_node->HasNavigation()) {
+    // It's possible that another navigation happens after posting a task to
+    // resume the activation because PrerenderNavigationThrottle allows the main
+    // frame navigation in a prerendered page. In that case, prerendering is
+    // cancelled and the activation falls back to network.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(done_closure_));
 

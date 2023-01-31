@@ -343,6 +343,25 @@ bool PrerenderHost::StartPrerendering() {
   return true;
 }
 
+void PrerenderHost::DidStartNavigation(NavigationHandle* navigation_handle) {
+  DCHECK(base::FeatureList::IsEnabled(
+      blink::features::kPrerender2MainFrameNavigation));
+
+  auto* navigation_request = NavigationRequest::From(navigation_handle);
+  DCHECK(navigation_request->IsInPrerenderedMainFrame());
+
+  // Do nothing for the initial navigation.
+  if (GetInitialNavigationId() == navigation_request->GetNavigationId()) {
+    return;
+  }
+
+  // Reset `is_ready_for_activation_` since it can be set to true more than once
+  // and DCHECK will fail when the main frame navigation happens in a
+  // prerendered page and PrerenderHost::DidFinishNavigation is called multiple
+  // times.
+  is_ready_for_activation_ = false;
+}
+
 void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
   auto* navigation_request = NavigationRequest::From(navigation_handle);
 
@@ -977,6 +996,7 @@ void PrerenderHost::SetFailureReason(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kActivationFramePolicyNotCompatible:
     case PrerenderFinalStatus::kPreloadingDisabled:
     case PrerenderFinalStatus::kBatterySaverEnabled:
+    case PrerenderFinalStatus::kActivatedDuringMainFrameNavigation:
       attempt_->SetFailureReason(ToPreloadingFailureReason(status));
       // We reset the attempt to ensure we don't update once we have reported it
       // as failure or accidentally use it for any other prerender attempts as

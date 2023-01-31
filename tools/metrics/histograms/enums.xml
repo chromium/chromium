@@ -83644,6 +83644,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="58" label="kActivationFramePolicyNotCompatible"/>
   <int value="59" label="kPreloadingDisabled"/>
   <int value="60" label="kBatterySaverEnabled"/>
+  <int value="61" label="kActivatedDuringMainFrameNavigation"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">

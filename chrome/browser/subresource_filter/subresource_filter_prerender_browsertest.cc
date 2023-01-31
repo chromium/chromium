@@ -309,7 +309,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
 IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
                        NavigatePrerenderedPage) {
   const GURL kPrerenderUrl1 = embedded_test_server()->GetURL("/title1.html");
-  const GURL kPrerenderUrl2 = embedded_test_server()->GetURL("/title2.html");
+  const GURL kPrerenderUrl2 =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
 
   // Navigate to the initial URL.
@@ -318,8 +319,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterPrerenderingBrowserTest,
   // Trigger a prerendering of title1.html.
   const int prerender_host_id = prerender_helper_.AddPrerender(kPrerenderUrl1);
 
-  // Now navigate the prerendered page to title2.html. Ensure the prerender is
-  // canceled.
+  // Now navigate the prerendered page to a cross-site page. Ensure the
+  // prerender is canceled.
   // TODO(bokan): If this is ever changed, we should ensure this test checks
   // that we navigate the prerender between filtered and unfiltered pages, and
   // ensure subresources are correctly filtered (or not).

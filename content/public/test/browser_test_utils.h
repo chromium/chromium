@@ -1824,6 +1824,9 @@ class TestActivationManager : public WebContentsObserver {
   // cleared when the navigation finishes.
   NavigationHandle* GetNavigationHandle();
 
+  // Sets the callback that is called after all commit deferring conditions run.
+  void SetCallbackCalledAfterActivationIsReady(base::OnceClosure callback);
+
   // Whether the navigation successfully committed.
   bool was_committed() const { return was_committed_; }
 
@@ -1897,6 +1900,10 @@ class TestActivationManager : public WebContentsObserver {
   bool was_committed_ = false;
   bool was_successful_ = false;
   bool was_activated_ = false;
+
+  // Callback to be called in the last condition callback after all commit
+  // deferring conditions run.
+  base::OnceClosure callback_in_last_condition;
 
   base::WeakPtrFactory<TestActivationManager> weak_factory_{this};
 };

@@ -8584,6 +8584,7 @@ domain Page
       ActivationFramePolicyNotCompatible
       PreloadingDisabled
       BatterySaverEnabled
+      ActivatedDuringMainFrameNavigation
 
   # Fired when a prerender attempt is completed.
   experimental event prerenderAttemptCompleted

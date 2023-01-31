@@ -3520,6 +3520,12 @@ NavigationHandle* TestActivationManager::GetNavigationHandle() {
   return request_;
 }
 
+void TestActivationManager::SetCallbackCalledAfterActivationIsReady(
+    base::OnceClosure callback) {
+  DCHECK(!callback_in_last_condition);
+  callback_in_last_condition = std::move(callback);
+}
+
 CommitDeferringCondition::Result TestActivationManager::FirstConditionCallback(
     CommitDeferringCondition& condition,
     base::OnceClosure resume_callback) {
@@ -3554,6 +3560,10 @@ CommitDeferringCondition::Result TestActivationManager::FirstConditionCallback(
 CommitDeferringCondition::Result TestActivationManager::LastConditionCallback(
     CommitDeferringCondition& condition,
     base::OnceClosure resume_callback) {
+  if (callback_in_last_condition) {
+    std::move(callback_in_last_condition).Run();
+  }
+
   if (request_ != &condition.GetNavigationHandle())
     return CommitDeferringCondition::Result::kProceed;
 

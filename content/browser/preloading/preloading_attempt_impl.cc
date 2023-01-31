@@ -42,8 +42,11 @@ void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
           // It can be possible that the preloading attempt may end up failing
           // after being ready to use, for cases where we have to cancel the
           // attempt for performance and security reasons.
+          // The transition of kReady to kReady occurs when the main frame
+          // navigation is completed in a preloaded page.
           {PreloadingTriggeringOutcome::kReady,
-           {PreloadingTriggeringOutcome::kSuccess,
+           {PreloadingTriggeringOutcome::kReady,
+            PreloadingTriggeringOutcome::kSuccess,
             PreloadingTriggeringOutcome::kFailure,
             PreloadingTriggeringOutcome::kTriggeredButUpgradedToPrerender}},
 

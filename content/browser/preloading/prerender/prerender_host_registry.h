@@ -212,6 +212,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
  private:
   // WebContentsObserver implementation:
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void OnVisibilityChanged(Visibility visibility) override;
   void ResourceLoadComplete(

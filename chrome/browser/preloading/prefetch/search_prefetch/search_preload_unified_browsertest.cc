@@ -1512,12 +1512,13 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender",
       SearchPrefetchServingReason::kPrerendered, 1);
 
-  // 4. Fail the prerender by navigating it to another page.
+  // 4. Fail the prerender by navigating it to a cross-site page.
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
   int host_id = prerender_helper().GetHostForUrl(expected_prerender_url);
   ASSERT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
-  prerender_helper().NavigatePrerenderedPage(host_id, expected_prefetch_url);
+  prerender_helper().NavigatePrerenderedPage(
+      host_id, embedded_test_server()->GetURL("a.com", "/title1.html"));
   prerender_observer.WaitForDestroyed();
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
