@@ -45,6 +45,7 @@ class FakeFindInPageManagerDelegate : public FindInPageManagerDelegate {
     NSString* query;
     int index = -1;
     NSString* context_string;
+    bool user_dismissed_find_navigator = false;
   };
 
   // Returns the current State.

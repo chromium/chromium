@@ -40,6 +40,8 @@ class WebState;
 @property(nonatomic, readonly) NSInteger index;
 // The last `contextString` passed in `didSelectMatchAtIndex:`.
 @property(nonatomic, readonly) NSString* contextString;
+// Whether `userDismissedFindNavigatorForManager` has been called.
+@property(nonatomic, readonly) BOOL userDismissedFindNavigator;
 
 @end
 

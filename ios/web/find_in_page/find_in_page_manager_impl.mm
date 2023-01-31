@@ -202,11 +202,13 @@ void FindInPageManagerImpl::StopPollingActiveFindSession()
 
 void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
   UIFindSession* findSession = GetActiveFindSession();
-  if (!findSession || !delegate_) {
+  if (!findSession) {
     if (use_find_interaction_) {
       // If a Find interaction is used but there is no active Find session
       // anymore, then the user dismissed the Find navigator.
-      delegate_->UserDismissedFindNavigator(this);
+      if (delegate_) {
+        delegate_->UserDismissedFindNavigator(this);
+      }
       StopSearch();
     } else {
       StopPollingActiveFindSession();
@@ -243,8 +245,10 @@ void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
 
   // If the result count differs from the last reported, report the new value.
   if (current_result_count_ != new_result_count) {
-    delegate_->DidHighlightMatches(this, web_state_, new_result_count,
-                                   current_query_);
+    if (delegate_) {
+      delegate_->DidHighlightMatches(this, web_state_, new_result_count,
+                                     current_query_);
+    }
     current_result_count_ = new_result_count;
   }
 
@@ -252,8 +256,10 @@ void FindInPageManagerImpl::PollActiveFindSession() API_AVAILABLE(ios(16)) {
   // new value.
   if (current_highlighted_result_index_ != new_highlighted_result_index &&
       new_highlighted_result_index != NSNotFound) {
-    delegate_->DidSelectMatch(this, web_state_, new_highlighted_result_index,
-                              /*context_string=*/nil);
+    if (delegate_) {
+      delegate_->DidSelectMatch(this, web_state_, new_highlighted_result_index,
+                                /*context_string=*/nil);
+    }
     current_highlighted_result_index_ = new_highlighted_result_index;
   }
 }

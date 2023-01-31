@@ -23,7 +23,9 @@ void FakeFindInPageManagerDelegate::DidHighlightMatches(
     WebState* web_state,
     int match_count,
     NSString* query) {
-  delegate_state_ = std::make_unique<State>();
+  if (!delegate_state_) {
+    delegate_state_ = std::make_unique<State>();
+  }
   delegate_state_->web_state = web_state;
   delegate_state_->match_count = match_count;
   delegate_state_->query = query;
@@ -43,6 +45,11 @@ void FakeFindInPageManagerDelegate::DidSelectMatch(
 }
 
 void FakeFindInPageManagerDelegate::UserDismissedFindNavigator(
-    AbstractFindInPageManager* manager) {}
+    AbstractFindInPageManager* manager) {
+  if (!delegate_state_) {
+    delegate_state_ = std::make_unique<State>();
+  }
+  delegate_state_->user_dismissed_find_navigator = true;
+}
 
 }  // namespace web

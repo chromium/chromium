@@ -30,6 +30,7 @@
 
 - (void)userDismissedFindNavigatorForManager:
     (web::AbstractFindInPageManager*)manager {
+  _userDismissedFindNavigator = YES;
 }
 
 @end
