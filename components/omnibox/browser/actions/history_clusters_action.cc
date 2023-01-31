@@ -248,10 +248,6 @@ void AttachHistoryClustersActions(
     if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL) {
       continue;
     }
-    if (!GetConfig().omnibox_action_on_entities &&
-        match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
-      continue;
-    }
 
     if (AutocompleteMatch::IsSearchType(match.type)) {
       std::string query = base::UTF16ToUTF8(match.contents);

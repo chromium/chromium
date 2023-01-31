@@ -161,10 +161,6 @@ struct Config {
   // `omnibox_action` is disabled.
   bool omnibox_action_on_navigation_intents = false;
 
-  // If enabled, allowed the action chip to appear on search entity suggestions.
-  // TODO(crbug.com/1394812): Clean this flag up beyond M110.
-  bool omnibox_action_on_entities = true;
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 
   // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
