@@ -12,12 +12,40 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+namespace {
+
+// Helper to modify our windows in this pixel test so they are more visible
+// when debugging.
+void DecorateWindow(aura::Window* window,
+                    const std::u16string& title,
+                    SkColor color) {
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window);
+  DCHECK(widget);
+  widget->client_view()->AddChildView(
+      views::Builder<views::View>()
+          .SetBackground(views::CreateRoundedRectBackground(color, 4.f))
+          .Build());
+
+  // Add a title and an app icon so that the header is fully stocked.
+  window->SetTitle(title);
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorCYAN);
+  window->SetProperty(aura::client::kAppIconKey,
+                      gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+}
+
+}  // namespace
 
 // TODO(b/261084863): For now, add some basic tests. Further investigation is
 // needed to determine the location of the test files, whether the tests should
@@ -50,30 +78,9 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
   auto window2 = CreateAppWindow(gfx::Rect(600, 600, 500, 200));
   auto window3 = CreateAppWindow(gfx::Rect(100, 400, 100, 600));
 
-  // Helper to modify our windows in this pixel test so they are more visible
-  // when debugging.
-  auto decorate_window = [](aura::Window* window, const std::u16string& title,
-                            SkColor color) -> void {
-    auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-    ASSERT_TRUE(widget);
-    widget->client_view()->AddChildView(
-        views::Builder<views::View>()
-            .SetBackground(views::CreateRoundedRectBackground(color, 4.f))
-            .Build());
-
-    // Add a title and an app icon so that the overview header is fully
-    // stocked.
-    window->SetTitle(title);
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(1, 1);
-    bitmap.eraseColor(SK_ColorCYAN);
-    window->SetProperty(aura::client::kAppIconKey,
-                        gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
-  };
-
-  decorate_window(window1.get(), u"Window1", SK_ColorDKGRAY);
-  decorate_window(window2.get(), u"Window2", SK_ColorBLUE);
-  decorate_window(window3.get(), u"Window3", SK_ColorGRAY);
+  DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
+  DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);
+  DecorateWindow(window3.get(), u"Window3", SK_ColorGRAY);
 
   EnterOverview();
 
@@ -90,6 +97,46 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
       "overview_and_desks_bar_basic",
       /*revision_number=*/0, desk_widget, overview_widget1, overview_widget2,
       overview_widget3));
+}
+
+// A basic window cycle pixel test that shows three windows and the window cycle
+// tab slider.
+TEST_F(WmPixelDiffTest, WindowCycleBasic) {
+  UpdateDisplay("1600x1000");
+
+  // Create a second desk so the window cycle tab slider shows up. This slider
+  // lets users toggle between seeing windows on the current desk only, or
+  // windows on all desks.
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  desks_controller->desks()[0]->SetName(u"Desk1", /*set_by_user=*/true);
+  desks_controller->desks()[1]->SetName(u"Desk2", /*set_by_user=*/true);
+
+  // Create a couple windows of different sizes.
+  auto window1 = CreateAppWindow(gfx::Rect(300, 300));
+  auto window2 = CreateAppWindow(gfx::Rect(500, 200));
+  auto window3 = CreateAppWindow(gfx::Rect(100, 600));
+  auto window4 = CreateAppWindow(gfx::Rect(800, 600));
+
+  DecorateWindow(window1.get(), u"Window1", SK_ColorDKGRAY);
+  DecorateWindow(window2.get(), u"Window2", SK_ColorBLUE);
+  DecorateWindow(window3.get(), u"Window3", SK_ColorGRAY);
+  DecorateWindow(window4.get(), u"Window4", SK_ColorGREEN);
+
+  // Press alt+tab to bring up the window cycle UI.
+  WindowCycleList::SetDisableInitialDelayForTesting(true);
+  GetEventGenerator()->PressKey(ui::VKEY_TAB, ui::EF_ALT_DOWN);
+
+  const WindowCycleView* cycle_view = Shell::Get()
+                                          ->window_cycle_controller()
+                                          ->window_cycle_list()
+                                          ->cycle_view();
+  ASSERT_TRUE(cycle_view);
+  views::Widget* widget = const_cast<views::Widget*>(cycle_view->GetWidget());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "window_cycle_basic",
+      /*revision_number=*/0, widget));
 }
 
 }  // namespace ash
