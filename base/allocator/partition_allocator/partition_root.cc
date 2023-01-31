@@ -33,7 +33,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
 #endif  // PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK) && BUILDFLAG(IS_APPLE)
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #endif
 
@@ -906,13 +906,13 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     PA_CHECK(!flags.allow_aligned_alloc || !flags.extras_offset);
 
     flags.quarantine_mode =
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
         (opts.quarantine == PartitionOptions::Quarantine::kDisallowed
              ? QuarantineMode::kAlwaysDisabled
              : QuarantineMode::kDisabledByDefault);
 #else
         QuarantineMode::kAlwaysDisabled;
-#endif  // BUILDFLAG(USE_STARSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
     // We mark the sentinel slot span as free to make sure it is skipped by our
     // logic to find a new active slot span.
@@ -1291,7 +1291,7 @@ template <bool thread_safe>
 void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
   {
     ::partition_alloc::internal::ScopedGuard guard{lock_};
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
     // Avoid purging if there is PCScan task currently scheduled. Since pcscan
     // takes snapshot of all allocated pages, decommitting pages here (even
     // under the lock) is racy.
@@ -1299,7 +1299,7 @@ void PartitionRoot<thread_safe>::PurgeMemory(int flags) {
     if (PCScan::IsInProgress()) {
       return;
     }
-#endif  // BUILDFLAG(USE_STARSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 
     if (flags & PurgeFlags::kDecommitEmptySlotSpans) {
       DecommitEmptySlotSpans();

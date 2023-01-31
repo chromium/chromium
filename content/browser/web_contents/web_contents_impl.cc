@@ -14,6 +14,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -1057,7 +1058,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   if (partition_alloc::internal::PCScan::IsInitialized()) {
     star_scan_load_observer_ = std::make_unique<StarScanLoadObserver>(this);
   }
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_CONFIG(ALLOW_PCSCAN)
 }
 
 WebContentsImpl::~WebContentsImpl() {

@@ -482,7 +482,8 @@ PA_ALWAYS_INLINE AllocationStateMap* SuperPageStateBitmap(
   return reinterpret_cast<AllocationStateMap*>(
       SuperPageStateBitmapAddr(super_page));
 }
-#else
+
+#else  // BUILDFLAG(USE_STARSCAN)
 
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR PA_ALWAYS_INLINE size_t
 ReservedStateBitmapSize() {

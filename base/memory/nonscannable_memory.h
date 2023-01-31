@@ -16,7 +16,9 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_allocator/partition_alloc.h"
-#if BUILDFLAG(USE_STARSCAN)
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
+
+#if PA_CONFIG(ALLOW_PCSCAN)
 #include "base/allocator/partition_allocator/starscan/metadata_allocator.h"
 #endif
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -47,13 +49,14 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   // Returns PartitionRoot corresponding to the allocator, or nullptr if the
   // allocator is not enabled.
   partition_alloc::ThreadSafePartitionRoot* root() {
-#if BUILDFLAG(USE_STARSCAN)
-    if (!allocator_.get())
+#if PA_CONFIG(ALLOW_PCSCAN)
+    if (!allocator_.get()) {
       return nullptr;
+    }
     return allocator_->root();
 #else
     return nullptr;
-#endif  // BUILDFLAG(USE_STARSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
   }
 
   void NotifyPCScanEnabled();
@@ -65,12 +68,12 @@ class BASE_EXPORT NonScannableAllocatorImpl final {
   NonScannableAllocatorImpl();
   ~NonScannableAllocatorImpl();
 
-#if BUILDFLAG(USE_STARSCAN)
+#if PA_CONFIG(ALLOW_PCSCAN)
   std::unique_ptr<partition_alloc::PartitionAllocator,
                   partition_alloc::internal::PCScanMetadataDeleter>
       allocator_;
   std::atomic_bool pcscan_enabled_{false};
-#endif  // BUILDFLAG(USE_STARSCAN)
+#endif  // PA_CONFIG(ALLOW_PCSCAN)
 };
 
 extern template class NonScannableAllocatorImpl<true>;
