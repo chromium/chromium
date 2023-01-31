@@ -3400,7 +3400,7 @@ void LayoutBox::AppendLayoutResult(const NGLayoutResult* result) {
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_.push_back(std::move(result));
-  SetHasValidCachedGeometry(false);
+  InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment);
 
   if (layout_results_.size() > 1)
@@ -3431,7 +3431,7 @@ void LayoutBox::ReplaceLayoutResult(const NGLayoutResult* result,
   // |layout_results_| is particularly critical when side effects are disabled.
   DCHECK(!NGDisableSideEffectsScope::IsDisabled());
   layout_results_[index] = std::move(result);
-  SetHasValidCachedGeometry(false);
+  InvalidateCachedGeometry();
   CheckDidAddFragment(*this, fragment, index);
 
   if (got_new_fragment && !fragment.BreakToken()) {
@@ -3509,7 +3509,20 @@ void LayoutBox::ShrinkLayoutResults(wtf_size_t results_to_keep) {
   if (layout_results_.size() > 1)
     FragmentCountOrSizeDidChange();
   layout_results_.Shrink(results_to_keep);
+  InvalidateCachedGeometry();
+}
+
+void LayoutBox::InvalidateCachedGeometry() {
+  NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+    return;
+  }
   SetHasValidCachedGeometry(false);
+  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(this)) {
+    if (auto* flow_thread = block_flow->MultiColumnFlowThread()) {
+      flow_thread->SetHasValidCachedGeometry(false);
+    }
+  }
 }
 
 void LayoutBox::InvalidateItems(const NGLayoutResult& result) {

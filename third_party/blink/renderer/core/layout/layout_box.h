@@ -2407,6 +2407,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   // Compute the border-box size from physical fragments.
   LayoutSize ComputeSize() const;
+  void InvalidateCachedGeometry();
 
   // The CSS border box rect for this box.
   //

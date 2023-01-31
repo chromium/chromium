@@ -1616,7 +1616,9 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 
     if (has_processed_first_column_in_flow_thread) {
       // Non-uniform fragmentainer widths not supported by legacy layout.
-      DCHECK_EQ(flow_thread->LogicalWidth(), logical_size.inline_size);
+      if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+        DCHECK_EQ(flow_thread->LogicalWidth(), logical_size.inline_size);
+      }
     } else {
       // The offset of the flow thread is the same as that of the first column.
       LayoutPoint point =
@@ -1625,7 +1627,9 @@ void NGBlockNode::PlaceChildrenInFlowThread(
       // TODO(crbug.com/1353190): SetLocation*() and SetLogicalWidth() should
       // be removed.
       flow_thread->SetLocationAndUpdateOverflowControlsIfNeeded(point);
-      flow_thread->SetLogicalWidth(logical_size.inline_size);
+      if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
+        flow_thread->SetLogicalWidth(logical_size.inline_size);
+      }
       has_processed_first_column_in_flow_thread = true;
     }
 
