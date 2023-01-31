@@ -27,10 +27,9 @@ rootWebArea
 ++++++labelText
 ++++++++staticText name='File: '
 ++++++++++inlineTextBox name='File: '
-++++++++button name='File:' value='No file chosen'
-++++++++++button name='Choose File'
-++++++++++++staticText name='Choose File'
-++++++++++++++inlineTextBox name='Choose File'
+++++++++button name='File:: No file chosen' value='No file chosen'
+++++++++++button invisible name='Choose File'
+++++++++++++staticText ignored invisible name='Choose File'
 ++++++++++genericContainer ignored invisible
 ++++++++++++staticText ignored invisible name='No file chosen'
 ++++++labelText

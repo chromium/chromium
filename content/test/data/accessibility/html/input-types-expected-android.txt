@@ -15,7 +15,7 @@ android.webkit.WebView focusable focused scrollable
 ++++++android.widget.EditText clickable editable_text focusable hint='Email:' input_type=209
 ++++android.view.View
 ++++++android.widget.TextView name='File: '
-++++++android.widget.Button role_description='button' clickable focusable name='File:'
+++++++android.widget.Button role_description='button' clickable focusable name='File:: No file chosen'
 ++++android.view.View
 ++++++android.widget.TextView name='Image: '
 ++++++android.widget.Button role_description='button' clickable focusable name='Image:'

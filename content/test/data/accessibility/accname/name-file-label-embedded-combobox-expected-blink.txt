@@ -1,1 +1,1 @@
-button name='Flash the screen 1 times.' nameFrom=relatedElement
+button name='Flash the screen 1 times.: No file chosen' nameFrom=relatedElement

@@ -563,12 +563,24 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameDivMultipleSources) {
   RunAccNameTest(FILE_PATH_LITERAL("name-div-multiple-sources.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileAriaLabel) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-file-aria-label.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileCssAfterInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-file-css-after-in-label.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileCssBeforeInLabel) {
   RunAccNameTest(FILE_PATH_LITERAL("name-file-css-before-in-label.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileDefault) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-file-default.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileDefaultRtl) {
+  RunAccNameTest(FILE_PATH_LITERAL("name-file-default-rtl.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameFileInLabel) {

@@ -1,4 +1,4 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
-++++ROLE_SYSTEM_PUSHBUTTON name='No file chosen, Choose File' value='No file chosen' FOCUSABLE ia2_hypertext='<obj0>'
-++++++ROLE_SYSTEM_PUSHBUTTON name='Choose File' FOCUSABLE ia2_hypertext='Choose File'
+++++ROLE_SYSTEM_PUSHBUTTON name='Choose File: No file chosen' value='No file chosen' FOCUSABLE ia2_hypertext='<obj0>'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Choose File' INVISIBLE FOCUSABLE ia2_hypertext='Choose File'

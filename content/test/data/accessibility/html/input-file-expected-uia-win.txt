@@ -1,4 +1,4 @@
 Document
 ++Group IsControlElement=false
-++++Button Name='No file chosen, Choose File' Value.Value='No file chosen'
-++++++Button Name='Choose File'
+++++Button Name='Choose File: No file chosen' Value.Value='No file chosen'
+++++++Button Name='Choose File' IsControlElement=false

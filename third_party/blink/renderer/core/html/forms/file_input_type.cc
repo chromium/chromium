@@ -351,9 +351,13 @@ void FileInputType::CreateShadowSubtree() {
   // The following element is used only in LayoutNG.
   // See LayoutFileUploadControl::IsChildAllowed().
   auto* span = document.CreateRawElement(html_names::kSpanTag);
-  // This element is hidden from AX trees for a historical reason.
-  span->setAttribute(html_names::kAriaHiddenAttr, "true");
   GetElement().UserAgentShadowRoot()->AppendChild(span);
+
+  // The file input element is presented to AX as one node with the role button,
+  // instead of the individual button and text nodes. That's the reason we hide
+  // the shadow root elements of the file input in the AX tree.
+  button->setAttribute(html_names::kAriaHiddenAttr, "true");
+  span->setAttribute(html_names::kAriaHiddenAttr, "true");
 
   UpdateView();
 }

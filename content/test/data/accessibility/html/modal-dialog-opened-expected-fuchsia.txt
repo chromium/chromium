@@ -10,6 +10,8 @@ UNKNOWN focusable
 ++++++++++++++UNKNOWN label='Link inside the dialog.'
 ++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
+++++++BUTTON hidden
+++++++++STATIC_TEXT hidden label='Choose File'
 ++++++UNKNOWN hidden
 ++++++++STATIC_TEXT hidden label='No file chosen'
 ++++++UNKNOWN hidden

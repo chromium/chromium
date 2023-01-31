@@ -1,2 +1,2 @@
 # BUG: The expected result is: '2 4 6 8 10'
-button name='2 46 8 9 10' nameFrom=relatedElement
+button name='2 46 8 9 10: No file chosen' nameFrom=relatedElement
