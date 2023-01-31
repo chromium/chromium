@@ -169,11 +169,7 @@ export class ChromeVoxPrefs {
  */
 ChromeVoxPrefs.DEFAULT_PREFS = {
   'brailleCaptions': false,
-  'cvoxKey': '',
   'earcons': true,
-  'focusFollowsMouse': false,
-  'granularity': undefined,
-  'position': {},
   'sticky': false,
   'typingEcho': 0,
 
