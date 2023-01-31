@@ -25,7 +25,16 @@ export enum RealmType {
   window = 'window',
 }
 
-const scriptEvaluator = new ScriptEvaluator();
+export class RealmStorage {
+  /** Keeps track of handles and their realms sent to client. */
+  readonly #knownHandlesToRealm = new Map<string, string>();
+
+  get knownHandlesToRealm() {
+    return this.#knownHandlesToRealm;
+  }
+}
+
+const scriptEvaluator = new ScriptEvaluator(new RealmStorage());
 
 export class Realm {
   static readonly #realmMap: Map<string, Realm> = new Map();

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 import {CommonDataTypes, Message, Script} from '../../../protocol/protocol.js';
-import {Realm} from './realm.js';
+import {Realm, RealmStorage} from './realm.js';
 import {Protocol} from 'devtools-protocol';
 
 // As `script.evaluate` wraps call into serialization script, `lineNumber`
@@ -363,8 +363,11 @@ export async function stringifyObject(
 }
 
 export class ScriptEvaluator {
-  // Keeps track of `handle`s and their realms sent to client.
-  readonly #knownHandlesToRealm: Map<string, string> = new Map();
+  readonly #realmStorage: RealmStorage;
+
+  constructor(realmStorage: RealmStorage) {
+    this.#realmStorage = realmStorage;
+  }
 
   /**
    * Serializes a given CDP object into BiDi, keeping references in the
@@ -472,14 +475,14 @@ export class ScriptEvaluator {
   }
 
   realmDestroyed(realm: Realm) {
-    return Array.from(this.#knownHandlesToRealm.entries())
+    return Array.from(this.#realmStorage.knownHandlesToRealm.entries())
       .filter(([, r]) => r === realm.realmId)
-      .map(([h]) => this.#knownHandlesToRealm.delete(h));
+      .map(([h]) => this.#realmStorage.knownHandlesToRealm.delete(h));
   }
 
   async disown(realm: Realm, handle: string) {
     // Disowning an object from different realm does nothing.
-    if (this.#knownHandlesToRealm.get(handle) !== realm.realmId) {
+    if (this.#realmStorage.knownHandlesToRealm.get(handle) !== realm.realmId) {
       return;
     }
     try {
@@ -493,7 +496,7 @@ export class ScriptEvaluator {
         throw e;
       }
     }
-    this.#knownHandlesToRealm.delete(handle);
+    this.#realmStorage.knownHandlesToRealm.delete(handle);
   }
 
   async #serializeCdpExceptionDetails(
@@ -552,7 +555,7 @@ export class ScriptEvaluator {
         // and  CDP response but not on the actual BiDi type.
         (bidiValue as any).handle = objectId;
         // Remember all the handles sent to client.
-        this.#knownHandlesToRealm.set(objectId, realm.realmId);
+        this.#realmStorage.knownHandlesToRealm.set(objectId, realm.realmId);
       } else {
         // No need in waiting for the object to be released.
         // noinspection ES6MissingAwait
