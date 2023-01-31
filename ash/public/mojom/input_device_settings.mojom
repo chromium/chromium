@@ -63,3 +63,10 @@ struct KeyboardSettings {
   mojo_base.mojom.TimeDelta auto_repeat_delay;
   mojo_base.mojom.TimeDelta auto_repeat_interval;
 };
+
+// Contains all information needed to display, apply, and update mouse
+// settings.
+// TODO(michaelcheco): add `settings` and other missing fields to
+// `mojom::Mouse` struct.
+struct Mouse {
+};
