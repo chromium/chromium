@@ -20,6 +20,10 @@
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/animation/timing_input.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/resolver/css_to_style_map.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/permissions_policy/layout_animations_policy.h"
@@ -67,12 +71,20 @@ V8UnionKeyframeEffectOptionsOrUnrestrictedDouble* CoerceEffectOptions(
 }
 
 TimelineOffset ConvertRangeOffset(
+    Element* element,
     const V8UnionStringOrTimelineRangeOffset* range_offset,
     double default_percent,
     ExceptionState& exception_state) {
   TimelineOffset result;
   if (range_offset->IsString()) {
-    // TODO(kevers): Implement once we have CSS support for animation-range.
+    absl::optional<TimelineOffset> parsed_timeline_offset =
+        TimelineOffset::Create(element, range_offset->GetAsString(),
+                               exception_state);
+    if (parsed_timeline_offset) {
+      // TODO(kevers): Keep track of style dependent value in order to
+      // re-resolve on a style update.
+      return parsed_timeline_offset.value();
+    }
     result.name = TimelineOffset::NamedRange::kNone;
     result.offset = Length(default_percent, Length::Type::kPercent);
   } else {
@@ -97,32 +109,8 @@ TimelineOffset ConvertRangeOffset(
       } else if (css_value->IsPercentage()) {
         result.offset = Length::Percent(css_value->GetDoubleValue());
       } else {
-        // TODO(kevers): Resolve if we need to handle style-dependent lengths
-        // such as em. If so, what is the reference element for resolving the
-        // style?
         DCHECK(css_value->IsCalculatedPercentageWithLength());
-        CSSLengthArray length_array;
-        css_value->AccumulateLengthArray(length_array);
-        double percent = 0;
-        double px = 0;
-        for (wtf_size_t i = 0; i < length_array.values.size(); ++i) {
-          double array_value = length_array.values[i];
-          if (array_value == 0) {
-            continue;
-          }
-          if (i == CSSPrimitiveValue::kUnitTypePercentage) {
-            percent = array_value;
-          } else if (i == CSSPrimitiveValue::kUnitTypePixels) {
-            px = array_value;
-          } else {
-            exception_state.ThrowDOMException(
-                DOMExceptionCode::kNotSupportedError,
-                "Unsupported range offset");
-            return result;
-          }
-        }
-        result.offset = Length(CalculationValue::Create(
-            PixelsAndPercent(px, percent), Length::ValueRange::kAll));
+        result.offset = TimelineOffset::ResolveLength(element, css_value);
       }
     } else {
       result.offset = Length::Percent(default_percent);
@@ -178,13 +166,15 @@ Animation* Animatable::animate(
   animation->setId(options_dict->id());
 
   // ViewTimeline options.
-  if (options_dict->hasRangeStart()) {
-    animation->SetRangeStart(
-        ConvertRangeOffset(options_dict->rangeStart(), 0, exception_state));
+  if (options_dict->hasRangeStart() &&
+      RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
+    animation->SetRangeStart(ConvertRangeOffset(
+        element, options_dict->rangeStart(), 0, exception_state));
   }
-  if (options_dict->hasRangeEnd()) {
-    animation->SetRangeEnd(
-        ConvertRangeOffset(options_dict->rangeEnd(), 100, exception_state));
+  if (options_dict->hasRangeEnd() &&
+      RuntimeEnabledFeatures::CSSScrollTimelineEnabled()) {
+    animation->SetRangeEnd(ConvertRangeOffset(element, options_dict->rangeEnd(),
+                                              100, exception_state));
   }
   return animation;
 }

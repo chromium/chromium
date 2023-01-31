@@ -10,6 +10,9 @@
 
 namespace blink {
 
+class Element;
+class CSSValue;
+
 struct TimelineOffset {
   using NamedRange = V8TimelineRange::Enum;
 
@@ -26,6 +29,12 @@ struct TimelineOffset {
   bool operator!=(const TimelineOffset& other) const {
     return !(*this == other);
   }
+
+  static absl::optional<TimelineOffset> Create(Element* element,
+                                               String value,
+                                               ExceptionState& exception_state);
+
+  static Length ResolveLength(Element* element, const CSSValue* value);
 
   String ToString() const;
 };
