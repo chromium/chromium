@@ -88,9 +88,15 @@ class H264Decoder : public VideoDecoder {
               std::unique_ptr<V4L2Queue> OUTPUT_queue,
               std::unique_ptr<V4L2Queue> CAPTURE_queue);
 
-  // Processes NALU's until reaching the end of the current frame.  This method
-  // will send Ext Ctrls via IOCTL calls to indicate the start of a frame.
+  // Processes NALU's until reaching the end of the current frame.  To
+  // know the end of the current frame it may be necessary to start parsing
+  // the next frame.  If this occurs the NALU that was parsed needs to be
+  // held over until the next frame.  This is done in |pending_nalu_|
+  // Not every frame has a SPS/PPS associated with it.  The SPS/PPS must
+  // occur on an IDR frame.  Store the last seen slice header in
+  // |pending_slice_header_| so it will be available for the next frame.
   H264Parser::Result ProcessNextFrame(
+      const int frame_number,
       std::unique_ptr<H264SliceHeader>* resulting_slice_header);
 
   // Sends IOCTL call to device with the frame's SPS, PPS, and Scaling Matrix
@@ -102,10 +108,15 @@ class H264Decoder : public VideoDecoder {
       H264SliceMetadata* slice_metadata,
       v4l2_ctrl_h264_decode_params* v4l2_decode_param);
 
-  // Transmits each H264 Slice associated with the current frame to the
-  // device.  Additionally sends Decode Parameters and Decode Mode
-  // via IOCTL Ext Ctrls.
-  VideoDecoder::Result SubmitSlice(H264SliceHeader curr_slice, int frame_num);
+  // Finishes frame processing for the current decoded frame. Transmits decode
+  // parameters via IOCTL Ext Ctrls. It continues to execute decoded ref
+  // picture marking process as defined in section 8.2.5. Finally, using
+  // the DPB, transmit H264 Slices to the device for the current frame.
+  VideoDecoder::Result FinishFrame(
+      const H264SliceHeader& curr_slice,
+      int frame_num,
+      v4l2_ctrl_h264_decode_params& v4l2_decode_param,
+      H264SliceMetadata& slice_metadata);
 
   // Initializes H264 Slice Metadata based on slice header and
   // based on H264 specifications which it calculates its pic order count.
