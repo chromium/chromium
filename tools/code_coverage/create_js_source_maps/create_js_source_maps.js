@@ -63,16 +63,17 @@ function addMapping(map, sourceFileName, originalLine, generatedLine, verbose) {
  *                                Otherwise, the standalone map file.
  * @param {boolean} verbose If true, print detailed information about the
  *                          mappings as they are added.
+ * @param {string} sourceRoot The root for all source files.
  * @param {boolean} inlineSourcemaps If true, append source map instead of
  *                                   creating standalone map file.
  */
 function processOneFile(
-    originalFileName, inputFileName, outputFileName, verbose,
+    originalFileName, inputFileName, outputFileName, verbose, sourceRoot,
     inlineSourcemaps) {
   const inputFile = fs.readFileSync(inputFileName, 'utf8');
   const inputLines = inputFile.split('\n');
   const map = new SourceMapGenerator(
-      {file: path.resolve(outputFileName), sourceRoot: process.cwd()});
+      {file: path.resolve(outputFileName), sourceRoot: sourceRoot});
 
   let originalLine = 0;
   let generatedLine = 0;
@@ -126,11 +127,16 @@ function main() {
   parser.addArgument('original', {help: 'Original file name', action: 'store'});
   parser.addArgument('input', {help: 'Input file name', action: 'store'});
   parser.addArgument('output', {help: 'Output file name', action: 'store'});
+  parser.addArgument('--sourceRoot', {
+    help: 'Source directory to store the source map',
+    required: false,
+    default: process.cwd(),
+  });
 
   const argv = parser.parseArgs();
 
   processOneFile(
-      argv.original, argv.input, argv.output, argv.verbose,
+      argv.original, argv.input, argv.output, argv.verbose, argv.sourceRoot,
       argv.inline_sourcemaps);
 }
 

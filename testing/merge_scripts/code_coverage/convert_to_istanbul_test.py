@@ -4,13 +4,19 @@
 # found in the LICENSE file.
 
 import json
-import mock
 import os
 import shutil
 import tempfile
 import unittest
 
 import merge_js_lib as merger
+from pathlib import Path
+import node
+
+_HERE_DIR = Path(__file__).parent.resolve()
+_SOURCE_MAP_PROCESSOR = (_HERE_DIR.parent.parent.parent /
+                         'tools' / 'code_coverage' / 'create_js_source_maps' /
+                         'create_js_source_maps.js').resolve()
 
 class ConvertToIstanbulTest(unittest.TestCase):
     _TEST_SOURCE_A = """function add(a, b) {
@@ -269,9 +275,12 @@ subtract(5, 2);
         self.task_output_dir = tempfile.mkdtemp()
         self.coverage_dir = os.path.join(self.task_output_dir, 'coverages')
         self.source_dir = os.path.join(self.task_output_dir, 'source')
+        self.out_dir = os.path.join(self.task_output_dir, 'out')
+        self.sourceRoot = '/'
 
         os.makedirs(self.coverage_dir)
         os.makedirs(self.source_dir)
+        os.makedirs(self.out_dir)
 
     def tearDown(self):
         shutil.rmtree(self.task_output_dir)
@@ -290,13 +299,31 @@ subtract(5, 2);
             with open(os.path.join(root_dir, file_path), 'w') as f:
                 f.write(contents)
 
+    def _write_transformations(
+        self, source_dir, out_dir,
+        original_file_name, input_file_name, output_file_name):
+      original_file = os.path.join(source_dir, original_file_name)
+      input_file = os.path.join(source_dir, input_file_name)
+      output_file = os.path.join(out_dir, output_file_name)
+      node.RunNode([
+        str(_SOURCE_MAP_PROCESSOR),
+        original_file,
+        input_file,
+        output_file,
+        "--inline-sourcemaps",
+        "--sourceRoot={}".format(self.sourceRoot),
+      ])
+
     def write_sources(self, *file_path_contents):
         url_to_path_map = {}
         for path_url, contents in file_path_contents:
             file_path, url = path_url
             url_to_path_map[file_path] = url
             self._write_files(self.source_dir, (url, contents))
-        with open(os.path.join(self.source_dir, 'parsed_scripts.json'),
+            self._write_files(self.out_dir, (url, contents))
+            self._write_transformations(
+              self.source_dir, self.out_dir, url, url, url)
+        with open(os.path.join(self.out_dir, 'parsed_scripts.json'),
                   'w',
                   encoding='utf-8') as f:
             f.write(json.dumps(url_to_path_map))
@@ -309,7 +336,7 @@ subtract(5, 2);
         self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                self.source_dir,
+                                                self.out_dir,
                                                 self.task_output_dir)
 
         istanbul_files = self.list_files(
@@ -326,7 +353,7 @@ subtract(5, 2);
         self.write_coverages(('test_coverage.cov.json', coverage_file))
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                self.source_dir,
+                                                self.out_dir,
                                                 self.task_output_dir)
 
         istanbul_files = self.list_files(
@@ -340,7 +367,7 @@ subtract(5, 2);
 
         with self.assertRaises(RuntimeError):
             merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                    self.source_dir,
+                                                    self.out_dir,
                                                     self.task_output_dir)
 
     def test_multiple_coverages_single_file(self):
@@ -349,7 +376,7 @@ subtract(5, 2);
         self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_B))
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                self.source_dir,
+                                                self.out_dir,
                                                 self.task_output_dir)
 
         istanbul_files = self.list_files(
@@ -363,7 +390,7 @@ subtract(5, 2);
             ('test_coverage.cov.json', self._TEST_COVERAGE_NO_LEADING_SLASH))
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                self.source_dir,
+                                                self.out_dir,
                                                 self.task_output_dir)
 
         istanbul_files = self.list_files(
@@ -380,12 +407,27 @@ subtract(5, 2);
             ('test_coverage_2.cov.json', self._TEST_COVERAGE_DUPLICATE_DOUBLE))
 
         merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
-                                                self.source_dir,
+                                                self.out_dir,
                                                 self.task_output_dir)
 
         istanbul_files = self.list_files(
             os.path.join(self.task_output_dir, 'istanbul'))
         self.assertEqual(len(istanbul_files), 2)
+
+
+    def test_original_source_missing(self):
+        self.write_sources((('//file.js', 'file.js'), self._TEST_SOURCE_A))
+        self.write_coverages(('test_coverage.cov.json', self._TEST_COVERAGE_A))
+        os.remove(os.path.join(self.source_dir, "file.js"))
+
+
+        merger.convert_raw_coverage_to_istanbul([self.coverage_dir],
+                                                self.out_dir,
+                                                self.task_output_dir)
+
+        istanbul_files = self.list_files(
+            os.path.join(self.task_output_dir, 'istanbul'))
+        self.assertEqual(len(istanbul_files), 0)
 
 
 if __name__ == '__main__':

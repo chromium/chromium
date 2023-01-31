@@ -12,10 +12,75 @@ const NODE_MODULES = [
   '..', '..', '..', 'third_party', 'js_code_coverage', 'node_modules'];
 
 const {createHash} = require('crypto');
-const {join, normalize} = require('path');
-const {readdir, readFile, writeFile, mkdir} = require('fs').promises;
+const {join, dirname} = require('path');
+const {readdir, readFile, writeFile, mkdir, access} = require('fs').promises;
 const V8ToIstanbul = require(join(...NODE_MODULES, 'v8-to-istanbul'));
 const {ArgumentParser} = require(join(...NODE_MODULES, 'argparse'));
+const convertSourceMap = require(join(...NODE_MODULES, 'convert-source-map'));
+const sourceMap = require(join(...NODE_MODULES, 'source-map'));
+
+/**
+ * Validate the sourcemap by looking at the start and end positions
+ * of the source file if present.
+ * @param {string} instrumentedFilePath Path to the file with source map.
+ * @returns {boolean} true if sourcemap is valid, false otherwise
+ */
+async function validateSourceMaps(instrumentedFilePath) {
+  const rawSource = await readFile(instrumentedFilePath, 'utf8');
+  const rawSourceMap = convertSourceMap.fromSource(rawSource) ||
+      convertSourceMap.fromMapFileSource(
+        rawSource, dirname(instrumentedFilePath));
+  if (!rawSourceMap || rawSourceMap.sourcemap.sources.length < 1) {
+    return false
+  }
+
+  let exists = false
+  const consumer =
+      await new sourceMap.SourceMapConsumer(rawSourceMap.sourcemap);
+  let result = consumer.originalPositionFor({line: 1, column: 0});
+
+  let file = null
+  try {
+    file = await readFile(result.source, 'utf8');
+  } catch(error) {
+    if (error.code === 'ENOENT') {
+      exists = false
+    } else {
+      throw error;
+    }
+  }
+
+  if (!file) {
+    consumer.destroy();
+    return exists;
+  }
+
+  const contents = file.toString();
+  const lines = contents.split("\n");
+  result = consumer.originalPositionFor({line: lines.length, column: 0});
+  if (checkSource(result.source)) {
+    exists = true
+  } else {
+    throw new Error(`Original source missing for ${instrumentedFilePath}`)
+  }
+
+  consumer.destroy();
+  return exists;
+}
+
+/**
+ * Check if the source exists on disk.
+ * @param {string} url Path to the source file
+ * @returns {boolean} True if exists, false otherwise
+ */
+async function checkSource(url) {
+  try {
+    await access(url)
+    return true
+  } catch(error) {
+    return false
+  }
+}
 
 /**
  * Extracts the raw coverage data from the v8 coverage reports and converts
@@ -48,6 +113,12 @@ async function extractCoverage(
 
       const instrumentedFilePath =
           join(instrumentedDirectoryRoot, urlToPathMap[coverage.url]);
+      const validSourceMap = await validateSourceMaps(instrumentedFilePath)
+      if (!validSourceMap) {
+        console.log(`Original source missing for ${instrumentedFilePath}.`);
+        continue;
+      }
+
       const converter = V8ToIstanbul(instrumentedFilePath);
       await converter.load();
       converter.applyCoverage(coverage.functions);
