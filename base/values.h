@@ -679,17 +679,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(Value&& value);
   // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(bool value);
-  template <typename T>
-  void Append(const T* ptr) = delete;
-  // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(int value);
-  // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(double value);
-  // DEPRECATED: prefer `Value::List::Append()`.
   void Append(StringPiece value);
-  // DEPRECATED: prefer `Value::List::Append()`.
-  void Append(StringPiece16 value);
   // DEPRECATED: prefer `Value::List::Append()`.
   void Append(const char* value);
   // DEPRECATED: prefer `Value::List::Append()`.
@@ -746,7 +736,7 @@ class BASE_EXPORT GSL_OWNER Value {
   // DEPRECATED: Prefer `Value::Dict::Set()`.
   Value* SetKey(StringPiece key, Value&& value);
 
-  // `Set`Type>Key` looks up `key` in the underlying dictionary and associates a
+  // `Set<Type>Key` looks up `key` in the underlying dictionary and associates a
   // corresponding Value() constructed from the second parameter. Compared to
   // `SetKey()`, this avoids un-necessary temporary `Value()` creation, as well
   // ambiguities in the value type.
