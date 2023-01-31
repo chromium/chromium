@@ -108,6 +108,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     bool is_aspect_preserving_scaling_ = false;
     bool has_overscan_ = false;
     PrivacyScreenState privacy_screen_state_ = kNotSupported;
+    bool has_content_protection_key_ = false;
     bool has_color_correction_matrix_ = false;
     bool color_correction_in_linear_space_ = false;
     std::string name_;
@@ -136,6 +137,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
       bool is_aspect_preserving_scaling,
       bool has_overscan,
       PrivacyScreenState privacy_screen_state,
+      bool has_content_protection_key_,
       bool has_color_correction_matrix,
       bool color_correction_in_linear_space,
       std::string display_name,

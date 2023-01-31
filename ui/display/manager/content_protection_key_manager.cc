@@ -4,6 +4,7 @@
 
 #include "ui/display/manager/content_protection_key_manager.h"
 
+#include "base/containers/contains.h"
 #include "ui/display/display_features.h"
 #include "ui/display/manager/display_manager_util.h"
 
@@ -11,17 +12,23 @@ namespace display {
 
 namespace {
 
-std::vector<display::DisplaySnapshot*> GetHdcpCapableDisplays(
-    const std::vector<display::DisplaySnapshot*>& displays_states) {
-  std::vector<display::DisplaySnapshot*> hdcp_capable_displays;
+display::DisplaySnapshot* GetDisplayWithIdIfHdcpCapableAndKeyNeeded(
+    const std::vector<display::DisplaySnapshot*>& displays_states,
+    int64_t display_id) {
   for (display::DisplaySnapshot* display : displays_states) {
-    uint32_t protection_mask;
-    if (GetContentProtectionMethods(display->type(), &protection_mask) &&
-        protection_mask & display::kContentProtectionMethodHdcpAll) {
-      hdcp_capable_displays.push_back(display);
+    if (display->display_id() == display_id) {
+      uint32_t protection_mask;
+      bool is_hdcp_capable =
+          GetContentProtectionMethods(display->type(), &protection_mask) &&
+          protection_mask & display::kContentProtectionMethodHdcpAll;
+      if (is_hdcp_capable && display->has_content_protection_key()) {
+        return display;
+      }
+      break;
     }
   }
-  return hdcp_capable_displays;
+
+  return nullptr;
 }
 
 }  // namespace
@@ -31,42 +38,43 @@ ContentProtectionKeyManager::~ContentProtectionKeyManager() = default;
 
 void ContentProtectionKeyManager::SetKeyIfRequired(
     const std::vector<DisplaySnapshot*>& displays_states,
-    NativeDisplayDelegate* native_display_delegate,
+    int64_t display_id,
     KeySetCallback on_key_set) {
-  // TODO(markyacoub): Query the hdcp key and inject it if needed to
-  // replace the feature flag.
+  DCHECK(!on_key_set.is_null());
+
+  // TODO(markyacoub): Remove this flag once the feature is fully launched.
   if (!features::IsHdcpKeyProvisioningRequired()) {
     std::move(on_key_set).Run();
     return;
   }
 
-  if (key_fetching_status_ == KeyFetchingStatus::kFetchingNotRequired ||
-      provisioned_key_request_.is_null()) {
+  if (!GetDisplayWithIdIfHdcpCapableAndKeyNeeded(displays_states, display_id)) {
     std::move(on_key_set).Run();
     return;
   }
 
-  // Check if any of the displays support HDCP.
-  std::vector<DisplaySnapshot*> hdcp_capable_displays =
-      GetHdcpCapableDisplays(displays_states);
-  pending_displays_to_configure_ = hdcp_capable_displays.size();
-  if (hdcp_capable_displays.empty()) {
-    std::move(on_key_set).Run();
-    return;
-  }
+  pending_display_callbacks_[display_id] = std::move(on_key_set);
 
   // If we already learnt that we need a key and already fetched the key, go
   // ahead and inject it into the kernel.
   if (!cached_provisioned_key_.empty()) {
-    for (DisplaySnapshot* display : hdcp_capable_displays) {
-      // TODO(markyacoub): inject key to kernel.
-      (void)display;
-    }
+    // TODO(markyacoub): Replace and inject key to kernel.
+    TriggerPendingCallbacks(display_id);
     return;
   }
 
-  // TODO(markyacoub): Implement querying and injecting.
-  std::move(on_key_set).Run();
+  // TODO(markyacoub): fetch the key from the server. For now, just end the
+  // process and call the callback when all displays have responded.
+  TriggerPendingCallbacks(display_id);
+}
+
+void ContentProtectionKeyManager::TriggerPendingCallbacks(int64_t display_id) {
+  CHECK(base::Contains(pending_display_callbacks_, display_id));
+  KeySetCallback callback = std::move(pending_display_callbacks_[display_id]);
+  DCHECK(!callback.is_null());
+  std::move(callback).Run();
+
+  pending_display_callbacks_.erase(display_id);
 }
 
 }  // namespace display

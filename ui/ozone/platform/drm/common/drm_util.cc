@@ -217,6 +217,13 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
   return display::PrivacyScreenState::kNotSupported;
 }
 
+bool HasContentProtectionKey(int fd, drmModeConnector* connector) {
+  ScopedDrmPropertyPtr content_protection_key_property;
+  int idx = GetDrmProperty(fd, connector, kContentProtectionKey,
+                           &content_protection_key_property);
+  return idx > -1;
+}
+
 std::vector<uint64_t> GetPathTopology(int fd, drmModeConnector* connector) {
   ScopedDrmPropertyBlobPtr path_blob =
       GetDrmPropertyBlob(fd, connector, "PATH");
@@ -544,6 +551,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       GetPanelOrientation(fd, info->connector());
   const display::PrivacyScreenState privacy_screen_state =
       GetPrivacyScreenState(fd, info->connector());
+  const bool has_content_protection_key =
+      HasContentProtectionKey(fd, info->connector());
   const bool has_color_correction_matrix =
       HasColorCorrectionMatrix(fd, info->crtc()) ||
       HasPerPlaneColorCorrectionMatrix(fd, info->crtc());
@@ -614,12 +623,12 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
       port_display_id, port_display_id, edid_display_id, connector_index,
       origin, physical_size, type, base_connector_id, path_topology,
       is_aspect_preserving_scaling, has_overscan, privacy_screen_state,
-      has_color_correction_matrix, color_correction_in_linear_space,
-      display_color_space, bits_per_channel, hdr_static_metadata, display_name,
-      sys_path, std::move(modes), panel_orientation, edid, current_mode,
-      native_mode, product_code, year_of_manufacture, maximum_cursor_size,
-      variable_refresh_rate_state, vertical_display_range_limits,
-      drm_formats_and_modifiers);
+      has_content_protection_key, has_color_correction_matrix,
+      color_correction_in_linear_space, display_color_space, bits_per_channel,
+      hdr_static_metadata, display_name, sys_path, std::move(modes),
+      panel_orientation, edid, current_mode, native_mode, product_code,
+      year_of_manufacture, maximum_cursor_size, variable_refresh_rate_state,
+      vertical_display_range_limits, drm_formats_and_modifiers);
 }
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {

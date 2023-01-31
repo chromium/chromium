@@ -26,6 +26,7 @@ struct DisplaySnapshot {
   bool is_aspect_preserving_scaling;
   bool has_overscan;
   display.mojom.PrivacyScreenState privacy_screen_state;
+  bool has_content_protection_key;
   bool has_color_correction_matrix;
   bool color_correction_in_linear_space;
   gfx.mojom.ColorSpace color_space;

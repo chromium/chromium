@@ -83,6 +83,11 @@ struct StructTraits<display::mojom::DisplaySnapshotDataView,
     return snapshot->privacy_screen_state();
   }
 
+  static bool has_content_protection_key(
+      const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
+    return snapshot->has_content_protection_key();
+  }
+
   static bool has_color_correction_matrix(
       const std::unique_ptr<display::DisplaySnapshot>& snapshot) {
     return snapshot->has_color_correction_matrix();

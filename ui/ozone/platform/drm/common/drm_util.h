@@ -42,6 +42,7 @@ constexpr int kMaxDrmCount = 256u;
 constexpr int kMaxDrmConnectors = 256u;
 
 // DRM property names.
+const char kContentProtectionKey[] = "Content Protection Key";
 const char kContentProtection[] = "Content Protection";
 const char kHdcpContentType[] = "HDCP Content Type";
 

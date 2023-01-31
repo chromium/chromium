@@ -5,6 +5,8 @@
 #ifndef UI_DISPLAY_MANAGER_CONTENT_PROTECTION_KEY_MANAGER_H_
 #define UI_DISPLAY_MANAGER_CONTENT_PROTECTION_KEY_MANAGER_H_
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/native_display_delegate.h"
@@ -18,7 +20,7 @@ namespace display {
 
 // The Workflow when a key is required:
 //  1. Check for a valid key request function.
-//  2. Query the "Content Protection Key" connector property to verify if the
+//  2. Look for the "Content Protection Key" connector property to verify if the
 //     key is required.
 //  3. Check for keys that are cached for the HDCP capable displays, if they
 //     don't exist get the provisioned key from the server.
@@ -43,26 +45,15 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
     provisioned_key_request_ = std::move(request);
   }
 
-  // Querying the key prop through |native_display_delegate|, requests the key
-  // by calling |request| and injects the key into the kernel if required by
-  // the |displays_states|.
-  // When the displays config is done, whether it was needed or not, on both
-  // success and failure, |on_key_set| is called.
+  // Check for the key prop of |displays_states|, request the key by calling
+  // |provisioned_key_request_| and inject the key into the kernel if
+  // required. When the displays config is done, call |on_key_set|.
   void SetKeyIfRequired(const std::vector<DisplaySnapshot*>& displays_states,
-                        NativeDisplayDelegate* native_display_delegate,
+                        int64_t display_id,
                         KeySetCallback on_key_set);
 
  private:
-  enum class KeyFetchingStatus {
-    kFetchingNotStarted,
-    kFetchingInProgress,
-    kFetchingSucceeded,
-    kFetchingFailed,
-    kFetchingNotRequired
-  };
-
-  KeyFetchingStatus key_fetching_status_ =
-      KeyFetchingStatus::kFetchingNotStarted;
+  void TriggerPendingCallbacks(int64_t callback_id);
 
   // Function to request the provisioned key from the server.
   ProvisionedKeyRequest provisioned_key_request_;
@@ -70,7 +61,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionKeyManager {
   // change throughout the life of the process.
   std::string cached_provisioned_key_;
 
-  int pending_displays_to_configure_ = 0;
+  // Displays that have already been handled and we know do not require keys.
+  base::flat_set<int64_t> displays_not_require_keys_;
+  base::flat_map<int64_t, KeySetCallback> pending_display_callbacks_;
+
+  base::WeakPtrFactory<ContentProtectionKeyManager> weak_ptr_factory_{this};
 };
 
 }  // namespace display

@@ -108,7 +108,7 @@ void ContentProtectionManager::ApplyContentProtection(
 
   if (HasExternalDisplaysWithContentProtection()) {
     hdcp_key_manager_.SetKeyIfRequired(
-        layout_manager_->GetDisplayStates(), native_display_delegate_,
+        layout_manager_->GetDisplayStates(), display_id,
         base::BindOnce(&ContentProtectionManager::QueueContentProtectionTask,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        client_id));
