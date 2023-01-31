@@ -126,6 +126,18 @@ absl::optional<VideoFrameLayout> AsMultiPlanarLayout(
   return VideoFrameLayout::CreateMultiPlanar(
       layout.format(), layout.coded_size(), layout.planes());
 }
+
+scoped_refptr<base::SequencedTaskRunner> CreateEncoderTaskRunner() {
+  if (base::FeatureList::IsEnabled(kUSeSequencedTaskRunnerForVEA)) {
+    return base::ThreadPool::CreateSequencedTaskRunner(
+        {base::WithBaseSyncPrimitives(), base::TaskPriority::USER_VISIBLE,
+         base::MayBlock()});
+  } else {
+    return base::ThreadPool::CreateSingleThreadTaskRunner(
+        {base::WithBaseSyncPrimitives(), base::MayBlock()},
+        base::SingleThreadTaskRunnerThreadMode::DEDICATED);
+  }
+}
 }  // namespace
 
 struct V4L2VideoEncodeAccelerator::BitstreamBufferRef {
@@ -178,13 +190,9 @@ V4L2VideoEncodeAccelerator::V4L2VideoEncodeAccelerator(
       device_(std::move(device)),
       input_memory_type_(V4L2_MEMORY_USERPTR),
       is_flush_supported_(false),
-      // TODO(akahuang): Change to use SequencedTaskRunner to see if the
-      // performance is affected.
       // TODO(akahuang): Remove WithBaseSyncPrimitives() after replacing poll
       // thread by V4L2DevicePoller.
-      encoder_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
-          {base::WithBaseSyncPrimitives(), base::MayBlock()},
-          base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
+      encoder_task_runner_(CreateEncoderTaskRunner()),
       device_poll_thread_("V4L2EncoderDevicePollThread") {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
   DETACH_FROM_SEQUENCE(encoder_sequence_checker_);
@@ -1550,7 +1558,7 @@ void V4L2VideoEncodeAccelerator::NotifyError(Error error) {
 void V4L2VideoEncodeAccelerator::SetErrorState(Error error) {
   // We can touch encoder_state_ only if this is the encoder thread or the
   // encoder thread isn't running.
-  if (!encoder_task_runner_->BelongsToCurrentThread()) {
+  if (!encoder_task_runner_->RunsTasksInCurrentSequence()) {
     encoder_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&V4L2VideoEncodeAccelerator::SetErrorState,
                                   weak_this_, error));

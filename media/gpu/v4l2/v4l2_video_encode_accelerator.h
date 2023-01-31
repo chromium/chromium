@@ -358,7 +358,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // The number of frames that are being processed by |image_processor_|.
   size_t num_frames_in_image_processor_ = 0;
 
-  const scoped_refptr<base::SingleThreadTaskRunner> encoder_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
   SEQUENCE_CHECKER(encoder_sequence_checker_);
 
   // The device polling thread handles notifications of V4L2 device changes.
